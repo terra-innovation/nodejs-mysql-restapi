@@ -9,16 +9,23 @@ export const getEmployees = async (req, res) => {
   }
 };
 
-export const getEmployee = async (req, res) => {
+export const getTrabajadoresPorRuc = async (req, res) => {
   try {
-    const { id } = req.params;
-    const [rows] = await poolFactoring.query("SELECT * FROM employee WHERE id = ?", [id]);
+    const { ruc } = req.params;
+    const query = `
+    SELECT se.ruc, se.nombreempresa, st.ano, st.mes, st.canttrabajador, st.cantpensionista, st.cantservicio, st.fechamod, CONCAT(se.ruc, " ", se.nombreempresa) AS empresa 
+    FROM dwh_sunat_empresa se 
+    INNER JOIN dwh_sunat_trabajador st ON st.ruc = se.ruc 
+    WHERE se.ruc = ? 
+    `;
+
+    const [rows] = await poolFactoring.query(query, [ruc]);
 
     if (rows.length <= 0) {
       return res.status(404).json({ message: "Employee not found" });
     }
 
-    res.json(rows[0]);
+    res.json(rows);
   } catch (error) {
     return res.status(500).json({ message: "Something goes wrong" });
   }
