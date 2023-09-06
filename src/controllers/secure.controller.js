@@ -13,21 +13,34 @@ export const loginUser = async (req, res) => {
     // Get user input
     const { correo, clave } = req.body;
 
-    // Validate user input
-    if (!(correo && clave)) {
-      return res.status(400).json({ message: "All input is required" });
-    }
+    let EMAIL_REGX = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$/;
+
+    const loginUserSchema = Yup.object()
+      .shape({
+        email: Yup.string()
+          .trim()
+          .required("Correo electrónico es requerido")
+          .email("Debe ser un correo válido")
+          .matches(EMAIL_REGX, "Debe ser un correo válido.")
+          .min(5, "Mínimo 5 caracteres")
+          .max(50, "Máximo 50 caracteres"),
+        password: Yup.string().required("Contraseña es requerido").min(6, "Mínimo 6 caracteres").max(20, "Máximo 20 caracteres"),
+      })
+      .required();
+    const data = loginUserSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
+
+    const { email, password } = data;
 
     // Validate if user exist in our database
-    const [rows] = await poolFactoring.query("SELECT * FROM user WHERE correo = ?", [correo]);
+    const [rows] = await poolFactoring.query("SELECT email, password FROM usuario WHERE email = ?", [email]);
 
     if (rows.length <= 0) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "Usuario no encontrado" });
     }
 
-    if (rows[0].correo && (await bcrypt.compare(clave, rows[0].clave))) {
+    if (rows[0].email && (await bcrypt.compare(password, rows[0].password))) {
       // Create token
-      const token = jwt.sign({ idusuario: rows[0].idusuario, correo }, TOKEN_KEY, {
+      const token = jwt.sign({ idusuario: rows[0].usuarioid, email }, TOKEN_KEY, {
         expiresIn: "2h",
       });
 
@@ -35,9 +48,9 @@ export const loginUser = async (req, res) => {
       // user.token = token;
       rows[0].token = token;
 
-      res.status(201).json(rows[0]);
+      res.status(201).json({ token });
     } else {
-      return res.status(404).json({ message: "Invalid Credentials" });
+      return res.status(404).json({ message: "Credenciales no válidas" });
     }
   } catch (error) {
     console.log(error);

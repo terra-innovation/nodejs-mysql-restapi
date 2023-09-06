@@ -1,0 +1,31 @@
+import { poolFactoring } from "../config/bd/db_factoring.js";
+
+export const insertarFacturaTerminoPago = async (factura_termino_pago) => {
+  const [rows] = await poolFactoring.query(
+    `INSERT INTO factura_termino_pago (
+      facturaterminopagoid,
+      idfactura,
+      id,
+      forma_pago,
+      monto,
+      porcentaje,
+      fecha_pago
+      ) VALUES (?,?,?,?,?,?,?)`,
+    [
+      factura_termino_pago.facturaterminopagoid,
+      factura_termino_pago.idfactura,
+      factura_termino_pago.id,
+      factura_termino_pago.forma_pago,
+      factura_termino_pago.monto,
+      factura_termino_pago.porcentaje,
+      factura_termino_pago.fecha_pago,
+    ]
+  );
+  //console.log(rows);
+
+  if (rows.length <= 0) {
+    throw new Error("BD Logica. Uh oh!");
+  }
+
+  return rows;
+};
