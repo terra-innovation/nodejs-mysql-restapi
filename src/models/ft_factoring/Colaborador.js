@@ -1,48 +1,40 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class Empresa extends Model {
+export default class Colaborador extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    idempresa: {
+    idcolaborador: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    empresaid: {
+    colaboradorid: {
       type: DataTypes.STRING(50),
       allowNull: false
     },
-    code: {
+    idempresa: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'empresa',
+        key: 'idempresa'
+      }
+    },
+    nombre: {
+      type: DataTypes.STRING(100),
+      allowNull: false
+    },
+    cargo: {
+      type: DataTypes.STRING(100),
+      allowNull: false
+    },
+    telefono: {
       type: DataTypes.STRING(20),
       allowNull: false
     },
-    ruc: {
-      type: DataTypes.STRING(11),
-      allowNull: false
-    },
-    razon_social: {
-      type: DataTypes.STRING(200),
-      allowNull: false
-    },
-    nombre_comercial: {
-      type: DataTypes.STRING(200),
-      allowNull: true
-    },
-    fecha_inscripcion: {
-      type: DataTypes.DATEONLY,
-      allowNull: true
-    },
-    domicilio_fiscal: {
-      type: DataTypes.STRING(200),
-      allowNull: true
-    },
-    score: {
-      type: DataTypes.STRING(5),
-      allowNull: true
-    },
-    idusuariocrea: {
+    idsuariocrea: {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 1
@@ -69,12 +61,19 @@ export default class Empresa extends Model {
     }
   }, {
     sequelize,
-    tableName: 'empresa',
+    tableName: 'colaborador',
     timestamps: false,
     indexes: [
       {
         name: "PRIMARY",
         unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "idcolaborador" },
+        ]
+      },
+      {
+        name: "FK_idempresa",
         using: "BTREE",
         fields: [
           { name: "idempresa" },

@@ -1,4 +1,5 @@
 import { poolFactoring } from "../config/bd/mysql2_db_factoring.js";
+import Colaborador from "../models/ft_factoring/Colaborador.js";
 import { ClientError, ConexionError } from "../utils/errors.js";
 
 export const getEmpresasActivas = async (req) => {
@@ -16,6 +17,31 @@ export const getEmpresasActivas = async (req) => {
     return empresas;
   } catch (error) {
     console.error(error.original.code);
+    console.error(error);
+    throw new ConexionError("Ocurrio un error", 500);
+  }
+};
+
+export const getEmpresaByIdempresa = async (req) => {
+  try {
+    const { models } = req.app.locals;
+
+    const empresa = await models.Empresa.findByPk(2, {
+      include: [
+        {
+          model: Colaborador,
+          as: "colaboradors", // Opcional: personalizar el nombre de la propiedad
+        },
+      ],
+    });
+    console.log(empresa);
+
+    //const colaboradores = await empresa.getColaboradors();
+    //console.log(colaboradores);
+
+    return empresa;
+  } catch (error) {
+    console.error(error.code);
     console.error(error);
     throw new ConexionError("Ocurrio un error", 500);
   }
