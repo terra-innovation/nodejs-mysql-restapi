@@ -65,9 +65,8 @@ app.use((err, req, res, next) => {
   } else if (statusCode == undefined) {
     statusCode = 500;
     message = "Ocurrio un error";
-  } else {
-    console.error(util.inspect(err, { colors: true, depth: null }));
   }
+  console.error(util.inspect(err, { colors: true, depth: null }));
 
   resError(res, statusCode, message);
 });

@@ -41,63 +41,10 @@ export const getEmpresaByEmpresaid = async (req, empresaid) => {
   }
 };
 
-export const insertarEmpresa = async (req, empresa) => {
+export const insertEmpresa = async (req, empresa) => {
   try {
     const { models } = req.app.locals;
     const empresa_nuevo = await models.Empresa.create(empresa);
-
-    /*
-    const connection = await poolFactoring.getConnection();
-    const [result] = await connection.query(
-      `INSERT INTO empresa (
-      empresaid, 
-      code, 
-      ruc, 
-      razon_social, 
-      nombre_comercial, 
-      fecha_inscripcion, 
-      domicilio_fiscal, 
-      score, 
-      idusuariocrea, 
-      fechacrea, 
-      idusuariomod, 
-      fechamod, 
-      estado) 
-      VALUES 
-      ( 
-      ?, 
-      ?, 
-      ?, 
-      ?, 
-      ?, 
-      ?, 
-      ?, 
-      ?, 
-      ?, 
-      now(3), 
-      ?, 
-      now(3), 
-      1
-      )`,
-      [
-        empresa.empresaid,
-        empresa.code,
-        empresa.ruc,
-        empresa.razon_social,
-        empresa.nombre_comercial,
-        empresa.fecha_inscripcion,
-        empresa.domicilio_fiscal,
-        empresa.score,
-        empresa.idusuariocrea,
-        empresa.idusuariomod,
-        empresa.estado,
-      ]
-    );
-    //console.debug(result);
-    connection.release();
-    return result;
-
-    */
     // console.log(empresa_nuevo);
     return empresa_nuevo;
   } catch (error) {
@@ -107,7 +54,7 @@ export const insertarEmpresa = async (req, empresa) => {
   }
 };
 
-export const actualizarEmpresa = async (req, empresa) => {
+export const updateEmpresa = async (req, empresa) => {
   try {
     const { models } = req.app.locals;
     const result = await models.Empresa.update(empresa, {
@@ -115,8 +62,6 @@ export const actualizarEmpresa = async (req, empresa) => {
         empresaid: empresa.empresaid,
       },
     });
-
-    //console.log("resultado update:", result);
     return result;
   } catch (error) {
     console.error(error.code);
@@ -125,20 +70,14 @@ export const actualizarEmpresa = async (req, empresa) => {
   }
 };
 
-export const deleteEmpresa = async (empresa) => {
+export const deleteEmpresa = async (req, empresa) => {
   try {
-    const connection = await poolFactoring.getConnection();
-    const [result] = await connection.query(
-      `UPDATE empresa 
-      SET 
-      idusuariomod = ?,
-      fechamod = now(3),
-      estado = 2
-      WHERE empresaid = ? `,
-      [empresa.idusuariomod, empresa.empresaid]
-    );
-    //console.log(result);
-    connection.release();
+    const { models } = req.app.locals;
+    const result = await models.Empresa.update(empresa, {
+      where: {
+        empresaid: empresa.empresaid,
+      },
+    });
     return result;
   } catch (error) {
     console.error(error.code);
