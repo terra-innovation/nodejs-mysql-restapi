@@ -11,7 +11,7 @@ export const getEmpresasActivas = async (req) => {
           model: Colaborador,
           as: "colaboradors",
           attributes: {
-            exclude: ["idcolaborador", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
+            exclude: ["idcolaborador", "idempresa", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
           },
         },
       ],
@@ -31,15 +31,18 @@ export const getEmpresasActivas = async (req) => {
   }
 };
 
-export const getEmpresaByIdempresa = async (req) => {
+export const getEmpresaByIdempresa = async (req, idempresa) => {
   try {
     const { models } = req.app.locals;
 
-    const empresa = await models.Empresa.findByPk(2, {
+    const empresa = await models.Empresa.findByPk(idempresa, {
       include: [
         {
           model: Colaborador,
-          as: "colaboradors", // Opcional: personalizar el nombre de la propiedad
+          as: "colaboradors",
+          attributes: {
+            exclude: ["idcolaborador", "idempresa", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
+          },
         },
       ],
     });
@@ -65,7 +68,7 @@ export const getEmpresaByEmpresaid = async (req, empresaid) => {
           model: Colaborador,
           as: "colaboradors",
           attributes: {
-            exclude: ["idcolaborador", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
+            exclude: ["idcolaborador", "idempresa", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
           },
         },
       ],

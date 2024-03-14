@@ -23,8 +23,6 @@ export const getEmpresa = async (req, res) => {
   if (rows.length <= 0) {
     throw new ClientError("Empresa no existe", 404);
   }
-
-  const prueba = await empresaDao.getEmpresaByIdempresa(req);
   response(res, 200, rows[0]);
 };
 
