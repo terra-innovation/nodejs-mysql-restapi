@@ -9,7 +9,7 @@ import sunatTrabajadoresRoutes from "./routes/sunat.trabajadores.routes.js";
 import empresasRoutes from "./routes/empresasRoutes.js";
 
 import secureRoutes from "./routes/secure.routes.js";
-import { resError } from "./utils/resError.js";
+import { customResponseError } from "./utils/CustomResponseError.js";
 import { ValidationError } from "yup";
 import sequelize from "./config/bd/sequelize_db_factoring.js";
 import initModels from "./models/ft_factoring/init-models.js";
@@ -68,7 +68,7 @@ app.use((err, req, res, next) => {
   }
   console.error(util.inspect(err, { colors: true, depth: null }));
 
-  resError(res, statusCode, message);
+  customResponseError(res, statusCode, message);
 });
 
 export default app;

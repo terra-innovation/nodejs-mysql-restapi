@@ -1,6 +1,6 @@
 import * as empresaDao from "../daos/empresaDao.js";
-import { response } from "../utils/response.js";
-import { ClientError } from "../utils/errors.js";
+import { response } from "../utils/CustomResponseOk.js";
+import { ClientError } from "../utils/CustomErrors.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as Yup from "yup";

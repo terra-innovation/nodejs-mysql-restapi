@@ -1,6 +1,6 @@
 import { poolFactoring } from "../config/bd/mysql2_db_factoring.js";
 import Colaborador from "../models/ft_factoring/Colaborador.js";
-import { ClientError, ConexionError } from "../utils/errors.js";
+import { ClientError, ConexionError } from "../utils/CustomErrors.js";
 
 export const getEmpresasActivas = async (req) => {
   try {
