@@ -107,26 +107,16 @@ export const insertarEmpresa = async (req, empresa) => {
   }
 };
 
-export const actualizarEmpresa = async (empresa) => {
+export const actualizarEmpresa = async (req, empresa) => {
   try {
-    const connection = await poolFactoring.getConnection();
-    const [result] = await connection.query(
-      `UPDATE empresa 
-      SET 
-      ruc = IFNULL(?, ruc),
-      razon_social = IFNULL(?, razon_social), 
-      nombre_comercial = IFNULL(?, nombre_comercial),
-      fecha_inscripcion = IFNULL(?, fecha_inscripcion),
-      domicilio_fiscal = IFNULL(?, domicilio_fiscal),
-      score = IFNULL(?, score),
-      idusuariomod = ?,
-      fechamod = now(3),
-      estado = IFNULL(?, estado)
-      WHERE empresaid = ? `,
-      [empresa.ruc, empresa.razon_social, empresa.nombre_comercial, empresa.fecha_inscripcion, empresa.domicilio_fiscal, empresa.score, empresa.idusuariomod, empresa.estado, empresa.empresaid]
-    );
-    //console.log(result);
-    connection.release();
+    const { models } = req.app.locals;
+    const result = await models.Empresa.update(empresa, {
+      where: {
+        empresaid: empresa.empresaid,
+      },
+    });
+
+    //console.log("resultado update:", result);
     return result;
   } catch (error) {
     console.error(error.code);

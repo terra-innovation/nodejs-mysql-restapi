@@ -19,12 +19,8 @@ export const getEmpresa = async (req, res) => {
       empresaid: Yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const data = empresaSchema.validateSync({ empresaid: id }, { abortEarly: false, stripUnknown: true });
-  const { empresaid } = data;
-  var empresa = {
-    empresaid,
-  };
-  const rows = await empresaDao.getEmpresaByEmpresaid(req, empresa.empresaid);
+  var empresaValidated = empresaSchema.validateSync({ empresaid: id }, { abortEarly: false, stripUnknown: true });
+  const rows = await empresaDao.getEmpresaByEmpresaid(req, empresaValidated.empresaid);
   if (rows.length <= 0) {
     throw new ClientError("Empresa no existe", 404);
   }
@@ -38,8 +34,8 @@ export const deleteEmpresa = async (req, res) => {
       empresaid: Yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const data = empresaSchema.validateSync({ empresaid: id }, { abortEarly: false, stripUnknown: true });
-  const { empresaid } = data;
+  const empresaValidated = empresaSchema.validateSync({ empresaid: id }, { abortEarly: false, stripUnknown: true });
+  const { empresaid } = empresaValidated;
   var empresa = {
     empresaid,
     idusuariomod: 1,
@@ -54,7 +50,7 @@ export const deleteEmpresa = async (req, res) => {
 };
 
 export const createEmpresa = async (req, res) => {
-  const empresaSchema = Yup.object()
+  const empresaCreateSchema = Yup.object()
     .shape({
       ruc: Yup.string().trim().required().min(11).max(11),
       razon_social: Yup.string().required().max(200),
@@ -64,61 +60,57 @@ export const createEmpresa = async (req, res) => {
       score: Yup.string().max(5),
     })
     .required();
-  const data = empresaSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
+  var empresaValidated = empresaCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
+  console.debug("empresaValidated:", empresaValidated);
+  var camposAdicionales = {};
+  camposAdicionales.empresaid = uuidv4();
+  camposAdicionales.code = uuidv4().split("-")[0];
 
-  const { ruc, razon_social, nombre_comercial, fecha_inscripcion, domicilio_fiscal, score } = data;
-  var empresa = {
-    empresaid: uuidv4(),
-    code: uuidv4().split("-")[0],
-    ruc: ruc,
-    razon_social: razon_social,
-    nombre_comercial: nombre_comercial,
-    fecha_inscripcion: fecha_inscripcion,
-    domicilio_fiscal: domicilio_fiscal,
-    score: score,
-    idusuariocrea: 1,
-    //fechacrea: Sequelize.literal("CURRENT_TIMESTAMP(3)"),
-    idusuariomod: 1,
-    fechamod: Sequelize.fn("now", 3),
-    estado: 1,
-  };
-  const result = await empresaDao.insertarEmpresa(req, empresa);
-  console.debug("Create empresa: ID:" + result.idempresa + " | " + empresa.empresaid);
-  //res.status(201).json({ empresa });
-  response(res, 201, result);
+  var camposAuditoria = {};
+  camposAuditoria.idusuariocrea = 1;
+  camposAuditoria.fechacrea = Sequelize.fn("now", 3);
+  camposAuditoria.idusuariomod = 1;
+  camposAuditoria.fechamod = Sequelize.fn("now", 3);
+  camposAuditoria.estado = 1;
+
+  const empresaCreated = await empresaDao.insertarEmpresa(req, { ...camposAdicionales, ...empresaValidated, ...camposAuditoria });
+  console.debug("Create empresa: ID:" + empresaCreated.idempresa + " | " + camposAdicionales.empresaid);
+  console.debug("empresaCreated:", empresaCreated.dataValues);
+  response(res, 201, { ...camposAdicionales, ...empresaValidated });
 };
 
 export const updateEmpresa = async (req, res) => {
   const { id } = req.params;
-  const empresaSchema = Yup.object()
+  const empresaUpdateSchema = Yup.object()
     .shape({
-      ruc: Yup.string().trim().required("Ruc es requerido").min(11, "Mínimo 11 caracteres").max(11, "Máximo 11 caracteres"),
-      razon_social: Yup.string().required("Razon Social es requerido").max(200, "Máximo 20 caracteres"),
-      nombre_comercial: Yup.string().max(200, "Máximo 20 caracteres"),
+      empresaid: Yup.string().trim().required().min(36).max(36),
+
+      ruc: Yup.string().trim().required().min(11).max(11),
+      razon_social: Yup.string().required().max(200),
+      nombre_comercial: Yup.string().max(200),
       fecha_inscripcion: Yup.string(),
-      domicilio_fiscal: Yup.string().max(200, "Máximo 20 caracteres"),
-      score: Yup.string().max(5, "Máximo 20 caracteres"),
+      domicilio_fiscal: Yup.string().max(200),
+      score: Yup.string().max(5),
     })
     .required();
-  const data = empresaSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
+  const empresaValidated = empresaUpdateSchema.validateSync({ empresaid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
+  console.debug("empresaValidated:", empresaValidated);
 
-  const { ruc, razon_social, nombre_comercial, fecha_inscripcion, domicilio_fiscal, score } = data;
-  var empresa = {
-    empresaid: id,
-    ruc: ruc,
-    razon_social: razon_social,
-    nombre_comercial: nombre_comercial,
-    fecha_inscripcion: fecha_inscripcion,
-    domicilio_fiscal: domicilio_fiscal,
-    score: score,
-    idusuariomod: 1,
-  };
-  const result = await empresaDao.actualizarEmpresa(empresa);
+  var camposAdicionales = {};
+  camposAdicionales.empresaid = id;
 
-  if (result.affectedRows === 0) {
+  var camposAuditoria = {};
+  camposAuditoria.idusuariomod = 1;
+  camposAuditoria.fechamod = Sequelize.fn("now", 3);
+
+  const result = await empresaDao.actualizarEmpresa(req, { ...camposAdicionales, ...empresaValidated, ...camposAuditoria });
+  if (result[0] === 0) {
     throw new ClientError("Empresa no existe", 404);
   }
-  const rows = await empresaDao.getEmpresaByEmpresaid(empresa.empresaid);
-
-  response(res, 200, rows[0]);
+  const empresa_actualizada = await empresaDao.getEmpresaByEmpresaid(req, id);
+  if (empresa_actualizada.length === 0) {
+    throw new ClientError("Empresa no existe", 404);
+  }
+  console.debug("empresaUpdated:", empresa_actualizada[0].dataValues);
+  response(res, 200, empresa_actualizada[0]);
 };
