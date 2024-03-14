@@ -1,9 +1,9 @@
-import { poolFactoring } from "../config/bd/db_factoring.js";
-import { insertarFactura } from "../dao/factura.dao.js";
-import { insertarFacturaMedioPago } from "../dao/factura_medio_pago.dao.js";
-import { insertarFacturaTerminoPago } from "../dao/factura_termino_pago.dao.js";
-import { insertarFacturaItem } from "../dao/factura_item.dao.js";
-import { insertarFacturaImpuesto } from "../dao/factura_impuesto.dao.js";
+import { poolFactoring } from "../config/bd/mysql2_db_factoring.js";
+import { insertarFactura } from "../daos/factura.dao.js";
+import { insertarFacturaMedioPago } from "../daos/factura_medio_pago.dao.js";
+import { insertarFacturaTerminoPago } from "../daos/factura_termino_pago.dao.js";
+import { insertarFacturaItem } from "../daos/factura_item.dao.js";
+import { insertarFacturaImpuesto } from "../daos/factura_impuesto.dao.js";
 import date from "date-and-time";
 import multer from "multer";
 import xml2js from "xml2js";
@@ -26,7 +26,9 @@ const upload_invoice = multer({
   storage: storage_invoice,
   limits: { fileSize: 2 * 1024 * 1024, files: 5, fields: 10 },
   fileFilter: function (req, file, cb) {
-    if (file.mimetype != "application/xml") {
+    //console.log("fileFilter");
+    //console.log("file.mimetype: " + file.mimetype);
+    if (file.mimetype !== "text/xml" && file.mimetype !== "application/xml") {
       cb(new Error("Formato de archivo inválido"));
     }
     cb(null, true);
@@ -35,7 +37,13 @@ const upload_invoice = multer({
 
 export const uploadInvoice = async (req, res) => {
   try {
+    //console.log("Ingreso a uploadInvoice");
+
+    //console.log(req.file);
+    //console.log(req.files);
+    //console.log(req.body);
     upload_invoice(req, res, function (err) {
+      //console.log("Ingreso a upload_invoice");
       if (err instanceof multer.MulterError) {
         // A Multer error occurred when uploading.
         if (err.code == "LIMIT_FILE_SIZE") {
@@ -53,8 +61,9 @@ export const uploadInvoice = async (req, res) => {
           });
         }
       } else if (err) {
+        console.log(err);
         // An unknown error occurred when uploading.
-        return res.status(404).json({ message: err.message });
+        return res.status(500).json({ message: err.message });
       } else if (!req.files) {
         // FILE NOT SELECTED
         return res.status(404).json({ message: "El archivo es requerido" });
@@ -279,8 +288,7 @@ export const uploadInvoice = async (req, res) => {
       });
     });
   } catch (error) {
-    console.log("aqui");
-    console.log(error);
+    console.error(error.message);
     return res.status(500).json({ message: "Something goes wrong" });
   }
 };
@@ -290,6 +298,7 @@ export const getEmployees = async (req, res) => {
     const [rows] = await poolFactoring.query("SELECT * FROM employee");
     res.json(rows);
   } catch (error) {
+    console.error(error.message);
     return res.status(500).json({ message: "Something goes wrong" });
   }
 };
@@ -312,6 +321,7 @@ export const getTrabajadoresPorRuc = async (req, res) => {
 
     res.json(rows);
   } catch (error) {
+    console.error(error.message);
     return res.status(500).json({ message: "Something goes wrong" });
   }
 };
@@ -327,6 +337,7 @@ export const deleteEmployee = async (req, res) => {
 
     res.sendStatus(204);
   } catch (error) {
+    console.error(error.message);
     return res.status(500).json({ message: "Something goes wrong" });
   }
 };
@@ -337,6 +348,7 @@ export const createEmployee = async (req, res) => {
     const [rows] = await poolFactoring.query("INSERT INTO employee (name, salary) VALUES (?, ?)", [name, salary]);
     res.status(201).json({ id: rows.insertId, name, salary });
   } catch (error) {
+    console.error(error.message);
     return res.status(500).json({ message: "Something goes wrong" });
   }
 };
@@ -354,6 +366,7 @@ export const updateEmployee = async (req, res) => {
 
     res.json(rows[0]);
   } catch (error) {
+    console.error(error.message);
     return res.status(500).json({ message: "Something goes wrong" });
   }
 };

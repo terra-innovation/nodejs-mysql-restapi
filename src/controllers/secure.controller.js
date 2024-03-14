@@ -1,5 +1,5 @@
-import { poolFactoring } from "../config/bd/db_factoring.js";
-import { poolBigData } from "../config/bd/db_bigdata.js";
+import { poolFactoring } from "../config/bd/mysql2_db_factoring.js";
+import { poolBigData } from "../config/bd/mysql2_db_bigdata.js";
 import { TOKEN_KEY } from "../config.js";
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
@@ -53,7 +53,7 @@ export const loginUser = async (req, res) => {
       return res.status(404).json({ message: "Credenciales no válidas" });
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({ message: "Something goes wrong" });
   }
 };

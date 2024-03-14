@@ -1,4 +1,4 @@
-import { poolFactoring } from "../config/bd/db_factoring.js";
+import { poolFactoring } from "../config/bd/mysql2_db_factoring.js";
 
 export const insertarFactura = async (factura) => {
   const [rows] = await poolFactoring.query(
