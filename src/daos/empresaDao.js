@@ -6,6 +6,15 @@ export const getEmpresasActivas = async (req) => {
   try {
     const { models } = req.app.locals;
     const empresas = await models.Empresa.findAll({
+      include: [
+        {
+          model: Colaborador,
+          as: "colaboradors",
+          attributes: {
+            exclude: ["idcolaborador", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
+          },
+        },
+      ],
       attributes: {
         exclude: ["idempresa", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
       },
@@ -51,6 +60,15 @@ export const getEmpresaByEmpresaid = async (req, empresaid) => {
   try {
     const { models } = req.app.locals;
     const empresa = await models.Empresa.findAll({
+      include: [
+        {
+          model: Colaborador,
+          as: "colaboradors",
+          attributes: {
+            exclude: ["idcolaborador", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
+          },
+        },
+      ],
       attributes: {
         exclude: ["idempresa", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
       },
