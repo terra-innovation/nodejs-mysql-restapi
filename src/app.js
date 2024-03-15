@@ -7,6 +7,7 @@ import employeesRoutes from "./routes/employees.routes.js";
 import indexRoutes from "./routes/index.routes.js";
 import sunatTrabajadoresRoutes from "./routes/sunat.trabajadores.routes.js";
 import empresasRoutes from "./routes/empresasRoutes.js";
+import colaboradoresRoutes from "./routes/colaboradoresRoutes.js";
 
 import secureRoutes from "./routes/secure.routes.js";
 import { customResponseError } from "./utils/CustomResponseError.js";
@@ -37,6 +38,7 @@ app.use("/", indexRoutes);
 app.use("/api", employeesRoutes);
 app.use("/api/sunat", sunatTrabajadoresRoutes);
 app.use("/api/v1", empresasRoutes);
+app.use("/api/v1", colaboradoresRoutes);
 app.use("/secure", secureRoutes);
 
 // Para cuando no existe la ruta

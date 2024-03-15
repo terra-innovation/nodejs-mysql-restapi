@@ -87,6 +87,25 @@ export const getEmpresaByEmpresaid = async (req, empresaid) => {
   }
 };
 
+export const findEmpresaPk = async (req, empresaid) => {
+  try {
+    const { models } = req.app.locals;
+    const empresa = await models.Empresa.findAll({
+      attributes: ["idempresa"],
+      where: {
+        empresaid: empresaid,
+      },
+      raw: true,
+    });
+    //console.log(empresa);
+    return empresa;
+  } catch (error) {
+    console.error(error.code);
+    console.error(error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const insertEmpresa = async (req, empresa) => {
   try {
     const { models } = req.app.locals;
