@@ -1,6 +1,5 @@
-import { poolFactoring } from "../config/bd/mysql2_db_factoring.js";
 import Colaborador from "../models/ft_factoring/Colaborador.js";
-import { ClientError, ConexionError } from "../utils/CustomErrors.js";
+import { ClientError } from "../utils/CustomErrors.js";
 
 export const getEmpresasActivas = async (req) => {
   try {
@@ -27,7 +26,7 @@ export const getEmpresasActivas = async (req) => {
   } catch (error) {
     console.error(error.original.code);
     console.error(error);
-    throw new ConexionError("Ocurrio un error", 500);
+    throw new ClientError("Ocurrio un error", 500);
   }
 };
 
@@ -55,7 +54,7 @@ export const getEmpresaByIdempresa = async (req, idempresa) => {
   } catch (error) {
     console.error(error.code);
     console.error(error);
-    throw new ConexionError("Ocurrio un error", 500);
+    throw new ClientError("Ocurrio un error", 500);
   }
 };
 
@@ -84,7 +83,7 @@ export const getEmpresaByEmpresaid = async (req, empresaid) => {
   } catch (error) {
     console.error(error.code);
     console.error(error);
-    throw new ConexionError("Ocurrio un error", 500);
+    throw new ClientError("Ocurrio un error", 500);
   }
 };
 
@@ -97,7 +96,7 @@ export const insertEmpresa = async (req, empresa) => {
   } catch (error) {
     console.error(error.code);
     console.error(error);
-    throw new ConexionError("Ocurrio un error", 500);
+    throw new ClientError("Ocurrio un error", 500);
   }
 };
 
@@ -113,7 +112,7 @@ export const updateEmpresa = async (req, empresa) => {
   } catch (error) {
     console.error(error.code);
     console.error(error);
-    throw new ConexionError("Ocurrio un error", 500);
+    throw new ClientError("Ocurrio un error", 500);
   }
 };
 
@@ -129,6 +128,6 @@ export const deleteEmpresa = async (req, empresa) => {
   } catch (error) {
     console.error(error.code);
     console.error(error);
-    throw new ConexionError("Ocurrio un error", 500);
+    throw new ClientError("Ocurrio un error", 500);
   }
 };
