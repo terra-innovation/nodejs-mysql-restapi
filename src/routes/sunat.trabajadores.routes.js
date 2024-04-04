@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { getTrabajadoresPorRuc, uploadInvoice } from "../controllers/sunat.trabajadores.controller.js";
 
-import { verifyToken } from "../middlewares/auth.js";
+import { verifyToken } from "../middlewares/authMiddleware.js";
 
 const router = Router();
 

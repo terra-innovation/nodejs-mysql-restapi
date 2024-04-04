@@ -32,16 +32,17 @@ export const loginUser = async (req, res) => {
     const { email, password } = data;
 
     // Validate if user exist in our database
-    const [rows] = await poolFactoring.query("SELECT email, password FROM usuario WHERE email = ?", [email]);
+    const [rows] = await poolFactoring.query("SELECT idusuario, usuarioid, email, password FROM usuario WHERE email = ?", [email]);
 
     if (rows.length <= 0) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
 
+    const rol = 1;
     if (rows[0].email && (await bcrypt.compare(password, rows[0].password))) {
       // Create token
-      const token = jwt.sign({ idusuario: rows[0].usuarioid, email }, TOKEN_KEY, {
-        expiresIn: "2h",
+      const token = jwt.sign({ idusuario: rows[0].idusuario, usuarioid: rows[0].usuarioid, email: rows[0].email, rol: rol }, TOKEN_KEY, {
+        expiresIn: "200000h",
       });
 
       // save user token

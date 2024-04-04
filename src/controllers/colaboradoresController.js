@@ -4,7 +4,7 @@ import { response } from "../utils/CustomResponseOk.js";
 import { ClientError } from "../utils/CustomErrors.js";
 
 import { v4 as uuidv4 } from "uuid";
-import * as Yup from "yup";
+import * as yup from "yup";
 import { Sequelize } from "sequelize";
 
 export const getColaboradores = async (req, res) => {
@@ -14,9 +14,10 @@ export const getColaboradores = async (req, res) => {
 
 export const getColaborador = async (req, res) => {
   const { id } = req.params;
-  const colaboradorSchema = Yup.object()
+  const colaboradorSchema = yup
+    .object()
     .shape({
-      colaboradorid: Yup.string().trim().required().min(36).max(36),
+      colaboradorid: yup.string().trim().required().min(36).max(36),
     })
     .required();
   var colaboradorValidated = colaboradorSchema.validateSync({ colaboradorid: id }, { abortEarly: false, stripUnknown: true });
@@ -28,12 +29,14 @@ export const getColaborador = async (req, res) => {
 };
 
 export const createColaborador = async (req, res) => {
-  const colaboradorCreateSchema = Yup.object()
+  const colaboradorCreateSchema = yup
+    .object()
     .shape({
-      empresaid: Yup.string().trim().required().min(36).max(36),
-      nombre: Yup.string().required().max(80),
-      cargo: Yup.string().required().max(80),
-      telefono: Yup.string().required(),
+      empresaid: yup.string().trim().required().min(36).max(36),
+      nombre: yup.string().required().max(80),
+      cargo: yup.string().required().max(80),
+      email: yup.string().required().email().max(80),
+      telefono: yup.string().required(),
     })
     .required();
   var colaboradorValidated = colaboradorCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
@@ -67,13 +70,15 @@ export const createColaborador = async (req, res) => {
 
 export const updateColaborador = async (req, res) => {
   const { id } = req.params;
-  const colaboradorUpdateSchema = Yup.object()
+  const colaboradorUpdateSchema = yup
+    .object()
     .shape({
-      colaboradorid: Yup.string().trim().required().min(36).max(36),
+      colaboradorid: yup.string().trim().required().min(36).max(36),
 
-      nombre: Yup.string().trim().required().max(80),
-      cargo: Yup.string().trim().required().max(80),
-      telefono: Yup.string().trim().required(),
+      nombre: yup.string().trim().required().max(80),
+      cargo: yup.string().trim().required().max(80),
+      email: yup.string().required().email().max(80),
+      telefono: yup.string().trim().required(),
     })
     .required();
   const colaboradorValidated = colaboradorUpdateSchema.validateSync({ colaboradorid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
@@ -100,9 +105,10 @@ export const updateColaborador = async (req, res) => {
 
 export const deleteColaborador = async (req, res) => {
   const { id } = req.params;
-  const colaboradorSchema = Yup.object()
+  const colaboradorSchema = yup
+    .object()
     .shape({
-      colaboradorid: Yup.string().trim().required().min(36).max(36),
+      colaboradorid: yup.string().trim().required().min(36).max(36),
     })
     .required();
   const colaboradorValidated = colaboradorSchema.validateSync({ colaboradorid: id }, { abortEarly: false, stripUnknown: true });

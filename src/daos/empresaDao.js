@@ -87,6 +87,35 @@ export const getEmpresaByEmpresaid = async (req, empresaid) => {
   }
 };
 
+export const getEmpresaByRuc = async (req, ruc) => {
+  try {
+    const { models } = req.app.locals;
+    const empresa = await models.Empresa.findAll({
+      include: [
+        {
+          model: Colaborador,
+          as: "colaboradors",
+          attributes: {
+            exclude: ["idcolaborador", "idempresa", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
+          },
+        },
+      ],
+      attributes: {
+        exclude: ["idempresa", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
+      },
+      where: {
+        ruc: ruc,
+      },
+    });
+    //console.log(empresa);
+    return empresa;
+  } catch (error) {
+    console.error(error.code);
+    console.error(error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const findEmpresaPk = async (req, empresaid) => {
   try {
     const { models } = req.app.locals;

@@ -3,7 +3,7 @@ import { response } from "../utils/CustomResponseOk.js";
 import { ClientError } from "../utils/CustomErrors.js";
 
 import { v4 as uuidv4 } from "uuid";
-import * as Yup from "yup";
+import * as yup from "yup";
 import { Sequelize } from "sequelize";
 
 export const getEmpresas = async (req, res) => {
@@ -13,9 +13,10 @@ export const getEmpresas = async (req, res) => {
 
 export const getEmpresa = async (req, res) => {
   const { id } = req.params;
-  const empresaSchema = Yup.object()
+  const empresaSchema = yup
+    .object()
     .shape({
-      empresaid: Yup.string().trim().required().min(36).max(36),
+      empresaid: yup.string().trim().required().min(36).max(36),
     })
     .required();
   var empresaValidated = empresaSchema.validateSync({ empresaid: id }, { abortEarly: false, stripUnknown: true });
@@ -27,14 +28,15 @@ export const getEmpresa = async (req, res) => {
 };
 
 export const createEmpresa = async (req, res) => {
-  const empresaCreateSchema = Yup.object()
+  const empresaCreateSchema = yup
+    .object()
     .shape({
-      ruc: Yup.string().trim().required().min(11).max(11),
-      razon_social: Yup.string().required().max(200),
-      nombre_comercial: Yup.string().max(200),
-      fecha_inscripcion: Yup.string(),
-      domicilio_fiscal: Yup.string().max(200),
-      score: Yup.string().max(5),
+      ruc: yup.string().trim().required().min(11).max(11),
+      razon_social: yup.string().required().max(200),
+      nombre_comercial: yup.string().max(200),
+      fecha_inscripcion: yup.string(),
+      domicilio_fiscal: yup.string().max(200),
+      score: yup.string().max(5),
     })
     .required();
   var empresaValidated = empresaCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
@@ -50,6 +52,11 @@ export const createEmpresa = async (req, res) => {
   camposAuditoria.fechamod = Sequelize.fn("now", 3);
   camposAuditoria.estado = 1;
 
+  const empresa_existe = await empresaDao.getEmpresaByRuc(req, empresaValidated.ruc);
+
+  if (empresa_existe.length >= 1) {
+    throw new ClientError("Empresa ya existe", 404);
+  }
   const empresaCreated = await empresaDao.insertEmpresa(req, { ...camposAdicionales, ...empresaValidated, ...camposAuditoria });
   console.debug("Create empresa: ID:" + empresaCreated.idempresa + " | " + camposAdicionales.empresaid);
   console.debug("empresaCreated:", empresaCreated.dataValues);
@@ -58,16 +65,17 @@ export const createEmpresa = async (req, res) => {
 
 export const updateEmpresa = async (req, res) => {
   const { id } = req.params;
-  const empresaUpdateSchema = Yup.object()
+  const empresaUpdateSchema = yup
+    .object()
     .shape({
-      empresaid: Yup.string().trim().required().min(36).max(36),
+      empresaid: yup.string().trim().required().min(36).max(36),
 
-      ruc: Yup.string().trim().required().min(11).max(11),
-      razon_social: Yup.string().required().max(200),
-      nombre_comercial: Yup.string().max(200),
-      fecha_inscripcion: Yup.string(),
-      domicilio_fiscal: Yup.string().max(200),
-      score: Yup.string().max(5),
+      ruc: yup.string().trim().required().min(11).max(11),
+      razon_social: yup.string().required().max(200),
+      nombre_comercial: yup.string().max(200),
+      fecha_inscripcion: yup.string(),
+      domicilio_fiscal: yup.string().max(200),
+      score: yup.string().max(5),
     })
     .required();
   const empresaValidated = empresaUpdateSchema.validateSync({ empresaid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
@@ -79,6 +87,11 @@ export const updateEmpresa = async (req, res) => {
   var camposAuditoria = {};
   camposAuditoria.idusuariomod = 1;
   camposAuditoria.fechamod = Sequelize.fn("now", 3);
+
+  const empresa_por_ruc_existe = await empresaDao.getEmpresaByRuc(req, empresaValidated.ruc);
+  if (empresa_por_ruc_existe.length >= 1 && empresa_por_ruc_existe[0].empresaid != id) {
+    throw new ClientError("Ruc duplicado", 404);
+  }
 
   const result = await empresaDao.updateEmpresa(req, { ...camposAdicionales, ...empresaValidated, ...camposAuditoria });
   if (result[0] === 0) {
@@ -94,9 +107,10 @@ export const updateEmpresa = async (req, res) => {
 
 export const deleteEmpresa = async (req, res) => {
   const { id } = req.params;
-  const empresaSchema = Yup.object()
+  const empresaSchema = yup
+    .object()
     .shape({
-      empresaid: Yup.string().trim().required().min(36).max(36),
+      empresaid: yup.string().trim().required().min(36).max(36),
     })
     .required();
   const empresaValidated = empresaSchema.validateSync({ empresaid: id }, { abortEarly: false, stripUnknown: true });
