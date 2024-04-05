@@ -7,9 +7,25 @@ import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { Sequelize } from "sequelize";
 
-export const getEmpresas = async (req, res) => {
-  const empresas = await empresaDao.getEmpresasActivas(req);
-  response(res, 201, empresas);
+export const getAceptante = async (req, res) => {
+  const { id } = req.params;
+  const empresaSchema = yup
+    .object()
+    .shape({
+      empresaid: yup.string().trim().required().min(36).max(36),
+    })
+    .required();
+  var empresaValidated = empresaSchema.validateSync({ empresaid: id }, { abortEarly: false, stripUnknown: true });
+  const rows = await empresaDao.getEmpresaByEmpresaid(req, empresaValidated.empresaid);
+  if (rows.length <= 0) {
+    throw new ClientError("Empresa no existe", 404);
+  }
+
+  var usuarioOfuscado = ofuscarUtils.ofuscarAtributos(rows[0], ["email"], ofuscarUtils.PATRON_OFUSCAR_EMAIL);
+  usuarioOfuscado = ofuscarUtils.ofuscarAtributos(usuarioOfuscado, ["nombre"], ofuscarUtils.PATRON_OFUSCAR_NOMBRE);
+  usuarioOfuscado = ofuscarUtils.ofuscarAtributos(usuarioOfuscado, ["telefono"], ofuscarUtils.PATRON_OFUSCAR_TELEFONO);
+  //console.log(usuarioOfuscado);
+  response(res, 200, usuarioOfuscado);
 };
 
 export const getGirador = async (req, res) => {
@@ -26,13 +42,16 @@ export const getGirador = async (req, res) => {
     throw new ClientError("Empresa no existe", 404);
   }
 
-  const atributosOfuscar = ["email"];
-  var usuarioOfuscado = ofuscarUtils.ofuscarAtributos(rows[0], atributosOfuscar, ofuscarUtils.PATRON_OFUSCAR_EMAIL);
+  var usuarioOfuscado = ofuscarUtils.ofuscarAtributos(rows[0], ["email"], ofuscarUtils.PATRON_OFUSCAR_EMAIL);
   usuarioOfuscado = ofuscarUtils.ofuscarAtributos(usuarioOfuscado, ["nombre"], ofuscarUtils.PATRON_OFUSCAR_NOMBRE);
   usuarioOfuscado = ofuscarUtils.ofuscarAtributos(usuarioOfuscado, ["telefono"], ofuscarUtils.PATRON_OFUSCAR_TELEFONO);
-  usuarioOfuscado = ofuscarUtils.ofuscarAtributos(usuarioOfuscado, ["ruc"], ofuscarUtils.PATRON_OFUSCAR_CUENTA);
-  console.log(usuarioOfuscado);
-  response(res, 200, rows[0]);
+  //console.log(usuarioOfuscado);
+  response(res, 200, usuarioOfuscado);
+};
+
+export const getEmpresas = async (req, res) => {
+  const empresas = await empresaDao.getEmpresasActivas(req);
+  response(res, 201, empresas);
 };
 
 export const getEmpresa = async (req, res) => {
