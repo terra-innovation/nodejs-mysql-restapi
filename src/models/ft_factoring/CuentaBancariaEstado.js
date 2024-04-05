@@ -1,16 +1,16 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class Rol extends Model {
+export default class CuentaBancariaEstado extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    _idrol: {
+    idcuentabancariaestado: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    rolid: {
+    cuentabancariaestadoid: {
       type: DataTypes.STRING(50),
       allowNull: false,
       defaultValue: Sequelize.Sequelize.fn('uuid'),
@@ -22,10 +22,6 @@ export default class Rol extends Model {
     },
     alias: {
       type: DataTypes.STRING(50),
-      allowNull: false
-    },
-    codigo: {
-      type: DataTypes.STRING(10),
       allowNull: false
     },
     idusuariocrea: {
@@ -55,7 +51,7 @@ export default class Rol extends Model {
     }
   }, {
     sequelize,
-    tableName: 'rol',
+    tableName: 'cuenta_bancaria_estado',
     timestamps: false,
     indexes: [
       {
@@ -63,7 +59,7 @@ export default class Rol extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idrol" },
+          { name: "idcuentabancariaestado" },
         ]
       },
       {
@@ -71,7 +67,7 @@ export default class Rol extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "rolid" },
+          { name: "cuentabancariaestadoid" },
         ]
       },
     ]

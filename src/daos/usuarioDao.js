@@ -6,7 +6,7 @@ export const getUsuariosActivos = async (req) => {
     const { models } = req.app.locals;
     const usuarioes = await models.Usuario.findAll({
       attributes: {
-        exclude: ["idusuario", "idempresa", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
+        exclude: ["_idusuario", "idempresa", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
       },
       where: {
         estado: 1,
@@ -43,7 +43,7 @@ export const autenticarUsuario = async (req, email) => {
   try {
     const { models } = req.app.locals;
     const usuario = await models.Usuario.findAll({
-      attributes: ["idusuario", "usuarioid", "email", "password"],
+      attributes: ["_idusuario", "usuarioid", "email", "password"],
       where: {
         email: email,
       },
@@ -91,7 +91,7 @@ export const getUsuarioByUsuarioid = async (req, usuarioid) => {
     const { models } = req.app.locals;
     const usuario = await models.Usuario.findAll({
       attributes: {
-        exclude: ["idusuario", "idempresa", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
+        exclude: ["_idusuario", "idempresa", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
       },
       where: {
         usuarioid: usuarioid,
@@ -110,7 +110,7 @@ export const findUsuarioPk = async (req, usuarioid) => {
   try {
     const { models } = req.app.locals;
     const usuario = await models.Usuario.findAll({
-      attributes: ["idusuario"],
+      attributes: ["_idusuario"],
       where: {
         usuarioid: usuarioid,
       },

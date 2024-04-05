@@ -12,15 +12,19 @@ export default class Empresa extends Model {
     },
     empresaid: {
       type: DataTypes.STRING(50),
-      allowNull: false
+      allowNull: false,
+      defaultValue: Sequelize.Sequelize.fn('uuid'),
+      unique: "UQ_empresaid"
     },
     code: {
       type: DataTypes.STRING(20),
-      allowNull: false
+      allowNull: false,
+      unique: "UQ_code"
     },
     ruc: {
       type: DataTypes.STRING(11),
-      allowNull: false
+      allowNull: false,
+      unique: "UQ_ruc"
     },
     razon_social: {
       type: DataTypes.STRING(200),
@@ -78,6 +82,30 @@ export default class Empresa extends Model {
         using: "BTREE",
         fields: [
           { name: "idempresa" },
+        ]
+      },
+      {
+        name: "UQ_ruc",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "ruc" },
+        ]
+      },
+      {
+        name: "UQ_code",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "code" },
+        ]
+      },
+      {
+        name: "UQ_empresaid",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "empresaid" },
         ]
       },
     ]

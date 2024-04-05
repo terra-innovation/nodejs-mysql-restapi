@@ -1,32 +1,42 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class Rol extends Model {
+export default class FacturaTerminoPago extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    _idrol: {
+    idfacturaterminopago: {
       autoIncrement: true,
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT,
       allowNull: false,
       primaryKey: true
     },
-    rolid: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
-      defaultValue: Sequelize.Sequelize.fn('uuid'),
-      unique: "UQ_bancoid"
-    },
-    nombre: {
-      type: DataTypes.STRING(50),
+    facturaterminopagoid: {
+      type: DataTypes.STRING(500),
       allowNull: false
     },
-    alias: {
-      type: DataTypes.STRING(50),
+    idfactura: {
+      type: DataTypes.BIGINT,
       allowNull: false
     },
-    codigo: {
-      type: DataTypes.STRING(10),
-      allowNull: false
+    id: {
+      type: DataTypes.STRING(200),
+      allowNull: true
+    },
+    forma_pago: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    monto: {
+      type: DataTypes.DECIMAL(12,2),
+      allowNull: true
+    },
+    porcentaje: {
+      type: DataTypes.DECIMAL(12,2),
+      allowNull: true
+    },
+    fecha_pago: {
+      type: DataTypes.DATEONLY,
+      allowNull: true
     },
     idusuariocrea: {
       type: DataTypes.INTEGER,
@@ -55,7 +65,7 @@ export default class Rol extends Model {
     }
   }, {
     sequelize,
-    tableName: 'rol',
+    tableName: 'factura_termino_pago',
     timestamps: false,
     indexes: [
       {
@@ -63,15 +73,7 @@ export default class Rol extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idrol" },
-        ]
-      },
-      {
-        name: "UQ_bancoid",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "rolid" },
+          { name: "idfacturaterminopago" },
         ]
       },
     ]

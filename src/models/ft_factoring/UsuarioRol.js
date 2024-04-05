@@ -4,22 +4,22 @@ const { Model, Sequelize } = _sequelize;
 export default class UsuarioRol extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    idusuario: {
+    _idusuario: {
       type: DataTypes.BIGINT,
       allowNull: false,
       primaryKey: true,
       references: {
         model: 'usuario',
-        key: 'idusuario'
+        key: '_idusuario'
       }
     },
-    idrol: {
+    _idrol: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
       references: {
         model: 'rol',
-        key: 'idrol'
+        key: '_idrol'
       }
     },
     idusuariocrea: {
@@ -57,15 +57,15 @@ export default class UsuarioRol extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "idusuario" },
-          { name: "idrol" },
+          { name: "_idusuario" },
+          { name: "_idrol" },
         ]
       },
       {
-        name: "FK_idrol",
+        name: "FK_usuario_rol_idrol",
         using: "BTREE",
         fields: [
-          { name: "idrol" },
+          { name: "_idrol" },
         ]
       },
     ]

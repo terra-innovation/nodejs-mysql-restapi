@@ -1,77 +1,71 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class Usuario extends Model {
+export default class CuentaBancaria extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    _idusuario: {
+    idcuentabancaria: {
       autoIncrement: true,
-      type: DataTypes.BIGINT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    usuarioid: {
+    cuentabancariaid: {
       type: DataTypes.STRING(50),
       allowNull: false,
       defaultValue: Sequelize.Sequelize.fn('uuid')
     },
-    _iddocumentotipo: {
+    idempresa: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'documento_tipo',
-        key: '_iddocumentotipo'
+        model: 'empresa',
+        key: 'idempresa'
       }
     },
-    documentonumero: {
-      type: DataTypes.STRING(50),
+    idbanco: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-      unique: "documentonumero"
+      references: {
+        model: 'banco',
+        key: 'idbanco'
+      }
     },
-    nombres: {
-      type: DataTypes.STRING(50),
-      allowNull: false
-    },
-    apellidopaterno: {
-      type: DataTypes.STRING(50),
-      allowNull: false
-    },
-    apellidomaterno: {
-      type: DataTypes.STRING(50),
-      allowNull: false
-    },
-    email: {
-      type: DataTypes.STRING(50),
+    idcuentatipo: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-      unique: "email"
+      references: {
+        model: 'cuenta_tipo',
+        key: 'idcuentatipo'
+      }
     },
-    celular: {
+    idmoneda: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'moneda',
+        key: 'idmoneda'
+      }
+    },
+    idcuentabancariaestado: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'cuenta_bancaria_estado',
+        key: 'idcuentabancariaestado'
+      }
+    },
+    numero: {
       type: DataTypes.STRING(20),
       allowNull: false
     },
-    password: {
-      type: DataTypes.STRING(200),
+    cci: {
+      type: DataTypes.STRING(20),
       allowNull: false
     },
-    emailvalidationcode: {
+    alias: {
       type: DataTypes.STRING(50),
       allowNull: false
-    },
-    emailvalid: {
-      type: DataTypes.BOOLEAN,
-      allowNull: true
-    },
-    emaillastvalidate: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    emailnumvalidation: {
-      type: DataTypes.INTEGER,
-      allowNull: true
-    },
-    hash: {
-      type: DataTypes.STRING(50),
-      allowNull: true
     },
     idusuariocrea: {
       type: DataTypes.INTEGER,
@@ -100,7 +94,7 @@ export default class Usuario extends Model {
     }
   }, {
     sequelize,
-    tableName: 'usuario',
+    tableName: 'cuenta_bancaria',
     timestamps: false,
     indexes: [
       {
@@ -108,30 +102,42 @@ export default class Usuario extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idusuario" },
+          { name: "idcuentabancaria" },
         ]
       },
       {
-        name: "email",
-        unique: true,
+        name: "FK_cuenta_bancaria_idbanco",
         using: "BTREE",
         fields: [
-          { name: "email" },
+          { name: "idbanco" },
         ]
       },
       {
-        name: "documentonumero",
-        unique: true,
+        name: "FK_cuenta_bancaria_idcuentabancariaestado",
         using: "BTREE",
         fields: [
-          { name: "documentonumero" },
+          { name: "idcuentabancariaestado" },
         ]
       },
       {
-        name: "FK_usuario_iddocuemntotipo",
+        name: "FK_cuenta_bancaria_idcuentatipo",
         using: "BTREE",
         fields: [
-          { name: "_iddocumentotipo" },
+          { name: "idcuentatipo" },
+        ]
+      },
+      {
+        name: "FK_cuenta_bancaria_idmoneda",
+        using: "BTREE",
+        fields: [
+          { name: "idmoneda" },
+        ]
+      },
+      {
+        name: "FK_cuenta_bancaria_idempresa",
+        using: "BTREE",
+        fields: [
+          { name: "idempresa" },
         ]
       },
     ]

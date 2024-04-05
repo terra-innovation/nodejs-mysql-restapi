@@ -77,7 +77,7 @@ export default class Colaborador extends Model {
         ]
       },
       {
-        name: "FK_idempresa",
+        name: "FK_colaborador_idempresa",
         using: "BTREE",
         fields: [
           { name: "idempresa" },
