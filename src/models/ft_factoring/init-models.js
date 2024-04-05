@@ -21,7 +21,7 @@ export default function initModels(sequelize) {
   Usuario.hasMany(UsuarioRol, { as: "usuarioroles", foreignKey: "idusuario" });
 
   Colaborador.belongsTo(Empresa, { as: "empresa", foreignKey: "idempresa" });
-  Empresa.hasMany(Colaborador, { as: "colaboradors", foreignKey: "idempresa" });
+  Empresa.hasMany(Colaborador, { as: "colaboradores", foreignKey: "idempresa" });
 
   return {
     Rol,

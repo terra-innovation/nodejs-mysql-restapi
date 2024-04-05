@@ -6,6 +6,10 @@ import { verifyToken, checkRole } from "../middlewares/authMiddleware.js";
 
 const router = Router();
 
+//Empresario
+router.get("/empresario/giradores/:id", verifyToken, checkRole([2]), catchedAsync(empresasController.getGirador));
+router.get("/empresario/aceptantes/:id", verifyToken, checkRole([2]), catchedAsync(empresasController.getEmpresa));
+
 // GET all Empresas
 router.get("/empresas", verifyToken, checkRole([2]), catchedAsync(empresasController.getEmpresas));
 

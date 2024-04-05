@@ -8,7 +8,7 @@ export const getEmpresasActivas = async (req) => {
       include: [
         {
           model: Colaborador,
-          as: "colaboradors",
+          as: "colaboradores",
           attributes: {
             exclude: ["idcolaborador", "idempresa", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
           },
@@ -38,7 +38,7 @@ export const getEmpresaByIdempresa = async (req, idempresa) => {
       include: [
         {
           model: Colaborador,
-          as: "colaboradors",
+          as: "colaboradores",
           attributes: {
             exclude: ["idcolaborador", "idempresa", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
           },
@@ -65,7 +65,7 @@ export const getEmpresaByEmpresaid = async (req, empresaid) => {
       include: [
         {
           model: Colaborador,
-          as: "colaboradors",
+          as: "colaboradores",
           attributes: {
             exclude: ["idcolaborador", "idempresa", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
           },
@@ -94,7 +94,7 @@ export const getEmpresaByRuc = async (req, ruc) => {
       include: [
         {
           model: Colaborador,
-          as: "colaboradors",
+          as: "colaboradores",
           attributes: {
             exclude: ["idcolaborador", "idempresa", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
           },
