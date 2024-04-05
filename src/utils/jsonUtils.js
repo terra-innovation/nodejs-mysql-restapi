@@ -1,3 +1,15 @@
+import util from "util";
+
+// Imprime json en consola de manera legible y a colores
+export const prettyPrint = (obj) => {
+  console.log(util.inspect(obj, { depth: null, colors: true }));
+};
+
+// Función para remover atributos de un json
+export const removeAttributesPrivates = (json) => {
+  return removeAttributes(json, ["idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado", /_id\w+/]);
+};
+
 // Función para remover atributos de un json
 export const removeAttributes = (json, rules) => {
   if (typeof json !== "object" || json === null) {

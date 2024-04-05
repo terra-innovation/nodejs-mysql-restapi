@@ -21,14 +21,14 @@ export const getAceptante = async (req, res) => {
     throw new ClientError("Empresa no existe", 404);
   }
 
-  var empresaOfuscado = jsonUtils.ofuscarAtributos(rows[0], ["email"], jsonUtils.PATRON_OFUSCAR_EMAIL);
-  empresaOfuscado = jsonUtils.ofuscarAtributos(empresaOfuscado, ["nombre"], jsonUtils.PATRON_OFUSCAR_NOMBRE);
-  empresaOfuscado = jsonUtils.ofuscarAtributos(empresaOfuscado, ["telefono"], jsonUtils.PATRON_OFUSCAR_TELEFONO);
-  //console.log(empresaOfuscado);
+  var empresaObfuscated = jsonUtils.ofuscarAtributos(rows[0], ["email"], jsonUtils.PATRON_OFUSCAR_EMAIL);
+  empresaObfuscated = jsonUtils.ofuscarAtributos(empresaObfuscated, ["nombre"], jsonUtils.PATRON_OFUSCAR_NOMBRE);
+  empresaObfuscated = jsonUtils.ofuscarAtributos(empresaObfuscated, ["telefono"], jsonUtils.PATRON_OFUSCAR_TELEFONO);
+  //console.log(empresaObfuscated);
 
-  var empresaCleared = jsonUtils.removeAttributes(empresaOfuscado, ["idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado", /_id\w+/]);
-  console.log(JSON.stringify(empresaCleared, null, 2));
-  response(res, 200, empresaCleared);
+  var empresaFiltered = jsonUtils.removeAttributesPrivates(empresaObfuscated);
+  //jsonUtils.prettyPrint(empresaFiltered);
+  response(res, 200, empresaFiltered);
 };
 
 export const getGirador = async (req, res) => {

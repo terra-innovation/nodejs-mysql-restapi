@@ -1,5 +1,6 @@
 import { TOKEN_KEY } from "../config.js";
 import jwt from "jsonwebtoken";
+import * as jsonUtils from "../utils/jsonUtils.js";
 
 export const verifyToken = (req, res, next) => {
   const authHeader = req.body.token || req.query.token || req.params.token || req.headers["authorization"];
@@ -18,7 +19,7 @@ export const verifyToken = (req, res, next) => {
   // Verificamos y decodificamos el token
   try {
     const decoded = jwt.verify(token, TOKEN_KEY);
-    //console.log(JSON.stringify(decoded, null, 2));
+    //jsonUtils.prettyPrint(decoded);
     // Si el token es válido, almacenamos la información decodificada en el objeto de solicitud para uso posterior
     req.session_user = decoded;
   } catch (err) {
@@ -32,7 +33,7 @@ export const checkRole = (roles) => {
   return (req, res, next) => {
     // Verifica si req.user existe y tiene la propiedad 'roles'
     if (req.session_user && req.session_user.usuario.Rols) {
-      //console.log(JSON.stringify(req.session_user, null, 2));
+      //jsonUtils.prettyPrint(session_user);
       // Comprueba si al menos uno de los roles especificados está presente en los roles del usuario
       const rolesUsuario = req.session_user.usuario.Rols.map((role) => role._idrol);
       const tieneRol = roles.some((rol) => rolesUsuario.includes(rol));

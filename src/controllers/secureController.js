@@ -2,6 +2,7 @@ import * as usuarioDao from "../daos/usuarioDao.js";
 import { response } from "../utils/CustomResponseOk.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import { poolFactoring } from "../config/bd/mysql2_db_factoring.js";
+import * as jsonUtils from "../utils/jsonUtils.js";
 import { poolBigData } from "../config/bd/mysql2_db_bigdata.js";
 import { TOKEN_KEY } from "../config.js";
 import crypto from "crypto";
@@ -37,14 +38,14 @@ export const loginUser = async (req, res) => {
     throw new ClientError("Usuario no existe", 404);
   }
 
-  console.log(JSON.stringify(usuario_login, null, 2));
+  jsonUtils.prettyPrint(usuario_login);
 
   if (usuario_login[0].email && (await bcrypt.compare(loginUserValidated.password, usuario_login[0].password))) {
     // Consultamos todos los datos del usuario y sus roles
     const usuario_autenticado = await usuarioDao.getUsuarioAndRolesByEmail(req, loginUserValidated.email);
     // Obtén el primer registro de usuario_autenticado
     const usuario = usuario_autenticado[0];
-    console.log(JSON.stringify(usuario, null, 2));
+    //jsonUtils.prettyPrint(usuario);
     // Create token
     const token = jwt.sign({ usuario: usuario }, TOKEN_KEY, {
       expiresIn: "200000h",
