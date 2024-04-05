@@ -1,7 +1,7 @@
 import * as empresaDao from "../daos/empresaDao.js";
 import { response } from "../utils/CustomResponseOk.js";
 import { ClientError } from "../utils/CustomErrors.js";
-import * as ofuscarUtils from "../utils/ofuscarUtils.js";
+import * as jsonUtils from "../utils/jsonUtils.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
@@ -21,11 +21,14 @@ export const getAceptante = async (req, res) => {
     throw new ClientError("Empresa no existe", 404);
   }
 
-  var usuarioOfuscado = ofuscarUtils.ofuscarAtributos(rows[0], ["email"], ofuscarUtils.PATRON_OFUSCAR_EMAIL);
-  usuarioOfuscado = ofuscarUtils.ofuscarAtributos(usuarioOfuscado, ["nombre"], ofuscarUtils.PATRON_OFUSCAR_NOMBRE);
-  usuarioOfuscado = ofuscarUtils.ofuscarAtributos(usuarioOfuscado, ["telefono"], ofuscarUtils.PATRON_OFUSCAR_TELEFONO);
-  //console.log(usuarioOfuscado);
-  response(res, 200, usuarioOfuscado);
+  var empresaOfuscado = jsonUtils.ofuscarAtributos(rows[0], ["email"], jsonUtils.PATRON_OFUSCAR_EMAIL);
+  empresaOfuscado = jsonUtils.ofuscarAtributos(empresaOfuscado, ["nombre"], jsonUtils.PATRON_OFUSCAR_NOMBRE);
+  empresaOfuscado = jsonUtils.ofuscarAtributos(empresaOfuscado, ["telefono"], jsonUtils.PATRON_OFUSCAR_TELEFONO);
+  //console.log(empresaOfuscado);
+
+  var empresaCleared = jsonUtils.removeAttributes(empresaOfuscado, ["idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado", /_id\w+/]);
+  console.log(JSON.stringify(empresaCleared, null, 2));
+  response(res, 200, empresaCleared);
 };
 
 export const getGirador = async (req, res) => {
@@ -42,9 +45,9 @@ export const getGirador = async (req, res) => {
     throw new ClientError("Empresa no existe", 404);
   }
 
-  var usuarioOfuscado = ofuscarUtils.ofuscarAtributos(rows[0], ["email"], ofuscarUtils.PATRON_OFUSCAR_EMAIL);
-  usuarioOfuscado = ofuscarUtils.ofuscarAtributos(usuarioOfuscado, ["nombre"], ofuscarUtils.PATRON_OFUSCAR_NOMBRE);
-  usuarioOfuscado = ofuscarUtils.ofuscarAtributos(usuarioOfuscado, ["telefono"], ofuscarUtils.PATRON_OFUSCAR_TELEFONO);
+  var usuarioOfuscado = jsonUtils.ofuscarAtributos(rows[0], ["email"], jsonUtils.PATRON_OFUSCAR_EMAIL);
+  usuarioOfuscado = jsonUtils.ofuscarAtributos(usuarioOfuscado, ["nombre"], jsonUtils.PATRON_OFUSCAR_NOMBRE);
+  usuarioOfuscado = jsonUtils.ofuscarAtributos(usuarioOfuscado, ["telefono"], jsonUtils.PATRON_OFUSCAR_TELEFONO);
   //console.log(usuarioOfuscado);
   response(res, 200, usuarioOfuscado);
 };

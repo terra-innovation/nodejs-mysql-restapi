@@ -1,3 +1,25 @@
+// Función para remover atributos de un json
+export const removeAttributes = (json, rules) => {
+  if (typeof json !== "object" || json === null) {
+    return json;
+  }
+
+  if (Array.isArray(json)) {
+    return json.map((item) => removeAttributes(item, rules));
+  }
+
+  const newObj = {};
+  for (const key in json) {
+    if (Object.prototype.hasOwnProperty.call(json, key)) {
+      const value = json[key];
+      if (!rules.some((rule) => (typeof rule === "string" && rule === key) || (rule instanceof RegExp && rule.test(key)))) {
+        newObj[key] = removeAttributes(value, rules);
+      }
+    }
+  }
+  return newObj;
+};
+
 // Función para ofuscar el correo electrónico
 export function ofuscarAtributos(objeto, atributosOfuscar, patron) {
   // Copia profunda del objeto para evitar modificar el objeto original

@@ -5,9 +5,6 @@ export const getUsuariosActivos = async (req) => {
   try {
     const { models } = req.app.locals;
     const usuarioes = await models.Usuario.findAll({
-      attributes: {
-        exclude: ["_idusuario", "idempresa", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
-      },
       where: {
         estado: 1,
       },
@@ -64,15 +61,8 @@ export const getUsuarioAndRolesByEmail = async (req, email) => {
       include: [
         {
           model: Rol,
-          as: "roles",
-          attributes: {
-            exclude: ["idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
-          },
         },
       ],
-      attributes: {
-        exclude: ["password", "emailvalidationcode", "emaillastvalidate", "emailnumvalidation", "hash", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
-      },
       where: {
         email: email,
       },
@@ -90,9 +80,6 @@ export const getUsuarioByUsuarioid = async (req, usuarioid) => {
   try {
     const { models } = req.app.locals;
     const usuario = await models.Usuario.findAll({
-      attributes: {
-        exclude: ["_idusuario", "idempresa", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
-      },
       where: {
         usuarioid: usuarioid,
       },

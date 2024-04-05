@@ -31,10 +31,10 @@ export const verifyToken = (req, res, next) => {
 export const checkRole = (roles) => {
   return (req, res, next) => {
     // Verifica si req.user existe y tiene la propiedad 'roles'
-    if (req.session_user && req.session_user.usuario.roles) {
-      console.log(JSON.stringify(req.session_user, null, 2));
+    if (req.session_user && req.session_user.usuario.Rols) {
+      //console.log(JSON.stringify(req.session_user, null, 2));
       // Comprueba si al menos uno de los roles especificados está presente en los roles del usuario
-      const rolesUsuario = req.session_user.usuario.roles.map((role) => role._idrol);
+      const rolesUsuario = req.session_user.usuario.Rols.map((role) => role._idrol);
       const tieneRol = roles.some((rol) => rolesUsuario.includes(rol));
       if (tieneRol) {
         // Si el usuario tiene al menos uno de los roles especificados, continúa con la siguiente función de middleware o ruta
