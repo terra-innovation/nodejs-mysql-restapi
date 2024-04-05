@@ -39,8 +39,8 @@ export default function initModels(sequelize) {
   const Usuario = _Usuario.init(sequelize, DataTypes);
   const UsuarioRol = _UsuarioRol.init(sequelize, DataTypes);
 
-  Rol.belongsToMany(Usuario, { as: "_idusuario_usuarios", through: UsuarioRol, foreignKey: "_idrol", otherKey: "_idusuario" });
-  Usuario.belongsToMany(Rol, { as: "roles", through: UsuarioRol, foreignKey: "_idusuario", otherKey: "_idrol" });
+  Rol.belongsToMany(Usuario, { through: UsuarioRol, foreignKey: "_idrol", otherKey: "_idusuario" });
+  Usuario.belongsToMany(Rol, { through: UsuarioRol, foreignKey: "_idusuario", otherKey: "_idrol" });
   CuentaBancaria.belongsTo(Banco, { foreignKey: "idbanco" });
   Banco.hasMany(CuentaBancaria, { foreignKey: "idbanco" });
   Factoring.belongsTo(Company, { foreignKey: "iddebtor" });

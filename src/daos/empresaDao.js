@@ -1,4 +1,3 @@
-import Colaborador from "../models/ft_factoring/Colaborador.js";
 import { ClientError } from "../utils/CustomErrors.js";
 
 export const getEmpresasActivas = async (req) => {
@@ -7,7 +6,7 @@ export const getEmpresasActivas = async (req) => {
     const empresas = await models.Empresa.findAll({
       include: [
         {
-          model: Colaborador,
+          model: models.Colaborador,
           as: "colaboradores",
           attributes: {
             exclude: ["idcolaborador", "idempresa", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
@@ -37,11 +36,7 @@ export const getEmpresaByIdempresa = async (req, idempresa) => {
     const empresa = await models.Empresa.findByPk(idempresa, {
       include: [
         {
-          model: Colaborador,
-          as: "colaboradores",
-          attributes: {
-            exclude: ["idcolaborador", "idempresa", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
-          },
+          model: models.Colaborador,
         },
       ],
     });
@@ -64,16 +59,9 @@ export const getEmpresaByEmpresaid = async (req, empresaid) => {
     const empresa = await models.Empresa.findAll({
       include: [
         {
-          model: Colaborador,
-          as: "colaboradores",
-          attributes: {
-            exclude: ["idcolaborador", "idempresa", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
-          },
+          model: models.Colaborador,
         },
       ],
-      attributes: {
-        exclude: ["idempresa", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
-      },
       where: {
         empresaid: empresaid,
       },
@@ -93,7 +81,7 @@ export const getEmpresaByRuc = async (req, ruc) => {
     const empresa = await models.Empresa.findAll({
       include: [
         {
-          model: Colaborador,
+          model: models.Colaborador,
           as: "colaboradores",
           attributes: {
             exclude: ["idcolaborador", "idempresa", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],

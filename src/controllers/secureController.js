@@ -38,7 +38,7 @@ export const loginUser = async (req, res) => {
   }
 
   console.log(JSON.stringify(usuario_login, null, 2));
-  const rol = 1;
+
   if (usuario_login[0].email && (await bcrypt.compare(loginUserValidated.password, usuario_login[0].password))) {
     // Consultamos todos los datos del usuario y sus roles
     const usuario_autenticado = await usuarioDao.getUsuarioAndRolesByEmail(req, loginUserValidated.email);
@@ -46,7 +46,7 @@ export const loginUser = async (req, res) => {
     const usuario = usuario_autenticado[0];
     console.log(JSON.stringify(usuario, null, 2));
     // Create token
-    const token = jwt.sign({ usuario: usuario, rol: rol }, TOKEN_KEY, {
+    const token = jwt.sign({ usuario: usuario }, TOKEN_KEY, {
       expiresIn: "200000h",
     });
 
