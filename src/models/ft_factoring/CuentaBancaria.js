@@ -4,7 +4,7 @@ const { Model, Sequelize } = _sequelize;
 export default class CuentaBancaria extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    idcuentabancaria: {
+    _idcuentabancaria: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -15,44 +15,44 @@ export default class CuentaBancaria extends Model {
       allowNull: false,
       defaultValue: Sequelize.Sequelize.fn('uuid')
     },
-    idempresa: {
+    _idempresa: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: 'empresa',
-        key: 'idempresa'
+        key: '_idempresa'
       }
     },
-    idbanco: {
+    _idbanco: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: 'banco',
-        key: 'idbanco'
+        key: '_idbanco'
       }
     },
-    idcuentatipo: {
+    _idcuentatipo: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: 'cuenta_tipo',
-        key: 'idcuentatipo'
+        key: '_idcuentatipo'
       }
     },
-    idmoneda: {
+    _idmoneda: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: 'moneda',
-        key: 'idmoneda'
+        key: '_idmoneda'
       }
     },
-    idcuentabancariaestado: {
+    _idcuentabancariaestado: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: 'cuenta_bancaria_estado',
-        key: 'idcuentabancariaestado'
+        key: '_idcuentabancariaestado'
       }
     },
     numero: {
@@ -102,42 +102,42 @@ export default class CuentaBancaria extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "idcuentabancaria" },
+          { name: "_idcuentabancaria" },
         ]
       },
       {
         name: "FK_cuenta_bancaria_idbanco",
         using: "BTREE",
         fields: [
-          { name: "idbanco" },
+          { name: "_idbanco" },
         ]
       },
       {
         name: "FK_cuenta_bancaria_idcuentabancariaestado",
         using: "BTREE",
         fields: [
-          { name: "idcuentabancariaestado" },
+          { name: "_idcuentabancariaestado" },
         ]
       },
       {
         name: "FK_cuenta_bancaria_idcuentatipo",
         using: "BTREE",
         fields: [
-          { name: "idcuentatipo" },
+          { name: "_idcuentatipo" },
         ]
       },
       {
         name: "FK_cuenta_bancaria_idmoneda",
         using: "BTREE",
         fields: [
-          { name: "idmoneda" },
+          { name: "_idmoneda" },
         ]
       },
       {
         name: "FK_cuenta_bancaria_idempresa",
         using: "BTREE",
         fields: [
-          { name: "idempresa" },
+          { name: "_idempresa" },
         ]
       },
     ]

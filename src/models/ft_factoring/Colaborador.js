@@ -4,7 +4,7 @@ const { Model, Sequelize } = _sequelize;
 export default class Colaborador extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    idcolaborador: {
+    _idcolaborador: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -14,12 +14,12 @@ export default class Colaborador extends Model {
       type: DataTypes.STRING(50),
       allowNull: false
     },
-    idempresa: {
+    _idempresa: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: 'empresa',
-        key: 'idempresa'
+        key: '_idempresa'
       }
     },
     nombre: {
@@ -73,14 +73,14 @@ export default class Colaborador extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "idcolaborador" },
+          { name: "_idcolaborador" },
         ]
       },
       {
         name: "FK_colaborador_idempresa",
         using: "BTREE",
         fields: [
-          { name: "idempresa" },
+          { name: "_idempresa" },
         ]
       },
     ]

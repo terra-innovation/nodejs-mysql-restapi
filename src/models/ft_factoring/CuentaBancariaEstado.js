@@ -4,7 +4,7 @@ const { Model, Sequelize } = _sequelize;
 export default class CuentaBancariaEstado extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    idcuentabancariaestado: {
+    _idcuentabancariaestado: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -59,7 +59,7 @@ export default class CuentaBancariaEstado extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "idcuentabancariaestado" },
+          { name: "_idcuentabancariaestado" },
         ]
       },
       {
