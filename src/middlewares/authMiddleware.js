@@ -18,8 +18,7 @@ export const verifyToken = (req, res, next) => {
   // Verificamos y decodificamos el token
   try {
     const decoded = jwt.verify(token, TOKEN_KEY);
-    //console.log(decoded);
-
+    //console.log(JSON.stringify(decoded, null, 2));
     // Si el token es válido, almacenamos la información decodificada en el objeto de solicitud para uso posterior
     req.session_user = decoded;
   } catch (err) {
@@ -31,11 +30,21 @@ export const verifyToken = (req, res, next) => {
 // Middleware para verificar si el usuario tiene alguno de los roles especificados
 export const checkRole = (roles) => {
   return (req, res, next) => {
-    // Verificamos si el usuario tiene alguno de los roles especificados
-    if (req.session_user && roles.includes(req.session_user.rol)) {
-      next(); // Si tiene el rol, pasamos al siguiente middleware o a la ruta
+    // Verifica si req.user existe y tiene la propiedad 'roles'
+    if (req.session_user && req.session_user.usuario.roles) {
+      // Comprueba si al menos uno de los roles especificados está presente en los roles del usuario
+      const rolesUsuario = req.session_user.usuario.roles.map((role) => role.idrol);
+      const tieneRol = roles.some((rol) => rolesUsuario.includes(rol));
+      if (tieneRol) {
+        // Si el usuario tiene al menos uno de los roles especificados, continúa con la siguiente función de middleware o ruta
+        next();
+      } else {
+        // Si el usuario no tiene ninguno de los roles especificados, devuelve un error de acceso denegado
+        res.status(403).json({ error: true, message: "Acceso denegado" });
+      }
     } else {
-      res.status(403).json({ error: true, message: "Acceso denegado. Se requiere el rol adecuado" });
+      // Si req.user no existe o no tiene la propiedad 'roles', devuelve un error de acceso denegado
+      res.status(403).json({ error: true, message: "Acceso denegado" });
     }
   };
 };

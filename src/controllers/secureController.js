@@ -1,3 +1,6 @@
+import * as usuarioDao from "../daos/usuarioDao.js";
+import { response } from "../utils/CustomResponseOk.js";
+import { ClientError } from "../utils/CustomErrors.js";
 import { poolFactoring } from "../config/bd/mysql2_db_factoring.js";
 import { poolBigData } from "../config/bd/mysql2_db_bigdata.js";
 import { TOKEN_KEY } from "../config.js";
@@ -9,53 +12,47 @@ import * as Yup from "yup";
 import { ValidationError } from "yup";
 
 export const loginUser = async (req, res) => {
-  try {
-    // Get user input
-    const { correo, clave } = req.body;
+  // Get user input
+  const { correo, clave } = req.body;
 
-    let EMAIL_REGX = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$/;
+  let EMAIL_REGX = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$/;
 
-    const loginUserSchema = Yup.object()
-      .shape({
-        email: Yup.string()
-          .trim()
-          .required("Correo electrónico es requerido")
-          .email("Debe ser un correo válido")
-          .matches(EMAIL_REGX, "Debe ser un correo válido.")
-          .min(5, "Mínimo 5 caracteres")
-          .max(50, "Máximo 50 caracteres"),
-        password: Yup.string().required("Contraseña es requerido").min(6, "Mínimo 6 caracteres").max(20, "Máximo 20 caracteres"),
-      })
-      .required();
-    const data = loginUserSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
+  const loginUserSchema = Yup.object()
+    .shape({
+      email: Yup.string()
+        .trim()
+        .required("Correo electrónico es requerido")
+        .email("Debe ser un correo válido")
+        .matches(EMAIL_REGX, "Debe ser un correo válido.")
+        .min(5, "Mínimo 5 caracteres")
+        .max(50, "Máximo 50 caracteres"),
+      password: Yup.string().required("Contraseña es requerido").min(6, "Mínimo 6 caracteres").max(20, "Máximo 20 caracteres"),
+    })
+    .required();
+  const loginUserValidated = loginUserSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
 
-    const { email, password } = data;
+  // Validate if user exist in our database
+  const usuario_login = await usuarioDao.autenticarUsuario(req, loginUserValidated.email);
+  if (usuario_login.length <= 0) {
+    throw new ClientError("Usuario no existe", 404);
+  }
 
-    // Validate if user exist in our database
-    const [rows] = await poolFactoring.query("SELECT idusuario, usuarioid, email, password FROM usuario WHERE email = ?", [email]);
+  console.log(JSON.stringify(usuario_login, null, 2));
+  const rol = 1;
+  if (usuario_login[0].email && (await bcrypt.compare(loginUserValidated.password, usuario_login[0].password))) {
+    // Consultamos todos los datos del usuario y sus roles
+    const usuario_autenticado = await usuarioDao.getUsuarioAndRolesByEmail(req, loginUserValidated.email);
+    // Obtén el primer registro de usuario_autenticado
+    const usuario = usuario_autenticado[0];
+    console.log(JSON.stringify(usuario, null, 2));
+    // Create token
+    const token = jwt.sign({ usuario: usuario, rol: rol }, TOKEN_KEY, {
+      expiresIn: "200000h",
+    });
 
-    if (rows.length <= 0) {
-      return res.status(404).json({ message: "Usuario no encontrado" });
-    }
-
-    const rol = 1;
-    if (rows[0].email && (await bcrypt.compare(password, rows[0].password))) {
-      // Create token
-      const token = jwt.sign({ idusuario: rows[0].idusuario, usuarioid: rows[0].usuarioid, email: rows[0].email, rol: rol }, TOKEN_KEY, {
-        expiresIn: "200000h",
-      });
-
-      // save user token
-      // user.token = token;
-      rows[0].token = token;
-
-      res.status(201).json({ token });
-    } else {
-      return res.status(404).json({ message: "Credenciales no válidas" });
-    }
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Something goes wrong" });
+    response(res, 201, { token });
+  } else {
+    throw new ClientError("Credenciales no válidas", 404);
   }
 };
 

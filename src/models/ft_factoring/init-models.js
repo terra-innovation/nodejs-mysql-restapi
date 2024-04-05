@@ -13,12 +13,12 @@ export default function initModels(sequelize) {
   const Colaborador = _Colaborador.init(sequelize, DataTypes);
   const Empresa = _Empresa.init(sequelize, DataTypes);
 
-  Rol.belongsToMany(Usuario, { as: "idusuario_usuarios", through: UsuarioRol, foreignKey: "idrol", otherKey: "idusuario" });
-  Usuario.belongsToMany(Rol, { as: "idrol_rols", through: UsuarioRol, foreignKey: "idusuario", otherKey: "idrol" });
-  UsuarioRol.belongsTo(Rol, { as: "idrol_rol", foreignKey: "idrol" });
-  Rol.hasMany(UsuarioRol, { as: "usuario_rols", foreignKey: "idrol" });
-  UsuarioRol.belongsTo(Usuario, { as: "idusuario_usuario", foreignKey: "idusuario" });
-  Usuario.hasMany(UsuarioRol, { as: "usuario_rols", foreignKey: "idusuario" });
+  Rol.belongsToMany(Usuario, { as: "usuarios", through: UsuarioRol, foreignKey: "idrol", otherKey: "idusuario" });
+  Usuario.belongsToMany(Rol, { as: "roles", through: UsuarioRol, foreignKey: "idusuario", otherKey: "idrol" });
+  UsuarioRol.belongsTo(Rol, { as: "rol", foreignKey: "idrol" });
+  Rol.hasMany(UsuarioRol, { as: "usuarioroles", foreignKey: "idrol" });
+  UsuarioRol.belongsTo(Usuario, { as: "usuario", foreignKey: "idusuario" });
+  Usuario.hasMany(UsuarioRol, { as: "usuarioroles", foreignKey: "idusuario" });
 
   Colaborador.belongsTo(Empresa, { as: "empresa", foreignKey: "idempresa" });
   Empresa.hasMany(Colaborador, { as: "colaboradors", foreignKey: "idempresa" });

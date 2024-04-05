@@ -1,3 +1,4 @@
+import Rol from "../models/ft_factoring/Rol.js";
 import { ClientError } from "../utils/CustomErrors.js";
 
 export const getUsuariosActivos = async (req) => {
@@ -30,6 +31,53 @@ export const getUsuarioByIdusuario = async (req, idusuario) => {
     //const usuarios = await usuario.getUsuarios();
     //console.log(usuarios);
 
+    return usuario;
+  } catch (error) {
+    console.error(error.code);
+    console.error(error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
+export const autenticarUsuario = async (req, email) => {
+  try {
+    const { models } = req.app.locals;
+    const usuario = await models.Usuario.findAll({
+      attributes: ["idusuario", "usuarioid", "email", "password"],
+      where: {
+        email: email,
+      },
+    });
+    //console.log(usuario);
+    return usuario;
+  } catch (error) {
+    console.error(error.code);
+    console.error(error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
+export const getUsuarioAndRolesByEmail = async (req, email) => {
+  try {
+    const { models } = req.app.locals;
+    const usuario = await models.Usuario.findAll({
+      include: [
+        {
+          model: Rol,
+          as: "roles",
+          attributes: {
+            exclude: ["idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
+          },
+        },
+      ],
+      attributes: {
+        exclude: ["password", "emailvalidationcode", "emaillastvalidate", "emailnumvalidation", "hash", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
+      },
+      where: {
+        email: email,
+      },
+    });
+    //console.log(usuario);
     return usuario;
   } catch (error) {
     console.error(error.code);
