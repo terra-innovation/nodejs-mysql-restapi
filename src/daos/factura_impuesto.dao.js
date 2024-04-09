@@ -4,7 +4,7 @@ export const insertarFacturaImpuesto = async (factura_impuesto) => {
   const [rows] = await poolFactoring.query(
     `INSERT INTO factura_impuesto (
       facturaimpuestoid,
-      idfactura,
+      _idfactura,
       id,
       codigo_sunat,
       nombre,
@@ -23,7 +23,7 @@ export const insertarFacturaImpuesto = async (factura_impuesto) => {
         )`,
     [
       factura_impuesto.facturaimpuestoid,
-      factura_impuesto.idfactura,
+      factura_impuesto._idfactura,
       factura_impuesto.id,
       factura_impuesto.codigo_sunat,
       factura_impuesto.nombre,

@@ -5,6 +5,28 @@ export const prettyPrint = (obj) => {
   console.log(util.inspect(obj, { depth: null, colors: true }));
 };
 
+// Reemplaza valores en un json
+export const reemplazarValores = (json, regexsYReemplazos) => {
+  // Verificar si el valor es un objeto
+  if (typeof json === "object" && json !== null) {
+    // Recorrer cada clave-valor del objeto
+    for (let clave in json) {
+      if (Object.prototype.hasOwnProperty.call(json, clave)) {
+        // Llamar recursivamente a la función para cada valor del objeto
+        json[clave] = reemplazarValores(json[clave], regexsYReemplazos);
+      }
+    }
+  } else if (typeof json === "string") {
+    // Aplicar los reemplazos
+    for (let i = 0; i < regexsYReemplazos.length; i++) {
+      const [regexBuscar, valorReemplazo] = regexsYReemplazos[i];
+      json = json.replace(regexBuscar, valorReemplazo);
+    }
+  }
+  // Devolver el valor transformado
+  return json;
+};
+
 // Función para remover atributos de un json
 export const removeAttributesPrivates = (json) => {
   return removeAttributes(json, ["idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado", /_id\w+/]);

@@ -72,11 +72,6 @@ export const getEmpresaByRuc = async (req, ruc) => {
   try {
     const { models } = req.app.locals;
     const empresa = await models.Empresa.findAll({
-      include: [
-        {
-          model: models.Colaborador,
-        },
-      ],
       where: {
         ruc: ruc,
       },
@@ -93,8 +88,8 @@ export const getEmpresaByRuc = async (req, ruc) => {
 export const findEmpresaPk = async (req, empresaid) => {
   try {
     const { models } = req.app.locals;
-    const empresa = await models.Empresa.findAll({
-      attributes: ["idempresa"],
+    const empresa = await models.Empresa.findOne({
+      attributes: ["_idempresa"],
       where: {
         empresaid: empresaid,
       },

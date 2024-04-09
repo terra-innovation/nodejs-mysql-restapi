@@ -4,12 +4,12 @@ export const insertarFacturaMedioPago = async (factura_medio_pago) => {
   const [rows] = await poolFactoring.query(
     `INSERT INTO factura_medio_pago (
       facturamediopagoid,
-      idfactura,
+      _idfactura,
       id,
       medio_pago_codigo,
       cuenta_bancaria
       ) VALUES (?,?,?,?,?)`,
-    [factura_medio_pago.facturamediopagoid, factura_medio_pago.idfactura, factura_medio_pago.id, factura_medio_pago.medio_pago_codigo, factura_medio_pago.cuenta_bancaria]
+    [factura_medio_pago.facturamediopagoid, factura_medio_pago._idfactura, factura_medio_pago.id, factura_medio_pago.medio_pago_codigo, factura_medio_pago.cuenta_bancaria]
   );
   //console.log(rows);
 

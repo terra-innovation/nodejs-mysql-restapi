@@ -5,9 +5,10 @@ import * as util from "util";
 
 import employeesRoutes from "./routes/employees.routes.js";
 import indexRoutes from "./routes/index.routes.js";
-import sunatTrabajadoresRoutes from "./routes/sunat.trabajadores.routes.js";
+import facturaRoutes from "./routes/factura.routes.js";
 import empresasRoutes from "./routes/empresasRoutes.js";
 import colaboradoresRoutes from "./routes/colaboradoresRoutes.js";
+import cuentasbancariasRoutes from "./routes/cuentasbancarias.routes.js";
 
 import secureRoutes from "./routes/secure.routes.js";
 import { customResponseError } from "./utils/CustomResponseError.js";
@@ -36,9 +37,10 @@ app.use(express.json()); // Convierte los request a json
 // Routes
 app.use("/", indexRoutes);
 app.use("/api", employeesRoutes);
-app.use("/api/sunat", sunatTrabajadoresRoutes);
+app.use("/api/v1", facturaRoutes);
 app.use("/api/v1", empresasRoutes);
 app.use("/api/v1", colaboradoresRoutes);
+app.use("/api/v1", cuentasbancariasRoutes);
 app.use("/secure", secureRoutes);
 
 // Para cuando no existe la ruta
@@ -50,7 +52,7 @@ app.use((req, res, next) => {
 app.locals.sequelize = sequelize;
 app.locals.models = initModels(sequelize);
 
-// Establecemos una respuesta estandar para los errores
+// Middleware de manejo de errores global
 app.use((err, req, res, next) => {
   var { statusCode, message } = err;
   if (err instanceof ValidationError) {
