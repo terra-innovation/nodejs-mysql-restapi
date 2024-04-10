@@ -10,6 +10,7 @@ import empresasRoutes from "./routes/empresasRoutes.js";
 import colaboradoresRoutes from "./routes/colaboradoresRoutes.js";
 import cuentasbancariasRoutes from "./routes/cuentasbancarias.routes.js";
 import usuariosRoutes from "./routes/usuarios.routes.js";
+import factoringsRoutes from "./routes/factorings.routes.js";
 
 import secureRoutes from "./routes/secure.routes.js";
 import { customResponseError } from "./utils/CustomResponseError.js";
@@ -43,6 +44,7 @@ app.use("/api/v1", empresasRoutes);
 app.use("/api/v1", colaboradoresRoutes);
 app.use("/api/v1", cuentasbancariasRoutes);
 app.use("/api/v1", usuariosRoutes);
+app.use("/api/v1", factoringsRoutes);
 app.use("/secure", secureRoutes);
 
 // Para cuando no existe la ruta

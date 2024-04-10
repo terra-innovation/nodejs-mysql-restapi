@@ -101,7 +101,7 @@ export const findCuentabancariaPk = async (req, cuentabancariaid) => {
   try {
     const { models } = req.app.locals;
     const cuentabancaria = await models.CuentaBancaria.findOne({
-      attributes: ["idcuentabancaria"],
+      attributes: ["_idcuentabancaria"],
       where: {
         cuentabancariaid: cuentabancariaid,
       },

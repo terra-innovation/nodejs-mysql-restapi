@@ -5,6 +5,7 @@ export default class Factoring extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
     _idfactoring: {
+      autoIncrement: true,
       type: DataTypes.BIGINT,
       allowNull: false,
       primaryKey: true
@@ -18,7 +19,7 @@ export default class Factoring extends Model {
       type: DataTypes.STRING(255),
       allowNull: false
     },
-    _iddeudor: {
+    _idaceptante: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
@@ -47,6 +48,14 @@ export default class Factoring extends Model {
       allowNull: true
     },
     _idriesgocedente: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    _idcuentabancaria: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    _idcolaborador: {
       type: DataTypes.INTEGER,
       allowNull: true
     },
@@ -97,7 +106,7 @@ export default class Factoring extends Model {
     },
     fecha_pago_estimado: {
       type: DataTypes.DATEONLY,
-      allowNull: true,
+      allowNull: false,
       comment: "Fecha en el que el deudor debe pagar"
     },
     fecha_pago_real: {
@@ -112,7 +121,7 @@ export default class Factoring extends Model {
     },
     dias_pago_estimado: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       comment: "Dias estimados para el pago"
     },
     dias_pago_real: {
@@ -125,7 +134,7 @@ export default class Factoring extends Model {
       allowNull: true,
       comment: "Dias de mora de la operación"
     },
-    monto_operacion: {
+    monto_neto: {
       type: DataTypes.DECIMAL(10,2),
       allowNull: false,
       comment: "Monto de la operación, descontando las detracciones"
