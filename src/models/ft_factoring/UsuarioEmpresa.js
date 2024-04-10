@@ -1,51 +1,26 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class FacturaImpuesto extends Model {
+export default class UsuarioEmpresa extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    _idfacturaimpuesto: {
-      autoIncrement: true,
+    _idusuario: {
       type: DataTypes.BIGINT,
       allowNull: false,
-      primaryKey: true
-    },
-    facturaimpuestoid: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
-      defaultValue: Sequelize.Sequelize.fn('uuid')
-    },
-    _idfactura: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
+      primaryKey: true,
       references: {
-        model: 'factura',
-        key: '_idfactura'
+        model: 'usuario',
+        key: '_idusuario'
       }
     },
-    id: {
-      type: DataTypes.STRING(200),
-      allowNull: true
-    },
-    codigo_sunat: {
-      type: DataTypes.STRING(100),
-      allowNull: true
-    },
-    nombre: {
-      type: DataTypes.STRING(100),
-      allowNull: true
-    },
-    porcentaje: {
-      type: DataTypes.DECIMAL(12,2),
-      allowNull: true
-    },
-    base_imponible: {
-      type: DataTypes.DECIMAL(12,2),
-      allowNull: true
-    },
-    monto: {
-      type: DataTypes.DECIMAL(12,2),
-      allowNull: true
+    _idempresa: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      references: {
+        model: 'empresa',
+        key: '_idempresa'
+      }
     },
     idusuariocrea: {
       type: DataTypes.INTEGER,
@@ -74,7 +49,7 @@ export default class FacturaImpuesto extends Model {
     }
   }, {
     sequelize,
-    tableName: 'factura_impuesto',
+    tableName: 'usuario_empresa',
     timestamps: false,
     indexes: [
       {
@@ -82,14 +57,15 @@ export default class FacturaImpuesto extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idfacturaimpuesto" },
+          { name: "_idusuario" },
+          { name: "_idempresa" },
         ]
       },
       {
-        name: "FK_factura_impuesto_idfactura",
+        name: "FK_usuario_empresa_idempresa",
         using: "BTREE",
         fields: [
-          { name: "_idfactura" },
+          { name: "_idempresa" },
         ]
       },
     ]

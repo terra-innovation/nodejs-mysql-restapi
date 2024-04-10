@@ -29,7 +29,22 @@ export const getMonedaByIdmoneda = async (req, idmoneda) => {
 
     return moneda;
   } catch (error) {
-    console.error(error.code);
+    console.error(error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
+export const getMonedaByCodigo = async (req, codigo) => {
+  try {
+    const { models } = req.app.locals;
+    const moneda = await models.Moneda.findOne({
+      where: {
+        codigo: codigo,
+      },
+    });
+    //console.log(moneda);
+    return moneda;
+  } catch (error) {
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -46,7 +61,6 @@ export const getMonedaByMonedaid = async (req, monedaid) => {
     //console.log(moneda);
     return moneda;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -78,7 +92,6 @@ export const insertMoneda = async (req, moneda) => {
     // console.log(moneda_nuevo);
     return moneda_nuevo;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }

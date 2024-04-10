@@ -21,12 +21,32 @@ export const getCuentasbancarias = async (req, res) => {
 };
 
 export const getCuentasbancariasMiosByEmpresaidActivos = async (req, res) => {
-  console.log(req.session_user);
-  const cuentasbancarias = await cuentabancariaDao.getCuentasbancariasByEmpresaid(req, "ab33ea61-1ca6-4143-8d34-f42c3cf7374d", 1);
+  //console.log(req.session_user.usuario._idusuario);
+  const { id } = req.params;
+  const cuentabancariaSchema = yup
+    .object()
+    .shape({
+      empresaid: yup.string().trim().required().min(36).max(36),
+      monedaid: yup.string().trim().required().min(36).max(36),
+    })
+    .required();
+  var cuentabancariaValidated = cuentabancariaSchema.validateSync({ empresaid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
+
+  const empresa = await empresaDao.getEmpresaByIdusuarioAndEmpresaid(req, req.session_user.usuario._idusuario, cuentabancariaValidated.empresaid, 1);
+  //console.log(empresa);
+  if (!empresa) {
+    throw new ClientError("Empresa no existe", 404);
+  }
+  const filter_empresaid = cuentabancariaValidated.empresaid;
+  const filter_monedaid = cuentabancariaValidated.monedaid;
+  const filter_idcuentabancariaestado = [2];
+  const filter_estado = [1, 2];
+  const cuentasbancarias = await cuentabancariaDao.getCuentasbancariasByEmpresaidAndMoneda(req, filter_empresaid, filter_monedaid, filter_idcuentabancariaestado, filter_estado);
   var cuentasbancariasObfuscated = jsonUtils.ofuscarAtributos(cuentasbancarias, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
   //console.log(empresaObfuscated);
 
-  var cuentasbancariasFiltered = jsonUtils.removeAttributesPrivates(cuentasbancariasObfuscated);
+  var cuentasbancariasFiltered = jsonUtils.removeAttributes(cuentasbancariasObfuscated, ["score"]);
+  cuentasbancariasFiltered = jsonUtils.removeAttributesPrivates(cuentasbancariasFiltered);
   response(res, 201, cuentasbancariasFiltered);
 };
 

@@ -1,5 +1,31 @@
 import { ClientError } from "../utils/CustomErrors.js";
 
+export const getEmpresaByIdusuarioAndEmpresaid = async (req, _idusuario, empresaid, estado) => {
+  try {
+    const { models } = req.app.locals;
+    const empresas = await models.Empresa.findOne({
+      include: [
+        {
+          model: models.UsuarioEmpresa,
+          where: {
+            _idusuario: _idusuario,
+            estado: estado,
+          },
+        },
+      ],
+      where: {
+        empresaid: empresaid,
+        estado: estado,
+      },
+    });
+    //console.log(empresas);
+    return empresas;
+  } catch (error) {
+    console.error(error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getEmpresasActivas = async (req) => {
   try {
     const { models } = req.app.locals;

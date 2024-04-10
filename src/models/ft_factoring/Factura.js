@@ -4,19 +4,30 @@ const { Model, Sequelize } = _sequelize;
 export default class Factura extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    idfactura: {
+    _idfactura: {
       autoIncrement: true,
       type: DataTypes.BIGINT,
       allowNull: false,
       primaryKey: true
     },
     facturaid: {
-      type: DataTypes.STRING(500),
-      allowNull: false
+      type: DataTypes.STRING(50),
+      allowNull: false,
+      defaultValue: Sequelize.Sequelize.fn('uuid'),
+      unique: "UQ_factura_facturaid"
     },
     code: {
       type: DataTypes.STRING(20),
-      allowNull: false
+      allowNull: false,
+      unique: "UQ_factura_code"
+    },
+    UBLVersionID: {
+      type: DataTypes.STRING(10),
+      allowNull: true
+    },
+    CustomizationID: {
+      type: DataTypes.STRING(10),
+      allowNull: true
     },
     serie: {
       type: DataTypes.STRING(20),
@@ -42,15 +53,39 @@ export default class Factura extends Model {
       type: DataTypes.STRING(10),
       allowNull: true
     },
-    nota: {
-      type: DataTypes.TEXT,
-      allowNull: true
-    },
     codigo_tipo_moneda: {
       type: DataTypes.STRING(10),
       allowNull: false
     },
     cantidad_items: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    fecha_registro: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    detraccion_cantidad: {
+      type: DataTypes.TINYINT,
+      allowNull: true
+    },
+    detraccion_total: {
+      type: DataTypes.DECIMAL(12,2),
+      allowNull: true
+    },
+    pago_cantidad_cuotas: {
+      type: DataTypes.TINYINT,
+      allowNull: true
+    },
+    fecha_pago_mayor_estimado: {
+      type: DataTypes.DATEONLY,
+      allowNull: true
+    },
+    dias_dede_emision: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    dias_estimados_para_pago: {
       type: DataTypes.INTEGER,
       allowNull: true
     },
@@ -149,7 +184,23 @@ export default class Factura extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "idfactura" },
+          { name: "_idfactura" },
+        ]
+      },
+      {
+        name: "UQ_factura_facturaid",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "facturaid" },
+        ]
+      },
+      {
+        name: "UQ_factura_code",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "code" },
         ]
       },
     ]

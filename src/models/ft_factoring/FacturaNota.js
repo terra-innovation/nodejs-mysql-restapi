@@ -1,50 +1,30 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class FacturaImpuesto extends Model {
+export default class FacturaNota extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    _idfacturaimpuesto: {
+    _idfacturanota: {
       autoIncrement: true,
       type: DataTypes.BIGINT,
       allowNull: false,
       primaryKey: true
     },
-    facturaimpuestoid: {
+    facturanotaid: {
       type: DataTypes.STRING(50),
       allowNull: false,
       defaultValue: Sequelize.Sequelize.fn('uuid')
     },
     _idfactura: {
       type: DataTypes.BIGINT,
-      allowNull: false,
-      references: {
-        model: 'factura',
-        key: '_idfactura'
-      }
+      allowNull: false
     },
     id: {
-      type: DataTypes.STRING(200),
+      type: DataTypes.STRING(20),
       allowNull: true
     },
-    codigo_sunat: {
-      type: DataTypes.STRING(100),
-      allowNull: true
-    },
-    nombre: {
-      type: DataTypes.STRING(100),
-      allowNull: true
-    },
-    porcentaje: {
-      type: DataTypes.DECIMAL(12,2),
-      allowNull: true
-    },
-    base_imponible: {
-      type: DataTypes.DECIMAL(12,2),
-      allowNull: true
-    },
-    monto: {
-      type: DataTypes.DECIMAL(12,2),
+    descripcion: {
+      type: DataTypes.TEXT,
       allowNull: true
     },
     idusuariocrea: {
@@ -74,7 +54,7 @@ export default class FacturaImpuesto extends Model {
     }
   }, {
     sequelize,
-    tableName: 'factura_impuesto',
+    tableName: 'factura_nota',
     timestamps: false,
     indexes: [
       {
@@ -82,11 +62,11 @@ export default class FacturaImpuesto extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idfacturaimpuesto" },
+          { name: "_idfacturanota" },
         ]
       },
       {
-        name: "FK_factura_impuesto_idfactura",
+        name: "FK_factura_item_idfactura",
         using: "BTREE",
         fields: [
           { name: "_idfactura" },

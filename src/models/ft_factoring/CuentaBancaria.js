@@ -13,7 +13,8 @@ export default class CuentaBancaria extends Model {
     cuentabancariaid: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: Sequelize.Sequelize.fn('uuid')
+      defaultValue: Sequelize.Sequelize.fn('uuid'),
+      unique: "UQ_cuenta_bancaria_cuentabancariaid"
     },
     _idempresa: {
       type: DataTypes.INTEGER,
@@ -103,6 +104,14 @@ export default class CuentaBancaria extends Model {
         using: "BTREE",
         fields: [
           { name: "_idcuentabancaria" },
+        ]
+      },
+      {
+        name: "UQ_cuenta_bancaria_cuentabancariaid",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "cuentabancariaid" },
         ]
       },
       {

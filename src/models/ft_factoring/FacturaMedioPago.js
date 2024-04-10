@@ -4,19 +4,24 @@ const { Model, Sequelize } = _sequelize;
 export default class FacturaMedioPago extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    idfacturamediopago: {
+    _idfacturamediopago: {
       autoIncrement: true,
       type: DataTypes.BIGINT,
       allowNull: false,
       primaryKey: true
     },
     facturamediopagoid: {
-      type: DataTypes.STRING(500),
-      allowNull: false
+      type: DataTypes.STRING(50),
+      allowNull: false,
+      defaultValue: Sequelize.Sequelize.fn('uuid')
     },
-    idfactura: {
+    _idfactura: {
       type: DataTypes.BIGINT,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'factura',
+        key: '_idfactura'
+      }
     },
     id: {
       type: DataTypes.STRING(200),
@@ -65,7 +70,14 @@ export default class FacturaMedioPago extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "idfacturamediopago" },
+          { name: "_idfacturamediopago" },
+        ]
+      },
+      {
+        name: "FK_factura_medio_pago_idfactura",
+        using: "BTREE",
+        fields: [
+          { name: "_idfactura" },
         ]
       },
     ]

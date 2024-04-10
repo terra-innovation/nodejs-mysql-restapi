@@ -1,6 +1,7 @@
 import { poolFactoring } from "../config/bd/mysql2_db_factoring.js";
 import * as facturaDao from "../daos/factura.dao.js";
 import * as empresaDao from "../daos/empresaDao.js";
+import * as monedaDao from "../daos/monedaDao.js";
 import { insertarFacturaMedioPago } from "../daos/factura_medio_pago.dao.js";
 import { insertarFacturaTerminoPago } from "../daos/factura_termino_pago.dao.js";
 import { insertarFacturaItem } from "../daos/factura_item.dao.js";
@@ -139,6 +140,9 @@ export const uploadInvoice = async (req, res) => {
 
     var proveedor = await getEmpresaByRUCSinoExisteCrear(req, facturaJson.proveedor.ruc, facturaJson.proveedor);
     facturaJson.proveedor.empresaid = proveedor[0].empresaid;
+
+    var moneda = await monedaDao.getMonedaByCodigo(req, facturaJson.codigo_tipo_moneda);
+    facturaJson.monedaid = moneda.monedaid;
 
     var facturaFiltered = jsonUtils.removeAttributesPrivates(facturaJson);
     facturaFiltered = jsonUtils.removeAttributes(facturaJson, ["items", "terminos_pago", "notas", "medios_pago"]);

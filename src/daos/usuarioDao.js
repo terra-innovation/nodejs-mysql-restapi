@@ -1,5 +1,31 @@
+import { Sequelize } from "sequelize";
 import Rol from "../models/ft_factoring/Rol.js";
 import { ClientError } from "../utils/CustomErrors.js";
+
+export const getUsuarioDatosContactoByIdusuario = async (req, idusuario, estado) => {
+  try {
+    const { models } = req.app.locals;
+
+    const usuario = await models.Usuario.findByPk(idusuario, {
+      attributes: ["usuarioid", "nombres", "apellidopaterno", "apellidomaterno", "email", "celular"],
+      where: {
+        estado: {
+          [Sequelize.Op.in]: estado,
+        },
+      },
+    });
+    console.log(usuario);
+
+    //const usuarios = await usuario.getUsuarios();
+    //console.log(usuarios);
+
+    return usuario;
+  } catch (error) {
+    console.error(error.code);
+    console.error(error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
 
 export const getUsuariosActivos = async (req) => {
   try {
