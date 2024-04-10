@@ -1,22 +1,27 @@
 import * as jsonUtils from "../utils/jsonUtils.js";
 import multer from "multer";
 import * as luxon from "luxon";
+import { v4 as uuidv4 } from "uuid";
+import * as storageUtils from "../utils/storageUtils.js";
 
 let storage_invoice = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "./src/uploads");
+    cb(null, storageUtils.STORAGE_PATH_PROCESAR);
   },
   filename: (req, file, cb) => {
     //console.log(file);
-    const uniqueSuffix = luxon.DateTime.now().toFormat("yyyyMMdd_HHmmss_SSS") + "_" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + "_" + file.originalname);
+    const codigo_archivo = uuidv4().split("-")[0] + "-" + uuidv4().split("-")[1];
+    const uniqueSuffix = luxon.DateTime.now().toFormat("yyyyMMdd_HHmmss_SSS") + "_" + codigo_archivo;
+    const filename = uniqueSuffix + "_" + file.originalname;
+    cb(null, filename);
+    file.codigo_archivo = codigo_archivo;
   },
 });
 
 export const upload_invoice = multer({
   storage: storage_invoice,
   limits: { fileSize: 2 * 1024 * 1024, files: 5, fields: 10 },
-  fileFilter: function (req, file, cb) {
+  fileFilter: async function (req, file, cb) {
     //console.log("fileFilter");
     //console.log("file.mimetype: " + file.mimetype);
     if (file.mimetype !== "text/xml" && file.mimetype !== "application/xml") {

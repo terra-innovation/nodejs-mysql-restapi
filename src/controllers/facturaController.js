@@ -11,6 +11,7 @@ import { response } from "../utils/CustomResponseOk.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import * as jsonUtils from "../utils/jsonUtils.js";
 import * as facturaUtils from "../utils/facturaUtils.js";
+import * as storageUtils from "../utils/storageUtils.js";
 import { parseStringPromise } from "xml2js";
 import * as fs from "fs";
 import { v4 as uuidv4 } from "uuid";
@@ -26,7 +27,7 @@ export const uploadInvoice = async (req, res) => {
   //console.log(req.body);
 
   for (const file of req.files) {
-    //console.log(file.filename);
+    //console.log(file);
 
     var archivoXML = fs.readFileSync(file.path, "latin1");
     // console.log(archivoXML);
@@ -59,6 +60,7 @@ export const uploadInvoice = async (req, res) => {
     }
 
     var facturaJson = facturaUtils.getFactura(result);
+    facturaJson.codigo_archivo = file.codigo_archivo;
 
     var factura = {
       proveedor_ruc: facturaJson.proveedor.ruc,
@@ -146,6 +148,11 @@ export const uploadInvoice = async (req, res) => {
 
     var facturaFiltered = jsonUtils.removeAttributesPrivates(facturaJson);
     facturaFiltered = jsonUtils.removeAttributes(facturaJson, ["items", "terminos_pago", "notas", "medios_pago"]);
+
+    const origen = storageUtils.STORAGE_PATH_PROCESAR + "/" + file.filename;
+    const destino = storageUtils.STORAGE_PATH_SUCCESS + "/" + file.filename;
+    fs.renameSync(origen, destino);
+
     response(res, 200, facturaFiltered);
   }
 };

@@ -37,7 +37,8 @@ export const insertarFactura = async (factura) => {
         impuesto_monto,
         impuesto_valor_venta_monto_venta,
         impuesto_valor_venta_monto_venta_mas_impuesto,
-        impuesto_valor_venta_monto_pago) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+        impuesto_valor_venta_monto_pago,
+        codigo_archivo) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
     [
       factura.facturaid,
       factura.code,
@@ -75,6 +76,7 @@ export const insertarFactura = async (factura) => {
       factura.impuestos_valor_venta_monto_venta,
       factura.impuestos_valor_venta_monto_venta_mas_impuesto,
       factura.impuestos_valor_venta_monto_pago,
+      factura.codigo_archivo,
     ]
   );
   //console.log(rows);

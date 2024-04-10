@@ -3,3 +3,4 @@ coverage
 .env
 .history
 sequelize-auto.config.json
+src/storage/*
