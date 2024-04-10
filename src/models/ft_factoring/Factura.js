@@ -69,7 +69,7 @@ export default class Factura extends Model {
       type: DataTypes.TINYINT,
       allowNull: true
     },
-    detraccion_total: {
+    detraccion_monto: {
       type: DataTypes.DECIMAL(12,2),
       allowNull: true
     },
@@ -81,13 +81,21 @@ export default class Factura extends Model {
       type: DataTypes.DATEONLY,
       allowNull: true
     },
-    dias_dede_emision: {
+    dias_desde_emision: {
       type: DataTypes.INTEGER,
       allowNull: true
     },
     dias_estimados_para_pago: {
       type: DataTypes.INTEGER,
       allowNull: true
+    },
+    importe_bruto: {
+      type: DataTypes.DECIMAL(12,2),
+      allowNull: false
+    },
+    importe_neto: {
+      type: DataTypes.DECIMAL(12,2),
+      allowNull: false
     },
     proveedor_ruc: {
       type: DataTypes.STRING(50),
@@ -147,6 +155,10 @@ export default class Factura extends Model {
     },
     impuesto_valor_venta_monto_pago: {
       type: DataTypes.DECIMAL(12,2),
+      allowNull: true
+    },
+    codigo_archivo: {
+      type: DataTypes.STRING(20),
       allowNull: true
     },
     idusuariocrea: {
