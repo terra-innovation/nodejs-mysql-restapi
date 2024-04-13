@@ -4,6 +4,11 @@ export const getFactoringsActivas = async (req) => {
   try {
     const { models } = req.app.locals;
     const factorings = await models.Factoring.findAll({
+      include: [
+        {
+          all: true,
+        },
+      ],
       where: {
         estado: 1,
       },
@@ -11,7 +16,6 @@ export const getFactoringsActivas = async (req) => {
     //console.log(factorings);
     return factorings;
   } catch (error) {
-    console.error(error.original.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }

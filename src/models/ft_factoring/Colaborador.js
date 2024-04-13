@@ -12,7 +12,8 @@ export default class Colaborador extends Model {
     },
     colaboradorid: {
       type: DataTypes.STRING(50),
-      allowNull: false
+      allowNull: false,
+      defaultValue: Sequelize.Sequelize.fn('uuid')
     },
     _idempresa: {
       type: DataTypes.INTEGER,

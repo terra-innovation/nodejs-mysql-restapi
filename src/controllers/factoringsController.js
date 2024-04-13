@@ -1,5 +1,6 @@
 import * as factoringDao from "../daos/factoringDao.js";
 import * as facturaDao from "../daos/facturaDao.js";
+import * as factoringfacturaDao from "../daos/factoringfacturaDao.js";
 import * as factoringtipoDao from "../daos/factoringtipoDao.js";
 import * as cuentabancariaDao from "../daos/cuentabancariaDao.js";
 import * as empresaDao from "../daos/empresaDao.js";
@@ -95,9 +96,9 @@ export const createFactoring = async (req, res) => {
   console.log(camposAdicionales);
 
   var camposAuditoria = {};
-  camposAuditoria.idusuariocrea = 1;
+  camposAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
   camposAuditoria.fechacrea = Sequelize.fn("now", 3);
-  camposAuditoria.idusuariomod = 1;
+  camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
   camposAuditoria.fechamod = Sequelize.fn("now", 3);
   camposAuditoria.estado = 1;
 
@@ -113,8 +114,14 @@ export const createFactoring = async (req, res) => {
   */
 
   const factoringCreated = await factoringDao.insertFactoring(req, { ...camposFk, ...camposAdicionales, ...factoringValidated, ...camposAuditoria });
-  console.debug("Create factoring: ID:" + factoringCreated.idfactoring + " | " + camposAdicionales.factoringid);
+  console.debug("Create factoring: ID:" + factoringCreated._idfactoring + " | " + camposAdicionales.factoringid);
   console.debug("factoringCreated:", factoringCreated.dataValues);
+
+  /* Insertar en la tabla intermedia */
+  var factoringfacturaFk = {};
+  factoringfacturaFk._idfactoring = factoringCreated._idfactoring;
+  factoringfacturaFk._idfactura = factura._idfactura;
+  const factoringfacturaCreated = await factoringfacturaDao.insertFactoringfactura(req, { ...factoringfacturaFk, ...camposAuditoria });
   response(res, 201, { ...camposAdicionales, ...factoringValidated });
 };
 
@@ -140,7 +147,7 @@ export const updateFactoring = async (req, res) => {
   camposAdicionales.factoringid = id;
 
   var camposAuditoria = {};
-  camposAuditoria.idusuariomod = 1;
+  camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
   camposAuditoria.fechamod = Sequelize.fn("now", 3);
 
   const factoring_por_ruc_existe = await factoringDao.getFactoringByRuc(req, factoringValidated.ruc);
@@ -172,7 +179,7 @@ export const deleteFactoring = async (req, res) => {
   console.debug("factoringValidated:", factoringValidated);
 
   var camposAuditoria = {};
-  camposAuditoria.idusuariomod = 1;
+  camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
   camposAuditoria.fechamod = Sequelize.fn("now", 3);
   camposAuditoria.estado = 2;
 

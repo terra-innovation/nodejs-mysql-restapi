@@ -21,43 +21,93 @@ export default class Factoring extends Model {
     },
     _idaceptante: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'empresa',
+        key: '_idempresa'
+      }
     },
     _idcedente: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'empresa',
+        key: '_idempresa'
+      }
     },
     _idmoneda: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'moneda',
+        key: '_idmoneda'
+      }
     },
     _idfactoringtipo: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: true,
+      references: {
+        model: 'factoring_tipo',
+        key: '_idfactoringtipo'
+      }
     },
     _idfactoringestado: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'factoring_estado',
+        key: '_idfactoringestado'
+      }
     },
     _idriesgooperacion: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: true,
+      references: {
+        model: 'riesgo',
+        key: '_idriesgo'
+      }
     },
     _idriesgodeudor: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: true,
+      references: {
+        model: 'riesgo',
+        key: '_idriesgo'
+      }
     },
     _idriesgocedente: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: true,
+      references: {
+        model: 'riesgo',
+        key: '_idriesgo'
+      }
     },
     _idcuentabancaria: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: true,
+      references: {
+        model: 'cuenta_bancaria',
+        key: '_idcuentabancaria'
+      }
     },
-    _idcolaborador: {
+    _idcontactoaceptante: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: true,
+      comment: "Contacto del aceptante",
+      references: {
+        model: 'colaborador',
+        key: '_idcolaborador'
+      }
+    },
+    _idcontactocedente: {
+      type: DataTypes.BIGINT,
+      allowNull: true,
+      comment: "Contacto del cedente",
+      references: {
+        model: 'usuario',
+        key: '_idusuario'
+      }
     },
     tea: {
       type: DataTypes.DECIMAL(10,5),
@@ -215,6 +265,83 @@ export default class Factoring extends Model {
         using: "BTREE",
         fields: [
           { name: "_idfactoring" },
+        ]
+      },
+      {
+        name: "FK_factoring_idaceptante",
+        using: "BTREE",
+        fields: [
+          { name: "_idaceptante" },
+        ]
+      },
+      {
+        name: "FK_factoring_idcedente",
+        using: "BTREE",
+        fields: [
+          { name: "_idcedente" },
+        ]
+      },
+      {
+        name: "FK_factoring_idmoneda",
+        using: "BTREE",
+        fields: [
+          { name: "_idmoneda" },
+        ]
+      },
+      {
+        name: "FK_factoring_idfactoringtipo",
+        using: "BTREE",
+        fields: [
+          { name: "_idfactoringtipo" },
+        ]
+      },
+      {
+        name: "FK_factoring_idfactoringestado",
+        using: "BTREE",
+        fields: [
+          { name: "_idfactoringestado" },
+        ]
+      },
+      {
+        name: "FK_factoring_idriesgooperacion",
+        using: "BTREE",
+        fields: [
+          { name: "_idriesgooperacion" },
+        ]
+      },
+      {
+        name: "FK_factoring_idriesgodeudor",
+        using: "BTREE",
+        fields: [
+          { name: "_idriesgodeudor" },
+        ]
+      },
+      {
+        name: "FK_factoring_idriesgocedente",
+        using: "BTREE",
+        fields: [
+          { name: "_idriesgocedente" },
+        ]
+      },
+      {
+        name: "FK_factoring_idcuentabancaria",
+        using: "BTREE",
+        fields: [
+          { name: "_idcuentabancaria" },
+        ]
+      },
+      {
+        name: "FK_factoring_idcolaborador",
+        using: "BTREE",
+        fields: [
+          { name: "_idcontactoaceptante" },
+        ]
+      },
+      {
+        name: "FK_factoring_idcontactocedente",
+        using: "BTREE",
+        fields: [
+          { name: "_idcontactocedente" },
         ]
       },
     ]
