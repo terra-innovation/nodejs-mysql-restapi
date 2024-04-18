@@ -1,3 +1,4 @@
+import { Sequelize } from "sequelize";
 import { poolFactoring } from "../config/bd/mysql2_db_factoring.js";
 
 export const insertarFactura = async (factura) => {

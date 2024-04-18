@@ -1,3 +1,4 @@
+import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
 
 export const getBancosActivas = async (req) => {
@@ -29,7 +30,6 @@ export const getBancoByIdbanco = async (req, idbanco) => {
 
     return banco;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -46,7 +46,6 @@ export const getBancoByBancoid = async (req, bancoid) => {
     //console.log(banco);
     return banco;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -60,12 +59,10 @@ export const findBancoPk = async (req, bancoid) => {
       where: {
         bancoid: bancoid,
       },
-      raw: true,
     });
     //console.log(banco);
     return banco;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -78,7 +75,6 @@ export const insertBanco = async (req, banco) => {
     // console.log(banco_nuevo);
     return banco_nuevo;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -94,7 +90,6 @@ export const updateBanco = async (req, banco) => {
     });
     return result;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -110,7 +105,6 @@ export const deleteBanco = async (req, banco) => {
     });
     return result;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }

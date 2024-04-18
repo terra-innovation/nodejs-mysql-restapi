@@ -10,7 +10,7 @@ export default class FactoringTipo extends Model {
       allowNull: false,
       primaryKey: true
     },
-    factoringid: {
+    factoringtipoid: {
       type: DataTypes.STRING(50),
       allowNull: false,
       defaultValue: Sequelize.Sequelize.fn('uuid'),
@@ -67,7 +67,7 @@ export default class FactoringTipo extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "factoringid" },
+          { name: "factoringtipoid" },
         ]
       },
     ]

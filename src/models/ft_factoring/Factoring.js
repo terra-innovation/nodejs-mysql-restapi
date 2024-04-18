@@ -67,7 +67,7 @@ export default class Factoring extends Model {
         key: '_idriesgo'
       }
     },
-    _idriesgodeudor: {
+    _idriesgoaceptante: {
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
@@ -109,35 +109,54 @@ export default class Factoring extends Model {
         key: '_idusuario'
       }
     },
+    cantidad_facturas: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
     tea: {
       type: DataTypes.DECIMAL(10,5),
       allowNull: true,
-      comment: "Tasa efectiva anual"
+      comment: "Tasa efectiva anual de los intereses compensatorios"
     },
     tem: {
       type: DataTypes.DECIMAL(10,5),
       allowNull: true,
-      comment: "Tasa efectiva mensual"
+      comment: "Tasa efectiva mensual de los intereses compensatorios"
     },
     ted: {
       type: DataTypes.DECIMAL(10,5),
       allowNull: true,
-      comment: "Tasa efectiva diaria"
+      comment: "Tasa efectiva diaria de los intereses compensatorios"
     },
     tna: {
       type: DataTypes.DECIMAL(10,5),
       allowNull: true,
-      comment: "Tasa nominal anual"
+      comment: "Tasa nominal anual de los intereses compensatorios"
     },
     tnm: {
       type: DataTypes.DECIMAL(10,5),
       allowNull: true,
-      comment: "Tasa nominal mensual"
+      comment: "Tasa nominal mensual de los intereses compensatorios"
     },
     tnd: {
       type: DataTypes.DECIMAL(10,5),
       allowNull: true,
-      comment: "Tasa nominal diaria"
+      comment: "Tasa nominal diaria de los intereses compensatorios"
+    },
+    tna_mora: {
+      type: DataTypes.DECIMAL(10,5),
+      allowNull: true,
+      comment: "Tasa nominal anual de los intereses moratorios"
+    },
+    tnm_mora: {
+      type: DataTypes.DECIMAL(10,5),
+      allowNull: true,
+      comment: "Tasa nominal mensual de los intereses moratorios"
+    },
+    tnd_mora: {
+      type: DataTypes.DECIMAL(10,5),
+      allowNull: true,
+      comment: "Tasa nominal diara de los intereses moratorios"
     },
     fecha_registro: {
       type: DataTypes.DATE,
@@ -184,6 +203,11 @@ export default class Factoring extends Model {
       allowNull: true,
       comment: "Dias de mora de la operación"
     },
+    dias_cobertura_garantia: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      comment: "Dias de mora que cubre la garantía"
+    },
     monto_neto: {
       type: DataTypes.DECIMAL(10,2),
       allowNull: false,
@@ -199,6 +223,11 @@ export default class Factoring extends Model {
       allowNull: true,
       comment: "Monto de la garantía que se le retiene al cedente"
     },
+    monto_desembolso: {
+      type: DataTypes.DECIMAL(10,2),
+      allowNull: true,
+      comment: "Monto a transferir al cedente."
+    },
     monto_costo_financiamiento_estimado: {
       type: DataTypes.DECIMAL(10,2),
       allowNull: true,
@@ -209,25 +238,74 @@ export default class Factoring extends Model {
       allowNull: true,
       comment: "Monto real de los intereses que debe pagar el cedente"
     },
-    monto_comision_estructuracion: {
+    monto_comision_operacion: {
       type: DataTypes.DECIMAL(10,2),
       allowNull: true,
-      comment: "Monto de la comisión de estructuración"
+      comment: "Monto asociado a la colocación de la operación"
     },
-    monto_igv: {
+    monto_costo_estudio: {
       type: DataTypes.DECIMAL(10,2),
       allowNull: true,
-      comment: "Monto del IGV por la comisón de estructuración"
+      comment: "Monto por los servicios derivados del análisis del deudor"
+    },
+    monto_costo_cavali: {
+      type: DataTypes.DECIMAL(10,2),
+      allowNull: true,
+      comment: "Monto del costo de CAVALI"
+    },
+    monto_comision_uso_sitio_estimado: {
+      type: DataTypes.DECIMAL(10,2),
+      allowNull: true,
+      comment: "Monto de la comisión derivado del uso del sitio"
+    },
+    monto_comision_uso_sitio_real: {
+      type: DataTypes.DECIMAL(10,2),
+      allowNull: true
+    },
+    monto_comision_gestion: {
+      type: DataTypes.DECIMAL(10,2),
+      allowNull: true,
+      comment: "Monto de la comisión por los servicios derivados de la administración de cobro y recuperación de la cartera"
+    },
+    monto_comision_interbancaria: {
+      type: DataTypes.DECIMAL(10,2),
+      allowNull: true,
+      comment: "Monto de las comisiones interbancarias"
     },
     monto_costo_factoring: {
       type: DataTypes.DECIMAL(10,2),
       allowNull: true,
       comment: "Monto del costo de la operación de factoring"
     },
+    monto_igv: {
+      type: DataTypes.DECIMAL(10,2),
+      allowNull: true,
+      comment: "Monto del IGV por la comisón de estructuración"
+    },
+    monto_dia_mora: {
+      type: DataTypes.DECIMAL(10,2),
+      allowNull: true,
+      comment: "Monto por día de interés moratorio"
+    },
+    monto_dia_interes: {
+      type: DataTypes.DECIMAL(10,2),
+      allowNull: true,
+      comment: "Monto por día de interés compensatorio"
+    },
     porcentaje_adelanto: {
       type: DataTypes.DECIMAL(10,2),
       allowNull: true,
-      comment: "Porcentaje del adelanto"
+      comment: "Porcentaje del adelanto respecto a monto neto"
+    },
+    porcentaje_desembolso: {
+      type: DataTypes.DECIMAL(10,2),
+      allowNull: true,
+      comment: "Porcentaje del desembolso con respecto al adelanto"
+    },
+    porcentaje_costo_factoring: {
+      type: DataTypes.DECIMAL(10,2),
+      allowNull: true,
+      comment: "Porcentaje del costo de factoring con respecto al adelanto"
     },
     idusuariocrea: {
       type: DataTypes.INTEGER,
@@ -310,13 +388,6 @@ export default class Factoring extends Model {
         ]
       },
       {
-        name: "FK_factoring_idriesgodeudor",
-        using: "BTREE",
-        fields: [
-          { name: "_idriesgodeudor" },
-        ]
-      },
-      {
         name: "FK_factoring_idriesgocedente",
         using: "BTREE",
         fields: [
@@ -342,6 +413,13 @@ export default class Factoring extends Model {
         using: "BTREE",
         fields: [
           { name: "_idcontactocedente" },
+        ]
+      },
+      {
+        name: "FK_factoring_idriesgodeudor",
+        using: "BTREE",
+        fields: [
+          { name: "_idriesgoaceptante" },
         ]
       },
     ]

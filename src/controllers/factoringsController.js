@@ -2,8 +2,10 @@ import * as factoringDao from "../daos/factoringDao.js";
 import * as facturaDao from "../daos/facturaDao.js";
 import * as factoringfacturaDao from "../daos/factoringfacturaDao.js";
 import * as factoringtipoDao from "../daos/factoringtipoDao.js";
+import * as factoringestadoDao from "../daos/factoringestadoDao.js";
 import * as cuentabancariaDao from "../daos/cuentabancariaDao.js";
 import * as empresaDao from "../daos/empresaDao.js";
+import * as riesgoDao from "../daos/riesgoDao.js";
 import * as bancoDao from "../daos/bancoDao.js";
 import * as cuentatipoDao from "../daos/cuentatipoDao.js";
 import * as monedaDao from "../daos/monedaDao.js";
@@ -21,7 +23,28 @@ export const getFactorings = async (req, res) => {
   response(res, 201, factorings);
 };
 
+export const getFactoringsMaster = async (req, res) => {
+  const filter_estados = [1];
+  const factoringtipos = await factoringtipoDao.getFactoringtipos(req, filter_estados);
+  const factoringestados = await factoringestadoDao.getFactoringestados(req, filter_estados);
+  const riesgos = await riesgoDao.getRiesgos(req, filter_estados);
+
+  var factoringsMaster = {};
+  factoringsMaster.factoringtipos = factoringtipos;
+  factoringsMaster.factoringestados = factoringestados;
+  factoringsMaster.riesgos = riesgos;
+
+  var factoringsMasterJSON = jsonUtils.sequelizeToJSON(factoringsMaster);
+  //jsonUtils.prettyPrint(factoringsMasterJSON);
+  var factoringsMasterObfuscated = factoringsMasterJSON;
+  //jsonUtils.prettyPrint(factoringsMasterObfuscated);
+  var factoringsMasterFiltered = jsonUtils.removeAttributesPrivates(factoringsMasterObfuscated);
+  //jsonUtils.prettyPrint(factoringsMasterFiltered);
+  response(res, 201, factoringsMasterFiltered);
+};
+
 export const getFactoring = async (req, res) => {
+  console.debug("getFactoring");
   const { id } = req.params;
   const factoringSchema = yup
     .object()
@@ -30,18 +53,27 @@ export const getFactoring = async (req, res) => {
     })
     .required();
   var factoringValidated = factoringSchema.validateSync({ factoringid: id }, { abortEarly: false, stripUnknown: true });
-  const rows = await factoringDao.getFactoringByFactoringid(req, factoringValidated.factoringid);
-  if (rows.length <= 0) {
+  console.debug("factoringValidated: ", factoringValidated);
+  const factoring = await factoringDao.getFactoringByFactoringid(req, factoringValidated.factoringid);
+  if (!factoring) {
     throw new ClientError("Factoring no existe", 404);
   }
-  response(res, 200, rows[0]);
+  response(res, 200, factoring);
 };
 
 export const createFactoring = async (req, res) => {
   const factoringCreateSchema = yup
     .object()
     .shape({
-      facturaid: yup.string().trim().required().min(36).max(36),
+      //facturaid: yup.string().trim().required().min(36).max(36),
+      facturas: yup
+        .array()
+        .of(
+          yup.object({
+            facturaid: yup.string().required().uuid(),
+          })
+        )
+        .min(1),
       cedenteid: yup.string().trim().required().min(36).max(36),
       aceptanteid: yup.string().trim().required().min(36).max(36),
       cuentabancariaid: yup.string().trim().required().min(36).max(36),
@@ -52,11 +84,17 @@ export const createFactoring = async (req, res) => {
     })
     .required();
   var factoringValidated = factoringCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
-  console.debug("factoringValidated:", factoringValidated);
+  //console.debug("factoringValidated:", factoringValidated);
 
-  var factura = await facturaDao.findFacturaPk(req, factoringValidated.facturaid);
-  if (!factura) {
-    throw new ClientError("Factura no existe", 404);
+  const facturas = [];
+
+  for (const [index, facturaid] of factoringValidated.facturas.entries()) {
+    var factura = await facturaDao.findFacturaPk(req, facturaid.facturaid);
+    if (!factura) {
+      throw new ClientError("Factura no existe", 404);
+    } else {
+      facturas.push(factura);
+    }
   }
   var cedente = await empresaDao.findEmpresaPk(req, factoringValidated.cedenteid);
   if (!cedente) {
@@ -86,14 +124,15 @@ export const createFactoring = async (req, res) => {
   camposFk._idfactoringtipo = 1; // Por defecto
   camposFk._idfactoringestado = 1; // Por defecto
 
-  console.log(camposFk);
+  //console.log(camposFk);
 
   var camposAdicionales = {};
   camposAdicionales.factoringid = uuidv4();
   camposAdicionales.code = uuidv4().split("-")[0];
   camposAdicionales.fecha_registro = luxon.DateTime.now().toISO();
+  camposAdicionales.cantidad_facturas = factoringValidated.facturas.length;
 
-  console.log(camposAdicionales);
+  //console.log(camposAdicionales);
 
   var camposAuditoria = {};
   camposAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
@@ -102,7 +141,7 @@ export const createFactoring = async (req, res) => {
   camposAuditoria.fechamod = Sequelize.fn("now", 3);
   camposAuditoria.estado = 1;
 
-  console.log(camposAuditoria);
+  //console.log(camposAuditoria);
 
   /*
   // Validar si el factoring ya existe
@@ -114,57 +153,154 @@ export const createFactoring = async (req, res) => {
   */
 
   const factoringCreated = await factoringDao.insertFactoring(req, { ...camposFk, ...camposAdicionales, ...factoringValidated, ...camposAuditoria });
-  console.debug("Create factoring: ID:" + factoringCreated._idfactoring + " | " + camposAdicionales.factoringid);
-  console.debug("factoringCreated:", factoringCreated.dataValues);
+  //console.debug("Create factoring: ID:" + factoringCreated._idfactoring + " | " + camposAdicionales.factoringid);
+  //console.debug("factoringCreated:", factoringCreated.dataValues);
 
   /* Insertar en la tabla intermedia */
-  var factoringfacturaFk = {};
-  factoringfacturaFk._idfactoring = factoringCreated._idfactoring;
-  factoringfacturaFk._idfactura = factura._idfactura;
-  const factoringfacturaCreated = await factoringfacturaDao.insertFactoringfactura(req, { ...factoringfacturaFk, ...camposAuditoria });
+
+  for (const [index, factura] of facturas.entries()) {
+    //console.log(`Índice: ${index}, Objeto: ${jsonUtils.prettyPrint(factura)}`);
+    var factoringfacturaFk = {};
+    factoringfacturaFk._idfactoring = factoringCreated._idfactoring;
+    factoringfacturaFk._idfactura = factura._idfactura;
+    const factoringfacturaCreated = await factoringfacturaDao.insertFactoringfactura(req, { ...factoringfacturaFk, ...camposAuditoria });
+    //console.log(jsonUtils.prettyPrint(factoringfacturaCreated));
+  }
+
   response(res, 201, { ...camposAdicionales, ...factoringValidated });
 };
 
-export const updateFactoring = async (req, res) => {
+export const updateFactoringCotizacion = async (req, res) => {
   const { id } = req.params;
   const factoringUpdateSchema = yup
     .object()
     .shape({
       factoringid: yup.string().trim().required().min(36).max(36),
-
-      ruc: yup.string().trim().required().min(11).max(11),
-      razon_social: yup.string().required().max(200),
-      nombre_comercial: yup.string().max(200),
-      fecha_inscripcion: yup.string(),
-      domicilio_fiscal: yup.string().max(200),
-      score: yup.string().max(5),
+      factoringtipoid: yup.string().trim().required().min(36).max(36),
+      factoringestadoid: yup.string().trim().required().min(36).max(36),
+      riesgooperacionid: yup.string().trim().required().min(36).max(36),
+      riesgocedenteid: yup.string().trim().required().min(36).max(36),
+      riesgoaceptanteid: yup.string().trim().required().min(36).max(36),
+      tna: yup.number().required().min(1).max(100),
+      porcentaje_adelanto: yup.number().required().min(0).max(100),
     })
     .required();
   const factoringValidated = factoringUpdateSchema.validateSync({ factoringid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
-  console.debug("factoringValidated:", factoringValidated);
+  console.debug("factoringValidated: ", factoringValidated);
+
+  var factoring = await factoringDao.findFactoringPk(req, factoringValidated.factoringid);
+  if (!factoring) {
+    throw new ClientError("Factoring no existe", 404);
+  }
+
+  var factoringtipo = await factoringtipoDao.findFactoringtipoPk(req, factoringValidated.factoringtipoid);
+  if (!factoringtipo) {
+    throw new ClientError("Factoring tipo no existe", 404);
+  }
+
+  var factoringestado = await factoringestadoDao.findFactoringestadoPk(req, factoringValidated.factoringestadoid);
+  if (!factoringestado) {
+    throw new ClientError("Factoring estado no existe", 404);
+  }
+
+  var riesgooperacion = await riesgoDao.findRiesgoPk(req, factoringValidated.riesgooperacionid);
+  if (!riesgooperacion) {
+    throw new ClientError("Riesgo operación no existe", 404);
+  }
+
+  var riesgocedente = await riesgoDao.findRiesgoPk(req, factoringValidated.riesgocedenteid);
+  if (!riesgocedente) {
+    throw new ClientError("Riesgo cedente no existe", 404);
+  }
+
+  var riesgoaceptante = await riesgoDao.findRiesgoPk(req, factoringValidated.riesgoaceptanteid);
+  if (!riesgoaceptante) {
+    throw new ClientError("Riesgo aceptante no existe", 404);
+  }
+
+  const factoringBefore = await factoringDao.getFactoringByFactoringid(req, id);
+  if (!factoringBefore) {
+    throw new ClientError("Factoring no existe", 404);
+  }
+
+  var camposFk = {};
+  camposFk._idfactoring = factoring._idfactoring;
+  camposFk._idfactoringtipo = factoringtipo._idfactoringtipo;
+  camposFk._idfactoringestado = factoringestado._idfactoringestado;
+  camposFk._idriesgooperacion = riesgooperacion._idriesgo;
+  camposFk._idriesgocedente = riesgocedente._idriesgo;
+  camposFk._idriesgoaceptante = riesgoaceptante._idriesgo;
+
+  //console.log("camposFk: ", camposFk);
 
   var camposAdicionales = {};
-  camposAdicionales.factoringid = id;
+  camposAdicionales.dias_pago_estimado = luxon.DateTime.fromISO(factoringBefore.fecha_pago_estimado).startOf("day").diff(luxon.DateTime.local().startOf("day"), "days").days; // Actualizamos la cantidad de dias para el pago
+  camposAdicionales.montoCostoCAVALI = 4.54;
+  camposAdicionales.montoComisionOperacionPorFactura = 10;
+  camposAdicionales.montoCostoEstudioPorAceptante = 100;
+  camposAdicionales.porcentajeComisionUsoSitio = 0.7;
+  camposAdicionales.minimoComisionUsoSitio = 130;
+  camposAdicionales.minimoComisionGestion = 20;
+  camposAdicionales.porcentajeComisionGestion = (await riesgoDao.getRiesgoByRiesgoid(req, factoringValidated.riesgooperacionid)).porcentaje_comision_gestion;
+  camposAdicionales.cantidadMeses = Math.ceil(camposAdicionales.dias_pago_estimado / 30);
+  camposAdicionales.montoComisionInterbancariaInmediataBCP = 4.8;
+  camposAdicionales.porcentajeIGV = 18;
+  camposAdicionales.tnm = Number((factoringValidated.tna / 12).toFixed(5));
+  camposAdicionales.tnd = Number((factoringValidated.tna / 360).toFixed(5));
+  camposAdicionales.tea = Number(((Math.pow(1 + factoringValidated.tna / 100 / 360, 360) - 1) * 100).toFixed(5));
+  camposAdicionales.tem = Number(((Math.pow(1 + factoringValidated.tna / 100, 1 / 12) - 1) * 100).toFixed(5));
+  camposAdicionales.ted = Number(((Math.pow(1 + factoringValidated.tna / 100, 1 / 360) - 1) * 100).toFixed(5));
+  camposAdicionales.tnm_mora = 0.5;
+  camposAdicionales.tna_mora = Number((camposAdicionales.tnm_mora * 12).toFixed(5));
+  camposAdicionales.tnd_mora = Number((camposAdicionales.tna_mora / 360).toFixed(5));
+  camposAdicionales.monto_adelanto = Number(((factoringBefore.monto_neto * factoringValidated.porcentaje_adelanto) / 100).toFixed(2));
+  camposAdicionales.monto_garantia = Number((factoringBefore.monto_neto - camposAdicionales.monto_adelanto).toFixed(2));
+  camposAdicionales.monto_costo_financiamiento_estimado = Number((camposAdicionales.monto_adelanto * (camposAdicionales.tnd / 100) * camposAdicionales.dias_pago_estimado).toFixed(2));
+  camposAdicionales.monto_comision_operacion = Number((camposAdicionales.montoComisionOperacionPorFactura * factoringBefore.cantidad_facturas).toFixed(2));
+  camposAdicionales.monto_costo_estudio = camposAdicionales.montoCostoEstudioPorAceptante;
+  camposAdicionales.monto_comision_uso_sitio_estimado = Math.max(
+    camposAdicionales.monto_adelanto * camposAdicionales.cantidadMeses * (camposAdicionales.porcentajeComisionUsoSitio / 100),
+    camposAdicionales.minimoComisionUsoSitio
+  );
+
+  camposAdicionales.monto_comision_gestion = camposAdicionales.monto_adelanto * (camposAdicionales.porcentajeComisionGestion / 100);
+  camposAdicionales.monto_comision_interbancaria = factoringBefore.cuentabancaria_cuenta_bancarium._idbanco == 1 ? 0 : camposAdicionales.montoComisionInterbancariaInmediataBCP;
+  camposAdicionales.monto_costo_cavali = camposAdicionales.montoCostoCAVALI * factoringBefore.cantidad_facturas;
+
+  camposAdicionales.monto_costo_factoring =
+    camposAdicionales.monto_comision_operacion +
+    camposAdicionales.monto_costo_estudio +
+    camposAdicionales.monto_comision_uso_sitio_estimado +
+    camposAdicionales.monto_comision_gestion +
+    camposAdicionales.monto_comision_interbancaria +
+    camposAdicionales.monto_costo_cavali;
+
+  camposAdicionales.monto_igv = camposAdicionales.monto_costo_factoring * (camposAdicionales.porcentajeIGV / 100);
+  camposAdicionales.monto_desembolso = camposAdicionales.monto_adelanto - camposAdicionales.monto_costo_financiamiento_estimado - camposAdicionales.monto_costo_factoring - camposAdicionales.monto_igv;
+
+  camposAdicionales.porcentaje_desembolso = (camposAdicionales.monto_desembolso / camposAdicionales.monto_adelanto) * 100;
+  camposAdicionales.porcentaje_costo_factoring = (camposAdicionales.monto_costo_factoring / camposAdicionales.monto_adelanto) * 100;
+
+  camposAdicionales.monto_dia_interes = (camposAdicionales.tnd / 100) * camposAdicionales.monto_adelanto;
+  camposAdicionales.monto_dia_mora = (camposAdicionales.tnd_mora / 100) * camposAdicionales.monto_adelanto;
+  camposAdicionales.dias_cobertura_garantia = camposAdicionales.monto_garantia / (camposAdicionales.monto_dia_interes + camposAdicionales.monto_dia_mora);
+
+  console.log("camposAdicionales: ", camposAdicionales);
 
   var camposAuditoria = {};
   camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
   camposAuditoria.fechamod = Sequelize.fn("now", 3);
 
-  const factoring_por_ruc_existe = await factoringDao.getFactoringByRuc(req, factoringValidated.ruc);
-  if (factoring_por_ruc_existe.length >= 1 && factoring_por_ruc_existe[0].factoringid != id) {
-    throw new ClientError("Ruc duplicado", 404);
-  }
-
-  const result = await factoringDao.updateFactoring(req, { ...camposAdicionales, ...factoringValidated, ...camposAuditoria });
-  if (result[0] === 0) {
+  const resultUpdate = await factoringDao.updateFactoring(req, { ...camposFk, ...camposAdicionales, ...factoringValidated, ...camposAuditoria });
+  if (resultUpdate[0] === 0) {
     throw new ClientError("Factoring no existe", 404);
   }
-  const factoring_actualizada = await factoringDao.getFactoringByFactoringid(req, id);
-  if (factoring_actualizada.length === 0) {
+  const factoringUpdated = await factoringDao.getFactoringByFactoringid(req, id);
+  if (!factoringUpdated) {
     throw new ClientError("Factoring no existe", 404);
   }
-  console.debug("factoringUpdated:", factoring_actualizada[0].dataValues);
-  response(res, 200, factoring_actualizada[0]);
+  //console.debug("factoringUpdated: ", factoringUpdated.dataValues);
+  response(res, 200, factoringUpdated);
 };
 
 export const deleteFactoring = async (req, res) => {
@@ -193,4 +329,8 @@ export const deleteFactoring = async (req, res) => {
   }
   console.debug("factoringDeleted:", factoring_actualizada[0].dataValues);
   response(res, 204, factoring_actualizada[0]);
+};
+
+export const updateFactoring = async (req, res) => {
+  response(res, 200, {});
 };

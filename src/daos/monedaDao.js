@@ -1,3 +1,4 @@
+import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
 
 export const getMonedasActivas = async (req) => {
@@ -74,12 +75,10 @@ export const findMonedaPk = async (req, monedaid) => {
       where: {
         monedaid: monedaid,
       },
-      raw: true,
     });
     //console.log(moneda);
     return moneda;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -107,7 +106,6 @@ export const updateMoneda = async (req, moneda) => {
     });
     return result;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -123,7 +121,6 @@ export const deleteMoneda = async (req, moneda) => {
     });
     return result;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }

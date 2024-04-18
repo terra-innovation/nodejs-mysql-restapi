@@ -1,3 +1,4 @@
+import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
 
 export const getCuentatiposActivas = async (req) => {
@@ -29,7 +30,6 @@ export const getCuentatipoByIdcuentatipo = async (req, idcuentatipo) => {
 
     return cuentatipo;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -46,7 +46,6 @@ export const getCuentatipoByCuentatipoid = async (req, cuentatipoid) => {
     //console.log(cuentatipo);
     return cuentatipo;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -60,12 +59,10 @@ export const findCuentatipoPk = async (req, cuentatipoid) => {
       where: {
         cuentatipoid: cuentatipoid,
       },
-      raw: true,
     });
     //console.log(cuentatipo);
     return cuentatipo;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -78,7 +75,6 @@ export const insertCuentatipo = async (req, cuentatipo) => {
     // console.log(cuentatipo_nuevo);
     return cuentatipo_nuevo;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -94,7 +90,6 @@ export const updateCuentatipo = async (req, cuentatipo) => {
     });
     return result;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -110,7 +105,6 @@ export const deleteCuentatipo = async (req, cuentatipo) => {
     });
     return result;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }

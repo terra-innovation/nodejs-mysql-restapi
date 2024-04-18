@@ -5,6 +5,10 @@ const sequelize = new Sequelize(config.DB_FACTORING_DATABASE, config.DB_FACTORIN
   host: config.DB_FACTORING_HOST,
   port: config.DB_FACTORING_PORT,
   dialect: "mysql",
+  dialectOptions: {
+    supportBigNumbers: true,
+    decimalNumbers: true,
+  },
   pool: {
     max: 5,
     min: 0,

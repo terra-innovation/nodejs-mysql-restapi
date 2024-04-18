@@ -1,91 +1,92 @@
 import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
 
-export const getFacturasActivas = async (req) => {
+export const getRiesgos = async (req, estados) => {
   try {
     const { models } = req.app.locals;
-    const facturas = await models.Factura.findAll({
+    const riesgos = await models.Riesgo.findAll({
       where: {
-        estado: 1,
+        estado: {
+          [Sequelize.Op.in]: estados,
+        },
       },
     });
-    //console.log(facturas);
-    return facturas;
-  } catch (error) {
-    console.error(error.original.code);
-    console.error(error);
-    throw new ClientError("Ocurrio un error", 500);
-  }
-};
-
-export const getFacturaByIdfactura = async (req, idfactura) => {
-  try {
-    const { models } = req.app.locals;
-
-    const factura = await models.Factura.findByPk(idfactura, {});
-    console.log(factura);
-
-    //const facturas = await factura.getFacturas();
-    //console.log(facturas);
-
-    return factura;
+    //console.log(riesgos);
+    return riesgos;
   } catch (error) {
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getFacturaByFacturaid = async (req, facturaid) => {
+export const getRiesgoByIdriesgo = async (req, idriesgo) => {
   try {
     const { models } = req.app.locals;
-    const factura = await models.Factura.findOne({
+
+    const riesgo = await models.Riesgo.findByPk(idriesgo, {});
+    console.log(riesgo);
+
+    //const riesgos = await riesgo.getRiesgos();
+    //console.log(riesgos);
+
+    return riesgo;
+  } catch (error) {
+    console.error(error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
+export const getRiesgoByRiesgoid = async (req, riesgoid) => {
+  try {
+    const { models } = req.app.locals;
+    const riesgo = await models.Riesgo.findOne({
       where: {
-        facturaid: facturaid,
+        riesgoid: riesgoid,
       },
     });
-    //console.log(factura);
-    return factura;
+    //console.log(riesgo);
+    return riesgo;
   } catch (error) {
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const findFacturaPk = async (req, facturaid) => {
+export const findRiesgoPk = async (req, riesgoid) => {
   try {
     const { models } = req.app.locals;
-    const factura = await models.Factura.findOne({
-      attributes: ["_idfactura"],
+    const riesgo = await models.Riesgo.findOne({
+      attributes: ["_idriesgo"],
       where: {
-        facturaid: facturaid,
+        riesgoid: riesgoid,
       },
     });
-    //console.log(factura);
-    return factura;
+    //console.log(riesgo);
+    return riesgo;
   } catch (error) {
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const insertFactura = async (req, factura) => {
+export const insertRiesgo = async (req, riesgo) => {
   try {
     const { models } = req.app.locals;
-    const factura_nuevo = await models.Factura.create(factura);
-    // console.log(factura_nuevo);
-    return factura_nuevo;
+    const riesgo_nuevo = await models.Riesgo.create(riesgo);
+    // console.log(riesgo_nuevo);
+    return riesgo_nuevo;
   } catch (error) {
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateFactura = async (req, factura) => {
+export const updateRiesgo = async (req, riesgo) => {
   try {
     const { models } = req.app.locals;
-    const result = await models.Factura.update(factura, {
+    const result = await models.Riesgo.update(riesgo, {
       where: {
-        facturaid: factura.facturaid,
+        riesgoid: riesgo.riesgoid,
       },
     });
     return result;
@@ -95,12 +96,12 @@ export const updateFactura = async (req, factura) => {
   }
 };
 
-export const deleteFactura = async (req, factura) => {
+export const deleteRiesgo = async (req, riesgo) => {
   try {
     const { models } = req.app.locals;
-    const result = await models.Factura.update(factura, {
+    const result = await models.Riesgo.update(riesgo, {
       where: {
-        facturaid: factura.facturaid,
+        riesgoid: riesgo.riesgoid,
       },
     });
     return result;

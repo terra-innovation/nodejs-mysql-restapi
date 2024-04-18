@@ -1,3 +1,4 @@
+import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
 
 export const getFactoringsActivas = async (req) => {
@@ -33,7 +34,6 @@ export const getFactoringByIdfactoring = async (req, idfactoring) => {
 
     return factoring;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -43,14 +43,18 @@ export const getFactoringByFactoringid = async (req, factoringid) => {
   try {
     const { models } = req.app.locals;
     const factoring = await models.Factoring.findOne({
+      include: [
+        {
+          all: true,
+        },
+      ],
       where: {
         factoringid: factoringid,
       },
     });
-    //console.log(factoring);
+    //console.debug("factoring: ", factoring);
     return factoring;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -64,12 +68,10 @@ export const findFactoringPk = async (req, factoringid) => {
       where: {
         factoringid: factoringid,
       },
-      raw: true,
     });
     //console.log(factoring);
     return factoring;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -82,7 +84,6 @@ export const insertFactoring = async (req, factoring) => {
     // console.log(factoring_nuevo);
     return factoring_nuevo;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -98,7 +99,6 @@ export const updateFactoring = async (req, factoring) => {
     });
     return result;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -114,7 +114,6 @@ export const deleteFactoring = async (req, factoring) => {
     });
     return result;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }

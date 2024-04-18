@@ -101,8 +101,8 @@ export default function initModels(sequelize) {
   Moneda.hasMany(Factoring, { as: "factorings", foreignKey: "_idmoneda" });
   Factoring.belongsTo(Riesgo, { as: "riesgooperacion_riesgo", foreignKey: "_idriesgooperacion" });
   Riesgo.hasMany(Factoring, { as: "factorings", foreignKey: "_idriesgooperacion" });
-  Factoring.belongsTo(Riesgo, { as: "riesgodeudor_riesgo", foreignKey: "_idriesgodeudor" });
-  Riesgo.hasMany(Factoring, { as: "riesgodeudor_factorings", foreignKey: "_idriesgodeudor" });
+  Factoring.belongsTo(Riesgo, { as: "riesgoaceptante_riesgo", foreignKey: "_idriesgoaceptante" });
+  Riesgo.hasMany(Factoring, { as: "riesgoaceptante_factorings", foreignKey: "_idriesgoaceptante" });
   Factoring.belongsTo(Riesgo, { as: "riesgocedente_riesgo", foreignKey: "_idriesgocedente" });
   Riesgo.hasMany(Factoring, { as: "riesgocedente_factorings", foreignKey: "_idriesgocedente" });
   UsuarioRol.belongsTo(Rol, { as: "rol_rol", foreignKey: "_idrol" });

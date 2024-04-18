@@ -13,7 +13,6 @@ export const getCuentabancariaByIdcuentabancaria = async (req, idcuentabancaria)
 
     return cuentabancaria;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -26,24 +25,29 @@ export const getCuentasbancariasByEmpresaidAndMoneda = async (req, empresaid, mo
       include: [
         {
           model: models.Empresa,
+          as: "empresa_empresa",
           where: {
             empresaid: empresaid,
           },
         },
         {
           model: models.Banco,
+          as: "banco_banco",
         },
         {
           model: models.Moneda,
+          as: "moneda_moneda",
           where: {
             monedaid: monedaid,
           },
         },
         {
           model: models.CuentaTipo,
+          as: "cuentatipo_cuenta_tipo",
         },
         {
           model: models.CuentaBancariaEstado,
+          as: "cuentabancariaestado_cuenta_bancaria_estado",
         },
       ],
       where: {
@@ -70,18 +74,23 @@ export const getCuentabancariaByCuentabancariaid = async (req, cuentabancariaid)
       include: [
         {
           model: models.Empresa,
+          as: "empresa_empresa",
         },
         {
           model: models.Banco,
+          as: "banco_banco",
         },
         {
           model: models.Moneda,
+          as: "moneda_moneda",
         },
         {
           model: models.CuentaTipo,
+          as: "cuentatipo_cuenta_tipo",
         },
         {
           model: models.CuentaBancariaEstado,
+          as: "cuentabancariaestado_cuenta_bancaria_estado",
         },
       ],
       where: {
@@ -91,7 +100,6 @@ export const getCuentabancariaByCuentabancariaid = async (req, cuentabancariaid)
     console.log(cuentabancaria);
     return cuentabancaria;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -105,12 +113,10 @@ export const findCuentabancariaPk = async (req, cuentabancariaid) => {
       where: {
         cuentabancariaid: cuentabancariaid,
       },
-      raw: true,
     });
     //console.log(cuentabancaria);
     return cuentabancaria;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -157,7 +163,6 @@ export const insertCuentabancaria = async (req, cuentabancaria) => {
     // console.log(cuentabancaria_nuevo);
     return cuentabancaria_nuevo;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -173,7 +178,6 @@ export const updateCuentabancaria = async (req, cuentabancaria) => {
     });
     return result;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -189,7 +193,6 @@ export const deleteCuentabancaria = async (req, cuentabancaria) => {
     });
     return result;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }

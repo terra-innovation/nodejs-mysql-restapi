@@ -1,11 +1,14 @@
+import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
 
-export const getFactoringtiposActivas = async (req) => {
+export const getFactoringtipos = async (req, estados) => {
   try {
     const { models } = req.app.locals;
     const factoringtipos = await models.FactoringTipo.findAll({
       where: {
-        estado: 1,
+        estado: {
+          [Sequelize.Op.in]: estados,
+        },
       },
     });
     //console.log(factoringtipos);
@@ -29,7 +32,6 @@ export const getFactoringtipoByIdfactoringtipo = async (req, idfactoringtipo) =>
 
     return factoringtipo;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -46,7 +48,6 @@ export const getFactoringtipoByFactoringtipoid = async (req, factoringtipoid) =>
     //console.log(factoringtipo);
     return factoringtipo;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -60,12 +61,10 @@ export const findFactoringtipoPk = async (req, factoringtipoid) => {
       where: {
         factoringtipoid: factoringtipoid,
       },
-      raw: true,
     });
     //console.log(factoringtipo);
     return factoringtipo;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -78,7 +77,6 @@ export const insertFactoringtipo = async (req, factoringtipo) => {
     // console.log(factoringtipo_nuevo);
     return factoringtipo_nuevo;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -94,7 +92,6 @@ export const updateFactoringtipo = async (req, factoringtipo) => {
     });
     return result;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -110,7 +107,6 @@ export const deleteFactoringtipo = async (req, factoringtipo) => {
     });
     return result;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }

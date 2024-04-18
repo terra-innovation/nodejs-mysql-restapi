@@ -92,9 +92,9 @@ export const createEmpresa = async (req, res) => {
   camposAdicionales.code = uuidv4().split("-")[0];
 
   var camposAuditoria = {};
-  camposAuditoria.idusuariocrea = 1;
+  camposAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
   camposAuditoria.fechacrea = Sequelize.fn("now", 3);
-  camposAuditoria.idusuariomod = 1;
+  camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
   camposAuditoria.fechamod = Sequelize.fn("now", 3);
   camposAuditoria.estado = 1;
 

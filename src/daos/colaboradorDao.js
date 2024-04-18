@@ -1,3 +1,4 @@
+import { Sequelize } from "sequelize";
 import Empresa from "../models/ft_factoring/Empresa.js";
 import { ClientError } from "../utils/CustomErrors.js";
 
@@ -42,7 +43,6 @@ export const getColaboradorByIdcolaborador = async (req, idcolaborador) => {
 
     return colaborador;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -71,7 +71,6 @@ export const getColaboradorByColaboradorid = async (req, colaboradorid) => {
     //console.log(colaborador);
     return colaborador;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -85,12 +84,10 @@ export const findColaboradorPk = async (req, colaboradorid) => {
       where: {
         colaboradorid: colaboradorid,
       },
-      raw: true,
     });
     //console.log(colaborador);
     return colaborador;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -103,7 +100,6 @@ export const insertColaborador = async (req, colaborador) => {
     // console.log(colaborador_nuevo);
     return colaborador_nuevo;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -119,7 +115,6 @@ export const updateColaborador = async (req, colaborador) => {
     });
     return result;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -135,7 +130,6 @@ export const deleteColaborador = async (req, colaborador) => {
     });
     return result;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }

@@ -36,6 +36,10 @@ export default class Riesgo extends Model {
       type: DataTypes.STRING(500),
       allowNull: true
     },
+    porcentaje_comision_gestion: {
+      type: DataTypes.DECIMAL(12,2),
+      allowNull: true
+    },
     idusuariocrea: {
       type: DataTypes.INTEGER,
       allowNull: false,

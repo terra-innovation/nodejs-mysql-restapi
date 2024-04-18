@@ -1,3 +1,4 @@
+import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
 
 export const getFactoringsfacturasEmpresasActivas = async (req) => {
@@ -33,7 +34,6 @@ export const getFactoringfacturaByIdfactoringfactura = async (req, idfactoringfa
 
     return factoringfactura;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -50,7 +50,6 @@ export const getFactoringfacturaByFactoringfacturaid = async (req, factoringfact
     //console.log(factoringfactura);
     return factoringfactura;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -64,12 +63,10 @@ export const findFactoringfacturaPk = async (req, factoringfacturaid) => {
       where: {
         factoringfacturaid: factoringfacturaid,
       },
-      raw: true,
     });
     //console.log(factoringfactura);
     return factoringfactura;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -82,7 +79,6 @@ export const insertFactoringfactura = async (req, factoringfactura) => {
     // console.log(factoringfactura_nuevo);
     return factoringfactura_nuevo;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -98,7 +94,6 @@ export const updateFactoringfactura = async (req, factoringfactura) => {
     });
     return result;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -114,7 +109,6 @@ export const deleteFactoringfactura = async (req, factoringfactura) => {
     });
     return result;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }

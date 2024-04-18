@@ -11,6 +11,9 @@ import colaboradoresRoutes from "./routes/colaboradoresRoutes.js";
 import cuentasbancariasRoutes from "./routes/cuentasbancarias.routes.js";
 import usuariosRoutes from "./routes/usuarios.routes.js";
 import factoringsRoutes from "./routes/factorings.routes.js";
+import factoringestadosRoutes from "./routes/factoringestados.routes.js";
+import factoringtiposRoutes from "./routes/factoringtipos.routes.js";
+import riesgosRoutes from "./routes/riesgos.routes.js";
 
 import secureRoutes from "./routes/secure.routes.js";
 import { customResponseError } from "./utils/CustomResponseError.js";
@@ -45,6 +48,9 @@ app.use("/api/v1", colaboradoresRoutes);
 app.use("/api/v1", cuentasbancariasRoutes);
 app.use("/api/v1", usuariosRoutes);
 app.use("/api/v1", factoringsRoutes);
+app.use("/api/v1", factoringestadosRoutes);
+app.use("/api/v1", factoringtiposRoutes);
+app.use("/api/v1", riesgosRoutes);
 app.use("/secure", secureRoutes);
 
 // Para cuando no existe la ruta

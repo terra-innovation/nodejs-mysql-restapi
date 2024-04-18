@@ -21,7 +21,6 @@ export const getUsuarioDatosContactoByIdusuario = async (req, idusuario, estado)
 
     return usuario;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -56,7 +55,6 @@ export const getUsuarioByIdusuario = async (req, idusuario) => {
 
     return usuario;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -74,7 +72,6 @@ export const autenticarUsuario = async (req, email) => {
     //console.log(usuario);
     return usuario;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -96,7 +93,6 @@ export const getUsuarioAndRolesByEmail = async (req, email) => {
     //console.log(usuario);
     return usuario;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -113,7 +109,6 @@ export const getUsuarioByUsuarioid = async (req, usuarioid) => {
     //console.log(usuario);
     return usuario;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -127,12 +122,10 @@ export const findUsuarioPk = async (req, usuarioid) => {
       where: {
         usuarioid: usuarioid,
       },
-      raw: true,
     });
     //console.log(usuario);
     return usuario;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -145,7 +138,6 @@ export const insertUsuario = async (req, usuario) => {
     // console.log(usuario_nuevo);
     return usuario_nuevo;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -161,7 +153,6 @@ export const updateUsuario = async (req, usuario) => {
     });
     return result;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -177,7 +168,6 @@ export const deleteUsuario = async (req, usuario) => {
     });
     return result;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }

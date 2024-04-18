@@ -1,5 +1,14 @@
 import util from "util";
 
+// Función para ofuscar el correo electrónico
+export function sequelizeToJSON(objeto) {
+  // Copia profunda del objeto
+  const objetoJSON = JSON.parse(JSON.stringify(objeto));
+
+  // Devuelve el objeto JSON
+  return objetoJSON;
+}
+
 // Imprime json en consola de manera legible y a colores
 export const prettyPrint = (obj) => {
   console.log(util.inspect(obj, { depth: null, colors: true }));
@@ -140,7 +149,7 @@ export function ofuscarTelefono(telefono) {
   const ultimosDosDigitos = telefono.slice(-2);
 
   // Genera una cadena de asteriscos de longitud 6 seguida de un espacio
-  const asteriscos = "*".repeat(6);
+  const asteriscos = "*".repeat(3) + " " + "*".repeat(3);
 
   // Devuelve la cadena de asteriscos seguida de los últimos cuatro dígitos
   return `${asteriscos} ${ultimosDosDigitos}`;

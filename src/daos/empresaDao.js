@@ -1,3 +1,4 @@
+import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
 
 export const getEmpresaByIdusuarioAndEmpresaid = async (req, _idusuario, empresaid, estado) => {
@@ -7,6 +8,7 @@ export const getEmpresaByIdusuarioAndEmpresaid = async (req, _idusuario, empresa
       include: [
         {
           model: models.UsuarioEmpresa,
+          as: "usuario_empresas",
           where: {
             _idusuario: _idusuario,
             estado: estado,
@@ -66,7 +68,6 @@ export const getEmpresaByIdempresa = async (req, idempresa) => {
 
     return empresa;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -88,7 +89,6 @@ export const getEmpresaByEmpresaid = async (req, empresaid) => {
     //console.log(empresa);
     return empresa;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -105,7 +105,6 @@ export const getEmpresaByRuc = async (req, ruc) => {
     //console.log(empresa);
     return empresa;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -119,12 +118,10 @@ export const findEmpresaPk = async (req, empresaid) => {
       where: {
         empresaid: empresaid,
       },
-      raw: true,
     });
     //console.log(empresa);
     return empresa;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -137,7 +134,6 @@ export const insertEmpresa = async (req, empresa) => {
     // console.log(empresa_nuevo);
     return empresa_nuevo;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -153,7 +149,6 @@ export const updateEmpresa = async (req, empresa) => {
     });
     return result;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
@@ -169,7 +164,6 @@ export const deleteEmpresa = async (req, empresa) => {
     });
     return result;
   } catch (error) {
-    console.error(error.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }

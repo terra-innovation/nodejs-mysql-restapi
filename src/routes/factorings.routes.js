@@ -8,6 +8,12 @@ const router = Router();
 //Mio
 router.post("/factorings/mio/listar/empresaid/activo/:id", verifyToken, checkRole([2]), catchedAsync(factoringsController.getFactoringsMiosByEmpresaidActivos));
 
+// UPDATE Factoring Cotización
+router.patch("/factorings/actualizar/cotizacion/:id", verifyToken, checkRole([2]), catchedAsync(factoringsController.updateFactoringCotizacion));
+
+// GET all Factorings Master
+router.get("/factorings/master", verifyToken, checkRole([2]), catchedAsync(factoringsController.getFactoringsMaster));
+
 // GET all Factorings
 router.get("/factorings/listar", verifyToken, checkRole([2]), catchedAsync(factoringsController.getFactorings));
 
