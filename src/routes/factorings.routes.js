@@ -6,7 +6,8 @@ import { verifyToken, checkRole } from "../middlewares/authMiddleware.js";
 const router = Router();
 
 //Mio
-router.post("/factorings/mio/listar/empresaid/activo/:id", verifyToken, checkRole([2]), catchedAsync(factoringsController.getFactoringsMiosByEmpresaidActivos));
+router.get("/factorings/mio/cotizaciones/listar/", verifyToken, checkRole([2]), catchedAsync(factoringsController.getFactoringsCotizacionesMiosActivos));
+router.get("/factorings/mio/cotizaciones/listar/:id", verifyToken, checkRole([2]), catchedAsync(factoringsController.getFactoringEmpresario));
 
 // UPDATE Factoring Cotización
 router.patch("/factorings/actualizar/cotizacion/:id", verifyToken, checkRole([2]), catchedAsync(factoringsController.updateFactoringCotizacion));

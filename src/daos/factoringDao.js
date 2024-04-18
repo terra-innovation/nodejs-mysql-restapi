@@ -1,6 +1,55 @@
 import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
 
+export const getFactoringByFactoringidAndIdcontactocedente = async (req, factoringid, idcontactocedete, estados) => {
+  try {
+    const { models } = req.app.locals;
+    const factoring = await models.Factoring.findOne({
+      include: [
+        {
+          all: true,
+        },
+      ],
+      where: {
+        _idcontactocedente: idcontactocedete,
+        factoringid: factoringid,
+        estado: {
+          [Sequelize.Op.in]: estados,
+        },
+      },
+    });
+    //console.debug("factoring: ", factoring);
+    return factoring;
+  } catch (error) {
+    console.error(error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
+export const getFactoringsCotizacionesByIdcontactocedente = async (req, idcontactocedete, estados) => {
+  try {
+    const { models } = req.app.locals;
+    const factorings = await models.Factoring.findAll({
+      include: [
+        {
+          all: true,
+        },
+      ],
+      where: {
+        estado: {
+          [Sequelize.Op.in]: estados,
+        },
+        _idcontactocedente: idcontactocedete,
+      },
+    });
+    //console.log(factorings);
+    return factorings;
+  } catch (error) {
+    console.error(error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getFactoringsActivas = async (req) => {
   try {
     const { models } = req.app.locals;

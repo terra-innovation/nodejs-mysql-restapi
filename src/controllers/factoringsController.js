@@ -18,6 +18,40 @@ import * as yup from "yup";
 import { Sequelize } from "sequelize";
 import * as luxon from "luxon";
 
+export const getFactoringEmpresario = async (req, res) => {
+  console.debug("getFactoringEmpresario");
+  const session_idusuario = req.session_user.usuario._idusuario;
+  console.debug("session_idusuario:", session_idusuario);
+  const { id } = req.params;
+  const factoringSchema = yup
+    .object()
+    .shape({
+      factoringid: yup.string().trim().required().min(36).max(36),
+    })
+    .required();
+  var factoringValidated = factoringSchema.validateSync({ factoringid: id }, { abortEarly: false, stripUnknown: true });
+  console.debug("factoringValidated: ", factoringValidated);
+  const filter_estados = [1];
+  const factoring = await factoringDao.getFactoringByFactoringidAndIdcontactocedente(req, factoringValidated.factoringid, session_idusuario, filter_estados);
+  if (!factoring) {
+    throw new ClientError("Factoring no existe", 404);
+  }
+  var factoringsJson = jsonUtils.sequelizeToJSON(factoring);
+  var factoringsObfuscated = jsonUtils.ofuscarAtributosDefault(factoringsJson);
+  var factoringsFiltered = jsonUtils.removeAttributesUsusarioPrivates(factoringsObfuscated);
+  factoringsFiltered = jsonUtils.removeAttributesPrivates(factoringsFiltered);
+  response(res, 200, factoringsFiltered);
+};
+
+export const getFactoringsCotizacionesMiosActivos = async (req, res) => {
+  console.debug("getFactoringsCotizacionesMiosActivos");
+  const session_idusuario = req.session_user.usuario._idusuario;
+  console.debug("session_idusuario:", session_idusuario);
+  const filter_estados = [1];
+  const factorings = await factoringDao.getFactoringsCotizacionesByIdcontactocedente(req, session_idusuario, filter_estados);
+  response(res, 201, factorings);
+};
+
 export const getFactorings = async (req, res) => {
   const factorings = await factoringDao.getFactoringsActivas(req);
   response(res, 201, factorings);

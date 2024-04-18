@@ -37,6 +37,11 @@ export const reemplazarValores = (json, regexsYReemplazos) => {
 };
 
 // Función para remover atributos de un json
+export const removeAttributesUsusarioPrivates = (json) => {
+  return removeAttributes(json, ["password", "emailvalidationcode", "emailvalid", "emaillastvalidate", "emailnumvalidation", "hash"]);
+};
+
+// Función para remover atributos de un json
 export const removeAttributesPrivates = (json) => {
   return removeAttributes(json, ["idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado", /_id\w+/]);
 };
@@ -62,6 +67,15 @@ export const removeAttributes = (json, rules) => {
   }
   return newObj;
 };
+
+export function ofuscarAtributosDefault(json) {
+  var jsonOfuscado = json;
+  jsonOfuscado = ofuscarAtributos(jsonOfuscado, ["email"], PATRON_OFUSCAR_EMAIL);
+  jsonOfuscado = ofuscarAtributos(jsonOfuscado, ["nombre", "nombres", "apellidopaterno", "apellidomaterno"], PATRON_OFUSCAR_NOMBRE);
+  jsonOfuscado = ofuscarAtributos(jsonOfuscado, ["telefono", "celular", "documentonumero"], PATRON_OFUSCAR_TELEFONO);
+  jsonOfuscado = ofuscarAtributos(jsonOfuscado, ["numero", "cci"], PATRON_OFUSCAR_CUENTA);
+  return jsonOfuscado;
+}
 
 // Función para ofuscar el correo electrónico
 export function ofuscarAtributos(objeto, atributosOfuscar, patron) {
