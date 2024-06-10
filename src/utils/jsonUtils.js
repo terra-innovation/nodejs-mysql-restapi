@@ -71,7 +71,7 @@ export const removeAttributes = (json, rules) => {
 export function ofuscarAtributosDefault(json) {
   var jsonOfuscado = json;
   jsonOfuscado = ofuscarAtributos(jsonOfuscado, ["email"], PATRON_OFUSCAR_EMAIL);
-  jsonOfuscado = ofuscarAtributos(jsonOfuscado, ["nombre", "nombres", "apellidopaterno", "apellidomaterno"], PATRON_OFUSCAR_NOMBRE);
+  jsonOfuscado = ofuscarAtributos(jsonOfuscado, ["nombrecolaborador", "usuarionombres", "apellidopaterno", "apellidomaterno"], PATRON_OFUSCAR_NOMBRE);
   jsonOfuscado = ofuscarAtributos(jsonOfuscado, ["telefono", "celular", "documentonumero"], PATRON_OFUSCAR_TELEFONO);
   jsonOfuscado = ofuscarAtributos(jsonOfuscado, ["numero", "cci"], PATRON_OFUSCAR_CUENTA);
   return jsonOfuscado;

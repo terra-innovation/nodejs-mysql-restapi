@@ -28,7 +28,7 @@ export default class Usuario extends Model {
       allowNull: false,
       unique: "documentonumero"
     },
-    nombres: {
+    usuarionombres: {
       type: DataTypes.STRING(50),
       allowNull: false
     },

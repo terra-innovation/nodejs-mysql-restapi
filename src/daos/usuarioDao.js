@@ -84,6 +84,7 @@ export const getUsuarioAndRolesByEmail = async (req, email) => {
       include: [
         {
           model: Rol,
+          as: "rol_rols",
         },
       ],
       where: {

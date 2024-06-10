@@ -23,7 +23,7 @@ export default class Colaborador extends Model {
         key: '_idempresa'
       }
     },
-    nombre: {
+    nombrecolaborador: {
       type: DataTypes.STRING(100),
       allowNull: false
     },

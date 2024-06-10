@@ -158,6 +158,21 @@ export default class Factoring extends Model {
       allowNull: true,
       comment: "Tasa nominal diara de los intereses moratorios"
     },
+    tcna: {
+      type: DataTypes.DECIMAL(10,5),
+      allowNull: true,
+      comment: "Tasa de costo nominal anual"
+    },
+    tcnm: {
+      type: DataTypes.DECIMAL(10,5),
+      allowNull: true,
+      comment: "Tasa de costo nominal mensual"
+    },
+    tcnd: {
+      type: DataTypes.DECIMAL(10,5),
+      allowNull: true,
+      comment: "Tasa de costo nominal diario"
+    },
     fecha_registro: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -272,6 +287,11 @@ export default class Factoring extends Model {
       allowNull: true,
       comment: "Monto de las comisiones interbancarias"
     },
+    monto_comision_factor: {
+      type: DataTypes.DECIMAL(10,2),
+      allowNull: true,
+      comment: "Monto total de las comisiones del factor"
+    },
     monto_costo_factoring: {
       type: DataTypes.DECIMAL(10,2),
       allowNull: true,
@@ -280,7 +300,7 @@ export default class Factoring extends Model {
     monto_igv: {
       type: DataTypes.DECIMAL(10,2),
       allowNull: true,
-      comment: "Monto del IGV por la comisón de estructuración"
+      comment: "Monto del IGV por la comisión del factor"
     },
     monto_dia_mora: {
       type: DataTypes.DECIMAL(10,2),
@@ -301,6 +321,11 @@ export default class Factoring extends Model {
       type: DataTypes.DECIMAL(10,2),
       allowNull: true,
       comment: "Porcentaje del desembolso con respecto al adelanto"
+    },
+    porcentaje_comision_factor: {
+      type: DataTypes.DECIMAL(10,2),
+      allowNull: true,
+      comment: "Porcentaje de la comisión del factor"
     },
     porcentaje_costo_factoring: {
       type: DataTypes.DECIMAL(10,2),

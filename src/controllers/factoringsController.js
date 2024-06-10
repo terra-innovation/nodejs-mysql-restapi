@@ -18,6 +18,49 @@ import * as yup from "yup";
 import { Sequelize } from "sequelize";
 import * as luxon from "luxon";
 
+export const acceptFactoringCotizacion = async (req, res) => {
+  const { id } = req.params;
+  const factoringUpdateSchema = yup
+    .object()
+    .shape({
+      factoringid: yup.string().trim().required().min(36).max(36),
+    })
+    .required();
+  const factoringValidated = factoringUpdateSchema.validateSync({ factoringid: id }, { abortEarly: false, stripUnknown: true });
+  console.debug("factoringValidated: ", factoringValidated);
+
+  var factoring = await factoringDao.findFactoringPk(req, factoringValidated.factoringid);
+  if (!factoring) {
+    throw new ClientError("Factoring no existe", 404);
+  }
+
+  var camposFk = {};
+  camposFk._idfactoring = factoring._idfactoring;
+  //console.log("camposFk: ", camposFk);
+
+  var camposAdicionales = {};
+  camposAdicionales._idfactoringestado = 4;
+  console.log("camposAdicionales: ", camposAdicionales);
+
+  var camposAuditoria = {};
+  camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+  camposAuditoria.fechamod = Sequelize.fn("now", 3);
+
+  const resultUpdate = await factoringDao.updateFactoring(req, { ...camposFk, ...camposAdicionales, ...factoringValidated, ...camposAuditoria });
+  if (resultUpdate[0] === 0) {
+    throw new ClientError("Factoring no existe", 404);
+  }
+  const factoringUpdated = await factoringDao.getFactoringByFactoringid(req, id);
+  if (!factoringUpdated) {
+    throw new ClientError("Factoring no existe", 404);
+  }
+  var factoringsJson = jsonUtils.sequelizeToJSON(factoringUpdated);
+  var factoringsObfuscated = jsonUtils.ofuscarAtributosDefault(factoringsJson);
+  var factoringsFiltered = jsonUtils.removeAttributesUsusarioPrivates(factoringsObfuscated);
+  factoringsFiltered = jsonUtils.removeAttributesPrivates(factoringsFiltered);
+  response(res, 200, factoringsFiltered);
+};
+
 export const getFactoringEmpresario = async (req, res) => {
   console.debug("getFactoringEmpresario");
   const session_idusuario = req.session_user.usuario._idusuario;
@@ -301,7 +344,7 @@ export const updateFactoringCotizacion = async (req, res) => {
   camposAdicionales.monto_comision_interbancaria = factoringBefore.cuentabancaria_cuenta_bancarium._idbanco == 1 ? 0 : camposAdicionales.montoComisionInterbancariaInmediataBCP;
   camposAdicionales.monto_costo_cavali = camposAdicionales.montoCostoCAVALI * factoringBefore.cantidad_facturas;
 
-  camposAdicionales.monto_costo_factoring =
+  camposAdicionales.monto_comision_factor =
     camposAdicionales.monto_comision_operacion +
     camposAdicionales.monto_costo_estudio +
     camposAdicionales.monto_comision_uso_sitio_estimado +
@@ -309,16 +352,22 @@ export const updateFactoringCotizacion = async (req, res) => {
     camposAdicionales.monto_comision_interbancaria +
     camposAdicionales.monto_costo_cavali;
 
-  camposAdicionales.monto_igv = camposAdicionales.monto_costo_factoring * (camposAdicionales.porcentajeIGV / 100);
-  camposAdicionales.monto_desembolso = camposAdicionales.monto_adelanto - camposAdicionales.monto_costo_financiamiento_estimado - camposAdicionales.monto_costo_factoring - camposAdicionales.monto_igv;
+  camposAdicionales.monto_igv = Number((camposAdicionales.monto_comision_factor * (camposAdicionales.porcentajeIGV / 100)).toFixed(2));
+
+  camposAdicionales.monto_costo_factoring = camposAdicionales.monto_comision_factor + camposAdicionales.monto_costo_financiamiento_estimado;
+  camposAdicionales.monto_desembolso = camposAdicionales.monto_adelanto - camposAdicionales.monto_costo_factoring - camposAdicionales.monto_igv;
 
   camposAdicionales.porcentaje_desembolso = (camposAdicionales.monto_desembolso / camposAdicionales.monto_adelanto) * 100;
+  camposAdicionales.porcentaje_comision_factor = (camposAdicionales.monto_comision_factor / camposAdicionales.monto_adelanto) * 100;
   camposAdicionales.porcentaje_costo_factoring = (camposAdicionales.monto_costo_factoring / camposAdicionales.monto_adelanto) * 100;
 
   camposAdicionales.monto_dia_interes = (camposAdicionales.tnd / 100) * camposAdicionales.monto_adelanto;
   camposAdicionales.monto_dia_mora = (camposAdicionales.tnd_mora / 100) * camposAdicionales.monto_adelanto;
   camposAdicionales.dias_cobertura_garantia = camposAdicionales.monto_garantia / (camposAdicionales.monto_dia_interes + camposAdicionales.monto_dia_mora);
 
+  camposAdicionales.tcnm = (camposAdicionales.monto_costo_factoring / camposAdicionales.monto_adelanto / camposAdicionales.dias_pago_estimado) * 30 * 100;
+  camposAdicionales.tcna = camposAdicionales.tcnm * 12;
+  camposAdicionales.tcnd = camposAdicionales.tcnm / 30;
   console.log("camposAdicionales: ", camposAdicionales);
 
   var camposAuditoria = {};

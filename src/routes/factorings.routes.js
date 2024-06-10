@@ -8,6 +8,7 @@ const router = Router();
 //Mio
 router.get("/factorings/mio/cotizaciones/listar/", verifyToken, checkRole([2]), catchedAsync(factoringsController.getFactoringsCotizacionesMiosActivos));
 router.get("/factorings/mio/cotizaciones/listar/:id", verifyToken, checkRole([2]), catchedAsync(factoringsController.getFactoringEmpresario));
+router.patch("/factorings/mio/cotizaciones/aceptar/:id", verifyToken, checkRole([2]), catchedAsync(factoringsController.acceptFactoringCotizacion));
 
 // UPDATE Factoring Cotización
 router.patch("/factorings/actualizar/cotizacion/:id", verifyToken, checkRole([2]), catchedAsync(factoringsController.updateFactoringCotizacion));
