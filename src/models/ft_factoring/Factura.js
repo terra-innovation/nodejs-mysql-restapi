@@ -200,19 +200,19 @@ export default class Factura extends Model {
         ]
       },
       {
-        name: "UQ_factura_facturaid",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "facturaid" },
-        ]
-      },
-      {
         name: "UQ_factura_code",
         unique: true,
         using: "BTREE",
         fields: [
           { name: "code" },
+        ]
+      },
+      {
+        name: "UQ_factura_facturaid",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "facturaid" },
         ]
       },
     ]

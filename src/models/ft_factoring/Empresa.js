@@ -85,14 +85,6 @@ export default class Empresa extends Model {
         ]
       },
       {
-        name: "UQ_ruc",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "ruc" },
-        ]
-      },
-      {
         name: "UQ_code",
         unique: true,
         using: "BTREE",
@@ -106,6 +98,14 @@ export default class Empresa extends Model {
         using: "BTREE",
         fields: [
           { name: "empresaid" },
+        ]
+      },
+      {
+        name: "UQ_ruc",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "ruc" },
         ]
       },
     ]

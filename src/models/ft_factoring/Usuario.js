@@ -112,19 +112,19 @@ export default class Usuario extends Model {
         ]
       },
       {
-        name: "email",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "email" },
-        ]
-      },
-      {
         name: "documentonumero",
         unique: true,
         using: "BTREE",
         fields: [
           { name: "documentonumero" },
+        ]
+      },
+      {
+        name: "email",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "email" },
         ]
       },
       {

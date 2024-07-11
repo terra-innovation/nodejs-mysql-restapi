@@ -136,17 +136,17 @@ export default class CuentaBancaria extends Model {
         ]
       },
       {
-        name: "FK_cuenta_bancaria_idmoneda",
-        using: "BTREE",
-        fields: [
-          { name: "_idmoneda" },
-        ]
-      },
-      {
         name: "FK_cuenta_bancaria_idempresa",
         using: "BTREE",
         fields: [
           { name: "_idempresa" },
+        ]
+      },
+      {
+        name: "FK_cuenta_bancaria_idmoneda",
+        using: "BTREE",
+        fields: [
+          { name: "_idmoneda" },
         ]
       },
     ]

@@ -17,7 +17,11 @@ export default class FacturaNota extends Model {
     },
     _idfactura: {
       type: DataTypes.BIGINT,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'factura',
+        key: '_idfactura'
+      }
     },
     id: {
       type: DataTypes.STRING(20),
