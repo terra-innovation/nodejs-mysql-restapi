@@ -385,48 +385,6 @@ export default class Factoring extends Model {
         ]
       },
       {
-        name: "FK_factoring_idmoneda",
-        using: "BTREE",
-        fields: [
-          { name: "_idmoneda" },
-        ]
-      },
-      {
-        name: "FK_factoring_idfactoringtipo",
-        using: "BTREE",
-        fields: [
-          { name: "_idfactoringtipo" },
-        ]
-      },
-      {
-        name: "FK_factoring_idfactoringestado",
-        using: "BTREE",
-        fields: [
-          { name: "_idfactoringestado" },
-        ]
-      },
-      {
-        name: "FK_factoring_idriesgooperacion",
-        using: "BTREE",
-        fields: [
-          { name: "_idriesgooperacion" },
-        ]
-      },
-      {
-        name: "FK_factoring_idriesgocedente",
-        using: "BTREE",
-        fields: [
-          { name: "_idriesgocedente" },
-        ]
-      },
-      {
-        name: "FK_factoring_idcuentabancaria",
-        using: "BTREE",
-        fields: [
-          { name: "_idcuentabancaria" },
-        ]
-      },
-      {
         name: "FK_factoring_idcolaborador",
         using: "BTREE",
         fields: [
@@ -441,10 +399,52 @@ export default class Factoring extends Model {
         ]
       },
       {
+        name: "FK_factoring_idcuentabancaria",
+        using: "BTREE",
+        fields: [
+          { name: "_idcuentabancaria" },
+        ]
+      },
+      {
+        name: "FK_factoring_idfactoringestado",
+        using: "BTREE",
+        fields: [
+          { name: "_idfactoringestado" },
+        ]
+      },
+      {
+        name: "FK_factoring_idfactoringtipo",
+        using: "BTREE",
+        fields: [
+          { name: "_idfactoringtipo" },
+        ]
+      },
+      {
+        name: "FK_factoring_idmoneda",
+        using: "BTREE",
+        fields: [
+          { name: "_idmoneda" },
+        ]
+      },
+      {
+        name: "FK_factoring_idriesgocedente",
+        using: "BTREE",
+        fields: [
+          { name: "_idriesgocedente" },
+        ]
+      },
+      {
         name: "FK_factoring_idriesgodeudor",
         using: "BTREE",
         fields: [
           { name: "_idriesgoaceptante" },
+        ]
+      },
+      {
+        name: "FK_factoring_idriesgooperacion",
+        using: "BTREE",
+        fields: [
+          { name: "_idriesgooperacion" },
         ]
       },
     ]
