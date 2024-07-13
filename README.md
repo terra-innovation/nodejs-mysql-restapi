@@ -18,3 +18,10 @@ npm run dev
 - [ ] improve error handling
 - [ ] complete the tests
 - [ ] docker for production
+
+### ESLint
+
+npx eslint --init  / genera el archivo ce configuración
+npx eslint .  // revisa los problemas en el código
+
+

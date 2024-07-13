@@ -1,0 +1,23 @@
+import globals from "globals";
+import pluginJs from "@eslint/js";
+
+export default [
+  {
+    languageOptions: {
+      sourceType: "module",
+      globals: globals.node,
+    },
+    files: ["src/**/*.js"],
+    ignores: ["**/*.config.js", "!**/eslint.config.js"],
+    rules: {
+      semi: "error",
+    },
+  },
+  pluginJs.configs.recommended,
+  {
+    rules: {
+      "no-unused-vars": "warn",
+      "no-undef": "warn",
+    },
+  },
+];
