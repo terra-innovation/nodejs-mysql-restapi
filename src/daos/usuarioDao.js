@@ -7,7 +7,7 @@ export const getUsuarioDatosContactoByIdusuario = async (req, idusuario, estado)
     const { models } = req.app.locals;
 
     const usuario = await models.Usuario.findByPk(idusuario, {
-      attributes: ["usuarioid", "nombres", "apellidopaterno", "apellidomaterno", "email", "celular"],
+      attributes: ["usuarioid", "usuarionombres", "apellidopaterno", "apellidomaterno", "email", "celular"],
       where: {
         estado: {
           [Sequelize.Op.in]: estado,

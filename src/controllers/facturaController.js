@@ -117,6 +117,12 @@ export const uploadInvoice = async (req, res) => {
       await insertarFacturaNota(factura_nota);
     });
 
+    const empresa = await empresaDao.getEmpresaByIdusuarioAndRuc(req, req.session_user.usuario._idusuario, factura.proveedor_ruc, 1);
+    //console.log(empresa);
+    if (!empresa) {
+      throw new ClientError("Seleccione una factura perteneciente a una de las empresas asociadas a su cuenta. La empresa ["+factura.proveedor_razon_social+" ("+factura.proveedor_ruc+")] no está asociada a su cuenta.", 404);
+    }
+
     if (!facturaJson.codigo_tipo_documento || facturaJson.codigo_tipo_documento != "01") {
       throw new ClientError("Seleccione una factura válida", 404);
     }
@@ -133,8 +139,9 @@ export const uploadInvoice = async (req, res) => {
       //throw new ClientError("Seleccione una factura que no haya transcurrido más de 8 días desde su fecha de emisión", 404);
     }
 
-    if (facturaJson.dias_estimados_para_pago <= 8) {
-      //throw new ClientError("Seleccione una factura que cuyo fecha de vencimiento sea mayor a 8 días", 404);
+    var REGLA_MINIMO_DE_DIAS_PARA_PAGO = 8;
+    if (facturaJson.dias_estimados_para_pago <= REGLA_MINIMO_DE_DIAS_PARA_PAGO) {
+      throw new ClientError("Seleccione una factura cuya fecha de vencimiento sea superior a "+REGLA_MINIMO_DE_DIAS_PARA_PAGO+" días.", 404);
     }
 
     var cliente = await getEmpresaByRUCSinoExisteCrear(req, facturaJson.cliente.ruc, facturaJson.cliente);

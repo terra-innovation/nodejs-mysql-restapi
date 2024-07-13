@@ -20,6 +20,21 @@ export const getCuentasbancarias = async (req, res) => {
   response(res, 201, cuentasbancariasFiltered);
 };
 
+
+export const getCuentasbancariasEmpresario = async (req, res) => {
+  //console.log(req.session_user.usuario._idusuario);
+
+  const session_idusuario = req.session_user.usuario._idusuario;
+  const filter_estado = [1, 2];
+  const cuentasbancarias = await cuentabancariaDao.getCuentasbancariasByIdusuario(req, session_idusuario, filter_estado);
+  var cuentasbancariasJson= jsonUtils.sequelizeToJSON(cuentasbancarias);
+  //console.log(empresaObfuscated);
+
+  var cuentasbancariasFiltered = jsonUtils.removeAttributes(cuentasbancariasJson, ["score"]);
+  cuentasbancariasFiltered = jsonUtils.removeAttributesPrivates(cuentasbancariasFiltered);
+  response(res, 201, cuentasbancariasFiltered);
+};
+
 export const getCuentasbancariasMiosByEmpresaidActivos = async (req, res) => {
   //console.log(req.session_user.usuario._idusuario);
   const { id } = req.params;

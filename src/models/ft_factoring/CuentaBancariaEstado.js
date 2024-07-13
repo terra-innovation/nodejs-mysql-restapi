@@ -24,6 +24,10 @@ export default class CuentaBancariaEstado extends Model {
       type: DataTypes.STRING(50),
       allowNull: false
     },
+    color: {
+      type: DataTypes.STRING(50),
+      allowNull: true
+    },
     idusuariocrea: {
       type: DataTypes.INTEGER,
       allowNull: false,

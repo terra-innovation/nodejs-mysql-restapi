@@ -1,6 +1,33 @@
 import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
 
+export const getEmpresaByIdusuarioAndRuc = async (req, _idusuario, ruc, estado) => {
+  try {
+    const { models } = req.app.locals;
+    const empresas = await models.Empresa.findOne({
+      include: [
+        {
+          model: models.UsuarioEmpresa,
+          as: "usuario_empresas",
+          where: {
+            _idusuario: _idusuario,
+            estado: estado,
+          },
+        },
+      ],
+      where: {
+        ruc: ruc,
+        estado: estado,
+      },
+    });
+    //console.log(empresas);
+    return empresas;
+  } catch (error) {
+    console.error(error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getEmpresaByIdusuarioAndEmpresaid = async (req, _idusuario, empresaid, estado) => {
   try {
     const { models } = req.app.locals;
