@@ -15,7 +15,8 @@ export default [
     },
     rules: {
       semi: "error",
-      "pluginimport/no-unresolved": "error"
+      "pluginimport/no-unresolved": "error",
+      "pluginimport/no-duplicates": "warn"
     },
   },
   pluginJs.configs.recommended,
