@@ -1,12 +1,14 @@
 import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
 
-export const getMonedasActivas = async (req) => {
+export const getMonedas = async (req, estados) => {
   try {
     const { models } = req.app.locals;
     const monedas = await models.Moneda.findAll({
       where: {
-        estado: 1,
+        estado: {
+          [Sequelize.Op.in]: estados,
+        },
       },
     });
     //console.log(monedas);

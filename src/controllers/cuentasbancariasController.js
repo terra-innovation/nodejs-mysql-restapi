@@ -11,6 +11,35 @@ import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { Sequelize } from "sequelize";
 
+export const getCuentasbancariasMaster = async (req, res) => {
+  const filter_estados = [1];
+  const session_idusuario = req.session_user.usuario._idusuario;
+  //console.log(req.session_user.usuario.rol_rols);
+  const roles = [2]; // Administrador
+  const rolesUsuario = req.session_user.usuario.rol_rols.map((role) => role._idrol);
+  const tieneRol = roles.some((rol) => rolesUsuario.includes(rol));
+
+  const empresas = await empresaDao.getEmpresasByIdusuario(req, session_idusuario, filter_estados);
+
+  const bancos = await bancoDao.getBancos(req, filter_estados);
+  const monedas = await monedaDao.getMonedas(req, filter_estados);
+  const cuentatipos = await cuentatipoDao.getCuentatipos(req, filter_estados);
+
+  var cuentasbancariasMaster = {};
+  cuentasbancariasMaster.empresas = empresas;
+  cuentasbancariasMaster.bancos = bancos;
+  cuentasbancariasMaster.monedas = monedas;
+  cuentasbancariasMaster.cuentatipos = cuentatipos;
+
+  var cuentasbancariasMasterJSON = jsonUtils.sequelizeToJSON(cuentasbancariasMaster);
+  //jsonUtils.prettyPrint(cuentasbancariasMasterJSON);
+  var cuentasbancariasMasterObfuscated = cuentasbancariasMasterJSON;
+  //jsonUtils.prettyPrint(cuentasbancariasMasterObfuscated);
+  var cuentasbancariasMasterFiltered = jsonUtils.removeAttributesPrivates(cuentasbancariasMasterObfuscated);
+  //jsonUtils.prettyPrint(cuentasbancariasMaster);
+  response(res, 201, cuentasbancariasMasterFiltered);
+};
+
 export const getCuentasbancarias = async (req, res) => {
   const cuentasbancarias = await cuentabancariaDao.getCuentasbancariasActivas(req);
   var cuentasbancariasObfuscated = jsonUtils.ofuscarAtributos(cuentasbancarias, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
@@ -20,14 +49,13 @@ export const getCuentasbancarias = async (req, res) => {
   response(res, 201, cuentasbancariasFiltered);
 };
 
-
 export const getCuentasbancariasEmpresario = async (req, res) => {
   //console.log(req.session_user.usuario._idusuario);
 
   const session_idusuario = req.session_user.usuario._idusuario;
   const filter_estado = [1, 2];
   const cuentasbancarias = await cuentabancariaDao.getCuentasbancariasByIdusuario(req, session_idusuario, filter_estado);
-  var cuentasbancariasJson= jsonUtils.sequelizeToJSON(cuentasbancarias);
+  var cuentasbancariasJson = jsonUtils.sequelizeToJSON(cuentasbancarias);
   //console.log(empresaObfuscated);
 
   var cuentasbancariasFiltered = jsonUtils.removeAttributes(cuentasbancariasJson, ["score"]);
@@ -137,7 +165,12 @@ export const createCuentabancaria = async (req, res) => {
   camposAuditoria.fechamod = Sequelize.fn("now", 3);
   camposAuditoria.estado = 1;
 
-  const cuentabancariaCreated = await cuentabancariaDao.insertCuentabancaria(req, { ...camposFk, ...camposAdicionales, ...cuentabancariaValidated, ...camposAuditoria });
+  const cuentabancariaCreated = await cuentabancariaDao.insertCuentabancaria(req, {
+    ...camposFk,
+    ...camposAdicionales,
+    ...cuentabancariaValidated,
+    ...camposAuditoria,
+  });
   console.debug("Create cuentabancaria: ID:" + cuentabancariaCreated.idcuentabancaria + " | " + camposAdicionales.cuentabancariaid);
   console.debug("cuentabancariaCreated:", cuentabancariaCreated.dataValues);
   // Retiramos los IDs internos
@@ -165,7 +198,11 @@ export const updateCuentabancaria = async (req, res) => {
   camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
   camposAuditoria.fechamod = Sequelize.fn("now", 3);
 
-  const result = await cuentabancariaDao.updateCuentabancaria(req, { ...camposAdicionales, ...cuentabancariaValidated, ...camposAuditoria });
+  const result = await cuentabancariaDao.updateCuentabancaria(req, {
+    ...camposAdicionales,
+    ...cuentabancariaValidated,
+    ...camposAuditoria,
+  });
   if (result[0] === 0) {
     throw new ClientError("Cuentabancaria no existe", 404);
   }

@@ -11,6 +11,9 @@ router.get("/cuentasbancarias/empresario/listar", verifyToken, checkRole([2]), c
 //Mio
 router.post("/cuentasbancarias/mio/listar/empresaid/activo/:id", verifyToken, checkRole([2]), catchedAsync(cuentasbancariasController.getCuentasbancariasMiosByEmpresaidActivos));
 
+// GET all Factorings Master
+router.get("/cuentasbancarias/master", verifyToken, checkRole([2]), catchedAsync(cuentasbancariasController.getCuentasbancariasMaster));
+
 // GET all Cuentasbancarias
 router.get("/cuentasbancarias/listar", verifyToken, checkRole([2]), catchedAsync(cuentasbancariasController.getCuentasbancarias));
 

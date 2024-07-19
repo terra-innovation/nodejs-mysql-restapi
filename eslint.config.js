@@ -16,14 +16,14 @@ export default [
     rules: {
       semi: "error",
       "pluginimport/no-unresolved": "error",
-      "pluginimport/no-duplicates": "warn"
+      "pluginimport/no-duplicates": "warn",
     },
   },
   pluginJs.configs.recommended,
   {
     rules: {
       "no-unused-vars": "warn",
-      "no-undef": "warn",
+      "no-undef": "error",
     },
   },
 ];

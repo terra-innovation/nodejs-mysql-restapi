@@ -1,6 +1,36 @@
 import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
 
+export const getEmpresasByIdusuario = async (req, _idusuario, estados) => {
+  try {
+    const { models } = req.app.locals;
+    const empresas = await models.Empresa.findAll({
+      include: [
+        {
+          model: models.UsuarioEmpresa,
+          as: "usuario_empresas",
+          where: {
+            _idusuario: _idusuario,
+            estado: {
+              [Sequelize.Op.in]: estados,
+            },
+          },
+        },
+      ],
+      where: {
+        estado: {
+          [Sequelize.Op.in]: estados,
+        },
+      },
+    });
+    //console.log(empresas);
+    return empresas;
+  } catch (error) {
+    console.error(error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getEmpresaByIdusuarioAndRuc = async (req, _idusuario, ruc, estado) => {
   try {
     const { models } = req.app.locals;
@@ -55,23 +85,19 @@ export const getEmpresaByIdusuarioAndEmpresaid = async (req, _idusuario, empresa
   }
 };
 
-export const getEmpresasActivas = async (req) => {
+export const getEmpresas = async (req, estados) => {
   try {
     const { models } = req.app.locals;
     const empresas = await models.Empresa.findAll({
-      include: [
-        {
-          model: models.Colaborador,
-        },
-      ],
       where: {
-        estado: 1,
+        estado: {
+          [Sequelize.Op.in]: estados,
+        },
       },
     });
     //console.log(empresas);
     return empresas;
   } catch (error) {
-    console.error(error.original.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }

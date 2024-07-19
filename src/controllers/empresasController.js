@@ -53,7 +53,8 @@ export const getGirador = async (req, res) => {
 };
 
 export const getEmpresas = async (req, res) => {
-  const empresas = await empresaDao.getEmpresasActivas(req);
+  const filter_estados = [1];
+  const empresas = await empresaDao.getEmpresas(req, filter_estados);
   response(res, 201, empresas);
 };
 

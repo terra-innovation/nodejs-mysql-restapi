@@ -1,12 +1,14 @@
 import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
 
-export const getCuentatiposActivas = async (req) => {
+export const getCuentatipos = async (req, estados) => {
   try {
     const { models } = req.app.locals;
     const cuentatipos = await models.CuentaTipo.findAll({
       where: {
-        estado: 1,
+        estado: {
+          [Sequelize.Op.in]: estados,
+        },
       },
     });
     //console.log(cuentatipos);
