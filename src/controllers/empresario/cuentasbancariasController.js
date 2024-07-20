@@ -1,0 +1,107 @@
+import * as cuentabancariaDao from "../../daos/cuentabancariaDao.js";
+import * as empresaDao from "../../daos/empresaDao.js";
+import * as bancoDao from "../../daos/bancoDao.js";
+import * as cuentatipoDao from "../../daos/cuentatipoDao.js";
+import * as monedaDao from "../../daos/monedaDao.js";
+import { response } from "../../utils/CustomResponseOk.js";
+import { ClientError } from "../../utils/CustomErrors.js";
+import * as jsonUtils from "../../utils/jsonUtils.js";
+
+import { v4 as uuidv4 } from "uuid";
+import * as yup from "yup";
+import { Sequelize } from "sequelize";
+
+export const getCuentasbancarias = async (req, res) => {
+  //console.log(req.session_user.usuario._idusuario);
+
+  const session_idusuario = req.session_user.usuario._idusuario;
+  const filter_estado = [1, 2];
+  const cuentasbancarias = await cuentabancariaDao.getCuentasbancariasByIdusuario(req, session_idusuario, filter_estado);
+  var cuentasbancariasJson = jsonUtils.sequelizeToJSON(cuentasbancarias);
+  //console.log(empresaObfuscated);
+
+  var cuentasbancariasFiltered = jsonUtils.removeAttributes(cuentasbancariasJson, ["score"]);
+  cuentasbancariasFiltered = jsonUtils.removeAttributesPrivates(cuentasbancariasFiltered);
+  response(res, 201, cuentasbancariasFiltered);
+};
+
+export const createCuentabancaria = async (req, res) => {
+  const session_idusuario = req.session_user.usuario._idusuario;
+  const filter_estado = [1, 2];
+  const cuentabancariaCreateSchema = yup
+    .object()
+    .shape({
+      empresaid: yup.string().trim().required().min(36).max(36),
+      bancoid: yup.string().trim().required().min(36).max(36),
+      cuentatipoid: yup.string().trim().required().min(36).max(36),
+      monedaid: yup.string().trim().required().min(36).max(36),
+      numero: yup.string().required().max(20),
+      cci: yup.string().required().max(20),
+      alias: yup.string().required().max(50),
+    })
+    .required();
+  var cuentabancariaValidated = cuentabancariaCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
+  console.debug("cuentabancariaValidated:", cuentabancariaValidated);
+
+  var empresa = await empresaDao.findEmpresaPk(req, cuentabancariaValidated.empresaid);
+  if (!empresa) {
+    throw new ClientError("Empresa no existe", 404);
+  }
+
+  var banco = await bancoDao.findBancoPk(req, cuentabancariaValidated.bancoid);
+  if (!banco) {
+    throw new ClientError("Banco no existe", 404);
+  }
+
+  var cuentatipo = await cuentatipoDao.findCuentatipoPk(req, cuentabancariaValidated.cuentatipoid);
+  if (!cuentatipo) {
+    throw new ClientError("Cuenta tipo no existe", 404);
+  }
+  var moneda = await monedaDao.findMonedaPk(req, cuentabancariaValidated.monedaid);
+  if (!moneda) {
+    throw new ClientError("Moneda no existe", 404);
+  }
+
+  var empresa_por_idusuario = await empresaDao.getEmpresaByIdusuarioAndEmpresaid(req, session_idusuario, cuentabancariaValidated.empresaid, filter_estado);
+  if (!empresa_por_idusuario) {
+    throw new ClientError("Empresa no asociada al usuario", 404);
+  }
+
+  var cuentasbancarias_por_numero = await cuentabancariaDao.getCuentasbancariasByIdbancoAndNumero(req, banco._idbanco, cuentabancariaValidated.numero, filter_estado);
+  if (cuentasbancarias_por_numero && cuentasbancarias_por_numero.length > 0) {
+    throw new ClientError("El número de cuenta [" + cuentabancariaValidated.numero + "] se encuentra registrado. Ingrese un número de cuenta diferente.", 404);
+  }
+
+  var cuentasbancarias_por_alias = await cuentabancariaDao.getCuentasbancariasByIdusuarioAndAlias(req, session_idusuario, cuentabancariaValidated.alias, filter_estado);
+  if (cuentasbancarias_por_alias && cuentasbancarias_por_alias.length > 0) {
+    throw new ClientError("El alias [" + cuentabancariaValidated.alias + "] se encuentra registrado. Ingrese un alias diferente.", 404);
+  }
+  var camposFk = {};
+  camposFk._idempresa = empresa._idempresa;
+  camposFk._idbanco = banco._idbanco;
+  camposFk._idcuentatipo = cuentatipo._idcuentatipo;
+  camposFk._idmoneda = moneda._idmoneda;
+  camposFk._idcuentabancariaestado = 1; // Por defecto
+
+  var camposAdicionales = {};
+  camposAdicionales.cuentabancariaid = uuidv4();
+
+  var camposAuditoria = {};
+  camposAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
+  camposAuditoria.fechacrea = Sequelize.fn("now", 3);
+  camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+  camposAuditoria.fechamod = Sequelize.fn("now", 3);
+  camposAuditoria.estado = 1;
+
+  const cuentabancariaCreated = await cuentabancariaDao.insertCuentabancaria(req, {
+    ...camposFk,
+    ...camposAdicionales,
+    ...cuentabancariaValidated,
+    ...camposAuditoria,
+  });
+  //console.debug("Create cuentabancaria: ID:" + cuentabancariaCreated._idcuentabancaria + " | " + camposAdicionales.cuentabancariaid);
+  //console.debug("cuentabancariaCreated:", cuentabancariaCreated.dataValues);
+  // Retiramos los IDs internos
+  delete camposAdicionales.idempresa;
+  response(res, 201, { ...camposAdicionales, ...cuentabancariaValidated });
+};

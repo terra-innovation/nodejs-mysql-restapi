@@ -335,22 +335,14 @@ export const updateFactoringCotizacion = async (req, res) => {
   camposAdicionales.monto_costo_financiamiento_estimado = Number((camposAdicionales.monto_adelanto * (camposAdicionales.tnd / 100) * camposAdicionales.dias_pago_estimado).toFixed(2));
   camposAdicionales.monto_comision_operacion = Number((camposAdicionales.montoComisionOperacionPorFactura * factoringBefore.cantidad_facturas).toFixed(2));
   camposAdicionales.monto_costo_estudio = camposAdicionales.montoCostoEstudioPorAceptante;
-  camposAdicionales.monto_comision_uso_sitio_estimado = Math.max(
-    camposAdicionales.monto_adelanto * camposAdicionales.cantidadMeses * (camposAdicionales.porcentajeComisionUsoSitio / 100),
-    camposAdicionales.minimoComisionUsoSitio
-  );
+  camposAdicionales.monto_comision_uso_sitio_estimado = Math.max(camposAdicionales.monto_adelanto * camposAdicionales.cantidadMeses * (camposAdicionales.porcentajeComisionUsoSitio / 100), camposAdicionales.minimoComisionUsoSitio);
 
   camposAdicionales.monto_comision_gestion = camposAdicionales.monto_adelanto * (camposAdicionales.porcentajeComisionGestion / 100);
   camposAdicionales.monto_comision_interbancaria = factoringBefore.cuentabancaria_cuenta_bancarium._idbanco == 1 ? 0 : camposAdicionales.montoComisionInterbancariaInmediataBCP;
   camposAdicionales.monto_costo_cavali = camposAdicionales.montoCostoCAVALI * factoringBefore.cantidad_facturas;
 
   camposAdicionales.monto_comision_factor =
-    camposAdicionales.monto_comision_operacion +
-    camposAdicionales.monto_costo_estudio +
-    camposAdicionales.monto_comision_uso_sitio_estimado +
-    camposAdicionales.monto_comision_gestion +
-    camposAdicionales.monto_comision_interbancaria +
-    camposAdicionales.monto_costo_cavali;
+    camposAdicionales.monto_comision_operacion + camposAdicionales.monto_costo_estudio + camposAdicionales.monto_comision_uso_sitio_estimado + camposAdicionales.monto_comision_gestion + camposAdicionales.monto_comision_interbancaria + camposAdicionales.monto_costo_cavali;
 
   camposAdicionales.monto_igv = Number((camposAdicionales.monto_comision_factor * (camposAdicionales.porcentajeIGV / 100)).toFixed(2));
 

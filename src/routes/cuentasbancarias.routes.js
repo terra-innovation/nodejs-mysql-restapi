@@ -5,9 +5,6 @@ import { verifyToken, checkRole } from "../middlewares/authMiddleware.js";
 
 const router = Router();
 
-//Empresario
-router.get("/cuentasbancarias/empresario/listar", verifyToken, checkRole([2]), catchedAsync(cuentasbancariasController.getCuentasbancariasEmpresario));
-
 //Mio
 router.post("/cuentasbancarias/mio/listar/empresaid/activo/:id", verifyToken, checkRole([2]), catchedAsync(cuentasbancariasController.getCuentasbancariasMiosByEmpresaidActivos));
 

@@ -9,6 +9,7 @@ import facturaRoutes from "./routes/factura.routes.js";
 import empresasRoutes from "./routes/empresasRoutes.js";
 import colaboradoresRoutes from "./routes/colaboradoresRoutes.js";
 import cuentasbancariasRoutes from "./routes/cuentasbancarias.routes.js";
+import empresario_cuentasbancariasRoutes from "./routes/empresario/cuentasbancarias.routes.js";
 import usuariosRoutes from "./routes/usuarios.routes.js";
 import factoringsRoutes from "./routes/factorings.routes.js";
 import factoringestadosRoutes from "./routes/factoringestados.routes.js";
@@ -51,6 +52,7 @@ app.use("/api/v1", factoringsRoutes);
 app.use("/api/v1", factoringestadosRoutes);
 app.use("/api/v1", factoringtiposRoutes);
 app.use("/api/v1", riesgosRoutes);
+app.use("/api/v1", empresario_cuentasbancariasRoutes);
 app.use("/secure", secureRoutes);
 
 // Para cuando no existe la ruta

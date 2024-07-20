@@ -1,11 +1,110 @@
 import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
 
-export const getCuentasbancariasByIdusuario = async (
-  req,
-  idusuario,
-  estado
-) => {
+export const getCuentasbancariasByIdbancoAndNumero = async (req, idbanco, numero, estado) => {
+  try {
+    const { models } = req.app.locals;
+    const cuentasbancarias = await models.CuentaBancaria.findAll({
+      include: [
+        {
+          model: models.Empresa,
+          required: true,
+          as: "empresa_empresa",
+        },
+        {
+          model: models.Banco,
+          required: true,
+          as: "banco_banco",
+        },
+        {
+          model: models.Moneda,
+          required: true,
+          as: "moneda_moneda",
+        },
+        {
+          model: models.CuentaTipo,
+          required: true,
+          as: "cuentatipo_cuenta_tipo",
+        },
+        {
+          model: models.CuentaBancariaEstado,
+          required: true,
+          as: "cuentabancariaestado_cuenta_bancaria_estado",
+        },
+      ],
+      where: {
+        _idbanco: idbanco,
+        numero: numero,
+        estado: {
+          [Sequelize.Op.in]: estado,
+        },
+      },
+    });
+    //console.log(cuentasbancarias);
+    return cuentasbancarias;
+  } catch (error) {
+    console.error(error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
+export const getCuentasbancariasByIdusuarioAndAlias = async (req, idusuario, alias, estado) => {
+  try {
+    const { models } = req.app.locals;
+    const cuentasbancarias = await models.CuentaBancaria.findAll({
+      include: [
+        {
+          model: models.Empresa,
+          required: true,
+          as: "empresa_empresa",
+          include: [
+            {
+              model: models.UsuarioEmpresa,
+              required: true,
+              as: "usuario_empresas",
+              where: {
+                _idusuario: idusuario,
+              },
+            },
+          ],
+        },
+        {
+          model: models.Banco,
+          required: true,
+          as: "banco_banco",
+        },
+        {
+          model: models.Moneda,
+          required: true,
+          as: "moneda_moneda",
+        },
+        {
+          model: models.CuentaTipo,
+          required: true,
+          as: "cuentatipo_cuenta_tipo",
+        },
+        {
+          model: models.CuentaBancariaEstado,
+          required: true,
+          as: "cuentabancariaestado_cuenta_bancaria_estado",
+        },
+      ],
+      where: {
+        alias: alias,
+        estado: {
+          [Sequelize.Op.in]: estado,
+        },
+      },
+    });
+    //console.log(cuentasbancarias);
+    return cuentasbancarias;
+  } catch (error) {
+    console.error(error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
+export const getCuentasbancariasByIdusuario = async (req, idusuario, estado) => {
   try {
     const { models } = req.app.locals;
     const cuentasbancarias = await models.CuentaBancaria.findAll({
@@ -60,17 +159,11 @@ export const getCuentasbancariasByIdusuario = async (
   }
 };
 
-export const getCuentabancariaByIdcuentabancaria = async (
-  req,
-  idcuentabancaria
-) => {
+export const getCuentabancariaByIdcuentabancaria = async (req, idcuentabancaria) => {
   try {
     const { models } = req.app.locals;
 
-    const cuentabancaria = await models.CuentaBancaria.findByPk(
-      idcuentabancaria,
-      {}
-    );
+    const cuentabancaria = await models.CuentaBancaria.findByPk(idcuentabancaria, {});
     console.log(cuentabancaria);
 
     //const cuentasbancarias = await cuentabancaria.getCuentabancarias();
@@ -83,13 +176,7 @@ export const getCuentabancariaByIdcuentabancaria = async (
   }
 };
 
-export const getCuentasbancariasByEmpresaidAndMoneda = async (
-  req,
-  empresaid,
-  monedaid,
-  _idcuentabancariaestado,
-  estado
-) => {
+export const getCuentasbancariasByEmpresaidAndMoneda = async (req, empresaid, monedaid, _idcuentabancariaestado, estado) => {
   try {
     const { models } = req.app.locals;
     const cuentasbancarias = await models.CuentaBancaria.findAll({
@@ -138,10 +225,7 @@ export const getCuentasbancariasByEmpresaidAndMoneda = async (
   }
 };
 
-export const getCuentabancariaByCuentabancariaid = async (
-  req,
-  cuentabancariaid
-) => {
+export const getCuentabancariaByCuentabancariaid = async (req, cuentabancariaid) => {
   try {
     const { models } = req.app.locals;
     const cuentabancaria = await models.CuentaBancaria.findOne({
@@ -233,9 +317,7 @@ export const getCuentasbancariasActivas = async (req) => {
 export const insertCuentabancaria = async (req, cuentabancaria) => {
   try {
     const { models } = req.app.locals;
-    const cuentabancaria_nuevo = await models.CuentaBancaria.create(
-      cuentabancaria
-    );
+    const cuentabancaria_nuevo = await models.CuentaBancaria.create(cuentabancaria);
     // console.log(cuentabancaria_nuevo);
     return cuentabancaria_nuevo;
   } catch (error) {
