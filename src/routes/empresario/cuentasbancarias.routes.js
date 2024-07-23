@@ -8,5 +8,6 @@ const router = Router();
 //Empresario
 router.get("/empresario/cuentasbancarias/listar", verifyToken, checkRole([2]), catchedAsync(cuentasbancariasController.getCuentasbancarias));
 router.post("/empresario/cuentasbancarias/crear", verifyToken, checkRole([2]), catchedAsync(cuentasbancariasController.createCuentabancaria));
+router.patch("/empresario/cuentasbancarias/actualizar/:id", verifyToken, checkRole([2]), catchedAsync(cuentasbancariasController.updateCuentabancariaOnlyAlias));
 
 export default router;

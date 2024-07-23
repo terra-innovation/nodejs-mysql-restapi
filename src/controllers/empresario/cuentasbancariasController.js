@@ -11,6 +11,46 @@ import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { Sequelize } from "sequelize";
 
+export const updateCuentabancariaOnlyAlias = async (req, res) => {
+  const { id } = req.params;
+  const cuentabancariaUpdateSchema = yup
+    .object()
+    .shape({
+      cuentabancariaid: yup.string().trim().required().min(36).max(36),
+      alias: yup.string().required().max(50),
+    })
+    .required();
+  const cuentabancariaValidated = cuentabancariaUpdateSchema.validateSync({ cuentabancariaid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
+  console.debug("cuentabancariaValidated:", cuentabancariaValidated);
+
+  var camposAdicionales = {};
+  camposAdicionales.cuentabancariaid = id;
+
+  var camposAuditoria = {};
+  camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+  camposAuditoria.fechamod = Sequelize.fn("now", 3);
+
+  const result = await cuentabancariaDao.updateCuentabancaria(req, {
+    ...camposAdicionales,
+    ...cuentabancariaValidated,
+    ...camposAuditoria,
+  });
+  if (result[0] === 0) {
+    throw new ClientError("Cuentabancaria no existe", 404);
+  }
+  console.log(id);
+  const cuentabancariaUpdated = await cuentabancariaDao.getCuentabancariaByCuentabancariaid(req, id);
+  if (!cuentabancariaUpdated) {
+    throw new ClientError("Cuentabancaria no existe", 404);
+  }
+
+  var cuentabancariaObfuscated = jsonUtils.ofuscarAtributos(cuentabancariaUpdated, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
+  //console.log(empresaObfuscated);
+
+  var cuentabancariaFiltered = jsonUtils.removeAttributesPrivates(cuentabancariaObfuscated);
+  response(res, 200, cuentabancariaFiltered);
+};
+
 export const getCuentasbancarias = async (req, res) => {
   //console.log(req.session_user.usuario._idusuario);
 

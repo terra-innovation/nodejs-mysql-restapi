@@ -326,6 +326,24 @@ export const insertCuentabancaria = async (req, cuentabancaria) => {
   }
 };
 
+export const updateCuentabancariaOnlyAliasByCuentabancariaid = async (req, cuentabancaria) => {
+  try {
+    const { models } = req.app.locals;
+    const result = await models.CuentaBancaria.update(
+      { alias: cuentabancaria.alias, idusuariomod: cuentabancaria.idusuariomod, fechamod: cuentabancaria.fechamod },
+      {
+        where: {
+          cuentabancariaid: cuentabancaria.cuentabancariaid,
+        },
+      }
+    );
+    return result;
+  } catch (error) {
+    console.error(error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const updateCuentabancaria = async (req, cuentabancaria) => {
   try {
     const { models } = req.app.locals;
