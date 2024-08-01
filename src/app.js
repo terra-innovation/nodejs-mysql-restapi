@@ -22,6 +22,8 @@ import { ValidationError } from "yup";
 import sequelize from "./config/bd/sequelize_db_factoring.js";
 import initModels from "./models/ft_factoring/init-models.js";
 
+import usuario_menuRoutes from "./routes/usuario/menu.routes.js";
+
 const app = express();
 
 // Configuración de CORS
@@ -43,6 +45,7 @@ app.use(express.json()); // Convierte los request a json
 // Routes
 app.use("/", indexRoutes);
 app.use("/api", employeesRoutes);
+app.use("/api/v1", usuario_menuRoutes);
 app.use("/api/v1", facturaRoutes);
 app.use("/api/v1", empresasRoutes);
 app.use("/api/v1", colaboradoresRoutes);
