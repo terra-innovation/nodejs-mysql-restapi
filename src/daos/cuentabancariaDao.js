@@ -384,3 +384,18 @@ export const deleteCuentabancaria = async (req, cuentabancaria) => {
     throw new ClientError("Ocurrio un error", 500);
   }
 };
+
+export const activateCuentabancaria = async (req, cuentabancaria) => {
+  try {
+    const { models } = req.app.locals;
+    const result = await models.CuentaBancaria.update(cuentabancaria, {
+      where: {
+        cuentabancariaid: cuentabancaria.cuentabancariaid,
+      },
+    });
+    return result;
+  } catch (error) {
+    console.error(error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};

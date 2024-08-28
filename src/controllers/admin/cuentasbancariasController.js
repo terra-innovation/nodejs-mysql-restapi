@@ -11,6 +11,30 @@ import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { Sequelize } from "sequelize";
 
+export const activateCuentabancaria = async (req, res) => {
+  const { id } = req.params;
+  const cuentabancariaSchema = yup
+    .object()
+    .shape({
+      cuentabancariaid: yup.string().trim().required().min(36).max(36),
+    })
+    .required();
+  const cuentabancariaValidated = cuentabancariaSchema.validateSync({ cuentabancariaid: id }, { abortEarly: false, stripUnknown: true });
+  console.debug("cuentabancariaValidated:", cuentabancariaValidated);
+
+  var camposAuditoria = {};
+  camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+  camposAuditoria.fechamod = Sequelize.fn("now", 3);
+  camposAuditoria.estado = 1;
+
+  const cuentabancariaDeleted = await cuentabancariaDao.activateCuentabancaria(req, { ...cuentabancariaValidated, ...camposAuditoria });
+  if (cuentabancariaDeleted[0] === 0) {
+    throw new ClientError("Cuentabancaria no existe", 404);
+  }
+  console.debug("cuentabancariaActivated:", cuentabancariaDeleted);
+  response(res, 204, cuentabancariaDeleted);
+};
+
 export const deleteCuentabancaria = async (req, res) => {
   const { id } = req.params;
   const cuentabancariaSchema = yup
