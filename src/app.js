@@ -16,6 +16,8 @@ import factoringestadosRoutes from "./routes/factoringestados.routes.js";
 import factoringtiposRoutes from "./routes/factoringtipos.routes.js";
 import riesgosRoutes from "./routes/riesgos.routes.js";
 
+import admin_cuentasbancariasRoutes from "./routes/admin/cuentasbancarias.routes.js";
+
 import secureRoutes from "./routes/secure.routes.js";
 import { customResponseError } from "./utils/CustomResponseError.js";
 import { ValidationError } from "yup";
@@ -56,6 +58,7 @@ app.use("/api/v1", factoringestadosRoutes);
 app.use("/api/v1", factoringtiposRoutes);
 app.use("/api/v1", riesgosRoutes);
 app.use("/api/v1", empresario_cuentasbancariasRoutes);
+app.use("/api/v1", admin_cuentasbancariasRoutes);
 app.use("/secure", secureRoutes);
 
 // Para cuando no existe la ruta

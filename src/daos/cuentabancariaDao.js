@@ -280,35 +280,46 @@ export const findCuentabancariaPk = async (req, cuentabancariaid) => {
   }
 };
 
-export const getCuentasbancariasActivas = async (req) => {
+export const getCuentasbancarias = async (req, estado) => {
   try {
     const { models } = req.app.locals;
     const cuentasbancarias = await models.CuentaBancaria.findAll({
       include: [
         {
           model: models.Empresa,
+          required: true,
+          as: "empresa_empresa",
         },
         {
           model: models.Banco,
+          required: true,
+          as: "banco_banco",
         },
         {
           model: models.Moneda,
+          required: true,
+          as: "moneda_moneda",
         },
         {
           model: models.CuentaTipo,
+          required: true,
+          as: "cuentatipo_cuenta_tipo",
         },
         {
           model: models.CuentaBancariaEstado,
+          required: true,
+          as: "cuentabancariaestado_cuenta_bancaria_estado",
         },
       ],
       where: {
-        estado: 1,
+        estado: {
+          [Sequelize.Op.in]: estado,
+        },
       },
     });
     //console.log(cuentasbancarias);
     return cuentasbancarias;
   } catch (error) {
-    console.error(error.original.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }

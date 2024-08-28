@@ -11,37 +11,9 @@ import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { Sequelize } from "sequelize";
 
-export const getCuentasbancariasMaster = async (req, res) => {
-  const filter_estados = [1];
-  const session_idusuario = req.session_user.usuario._idusuario;
-  //console.log(req.session_user.usuario.rol_rols);
-  const roles = [2]; // Administrador
-  const rolesUsuario = req.session_user.usuario.rol_rols.map((role) => role._idrol);
-  const tieneRol = roles.some((rol) => rolesUsuario.includes(rol));
-
-  const empresas = await empresaDao.getEmpresasByIdusuario(req, session_idusuario, filter_estados);
-
-  const bancos = await bancoDao.getBancos(req, filter_estados);
-  const monedas = await monedaDao.getMonedas(req, filter_estados);
-  const cuentatipos = await cuentatipoDao.getCuentatipos(req, filter_estados);
-
-  var cuentasbancariasMaster = {};
-  cuentasbancariasMaster.empresas = empresas;
-  cuentasbancariasMaster.bancos = bancos;
-  cuentasbancariasMaster.monedas = monedas;
-  cuentasbancariasMaster.cuentatipos = cuentatipos;
-
-  var cuentasbancariasMasterJSON = jsonUtils.sequelizeToJSON(cuentasbancariasMaster);
-  //jsonUtils.prettyPrint(cuentasbancariasMasterJSON);
-  var cuentasbancariasMasterObfuscated = cuentasbancariasMasterJSON;
-  //jsonUtils.prettyPrint(cuentasbancariasMasterObfuscated);
-  var cuentasbancariasMasterFiltered = jsonUtils.removeAttributesPrivates(cuentasbancariasMasterObfuscated);
-  //jsonUtils.prettyPrint(cuentasbancariasMaster);
-  response(res, 201, cuentasbancariasMasterFiltered);
-};
-
 export const getCuentasbancarias = async (req, res) => {
-  const cuentasbancarias = await cuentabancariaDao.getCuentasbancariasActivas(req);
+  const filter_estado = [1, 2];
+  const cuentasbancarias = await cuentabancariaDao.getCuentasbancarias(req, filter_estado);
   var cuentasbancariasObfuscated = jsonUtils.ofuscarAtributos(cuentasbancarias, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
   //console.log(empresaObfuscated);
 

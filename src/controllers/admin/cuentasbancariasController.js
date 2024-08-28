@@ -11,15 +11,33 @@ import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { Sequelize } from "sequelize";
 
+export const deleteCuentabancaria = async (req, res) => {
+  const { id } = req.params;
+  const cuentabancariaSchema = yup
+    .object()
+    .shape({
+      cuentabancariaid: yup.string().trim().required().min(36).max(36),
+    })
+    .required();
+  const cuentabancariaValidated = cuentabancariaSchema.validateSync({ cuentabancariaid: id }, { abortEarly: false, stripUnknown: true });
+  console.debug("cuentabancariaValidated:", cuentabancariaValidated);
+
+  var camposAuditoria = {};
+  camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+  camposAuditoria.fechamod = Sequelize.fn("now", 3);
+  camposAuditoria.estado = 2;
+
+  const cuentabancariaDeleted = await cuentabancariaDao.deleteCuentabancaria(req, { ...cuentabancariaValidated, ...camposAuditoria });
+  if (cuentabancariaDeleted[0] === 0) {
+    throw new ClientError("Cuentabancaria no existe", 404);
+  }
+  console.debug("cuentabancariaDeleted:", cuentabancariaDeleted);
+  response(res, 204, cuentabancariaDeleted);
+};
+
 export const getCuentasbancariasMaster = async (req, res) => {
   const filter_estados = [1];
-  const session_idusuario = req.session_user.usuario._idusuario;
-  //console.log(req.session_user.usuario.rol_rols);
-  const roles = [2]; // Administrador
-  const rolesUsuario = req.session_user.usuario.rol_rols.map((role) => role._idrol);
-  const tieneRol = roles.some((rol) => rolesUsuario.includes(rol));
-
-  const empresas = await empresaDao.getEmpresasByIdusuario(req, session_idusuario, filter_estados);
+  const empresas = await empresaDao.getEmpresas(req, filter_estados);
 
   const bancos = await bancoDao.getBancos(req, filter_estados);
   const monedas = await monedaDao.getMonedas(req, filter_estados);
@@ -83,15 +101,14 @@ export const updateCuentabancariaOnlyAlias = async (req, res) => {
 export const getCuentasbancarias = async (req, res) => {
   //console.log(req.session_user.usuario._idusuario);
 
-  const session_idusuario = req.session_user.usuario._idusuario;
   const filter_estado = [1, 2];
-  const cuentasbancarias = await cuentabancariaDao.getCuentasbancariasByIdusuario(req, session_idusuario, filter_estado);
+  const cuentasbancarias = await cuentabancariaDao.getCuentasbancarias(req, filter_estado);
   var cuentasbancariasJson = jsonUtils.sequelizeToJSON(cuentasbancarias);
   //console.log(empresaObfuscated);
 
-  var cuentasbancariasFiltered = jsonUtils.removeAttributes(cuentasbancariasJson, ["score"]);
-  cuentasbancariasFiltered = jsonUtils.removeAttributesPrivates(cuentasbancariasFiltered);
-  response(res, 201, cuentasbancariasFiltered);
+  //var cuentasbancariasFiltered = jsonUtils.removeAttributes(cuentasbancariasJson, ["score"]);
+  //cuentasbancariasFiltered = jsonUtils.removeAttributesPrivates(cuentasbancariasFiltered);
+  response(res, 201, cuentasbancariasJson);
 };
 
 export const createCuentabancaria = async (req, res) => {
@@ -129,11 +146,6 @@ export const createCuentabancaria = async (req, res) => {
   var moneda = await monedaDao.findMonedaPk(req, cuentabancariaValidated.monedaid);
   if (!moneda) {
     throw new ClientError("Moneda no existe", 404);
-  }
-
-  var empresa_por_idusuario = await empresaDao.getEmpresaByIdusuarioAndEmpresaid(req, session_idusuario, cuentabancariaValidated.empresaid, filter_estado);
-  if (!empresa_por_idusuario) {
-    throw new ClientError("Empresa no asociada al usuario", 404);
   }
 
   var cuentasbancarias_por_numero = await cuentabancariaDao.getCuentasbancariasByIdbancoAndNumero(req, banco._idbanco, cuentabancariaValidated.numero, filter_estado);
