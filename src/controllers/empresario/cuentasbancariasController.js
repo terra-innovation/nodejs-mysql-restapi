@@ -84,7 +84,7 @@ export const getCuentasbancarias = async (req, res) => {
   //console.log(req.session_user.usuario._idusuario);
 
   const session_idusuario = req.session_user.usuario._idusuario;
-  const filter_estado = [1, 2];
+  const filter_estado = [1];
   const cuentasbancarias = await cuentabancariaDao.getCuentasbancariasByIdusuario(req, session_idusuario, filter_estado);
   var cuentasbancariasJson = jsonUtils.sequelizeToJSON(cuentasbancarias);
   //console.log(empresaObfuscated);

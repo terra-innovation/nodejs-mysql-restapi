@@ -15,7 +15,7 @@ const menuMantenimiento = {
           title: "Cuentas bancarias",
           type: "item",
           url: "/admin/cuentabancaria/lista",
-          breadcrumbs: false,
+          breadcrumbs: true,
         },
       ],
     },

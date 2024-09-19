@@ -10,6 +10,7 @@ const menuAdministracion = {
       type: "item",
       url: "/empresario/cuentabancaria/lista",
       icon: "IdcardOutlined",
+      breadcrumbs: true,
     },
   ],
 };

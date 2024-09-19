@@ -3,6 +3,7 @@ import * as empresaDao from "../../daos/empresaDao.js";
 import * as bancoDao from "../../daos/bancoDao.js";
 import * as cuentatipoDao from "../../daos/cuentatipoDao.js";
 import * as monedaDao from "../../daos/monedaDao.js";
+import * as cuentabancariaestadoDao from "../../daos/cuentabancariaestadoDao.js";
 import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
@@ -66,12 +67,14 @@ export const getCuentasbancariasMaster = async (req, res) => {
   const bancos = await bancoDao.getBancos(req, filter_estados);
   const monedas = await monedaDao.getMonedas(req, filter_estados);
   const cuentatipos = await cuentatipoDao.getCuentatipos(req, filter_estados);
+  const cuentabancariaestados = await cuentabancariaestadoDao.getCuentaBancariaEstados(req, filter_estados);
 
   var cuentasbancariasMaster = {};
   cuentasbancariasMaster.empresas = empresas;
   cuentasbancariasMaster.bancos = bancos;
   cuentasbancariasMaster.monedas = monedas;
   cuentasbancariasMaster.cuentatipos = cuentatipos;
+  cuentasbancariasMaster.cuentabancariaestados = cuentabancariaestados;
 
   var cuentasbancariasMasterJSON = jsonUtils.sequelizeToJSON(cuentasbancariasMaster);
   //jsonUtils.prettyPrint(cuentasbancariasMasterJSON);
@@ -82,17 +85,26 @@ export const getCuentasbancariasMaster = async (req, res) => {
   response(res, 201, cuentasbancariasMasterFiltered);
 };
 
-export const updateCuentabancariaOnlyAlias = async (req, res) => {
+export const updateCuentabancariaOnlyAliasAndCuentaBancariaEstado = async (req, res) => {
   const { id } = req.params;
   const cuentabancariaUpdateSchema = yup
     .object()
     .shape({
       cuentabancariaid: yup.string().trim().required().min(36).max(36),
+      cuentabancariaestadoid: yup.string().trim().required().min(36).max(36),
       alias: yup.string().required().max(50),
     })
     .required();
   const cuentabancariaValidated = cuentabancariaUpdateSchema.validateSync({ cuentabancariaid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
   console.debug("cuentabancariaValidated:", cuentabancariaValidated);
+
+  var cuentabancariaestado = await cuentabancariaestadoDao.findCuentaBancariaEstadoPk(req, cuentabancariaValidated.cuentabancariaestadoid);
+  if (!cuentabancariaestado) {
+    throw new ClientError("Cuenta bancaria tipo no existe", 404);
+  }
+
+  var camposFk = {};
+  camposFk._idcuentabancariaestado = cuentabancariaestado._idcuentabancariaestado;
 
   var camposAdicionales = {};
   camposAdicionales.cuentabancariaid = id;
@@ -102,6 +114,7 @@ export const updateCuentabancariaOnlyAlias = async (req, res) => {
   camposAuditoria.fechamod = Sequelize.fn("now", 3);
 
   const result = await cuentabancariaDao.updateCuentabancaria(req, {
+    ...camposFk,
     ...camposAdicionales,
     ...cuentabancariaValidated,
     ...camposAuditoria,
@@ -167,6 +180,7 @@ export const createCuentabancaria = async (req, res) => {
   if (!cuentatipo) {
     throw new ClientError("Cuenta tipo no existe", 404);
   }
+
   var moneda = await monedaDao.findMonedaPk(req, cuentabancariaValidated.monedaid);
   if (!moneda) {
     throw new ClientError("Moneda no existe", 404);

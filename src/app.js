@@ -17,6 +17,7 @@ import factoringtiposRoutes from "./routes/factoringtipos.routes.js";
 import riesgosRoutes from "./routes/riesgos.routes.js";
 
 import admin_cuentasbancariasRoutes from "./routes/admin/cuentasbancarias.routes.js";
+import admin_cuentabancariaestadosRoutes from "./routes/admin/cuentabancariaestados.routes.js";
 
 import secureRoutes from "./routes/secure.routes.js";
 import { customResponseError } from "./utils/CustomResponseError.js";
@@ -59,6 +60,7 @@ app.use("/api/v1", factoringtiposRoutes);
 app.use("/api/v1", riesgosRoutes);
 app.use("/api/v1", empresario_cuentasbancariasRoutes);
 app.use("/api/v1", admin_cuentasbancariasRoutes);
+app.use("/api/v1", admin_cuentabancariaestadosRoutes);
 app.use("/secure", secureRoutes);
 
 // Para cuando no existe la ruta
