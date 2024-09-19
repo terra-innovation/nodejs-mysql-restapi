@@ -9,15 +9,15 @@ import facturaRoutes from "./routes/factura.routes.js";
 import empresasRoutes from "./routes/empresasRoutes.js";
 import colaboradoresRoutes from "./routes/colaboradoresRoutes.js";
 import cuentasbancariasRoutes from "./routes/cuentasbancarias.routes.js";
-import empresario_cuentasbancariasRoutes from "./routes/empresario/cuentasbancarias.routes.js";
+import empresario_cuentabancariaRoutes from "./routes/empresario/cuentabancaria.routes.js";
 import usuariosRoutes from "./routes/usuarios.routes.js";
 import factoringsRoutes from "./routes/factorings.routes.js";
 import factoringestadosRoutes from "./routes/factoringestados.routes.js";
 import factoringtiposRoutes from "./routes/factoringtipos.routes.js";
 import riesgosRoutes from "./routes/riesgos.routes.js";
 
-import admin_cuentasbancariasRoutes from "./routes/admin/cuentasbancarias.routes.js";
-import admin_cuentabancariaestadosRoutes from "./routes/admin/cuentabancariaestados.routes.js";
+import admin_cuentabancariaRoutes from "./routes/admin/cuentabancaria.routes.js";
+import admin_cuentabancariaestadoRoutes from "./routes/admin/cuentabancariaestado.routes.js";
 
 import secureRoutes from "./routes/secure.routes.js";
 import { customResponseError } from "./utils/CustomResponseError.js";
@@ -58,9 +58,9 @@ app.use("/api/v1", factoringsRoutes);
 app.use("/api/v1", factoringestadosRoutes);
 app.use("/api/v1", factoringtiposRoutes);
 app.use("/api/v1", riesgosRoutes);
-app.use("/api/v1", empresario_cuentasbancariasRoutes);
-app.use("/api/v1", admin_cuentasbancariasRoutes);
-app.use("/api/v1", admin_cuentabancariaestadosRoutes);
+app.use("/api/v1", empresario_cuentabancariaRoutes);
+app.use("/api/v1", admin_cuentabancariaRoutes);
+app.use("/api/v1", admin_cuentabancariaestadoRoutes);
 app.use("/secure", secureRoutes);
 
 // Para cuando no existe la ruta
