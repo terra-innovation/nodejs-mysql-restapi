@@ -60,7 +60,7 @@ export const deleteCuentabancaria = async (req, res) => {
   response(res, 204, cuentabancariaDeleted);
 };
 
-export const getCuentasbancariasMaster = async (req, res) => {
+export const getCuentabancariaMaster = async (req, res) => {
   const filter_estados = [1];
   const empresas = await empresaDao.getEmpresas(req, filter_estados);
 
@@ -135,7 +135,7 @@ export const updateCuentabancariaOnlyAliasAndCuentaBancariaEstado = async (req, 
   response(res, 200, cuentabancariaFiltered);
 };
 
-export const getCuentasbancarias = async (req, res) => {
+export const getCuentabancarias = async (req, res) => {
   //console.log(req.session_user.usuario._idusuario);
 
   const filter_estado = [1, 2];

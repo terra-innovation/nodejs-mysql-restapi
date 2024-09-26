@@ -46,7 +46,6 @@ export const getUsuariosActivos = async (req) => {
 export const getUsuarioByIdusuario = async (req, idusuario) => {
   try {
     const { models } = req.app.locals;
-
     const usuario = await models.Usuario.findByPk(idusuario, {});
     console.log(usuario);
 
@@ -105,6 +104,38 @@ export const getUsuarioByUsuarioid = async (req, usuarioid) => {
     const usuario = await models.Usuario.findAll({
       where: {
         usuarioid: usuarioid,
+      },
+    });
+    //console.log(usuario);
+    return usuario;
+  } catch (error) {
+    console.error(error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
+export const getUsuarioByEmail = async (req, email) => {
+  try {
+    const { models } = req.app.locals;
+    const usuario = await models.Usuario.findAll({
+      where: {
+        email: email,
+      },
+    });
+    //console.log(usuario);
+    return usuario;
+  } catch (error) {
+    console.error(error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
+export const getUsuarioByNumerodocumento = async (req, documentonumero) => {
+  try {
+    const { models } = req.app.locals;
+    const usuario = await models.Usuario.findAll({
+      where: {
+        documentonumero: documentonumero,
       },
     });
     //console.log(usuario);

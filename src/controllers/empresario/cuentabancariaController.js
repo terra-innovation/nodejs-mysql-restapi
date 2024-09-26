@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { Sequelize } from "sequelize";
 
-export const getCuentasbancariasMaster = async (req, res) => {
+export const getCuentabancariaMaster = async (req, res) => {
   const filter_estados = [1];
   const session_idusuario = req.session_user.usuario._idusuario;
   //console.log(req.session_user.usuario.rol_rols);
@@ -80,7 +80,7 @@ export const updateCuentabancariaOnlyAlias = async (req, res) => {
   response(res, 200, cuentabancariaFiltered);
 };
 
-export const getCuentasbancarias = async (req, res) => {
+export const getCuentabancarias = async (req, res) => {
   //console.log(req.session_user.usuario._idusuario);
 
   const session_idusuario = req.session_user.usuario._idusuario;

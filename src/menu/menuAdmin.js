@@ -17,6 +17,13 @@ const menuMantenimiento = {
           url: "/admin/cuentabancaria/lista",
           breadcrumbs: true,
         },
+        {
+          id: "admin-mantenimiento-empresas",
+          title: "Empresas",
+          type: "item",
+          url: "/admin/empresa/lista",
+          breadcrumbs: true,
+        },
       ],
     },
   ],

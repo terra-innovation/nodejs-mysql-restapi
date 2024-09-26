@@ -1,14 +1,14 @@
 import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
 
-export const getEmpresasByIdusuario = async (req, _idusuario, estados) => {
+export const getDocumentotiposByIdusuario = async (req, _idusuario, estados) => {
   try {
     const { models } = req.app.locals;
-    const empresas = await models.Empresa.findAll({
+    const documentotipos = await models.DocumentoTipo.findAll({
       include: [
         {
-          model: models.UsuarioEmpresa,
-          as: "usuario_empresas",
+          model: models.UsuarioDocumentotipo,
+          as: "usuario_documentotipos",
           where: {
             _idusuario: _idusuario,
             estado: {
@@ -23,22 +23,22 @@ export const getEmpresasByIdusuario = async (req, _idusuario, estados) => {
         },
       },
     });
-    //console.log(empresas);
-    return empresas;
+    //console.log(documentotipos);
+    return documentotipos;
   } catch (error) {
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getEmpresaByIdusuarioAndRuc = async (req, _idusuario, ruc, estado) => {
+export const getDocumentotipoByIdusuarioAndRuc = async (req, _idusuario, ruc, estado) => {
   try {
     const { models } = req.app.locals;
-    const empresas = await models.Empresa.findOne({
+    const documentotipos = await models.DocumentoTipo.findOne({
       include: [
         {
-          model: models.UsuarioEmpresa,
-          as: "usuario_empresas",
+          model: models.UsuarioDocumentotipo,
+          as: "usuario_documentotipos",
           where: {
             _idusuario: _idusuario,
             estado: estado,
@@ -50,22 +50,22 @@ export const getEmpresaByIdusuarioAndRuc = async (req, _idusuario, ruc, estado) 
         estado: estado,
       },
     });
-    //console.log(empresas);
-    return empresas;
+    //console.log(documentotipos);
+    return documentotipos;
   } catch (error) {
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getEmpresaByIdusuarioAndEmpresaid = async (req, _idusuario, empresaid, estado) => {
+export const getDocumentotipoByIdusuarioAndDocumentotipoid = async (req, _idusuario, documentotipoid, estado) => {
   try {
     const { models } = req.app.locals;
-    const empresas = await models.Empresa.findOne({
+    const documentotipos = await models.DocumentoTipo.findOne({
       include: [
         {
-          model: models.UsuarioEmpresa,
-          as: "usuario_empresas",
+          model: models.UsuarioDocumentotipo,
+          as: "usuario_documentotipos",
           where: {
             _idusuario: _idusuario,
             estado: estado,
@@ -73,41 +73,41 @@ export const getEmpresaByIdusuarioAndEmpresaid = async (req, _idusuario, empresa
         },
       ],
       where: {
-        empresaid: empresaid,
+        documentotipoid: documentotipoid,
         estado: estado,
       },
     });
-    //console.log(empresas);
-    return empresas;
+    //console.log(documentotipos);
+    return documentotipos;
   } catch (error) {
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getEmpresas = async (req, estados) => {
+export const getDocumentotipos = async (req, estados) => {
   try {
     const { models } = req.app.locals;
-    const empresas = await models.Empresa.findAll({
+    const documentotipos = await models.DocumentoTipo.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
     });
-    //console.log(empresas);
-    return empresas;
+    //console.log(documentotipos);
+    return documentotipos;
   } catch (error) {
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getEmpresaByIdempresa = async (req, idempresa) => {
+export const getDocumentotipoByIddocumentotipo = async (req, iddocumentotipo) => {
   try {
     const { models } = req.app.locals;
 
-    const empresa = await models.Empresa.findByPk(idempresa, {
+    const documentotipo = await models.DocumentoTipo.findByPk(iddocumentotipo, {
       include: [
         {
           model: models.Colaborador,
@@ -115,22 +115,22 @@ export const getEmpresaByIdempresa = async (req, idempresa) => {
         },
       ],
     });
-    console.log(empresa);
+    console.log(documentotipo);
 
-    //const colaboradores = await empresa.getColaboradors();
+    //const colaboradores = await documentotipo.getColaboradors();
     //console.log(colaboradores);
 
-    return empresa;
+    return documentotipo;
   } catch (error) {
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getEmpresaByEmpresaid = async (req, empresaid) => {
+export const getDocumentotipoByDocumentotipoid = async (req, documentotipoid) => {
   try {
     const { models } = req.app.locals;
-    const empresa = await models.Empresa.findAll({
+    const documentotipo = await models.DocumentoTipo.findAll({
       include: [
         {
           model: models.Colaborador,
@@ -138,83 +138,68 @@ export const getEmpresaByEmpresaid = async (req, empresaid) => {
         },
       ],
       where: {
-        empresaid: empresaid,
+        documentotipoid: documentotipoid,
       },
     });
-    //console.log(empresa);
-    return empresa;
+    //console.log(documentotipo);
+    return documentotipo;
   } catch (error) {
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getEmpresaByRuc = async (req, ruc) => {
+export const getDocumentotipoByRuc = async (req, ruc) => {
   try {
     const { models } = req.app.locals;
-    const empresa = await models.Empresa.findAll({
+    const documentotipo = await models.DocumentoTipo.findAll({
       where: {
         ruc: ruc,
       },
     });
-    //console.log(empresa);
-    return empresa;
+    //console.log(documentotipo);
+    return documentotipo;
   } catch (error) {
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const findEmpresaPk = async (req, empresaid) => {
+export const findDocumentotipoPk = async (req, documentotipoid) => {
   try {
     const { models } = req.app.locals;
-    const empresa = await models.Empresa.findOne({
-      attributes: ["_idempresa"],
+    const documentotipo = await models.DocumentoTipo.findOne({
+      attributes: ["_iddocumentotipo"],
       where: {
-        empresaid: empresaid,
+        documentotipoid: documentotipoid,
       },
     });
-    //console.log(empresa);
-    return empresa;
+    //console.log(documentotipo);
+    return documentotipo;
   } catch (error) {
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const insertEmpresa = async (req, empresa) => {
+export const insertDocumentotipo = async (req, documentotipo) => {
   try {
     const { models } = req.app.locals;
-    const empresa_nuevo = await models.Empresa.create(empresa);
-    // console.log(empresa_nuevo);
-    return empresa_nuevo;
+    const documentotipo_nuevo = await models.DocumentoTipo.create(documentotipo);
+    // console.log(documentotipo_nuevo);
+    return documentotipo_nuevo;
   } catch (error) {
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateEmpresa = async (req, empresa) => {
+export const updateDocumentotipo = async (req, documentotipo) => {
   try {
     const { models } = req.app.locals;
-    const result = await models.Empresa.update(empresa, {
+    const result = await models.DocumentoTipo.update(documentotipo, {
       where: {
-        empresaid: empresa.empresaid,
-      },
-    });
-    return result;
-  } catch (error) {
-    console.error(error);
-    throw new ClientError("Ocurrio un error", 500);
-  }
-};
-
-export const deleteEmpresa = async (req, empresa) => {
-  try {
-    const { models } = req.app.locals;
-    const result = await models.Empresa.update(empresa, {
-      where: {
-        empresaid: empresa.empresaid,
+        documentotipoid: documentotipo.documentotipoid,
       },
     });
     return result;
@@ -224,12 +209,27 @@ export const deleteEmpresa = async (req, empresa) => {
   }
 };
 
-export const activateEmpresa = async (req, empresa) => {
+export const deleteDocumentotipo = async (req, documentotipo) => {
   try {
     const { models } = req.app.locals;
-    const result = await models.Empresa.update(empresa, {
+    const result = await models.DocumentoTipo.update(documentotipo, {
       where: {
-        empresaid: empresa.empresaid,
+        documentotipoid: documentotipo.documentotipoid,
+      },
+    });
+    return result;
+  } catch (error) {
+    console.error(error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
+export const activateDocumentotipo = async (req, documentotipo) => {
+  try {
+    const { models } = req.app.locals;
+    const result = await models.DocumentoTipo.update(documentotipo, {
+      where: {
+        documentotipoid: documentotipo.documentotipoid,
       },
     });
     return result;
