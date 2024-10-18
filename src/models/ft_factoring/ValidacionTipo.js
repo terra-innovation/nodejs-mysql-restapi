@@ -1,25 +1,22 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class CuentaTipo extends Model {
+export default class ValidacionTipo extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    _idcuentatipo: {
+    _idvalidaciontipo: {
+      autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true,
-      autoIncrement: true
+      primaryKey: true
     },
-    cuentatipoid: {
+    validaciontipoid: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: Sequelize.Sequelize.fn('uuid')
+      defaultValue: Sequelize.Sequelize.fn('uuid'),
+      unique: "UQ_validacion_tipo_validaciontipoid"
     },
     nombre: {
-      type: DataTypes.STRING(50),
-      allowNull: false
-    },
-    alias: {
       type: DataTypes.STRING(50),
       allowNull: false
     },
@@ -50,7 +47,7 @@ export default class CuentaTipo extends Model {
     }
   }, {
     sequelize,
-    tableName: 'cuenta_tipo',
+    tableName: 'validacion_tipo',
     timestamps: false,
     indexes: [
       {
@@ -58,15 +55,15 @@ export default class CuentaTipo extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idcuentatipo" },
+          { name: "_idvalidaciontipo" },
         ]
       },
       {
-        name: "UQ_bancoid",
+        name: "UQ_validacion_tipo_validaciontipoid",
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "cuentatipoid" },
+          { name: "validaciontipoid" },
         ]
       },
     ]

@@ -1,11 +1,11 @@
 import * as usuarioDao from "../../daos/usuarioDao.js";
 import * as documentotipoDao from "../../daos/documentotipoDao.js";
+import * as validacionDao from "../../daos/validacionDao.js";
 import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
-import { poolFactoring } from "../../config/bd/mysql2_db_factoring.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
-import { poolBigData } from "../../config/bd/mysql2_db_bigdata.js";
-import { TOKEN_KEY } from "../../config.js";
+import * as cryptoUtils from "../../utils/cryptoUtils.js";
+import * as config from "../../config.js";
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -13,13 +13,257 @@ import { v4 as uuidv4 } from "uuid";
 import * as Yup from "yup";
 import { Sequelize } from "sequelize";
 
-import { ValidationError } from "yup";
+export const resetPassword = async (req, res) => {
+  //console.log(req);
+  const filter_estado = [1];
+  const validateChangePasswordSchema = Yup.object({
+    hash: Yup.string().trim().required().max(50),
+    codigo: Yup.string().trim().required().max(100),
+    token: Yup.string().trim().required().max(255),
+    password: Yup.string().min(8).max(50).required(),
+    confirmPassword: Yup.string()
+      .required()
+      .min(8)
+      .max(50)
+      .test("confirmPassword", "¡Ambas contraseñas deben coincidir!", (confirmPassword, yup) => yup.parent.password === confirmPassword),
+  }).required();
+  const validacionValidated = validateChangePasswordSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
+
+  const usuario = await usuarioDao.getUsuarioByHash(req, validacionValidated.hash);
+  if (!usuario) {
+    console.warn("Usuario no existe: ", validacionValidated);
+    throw new ClientError("El código de verificación no es válido o ha expidado", 404);
+  }
+
+  const validacion = await validacionDao.getValidacionByIdusuarioAndCodigo(req, usuario._idusuario, validacionValidated.codigo, filter_estado);
+  if (!validacion) {
+    console.warn("Validación no existe: ", validacionValidated);
+    throw new ClientError("El código de verificación no es válido o ha expidado", 404);
+  }
+  //jsonUtils.prettyPrint(validacion);
+
+  //Desencriptamos token para hallar el otp
+  let otp_desencriptado = cryptoUtils.decryptText(validacionValidated.token, config.TOKEN_KEY_OTP);
+  console.log("OTP Desencriptado", otp_desencriptado);
+
+  if (otp_desencriptado === validacion.otp) {
+    if (validacion.verificado === 0) {
+      // Sumar 10 minutos y 10 segundos a la fecha de la base de datos
+      const fechaConAjustes = new Date(validacion.tiempo_marca);
+      fechaConAjustes.setMinutes(fechaConAjustes.getMinutes() + validacion.tiempo_expiracion);
+      fechaConAjustes.setSeconds(fechaConAjustes.getSeconds() + 10);
+      // Obtener la fecha actual
+      const fechaActual = new Date();
+      if (fechaActual <= fechaConAjustes) {
+        // Validación conforme
+        const encryptedPassword = await bcrypt.hash(validacionValidated.password, 10);
+
+        let usuarioUpdate = {};
+        usuarioUpdate.usuarioid = usuario.usuarioid;
+        usuarioUpdate.password = encryptedPassword;
+        usuarioUpdate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
+        usuarioUpdate.fechamod = Sequelize.fn("now", 3);
+
+        const usuarioUpdated = await usuarioDao.updateUsuario(req, usuarioUpdate);
+        if (usuarioUpdated[0] == 0) {
+          console.warn("No fue posible actualizar el usuario: ", usuarioUpdated);
+          throw new ClientError("El código de verificación no es válido o ha expidado", 404);
+        }
+
+        // Actualizamos el validate
+        var validacionUpdate = {};
+        validacionUpdate.validacionid = validacion.validacionid;
+        validacionUpdate.verificado = 1;
+        validacionUpdate.fecha_verificado = Sequelize.fn("now", 3);
+        validacionUpdate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
+        validacionUpdate.fechamod = Sequelize.fn("now", 3);
+        const validacionUpdated = await validacionDao.updateValidacion(req, validacionUpdate);
+      } else {
+        console.warn("El código de verificación ha expirado: ", validacionValidated);
+        throw new ClientError("El código de verificación no es válido o ha expidado", 404);
+      }
+    } else {
+      console.warn("El código de verificación ha sido validado anteriormente: ", validacionValidated);
+      throw new ClientError("El código de verificación no es válido o ha expidado", 404);
+    }
+  } else {
+    console.warn("El código de verificación no es válido: ", validacionValidated);
+    throw new ClientError("El código de verificación no es válido o ha expidado", 404);
+  }
+  var validacionReturned = {};
+  validacionReturned.hash = validacionValidated.hash;
+  response(res, 201, { ...validacionReturned });
+};
+
+export const validateRestorePassword = async (req, res) => {
+  //console.log(req);
+  const filter_estado = [1];
+  const validateRestorePasswordSchema = Yup.object({
+    hash: Yup.string().trim().required().max(50),
+    codigo: Yup.string().trim().required().max(100),
+    token: Yup.string().trim().required().max(255),
+  }).required();
+  const validacionValidated = validateRestorePasswordSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
+
+  const usuario = await usuarioDao.getUsuarioByHash(req, validacionValidated.hash);
+  if (!usuario) {
+    console.warn("Usuario no existe: ", validacionValidated);
+    throw new ClientError("El código de verificación no es válido o ha expidado", 404);
+  }
+
+  const validacion = await validacionDao.getValidacionByIdusuarioAndCodigo(req, usuario._idusuario, validacionValidated.codigo, filter_estado);
+  if (!validacion) {
+    console.warn("Validación no existe: ", validacionValidated);
+    throw new ClientError("El código de verificación no es válido o ha expidado", 404);
+  }
+  //jsonUtils.prettyPrint(validacion);
+
+  //Desencriptamos token para hallar el otp
+  let otp_desencriptado = cryptoUtils.decryptText(validacionValidated.token, config.TOKEN_KEY_OTP);
+  console.log("OTP Desencriptado", otp_desencriptado);
+
+  if (otp_desencriptado === validacion.otp) {
+    if (validacion.verificado === 0) {
+      // Sumar 10 minutos y 10 segundos a la fecha de la base de datos
+      const fechaConAjustes = new Date(validacion.tiempo_marca);
+      fechaConAjustes.setMinutes(fechaConAjustes.getMinutes() + validacion.tiempo_expiracion);
+      fechaConAjustes.setSeconds(fechaConAjustes.getSeconds() + 10);
+      // Obtener la fecha actual
+      const fechaActual = new Date();
+      if (fechaActual <= fechaConAjustes) {
+        // Validación conforme
+      } else {
+        console.warn("El código de verificación ha expirado: ", validacionValidated);
+        throw new ClientError("El código de verificación no es válido o ha expidado", 404);
+      }
+    } else {
+      console.warn("El código de verificación ha sido validado anteriormente: ", validacionValidated);
+      throw new ClientError("El código de verificación no es válido o ha expidado", 404);
+    }
+  } else {
+    console.warn("El código de verificación no es válido: ", validacionValidated);
+    throw new ClientError("El código de verificación no es válido o ha expidado", 404);
+  }
+  var validacionReturned = {};
+  validacionReturned.hash = validacionValidated.hash;
+  response(res, 201, { ...validacionReturned });
+};
+
+export const sendTokenPassword = async (req, res) => {
+  let EMAIL_REGX = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+  const filter_estado = [1];
+  const validacionCreateSchema = Yup.object()
+    .shape({
+      email: Yup.string().trim().required().email().matches(EMAIL_REGX, "Debe ser un correo válido.").min(5).max(50),
+    })
+    .required();
+  const validacionValidated = validacionCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
+
+  const usuario = await usuarioDao.getUsuarioByEmail(req, validacionValidated.email);
+  if (!usuario) {
+    console.warn("Usuario no existe: ", validacionValidated);
+  } else {
+    const _idvalidaciontipo = 3; // 1: Para recuperar contraseña
+    const resetpasswordvalidationcode = Math.floor(100000 + Math.random() * 900000); // Código aleaatorio de 6 dígitos
+    const validacionPrev = await validacionDao.getValidacionByIdusuarioAndIdvalidaciontipo(req, usuario._idusuario, _idvalidaciontipo, filter_estado);
+    if (!validacionPrev) {
+      console.warn("Validación no existe: ", validacionValidated);
+      let validacionNew = {};
+      validacionNew._idusuario = usuario._idusuario;
+      validacionNew._idvalidaciontipo = _idvalidaciontipo;
+      validacionNew.valor = validacionValidated.email;
+      validacionNew.otp = resetpasswordvalidationcode;
+      validacionNew.tiempo_marca = Sequelize.fn("now", 3);
+      validacionNew.tiempo_expiracion = 15; // En minutos
+      validacionNew.codigo = crypto.randomBytes(77).toString("hex").slice(0, 77);
+      validacionNew.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
+      validacionNew.fechacrea = Sequelize.fn("now", 3);
+      validacionNew.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
+      validacionNew.fechamod = Sequelize.fn("now", 3);
+      validacionNew.estado = 1;
+
+      const validacionCreated = await validacionDao.insertValidacion(req, validacionNew);
+      if (!validacionCreated) {
+        console.warn("No fue posible insertar el objeto: ", validacionNew);
+      }
+    } else {
+      let validacionUpdate = {};
+      validacionUpdate.validacionid = validacionPrev.validacionid;
+      validacionUpdate.otp = resetpasswordvalidationcode;
+      validacionUpdate.tiempo_marca = Sequelize.fn("now", 3);
+      validacionUpdate.tiempo_expiracion = 15; // En minutos
+      validacionUpdate.verificado = 0;
+      validacionUpdate.fechaverificado = null;
+      validacionUpdate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
+      validacionUpdate.fechamod = Sequelize.fn("now", 3);
+
+      const validacionUpdated = await validacionDao.updateValidacion(req, validacionUpdate);
+      if (!validacionUpdated) {
+        console.warn("No fue posible actualizar el objeto: ", validacionUpdate);
+      }
+    }
+    const validacionNext = await validacionDao.getValidacionByIdusuarioAndIdvalidaciontipo(req, usuario._idusuario, _idvalidaciontipo, filter_estado);
+    if (validacionNext) {
+      //Enviar enlace para recuperar contraseña
+      let otp_encriptado = cryptoUtils.encryptText(resetpasswordvalidationcode.toString(), config.TOKEN_KEY_OTP);
+      let url = config.WEB_SITE + "token-verification-password?hash=" + usuario.hash + "&codigo=" + validacionNext.codigo + "&token=" + otp_encriptado;
+      console.log("url", url);
+    }
+  }
+
+  let validacionReturned = {};
+  response(res, 201, { ...validacionReturned });
+};
+
+export const sendVerificactionCode = async (req, res) => {
+  const filter_estado = [1];
+  const validacionCreateSchema = Yup.object()
+    .shape({
+      hash: Yup.string().max(50).trim().required(),
+      codigo: Yup.string().max(100).trim().required(),
+    })
+    .required();
+  const validacionValidated = validacionCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
+
+  const usuario = await usuarioDao.getUsuarioByHash(req, validacionValidated.hash);
+  if (!usuario) {
+    console.warn("Usuario no existe: ", validacionValidated);
+    throw new ClientError("Información no válida", 404);
+  }
+
+  const validacion = await validacionDao.getValidacionByIdusuarioAndCodigo(req, usuario._idusuario, validacionValidated.codigo, filter_estado);
+  if (!validacion) {
+    console.warn("Validación no existe: ", validacionValidated);
+    throw new ClientError("Información no válida", 404);
+  }
+
+  if (validacion.verificado != 0) {
+    console.warn("Valor ya se encuentra verificado: ", validacionValidated);
+    throw new ClientError("Información no válida", 404);
+  }
+
+  const emailvalidationcode = Math.floor(100000 + Math.random() * 900000); // Código aleaatorio de 6 dígitos
+
+  let validacionUpdate = {};
+  validacionUpdate.validacionid = validacion.validacionid;
+  validacionUpdate.otp = emailvalidationcode;
+  validacionUpdate.tiempo_marca = Sequelize.fn("now", 3);
+  validacionUpdate.tiempo_expiracion = 5; // En minutos
+  validacionUpdate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
+  validacionUpdate.fechamod = Sequelize.fn("now", 3);
+
+  const validacionUpdated = await validacionDao.updateValidacion(req, validacionUpdate);
+
+  let validacionReturned = {};
+
+  response(res, 201, { ...validacionReturned });
+};
 
 export const loginUser = async (req, res) => {
   // Get user input
   const { correo, clave } = req.body;
 
-  let EMAIL_REGX = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$/;
+  let EMAIL_REGX = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
 
   const loginUserSchema = Yup.object()
     .shape({
@@ -44,7 +288,7 @@ export const loginUser = async (req, res) => {
     const usuario = usuario_autenticado[0];
     //jsonUtils.prettyPrint(usuario);
     // Create token
-    const token = jwt.sign({ usuario: usuario }, TOKEN_KEY, {
+    const token = jwt.sign({ usuario: usuario }, config.TOKEN_KEY_JWT, {
       expiresIn: "200000h",
     });
 
@@ -55,8 +299,8 @@ export const loginUser = async (req, res) => {
 };
 
 export const registerUsuario = async (req, res) => {
-  let EMAIL_REGX = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$/;
-  var NAME_REGX = /^[a-zA-Z ]+$/;
+  let EMAIL_REGX = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+  let NAME_REGX = /^[a-zA-Z ]+$/;
 
   const usuarioCreateSchema = Yup.object()
     .shape({
@@ -70,11 +314,7 @@ export const registerUsuario = async (req, res) => {
       apellidopaterno: Yup.string().trim().required().matches(NAME_REGX, "Debe ser un apellido válido").min(2).max(50),
       apellidomaterno: Yup.string().trim().required().matches(NAME_REGX, "Debe ser un apellido válido").min(2).max(50),
       email: Yup.string().trim().required().email().matches(EMAIL_REGX, "Debe ser un correo válido.").min(5).max(50),
-      celular: Yup.string()
-        .trim()
-        .required()
-        .matches(/^\+\d+$/, "Ingrese solo números")
-        .length(12),
+      celular: Yup.string().trim().required(),
       password: Yup.string().min(8).max(50).required(),
     })
     .required();
@@ -96,10 +336,10 @@ export const registerUsuario = async (req, res) => {
     throw new ClientError("El correo electrónico ya se encuentra registrado. ", 404);
   }
 
-  const emailvalidationcode = Math.floor(100000 + Math.random() * 900000);
+  const emailvalidationcode = Math.floor(100000 + Math.random() * 900000); // Código aleaatorio de 6 dígitos
   const hash = crypto
     .createHash("sha1")
-    .update(usuarioValidated.email + "|" + usuarioValidated.documentonumero)
+    .update(usuarioValidated.email + "|" + usuarioValidated.documentotipoid + "|" + usuarioValidated.documentonumero + "|" + Sequelize.fn("now", 3))
     .digest("hex");
 
   //Encrypt user password
@@ -107,16 +347,15 @@ export const registerUsuario = async (req, res) => {
 
   delete usuarioValidated.password;
 
-  var camposFk = {};
+  let camposFk = {};
   camposFk._iddocumentotipo = documentotipo._iddocumentotipo;
 
-  var camposAdicionales = {};
+  let camposAdicionales = {};
   camposAdicionales.usuarioid = uuidv4();
   camposAdicionales.password = encryptedPassword;
-  camposAdicionales.emailvalidationcode = emailvalidationcode;
   camposAdicionales.hash = hash;
 
-  var camposAuditoria = {};
+  let camposAuditoria = {};
   camposAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
   camposAuditoria.fechacrea = Sequelize.fn("now", 3);
   camposAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
@@ -129,77 +368,90 @@ export const registerUsuario = async (req, res) => {
     ...usuarioValidated,
     ...camposAuditoria,
   });
-  delete camposAdicionales.password;
-  delete camposAdicionales.emailvalidationcode;
-  delete camposAdicionales.hash;
 
-  response(res, 201, { ...camposAdicionales, ...usuarioValidated });
+  let validacion = {};
+  validacion._idusuario = usuarioCreated._idusuario;
+  validacion._idvalidaciontipo = 1; // 1: Para Correo electrónico
+  validacion.valor = usuarioValidated.email;
+  validacion.otp = emailvalidationcode;
+  validacion.tiempo_marca = Sequelize.fn("now", 3);
+  validacion.tiempo_expiracion = 5; // En minutos
+  validacion.codigo = crypto.randomBytes(77).toString("hex").slice(0, 77);
+  validacion.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
+  validacion.fechacrea = Sequelize.fn("now", 3);
+  validacion.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
+  validacion.fechamod = Sequelize.fn("now", 3);
+  validacion.estado = 1;
+
+  const validacionCreated = await validacionDao.insertValidacion(req, validacion);
+
+  const usuarioReturned = {};
+  usuarioReturned.hash = camposAdicionales.hash;
+  usuarioReturned.email = usuarioValidated.email;
+  usuarioReturned.codigo = validacion.codigo;
+
+  var usuarioObfuscated = jsonUtils.ofuscarAtributos(usuarioReturned, ["email"], jsonUtils.PATRON_OFUSCAR_EMAIL);
+
+  response(res, 201, { ...usuarioObfuscated });
 };
 
 export const validateEmail = async (req, res) => {
-  try {
-    //console.log(req);
-    const validateEmailSchema = Yup.object({
-      hash: Yup.string().max(50, "Máximo 50 caracteres").required("Hash es requerido").trim(),
-      token: Yup.string().max(50, "Máximo 50 caracteres").required("Token es requerido").trim(),
-    }).required();
-    const data = validateEmailSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
+  //console.log(req);
+  const filter_estado = [1];
+  const validateRestorePasswordSchema = Yup.object({
+    hash: Yup.string().trim().required().max(50),
+    codigo: Yup.string().trim().required().max(100),
+    otp: Yup.string().trim().required().max(6),
+  }).required();
+  const validacionValidated = validateRestorePasswordSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
 
-    // await new Promise((r) => setTimeout(r, 3000));
-    var query01 = `
-    UPDATE usuario SET emailvalid = 1,  emaillastvalidate= now(), emailnumvalidation = ifnull(emailnumvalidation,0)+1, idusuariomod=1, fechamod=now(), estado = 2
-    WHERE hash = ? and emailvalidationcode=?
-    `;
-
-    const [result] = await poolFactoring.query(query01, [data.hash, data.token]);
-
-    if (result.affectedRows === 0) return res.status(404).json({ message: "Parámetros no válidos" });
-
-    var query02 = `
-    SELECT email FROM usuario WHERE hash = ? and emailvalidationcode=?
-    `;
-
-    const [rows] = await poolFactoring.query(query02, [data.hash, data.token]);
-
-    res.json({ result: result.affectedRows, ...rows[0] });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: "Something goes wrong" });
+  const usuario = await usuarioDao.getUsuarioByHash(req, validacionValidated.hash);
+  if (!usuario) {
+    console.warn("Usuario no existe: ", validacionValidated);
+    throw new ClientError("El código de verificación no es válido o ha expidado", 404);
   }
-};
 
-export const registerUser_20230701 = async (req, res) => {
-  try {
-    // Get user input
-    let { nombre, apellido_paterno, apellido_materno, correo, clave } = req.body;
-
-    // sanitize: convert email to lowercase
-    correo = correo.toLowerCase();
-
-    //Encrypt user password
-    const encryptedPassword = await bcrypt.hash(clave, 10);
-    console.log(encryptedPassword);
-
-    const [rows] = await poolFactoring.query("INSERT INTO user (nombre, apellido_paterno, apellido_materno, correo, clave) VALUES (?,?,?,?,?)", [nombre, apellido_paterno, apellido_materno, correo, encryptedPassword]);
-
-    const idusuario = rows.insertId;
-
-    // Create token
-    const token = jwt.sign({ idusuario: idusuario, correo }, TOKEN_KEY, {
-      expiresIn: "2h",
-    });
-
-    res.status(201).json({
-      idusuario,
-      nombre,
-      apellido_paterno,
-      apellido_materno,
-      correo,
-      encryptedPassword,
-      token,
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: "Something goes wrong" });
+  const validacion = await validacionDao.getValidacionByIdusuarioAndCodigo(req, usuario._idusuario, validacionValidated.codigo, filter_estado);
+  if (!validacion) {
+    console.warn("Validación no existe: ", validacionValidated);
+    throw new ClientError("El código de verificación no es válido o ha expidado", 404);
   }
+  //jsonUtils.prettyPrint(validacion);
+
+  if (validacionValidated.otp === validacion.otp) {
+    if (validacion.verificado === 0) {
+      // Sumar 10 minutos y 10 segundos a la fecha de la base de datos
+      const fechaConAjustes = new Date(validacion.tiempo_marca);
+      fechaConAjustes.setMinutes(fechaConAjustes.getMinutes() + validacion.tiempo_expiracion);
+      fechaConAjustes.setSeconds(fechaConAjustes.getSeconds() + 10);
+      // Obtener la fecha actual
+      const fechaActual = new Date();
+      if (fechaActual <= fechaConAjustes) {
+        var validacionUpdate = {};
+        validacionUpdate.validacionid = validacion.validacionid;
+        validacionUpdate.verificado = 1;
+        validacionUpdate.fecha_verificado = Sequelize.fn("now", 3);
+        validacionUpdate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
+        validacionUpdate.fechamod = Sequelize.fn("now", 3);
+        const validacionUpdated = await validacionDao.updateValidacion(req, validacionUpdate);
+
+        var usuarioUpdate = {};
+        usuarioUpdate.usuarioid = usuario.usuarioid;
+        usuarioUpdate.isemailvalidated = 1; // true
+        const usuarioUpdated = await usuarioDao.updateUsuario(req, usuarioUpdate);
+      } else {
+        console.warn("El código de verificación ha expirado: ", validacionValidated);
+        throw new ClientError("El código de verificación no es válido o ha expidado", 404);
+      }
+    } else {
+      console.warn("El código de verificación ha sido validado anteriormente: ", validacionValidated);
+      throw new ClientError("El código de verificación no es válido o ha expidado", 404);
+    }
+  } else {
+    console.warn("El código de verificación no es válido: ", validacionValidated);
+    throw new ClientError("El código de verificación no es válido o ha expidado", 404);
+  }
+  var validacionReturned = {};
+  validacionReturned.hash = validacionValidated.hash;
+  response(res, 201, { ...validacionReturned });
 };

@@ -1,4 +1,4 @@
-import { TOKEN_KEY } from "../config.js";
+import { TOKEN_KEY_JWT } from "../config.js";
 import jwt from "jsonwebtoken";
 import * as jsonUtils from "../utils/jsonUtils.js";
 
@@ -18,7 +18,7 @@ export const verifyToken = (req, res, next) => {
   const token = tokenParts[1];
   // Verificamos y decodificamos el token
   try {
-    const decoded = jwt.verify(token, TOKEN_KEY);
+    const decoded = jwt.verify(token, TOKEN_KEY_JWT);
     //jsonUtils.prettyPrint(decoded);
     // Si el token es válido, almacenamos la información decodificada en el objeto de solicitud para uso posterior
     req.session_user = decoded;

@@ -3,7 +3,10 @@ config();
 
 export const PORT = process.env.PORT || 5000;
 
-export const TOKEN_KEY = process.env.TOKEN_KEY || "Hebreos13:6";
+export const WEB_SITE = process.env.WEB_SITE || "http://localhost:3000/";
+
+export const TOKEN_KEY_JWT = process.env.TOKEN_KEY_JWT || "Hebreos13:6";
+export const TOKEN_KEY_OTP = process.env.TOKEN_KEY_OTP || "Génesis1:1";
 
 // BD Factoring
 export const DB_FACTORING_HOST = process.env.DB_FACTORING_HOST || "localhost";

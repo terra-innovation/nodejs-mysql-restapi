@@ -117,9 +117,25 @@ export const getUsuarioByUsuarioid = async (req, usuarioid) => {
 export const getUsuarioByEmail = async (req, email) => {
   try {
     const { models } = req.app.locals;
-    const usuario = await models.Usuario.findAll({
+    const usuario = await models.Usuario.findOne({
       where: {
         email: email,
+      },
+    });
+    //console.log(usuario);
+    return usuario;
+  } catch (error) {
+    console.error(error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
+export const getUsuarioByHash = async (req, hash) => {
+  try {
+    const { models } = req.app.locals;
+    const usuario = await models.Usuario.findOne({
+      where: {
+        hash: hash,
       },
     });
     //console.log(usuario);

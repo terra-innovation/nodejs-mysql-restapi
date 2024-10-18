@@ -5,10 +5,10 @@ export default class FacturaMedioPago extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
     _idfacturamediopago: {
-      autoIncrement: true,
       type: DataTypes.BIGINT,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement: true
     },
     facturamediopagoid: {
       type: DataTypes.STRING(50),
@@ -17,11 +17,7 @@ export default class FacturaMedioPago extends Model {
     },
     _idfactura: {
       type: DataTypes.BIGINT,
-      allowNull: false,
-      references: {
-        model: 'factura',
-        key: '_idfactura'
-      }
+      allowNull: false
     },
     id: {
       type: DataTypes.STRING(200),

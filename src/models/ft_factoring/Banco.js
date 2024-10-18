@@ -14,7 +14,7 @@ export default class Banco extends Model {
       type: DataTypes.STRING(50),
       allowNull: false,
       defaultValue: Sequelize.Sequelize.fn('uuid'),
-      unique: "UQ_bancoid"
+      unique: "UQ_banco_bancoid"
     },
     tipo: {
       type: DataTypes.STRING(50),
@@ -67,7 +67,7 @@ export default class Banco extends Model {
         ]
       },
       {
-        name: "UQ_bancoid",
+        name: "UQ_banco_bancoid",
         unique: true,
         using: "BTREE",
         fields: [

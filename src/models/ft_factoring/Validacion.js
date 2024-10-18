@@ -1,67 +1,60 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class Usuario extends Model {
+export default class Validacion extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    _idusuario: {
-      autoIncrement: true,
-      type: DataTypes.BIGINT,
+    _idvalidacion: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement: true
     },
-    usuarioid: {
+    validacionid: {
       type: DataTypes.STRING(50),
       allowNull: false,
       defaultValue: Sequelize.Sequelize.fn('uuid')
     },
-    _iddocumentotipo: {
+    _idusuario: {
+      type: DataTypes.BIGINT,
+      allowNull: false
+    },
+    _idvalidaciontipo: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'documento_tipo',
-        key: '_iddocumentotipo'
-      }
-    },
-    documentonumero: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
-      unique: "documentonumero"
-    },
-    usuarionombres: {
-      type: DataTypes.STRING(50),
       allowNull: false
     },
-    apellidopaterno: {
-      type: DataTypes.STRING(50),
-      allowNull: false
-    },
-    apellidomaterno: {
-      type: DataTypes.STRING(50),
-      allowNull: false
-    },
-    email: {
-      type: DataTypes.STRING(50),
+    valor: {
+      type: DataTypes.STRING(250),
       allowNull: false,
-      unique: "email"
+      defaultValue: ""
     },
-    celular: {
+    otp: {
       type: DataTypes.STRING(20),
       allowNull: false
     },
-    password: {
-      type: DataTypes.STRING(200),
-      allowNull: false
+    tiempo_marca: {
+      type: DataTypes.DATE(3),
+      allowNull: false,
+      defaultValue: "current_timestamp(3)"
     },
-    isemailvalidated: {
-      type: DataTypes.BOOLEAN,
+    tiempo_expiracion: {
+      type: DataTypes.MEDIUMINT,
+      allowNull: false,
+      defaultValue: 0,
+      comment: "en minutos"
+    },
+    verificado: {
+      type: DataTypes.TINYINT,
       allowNull: false,
       defaultValue: 0
     },
-    hash: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
-      unique: "hash"
+    fecha_verificado: {
+      type: DataTypes.DATE(3),
+      allowNull: true
+    },
+    codigo: {
+      type: DataTypes.STRING(100),
+      allowNull: false
     },
     idusuariocrea: {
       type: DataTypes.INTEGER,
@@ -90,7 +83,7 @@ export default class Usuario extends Model {
     }
   }, {
     sequelize,
-    tableName: 'usuario',
+    tableName: 'validacion',
     timestamps: false,
     indexes: [
       {
@@ -98,38 +91,29 @@ export default class Usuario extends Model {
         unique: true,
         using: "BTREE",
         fields: [
+          { name: "_idvalidacion" },
+        ]
+      },
+      {
+        name: "UQ_validacion_validacionid",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "validacionid" },
+        ]
+      },
+      {
+        name: "FK_validacion_idusuario",
+        using: "BTREE",
+        fields: [
           { name: "_idusuario" },
         ]
       },
       {
-        name: "documentonumero",
-        unique: true,
+        name: "FK_validacion_idvalidaciontipo",
         using: "BTREE",
         fields: [
-          { name: "documentonumero" },
-        ]
-      },
-      {
-        name: "email",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "email" },
-        ]
-      },
-      {
-        name: "hash",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "hash" },
-        ]
-      },
-      {
-        name: "FK_usuario_iddocuemntotipo",
-        using: "BTREE",
-        fields: [
-          { name: "_iddocumentotipo" },
+          { name: "_idvalidaciontipo" },
         ]
       },
     ]

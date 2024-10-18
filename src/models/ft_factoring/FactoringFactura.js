@@ -7,20 +7,12 @@ export default class FactoringFactura extends Model {
     _idfactoring: {
       type: DataTypes.BIGINT,
       allowNull: false,
-      primaryKey: true,
-      references: {
-        model: 'factoring',
-        key: '_idfactoring'
-      }
+      primaryKey: true
     },
     _idfactura: {
       type: DataTypes.BIGINT,
       allowNull: false,
-      primaryKey: true,
-      references: {
-        model: 'factura',
-        key: '_idfactura'
-      }
+      primaryKey: true
     },
     idusuariocrea: {
       type: DataTypes.INTEGER,

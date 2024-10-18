@@ -20,7 +20,7 @@ import admin_cuentabancariaRoutes from "./routes/admin/cuentabancaria.routes.js"
 import admin_cuentabancariaestadoRoutes from "./routes/admin/cuentabancariaestado.routes.js";
 import admin_empresaRoutes from "./routes/admin/empresa.routes.js";
 
-import secureRoutes from "./routes/secure.routes.js";
+import secureRoutes from "./routes/secure/secure.routes.js";
 import { customResponseError } from "./utils/CustomResponseError.js";
 import { ValidationError } from "yup";
 import sequelize from "./config/bd/sequelize_db_factoring.js";
@@ -63,7 +63,7 @@ app.use("/api/v1", empresario_cuentabancariaRoutes);
 app.use("/api/v1", admin_cuentabancariaRoutes);
 app.use("/api/v1", admin_cuentabancariaestadoRoutes);
 app.use("/api/v1", admin_empresaRoutes);
-app.use("/secure", secureRoutes);
+app.use("/api/v1", secureRoutes);
 
 // Para cuando no existe la ruta
 app.use((req, res, next) => {
