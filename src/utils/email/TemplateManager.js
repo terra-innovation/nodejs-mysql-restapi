@@ -53,6 +53,34 @@ class TemplaceManager {
     }
   }
 
+  async templateCodigoVerificacion(params) {
+    const methodName = "templateCodigoVerificacion";
+    try {
+      const paramsSchema = yup
+        .object()
+        .shape({
+          name: yup.string().trim().required().min(1).max(100),
+          codigo: yup.string().trim().required().min(1).max(100),
+          fecha_actual: yup.string().trim().required().min(1).max(200),
+          duracion_minutos: yup.number().required().min(1).max(200),
+          fechacrea: yup.string().trim().required().min(1).max(200),
+        })
+        .required();
+      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+      const codigoverificacionEmail = await this.renderTemplate("codigo-verificacion.html", paramsValidated);
+
+      const codigoverificacionMailOptions = {
+        subject: "Código de verificación de Finanza Tech " + paramsValidated.fechacrea,
+        text: "Hola. Su código de verificación es: " + paramsValidated.codigo,
+        html: codigoverificacionEmail,
+      };
+      return codigoverificacionMailOptions;
+    } catch (error) {
+      console.error(`Error en ${methodName}:`, error);
+      throw error;
+    }
+  }
+
   async templateEjemplo(params) {
     const methodName = "templateEjemplo";
     try {
