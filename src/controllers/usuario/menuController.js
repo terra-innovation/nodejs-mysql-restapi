@@ -4,6 +4,7 @@ import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
 import * as menuAdmin from "../../menu/menuAdmin.js";
 import * as menuEmpresario from "../../menu/menuEmpresario.js";
+import * as menuUsuario from "../../menu/menuUsuario.js";
 
 export const getMenu = async (req, res) => {
   //console.log(req.session_user.usuario._idusuario);
@@ -56,7 +57,7 @@ export const getMenu = async (req, res) => {
 
   const menuInversionista = [];
   const menuItems = {
-    items: [menuDasboard, ...menuEmpresario.menuEmpresario, ...menuAdmin.menuAdmin, ...menuInversionista],
+    items: [menuDasboard, ...menuUsuario.menuUsuario, ...menuEmpresario.menuEmpresario, ...menuAdmin.menuAdmin, ...menuInversionista],
   };
   response(res, 201, menuItems);
 };
