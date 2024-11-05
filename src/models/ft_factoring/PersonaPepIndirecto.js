@@ -1,69 +1,64 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class Validacion extends Model {
+export default class PersonaPepIndirecto extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    _idvalidacion: {
+    _idpersonapepindirecto: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    validacionid: {
+    personapepindirectoid: {
       type: DataTypes.STRING(50),
       allowNull: false,
       defaultValue: Sequelize.Sequelize.fn('uuid'),
-      unique: "UQ_validacion_validacionid"
+      unique: "UQ_personapepdirectoid"
     },
-    _idusuario: {
+    _idpersona: {
       type: DataTypes.BIGINT,
-      allowNull: false,
+      allowNull: true,
       references: {
-        model: 'usuario',
-        key: '_idusuario'
+        model: 'persona',
+        key: '_idpersona'
       }
     },
-    _idvalidaciontipo: {
+    _idpepevinculo: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
-        model: 'validacion_tipo',
-        key: '_idvalidaciontipo'
+        model: 'pep_vinculo',
+        key: '_idpepvinculo'
       }
     },
-    valor: {
-      type: DataTypes.STRING(250),
-      allowNull: false,
-      defaultValue: ""
-    },
-    otp: {
-      type: DataTypes.STRING(20),
+    nombrescompletospep: {
+      type: DataTypes.STRING(300),
       allowNull: false
     },
-    tiempo_marca: {
-      type: DataTypes.DATE(3),
-      allowNull: false,
-      defaultValue: "current_timestamp(3)"
+    rucentidad: {
+      type: DataTypes.STRING(11),
+      allowNull: false
     },
-    tiempo_expiracion: {
-      type: DataTypes.MEDIUMINT,
-      allowNull: false,
-      defaultValue: 0,
-      comment: "en minutos"
+    nombreentidad: {
+      type: DataTypes.STRING(200),
+      allowNull: false
     },
-    verificado: {
-      type: DataTypes.TINYINT,
-      allowNull: false,
-      defaultValue: 0
+    cargoentidad: {
+      type: DataTypes.STRING(200),
+      allowNull: false
     },
-    fecha_verificado: {
-      type: DataTypes.DATE(3),
+    desde: {
+      type: DataTypes.DATEONLY,
+      allowNull: false
+    },
+    hasta: {
+      type: DataTypes.DATEONLY,
       allowNull: true
     },
-    codigo: {
-      type: DataTypes.STRING(100),
-      allowNull: false
+    actualmente: {
+      type: DataTypes.TINYINT,
+      allowNull: true
     },
     idusuariocrea: {
       type: DataTypes.INTEGER,
@@ -92,7 +87,7 @@ export default class Validacion extends Model {
     }
   }, {
     sequelize,
-    tableName: 'validacion',
+    tableName: 'persona_pep_indirecto',
     timestamps: false,
     indexes: [
       {
@@ -100,29 +95,29 @@ export default class Validacion extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idvalidacion" },
+          { name: "_idpersonapepindirecto" },
         ]
       },
       {
-        name: "UQ_validacion_validacionid",
+        name: "UQ_personapepdirectoid",
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "validacionid" },
+          { name: "personapepindirectoid" },
         ]
       },
       {
-        name: "FK_validacion_idusuario",
+        name: "FK_persona_pep_directo_idpersona",
         using: "BTREE",
         fields: [
-          { name: "_idusuario" },
+          { name: "_idpersona" },
         ]
       },
       {
-        name: "FK_validacion_idvalidaciontipo",
+        name: "FK_persona_pep_indirecto_idpepevinculo",
         using: "BTREE",
         fields: [
-          { name: "_idvalidaciontipo" },
+          { name: "_idpepevinculo" },
         ]
       },
     ]

@@ -1,26 +1,27 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class FactoringFactura extends Model {
+export default class Pais extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    _idfactoring: {
-      type: DataTypes.BIGINT,
+    _idpais: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true,
-      references: {
-        model: 'factoring',
-        key: '_idfactoring'
-      }
+      primaryKey: true
     },
-    _idfactura: {
-      type: DataTypes.BIGINT,
+    paisid: {
+      type: DataTypes.STRING(50),
       allowNull: false,
-      primaryKey: true,
-      references: {
-        model: 'factura',
-        key: '_idfactura'
-      }
+      defaultValue: Sequelize.Sequelize.fn('uuid'),
+      unique: "UQ_paisid"
+    },
+    codigopais: {
+      type: DataTypes.STRING(10),
+      allowNull: false
+    },
+    nombrepais: {
+      type: DataTypes.STRING(200),
+      allowNull: false
     },
     idusuariocrea: {
       type: DataTypes.INTEGER,
@@ -49,7 +50,7 @@ export default class FactoringFactura extends Model {
     }
   }, {
     sequelize,
-    tableName: 'factoring_factura',
+    tableName: 'pais',
     timestamps: false,
     indexes: [
       {
@@ -57,15 +58,15 @@ export default class FactoringFactura extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idfactoring" },
-          { name: "_idfactura" },
+          { name: "_idpais" },
         ]
       },
       {
-        name: "FK_factoring_factura_idfactura",
+        name: "UQ_paisid",
+        unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idfactura" },
+          { name: "paisid" },
         ]
       },
     ]

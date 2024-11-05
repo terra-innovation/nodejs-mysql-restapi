@@ -1,69 +1,66 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class Validacion extends Model {
+export default class Archivo extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    _idvalidacion: {
+    _idarchivo: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    validacionid: {
+    archivoid: {
       type: DataTypes.STRING(50),
       allowNull: false,
       defaultValue: Sequelize.Sequelize.fn('uuid'),
-      unique: "UQ_validacion_validacionid"
+      unique: "UQ_archivoid"
     },
-    _idusuario: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-      references: {
-        model: 'usuario',
-        key: '_idusuario'
-      }
-    },
-    _idvalidaciontipo: {
+    _idarchivotipo: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      defaultValue: 0,
       references: {
-        model: 'validacion_tipo',
-        key: '_idvalidaciontipo'
+        model: 'archivo_tipo',
+        key: '_idarchivotipo'
       }
     },
-    valor: {
-      type: DataTypes.STRING(250),
-      allowNull: false,
-      defaultValue: ""
-    },
-    otp: {
-      type: DataTypes.STRING(20),
-      allowNull: false
-    },
-    tiempo_marca: {
-      type: DataTypes.DATE(3),
-      allowNull: false,
-      defaultValue: "current_timestamp(3)"
-    },
-    tiempo_expiracion: {
-      type: DataTypes.MEDIUMINT,
+    _idarchivoestado: {
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
-      comment: "en minutos"
+      references: {
+        model: 'archivo_estado',
+        key: '_idarchivoestado'
+      }
     },
-    verificado: {
-      type: DataTypes.TINYINT,
-      allowNull: false,
-      defaultValue: 0
-    },
-    fecha_verificado: {
-      type: DataTypes.DATE(3),
-      allowNull: true
-    },
-    codigo: {
-      type: DataTypes.STRING(100),
+    nombre: {
+      type: DataTypes.STRING(200),
       allowNull: false
+    },
+    ruta: {
+      type: DataTypes.STRING(500),
+      allowNull: false
+    },
+    tamanio: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+      comment: "Tamaño del archivo en KB"
+    },
+    formato: {
+      type: DataTypes.STRING(10),
+      allowNull: false
+    },
+    observacion: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      comment: "Campo adicional para comentarios o información relevante."
+    },
+    fechavencimiento: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
+      comment: "Fecha en que el documento expira o requiere revisión, si es relevante."
     },
     idusuariocrea: {
       type: DataTypes.INTEGER,
@@ -92,7 +89,7 @@ export default class Validacion extends Model {
     }
   }, {
     sequelize,
-    tableName: 'validacion',
+    tableName: 'archivo',
     timestamps: false,
     indexes: [
       {
@@ -100,29 +97,29 @@ export default class Validacion extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idvalidacion" },
+          { name: "_idarchivo" },
         ]
       },
       {
-        name: "UQ_validacion_validacionid",
+        name: "UQ_archivoid",
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "validacionid" },
+          { name: "archivoid" },
         ]
       },
       {
-        name: "FK_validacion_idusuario",
+        name: "FK_archivo_idarchivotipo",
         using: "BTREE",
         fields: [
-          { name: "_idusuario" },
+          { name: "_idarchivotipo" },
         ]
       },
       {
-        name: "FK_validacion_idvalidaciontipo",
+        name: "FK_archivo_idarchivoestado",
         using: "BTREE",
         fields: [
-          { name: "_idvalidaciontipo" },
+          { name: "_idarchivoestado" },
         ]
       },
     ]

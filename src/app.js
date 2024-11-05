@@ -20,6 +20,8 @@ import admin_cuentabancariaRoutes from "./routes/admin/cuentabancaria.routes.js"
 import admin_cuentabancariaestadoRoutes from "./routes/admin/cuentabancariaestado.routes.js";
 import admin_empresaRoutes from "./routes/admin/empresa.routes.js";
 
+import usuario_personaRoutes from "./routes/usuario/persona.routes.js";
+
 import secureRoutes from "./routes/secure/secure.routes.js";
 import { customResponseError } from "./utils/CustomResponseError.js";
 import { ValidationError } from "yup";
@@ -63,6 +65,8 @@ app.use("/api/v1", empresario_cuentabancariaRoutes);
 app.use("/api/v1", admin_cuentabancariaRoutes);
 app.use("/api/v1", admin_cuentabancariaestadoRoutes);
 app.use("/api/v1", admin_empresaRoutes);
+
+app.use("/api/v1", usuario_personaRoutes);
 app.use("/api/v1", secureRoutes);
 
 // Para cuando no existe la ruta
@@ -87,12 +91,13 @@ app.use((err, req, res, next) => {
         path: dato.path,
       };
     });
-    console.error("ValidationError:", mensajeError);
+    console.error("ValidationError:", util.inspect(mensajeError, { colors: true, depth: null }));
   } else if (statusCode == undefined) {
+    console.error(util.inspect(err, { colors: true, depth: null }));
     statusCode = 500;
     message = "Ocurrio un error";
   }
-  console.error(util.inspect(err, { colors: true, depth: null }));
+  //console.error(util.inspect(err, { colors: true, depth: null }));
 
   customResponseError(res, statusCode, message);
 });

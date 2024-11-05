@@ -1,26 +1,38 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class FactoringFactura extends Model {
+export default class PersonaDeclaracion extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    _idfactoring: {
+    _idpersonadeclaracion: {
+      autoIncrement: true,
       type: DataTypes.BIGINT,
       allowNull: false,
-      primaryKey: true,
+      primaryKey: true
+    },
+    personadeclaracionid: {
+      type: DataTypes.STRING(50),
+      allowNull: false,
+      defaultValue: Sequelize.Sequelize.fn('uuid'),
+      unique: "UQ_personadeclaracionid"
+    },
+    _idpersona: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
       references: {
-        model: 'factoring',
-        key: '_idfactoring'
+        model: 'persona',
+        key: '_idpersona'
       }
     },
-    _idfactura: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-      primaryKey: true,
-      references: {
-        model: 'factura',
-        key: '_idfactura'
-      }
+    espep: {
+      type: DataTypes.TINYINT,
+      allowNull: true,
+      comment: "Declaro que soy una Persona Expuesta Políticamente"
+    },
+    tienevinculopep: {
+      type: DataTypes.TINYINT,
+      allowNull: true,
+      comment: "Declaro que tengo un vínculo con una Persona Expuesta"
     },
     idusuariocrea: {
       type: DataTypes.INTEGER,
@@ -49,7 +61,7 @@ export default class FactoringFactura extends Model {
     }
   }, {
     sequelize,
-    tableName: 'factoring_factura',
+    tableName: 'persona_declaracion',
     timestamps: false,
     indexes: [
       {
@@ -57,15 +69,22 @@ export default class FactoringFactura extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idfactoring" },
-          { name: "_idfactura" },
+          { name: "_idpersonadeclaracion" },
         ]
       },
       {
-        name: "FK_factoring_factura_idfactura",
+        name: "UQ_personadeclaracionid",
+        unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idfactura" },
+          { name: "personadeclaracionid" },
+        ]
+      },
+      {
+        name: "FK_persona_declaracion_idpersona",
+        using: "BTREE",
+        fields: [
+          { name: "_idpersona" },
         ]
       },
     ]

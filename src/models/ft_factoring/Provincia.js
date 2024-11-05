@@ -1,26 +1,35 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class FactoringFactura extends Model {
+export default class Provincia extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    _idfactoring: {
-      type: DataTypes.BIGINT,
+    _idprovincia: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true,
+      primaryKey: true
+    },
+    provinciaid: {
+      type: DataTypes.STRING(50),
+      allowNull: false,
+      defaultValue: Sequelize.Sequelize.fn('uuid'),
+      unique: "UQ_provinciaid"
+    },
+    _iddepartamento: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
       references: {
-        model: 'factoring',
-        key: '_idfactoring'
+        model: 'departamento',
+        key: '_iddepartamento'
       }
     },
-    _idfactura: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-      primaryKey: true,
-      references: {
-        model: 'factura',
-        key: '_idfactura'
-      }
+    codigoprovincia: {
+      type: DataTypes.STRING(10),
+      allowNull: false
+    },
+    nombreprovincia: {
+      type: DataTypes.STRING(200),
+      allowNull: false
     },
     idusuariocrea: {
       type: DataTypes.INTEGER,
@@ -49,7 +58,7 @@ export default class FactoringFactura extends Model {
     }
   }, {
     sequelize,
-    tableName: 'factoring_factura',
+    tableName: 'provincia',
     timestamps: false,
     indexes: [
       {
@@ -57,15 +66,22 @@ export default class FactoringFactura extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idfactoring" },
-          { name: "_idfactura" },
+          { name: "_idprovincia" },
         ]
       },
       {
-        name: "FK_factoring_factura_idfactura",
+        name: "UQ_provinciaid",
+        unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idfactura" },
+          { name: "provinciaid" },
+        ]
+      },
+      {
+        name: "FK_provincia_iddepartamento",
+        using: "BTREE",
+        fields: [
+          { name: "_iddepartamento" },
         ]
       },
     ]

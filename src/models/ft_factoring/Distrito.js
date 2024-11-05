@@ -1,31 +1,46 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class Rol extends Model {
+export default class Distrito extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    _idrol: {
-      autoIncrement: true,
+    _iddistrito: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    rolid: {
+    distritoid: {
       type: DataTypes.STRING(50),
       allowNull: false,
       defaultValue: Sequelize.Sequelize.fn('uuid'),
-      unique: "UQ_bancoid"
+      unique: "UQ_distritoid"
     },
-    nombre: {
-      type: DataTypes.STRING(50),
-      allowNull: false
+    _idprovincia: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'provincia',
+        key: '_idprovincia'
+      }
     },
-    alias: {
-      type: DataTypes.STRING(50),
-      allowNull: false
+    _idregionnatural: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'region_natural',
+        key: '_idregionnatural'
+      }
     },
-    codigo: {
+    codigodistrito: {
       type: DataTypes.STRING(10),
+      allowNull: false
+    },
+    nombredistrito: {
+      type: DataTypes.STRING(200),
+      allowNull: false
+    },
+    capitallegal: {
+      type: DataTypes.STRING(200),
       allowNull: false
     },
     idusuariocrea: {
@@ -55,7 +70,7 @@ export default class Rol extends Model {
     }
   }, {
     sequelize,
-    tableName: 'rol',
+    tableName: 'distrito',
     timestamps: false,
     indexes: [
       {
@@ -63,15 +78,29 @@ export default class Rol extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idrol" },
+          { name: "_iddistrito" },
         ]
       },
       {
-        name: "UQ_bancoid",
+        name: "UQ_distritoid",
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "rolid" },
+          { name: "distritoid" },
+        ]
+      },
+      {
+        name: "FK_distrito_idprovincia",
+        using: "BTREE",
+        fields: [
+          { name: "_idprovincia" },
+        ]
+      },
+      {
+        name: "FK_distrito_idregionnatural",
+        using: "BTREE",
+        fields: [
+          { name: "_idregionnatural" },
         ]
       },
     ]

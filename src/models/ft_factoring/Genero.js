@@ -1,26 +1,23 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class FactoringFactura extends Model {
+export default class Genero extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    _idfactoring: {
-      type: DataTypes.BIGINT,
+    _idgenero: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true,
-      references: {
-        model: 'factoring',
-        key: '_idfactoring'
-      }
+      primaryKey: true
     },
-    _idfactura: {
-      type: DataTypes.BIGINT,
+    generoid: {
+      type: DataTypes.STRING(50),
       allowNull: false,
-      primaryKey: true,
-      references: {
-        model: 'factura',
-        key: '_idfactura'
-      }
+      defaultValue: Sequelize.Sequelize.fn('uuid'),
+      unique: "UQ_generoid"
+    },
+    nombregenero: {
+      type: DataTypes.STRING(50),
+      allowNull: false
     },
     idusuariocrea: {
       type: DataTypes.INTEGER,
@@ -49,7 +46,7 @@ export default class FactoringFactura extends Model {
     }
   }, {
     sequelize,
-    tableName: 'factoring_factura',
+    tableName: 'genero',
     timestamps: false,
     indexes: [
       {
@@ -57,15 +54,15 @@ export default class FactoringFactura extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idfactoring" },
-          { name: "_idfactura" },
+          { name: "_idgenero" },
         ]
       },
       {
-        name: "FK_factoring_factura_idfactura",
+        name: "UQ_generoid",
+        unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idfactura" },
+          { name: "generoid" },
         ]
       },
     ]

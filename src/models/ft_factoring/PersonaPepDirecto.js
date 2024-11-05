@@ -1,32 +1,53 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class Rol extends Model {
+export default class PersonaPepDirecto extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    _idrol: {
+    _idpersonapepdirecto: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    rolid: {
+    personapepdirectoid: {
       type: DataTypes.STRING(50),
       allowNull: false,
       defaultValue: Sequelize.Sequelize.fn('uuid'),
-      unique: "UQ_bancoid"
+      unique: "UQ_personapepdirectoid"
     },
-    nombre: {
-      type: DataTypes.STRING(50),
+    _idpersona: {
+      type: DataTypes.BIGINT,
+      allowNull: true,
+      references: {
+        model: 'persona',
+        key: '_idpersona'
+      }
+    },
+    rucentidad: {
+      type: DataTypes.STRING(11),
       allowNull: false
     },
-    alias: {
-      type: DataTypes.STRING(50),
+    nombreentidad: {
+      type: DataTypes.STRING(200),
       allowNull: false
     },
-    codigo: {
-      type: DataTypes.STRING(10),
+    cargoentidad: {
+      type: DataTypes.STRING(200),
       allowNull: false
+    },
+    desde: {
+      type: DataTypes.DATEONLY,
+      allowNull: false
+    },
+    hasta: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
+      defaultValue: "0000-00-00"
+    },
+    actualmente: {
+      type: DataTypes.TINYINT,
+      allowNull: true
     },
     idusuariocrea: {
       type: DataTypes.INTEGER,
@@ -55,7 +76,7 @@ export default class Rol extends Model {
     }
   }, {
     sequelize,
-    tableName: 'rol',
+    tableName: 'persona_pep_directo',
     timestamps: false,
     indexes: [
       {
@@ -63,15 +84,22 @@ export default class Rol extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idrol" },
+          { name: "_idpersonapepdirecto" },
         ]
       },
       {
-        name: "UQ_bancoid",
+        name: "UQ_personapepdirectoid",
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "rolid" },
+          { name: "personapepdirectoid" },
+        ]
+      },
+      {
+        name: "FK_persona_pep_directo_idpersona",
+        using: "BTREE",
+        fields: [
+          { name: "_idpersona" },
         ]
       },
     ]

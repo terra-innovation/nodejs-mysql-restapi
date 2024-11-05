@@ -1,25 +1,25 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class FactoringFactura extends Model {
+export default class ArchivoPersona extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    _idfactoring: {
-      type: DataTypes.BIGINT,
+    _idarchivo: {
+      type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
       references: {
-        model: 'factoring',
-        key: '_idfactoring'
+        model: 'archivo',
+        key: '_idarchivo'
       }
     },
-    _idfactura: {
+    _idpersona: {
       type: DataTypes.BIGINT,
       allowNull: false,
       primaryKey: true,
       references: {
-        model: 'factura',
-        key: '_idfactura'
+        model: 'persona',
+        key: '_idpersona'
       }
     },
     idusuariocrea: {
@@ -49,7 +49,7 @@ export default class FactoringFactura extends Model {
     }
   }, {
     sequelize,
-    tableName: 'factoring_factura',
+    tableName: 'archivo_persona',
     timestamps: false,
     indexes: [
       {
@@ -57,15 +57,15 @@ export default class FactoringFactura extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idfactoring" },
-          { name: "_idfactura" },
+          { name: "_idarchivo" },
+          { name: "_idpersona" },
         ]
       },
       {
-        name: "FK_factoring_factura_idfactura",
+        name: "FK_archivo_persona_idpersona",
         using: "BTREE",
         fields: [
-          { name: "_idfactura" },
+          { name: "_idpersona" },
         ]
       },
     ]

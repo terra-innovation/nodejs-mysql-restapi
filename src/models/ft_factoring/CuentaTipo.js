@@ -5,15 +5,16 @@ export default class CuentaTipo extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
     _idcuentatipo: {
+      autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true,
-      autoIncrement: true
+      primaryKey: true
     },
     cuentatipoid: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: Sequelize.Sequelize.fn('uuid')
+      defaultValue: Sequelize.Sequelize.fn('uuid'),
+      unique: "UQ_cuentatipoid"
     },
     nombre: {
       type: DataTypes.STRING(50),
@@ -62,7 +63,7 @@ export default class CuentaTipo extends Model {
         ]
       },
       {
-        name: "UQ_bancoid",
+        name: "UQ_cuentatipoid",
         unique: true,
         using: "BTREE",
         fields: [
