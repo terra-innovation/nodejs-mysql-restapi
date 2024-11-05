@@ -1,8 +1,15 @@
-//import * as personaDao from "../../daos/personaDao.js";
+import * as personaDao from "../../daos/personaDao.js";
+import * as documentotipoDao from "../../daos/documentotipoDao.js";
+import * as paisDao from "../../daos/paisDao.js";
+import * as departamentoDao from "../../daos/departamentoDao.js";
+import * as provinciaDao from "../../daos/provinciaDao.js";
+import * as distritoDao from "../../daos/distritoDao.js";
+import * as generoDao from "../../daos/generoDao.js";
 import * as empresaDao from "../../daos/empresaDao.js";
 import * as bancoDao from "../../daos/bancoDao.js";
 import * as cuentatipoDao from "../../daos/cuentatipoDao.js";
 import * as monedaDao from "../../daos/monedaDao.js";
+import * as usuarioDao from "../../daos/usuarioDao.js";
 import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
@@ -19,6 +26,7 @@ export const verifyPersona = async (req, res) => {
   const personaVerifySchema = yup
     .object()
     .shape({
+      _idusuario: yup.number().required(),
       identificacion_anverso: yup
         .mixed()
         .concat(validacionesYup.fileRequeridValidation())
@@ -53,8 +61,67 @@ export const verifyPersona = async (req, res) => {
       direccion: yup.string().trim().max(200).required(),
     })
     .required();
-  const personaValidated = personaVerifySchema.validateSync({ ...req.files, ...req.body }, { abortEarly: false, stripUnknown: true });
+  const personaValidated = personaVerifySchema.validateSync({ ...req.files, ...req.body, _idusuario: req.session_user?.usuario?._idusuario }, { abortEarly: false, stripUnknown: true });
   console.debug("personaValidated:", personaValidated);
+
+  const documentotipo = await documentotipoDao.findDocumentotipoPk(req, personaValidated.documentotipoid);
+  if (!documentotipo) {
+    throw new ClientError("Documento tipo no existe", 404);
+  }
+  const paisNacionalidad = await paisDao.findPaisPk(req, personaValidated.paisnacionalidadid);
+  if (!paisNacionalidad) {
+    throw new ClientError("Nacionalidad no existe", 404);
+  }
+  const paisNacimiento = await paisDao.findPaisPk(req, personaValidated.paisnacimientoid);
+  if (!paisNacimiento) {
+    throw new ClientError("País de nacimiento no existe", 404);
+  }
+  const paisResidencia = await paisDao.findPaisPk(req, personaValidated.paisresidenciaid);
+  if (!paisResidencia) {
+    throw new ClientError("País de recidencia no existe", 404);
+  }
+  const distritoResidencia = await distritoDao.getDistritoByDistritoid(req, personaValidated.distritoresidenciaid);
+  if (!distritoResidencia) {
+    throw new ClientError("Distrito de recidencia no existe", 404);
+  }
+  const genero = await generoDao.findGeneroPk(req, personaValidated.generoid);
+  if (!genero) {
+    throw new ClientError("Genero no existe", 404);
+  }
+
+  const usuarioConected = await usuarioDao.getUsuarioByIdusuario(req, personaValidated._idusuario);
+  const provinciaResidencia = await provinciaDao.getProvinciaByIdprovincia(req, distritoResidencia._idprovincia);
+
+  let camposFk = {};
+  camposFk._idusuario = usuarioConected._idusuario;
+  camposFk._iddocumentotipo = documentotipo._iddocumentotipo;
+  camposFk._iddpaisnacionalidad = paisNacionalidad._idpais;
+  camposFk._idpaisnacimiento = paisNacimiento._idpais;
+  camposFk._idpaisresidencia = paisResidencia._idpais;
+  camposFk._iddepartamentoresidencia = provinciaResidencia._iddepartamento;
+  camposFk._idprovinciaresidencia = distritoResidencia._idprovincia;
+  camposFk._iddistritoresidencia = distritoResidencia._iddistrito;
+  camposFk._idgenero = genero._idgenero;
+  camposFk._iddocumentotipo = documentotipo._iddocumentotipo;
+
+  let camposAdicionales = {};
+  camposAdicionales.personaid = uuidv4();
+  camposAdicionales.email = usuarioConected.email;
+  camposAdicionales.celular = usuarioConected.celular;
+
+  let camposAuditoria = {};
+  camposAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
+  camposAuditoria.fechacrea = Sequelize.fn("now", 3);
+  camposAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
+  camposAuditoria.fechamod = Sequelize.fn("now", 3);
+  camposAuditoria.estado = 1;
+
+  const personaCreated = await personaDao.insertPersona(req, {
+    ...camposFk,
+    ...camposAdicionales,
+    ...personaValidated,
+    ...camposAuditoria,
+  });
 
   response(res, 200, {});
 };

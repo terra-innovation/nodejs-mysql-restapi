@@ -5,6 +5,7 @@ export default class Persona extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
     _idpersona: {
+      autoIncrement: true,
       type: DataTypes.BIGINT,
       allowNull: false,
       primaryKey: true

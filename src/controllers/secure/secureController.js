@@ -320,18 +320,18 @@ export const registerUsuario = async (req, res) => {
     .required();
   const usuarioValidated = usuarioCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
 
-  var documentotipo = await documentotipoDao.findDocumentotipoPk(req, usuarioValidated.documentotipoid);
+  const documentotipo = await documentotipoDao.findDocumentotipoPk(req, usuarioValidated.documentotipoid);
   if (!documentotipo) {
     throw new ClientError("Documento tipo no existe", 404);
   }
 
   //Validate unique register
-  var usuariobynumerodocumento = await usuarioDao.getUsuarioByNumerodocumento(req, usuarioValidated.documentonumero);
+  const usuariobynumerodocumento = await usuarioDao.getUsuarioByNumerodocumento(req, usuarioValidated.documentonumero);
   if (usuariobynumerodocumento?.length > 0) {
     throw new ClientError("El número de documento ya se encuentra registrado. ", 404);
   }
 
-  var usuariobyemail = await usuarioDao.getUsuarioByEmail(req, usuarioValidated.email);
+  const usuariobyemail = await usuarioDao.getUsuarioByEmail(req, usuarioValidated.email);
   if (usuariobyemail?.length > 0) {
     throw new ClientError("El correo electrónico ya se encuentra registrado. ", 404);
   }
