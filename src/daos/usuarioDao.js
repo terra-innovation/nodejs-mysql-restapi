@@ -47,9 +47,6 @@ export const getUsuarioByIdusuario = async (req, idusuario) => {
   try {
     const { models } = req.app.locals;
     const usuario = await models.Usuario.findByPk(idusuario, {});
-    console.log(usuario);
-
-    //const usuarios = await usuario.getUsuarios();
     //console.log(usuarios);
 
     return usuario;

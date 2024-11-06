@@ -34,23 +34,45 @@ export default class Archivo extends Model {
         key: '_idarchivoestado'
       }
     },
-    nombre: {
+    codigo: {
+      type: DataTypes.STRING(50),
+      allowNull: false,
+      defaultValue: "0"
+    },
+    nombrereal: {
       type: DataTypes.STRING(200),
-      allowNull: false
+      allowNull: false,
+      comment: "Nombre real del archivo"
+    },
+    nombrealmacenamiento: {
+      type: DataTypes.STRING(200),
+      allowNull: false,
+      comment: "Nombre del archivo en el almacenamiento"
     },
     ruta: {
       type: DataTypes.STRING(500),
       allowNull: false
     },
     tamanio: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT,
       allowNull: false,
       defaultValue: 0,
       comment: "Tamaño del archivo en KB"
     },
-    formato: {
-      type: DataTypes.STRING(10),
-      allowNull: false
+    mimetype: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      comment: "MineType"
+    },
+    encoding: {
+      type: DataTypes.STRING(50),
+      allowNull: false,
+      comment: "Encoding"
+    },
+    extension: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
+      comment: "Extesión del archivo"
     },
     observacion: {
       type: DataTypes.TEXT,

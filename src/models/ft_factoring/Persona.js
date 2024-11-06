@@ -18,11 +18,12 @@ export default class Persona extends Model {
     },
     _idusuario: {
       type: DataTypes.BIGINT,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: 'usuario',
         key: '_idusuario'
-      }
+      },
+      unique: "FK_persona_idusuario"
     },
     _iddocumentotipo: {
       type: DataTypes.INTEGER,
@@ -167,6 +168,14 @@ export default class Persona extends Model {
         ]
       },
       {
+        name: "UQ_idusuario",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "_idusuario" },
+        ]
+      },
+      {
         name: "FK_persona_iddocumentotipo",
         using: "BTREE",
         fields: [
@@ -220,13 +229,6 @@ export default class Persona extends Model {
         using: "BTREE",
         fields: [
           { name: "_idgenero" },
-        ]
-      },
-      {
-        name: "FK_persona_idusuario",
-        using: "BTREE",
-        fields: [
-          { name: "_idusuario" },
         ]
       },
     ]

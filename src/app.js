@@ -21,6 +21,7 @@ import admin_cuentabancariaestadoRoutes from "./routes/admin/cuentabancariaestad
 import admin_empresaRoutes from "./routes/admin/empresa.routes.js";
 
 import usuario_personaRoutes from "./routes/usuario/persona.routes.js";
+import usuario_personapepdirectoRoutes from "./routes/usuario/personapepdirecto.routes.js";
 
 import secureRoutes from "./routes/secure/secure.routes.js";
 import { customResponseError } from "./utils/CustomResponseError.js";
@@ -67,6 +68,7 @@ app.use("/api/v1", admin_cuentabancariaestadoRoutes);
 app.use("/api/v1", admin_empresaRoutes);
 
 app.use("/api/v1", usuario_personaRoutes);
+app.use("/api/v1", usuario_personapepdirectoRoutes);
 app.use("/api/v1", secureRoutes);
 
 // Para cuando no existe la ruta

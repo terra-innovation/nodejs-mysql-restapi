@@ -2,6 +2,7 @@ import * as jsonUtils from "../utils/jsonUtils.js";
 import multer from "multer";
 import * as luxon from "luxon";
 import { v4 as uuidv4 } from "uuid";
+import path from "path";
 import * as storageUtils from "../utils/storageUtils.js";
 
 let storage_persona = multer.diskStorage({
@@ -10,11 +11,19 @@ let storage_persona = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     //console.log(file);
+    const extension = path.extname(file.originalname).slice(1) || "";
+    const anio_upload = luxon.DateTime.now().toFormat("yyyy");
+    const mes_upload = luxon.DateTime.now().toFormat("MM");
+    const dia_upload = luxon.DateTime.now().toFormat("dd");
     const codigo_archivo = uuidv4().split("-")[0] + "-" + uuidv4().split("-")[1];
     const uniqueSuffix = luxon.DateTime.now().toFormat("yyyyMMdd_HHmmss_SSS") + "_" + codigo_archivo;
     const filename = uniqueSuffix + "_" + file.originalname;
     cb(null, filename);
     file.codigo_archivo = codigo_archivo;
+    file.extension = extension;
+    file.anio_upload = anio_upload;
+    file.mes_upload = mes_upload;
+    file.dia_upload = dia_upload;
   },
 });
 
@@ -35,7 +44,7 @@ export const upload_persona = multer({
   },
 }).fields([
   { name: "identificacion_anverso", maxCount: 1 },
-  { name: "identificacion_reservo", maxCount: 1 },
+  { name: "identificacion_reverso", maxCount: 1 },
   { name: "identificacion_selfi", maxCount: 1 },
 ]);
 

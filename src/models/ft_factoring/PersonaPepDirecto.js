@@ -42,8 +42,7 @@ export default class PersonaPepDirecto extends Model {
     },
     hasta: {
       type: DataTypes.DATEONLY,
-      allowNull: true,
-      defaultValue: "0000-00-00"
+      allowNull: true
     },
     actualmente: {
       type: DataTypes.TINYINT,

@@ -5,16 +5,15 @@ export default class Banco extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
     _idbanco: {
-      autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement: true
     },
     bancoid: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: Sequelize.Sequelize.fn('uuid'),
-      unique: "UQ_banco_bancoid"
+      defaultValue: Sequelize.Sequelize.fn('uuid')
     },
     tipo: {
       type: DataTypes.STRING(50),

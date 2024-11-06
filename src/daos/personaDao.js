@@ -1,6 +1,22 @@
 import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
 
+export const getPersonaByIdusuario = async (req, idusuario) => {
+  try {
+    const { models } = req.app.locals;
+    const persona = await models.Persona.findOne({
+      include: [],
+      where: {
+        _idusuario: idusuario,
+      },
+    });
+    return persona;
+  } catch (error) {
+    console.error(error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getPersonaByIdpersona = async (req, idpersona) => {
   try {
     const { models } = req.app.locals;
@@ -22,28 +38,7 @@ export const getPersonaByPersonaid = async (req, personaid) => {
   try {
     const { models } = req.app.locals;
     const persona = await models.Persona.findOne({
-      include: [
-        {
-          model: models.Empresa,
-          as: "empresa_empresa",
-        },
-        {
-          model: models.Banco,
-          as: "banco_banco",
-        },
-        {
-          model: models.Moneda,
-          as: "moneda_moneda",
-        },
-        {
-          model: models.CuentaTipo,
-          as: "cuentatipo_cuenta_tipo",
-        },
-        {
-          model: models.PersonaEstado,
-          as: "personaestado_cuenta_bancaria_estado",
-        },
-      ],
+      include: [],
       where: {
         personaid: personaid,
       },

@@ -1,18 +1,18 @@
 import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
 
-export const getProvincias = async (req, estados) => {
+export const getArchivos = async (req, estados) => {
   try {
     const { models } = req.app.locals;
-    const provincias = await models.Provincia.findAll({
+    const archivos = await models.Archivo.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
     });
-    //console.log(provincias);
-    return provincias;
+    //console.log(archivos);
+    return archivos;
   } catch (error) {
     console.error(error.original.code);
     console.error(error);
@@ -20,71 +20,74 @@ export const getProvincias = async (req, estados) => {
   }
 };
 
-export const getProvinciaByIdprovincia = async (req, idprovincia) => {
+export const getArchivoByIdarchivo = async (req, idarchivo) => {
   try {
     const { models } = req.app.locals;
 
-    const provincia = await models.Provincia.findByPk(idprovincia, {});
-    //console.log(provincias);
+    const archivo = await models.Archivo.findByPk(idarchivo, {});
+    console.log(archivo);
 
-    return provincia;
+    //const archivos = await archivo.getArchivos();
+    //console.log(archivos);
+
+    return archivo;
   } catch (error) {
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getProvinciaByProvinciaid = async (req, provinciaid) => {
+export const getArchivoByArchivoid = async (req, archivoid) => {
   try {
     const { models } = req.app.locals;
-    const provincia = await models.Provincia.findOne({
+    const archivo = await models.Archivo.findOne({
       where: {
-        provinciaid: provinciaid,
+        archivoid: archivoid,
       },
     });
-    //console.log(provincia);
-    return provincia;
+    //console.log(archivo);
+    return archivo;
   } catch (error) {
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const findProvinciaPk = async (req, provinciaid) => {
+export const findArchivoPk = async (req, archivoid) => {
   try {
     const { models } = req.app.locals;
-    const provincia = await models.Provincia.findOne({
-      attributes: ["_idprovincia"],
+    const archivo = await models.Archivo.findOne({
+      attributes: ["_idarchivo"],
       where: {
-        provinciaid: provinciaid,
+        archivoid: archivoid,
       },
     });
-    //console.log(provincia);
-    return provincia;
+    //console.log(archivo);
+    return archivo;
   } catch (error) {
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const insertProvincia = async (req, provincia) => {
+export const insertArchivo = async (req, archivo) => {
   try {
     const { models } = req.app.locals;
-    const provincia_nuevo = await models.Provincia.create(provincia);
-    // console.log(provincia_nuevo);
-    return provincia_nuevo;
+    const archivo_nuevo = await models.Archivo.create(archivo);
+    // console.log(archivo_nuevo);
+    return archivo_nuevo;
   } catch (error) {
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateProvincia = async (req, provincia) => {
+export const updateArchivo = async (req, archivo) => {
   try {
     const { models } = req.app.locals;
-    const result = await models.Provincia.update(provincia, {
+    const result = await models.Archivo.update(archivo, {
       where: {
-        provinciaid: provincia.provinciaid,
+        archivoid: archivo.archivoid,
       },
     });
     return result;
@@ -94,12 +97,12 @@ export const updateProvincia = async (req, provincia) => {
   }
 };
 
-export const deleteProvincia = async (req, provincia) => {
+export const deleteArchivo = async (req, archivo) => {
   try {
     const { models } = req.app.locals;
-    const result = await models.Provincia.update(provincia, {
+    const result = await models.Archivo.update(archivo, {
       where: {
-        provinciaid: provincia.provinciaid,
+        archivoid: archivo.archivoid,
       },
     });
     return result;
