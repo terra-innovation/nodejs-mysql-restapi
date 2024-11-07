@@ -8,7 +8,7 @@ const menuFormulario = {
       id: "usuario-verificacion-cuenta-usuario",
       title: "Verificación de cuenta",
       type: "item",
-      url: "/empresario/cuentabancaria/lista",
+      url: "/usuario/persona/verificacion",
       icon: "IdcardOutlined",
       breadcrumbs: true,
     },

@@ -117,8 +117,6 @@ export default function initModels(sequelize) {
   DocumentoTipo.hasMany(Persona, { as: "personas", foreignKey: "_iddocumentotipo" });
   Usuario.belongsTo(DocumentoTipo, { as: "documentotipo_documento_tipo", foreignKey: "_iddocumentotipo" });
   DocumentoTipo.hasMany(Usuario, { as: "usuarios", foreignKey: "_iddocumentotipo" });
-  Colaborador.belongsTo(Empresa, { as: "empresa_empresa", foreignKey: "_idempresa" });
-  Empresa.hasMany(Colaborador, { as: "colaboradors", foreignKey: "_idempresa" });
   CuentaBancaria.belongsTo(Empresa, { as: "empresa_empresa", foreignKey: "_idempresa" });
   Empresa.hasMany(CuentaBancaria, { as: "cuenta_bancaria", foreignKey: "_idempresa" });
   Factoring.belongsTo(Empresa, { as: "aceptante_empresa", foreignKey: "_idaceptante" });
@@ -151,8 +149,6 @@ export default function initModels(sequelize) {
   Moneda.hasMany(CuentaBancaria, { as: "cuenta_bancaria", foreignKey: "_idmoneda" });
   Factoring.belongsTo(Moneda, { as: "moneda_moneda", foreignKey: "_idmoneda" });
   Moneda.hasMany(Factoring, { as: "factorings", foreignKey: "_idmoneda" });
-  Departamento.belongsTo(Pais, { as: "pais_pai", foreignKey: "_idpais" });
-  Pais.hasMany(Departamento, { as: "departamentos", foreignKey: "_idpais" });
   Persona.belongsTo(Pais, { as: "paisnacionalidad_pai", foreignKey: "_idpaisnacionalidad" });
   Pais.hasMany(Persona, { as: "personas", foreignKey: "_idpaisnacionalidad" });
   Persona.belongsTo(Pais, { as: "paisnacimiento_pai", foreignKey: "_idpaisnacimiento" });

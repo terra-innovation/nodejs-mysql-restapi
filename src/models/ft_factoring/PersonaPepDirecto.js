@@ -46,7 +46,8 @@ export default class PersonaPepDirecto extends Model {
     },
     actualmente: {
       type: DataTypes.TINYINT,
-      allowNull: true
+      allowNull: true,
+      comment: "1:si, 0:no"
     },
     idusuariocrea: {
       type: DataTypes.INTEGER,

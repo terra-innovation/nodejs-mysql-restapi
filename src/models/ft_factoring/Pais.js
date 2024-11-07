@@ -23,6 +23,10 @@ export default class Pais extends Model {
       type: DataTypes.STRING(200),
       allowNull: false
     },
+    nacionalidad: {
+      type: DataTypes.STRING(200),
+      allowNull: false
+    },
     idusuariocrea: {
       type: DataTypes.INTEGER,
       allowNull: false,

@@ -1,9 +1,10 @@
-import * as personapepdirectoDao from "../../daos/personapepdirectoDao.js";
+import * as personapepindirectoDao from "../../daos/personapepindirectoDao.js";
 import * as empresaDao from "../../daos/empresaDao.js";
 import * as personaDao from "../../daos/personaDao.js";
 import * as bancoDao from "../../daos/bancoDao.js";
 import * as cuentatipoDao from "../../daos/cuentatipoDao.js";
 import * as monedaDao from "../../daos/monedaDao.js";
+import * as pepvinculoDao from "../../daos/pepvinculoDao.js";
 import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
@@ -12,7 +13,7 @@ import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { Sequelize } from "sequelize";
 
-export const getPersonapepdirectoMaster = async (req, res) => {
+export const getPersonapepindirectoMaster = async (req, res) => {
   const filter_estados = [1];
   const session_idusuario = req.session_user.usuario._idusuario;
   //console.log(req.session_user.usuario.rol_rols);
@@ -41,52 +42,52 @@ export const getPersonapepdirectoMaster = async (req, res) => {
   response(res, 201, cuentasbancariasMasterFiltered);
 };
 
-export const updatePersonapepdirectoOnlyAlias = async (req, res) => {
+export const updatePersonapepindirectoOnlyAlias = async (req, res) => {
   const { id } = req.params;
-  const personapepdirectoUpdateSchema = yup
+  const personapepindirectoUpdateSchema = yup
     .object()
     .shape({
-      personapepdirectoid: yup.string().trim().required().min(36).max(36),
+      personapepindirectoid: yup.string().trim().required().min(36).max(36),
       alias: yup.string().required().max(50),
     })
     .required();
-  const personapepdirectoValidated = personapepdirectoUpdateSchema.validateSync({ personapepdirectoid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
-  console.debug("personapepdirectoValidated:", personapepdirectoValidated);
+  const personapepindirectoValidated = personapepindirectoUpdateSchema.validateSync({ personapepindirectoid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
+  console.debug("personapepindirectoValidated:", personapepindirectoValidated);
 
   var camposAdicionales = {};
-  camposAdicionales.personapepdirectoid = id;
+  camposAdicionales.personapepindirectoid = id;
 
   var camposAuditoria = {};
   camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
   camposAuditoria.fechamod = Sequelize.fn("now", 3);
 
-  const result = await personapepdirectoDao.updatePersonapepdirecto(req, {
+  const result = await personapepindirectoDao.updatePersonapepindirecto(req, {
     ...camposAdicionales,
-    ...personapepdirectoValidated,
+    ...personapepindirectoValidated,
     ...camposAuditoria,
   });
   if (result[0] === 0) {
-    throw new ClientError("Personapepdirecto no existe", 404);
+    throw new ClientError("Personapepindirecto no existe", 404);
   }
   console.log(id);
-  const personapepdirectoUpdated = await personapepdirectoDao.getPersonapepdirectoByPersonapepdirectoid(req, id);
-  if (!personapepdirectoUpdated) {
-    throw new ClientError("Personapepdirecto no existe", 404);
+  const personapepindirectoUpdated = await personapepindirectoDao.getPersonapepindirectoByPersonapepindirectoid(req, id);
+  if (!personapepindirectoUpdated) {
+    throw new ClientError("Personapepindirecto no existe", 404);
   }
 
-  var personapepdirectoObfuscated = jsonUtils.ofuscarAtributos(personapepdirectoUpdated, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
+  var personapepindirectoObfuscated = jsonUtils.ofuscarAtributos(personapepindirectoUpdated, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
   //console.log(empresaObfuscated);
 
-  var personapepdirectoFiltered = jsonUtils.removeAttributesPrivates(personapepdirectoObfuscated);
-  response(res, 200, personapepdirectoFiltered);
+  var personapepindirectoFiltered = jsonUtils.removeAttributesPrivates(personapepindirectoObfuscated);
+  response(res, 200, personapepindirectoFiltered);
 };
 
-export const getPersonapepdirectos = async (req, res) => {
+export const getPersonapepindirectos = async (req, res) => {
   //console.log(req.session_user.usuario._idusuario);
 
   const session_idusuario = req.session_user.usuario._idusuario;
   const filter_estado = [1];
-  const cuentasbancarias = await personapepdirectoDao.getCuentasbancariasByIdusuario(req, session_idusuario, filter_estado);
+  const cuentasbancarias = await personapepindirectoDao.getCuentasbancariasByIdusuario(req, session_idusuario, filter_estado);
   var cuentasbancariasJson = jsonUtils.sequelizeToJSON(cuentasbancarias);
   //console.log(empresaObfuscated);
 
@@ -95,13 +96,16 @@ export const getPersonapepdirectos = async (req, res) => {
   response(res, 201, cuentasbancariasFiltered);
 };
 
-export const createPersonapepdirecto = async (req, res) => {
+export const createPersonapepindirecto = async (req, res) => {
   const session_idusuario = req.session_user.usuario._idusuario;
   const filter_estado = [1, 2];
-  const personapepdirectoCreateSchema = yup.array().of(
+  const personapepindirectoCreateSchema = yup.array().of(
     yup
       .object()
       .shape({
+        pepvinculoid: yup.string().min(36).max(36).trim().required(),
+        identificacionpep: yup.string().trim().required().min(8).max(8),
+        nombrescompletospep: yup.string().trim().required().max(200),
         rucentidad: yup.string().trim().required().min(11).max(11),
         nombreentidad: yup.string().trim().required().max(200),
         cargoentidad: yup.string().trim().required().max(200),
@@ -111,21 +115,28 @@ export const createPersonapepdirecto = async (req, res) => {
       })
       .required()
   );
-  let personapepdirectoValidated = personapepdirectoCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
+  let personapepindirectoValidated = personapepindirectoCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
 
   let persona = await personaDao.getPersonaByIdusuario(req, session_idusuario);
   if (!persona) {
     throw new ClientError("Persona no existe", 404);
   }
 
+  for (const [index, item] of personapepindirectoValidated.entries()) {
+    let pepvinculo = await pepvinculoDao.findPepvinculoPk(req, item.pepvinculoid);
+    if (!pepvinculo) {
+      throw new ClientError("PEP vínculo no existe", 404);
+    }
+  }
+
   // Campos adicionales
-  personapepdirectoValidated.forEach((item) => {
-    item.personapepdirectoid = uuidv4();
+  personapepindirectoValidated.forEach((item) => {
+    item.personapepindirectoid = uuidv4();
     item._idpersona = persona._idpersona;
   });
 
   // Campos de auditoría
-  personapepdirectoValidated.forEach((item) => {
+  personapepindirectoValidated.forEach((item) => {
     item.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
     item.fechacrea = Sequelize.fn("now", 3);
     item.idusuariomod = req.session_user.usuario._idusuario ?? 1;
@@ -133,9 +144,9 @@ export const createPersonapepdirecto = async (req, res) => {
     item.estado = 1;
   });
 
-  personapepdirectoValidated.forEach(async (item) => {
-    const personapepdirectoCreated = await personapepdirectoDao.insertPersonaPepDirecto(req, item);
-  });
+  for (const [index, item] of personapepindirectoValidated.entries()) {
+    const personapepindirectoCreated = await personapepindirectoDao.insertPersonaPepIndirecto(req, item);
+  }
 
   response(res, 201, {});
 };

@@ -32,6 +32,10 @@ export default class PersonaPepIndirecto extends Model {
         key: '_idpepvinculo'
       }
     },
+    identificacionpep: {
+      type: DataTypes.STRING(12),
+      allowNull: false
+    },
     nombrescompletospep: {
       type: DataTypes.STRING(300),
       allowNull: false
@@ -58,7 +62,8 @@ export default class PersonaPepIndirecto extends Model {
     },
     actualmente: {
       type: DataTypes.TINYINT,
-      allowNull: true
+      allowNull: true,
+      comment: "1:si, 0:no"
     },
     idusuariocrea: {
       type: DataTypes.INTEGER,
