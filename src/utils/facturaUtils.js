@@ -83,9 +83,7 @@ export const getFactura = (json) => {
         //item: item,
         facturaitemid: uuidv4(),
         id: item.ID[0] ?? null,
-        codigo_producto_sunat: item.Item[0].CommodityClassification?.[0].ItemClassificationCode[0]._
-          ? item.Item[0].CommodityClassification?.[0].ItemClassificationCode[0]._
-          : item.Item[0].CommodityClassification?.[0].ItemClassificationCode[0] ?? null,
+        codigo_producto_sunat: item.Item[0].CommodityClassification?.[0].ItemClassificationCode[0]._ ? item.Item[0].CommodityClassification?.[0].ItemClassificationCode[0]._ : item.Item[0].CommodityClassification?.[0].ItemClassificationCode[0] ?? null,
         codigo_producto_vendedor: item.Item[0].SellersItemIdentification?.[0].ID[0] ?? null,
         unidad_medida: item.InvoicedQuantity[0].$.unitCode ?? null,
         cantidad: item.InvoicedQuantity[0]._ ?? null,
@@ -129,14 +127,19 @@ export const getFactura = (json) => {
     //pago_cantidad_cuotas: facturaUtils.contarCuotasDepago(this.terminos_pago || []),
     //
   };
+
+  //Formatear para compatilidad con BBDD
+  facturaJson.hora_emision = luxon.DateTime.fromISO(facturaJson.hora_emision).toFormat("HH:mm:ss");
+
   //facturaJson.fecha_registro = new Date();
-  facturaJson.fecha_registro = luxon.DateTime.local().toISO();
+  facturaJson.fecha_registro_para_calculos = luxon.DateTime.local().toISO();
+  facturaJson.fecha_registro = luxon.DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss");
   facturaJson.detraccion_cantidad = contarDetracciones(facturaJson.terminos_pago || []);
   facturaJson.detraccion_monto = sumarMontosDetracciones(facturaJson.terminos_pago || []);
   facturaJson.pago_cantidad_cuotas = contarCuotasDepago(facturaJson.terminos_pago || []);
   facturaJson.fecha_pago_mayor_estimado = encontrarMayorFechaPago(facturaJson.terminos_pago || []);
-  facturaJson.dias_desde_emision = restarFechas(facturaJson.fecha_registro, facturaJson.fecha_emision);
-  facturaJson.dias_estimados_para_pago = restarFechas(facturaJson.fecha_pago_mayor_estimado, facturaJson.fecha_registro);
+  facturaJson.dias_desde_emision = restarFechas(facturaJson.fecha_registro_para_calculos, facturaJson.fecha_emision);
+  facturaJson.dias_estimados_para_pago = restarFechas(facturaJson.fecha_pago_mayor_estimado, facturaJson.fecha_registro_para_calculos);
   facturaJson.importe_bruto = parseFloat(facturaJson.impuesto.valor_venta.monto_pago).toFixed(2);
   facturaJson.importe_neto = parseFloat(parseFloat(facturaJson.importe_bruto) - parseFloat(facturaJson.detraccion_monto)).toFixed(2);
   //console.log(facturaJson);

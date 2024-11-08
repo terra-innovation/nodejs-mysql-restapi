@@ -24,6 +24,31 @@ import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { Sequelize } from "sequelize";
 
+export const getPersonaMaster = async (req, res) => {
+  const filter_estados = [1];
+  const paisnacionalidades = await paisDao.getPaises(req, filter_estados);
+  const paisnacimientos = await paisDao.getPaises(req, filter_estados);
+  const paisresidencias = await paisDao.getPaises(req, filter_estados);
+  const documentotipos = await documentotipoDao.getDocumentotipos(req, filter_estados);
+  const generos = await generoDao.getGeneros(req, filter_estados);
+
+  var personaMaster = {};
+  personaMaster.paisnacionalidades = paisnacionalidades;
+  personaMaster.paisnacimientos = paisnacimientos;
+  personaMaster.paisresidencias = paisresidencias;
+  personaMaster.paises = paisresidencias;
+  personaMaster.documentotipos = documentotipos;
+  personaMaster.generos = generos;
+
+  var personaMasterJSON = jsonUtils.sequelizeToJSON(personaMaster);
+  //jsonUtils.prettyPrint(personaMasterJSON);
+  var personaMasterObfuscated = personaMasterJSON;
+  //jsonUtils.prettyPrint(personaMasterObfuscated);
+  var personaMasterFiltered = jsonUtils.removeAttributesPrivates(personaMasterObfuscated);
+  //jsonUtils.prettyPrint(personaMaster);
+  response(res, 201, personaMasterFiltered);
+};
+
 export const verifyPersona = async (req, res) => {
   let NAME_REGX = /^[a-zA-Z ]+$/;
   const personaVerifySchema = yup

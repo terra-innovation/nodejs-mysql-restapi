@@ -5,10 +5,10 @@ export default class Colaborador extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
     _idcolaborador: {
+      autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true,
-      autoIncrement: true
+      primaryKey: true
     },
     colaboradorid: {
       type: DataTypes.STRING(50),
@@ -17,7 +17,11 @@ export default class Colaborador extends Model {
     },
     _idempresa: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'empresa',
+        key: '_idempresa'
+      }
     },
     nombrecolaborador: {
       type: DataTypes.STRING(100),
