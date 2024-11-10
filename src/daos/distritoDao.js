@@ -5,6 +5,20 @@ export const getDistritos = async (req, estados) => {
   try {
     const { models } = req.app.locals;
     const distritos = await models.Distrito.findAll({
+      include: [
+        {
+          model: models.Provincia,
+          required: true,
+          as: "provincia_provincium",
+          include: [
+            {
+              model: models.Departamento,
+              required: true,
+              as: "departamento_departamento",
+            },
+          ],
+        },
+      ],
       where: {
         estado: {
           [Sequelize.Op.in]: estados,

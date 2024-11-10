@@ -25,20 +25,20 @@ import * as yup from "yup";
 import { Sequelize } from "sequelize";
 
 export const getPersonaMaster = async (req, res) => {
+  const session_idusuario = req.session_user?.usuario?._idusuario;
   const filter_estados = [1];
-  const paisnacionalidades = await paisDao.getPaises(req, filter_estados);
-  const paisnacimientos = await paisDao.getPaises(req, filter_estados);
-  const paisresidencias = await paisDao.getPaises(req, filter_estados);
+  const paises = await paisDao.getPaises(req, filter_estados);
+  const distritos = await distritoDao.getDistritos(req, filter_estados);
   const documentotipos = await documentotipoDao.getDocumentotipos(req, filter_estados);
   const generos = await generoDao.getGeneros(req, filter_estados);
+  const usuario = await usuarioDao.getUsuarioByIdusuario(req, session_idusuario);
 
   var personaMaster = {};
-  personaMaster.paisnacionalidades = paisnacionalidades;
-  personaMaster.paisnacimientos = paisnacimientos;
-  personaMaster.paisresidencias = paisresidencias;
-  personaMaster.paises = paisresidencias;
+  personaMaster.paises = paises;
+  personaMaster.distritos = distritos;
   personaMaster.documentotipos = documentotipos;
   personaMaster.generos = generos;
+  personaMaster.usuario = usuario;
 
   var personaMasterJSON = jsonUtils.sequelizeToJSON(personaMaster);
   //jsonUtils.prettyPrint(personaMasterJSON);

@@ -121,6 +121,10 @@ export default class Persona extends Model {
       type: DataTypes.STRING(200),
       allowNull: true
     },
+    direccionreferencia: {
+      type: DataTypes.STRING(200),
+      allowNull: true
+    },
     idusuariocrea: {
       type: DataTypes.INTEGER,
       allowNull: false,
