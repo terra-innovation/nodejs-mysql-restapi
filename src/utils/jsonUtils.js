@@ -1,5 +1,30 @@
 import util from "util";
 
+// Función para filtrar campos en un JSON
+export function filterFields(json, fields) {
+  if (Array.isArray(json)) {
+    // Si el JSON es un array, aplicamos la función recursivamente a cada elemento
+    return json.map((item) => filterFields(item, fields));
+  } else if (typeof json === "object" && json !== null) {
+    // Si es un objeto, iteramos sobre sus propiedades
+    const filteredJson = {};
+
+    for (const key in json) {
+      if (Object.prototype.hasOwnProperty.call(json, key)) {
+        if (fields.includes(key)) {
+          // Si el campo está en la lista de campos a conservar, lo agregamos
+          filteredJson[key] = filterFields(json[key], fields);
+        }
+      }
+    }
+
+    return filteredJson;
+  }
+
+  // Si es un valor primitivo, lo devolvemos tal cual
+  return json;
+}
+
 // Función para ofuscar el correo electrónico
 export function sequelizeToJSON(objeto) {
   // Copia profunda del objeto

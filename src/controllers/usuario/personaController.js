@@ -1,14 +1,10 @@
 import * as personaDao from "../../daos/personaDao.js";
 import * as documentotipoDao from "../../daos/documentotipoDao.js";
 import * as paisDao from "../../daos/paisDao.js";
-import * as departamentoDao from "../../daos/departamentoDao.js";
 import * as provinciaDao from "../../daos/provinciaDao.js";
 import * as distritoDao from "../../daos/distritoDao.js";
 import * as generoDao from "../../daos/generoDao.js";
-import * as empresaDao from "../../daos/empresaDao.js";
-import * as bancoDao from "../../daos/bancoDao.js";
-import * as cuentatipoDao from "../../daos/cuentatipoDao.js";
-import * as monedaDao from "../../daos/monedaDao.js";
+import * as personadeclaracionDao from "../../daos/personadeclaracionDao.js";
 import * as usuarioDao from "../../daos/usuarioDao.js";
 import * as archivoDao from "../../daos/archivoDao.js";
 import * as archivopersonaDao from "../../daos/archivopersonaDao.js";
@@ -33,23 +29,24 @@ export const getPersonaMaster = async (req, res) => {
   const generos = await generoDao.getGeneros(req, filter_estados);
   const usuario = await usuarioDao.getUsuarioByIdusuario(req, session_idusuario);
 
-  var personaMaster = {};
+  let personaMaster = {};
   personaMaster.paises = paises;
   personaMaster.distritos = distritos;
   personaMaster.documentotipos = documentotipos;
   personaMaster.generos = generos;
-  personaMaster.usuario = usuario;
+  personaMaster.usuario = jsonUtils.filterFields(jsonUtils.sequelizeToJSON(usuario), ["usuarioid", "email", "celular", "isemailvalidated", "ispersonavalidated"]);
 
-  var personaMasterJSON = jsonUtils.sequelizeToJSON(personaMaster);
+  let personaMasterJSON = jsonUtils.sequelizeToJSON(personaMaster);
   //jsonUtils.prettyPrint(personaMasterJSON);
-  var personaMasterObfuscated = personaMasterJSON;
+  let personaMasterObfuscated = personaMasterJSON;
   //jsonUtils.prettyPrint(personaMasterObfuscated);
-  var personaMasterFiltered = jsonUtils.removeAttributesPrivates(personaMasterObfuscated);
+  let personaMasterFiltered = jsonUtils.removeAttributesPrivates(personaMasterObfuscated);
   //jsonUtils.prettyPrint(personaMaster);
   response(res, 201, personaMasterFiltered);
 };
 
 export const verifyPersona = async (req, res) => {
+  const _idusuario = req.session_user?.usuario?._idusuario;
   let NAME_REGX = /^[a-zA-Z ]+$/;
   const personaVerifySchema = yup
     .object()
@@ -70,6 +67,7 @@ export const verifyPersona = async (req, res) => {
         .concat(validacionesYup.fileRequeridValidation())
         .concat(validacionesYup.fileSizeValidation(5 * 1024 * 1024))
         .concat(validacionesYup.fileTypeValidation(["image/png", "image/jpeg", "image/jpg"])),
+
       documentotipoid: yup.string().min(36).max(36).trim().required(),
       documentonumero: yup
         .string()
@@ -80,16 +78,20 @@ export const verifyPersona = async (req, res) => {
       personanombres: yup.string().trim().required().matches(NAME_REGX, "Debe ser un nombre válido").min(2).max(100),
       apellidopaterno: yup.string().trim().required().matches(NAME_REGX, "Debe ser un apellido válido").min(2).max(50),
       apellidomaterno: yup.string().trim().required().matches(NAME_REGX, "Debe ser un apellido válido").min(2).max(50),
-      paisnacionalidadid: yup.string().min(36).max(36).trim().required(),
-      paisnacimientoid: yup.string().min(36).max(36).trim().required(),
-      paisresidenciaid: yup.string().min(36).max(36).trim().required(),
-      distritoresidenciaid: yup.string().min(36).max(36).trim().required(),
-      generoid: yup.string().min(36).max(36).trim().required(),
+      paisnacionalidadid: yup.string().trim().required().min(36).max(36),
+      paisnacimientoid: yup.string().trim().required().min(36).max(36),
+      paisresidenciaid: yup.string().trim().required().min(36).max(36),
+      distritoresidenciaid: yup.string().trim().required().min(36).max(36),
+      generoid: yup.string().trim().required().min(36).max(36),
       fechanacimiento: yup.date().required(),
-      direccion: yup.string().trim().max(200).required(),
+      direccion: yup.string().trim().required().max(200),
+      direccionreferencia: yup.string().trim().required().max(200),
+      tienevinculopep: yup.number().required().integer().max(1),
+      espep: yup.number().required().integer().max(1),
+      isdatacorrect: yup.boolean().required(),
     })
     .required();
-  const personaValidated = personaVerifySchema.validateSync({ ...req.files, ...req.body, _idusuario: req.session_user?.usuario?._idusuario }, { abortEarly: false, stripUnknown: true });
+  const personaValidated = personaVerifySchema.validateSync({ ...req.files, ...req.body, _idusuario }, { abortEarly: false, stripUnknown: true });
   console.debug("personaValidated:", personaValidated);
 
   const documentotipo = await documentotipoDao.findDocumentotipoPk(req, personaValidated.documentotipoid);
@@ -115,6 +117,17 @@ export const verifyPersona = async (req, res) => {
   const genero = await generoDao.findGeneroPk(req, personaValidated.generoid);
   if (!genero) {
     throw new ClientError("Genero no existe", 404);
+  }
+
+  if (!personaValidated.isdatacorrect) {
+    console.error("No aceptó los términos y condiciones");
+    throw new ClientError("Datos no válidos", 404);
+  }
+
+  const persona = await personaDao.getPersonaByIdusuario(req, personaValidated._idusuario);
+  if (persona) {
+    console.error("Persona ya existe");
+    throw new ClientError("Datos no válidos", 404);
   }
 
   const usuarioConected = await usuarioDao.getUsuarioByIdusuario(req, personaValidated._idusuario);
@@ -144,15 +157,14 @@ export const verifyPersona = async (req, res) => {
   camposAuditoria.fechamod = Sequelize.fn("now", 3);
   camposAuditoria.estado = 1;
 
-  /*const personaCreated = await personaDao.insertPersona(req, {
+  const personaCreated = await personaDao.insertPersona(req, {
     ...camposFk,
     ...camposAdicionales,
     ...personaValidated,
     ...camposAuditoria,
   });
-  */
 
-  let personaCreated = { _idpersona: 4 };
+  //let personaCreated = { _idpersona: 4 };
 
   const identificacionanversoCreated = await crearIdentificacionAnverso(req, personaValidated);
 
@@ -189,6 +201,28 @@ export const verifyPersona = async (req, res) => {
     fechamod: Sequelize.fn("now", 3),
     estado: 1,
   });
+
+  const personaDeclaracionCreate = {};
+  personaDeclaracionCreate.personadeclaracionid = uuidv4();
+  personaDeclaracionCreate._idpersona = personaCreated._idpersona;
+  personaDeclaracionCreate.espep = personaValidated.espep;
+  personaDeclaracionCreate.tienevinculopep = personaValidated.tienevinculopep;
+  personaDeclaracionCreate.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
+  personaDeclaracionCreate.fechacrea = Sequelize.fn("now", 3);
+  personaDeclaracionCreate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
+  personaDeclaracionCreate.fechamod = Sequelize.fn("now", 3);
+  personaDeclaracionCreate.estado = 1;
+
+  await personadeclaracionDao.insertPersonadeclaracion(req, personaDeclaracionCreate);
+
+  const usuarioUpdate = {};
+  usuarioUpdate.usuarioid = usuarioConected.usuarioid;
+  usuarioUpdate.ispersonavalidated = 3; // 3: En proceso
+  usuarioUpdate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
+  usuarioUpdate.fechamod = Sequelize.fn("now", 3);
+  usuarioUpdate.estado = 1;
+
+  await usuarioDao.updateUsuario(req, usuarioUpdate);
 
   response(res, 200, {});
 };

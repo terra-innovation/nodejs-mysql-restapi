@@ -28,7 +28,6 @@ export const getDistritos = async (req, estados) => {
     //console.log(distritos);
     return distritos;
   } catch (error) {
-    console.error(error.original.code);
     console.error(error);
     throw new ClientError("Ocurrio un error", 500);
   }

@@ -33,7 +33,7 @@ export const upload_persona = multer({
     fileSize: 5 * 1024 * 1024, // Para formularios multiparte, el tamaño máximo de los archivos (en bytes)
     files: 3, // Para los formularios multiparte, el número máximo de campos para archivos
     fieldSize: 0.5 * 1024 * 1024, //Tamaño máximo de los valores para cada campo (en bytes)
-    fields: 15, // Número máximo de campos que no son archivos
+    fields: 20, // Número máximo de campos que no son archivos
   },
   fileFilter: async function (req, file, cb) {
     const validImageTypes = ["image/png", "image/jpeg", "image/jpg"];
