@@ -1,9 +1,7 @@
 import app from "./app.js";
 import { PORT } from "./config.js";
+import logger from "./utils/logger.js";
 
 // Method 2
-console.log(new Date().toString());
-console.log(new Date());
-
 app.listen(PORT);
-console.log(`Server on port http://localhost:${PORT}`);
+logger.info(`Server on port http://localhost:${PORT}`);

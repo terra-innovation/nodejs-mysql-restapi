@@ -3,6 +3,8 @@ import morgan from "morgan";
 import cors from "cors";
 import * as util from "util";
 
+import logger from "./utils/logger.js";
+
 import employeesRoutes from "./routes/employees.routes.js";
 import indexRoutes from "./routes/index.routes.js";
 import facturaRoutes from "./routes/factura.routes.js";

@@ -7,3 +7,4 @@ src/storage/fail/*
 src/storage/invalid/*
 src/storage/procesar/*
 src/storage/success/*
+logs/*
