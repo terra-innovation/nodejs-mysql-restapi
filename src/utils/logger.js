@@ -37,9 +37,11 @@ const logger = winston.createLogger({
     new transports.Console({
       level: "silly",
       stderrLevels: ["error", "warn"],
+      handleExceptions: true, // Captura excepciones no controladas
+      handleRejections: true, // Captura promesas no manejadas
       format: format.combine(
         format.colorize(),
-        format.printf(({ timestamp, level, message, requestId, userId, durationMs, context, ...metadata }) => {
+        format.printf(({ timestamp, level, message }) => {
           return `[${chalk.green(timestamp)}] ${level}: ${message}`;
         })
       ),
@@ -51,14 +53,8 @@ const logger = winston.createLogger({
       maxsize: 2 * 1024 * 1024, // 2MB
       maxFiles: 10,
       tailable: true,
-    }),
-    // Log para nivel "debug"
-    new transports.File({
-      filename: path.join("logs", generateLogFilename("debug")),
-      level: "debug",
-      maxsize: 3 * 1024 * 1024, // 3MB
-      maxFiles: 10,
-      tailable: true,
+      handleExceptions: true, // Captura excepciones no controladas
+      handleRejections: true, // Captura promesas no manejadas
     }),
     // Log para nivel "warn"
     new transports.File({
@@ -67,6 +63,8 @@ const logger = winston.createLogger({
       maxsize: 5 * 1024 * 1024, // 5MB
       maxFiles: 10,
       tailable: true,
+      handleExceptions: true, // Captura excepciones no controladas
+      handleRejections: true, // Captura promesas no manejadas
     }),
     // Log para nivel "error"
     new transports.File({
@@ -75,12 +73,24 @@ const logger = winston.createLogger({
       maxsize: 10 * 1024 * 1024, // 10MB
       maxFiles: 10,
       tailable: true,
+      handleExceptions: true, // Captura excepciones no controladas
+      handleRejections: true, // Captura promesas no manejadas
     }),
   ],
+  exitOnError: false, // Evita que la aplicación se cierre en excepciones no controladas
 });
 
 // Guardar referencia al método log original
 const originalLogMethod = logger.log.bind(logger);
+
+// Captura global de errores no controlados en caso de que Winston no esté configurado
+process.on("uncaughtException", (err) => {
+  logger.error("Uncaught Exception:", err);
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  logger.error("Unhandled Rejection:", reason);
+});
 
 // Función auxiliar para concatenar argumentos
 function logSimulateConsole(level, ...args) {
