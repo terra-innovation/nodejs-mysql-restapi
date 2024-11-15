@@ -93,7 +93,7 @@ export const verifyPersona = async (req, res) => {
     })
     .required();
   const personaValidated = personaVerifySchema.validateSync({ ...req.files, ...req.body, _idusuario }, { abortEarly: false, stripUnknown: true });
-  logger.debug("personaValidated:", personaValidated);
+  logger.debug(line(), "personaValidated:", personaValidated);
 
   const documentotipo = await documentotipoDao.findDocumentotipoPk(req, personaValidated.documentotipoid);
   if (!documentotipo) {

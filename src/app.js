@@ -2,8 +2,9 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import * as util from "util";
+import * as luxon from "luxon";
 
-import logger, { line } from "./utils/logger.js";
+import logger, { line, loggerMorgan } from "./utils/logger.js";
 
 import employeesRoutes from "./routes/employees.routes.js";
 import indexRoutes from "./routes/index.routes.js";
@@ -45,11 +46,20 @@ app.use(
 
 //throw Error("Hubo un error X");
 
-// Define un formato personalizado (opcional)
-const customFormat = ":remote-addr [:date] :method :url :status :res[content-length] - :response-time ms";
-
+// Define un formato personalizado para Morgan
+const customFormat = ":iduser | :remote-addr | :remote-user | :dateCustom | :method :url HTTP/:http-version | :status | :res[content-length] | :referrer | :user-agent";
 // Middleware
-app.use(morgan(customFormat));
+// Configurar Morgan para usar Winston
+morgan.token("iduser", (req, res) => req.session_user?.usuario?._idusuario);
+morgan.token("dateCustom", () => luxon.DateTime.utc().toISO()); // Agrega un token para el código de estado
+app.use(
+  morgan(customFormat, {
+    stream: {
+      write: (message) => loggerMorgan.info(message.trim()), // Usar el logger de Winston
+    },
+  })
+);
+
 app.use(express.json()); // Convierte los request a json
 
 // Routes

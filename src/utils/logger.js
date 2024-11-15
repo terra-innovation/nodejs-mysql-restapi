@@ -5,7 +5,46 @@ import util from "util";
 import DailyRotateFile from "winston-daily-rotate-file";
 
 // Formato JSON para los logs
-const jsonFormat = format.printf(({ timestamp, file, level, message, ms }) => {
+const jsonFormatMorgan = format.printf(({ timestamp, level, message, ms }) => {
+  return JSON.stringify({
+    timestamp,
+    level,
+    message,
+    ms,
+  });
+});
+
+// Crear el logger de Winston pra Morgan
+export const loggerMorgan = winston.createLogger({
+  level: "silly",
+  format: format.combine(format.timestamp({ format: "YYYY-MM-DD HH:mm:ss.SSSZ" }), jsonFormatMorgan),
+  transports: [
+    // Log en consola (en formato texto plano)
+    new transports.Console({
+      level: "silly",
+      stderrLevels: ["error", "warn"], //se utiliza para especificar los niveles de log que deben ser enviados al flujo de error estándar (stderr) en lugar del flujo estándar (stdout)
+      format: format.combine(
+        format.colorize(),
+        format.ms(), // Number of milliseconds since the previous log message.
+        format.printf(({ timestamp, level, message, ms }) => {
+          return `[${chalk.green(timestamp)}] ${level}: ${message} ${ms}`;
+        })
+      ),
+    }),
+    new DailyRotateFile({
+      filename: path.join("logs", "morgan_silly_%DATE%.log"), // Nombre de archivo con marca de fecha
+      datePattern: "YYYYMMDD_HH", // Patrón de fecha personalizado
+      level: "silly", // Nivel
+      maxSize: "5m", // Tamaño máximo por archivo
+      maxFiles: "2d", // Guardar los últimos x días de logs
+      zippedArchive: true, // Comprimir archivos rotados en .gz
+    }),
+  ],
+  exitOnError: false, // Evita que la aplicación se cierre en excepciones no controladas
+});
+
+// Formato JSON para los logs
+const jsonFormatDefault = format.printf(({ timestamp, file, level, message, ms }) => {
   return JSON.stringify({
     timestamp,
     archivo: file ? file.archivo : "desconocido",
@@ -19,7 +58,7 @@ const jsonFormat = format.printf(({ timestamp, file, level, message, ms }) => {
 // Crear el logger de Winston
 const logger = winston.createLogger({
   level: "silly",
-  format: format.combine(format.timestamp({ format: "YYYY-MM-DD HH:mm:ss.SSSZ" }), jsonFormat),
+  format: format.combine(format.timestamp({ format: "YYYY-MM-DD HH:mm:ss.SSSZ" }), jsonFormatDefault),
   transports: [
     // Log en consola (en formato texto plano)
     new transports.Console({
@@ -115,23 +154,6 @@ process.on("unhandledRejection", (reason, promise) => {
   }
 });
 
-/* Cómo usar
-logger.silly("Este es un mensaje muy detallado (silly)");
-logger.debug("Este es un mensaje de debug");
-logger.verbose("Este es un mensaje verbose");
-logger.http("Este es un mensaje http");
-logger.info("Este es un mensaje informativo");
-logger.warn("Este es un mensaje de advertencia");
-logger.error("Este es un mensaje de error");
-
-const user = { id: 123, name: "Alice" };
-const action = { type: "login", time: Date.now() };
-logger.info("User info:", user, action);
-logger.warn("Warning: unusual activity detected", { ip: "192.168.1.1" });
-logger.error("Error processing request", new Error("Sample error"));
-
-*/
-
 export function line() {
   const error = new Error();
   const stackLines = error.stack.split("\n");
@@ -153,5 +175,22 @@ export function line() {
   }
   return "";
 }
+
+/* Cómo usar
+logger.silly(line(), "Este es un mensaje muy detallado (silly)");
+logger.debug(line(), "Este es un mensaje de debug");
+logger.verbose(line(), "Este es un mensaje verbose");
+logger.http(line(), "Este es un mensaje http");
+logger.info(line(), "Este es un mensaje informativo");
+logger.warn(line(), "Este es un mensaje de advertencia");
+logger.error(line(), "Este es un mensaje de error");
+
+const user = { id: 123, name: "Alice" };
+const action = { type: "login", time: Date.now() };
+logger.info(line(), "User info:", user, action);
+logger.warn(line(), "Warning: unusual activity detected", { ip: "192.168.1.1" });
+logger.error("Error processing request", new Error("Sample error"));
+
+*/
 
 export default logger;
