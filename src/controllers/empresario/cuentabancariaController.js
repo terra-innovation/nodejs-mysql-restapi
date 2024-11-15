@@ -6,6 +6,7 @@ import * as monedaDao from "../../daos/monedaDao.js";
 import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
+import logger, { line } from "../../utils/logger.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
@@ -14,7 +15,7 @@ import { Sequelize } from "sequelize";
 export const getCuentabancariaMaster = async (req, res) => {
   const filter_estados = [1];
   const session_idusuario = req.session_user.usuario._idusuario;
-  //console.log(req.session_user.usuario.rol_rols);
+  //logger.info(line(),req.session_user.usuario.rol_rols);
   const roles = [2]; // Administrador
   const rolesUsuario = req.session_user.usuario.rol_rols.map((role) => role._idrol);
   const tieneRol = roles.some((rol) => rolesUsuario.includes(rol));
@@ -50,7 +51,7 @@ export const updateCuentabancariaOnlyAlias = async (req, res) => {
     })
     .required();
   const cuentabancariaValidated = cuentabancariaUpdateSchema.validateSync({ cuentabancariaid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
-  console.debug("cuentabancariaValidated:", cuentabancariaValidated);
+  logger.debug(line(), "cuentabancariaValidated:", cuentabancariaValidated);
 
   var camposAdicionales = {};
   camposAdicionales.cuentabancariaid = id;
@@ -67,27 +68,27 @@ export const updateCuentabancariaOnlyAlias = async (req, res) => {
   if (result[0] === 0) {
     throw new ClientError("Cuentabancaria no existe", 404);
   }
-  console.log(id);
+  logger.info(line(), id);
   const cuentabancariaUpdated = await cuentabancariaDao.getCuentabancariaByCuentabancariaid(req, id);
   if (!cuentabancariaUpdated) {
     throw new ClientError("Cuentabancaria no existe", 404);
   }
 
   var cuentabancariaObfuscated = jsonUtils.ofuscarAtributos(cuentabancariaUpdated, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
-  //console.log(empresaObfuscated);
+  //logger.info(line(),empresaObfuscated);
 
   var cuentabancariaFiltered = jsonUtils.removeAttributesPrivates(cuentabancariaObfuscated);
   response(res, 200, cuentabancariaFiltered);
 };
 
 export const getCuentabancarias = async (req, res) => {
-  //console.log(req.session_user.usuario._idusuario);
+  //logger.info(line(),req.session_user.usuario._idusuario);
 
   const session_idusuario = req.session_user.usuario._idusuario;
   const filter_estado = [1];
   const cuentasbancarias = await cuentabancariaDao.getCuentasbancariasByIdusuario(req, session_idusuario, filter_estado);
   var cuentasbancariasJson = jsonUtils.sequelizeToJSON(cuentasbancarias);
-  //console.log(empresaObfuscated);
+  //logger.info(line(),empresaObfuscated);
 
   var cuentasbancariasFiltered = jsonUtils.removeAttributes(cuentasbancariasJson, ["score"]);
   cuentasbancariasFiltered = jsonUtils.removeAttributesPrivates(cuentasbancariasFiltered);
@@ -110,7 +111,7 @@ export const createCuentabancaria = async (req, res) => {
     })
     .required();
   var cuentabancariaValidated = cuentabancariaCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
-  console.debug("cuentabancariaValidated:", cuentabancariaValidated);
+  logger.debug(line(), "cuentabancariaValidated:", cuentabancariaValidated);
 
   var empresa = await empresaDao.findEmpresaPk(req, cuentabancariaValidated.empresaid);
   if (!empresa) {
@@ -168,8 +169,8 @@ export const createCuentabancaria = async (req, res) => {
     ...cuentabancariaValidated,
     ...camposAuditoria,
   });
-  //console.debug("Create cuentabancaria: ID:" + cuentabancariaCreated._idcuentabancaria + " | " + camposAdicionales.cuentabancariaid);
-  //console.debug("cuentabancariaCreated:", cuentabancariaCreated.dataValues);
+  //logger.debug(line(),"Create cuentabancaria: ID:" + cuentabancariaCreated._idcuentabancaria + " | " + camposAdicionales.cuentabancariaid);
+  //logger.debug(line(),"cuentabancariaCreated:", cuentabancariaCreated.dataValues);
   // Retiramos los IDs internos
   delete camposAdicionales.idempresa;
   response(res, 201, { ...camposAdicionales, ...cuentabancariaValidated });

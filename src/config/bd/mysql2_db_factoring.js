@@ -1,5 +1,6 @@
 import { createPool } from "mysql2/promise";
 import * as config from "../../config.js";
+import logger, { line } from "../../utils/logger.js";
 
 export const poolFactoring = createPool({
   host: config.DB_FACTORING_HOST,
@@ -13,15 +14,15 @@ export const poolFactoring = createPool({
 try {
   const connection = await poolFactoring.getConnection();
   connection.release();
-  console.info("[mysql2] Database " + config.DB_FACTORING_DATABASE + ": Successful connection.");
+  logger.info(line(), "[mysql2] Database " + config.DB_FACTORING_DATABASE + ": Successful connection.");
 } catch (error) {
   if (error instanceof Error) {
     if (error.code === "ECONNREFUSED") {
-      console.error("[mysql2] Database " + config.DB_FACTORING_DATABASE + ": Connection unavailable.");
+      logger.error(line(), "[mysql2] Database " + config.DB_FACTORING_DATABASE + ": Connection unavailable.");
     } else {
-      console.error("[mysql2] Database " + config.DB_FACTORING_DATABASE + ": " + error.code);
+      logger.error(line(), "[mysql2] Database " + config.DB_FACTORING_DATABASE + ": " + error.code);
     }
   } else {
-    console.error("[mysql2] Database " + config.DB_FACTORING_DATABASE + ": " + error.code);
+    logger.error(line(), "[mysql2] Database " + config.DB_FACTORING_DATABASE + ": " + error.code);
   }
 }

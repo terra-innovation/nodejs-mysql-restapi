@@ -36,7 +36,7 @@ export function sequelizeToJSON(objeto) {
 
 // Imprime json en consola de manera legible y a colores
 export const prettyPrint = (obj) => {
-  console.log(util.inspect(obj, { depth: null, colors: true }));
+  logger.info(line(), util.inspect(obj, { depth: null, colors: true }));
 };
 
 // Reemplaza valores en un json

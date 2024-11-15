@@ -6,6 +6,7 @@ import * as monedaDao from "../daos/monedaDao.js";
 import { response } from "../utils/CustomResponseOk.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import * as jsonUtils from "../utils/jsonUtils.js";
+import logger, { line } from "../utils/logger.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
@@ -23,7 +24,7 @@ export const getRiesgos = async (req, res) => {
 };
 
 export const getRiesgosMiosByEmpresaidActivos = async (req, res) => {
-  //console.log(req.session_user.usuario._idusuario);
+  //logger.info(line(),req.session_user.usuario._idusuario);
   const { id } = req.params;
   const riesgoSchema = yup
     .object()
@@ -35,7 +36,7 @@ export const getRiesgosMiosByEmpresaidActivos = async (req, res) => {
   var riesgoValidated = riesgoSchema.validateSync({ empresaid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
 
   const empresa = await empresaDao.getEmpresaByIdusuarioAndEmpresaid(req, req.session_user.usuario._idusuario, riesgoValidated.empresaid, 1);
-  //console.log(empresa);
+  //logger.info(line(),empresa);
   if (!empresa) {
     throw new ClientError("Empresa no existe", 404);
   }
@@ -45,7 +46,7 @@ export const getRiesgosMiosByEmpresaidActivos = async (req, res) => {
   const filter_estado = [1, 2];
   const riesgos = await riesgoDao.getRiesgosByEmpresaidAndMoneda(req, filter_empresaid, filter_monedaid, filter_idriesgoestado, filter_estado);
   var riesgosObfuscated = jsonUtils.ofuscarAtributos(riesgos, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
-  //console.log(empresaObfuscated);
+  //logger.info(line(),empresaObfuscated);
 
   var riesgosFiltered = jsonUtils.removeAttributes(riesgosObfuscated, ["score"]);
   riesgosFiltered = jsonUtils.removeAttributesPrivates(riesgosFiltered);
@@ -66,7 +67,7 @@ export const getRiesgo = async (req, res) => {
     throw new ClientError("Riesgo no existe", 404);
   }
   var riesgoObfuscated = jsonUtils.ofuscarAtributos(riesgo, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
-  //console.log(empresaObfuscated);
+  //logger.info(line(),empresaObfuscated);
 
   var riesgoFiltered = jsonUtils.removeAttributesPrivates(riesgoObfuscated);
   response(res, 200, riesgoFiltered);
@@ -86,7 +87,7 @@ export const createRiesgo = async (req, res) => {
     })
     .required();
   var riesgoValidated = riesgoCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
-  console.debug("riesgoValidated:", riesgoValidated);
+  logger.debug(line(), "riesgoValidated:", riesgoValidated);
 
   var empresa = await empresaDao.findEmpresaPk(req, riesgoValidated.empresaid);
   if (!empresa) {
@@ -125,8 +126,8 @@ export const createRiesgo = async (req, res) => {
   camposAuditoria.estado = 1;
 
   const riesgoCreated = await riesgoDao.insertRiesgo(req, { ...camposFk, ...camposAdicionales, ...riesgoValidated, ...camposAuditoria });
-  console.debug("Create riesgo: ID:" + riesgoCreated.idriesgo + " | " + camposAdicionales.riesgoid);
-  console.debug("riesgoCreated:", riesgoCreated.dataValues);
+  logger.debug(line(), "Create riesgo: ID:" + riesgoCreated.idriesgo + " | " + camposAdicionales.riesgoid);
+  logger.debug(line(), "riesgoCreated:", riesgoCreated.dataValues);
   // Retiramos los IDs internos
   delete camposAdicionales.idempresa;
   response(res, 201, { ...camposAdicionales, ...riesgoValidated });
@@ -143,7 +144,7 @@ export const updateRiesgo = async (req, res) => {
     })
     .required();
   const riesgoValidated = riesgoUpdateSchema.validateSync({ riesgoid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
-  console.debug("riesgoValidated:", riesgoValidated);
+  logger.debug(line(), "riesgoValidated:", riesgoValidated);
 
   var camposAdicionales = {};
   camposAdicionales.riesgoid = id;
@@ -156,14 +157,14 @@ export const updateRiesgo = async (req, res) => {
   if (result[0] === 0) {
     throw new ClientError("Riesgo no existe", 404);
   }
-  console.log(id);
+  logger.info(line(), id);
   const riesgoUpdated = await riesgoDao.getRiesgoByRiesgoid(req, id);
   if (!riesgoUpdated) {
     throw new ClientError("Riesgo no existe", 404);
   }
 
   var riesgoObfuscated = jsonUtils.ofuscarAtributos(riesgoUpdated, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
-  //console.log(empresaObfuscated);
+  //logger.info(line(),empresaObfuscated);
 
   var riesgoFiltered = jsonUtils.removeAttributesPrivates(riesgoObfuscated);
   response(res, 200, riesgoFiltered);
@@ -178,7 +179,7 @@ export const deleteRiesgo = async (req, res) => {
     })
     .required();
   const riesgoValidated = riesgoSchema.validateSync({ riesgoid: id }, { abortEarly: false, stripUnknown: true });
-  console.debug("riesgoValidated:", riesgoValidated);
+  logger.debug(line(), "riesgoValidated:", riesgoValidated);
 
   var camposAuditoria = {};
   camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
@@ -189,6 +190,6 @@ export const deleteRiesgo = async (req, res) => {
   if (riesgoDeleted[0] === 0) {
     throw new ClientError("Riesgo no existe", 404);
   }
-  console.debug("riesgoDeleted:", riesgoDeleted);
+  logger.debug(line(), "riesgoDeleted:", riesgoDeleted);
   response(res, 204, riesgoDeleted);
 };

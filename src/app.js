@@ -3,7 +3,7 @@ import morgan from "morgan";
 import cors from "cors";
 import * as util from "util";
 
-import logger from "./utils/logger.js";
+import logger, { line } from "./utils/logger.js";
 
 import employeesRoutes from "./routes/employees.routes.js";
 import indexRoutes from "./routes/index.routes.js";
@@ -97,13 +97,13 @@ app.use((err, req, res, next) => {
         path: dato.path,
       };
     });
-    console.error("ValidationError:", util.inspect(mensajeError, { colors: true, depth: null }));
+    logger.error(line(), "ValidationError:", util.inspect(mensajeError, { colors: true, depth: null }));
   } else if (statusCode == undefined) {
-    console.error(util.inspect(err, { colors: true, depth: null }));
+    logger.error(line(), util.inspect(err, { colors: true, depth: null }));
     statusCode = 500;
     message = "Ocurrio un error";
   }
-  //console.error(util.inspect(err, { colors: true, depth: null }));
+  //logger.error(line(),util.inspect(err, { colors: true, depth: null }));
 
   customResponseError(res, statusCode, message);
 });

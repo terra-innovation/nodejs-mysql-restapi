@@ -5,6 +5,7 @@ import * as monedaDao from "../../daos/monedaDao.js";
 import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
+import logger, { line } from "../../utils/logger.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
@@ -19,7 +20,7 @@ export const activateEmpresa = async (req, res) => {
     })
     .required();
   const empresaValidated = empresaSchema.validateSync({ empresaid: id }, { abortEarly: false, stripUnknown: true });
-  console.debug("empresaValidated:", empresaValidated);
+  logger.debug(line(), "empresaValidated:", empresaValidated);
 
   var camposAuditoria = {};
   camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
@@ -30,7 +31,7 @@ export const activateEmpresa = async (req, res) => {
   if (empresaDeleted[0] === 0) {
     throw new ClientError("Empresa no existe", 404);
   }
-  console.debug("empresaActivated:", empresaDeleted);
+  logger.debug(line(), "empresaActivated:", empresaDeleted);
   response(res, 204, empresaDeleted);
 };
 
@@ -43,7 +44,7 @@ export const deleteEmpresa = async (req, res) => {
     })
     .required();
   const empresaValidated = empresaSchema.validateSync({ empresaid: id }, { abortEarly: false, stripUnknown: true });
-  console.debug("empresaValidated:", empresaValidated);
+  logger.debug(line(), "empresaValidated:", empresaValidated);
 
   var camposAuditoria = {};
   camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
@@ -54,7 +55,7 @@ export const deleteEmpresa = async (req, res) => {
   if (empresaDeleted[0] === 0) {
     throw new ClientError("Empresa no existe", 404);
   }
-  console.debug("empresaDeleted:", empresaDeleted);
+  logger.debug(line(), "empresaDeleted:", empresaDeleted);
   response(res, 204, empresaDeleted);
 };
 
@@ -85,7 +86,7 @@ export const updateEmpresa = async (req, res) => {
     })
     .required();
   const empresaValidated = empresaUpdateSchema.validateSync({ empresaid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
-  console.debug("empresaValidated:", empresaValidated);
+  logger.debug(line(), "empresaValidated:", empresaValidated);
 
   var camposFk = {};
 
@@ -105,26 +106,26 @@ export const updateEmpresa = async (req, res) => {
   if (result[0] === 0) {
     throw new ClientError("Empresa no existe", 404);
   }
-  console.log(id);
+  logger.info(line(), id);
   const empresaUpdated = await empresaDao.getEmpresaByEmpresaid(req, id);
   if (!empresaUpdated) {
     throw new ClientError("Empresa no existe", 404);
   }
 
   var empresaObfuscated = jsonUtils.ofuscarAtributos(empresaUpdated, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
-  //console.log(empresaObfuscated);
+  //logger.info(line(),empresaObfuscated);
 
   var empresaFiltered = jsonUtils.removeAttributesPrivates(empresaObfuscated);
   response(res, 200, empresaFiltered);
 };
 
 export const getEmpresas = async (req, res) => {
-  //console.log(req.session_user.usuario._idusuario);
+  //logger.info(line(),req.session_user.usuario._idusuario);
 
   const filter_estado = [1, 2];
   const empresas = await empresaDao.getEmpresas(req, filter_estado);
   var empresasJson = jsonUtils.sequelizeToJSON(empresas);
-  //console.log(empresaObfuscated);
+  //logger.info(line(),empresaObfuscated);
 
   //var empresasFiltered = jsonUtils.removeAttributes(empresasJson, ["score"]);
   //empresasFiltered = jsonUtils.removeAttributesPrivates(empresasFiltered);
@@ -149,7 +150,7 @@ export const createEmpresa = async (req, res) => {
     })
     .required();
   var empresaValidated = empresaCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
-  console.debug("empresaValidated:", empresaValidated);
+  logger.debug(line(), "empresaValidated:", empresaValidated);
 
   var empresas_por_ruc = await empresaDao.getEmpresaByRuc(req, empresaValidated.ruc);
   if (empresas_por_ruc && empresas_por_ruc.length > 0) {
@@ -175,8 +176,8 @@ export const createEmpresa = async (req, res) => {
     ...empresaValidated,
     ...camposAuditoria,
   });
-  //console.debug("Create empresa: ID:" + empresaCreated._idempresa + " | " + camposAdicionales.empresaid);
-  //console.debug("empresaCreated:", empresaCreated.dataValues);
+  //logger.debug(line(),"Create empresa: ID:" + empresaCreated._idempresa + " | " + camposAdicionales.empresaid);
+  //logger.debug(line(),"empresaCreated:", empresaCreated.dataValues);
   // Retiramos los IDs internos
   delete camposAdicionales.idempresa;
   response(res, 201, { ...camposAdicionales, ...empresaValidated });

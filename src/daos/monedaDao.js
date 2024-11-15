@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
+import logger, { line } from "../utils/logger.js";
 
 export const getMonedas = async (req, estados) => {
   try {
@@ -11,11 +12,11 @@ export const getMonedas = async (req, estados) => {
         },
       },
     });
-    //console.log(monedas);
+    //logger.info(line(),monedas);
     return monedas;
   } catch (error) {
-    console.error(error.original.code);
-    console.error(error);
+    logger.error(line(), error.original.code);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -25,14 +26,14 @@ export const getMonedaByIdmoneda = async (req, idmoneda) => {
     const { models } = req.app.locals;
 
     const moneda = await models.Moneda.findByPk(idmoneda, {});
-    console.log(moneda);
+    logger.info(line(), moneda);
 
     //const monedas = await moneda.getMonedas();
-    //console.log(monedas);
+    //logger.info(line(),monedas);
 
     return moneda;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -45,10 +46,10 @@ export const getMonedaByCodigo = async (req, codigo) => {
         codigo: codigo,
       },
     });
-    //console.log(moneda);
+    //logger.info(line(),moneda);
     return moneda;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -61,10 +62,10 @@ export const getMonedaByMonedaid = async (req, monedaid) => {
         monedaid: monedaid,
       },
     });
-    //console.log(moneda);
+    //logger.info(line(),moneda);
     return moneda;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -78,10 +79,10 @@ export const findMonedaPk = async (req, monedaid) => {
         monedaid: monedaid,
       },
     });
-    //console.log(moneda);
+    //logger.info(line(),moneda);
     return moneda;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -90,10 +91,10 @@ export const insertMoneda = async (req, moneda) => {
   try {
     const { models } = req.app.locals;
     const moneda_nuevo = await models.Moneda.create(moneda);
-    // console.log(moneda_nuevo);
+    // logger.info(line(),moneda_nuevo);
     return moneda_nuevo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -108,7 +109,7 @@ export const updateMoneda = async (req, moneda) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -123,7 +124,7 @@ export const deleteMoneda = async (req, moneda) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

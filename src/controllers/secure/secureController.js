@@ -4,6 +4,7 @@ import * as validacionDao from "../../daos/validacionDao.js";
 import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
+import logger, { line } from "../../utils/logger.js";
 import * as cryptoUtils from "../../utils/cryptoUtils.js";
 import * as config from "../../config.js";
 import crypto from "crypto";
@@ -14,7 +15,7 @@ import * as Yup from "yup";
 import { Sequelize } from "sequelize";
 
 export const resetPassword = async (req, res) => {
-  //console.log(req);
+  //logger.info(line(),req);
   const filter_estado = [1];
   const validateChangePasswordSchema = Yup.object({
     hash: Yup.string().trim().required().max(50),
@@ -31,20 +32,20 @@ export const resetPassword = async (req, res) => {
 
   const usuario = await usuarioDao.getUsuarioByHash(req, validacionValidated.hash);
   if (!usuario) {
-    console.warn("Usuario no existe: ", validacionValidated);
+    logger.warn(line(), "Usuario no existe: ", validacionValidated);
     throw new ClientError("El código de verificación no es válido o ha expidado", 404);
   }
 
   const validacion = await validacionDao.getValidacionByIdusuarioAndCodigo(req, usuario._idusuario, validacionValidated.codigo, filter_estado);
   if (!validacion) {
-    console.warn("Validación no existe: ", validacionValidated);
+    logger.warn(line(), "Validación no existe: ", validacionValidated);
     throw new ClientError("El código de verificación no es válido o ha expidado", 404);
   }
   //jsonUtils.prettyPrint(validacion);
 
   //Desencriptamos token para hallar el otp
   let otp_desencriptado = cryptoUtils.decryptText(validacionValidated.token, config.TOKEN_KEY_OTP);
-  console.log("OTP Desencriptado", otp_desencriptado);
+  logger.info(line(), "OTP Desencriptado", otp_desencriptado);
 
   if (otp_desencriptado === validacion.otp) {
     if (validacion.verificado === 0) {
@@ -66,7 +67,7 @@ export const resetPassword = async (req, res) => {
 
         const usuarioUpdated = await usuarioDao.updateUsuario(req, usuarioUpdate);
         if (usuarioUpdated[0] == 0) {
-          console.warn("No fue posible actualizar el usuario: ", usuarioUpdated);
+          logger.warn(line(), "No fue posible actualizar el usuario: ", usuarioUpdated);
           throw new ClientError("El código de verificación no es válido o ha expidado", 404);
         }
 
@@ -79,15 +80,15 @@ export const resetPassword = async (req, res) => {
         validacionUpdate.fechamod = Sequelize.fn("now", 3);
         const validacionUpdated = await validacionDao.updateValidacion(req, validacionUpdate);
       } else {
-        console.warn("El código de verificación ha expirado: ", validacionValidated);
+        logger.warn(line(), "El código de verificación ha expirado: ", validacionValidated);
         throw new ClientError("El código de verificación no es válido o ha expidado", 404);
       }
     } else {
-      console.warn("El código de verificación ha sido validado anteriormente: ", validacionValidated);
+      logger.warn(line(), "El código de verificación ha sido validado anteriormente: ", validacionValidated);
       throw new ClientError("El código de verificación no es válido o ha expidado", 404);
     }
   } else {
-    console.warn("El código de verificación no es válido: ", validacionValidated);
+    logger.warn(line(), "El código de verificación no es válido: ", validacionValidated);
     throw new ClientError("El código de verificación no es válido o ha expidado", 404);
   }
   var validacionReturned = {};
@@ -96,7 +97,7 @@ export const resetPassword = async (req, res) => {
 };
 
 export const validateRestorePassword = async (req, res) => {
-  //console.log(req);
+  //logger.info(line(),req);
   const filter_estado = [1];
   const validateRestorePasswordSchema = Yup.object({
     hash: Yup.string().trim().required().max(50),
@@ -107,20 +108,20 @@ export const validateRestorePassword = async (req, res) => {
 
   const usuario = await usuarioDao.getUsuarioByHash(req, validacionValidated.hash);
   if (!usuario) {
-    console.warn("Usuario no existe: ", validacionValidated);
+    logger.warn(line(), "Usuario no existe: ", validacionValidated);
     throw new ClientError("El código de verificación no es válido o ha expidado", 404);
   }
 
   const validacion = await validacionDao.getValidacionByIdusuarioAndCodigo(req, usuario._idusuario, validacionValidated.codigo, filter_estado);
   if (!validacion) {
-    console.warn("Validación no existe: ", validacionValidated);
+    logger.warn(line(), "Validación no existe: ", validacionValidated);
     throw new ClientError("El código de verificación no es válido o ha expidado", 404);
   }
   //jsonUtils.prettyPrint(validacion);
 
   //Desencriptamos token para hallar el otp
   let otp_desencriptado = cryptoUtils.decryptText(validacionValidated.token, config.TOKEN_KEY_OTP);
-  console.log("OTP Desencriptado", otp_desencriptado);
+  logger.info(line(), "OTP Desencriptado", otp_desencriptado);
 
   if (otp_desencriptado === validacion.otp) {
     if (validacion.verificado === 0) {
@@ -133,15 +134,15 @@ export const validateRestorePassword = async (req, res) => {
       if (fechaActual <= fechaConAjustes) {
         // Validación conforme
       } else {
-        console.warn("El código de verificación ha expirado: ", validacionValidated);
+        logger.warn(line(), "El código de verificación ha expirado: ", validacionValidated);
         throw new ClientError("El código de verificación no es válido o ha expidado", 404);
       }
     } else {
-      console.warn("El código de verificación ha sido validado anteriormente: ", validacionValidated);
+      logger.warn(line(), "El código de verificación ha sido validado anteriormente: ", validacionValidated);
       throw new ClientError("El código de verificación no es válido o ha expidado", 404);
     }
   } else {
-    console.warn("El código de verificación no es válido: ", validacionValidated);
+    logger.warn(line(), "El código de verificación no es válido: ", validacionValidated);
     throw new ClientError("El código de verificación no es válido o ha expidado", 404);
   }
   var validacionReturned = {};
@@ -161,13 +162,13 @@ export const sendTokenPassword = async (req, res) => {
 
   const usuario = await usuarioDao.getUsuarioByEmail(req, validacionValidated.email);
   if (!usuario) {
-    console.warn("Usuario no existe: ", validacionValidated);
+    logger.warn(line(), "Usuario no existe: ", validacionValidated);
   } else {
     const _idvalidaciontipo = 3; // 1: Para recuperar contraseña
     const resetpasswordvalidationcode = Math.floor(100000 + Math.random() * 900000); // Código aleaatorio de 6 dígitos
     const validacionPrev = await validacionDao.getValidacionByIdusuarioAndIdvalidaciontipo(req, usuario._idusuario, _idvalidaciontipo, filter_estado);
     if (!validacionPrev) {
-      console.warn("Validación no existe: ", validacionValidated);
+      logger.warn(line(), "Validación no existe: ", validacionValidated);
       let validacionNew = {};
       validacionNew._idusuario = usuario._idusuario;
       validacionNew._idvalidaciontipo = _idvalidaciontipo;
@@ -184,7 +185,7 @@ export const sendTokenPassword = async (req, res) => {
 
       const validacionCreated = await validacionDao.insertValidacion(req, validacionNew);
       if (!validacionCreated) {
-        console.warn("No fue posible insertar el objeto: ", validacionNew);
+        logger.warn(line(), "No fue posible insertar el objeto: ", validacionNew);
       }
     } else {
       let validacionUpdate = {};
@@ -199,7 +200,7 @@ export const sendTokenPassword = async (req, res) => {
 
       const validacionUpdated = await validacionDao.updateValidacion(req, validacionUpdate);
       if (!validacionUpdated) {
-        console.warn("No fue posible actualizar el objeto: ", validacionUpdate);
+        logger.warn(line(), "No fue posible actualizar el objeto: ", validacionUpdate);
       }
     }
     const validacionNext = await validacionDao.getValidacionByIdusuarioAndIdvalidaciontipo(req, usuario._idusuario, _idvalidaciontipo, filter_estado);
@@ -207,7 +208,7 @@ export const sendTokenPassword = async (req, res) => {
       //Enviar enlace para recuperar contraseña
       let otp_encriptado = cryptoUtils.encryptText(resetpasswordvalidationcode.toString(), config.TOKEN_KEY_OTP);
       let url = config.WEB_SITE + "token-verification-password?hash=" + usuario.hash + "&codigo=" + validacionNext.codigo + "&token=" + otp_encriptado;
-      console.log("url", url);
+      logger.info(line(), "url", url);
     }
   }
 
@@ -227,18 +228,18 @@ export const sendVerificactionCode = async (req, res) => {
 
   const usuario = await usuarioDao.getUsuarioByHash(req, validacionValidated.hash);
   if (!usuario) {
-    console.warn("Usuario no existe: ", validacionValidated);
+    logger.warn(line(), "Usuario no existe: ", validacionValidated);
     throw new ClientError("Información no válida", 404);
   }
 
   const validacion = await validacionDao.getValidacionByIdusuarioAndCodigo(req, usuario._idusuario, validacionValidated.codigo, filter_estado);
   if (!validacion) {
-    console.warn("Validación no existe: ", validacionValidated);
+    logger.warn(line(), "Validación no existe: ", validacionValidated);
     throw new ClientError("Información no válida", 404);
   }
 
   if (validacion.verificado != 0) {
-    console.warn("Valor ya se encuentra verificado: ", validacionValidated);
+    logger.warn(line(), "Valor ya se encuentra verificado: ", validacionValidated);
     throw new ClientError("Información no válida", 404);
   }
 
@@ -396,7 +397,7 @@ export const registerUsuario = async (req, res) => {
 };
 
 export const validateEmail = async (req, res) => {
-  //console.log(req);
+  //logger.info(line(),req);
   const filter_estado = [1];
   const validateRestorePasswordSchema = Yup.object({
     hash: Yup.string().trim().required().max(50),
@@ -407,13 +408,13 @@ export const validateEmail = async (req, res) => {
 
   const usuario = await usuarioDao.getUsuarioByHash(req, validacionValidated.hash);
   if (!usuario) {
-    console.warn("Usuario no existe: ", validacionValidated);
+    logger.warn(line(), "Usuario no existe: ", validacionValidated);
     throw new ClientError("El código de verificación no es válido o ha expidado", 404);
   }
 
   const validacion = await validacionDao.getValidacionByIdusuarioAndCodigo(req, usuario._idusuario, validacionValidated.codigo, filter_estado);
   if (!validacion) {
-    console.warn("Validación no existe: ", validacionValidated);
+    logger.warn(line(), "Validación no existe: ", validacionValidated);
     throw new ClientError("El código de verificación no es válido o ha expidado", 404);
   }
   //jsonUtils.prettyPrint(validacion);
@@ -440,15 +441,15 @@ export const validateEmail = async (req, res) => {
         usuarioUpdate.isemailvalidated = 1; // true
         const usuarioUpdated = await usuarioDao.updateUsuario(req, usuarioUpdate);
       } else {
-        console.warn("El código de verificación ha expirado: ", validacionValidated);
+        logger.warn(line(), "El código de verificación ha expirado: ", validacionValidated);
         throw new ClientError("El código de verificación no es válido o ha expidado", 404);
       }
     } else {
-      console.warn("El código de verificación ha sido validado anteriormente: ", validacionValidated);
+      logger.warn(line(), "El código de verificación ha sido validado anteriormente: ", validacionValidated);
       throw new ClientError("El código de verificación no es válido o ha expidado", 404);
     }
   } else {
-    console.warn("El código de verificación no es válido: ", validacionValidated);
+    logger.warn(line(), "El código de verificación no es válido: ", validacionValidated);
     throw new ClientError("El código de verificación no es válido o ha expidado", 404);
   }
   var validacionReturned = {};

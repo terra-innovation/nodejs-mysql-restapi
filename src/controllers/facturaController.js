@@ -10,6 +10,8 @@ import { insertarFacturaImpuesto } from "../daos/factura_impuesto.dao.js";
 import { response } from "../utils/CustomResponseOk.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import * as jsonUtils from "../utils/jsonUtils.js";
+import logger, { line } from "../utils/logger.js";
+
 import * as facturaUtils from "../utils/facturaUtils.js";
 import * as storageUtils from "../utils/storageUtils.js";
 import { parseStringPromise } from "xml2js";
@@ -20,17 +22,17 @@ import { Sequelize } from "sequelize";
 import * as luxon from "luxon";
 
 export const uploadInvoice = async (req, res) => {
-  console.log("Ingreso a uploadInvoice");
+  logger.info(line(), "Ingreso a uploadInvoice");
 
-  //console.log(req.file);
-  //console.log(req.files);
-  //console.log(req.body);
+  //logger.info(line(),req.file);
+  //logger.info(line(),req.files);
+  //logger.info(line(),req.body);
 
   for (const file of req.files) {
-    //console.log(file);
+    //logger.info(line(),file);
 
     var archivoXML = fs.readFileSync(file.path, "latin1");
-    // console.log(archivoXML);
+    // logger.info(line(),archivoXML);
     archivoXML = archivoXML.replace(/cbc:/g, "");
     archivoXML = archivoXML.replace(/cac:/g, "");
     archivoXML = archivoXML.replace(/n1:/g, "");
@@ -50,12 +52,12 @@ export const uploadInvoice = async (req, res) => {
 
     var result = jsonUtils.reemplazarValores(archivoJson, regexsYReemplazos);
     if (!result || !result?.Invoice) {
-      console.error("En el archivo XML no existe el objeto result o result.Invoice");
+      logger.error(line(), "En el archivo XML no existe el objeto result o result.Invoice");
       throw new ClientError("El archivo carece de una estructura válida");
     }
     var codigo_tipo_documento = result?.Invoice?.InvoiceTypeCode?.[0]._ ?? result?.Invoice?.InvoiceTypeCode?.[0] ?? null;
     if (!codigo_tipo_documento || codigo_tipo_documento != "01") {
-      console.error("El código del tipo de documento [" + codigo_tipo_documento + "] del archivo XML no corresponde al de una factura.");
+      logger.error(line(), "El código del tipo de documento [" + codigo_tipo_documento + "] del archivo XML no corresponde al de una factura.");
       throw new ClientError("El archivo carece de una estructura válida");
     }
 
@@ -118,9 +120,9 @@ export const uploadInvoice = async (req, res) => {
     });
 
     const empresa = await empresaDao.getEmpresaByIdusuarioAndRuc(req, req.session_user.usuario._idusuario, factura.proveedor_ruc, 1);
-    //console.log(empresa);
+    //logger.info(line(),empresa);
     if (!empresa) {
-      throw new ClientError("Seleccione una factura perteneciente a una de las empresas asociadas a su cuenta. La empresa ["+factura.proveedor_razon_social+" ("+factura.proveedor_ruc+")] no está asociada a su cuenta.", 404);
+      throw new ClientError("Seleccione una factura perteneciente a una de las empresas asociadas a su cuenta. La empresa [" + factura.proveedor_razon_social + " (" + factura.proveedor_ruc + ")] no está asociada a su cuenta.", 404);
     }
 
     if (!facturaJson.codigo_tipo_documento || facturaJson.codigo_tipo_documento != "01") {
@@ -141,7 +143,7 @@ export const uploadInvoice = async (req, res) => {
 
     var REGLA_MINIMO_DE_DIAS_PARA_PAGO = 8;
     if (facturaJson.dias_estimados_para_pago <= REGLA_MINIMO_DE_DIAS_PARA_PAGO) {
-      throw new ClientError("Seleccione una factura cuya fecha de vencimiento sea superior a "+REGLA_MINIMO_DE_DIAS_PARA_PAGO+" días.", 404);
+      throw new ClientError("Seleccione una factura cuya fecha de vencimiento sea superior a " + REGLA_MINIMO_DE_DIAS_PARA_PAGO + " días.", 404);
     }
 
     var cliente = await getEmpresaByRUCSinoExisteCrear(req, facturaJson.cliente.ruc, facturaJson.cliente);
@@ -169,7 +171,7 @@ export const getEmployees = async (req, res) => {
     const [rows] = await poolFactoring.query("SELECT * FROM employee");
     res.json(rows);
   } catch (error) {
-    console.error(error.message);
+    logger.error(line(), error.message);
     return res.status(500).json({ message: "Ocurrió un error. Vuelva a intentarlo en unos momentos." });
   }
 };
@@ -192,7 +194,7 @@ export const getTrabajadoresPorRuc = async (req, res) => {
 
     res.json(rows);
   } catch (error) {
-    console.error(error.message);
+    logger.error(line(), error.message);
     return res.status(500).json({ message: "Ocurrió un error. Vuelva a intentarlo en unos momentos." });
   }
 };
@@ -208,7 +210,7 @@ export const deleteEmployee = async (req, res) => {
 
     res.sendStatus(204);
   } catch (error) {
-    console.error(error.message);
+    logger.error(line(), error.message);
     return res.status(500).json({ message: "Ocurrió un error. Vuelva a intentarlo en unos momentos." });
   }
 };
@@ -219,7 +221,7 @@ export const createEmployee = async (req, res) => {
     const [rows] = await poolFactoring.query("INSERT INTO employee (name, salary) VALUES (?, ?)", [name, salary]);
     res.status(201).json({ id: rows.insertId, name, salary });
   } catch (error) {
-    console.error(error.message);
+    logger.error(line(), error.message);
     return res.status(500).json({ message: "Ocurrió un error. Vuelva a intentarlo en unos momentos." });
   }
 };
@@ -237,7 +239,7 @@ export const updateEmployee = async (req, res) => {
 
     res.json(rows[0]);
   } catch (error) {
-    console.error(error.message);
+    logger.error(line(), error.message);
     return res.status(500).json({ message: "Ocurrió un error. Vuelva a intentarlo en unos momentos." });
   }
 };
@@ -253,7 +255,7 @@ const getEmpresaByRUCSinoExisteCrear = async (req, ruc, empresa) => {
       })
       .required();
     var empresaValidated = empresaCreateSchema.validateSync(empresa, { abortEarly: false, stripUnknown: true });
-    console.debug("empresaValidated:", empresaValidated);
+    logger.debug(line(), "empresaValidated:", empresaValidated);
     var camposAdicionales = {};
     camposAdicionales.empresaid = uuidv4();
     camposAdicionales.code = uuidv4().split("-")[0];
@@ -266,8 +268,8 @@ const getEmpresaByRUCSinoExisteCrear = async (req, ruc, empresa) => {
     camposAuditoria.estado = 1;
 
     const empresaCreated = await empresaDao.insertEmpresa(req, { ...camposAdicionales, ...empresaValidated, ...camposAuditoria });
-    console.debug("Create empresa: ID:" + empresaCreated.idempresa + " | " + camposAdicionales.empresaid);
-    console.debug("empresaCreated:", empresaCreated.dataValues);
+    logger.debug(line(), "Create empresa: ID:" + empresaCreated.idempresa + " | " + camposAdicionales.empresaid);
+    logger.debug(line(), "empresaCreated:", empresaCreated.dataValues);
     if (empresaCreated) {
       cliente = await empresaDao.getEmpresaByRuc(req, ruc);
     }

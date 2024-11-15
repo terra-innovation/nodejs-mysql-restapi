@@ -11,6 +11,7 @@ import * as archivopersonaDao from "../../daos/archivopersonaDao.js";
 import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
+import logger, { line } from "../../utils/logger.js";
 import * as storageUtils from "../../utils/storageUtils.js";
 import * as validacionesYup from "../../utils/validacionesYup.js";
 import * as fs from "fs";
@@ -92,41 +93,47 @@ export const verifyPersona = async (req, res) => {
     })
     .required();
   const personaValidated = personaVerifySchema.validateSync({ ...req.files, ...req.body, _idusuario }, { abortEarly: false, stripUnknown: true });
-  console.debug("personaValidated:", personaValidated);
+  logger.debug("personaValidated:", personaValidated);
 
   const documentotipo = await documentotipoDao.findDocumentotipoPk(req, personaValidated.documentotipoid);
   if (!documentotipo) {
-    throw new ClientError("Documento tipo no existe", 404);
+    logger.warn(line(), "Documento tipo no existe: [" + personaValidated.documentotipoid + "]");
+    throw new ClientError("Datos no válidos", 404);
   }
   const paisNacionalidad = await paisDao.findPaisPk(req, personaValidated.paisnacionalidadid);
   if (!paisNacionalidad) {
-    throw new ClientError("Nacionalidad no existe", 404);
+    logger.warn(line(), "Nacionalidad no existe: [" + personaValidated.paisnacionalidadid + "]");
+    throw new ClientError("Datos no válidos", 404);
   }
   const paisNacimiento = await paisDao.findPaisPk(req, personaValidated.paisnacimientoid);
   if (!paisNacimiento) {
-    throw new ClientError("País de nacimiento no existe", 404);
+    logger.warn(line(), "País de nacimiento no existe: [" + personaValidated.paisnacimientoid + "]");
+    throw new ClientError("Datos no válidos", 404);
   }
   const paisResidencia = await paisDao.findPaisPk(req, personaValidated.paisresidenciaid);
   if (!paisResidencia) {
-    throw new ClientError("País de recidencia no existe", 404);
+    logger.warn(line(), "País de recidencia no existe: [" + personaValidated.paisresidenciaid + "]");
+    throw new ClientError("Datos no válidos", 404);
   }
   const distritoResidencia = await distritoDao.getDistritoByDistritoid(req, personaValidated.distritoresidenciaid);
   if (!distritoResidencia) {
-    throw new ClientError("Distrito de recidencia no existe", 404);
+    logger.warn(line(), "Distrito de recidencia no existe: [" + personaValidated.distritoresidenciaid + "]");
+    throw new ClientError("Datos no válidos", 404);
   }
   const genero = await generoDao.findGeneroPk(req, personaValidated.generoid);
   if (!genero) {
-    throw new ClientError("Genero no existe", 404);
+    logger.warn(line(), "Genero no existe: [" + personaValidated.generoid + "]");
+    throw new ClientError("Datos no válidos", 404);
   }
 
   if (!personaValidated.isdatacorrect) {
-    console.error("No aceptó los términos y condiciones");
+    logger.warn(line(), "No aceptó los términos y condiciones");
     throw new ClientError("Datos no válidos", 404);
   }
 
   const persona = await personaDao.getPersonaByIdusuario(req, personaValidated._idusuario);
   if (persona) {
-    console.error("Persona ya existe");
+    logger.warn(line(), "Persona ya existe");
     throw new ClientError("Datos no válidos", 404);
   }
 

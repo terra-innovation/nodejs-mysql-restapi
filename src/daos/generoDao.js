@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
+import logger, { line } from "../utils/logger.js";
 
 export const getGeneros = async (req, estados) => {
   try {
@@ -11,11 +12,11 @@ export const getGeneros = async (req, estados) => {
         },
       },
     });
-    //console.log(generos);
+    //logger.info(line(),generos);
     return generos;
   } catch (error) {
-    console.error(error.original.code);
-    console.error(error);
+    logger.error(line(), error.original.code);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -25,14 +26,14 @@ export const getGeneroByIdgenero = async (req, idgenero) => {
     const { models } = req.app.locals;
 
     const genero = await models.Genero.findByPk(idgenero, {});
-    console.log(genero);
+    logger.info(line(), genero);
 
     //const generos = await genero.getGeneros();
-    //console.log(generos);
+    //logger.info(line(),generos);
 
     return genero;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -45,10 +46,10 @@ export const getGeneroByGeneroid = async (req, generoid) => {
         generoid: generoid,
       },
     });
-    //console.log(genero);
+    //logger.info(line(),genero);
     return genero;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -62,10 +63,10 @@ export const findGeneroPk = async (req, generoid) => {
         generoid: generoid,
       },
     });
-    //console.log(genero);
+    //logger.info(line(),genero);
     return genero;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -74,10 +75,10 @@ export const insertGenero = async (req, genero) => {
   try {
     const { models } = req.app.locals;
     const genero_nuevo = await models.Genero.create(genero);
-    // console.log(genero_nuevo);
+    // logger.info(line(),genero_nuevo);
     return genero_nuevo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -92,7 +93,7 @@ export const updateGenero = async (req, genero) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -107,7 +108,7 @@ export const deleteGenero = async (req, genero) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

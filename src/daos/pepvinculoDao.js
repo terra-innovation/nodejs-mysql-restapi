@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
+import logger, { line } from "../utils/logger.js";
 
 export const getPepvinculos = async (req, estados) => {
   try {
@@ -11,11 +12,11 @@ export const getPepvinculos = async (req, estados) => {
         },
       },
     });
-    //console.log(pepvinculos);
+    //logger.info(line(),pepvinculos);
     return pepvinculos;
   } catch (error) {
-    console.error(error.original.code);
-    console.error(error);
+    logger.error(line(), error.original.code);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -25,14 +26,14 @@ export const getPepvinculoByIdpepvinculo = async (req, idpepvinculo) => {
     const { models } = req.app.locals;
 
     const pepvinculo = await models.PepVinculo.findByPk(idpepvinculo, {});
-    console.log(pepvinculo);
+    logger.info(line(), pepvinculo);
 
     //const pepvinculos = await pepvinculo.getPepvinculos();
-    //console.log(pepvinculos);
+    //logger.info(line(),pepvinculos);
 
     return pepvinculo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -45,10 +46,10 @@ export const getPepvinculoByPepvinculoid = async (req, pepvinculoid) => {
         pepvinculoid: pepvinculoid,
       },
     });
-    //console.log(pepvinculo);
+    //logger.info(line(),pepvinculo);
     return pepvinculo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -62,10 +63,10 @@ export const findPepvinculoPk = async (req, pepvinculoid) => {
         pepvinculoid: pepvinculoid,
       },
     });
-    //console.log(pepvinculo);
+    //logger.info(line(),pepvinculo);
     return pepvinculo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -74,10 +75,10 @@ export const insertPepvinculo = async (req, pepvinculo) => {
   try {
     const { models } = req.app.locals;
     const pepvinculo_nuevo = await models.PepVinculo.create(pepvinculo);
-    // console.log(pepvinculo_nuevo);
+    // logger.info(line(),pepvinculo_nuevo);
     return pepvinculo_nuevo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -92,7 +93,7 @@ export const updatePepvinculo = async (req, pepvinculo) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -107,7 +108,7 @@ export const deletePepvinculo = async (req, pepvinculo) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

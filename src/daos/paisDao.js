@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
+import logger, { line } from "../utils/logger.js";
 
 export const getPaises = async (req, estados) => {
   try {
@@ -11,11 +12,11 @@ export const getPaises = async (req, estados) => {
         },
       },
     });
-    //console.log(paises);
+    //logger.info(line(),paises);
     return paises;
   } catch (error) {
-    console.error(error.original.code);
-    console.error(error);
+    logger.error(line(), error.original.code);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -25,14 +26,14 @@ export const getPaisByIdpais = async (req, idpais) => {
     const { models } = req.app.locals;
 
     const pais = await models.Pais.findByPk(idpais, {});
-    console.log(pais);
+    logger.info(line(), pais);
 
     //const paises = await pais.getPaises();
-    //console.log(paises);
+    //logger.info(line(),paises);
 
     return pais;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -45,10 +46,10 @@ export const getPaisByPaisid = async (req, paisid) => {
         paisid: paisid,
       },
     });
-    //console.log(pais);
+    //logger.info(line(),pais);
     return pais;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -62,10 +63,10 @@ export const findPaisPk = async (req, paisid) => {
         paisid: paisid,
       },
     });
-    //console.log(pais);
+    //logger.info(line(),pais);
     return pais;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -74,10 +75,10 @@ export const insertPais = async (req, pais) => {
   try {
     const { models } = req.app.locals;
     const pais_nuevo = await models.Pais.create(pais);
-    // console.log(pais_nuevo);
+    // logger.info(line(),pais_nuevo);
     return pais_nuevo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -92,7 +93,7 @@ export const updatePais = async (req, pais) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -107,7 +108,7 @@ export const deletePais = async (req, pais) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

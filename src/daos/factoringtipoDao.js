@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
+import logger, { line } from "../utils/logger.js";
 
 export const getFactoringtipos = async (req, estados) => {
   try {
@@ -11,11 +12,11 @@ export const getFactoringtipos = async (req, estados) => {
         },
       },
     });
-    //console.log(factoringtipos);
+    //logger.info(line(),factoringtipos);
     return factoringtipos;
   } catch (error) {
-    console.error(error.original.code);
-    console.error(error);
+    logger.error(line(), error.original.code);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -25,14 +26,14 @@ export const getFactoringtipoByIdfactoringtipo = async (req, idfactoringtipo) =>
     const { models } = req.app.locals;
 
     const factoringtipo = await models.FactoringTipo.findByPk(idfactoringtipo, {});
-    console.log(factoringtipo);
+    logger.info(line(), factoringtipo);
 
     //const factoringtipos = await factoringtipo.getFactoringtipos();
-    //console.log(factoringtipos);
+    //logger.info(line(),factoringtipos);
 
     return factoringtipo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -45,10 +46,10 @@ export const getFactoringtipoByFactoringtipoid = async (req, factoringtipoid) =>
         factoringtipoid: factoringtipoid,
       },
     });
-    //console.log(factoringtipo);
+    //logger.info(line(),factoringtipo);
     return factoringtipo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -62,10 +63,10 @@ export const findFactoringtipoPk = async (req, factoringtipoid) => {
         factoringtipoid: factoringtipoid,
       },
     });
-    //console.log(factoringtipo);
+    //logger.info(line(),factoringtipo);
     return factoringtipo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -74,10 +75,10 @@ export const insertFactoringtipo = async (req, factoringtipo) => {
   try {
     const { models } = req.app.locals;
     const factoringtipo_nuevo = await models.FactoringTipo.create(factoringtipo);
-    // console.log(factoringtipo_nuevo);
+    // logger.info(line(),factoringtipo_nuevo);
     return factoringtipo_nuevo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -92,7 +93,7 @@ export const updateFactoringtipo = async (req, factoringtipo) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -107,7 +108,7 @@ export const deleteFactoringtipo = async (req, factoringtipo) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

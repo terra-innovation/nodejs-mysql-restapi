@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import Empresa from "../models/ft_factoring/Empresa.js";
 import { ClientError } from "../utils/CustomErrors.js";
+import logger, { line } from "../utils/logger.js";
 
 export const getColaboradoresActivas = async (req) => {
   try {
@@ -22,11 +23,11 @@ export const getColaboradoresActivas = async (req) => {
         estado: 1,
       },
     });
-    //console.log(colaboradores);
+    //logger.info(line(),colaboradores);
     return colaboradores;
   } catch (error) {
-    console.error(error.original.code);
-    console.error(error);
+    logger.error(line(), error.original.code);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -36,14 +37,14 @@ export const getColaboradorByIdcolaborador = async (req, idcolaborador) => {
     const { models } = req.app.locals;
 
     const colaborador = await models.Colaborador.findByPk(idcolaborador, {});
-    console.log(colaborador);
+    logger.info(line(), colaborador);
 
     //const colaboradores = await colaborador.getColaboradors();
-    //console.log(colaboradores);
+    //logger.info(line(),colaboradores);
 
     return colaborador;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -68,10 +69,10 @@ export const getColaboradorByColaboradorid = async (req, colaboradorid) => {
         colaboradorid: colaboradorid,
       },
     });
-    //console.log(colaborador);
+    //logger.info(line(),colaborador);
     return colaborador;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -85,10 +86,10 @@ export const findColaboradorPk = async (req, colaboradorid) => {
         colaboradorid: colaboradorid,
       },
     });
-    //console.log(colaborador);
+    //logger.info(line(),colaborador);
     return colaborador;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -97,10 +98,10 @@ export const insertColaborador = async (req, colaborador) => {
   try {
     const { models } = req.app.locals;
     const colaborador_nuevo = await models.Colaborador.create(colaborador);
-    // console.log(colaborador_nuevo);
+    // logger.info(line(),colaborador_nuevo);
     return colaborador_nuevo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -115,7 +116,7 @@ export const updateColaborador = async (req, colaborador) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -130,7 +131,7 @@ export const deleteColaborador = async (req, colaborador) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

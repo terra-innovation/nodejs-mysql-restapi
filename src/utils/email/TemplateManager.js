@@ -48,7 +48,7 @@ class TemplaceManager {
       };
       return codigoverificacionMailOptions;
     } catch (error) {
-      console.error(`Error en ${methodName}:`, error);
+      logger.error(line(), `Error en ${methodName}:`, error);
       throw error;
     }
   }
@@ -76,7 +76,7 @@ class TemplaceManager {
       };
       return codigoverificacionMailOptions;
     } catch (error) {
-      console.error(`Error en ${methodName}:`, error);
+      logger.error(line(), `Error en ${methodName}:`, error);
       throw error;
     }
   }
@@ -102,7 +102,7 @@ class TemplaceManager {
       };
       return ejemploMailOptions;
     } catch (error) {
-      console.error(`Error en ${methodName}:`, error);
+      logger.error(line(), `Error en ${methodName}:`, error);
       throw error;
     }
   }

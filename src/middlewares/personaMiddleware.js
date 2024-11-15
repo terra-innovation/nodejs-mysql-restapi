@@ -4,13 +4,14 @@ import * as luxon from "luxon";
 import { v4 as uuidv4 } from "uuid";
 import path from "path";
 import * as storageUtils from "../utils/storageUtils.js";
+import logger, { line } from "../utils/logger.js";
 
 let storage_persona = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, storageUtils.STORAGE_PATH_PROCESAR);
   },
   filename: (req, file, cb) => {
-    //console.log(file);
+    //logger.info(line(),file);
     const extension = path.extname(file.originalname).slice(1) || "";
     const anio_upload = luxon.DateTime.now().toFormat("yyyy");
     const mes_upload = luxon.DateTime.now().toFormat("MM");
@@ -53,10 +54,10 @@ export const upload = (req, res, next) => {
   upload_persona(req, res, function (err) {
     if (err instanceof multer.MulterError) {
       // A Multer error occurred when uploading.
-      console.error(err);
+      logger.error(line(), err);
       return res.status(404).send({ error: true, message: "Datos no válidos" });
     } else if (err) {
-      console.error(err);
+      logger.error(line(), err);
       // An unknown error occurred when uploading.
       return res.status(500).json({ error: true, message: "Ocurrio un error" });
     }

@@ -7,6 +7,7 @@ import * as monedaDao from "../../daos/monedaDao.js";
 import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
+import logger, { line } from "../../utils/logger.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
@@ -15,7 +16,7 @@ import { Sequelize } from "sequelize";
 export const getPersonapepdirectoMaster = async (req, res) => {
   const filter_estados = [1];
   const session_idusuario = req.session_user.usuario._idusuario;
-  //console.log(req.session_user.usuario.rol_rols);
+  //logger.info(line(),req.session_user.usuario.rol_rols);
   const roles = [2]; // Administrador
   const rolesUsuario = req.session_user.usuario.rol_rols.map((role) => role._idrol);
   const tieneRol = roles.some((rol) => rolesUsuario.includes(rol));
@@ -51,7 +52,7 @@ export const updatePersonapepdirectoOnlyAlias = async (req, res) => {
     })
     .required();
   const personapepdirectoValidated = personapepdirectoUpdateSchema.validateSync({ personapepdirectoid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
-  console.debug("personapepdirectoValidated:", personapepdirectoValidated);
+  logger.debug(line(), "personapepdirectoValidated:", personapepdirectoValidated);
 
   var camposAdicionales = {};
   camposAdicionales.personapepdirectoid = id;
@@ -68,27 +69,27 @@ export const updatePersonapepdirectoOnlyAlias = async (req, res) => {
   if (result[0] === 0) {
     throw new ClientError("Personapepdirecto no existe", 404);
   }
-  console.log(id);
+  logger.info(line(), id);
   const personapepdirectoUpdated = await personapepdirectoDao.getPersonapepdirectoByPersonapepdirectoid(req, id);
   if (!personapepdirectoUpdated) {
     throw new ClientError("Personapepdirecto no existe", 404);
   }
 
   var personapepdirectoObfuscated = jsonUtils.ofuscarAtributos(personapepdirectoUpdated, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
-  //console.log(empresaObfuscated);
+  //logger.info(line(),empresaObfuscated);
 
   var personapepdirectoFiltered = jsonUtils.removeAttributesPrivates(personapepdirectoObfuscated);
   response(res, 200, personapepdirectoFiltered);
 };
 
 export const getPersonapepdirectos = async (req, res) => {
-  //console.log(req.session_user.usuario._idusuario);
+  //logger.info(line(),req.session_user.usuario._idusuario);
 
   const session_idusuario = req.session_user.usuario._idusuario;
   const filter_estado = [1];
   const cuentasbancarias = await personapepdirectoDao.getCuentasbancariasByIdusuario(req, session_idusuario, filter_estado);
   var cuentasbancariasJson = jsonUtils.sequelizeToJSON(cuentasbancarias);
-  //console.log(empresaObfuscated);
+  //logger.info(line(),empresaObfuscated);
 
   var cuentasbancariasFiltered = jsonUtils.removeAttributes(cuentasbancariasJson, ["score"]);
   cuentasbancariasFiltered = jsonUtils.removeAttributesPrivates(cuentasbancariasFiltered);

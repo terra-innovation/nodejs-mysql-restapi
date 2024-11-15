@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
+import logger, { line } from "../utils/logger.js";
 
 export const getPersonadeclaracions = async (req, estados) => {
   try {
@@ -11,11 +12,11 @@ export const getPersonadeclaracions = async (req, estados) => {
         },
       },
     });
-    //console.log(personadeclaracions);
+    //logger.info(line(),personadeclaracions);
     return personadeclaracions;
   } catch (error) {
-    console.error(error.original.code);
-    console.error(error);
+    logger.error(line(), error.original.code);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -25,14 +26,14 @@ export const getPersonadeclaracionByIdpersonadeclaracion = async (req, idpersona
     const { models } = req.app.locals;
 
     const personadeclaracion = await models.PersonaDeclaracion.findByPk(idpersonadeclaracion, {});
-    console.log(personadeclaracion);
+    logger.info(line(), personadeclaracion);
 
     //const personadeclaracions = await personadeclaracion.getPersonadeclaracions();
-    //console.log(personadeclaracions);
+    //logger.info(line(),personadeclaracions);
 
     return personadeclaracion;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -45,10 +46,10 @@ export const getPersonadeclaracionByPersonadeclaracionid = async (req, personade
         personadeclaracionid: personadeclaracionid,
       },
     });
-    //console.log(personadeclaracion);
+    //logger.info(line(),personadeclaracion);
     return personadeclaracion;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -62,10 +63,10 @@ export const findPersonadeclaracionPk = async (req, personadeclaracionid) => {
         personadeclaracionid: personadeclaracionid,
       },
     });
-    //console.log(personadeclaracion);
+    //logger.info(line(),personadeclaracion);
     return personadeclaracion;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -74,10 +75,10 @@ export const insertPersonadeclaracion = async (req, personadeclaracion) => {
   try {
     const { models } = req.app.locals;
     const personadeclaracion_nuevo = await models.PersonaDeclaracion.create(personadeclaracion);
-    // console.log(personadeclaracion_nuevo);
+    // logger.info(line(),personadeclaracion_nuevo);
     return personadeclaracion_nuevo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -92,7 +93,7 @@ export const updatePersonadeclaracion = async (req, personadeclaracion) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -107,7 +108,7 @@ export const deletePersonadeclaracion = async (req, personadeclaracion) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

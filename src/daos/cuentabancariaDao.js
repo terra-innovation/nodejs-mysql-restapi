@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
+import logger, { line } from "../utils/logger.js";
 
 export const getCuentasbancariasByIdbancoAndNumero = async (req, idbanco, numero, estado) => {
   try {
@@ -40,10 +41,10 @@ export const getCuentasbancariasByIdbancoAndNumero = async (req, idbanco, numero
         },
       },
     });
-    //console.log(cuentasbancarias);
+    //logger.info(line(),cuentasbancarias);
     return cuentasbancarias;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -96,10 +97,10 @@ export const getCuentasbancariasByIdusuarioAndAlias = async (req, idusuario, ali
         },
       },
     });
-    //console.log(cuentasbancarias);
+    //logger.info(line(),cuentasbancarias);
     return cuentasbancarias;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -151,10 +152,10 @@ export const getCuentasbancariasByIdusuario = async (req, idusuario, estado) => 
         },
       },
     });
-    //console.log(cuentasbancarias);
+    //logger.info(line(),cuentasbancarias);
     return cuentasbancarias;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -164,14 +165,14 @@ export const getCuentabancariaByIdcuentabancaria = async (req, idcuentabancaria)
     const { models } = req.app.locals;
 
     const cuentabancaria = await models.CuentaBancaria.findByPk(idcuentabancaria, {});
-    console.log(cuentabancaria);
+    logger.info(line(), cuentabancaria);
 
     //const cuentasbancarias = await cuentabancaria.getCuentabancarias();
-    //console.log(cuentasbancarias);
+    //logger.info(line(),cuentasbancarias);
 
     return cuentabancaria;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -217,10 +218,10 @@ export const getCuentasbancariasByEmpresaidAndMoneda = async (req, empresaid, mo
         },
       },
     });
-    //console.log(cuentasbancarias);
+    //logger.info(line(),cuentasbancarias);
     return cuentasbancarias;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -255,10 +256,10 @@ export const getCuentabancariaByCuentabancariaid = async (req, cuentabancariaid)
         cuentabancariaid: cuentabancariaid,
       },
     });
-    console.log(cuentabancaria);
+    logger.info(line(), cuentabancaria);
     return cuentabancaria;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -272,10 +273,10 @@ export const findCuentabancariaPk = async (req, cuentabancariaid) => {
         cuentabancariaid: cuentabancariaid,
       },
     });
-    //console.log(cuentabancaria);
+    //logger.info(line(),cuentabancaria);
     return cuentabancaria;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -317,10 +318,10 @@ export const getCuentasbancarias = async (req, estado) => {
         },
       },
     });
-    //console.log(cuentasbancarias);
+    //logger.info(line(),cuentasbancarias);
     return cuentasbancarias;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -329,10 +330,10 @@ export const insertCuentabancaria = async (req, cuentabancaria) => {
   try {
     const { models } = req.app.locals;
     const cuentabancaria_nuevo = await models.CuentaBancaria.create(cuentabancaria);
-    // console.log(cuentabancaria_nuevo);
+    // logger.info(line(),cuentabancaria_nuevo);
     return cuentabancaria_nuevo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -350,7 +351,7 @@ export const updateCuentabancariaOnlyAliasByCuentabancariaid = async (req, cuent
     );
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -365,7 +366,7 @@ export const updateCuentabancaria = async (req, cuentabancaria) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -380,7 +381,7 @@ export const deleteCuentabancaria = async (req, cuentabancaria) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -395,7 +396,7 @@ export const activateCuentabancaria = async (req, cuentabancaria) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

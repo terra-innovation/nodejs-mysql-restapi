@@ -6,6 +6,7 @@ import * as monedaDao from "../daos/monedaDao.js";
 import { response } from "../utils/CustomResponseOk.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import * as jsonUtils from "../utils/jsonUtils.js";
+import logger, { line } from "../utils/logger.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
@@ -23,7 +24,7 @@ export const getFactoringtipos = async (req, res) => {
 };
 
 export const getFactoringtiposMiosByEmpresaidActivos = async (req, res) => {
-  //console.log(req.session_user.usuario._idusuario);
+  //logger.info(line(),req.session_user.usuario._idusuario);
   const { id } = req.params;
   const factoringtipoSchema = yup
     .object()
@@ -35,7 +36,7 @@ export const getFactoringtiposMiosByEmpresaidActivos = async (req, res) => {
   var factoringtipoValidated = factoringtipoSchema.validateSync({ empresaid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
 
   const empresa = await empresaDao.getEmpresaByIdusuarioAndEmpresaid(req, req.session_user.usuario._idusuario, factoringtipoValidated.empresaid, 1);
-  //console.log(empresa);
+  //logger.info(line(),empresa);
   if (!empresa) {
     throw new ClientError("Empresa no existe", 404);
   }
@@ -45,7 +46,7 @@ export const getFactoringtiposMiosByEmpresaidActivos = async (req, res) => {
   const filter_estado = [1, 2];
   const factoringtipos = await factoringtipoDao.getFactoringtiposByEmpresaidAndMoneda(req, filter_empresaid, filter_monedaid, filter_idfactoringtipoestado, filter_estado);
   var factoringtiposObfuscated = jsonUtils.ofuscarAtributos(factoringtipos, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
-  //console.log(empresaObfuscated);
+  //logger.info(line(),empresaObfuscated);
 
   var factoringtiposFiltered = jsonUtils.removeAttributes(factoringtiposObfuscated, ["score"]);
   factoringtiposFiltered = jsonUtils.removeAttributesPrivates(factoringtiposFiltered);
@@ -66,7 +67,7 @@ export const getFactoringtipo = async (req, res) => {
     throw new ClientError("Factoringtipo no existe", 404);
   }
   var factoringtipoObfuscated = jsonUtils.ofuscarAtributos(factoringtipo, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
-  //console.log(empresaObfuscated);
+  //logger.info(line(),empresaObfuscated);
 
   var factoringtipoFiltered = jsonUtils.removeAttributesPrivates(factoringtipoObfuscated);
   response(res, 200, factoringtipoFiltered);
@@ -86,7 +87,7 @@ export const createFactoringtipo = async (req, res) => {
     })
     .required();
   var factoringtipoValidated = factoringtipoCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
-  console.debug("factoringtipoValidated:", factoringtipoValidated);
+  logger.debug(line(), "factoringtipoValidated:", factoringtipoValidated);
 
   var empresa = await empresaDao.findEmpresaPk(req, factoringtipoValidated.empresaid);
   if (!empresa) {
@@ -125,8 +126,8 @@ export const createFactoringtipo = async (req, res) => {
   camposAuditoria.estado = 1;
 
   const factoringtipoCreated = await factoringtipoDao.insertFactoringtipo(req, { ...camposFk, ...camposAdicionales, ...factoringtipoValidated, ...camposAuditoria });
-  console.debug("Create factoringtipo: ID:" + factoringtipoCreated.idfactoringtipo + " | " + camposAdicionales.factoringtipoid);
-  console.debug("factoringtipoCreated:", factoringtipoCreated.dataValues);
+  logger.debug(line(), "Create factoringtipo: ID:" + factoringtipoCreated.idfactoringtipo + " | " + camposAdicionales.factoringtipoid);
+  logger.debug(line(), "factoringtipoCreated:", factoringtipoCreated.dataValues);
   // Retiramos los IDs internos
   delete camposAdicionales.idempresa;
   response(res, 201, { ...camposAdicionales, ...factoringtipoValidated });
@@ -143,7 +144,7 @@ export const updateFactoringtipo = async (req, res) => {
     })
     .required();
   const factoringtipoValidated = factoringtipoUpdateSchema.validateSync({ factoringtipoid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
-  console.debug("factoringtipoValidated:", factoringtipoValidated);
+  logger.debug(line(), "factoringtipoValidated:", factoringtipoValidated);
 
   var camposAdicionales = {};
   camposAdicionales.factoringtipoid = id;
@@ -156,14 +157,14 @@ export const updateFactoringtipo = async (req, res) => {
   if (result[0] === 0) {
     throw new ClientError("Factoringtipo no existe", 404);
   }
-  console.log(id);
+  logger.info(line(), id);
   const factoringtipoUpdated = await factoringtipoDao.getFactoringtipoByFactoringtipoid(req, id);
   if (!factoringtipoUpdated) {
     throw new ClientError("Factoringtipo no existe", 404);
   }
 
   var factoringtipoObfuscated = jsonUtils.ofuscarAtributos(factoringtipoUpdated, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
-  //console.log(empresaObfuscated);
+  //logger.info(line(),empresaObfuscated);
 
   var factoringtipoFiltered = jsonUtils.removeAttributesPrivates(factoringtipoObfuscated);
   response(res, 200, factoringtipoFiltered);
@@ -178,7 +179,7 @@ export const deleteFactoringtipo = async (req, res) => {
     })
     .required();
   const factoringtipoValidated = factoringtipoSchema.validateSync({ factoringtipoid: id }, { abortEarly: false, stripUnknown: true });
-  console.debug("factoringtipoValidated:", factoringtipoValidated);
+  logger.debug(line(), "factoringtipoValidated:", factoringtipoValidated);
 
   var camposAuditoria = {};
   camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
@@ -189,6 +190,6 @@ export const deleteFactoringtipo = async (req, res) => {
   if (factoringtipoDeleted[0] === 0) {
     throw new ClientError("Factoringtipo no existe", 404);
   }
-  console.debug("factoringtipoDeleted:", factoringtipoDeleted);
+  logger.debug(line(), "factoringtipoDeleted:", factoringtipoDeleted);
   response(res, 204, factoringtipoDeleted);
 };

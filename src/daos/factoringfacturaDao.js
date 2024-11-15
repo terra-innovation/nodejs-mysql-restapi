@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
+import logger, { line } from "../utils/logger.js";
 
 export const getFactoringsfacturasEmpresasActivas = async (req) => {
   try {
@@ -14,10 +15,10 @@ export const getFactoringsfacturasEmpresasActivas = async (req) => {
         estado: 1,
       },
     });
-    //console.log(factoringsfacturasempresas);
+    //logger.info(line(),factoringsfacturasempresas);
     return factoringsfacturasempresas;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -27,14 +28,14 @@ export const getFactoringfacturaByIdfactoringfactura = async (req, idfactoringfa
     const { models } = req.app.locals;
 
     const factoringfactura = await models.FactoringFactura.findByPk(idfactoringfactura, {});
-    console.log(factoringfactura);
+    logger.info(line(), factoringfactura);
 
     //const factoringsfacturasempresas = await factoringfactura.getFactoringsfacturasEmpresas();
-    //console.log(factoringsfacturasempresas);
+    //logger.info(line(),factoringsfacturasempresas);
 
     return factoringfactura;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -47,10 +48,10 @@ export const getFactoringfacturaByFactoringfacturaid = async (req, factoringfact
         factoringfacturaid: factoringfacturaid,
       },
     });
-    //console.log(factoringfactura);
+    //logger.info(line(),factoringfactura);
     return factoringfactura;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -64,10 +65,10 @@ export const findFactoringfacturaPk = async (req, factoringfacturaid) => {
         factoringfacturaid: factoringfacturaid,
       },
     });
-    //console.log(factoringfactura);
+    //logger.info(line(),factoringfactura);
     return factoringfactura;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -76,10 +77,10 @@ export const insertFactoringfactura = async (req, factoringfactura) => {
   try {
     const { models } = req.app.locals;
     const factoringfactura_nuevo = await models.FactoringFactura.create(factoringfactura);
-    // console.log(factoringfactura_nuevo);
+    // logger.info(line(),factoringfactura_nuevo);
     return factoringfactura_nuevo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -94,7 +95,7 @@ export const updateFactoringfactura = async (req, factoringfactura) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -109,7 +110,7 @@ export const deleteFactoringfactura = async (req, factoringfactura) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

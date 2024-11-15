@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
+import logger, { line } from "../utils/logger.js";
 
 export const getBancos = async (req, estados) => {
   try {
@@ -11,11 +12,11 @@ export const getBancos = async (req, estados) => {
         },
       },
     });
-    //console.log(bancos);
+    //logger.info(line(),bancos);
     return bancos;
   } catch (error) {
-    console.error(error.original.code);
-    console.error(error);
+    logger.error(line(), error.original.code);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -25,14 +26,14 @@ export const getBancoByIdbanco = async (req, idbanco) => {
     const { models } = req.app.locals;
 
     const banco = await models.Banco.findByPk(idbanco, {});
-    console.log(banco);
+    logger.info(line(), banco);
 
     //const bancos = await banco.getBancos();
-    //console.log(bancos);
+    //logger.info(line(),bancos);
 
     return banco;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -45,10 +46,10 @@ export const getBancoByBancoid = async (req, bancoid) => {
         bancoid: bancoid,
       },
     });
-    //console.log(banco);
+    //logger.info(line(),banco);
     return banco;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -62,10 +63,10 @@ export const findBancoPk = async (req, bancoid) => {
         bancoid: bancoid,
       },
     });
-    //console.log(banco);
+    //logger.info(line(),banco);
     return banco;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -74,10 +75,10 @@ export const insertBanco = async (req, banco) => {
   try {
     const { models } = req.app.locals;
     const banco_nuevo = await models.Banco.create(banco);
-    // console.log(banco_nuevo);
+    // logger.info(line(),banco_nuevo);
     return banco_nuevo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -92,7 +93,7 @@ export const updateBanco = async (req, banco) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -107,7 +108,7 @@ export const deleteBanco = async (req, banco) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

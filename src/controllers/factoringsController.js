@@ -12,6 +12,7 @@ import * as monedaDao from "../daos/monedaDao.js";
 import { response } from "../utils/CustomResponseOk.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import * as jsonUtils from "../utils/jsonUtils.js";
+import logger, { line } from "../utils/logger.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
@@ -27,7 +28,7 @@ export const acceptFactoringCotizacion = async (req, res) => {
     })
     .required();
   const factoringValidated = factoringUpdateSchema.validateSync({ factoringid: id }, { abortEarly: false, stripUnknown: true });
-  console.debug("factoringValidated: ", factoringValidated);
+  logger.debug(line(), "factoringValidated: ", factoringValidated);
 
   var factoring = await factoringDao.findFactoringPk(req, factoringValidated.factoringid);
   if (!factoring) {
@@ -36,11 +37,11 @@ export const acceptFactoringCotizacion = async (req, res) => {
 
   var camposFk = {};
   camposFk._idfactoring = factoring._idfactoring;
-  //console.log("camposFk: ", camposFk);
+  //logger.info(line(),"camposFk: ", camposFk);
 
   var camposAdicionales = {};
   camposAdicionales._idfactoringestado = 4;
-  console.log("camposAdicionales: ", camposAdicionales);
+  logger.info(line(), "camposAdicionales: ", camposAdicionales);
 
   var camposAuditoria = {};
   camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
@@ -62,9 +63,9 @@ export const acceptFactoringCotizacion = async (req, res) => {
 };
 
 export const getFactoringEmpresario = async (req, res) => {
-  console.debug("getFactoringEmpresario");
+  logger.debug(line(), "getFactoringEmpresario");
   const session_idusuario = req.session_user.usuario._idusuario;
-  console.debug("session_idusuario:", session_idusuario);
+  logger.debug(line(), "session_idusuario:", session_idusuario);
   const { id } = req.params;
   const factoringSchema = yup
     .object()
@@ -73,7 +74,7 @@ export const getFactoringEmpresario = async (req, res) => {
     })
     .required();
   var factoringValidated = factoringSchema.validateSync({ factoringid: id }, { abortEarly: false, stripUnknown: true });
-  console.debug("factoringValidated: ", factoringValidated);
+  logger.debug(line(), "factoringValidated: ", factoringValidated);
   const filter_estados = [1];
   const factoring = await factoringDao.getFactoringByFactoringidAndIdcontactocedente(req, factoringValidated.factoringid, session_idusuario, filter_estados);
   if (!factoring) {
@@ -87,9 +88,9 @@ export const getFactoringEmpresario = async (req, res) => {
 };
 
 export const getFactoringsCotizacionesMiosActivos = async (req, res) => {
-  console.debug("getFactoringsCotizacionesMiosActivos");
+  logger.debug(line(), "getFactoringsCotizacionesMiosActivos");
   const session_idusuario = req.session_user.usuario._idusuario;
-  console.debug("session_idusuario:", session_idusuario);
+  logger.debug(line(), "session_idusuario:", session_idusuario);
   const filter_estados = [1];
   const factorings = await factoringDao.getFactoringsCotizacionesByIdcontactocedente(req, session_idusuario, filter_estados);
   response(res, 201, factorings);
@@ -121,7 +122,7 @@ export const getFactoringsMaster = async (req, res) => {
 };
 
 export const getFactoring = async (req, res) => {
-  console.debug("getFactoring");
+  logger.debug(line(), "getFactoring");
   const { id } = req.params;
   const factoringSchema = yup
     .object()
@@ -130,7 +131,7 @@ export const getFactoring = async (req, res) => {
     })
     .required();
   var factoringValidated = factoringSchema.validateSync({ factoringid: id }, { abortEarly: false, stripUnknown: true });
-  console.debug("factoringValidated: ", factoringValidated);
+  logger.debug(line(), "factoringValidated: ", factoringValidated);
   const factoring = await factoringDao.getFactoringByFactoringid(req, factoringValidated.factoringid);
   if (!factoring) {
     throw new ClientError("Factoring no existe", 404);
@@ -161,7 +162,7 @@ export const createFactoring = async (req, res) => {
     })
     .required();
   var factoringValidated = factoringCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
-  //console.debug("factoringValidated:", factoringValidated);
+  //logger.debug(line(),"factoringValidated:", factoringValidated);
 
   const facturas = [];
 
@@ -201,7 +202,7 @@ export const createFactoring = async (req, res) => {
   camposFk._idfactoringtipo = 1; // Por defecto
   camposFk._idfactoringestado = 1; // Por defecto
 
-  //console.log(camposFk);
+  //logger.info(line(),camposFk);
 
   var camposAdicionales = {};
   camposAdicionales.factoringid = uuidv4();
@@ -209,7 +210,7 @@ export const createFactoring = async (req, res) => {
   camposAdicionales.fecha_registro = luxon.DateTime.now().toISO();
   camposAdicionales.cantidad_facturas = factoringValidated.facturas.length;
 
-  //console.log(camposAdicionales);
+  //logger.info(line(),camposAdicionales);
 
   var camposAuditoria = {};
   camposAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
@@ -218,7 +219,7 @@ export const createFactoring = async (req, res) => {
   camposAuditoria.fechamod = Sequelize.fn("now", 3);
   camposAuditoria.estado = 1;
 
-  //console.log(camposAuditoria);
+  //logger.info(line(),camposAuditoria);
 
   /*
   // Validar si el factoring ya existe
@@ -230,18 +231,18 @@ export const createFactoring = async (req, res) => {
   */
 
   const factoringCreated = await factoringDao.insertFactoring(req, { ...camposFk, ...camposAdicionales, ...factoringValidated, ...camposAuditoria });
-  //console.debug("Create factoring: ID:" + factoringCreated._idfactoring + " | " + camposAdicionales.factoringid);
-  //console.debug("factoringCreated:", factoringCreated.dataValues);
+  //logger.debug(line(),"Create factoring: ID:" + factoringCreated._idfactoring + " | " + camposAdicionales.factoringid);
+  //logger.debug(line(),"factoringCreated:", factoringCreated.dataValues);
 
   /* Insertar en la tabla intermedia */
 
   for (const [index, factura] of facturas.entries()) {
-    //console.log(`Índice: ${index}, Objeto: ${jsonUtils.prettyPrint(factura)}`);
+    //logger.info(line(),`Índice: ${index}, Objeto: ${jsonUtils.prettyPrint(factura)}`);
     var factoringfacturaFk = {};
     factoringfacturaFk._idfactoring = factoringCreated._idfactoring;
     factoringfacturaFk._idfactura = factura._idfactura;
     const factoringfacturaCreated = await factoringfacturaDao.insertFactoringfactura(req, { ...factoringfacturaFk, ...camposAuditoria });
-    //console.log(jsonUtils.prettyPrint(factoringfacturaCreated));
+    //logger.info(line(),jsonUtils.prettyPrint(factoringfacturaCreated));
   }
 
   response(res, 201, { ...camposAdicionales, ...factoringValidated });
@@ -263,7 +264,7 @@ export const updateFactoringCotizacion = async (req, res) => {
     })
     .required();
   const factoringValidated = factoringUpdateSchema.validateSync({ factoringid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
-  console.debug("factoringValidated: ", factoringValidated);
+  logger.debug(line(), "factoringValidated: ", factoringValidated);
 
   var factoring = await factoringDao.findFactoringPk(req, factoringValidated.factoringid);
   if (!factoring) {
@@ -308,7 +309,7 @@ export const updateFactoringCotizacion = async (req, res) => {
   camposFk._idriesgocedente = riesgocedente._idriesgo;
   camposFk._idriesgoaceptante = riesgoaceptante._idriesgo;
 
-  //console.log("camposFk: ", camposFk);
+  //logger.info(line(),"camposFk: ", camposFk);
 
   var camposAdicionales = {};
   camposAdicionales.dias_pago_estimado = luxon.DateTime.fromISO(factoringBefore.fecha_pago_estimado).startOf("day").diff(luxon.DateTime.local().startOf("day"), "days").days; // Actualizamos la cantidad de dias para el pago
@@ -360,7 +361,7 @@ export const updateFactoringCotizacion = async (req, res) => {
   camposAdicionales.tcnm = (camposAdicionales.monto_costo_factoring / camposAdicionales.monto_adelanto / camposAdicionales.dias_pago_estimado) * 30 * 100;
   camposAdicionales.tcna = camposAdicionales.tcnm * 12;
   camposAdicionales.tcnd = camposAdicionales.tcnm / 30;
-  console.log("camposAdicionales: ", camposAdicionales);
+  logger.info(line(), "camposAdicionales: ", camposAdicionales);
 
   var camposAuditoria = {};
   camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
@@ -374,7 +375,7 @@ export const updateFactoringCotizacion = async (req, res) => {
   if (!factoringUpdated) {
     throw new ClientError("Factoring no existe", 404);
   }
-  //console.debug("factoringUpdated: ", factoringUpdated.dataValues);
+  //logger.debug(line(),"factoringUpdated: ", factoringUpdated.dataValues);
   response(res, 200, factoringUpdated);
 };
 
@@ -387,7 +388,7 @@ export const deleteFactoring = async (req, res) => {
     })
     .required();
   const factoringValidated = factoringSchema.validateSync({ factoringid: id }, { abortEarly: false, stripUnknown: true });
-  console.debug("factoringValidated:", factoringValidated);
+  logger.debug(line(), "factoringValidated:", factoringValidated);
 
   var camposAuditoria = {};
   camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
@@ -402,7 +403,7 @@ export const deleteFactoring = async (req, res) => {
   if (factoring_actualizada.length === 0) {
     throw new ClientError("Factoring no existe", 404);
   }
-  console.debug("factoringDeleted:", factoring_actualizada[0].dataValues);
+  logger.debug(line(), "factoringDeleted:", factoring_actualizada[0].dataValues);
   response(res, 204, factoring_actualizada[0]);
 };
 

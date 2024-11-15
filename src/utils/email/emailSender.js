@@ -47,10 +47,10 @@ class EmailSender {
   async sendEmail(transporter, mailOptions) {
     try {
       const info = await transporter.sendMail(mailOptions);
-      console.log("Correo enviado: " + info.response);
+      logger.info(line(), "Correo enviado: " + info.response);
       return info;
     } catch (error) {
-      console.error("Error al enviar el correo:", error);
+      logger.error(line(), "Error al enviar el correo:", error);
       throw error;
     }
   }

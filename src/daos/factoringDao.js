@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
+import logger, { line } from "../utils/logger.js";
 
 export const getFactoringByFactoringidAndIdcontactocedente = async (req, factoringid, idcontactocedete, estados) => {
   try {
@@ -18,10 +19,10 @@ export const getFactoringByFactoringidAndIdcontactocedente = async (req, factori
         },
       },
     });
-    //console.debug("factoring: ", factoring);
+    //logger.debug(line(),"factoring: ", factoring);
     return factoring;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -42,10 +43,10 @@ export const getFactoringsCotizacionesByIdcontactocedente = async (req, idcontac
         _idcontactocedente: idcontactocedete,
       },
     });
-    //console.log(factorings);
+    //logger.info(line(),factorings);
     return factorings;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -63,10 +64,10 @@ export const getFactoringsActivas = async (req) => {
         estado: 1,
       },
     });
-    //console.log(factorings);
+    //logger.info(line(),factorings);
     return factorings;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -76,14 +77,14 @@ export const getFactoringByIdfactoring = async (req, idfactoring) => {
     const { models } = req.app.locals;
 
     const factoring = await models.Factoring.findByPk(idfactoring, {});
-    console.log(factoring);
+    logger.info(line(), factoring);
 
     //const factorings = await factoring.getFactorings();
-    //console.log(factorings);
+    //logger.info(line(),factorings);
 
     return factoring;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -101,10 +102,10 @@ export const getFactoringByFactoringid = async (req, factoringid) => {
         factoringid: factoringid,
       },
     });
-    //console.debug("factoring: ", factoring);
+    //logger.debug(line(),"factoring: ", factoring);
     return factoring;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -118,10 +119,10 @@ export const findFactoringPk = async (req, factoringid) => {
         factoringid: factoringid,
       },
     });
-    //console.log(factoring);
+    //logger.info(line(),factoring);
     return factoring;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -130,10 +131,10 @@ export const insertFactoring = async (req, factoring) => {
   try {
     const { models } = req.app.locals;
     const factoring_nuevo = await models.Factoring.create(factoring);
-    // console.log(factoring_nuevo);
+    // logger.info(line(),factoring_nuevo);
     return factoring_nuevo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -148,7 +149,7 @@ export const updateFactoring = async (req, factoring) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -163,7 +164,7 @@ export const deleteFactoring = async (req, factoring) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

@@ -3,13 +3,14 @@ import multer from "multer";
 import * as luxon from "luxon";
 import { v4 as uuidv4 } from "uuid";
 import * as storageUtils from "../utils/storageUtils.js";
+import logger, { line } from "../utils/logger.js";
 
 let storage_invoice = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, storageUtils.STORAGE_PATH_PROCESAR);
   },
   filename: (req, file, cb) => {
-    //console.log(file);
+    //logger.info(line(),file);
     const codigo_archivo = uuidv4().split("-")[0] + "-" + uuidv4().split("-")[1];
     const uniqueSuffix = luxon.DateTime.now().toFormat("yyyyMMdd_HHmmss_SSS") + "_" + codigo_archivo;
     const filename = uniqueSuffix + "_" + file.originalname;
@@ -22,8 +23,8 @@ export const upload_invoice = multer({
   storage: storage_invoice,
   limits: { fileSize: 2 * 1024 * 1024, files: 5, fields: 10 },
   fileFilter: async function (req, file, cb) {
-    //console.log("fileFilter");
-    //console.log("file.mimetype: " + file.mimetype);
+    //logger.info(line(),"fileFilter");
+    //logger.info(line(),"file.mimetype: " + file.mimetype);
     if (file.mimetype !== "text/xml" && file.mimetype !== "application/xml") {
       cb(new Error("Formato de archivo inválido"));
     }
@@ -34,7 +35,7 @@ export const upload_invoice = multer({
 // Middleware de multer para manejar la subida de archivos
 export const upload = (req, res, next) => {
   upload_invoice(req, res, function (err) {
-    console.error(err);
+    logger.error(line(), err);
     if (err instanceof multer.MulterError) {
       // A Multer error occurred when uploading.
       if (err.code == "LIMIT_FILE_SIZE") {
@@ -42,11 +43,11 @@ export const upload = (req, res, next) => {
       } else if (err.code == "LIMIT_UNEXPECTED_FILE") {
         return res.status(404).send({ error: true, message: "El máximo de archivos a cargar es 1" });
       } else {
-        console.error(err);
+        logger.error(line(), err);
         return res.status(404).send({ error: true, message: "El archivo no fue posible cargar" });
       }
     } else if (err) {
-      console.error(err);
+      logger.error(line(), err);
       // An unknown error occurred when uploading.
       return res.status(500).json({ error: true, message: err.message });
     } else if (!req.files) {

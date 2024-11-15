@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
+import logger, { line } from "../utils/logger.js";
 
 export const getDepartamentos = async (req, estados) => {
   try {
@@ -11,11 +12,11 @@ export const getDepartamentos = async (req, estados) => {
         },
       },
     });
-    //console.log(departamentos);
+    //logger.info(line(),departamentos);
     return departamentos;
   } catch (error) {
-    console.error(error.original.code);
-    console.error(error);
+    logger.error(line(), error.original.code);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -25,14 +26,14 @@ export const getDepartamentoByIddepartamento = async (req, iddepartamento) => {
     const { models } = req.app.locals;
 
     const departamento = await models.Departamento.findByPk(iddepartamento, {});
-    console.log(departamento);
+    logger.info(line(), departamento);
 
     //const departamentos = await departamento.getDepartamentos();
-    //console.log(departamentos);
+    //logger.info(line(),departamentos);
 
     return departamento;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -45,10 +46,10 @@ export const getDepartamentoByDepartamentoid = async (req, departamentoid) => {
         departamentoid: departamentoid,
       },
     });
-    //console.log(departamento);
+    //logger.info(line(),departamento);
     return departamento;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -62,10 +63,10 @@ export const findDepartamentoPk = async (req, departamentoid) => {
         departamentoid: departamentoid,
       },
     });
-    //console.log(departamento);
+    //logger.info(line(),departamento);
     return departamento;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -74,10 +75,10 @@ export const insertDepartamento = async (req, departamento) => {
   try {
     const { models } = req.app.locals;
     const departamento_nuevo = await models.Departamento.create(departamento);
-    // console.log(departamento_nuevo);
+    // logger.info(line(),departamento_nuevo);
     return departamento_nuevo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -92,7 +93,7 @@ export const updateDepartamento = async (req, departamento) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -107,7 +108,7 @@ export const deleteDepartamento = async (req, departamento) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

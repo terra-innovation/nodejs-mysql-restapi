@@ -2,6 +2,7 @@ import * as colaboradorDao from "../daos/colaboradorDao.js";
 import * as empresaDao from "../daos/empresaDao.js";
 import { response } from "../utils/CustomResponseOk.js";
 import { ClientError } from "../utils/CustomErrors.js";
+import logger, { line } from "../utils/logger.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
@@ -40,7 +41,7 @@ export const createColaborador = async (req, res) => {
     })
     .required();
   var colaboradorValidated = colaboradorCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
-  console.debug("colaboradorValidated:", colaboradorValidated);
+  logger.debug(line(), "colaboradorValidated:", colaboradorValidated);
 
   var empresa = await empresaDao.findEmpresaPk(req, colaboradorValidated.empresaid);
   if (empresa.length === 0) {
@@ -61,8 +62,8 @@ export const createColaborador = async (req, res) => {
   camposAuditoria.estado = 1;
 
   const colaboradorCreated = await colaboradorDao.insertColaborador(req, { ...camposFk, ...camposAdicionales, ...colaboradorValidated, ...camposAuditoria });
-  console.debug("Create colaborador: ID:" + colaboradorCreated.idcolaborador + " | " + camposAdicionales.colaboradorid);
-  console.debug("colaboradorCreated:", colaboradorCreated.dataValues);
+  logger.debug(line(), "Create colaborador: ID:" + colaboradorCreated.idcolaborador + " | " + camposAdicionales.colaboradorid);
+  logger.debug(line(), "colaboradorCreated:", colaboradorCreated.dataValues);
   // Retiramos los IDs internos
   delete camposAdicionales.idempresa;
   response(res, 201, { ...camposAdicionales, ...colaboradorValidated });
@@ -82,7 +83,7 @@ export const updateColaborador = async (req, res) => {
     })
     .required();
   const colaboradorValidated = colaboradorUpdateSchema.validateSync({ colaboradorid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
-  console.debug("colaboradorValidated:", colaboradorValidated);
+  logger.debug(line(), "colaboradorValidated:", colaboradorValidated);
 
   var camposAdicionales = {};
   camposAdicionales.colaboradorid = id;
@@ -99,7 +100,7 @@ export const updateColaborador = async (req, res) => {
   if (colaborador_actualizada.length === 0) {
     throw new ClientError("Colaborador no existe", 404);
   }
-  console.debug("colaboradorUpdated:", colaborador_actualizada[0].dataValues);
+  logger.debug(line(), "colaboradorUpdated:", colaborador_actualizada[0].dataValues);
   response(res, 200, colaborador_actualizada[0]);
 };
 
@@ -112,7 +113,7 @@ export const deleteColaborador = async (req, res) => {
     })
     .required();
   const colaboradorValidated = colaboradorSchema.validateSync({ colaboradorid: id }, { abortEarly: false, stripUnknown: true });
-  console.debug("colaboradorValidated:", colaboradorValidated);
+  logger.debug(line(), "colaboradorValidated:", colaboradorValidated);
 
   var camposAuditoria = {};
   camposAuditoria.idusuariomod = 1;
@@ -127,6 +128,6 @@ export const deleteColaborador = async (req, res) => {
   if (colaborador_actualizada.length === 0) {
     throw new ClientError("Colaborador no existe", 404);
   }
-  console.debug("colaboradorDeleted:", colaborador_actualizada[0].dataValues);
+  logger.debug(line(), "colaboradorDeleted:", colaborador_actualizada[0].dataValues);
   response(res, 204, colaborador_actualizada[0]);
 };

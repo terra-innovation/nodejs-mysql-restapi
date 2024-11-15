@@ -1,4 +1,5 @@
 import { poolFactoring } from "../config/bd/mysql2_db_factoring.js";
+import logger, { line } from "../utils/logger.js";
 
 export const insertarFacturaImpuesto = async (factura_impuesto) => {
   const [rows] = await poolFactoring.query(
@@ -21,18 +22,9 @@ export const insertarFacturaImpuesto = async (factura_impuesto) => {
         ?,
         ?
         )`,
-    [
-      factura_impuesto.facturaimpuestoid,
-      factura_impuesto._idfactura,
-      factura_impuesto.id,
-      factura_impuesto.codigo_sunat,
-      factura_impuesto.nombre,
-      factura_impuesto.porcentaje,
-      factura_impuesto.base_imponible,
-      factura_impuesto.monto,
-    ]
+    [factura_impuesto.facturaimpuestoid, factura_impuesto._idfactura, factura_impuesto.id, factura_impuesto.codigo_sunat, factura_impuesto.nombre, factura_impuesto.porcentaje, factura_impuesto.base_imponible, factura_impuesto.monto]
   );
-  //console.log(rows);
+  //logger.info(line(),rows);
 
   if (rows.length <= 0) {
     throw new Error("BD Logica. Uh oh!");

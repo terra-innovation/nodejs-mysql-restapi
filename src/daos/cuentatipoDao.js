@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
+import logger, { line } from "../utils/logger.js";
 
 export const getCuentatipos = async (req, estados) => {
   try {
@@ -11,11 +12,11 @@ export const getCuentatipos = async (req, estados) => {
         },
       },
     });
-    //console.log(cuentatipos);
+    //logger.info(line(),cuentatipos);
     return cuentatipos;
   } catch (error) {
-    console.error(error.original.code);
-    console.error(error);
+    logger.error(line(), error.original.code);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -25,14 +26,14 @@ export const getCuentatipoByIdcuentatipo = async (req, idcuentatipo) => {
     const { models } = req.app.locals;
 
     const cuentatipo = await models.CuentaTipo.findByPk(idcuentatipo, {});
-    console.log(cuentatipo);
+    logger.info(line(), cuentatipo);
 
     //const cuentatipos = await cuentatipo.getCuentatipos();
-    //console.log(cuentatipos);
+    //logger.info(line(),cuentatipos);
 
     return cuentatipo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -45,10 +46,10 @@ export const getCuentatipoByCuentatipoid = async (req, cuentatipoid) => {
         cuentatipoid: cuentatipoid,
       },
     });
-    //console.log(cuentatipo);
+    //logger.info(line(),cuentatipo);
     return cuentatipo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -62,10 +63,10 @@ export const findCuentatipoPk = async (req, cuentatipoid) => {
         cuentatipoid: cuentatipoid,
       },
     });
-    //console.log(cuentatipo);
+    //logger.info(line(),cuentatipo);
     return cuentatipo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -74,10 +75,10 @@ export const insertCuentatipo = async (req, cuentatipo) => {
   try {
     const { models } = req.app.locals;
     const cuentatipo_nuevo = await models.CuentaTipo.create(cuentatipo);
-    // console.log(cuentatipo_nuevo);
+    // logger.info(line(),cuentatipo_nuevo);
     return cuentatipo_nuevo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -92,7 +93,7 @@ export const updateCuentatipo = async (req, cuentatipo) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -107,7 +108,7 @@ export const deleteCuentatipo = async (req, cuentatipo) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

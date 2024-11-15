@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
+import logger, { line } from "../utils/logger.js";
 
 export const getDistritos = async (req, estados) => {
   try {
@@ -25,10 +26,10 @@ export const getDistritos = async (req, estados) => {
         },
       },
     });
-    //console.log(distritos);
+    //logger.info(line(),distritos);
     return distritos;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -38,14 +39,14 @@ export const getDistritoByIddistrito = async (req, iddistrito) => {
     const { models } = req.app.locals;
 
     const distrito = await models.Distrito.findByPk(iddistrito, {});
-    console.log(distrito);
+    logger.info(line(), distrito);
 
     //const distritos = await distrito.getDistritos();
-    //console.log(distritos);
+    //logger.info(line(),distritos);
 
     return distrito;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -58,10 +59,10 @@ export const getDistritoByDistritoid = async (req, distritoid) => {
         distritoid: distritoid,
       },
     });
-    //console.log(distrito);
+    //logger.info(line(),distrito);
     return distrito;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -75,10 +76,10 @@ export const findDistritoPk = async (req, distritoid) => {
         distritoid: distritoid,
       },
     });
-    //console.log(distrito);
+    //logger.info(line(),distrito);
     return distrito;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -87,10 +88,10 @@ export const insertDistrito = async (req, distrito) => {
   try {
     const { models } = req.app.locals;
     const distrito_nuevo = await models.Distrito.create(distrito);
-    // console.log(distrito_nuevo);
+    // logger.info(line(),distrito_nuevo);
     return distrito_nuevo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -105,7 +106,7 @@ export const updateDistrito = async (req, distrito) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -120,7 +121,7 @@ export const deleteDistrito = async (req, distrito) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

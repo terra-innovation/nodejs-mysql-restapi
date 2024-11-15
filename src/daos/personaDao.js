@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
+import logger, { line } from "../utils/logger.js";
 
 export const getPersonaByIdusuario = async (req, idusuario) => {
   try {
@@ -12,7 +13,7 @@ export const getPersonaByIdusuario = async (req, idusuario) => {
     });
     return persona;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -22,14 +23,14 @@ export const getPersonaByIdpersona = async (req, idpersona) => {
     const { models } = req.app.locals;
 
     const persona = await models.Persona.findByPk(idpersona, {});
-    console.log(persona);
+    logger.info(line(), persona);
 
     //const personas = await persona.getPersonas();
-    //console.log(personas);
+    //logger.info(line(),personas);
 
     return persona;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -43,10 +44,10 @@ export const getPersonaByPersonaid = async (req, personaid) => {
         personaid: personaid,
       },
     });
-    console.log(persona);
+    logger.info(line(), persona);
     return persona;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -60,10 +61,10 @@ export const findPersonaPk = async (req, personaid) => {
         personaid: personaid,
       },
     });
-    //console.log(persona);
+    //logger.info(line(),persona);
     return persona;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -105,10 +106,10 @@ export const getPersonas = async (req, estado) => {
         },
       },
     });
-    //console.log(personas);
+    //logger.info(line(),personas);
     return personas;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -117,10 +118,10 @@ export const insertPersona = async (req, persona) => {
   try {
     const { models } = req.app.locals;
     const persona_nuevo = await models.Persona.create(persona);
-    // console.log(persona_nuevo);
+    // logger.info(line(),persona_nuevo);
     return persona_nuevo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -135,7 +136,7 @@ export const updatePersona = async (req, persona) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -150,7 +151,7 @@ export const deletePersona = async (req, persona) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -165,7 +166,7 @@ export const activatePersona = async (req, persona) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

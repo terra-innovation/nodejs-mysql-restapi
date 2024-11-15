@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import * as config from "../../config.js";
+import logger, { line } from "../../utils/logger.js";
 
 const sequelize = new Sequelize(config.DB_FACTORING_DATABASE, config.DB_FACTORING_USER, config.DB_FACTORING_PASSWORD, {
   host: config.DB_FACTORING_HOST,
@@ -21,17 +22,17 @@ const sequelize = new Sequelize(config.DB_FACTORING_DATABASE, config.DB_FACTORIN
 async function connect() {
   try {
     await sequelize.authenticate();
-    console.info("[Sequelize] Database " + config.DB_FACTORING_DATABASE + ": Successful connection.");
+    logger.info(line(), "[Sequelize] Database " + config.DB_FACTORING_DATABASE + ": Successful connection.");
   } catch (error) {
-    //console.error("Unable to connect to the database:", error);
+    //logger.error("Unable to connect to the database:", error);
     if (error instanceof Error) {
       if (error.parent.code === "ECONNREFUSED") {
-        console.error("[Sequelize] Database " + config.DB_FACTORING_DATABASE + ": Connection unavailable.");
+        logger.error(line(), "[Sequelize] Database " + config.DB_FACTORING_DATABASE + ": Connection unavailable.");
       } else {
-        console.error("[Sequelize] Database " + config.DB_FACTORING_DATABASE + ": " + error.parent.code);
+        logger.error(line(), "[Sequelize] Database " + config.DB_FACTORING_DATABASE + ": " + error.parent.code);
       }
     } else {
-      console.error("[Sequelize] Database " + config.DB_FACTORING_DATABASE + ": " + error.parent.code);
+      logger.error(line(), "[Sequelize] Database " + config.DB_FACTORING_DATABASE + ": " + error.parent.code);
     }
   }
 }

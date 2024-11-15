@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
+import logger, { line } from "../utils/logger.js";
 
 export const getFacturasActivas = async (req) => {
   try {
@@ -9,11 +10,11 @@ export const getFacturasActivas = async (req) => {
         estado: 1,
       },
     });
-    //console.log(facturas);
+    //logger.info(line(),facturas);
     return facturas;
   } catch (error) {
-    console.error(error.original.code);
-    console.error(error);
+    logger.error(line(), error.original.code);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -23,14 +24,14 @@ export const getFacturaByIdfactura = async (req, idfactura) => {
     const { models } = req.app.locals;
 
     const factura = await models.Factura.findByPk(idfactura, {});
-    console.log(factura);
+    logger.info(line(), factura);
 
     //const facturas = await factura.getFacturas();
-    //console.log(facturas);
+    //logger.info(line(),facturas);
 
     return factura;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -43,10 +44,10 @@ export const getFacturaByFacturaid = async (req, facturaid) => {
         facturaid: facturaid,
       },
     });
-    //console.log(factura);
+    //logger.info(line(),factura);
     return factura;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -60,10 +61,10 @@ export const findFacturaPk = async (req, facturaid) => {
         facturaid: facturaid,
       },
     });
-    //console.log(factura);
+    //logger.info(line(),factura);
     return factura;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -72,10 +73,10 @@ export const insertFactura = async (req, factura) => {
   try {
     const { models } = req.app.locals;
     const factura_nuevo = await models.Factura.create(factura);
-    // console.log(factura_nuevo);
+    // logger.info(line(),factura_nuevo);
     return factura_nuevo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -90,7 +91,7 @@ export const updateFactura = async (req, factura) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -105,7 +106,7 @@ export const deleteFactura = async (req, factura) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

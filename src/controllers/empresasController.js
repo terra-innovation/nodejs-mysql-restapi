@@ -2,6 +2,7 @@ import * as empresaDao from "../daos/empresaDao.js";
 import { response } from "../utils/CustomResponseOk.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import * as jsonUtils from "../utils/jsonUtils.js";
+import logger, { line } from "../utils/logger.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
@@ -24,7 +25,7 @@ export const getAceptante = async (req, res) => {
   var empresaObfuscated = jsonUtils.ofuscarAtributos(rows[0], ["email"], jsonUtils.PATRON_OFUSCAR_EMAIL);
   empresaObfuscated = jsonUtils.ofuscarAtributos(empresaObfuscated, ["nombre"], jsonUtils.PATRON_OFUSCAR_NOMBRE);
   empresaObfuscated = jsonUtils.ofuscarAtributos(empresaObfuscated, ["telefono"], jsonUtils.PATRON_OFUSCAR_TELEFONO);
-  //console.log(empresaObfuscated);
+  //logger.info(line(),empresaObfuscated);
 
   var empresaFiltered = jsonUtils.removeAttributesPrivates(empresaObfuscated);
   //jsonUtils.prettyPrint(empresaFiltered);
@@ -48,7 +49,7 @@ export const getGirador = async (req, res) => {
   var usuarioOfuscado = jsonUtils.ofuscarAtributos(rows[0], ["email"], jsonUtils.PATRON_OFUSCAR_EMAIL);
   usuarioOfuscado = jsonUtils.ofuscarAtributos(usuarioOfuscado, ["nombre"], jsonUtils.PATRON_OFUSCAR_NOMBRE);
   usuarioOfuscado = jsonUtils.ofuscarAtributos(usuarioOfuscado, ["telefono"], jsonUtils.PATRON_OFUSCAR_TELEFONO);
-  //console.log(usuarioOfuscado);
+  //logger.info(line(),usuarioOfuscado);
   response(res, 200, usuarioOfuscado);
 };
 
@@ -87,7 +88,7 @@ export const createEmpresa = async (req, res) => {
     })
     .required();
   var empresaValidated = empresaCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
-  console.debug("empresaValidated:", empresaValidated);
+  logger.debug(line(), "empresaValidated:", empresaValidated);
   var camposAdicionales = {};
   camposAdicionales.empresaid = uuidv4();
   camposAdicionales.code = uuidv4().split("-")[0];
@@ -105,8 +106,8 @@ export const createEmpresa = async (req, res) => {
     throw new ClientError("Empresa ya existe", 404);
   }
   const empresaCreated = await empresaDao.insertEmpresa(req, { ...camposAdicionales, ...empresaValidated, ...camposAuditoria });
-  console.debug("Create empresa: ID:" + empresaCreated.idempresa + " | " + camposAdicionales.empresaid);
-  console.debug("empresaCreated:", empresaCreated.dataValues);
+  logger.debug(line(), "Create empresa: ID:" + empresaCreated.idempresa + " | " + camposAdicionales.empresaid);
+  logger.debug(line(), "empresaCreated:", empresaCreated.dataValues);
   response(res, 201, { ...camposAdicionales, ...empresaValidated });
 };
 
@@ -126,7 +127,7 @@ export const updateEmpresa = async (req, res) => {
     })
     .required();
   const empresaValidated = empresaUpdateSchema.validateSync({ empresaid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
-  console.debug("empresaValidated:", empresaValidated);
+  logger.debug(line(), "empresaValidated:", empresaValidated);
 
   var camposAdicionales = {};
   camposAdicionales.empresaid = id;
@@ -148,7 +149,7 @@ export const updateEmpresa = async (req, res) => {
   if (empresa_actualizada.length === 0) {
     throw new ClientError("Empresa no existe", 404);
   }
-  console.debug("empresaUpdated:", empresa_actualizada[0].dataValues);
+  logger.debug(line(), "empresaUpdated:", empresa_actualizada[0].dataValues);
   response(res, 200, empresa_actualizada[0]);
 };
 
@@ -161,7 +162,7 @@ export const deleteEmpresa = async (req, res) => {
     })
     .required();
   const empresaValidated = empresaSchema.validateSync({ empresaid: id }, { abortEarly: false, stripUnknown: true });
-  console.debug("empresaValidated:", empresaValidated);
+  logger.debug(line(), "empresaValidated:", empresaValidated);
 
   var camposAuditoria = {};
   camposAuditoria.idusuariomod = 1;
@@ -176,6 +177,6 @@ export const deleteEmpresa = async (req, res) => {
   if (empresa_actualizada.length === 0) {
     throw new ClientError("Empresa no existe", 404);
   }
-  console.debug("empresaDeleted:", empresa_actualizada[0].dataValues);
+  logger.debug(line(), "empresaDeleted:", empresa_actualizada[0].dataValues);
   response(res, 204, empresa_actualizada[0]);
 };

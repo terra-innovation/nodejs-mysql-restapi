@@ -2,6 +2,7 @@ import * as cuentabancariaestadoDao from "../../daos/cuentabancariaestadoDao.js"
 import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
+import logger, { line } from "../../utils/logger.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
@@ -17,7 +18,7 @@ export const activateCuentabancariaestado = async (req, res) => {
     })
     .required();
   const cuentabancariaestadoValidated = cuentabancariaestadoSchema.validateSync({ cuentabancariaestadoid: id }, { abortEarly: false, stripUnknown: true });
-  console.debug("cuentabancariaestadoValidated:", cuentabancariaestadoValidated);
+  logger.debug(line(), "cuentabancariaestadoValidated:", cuentabancariaestadoValidated);
 
   var camposAuditoria = {};
   camposAuditoria.idusuariomod = session_idusuario ?? 1;
@@ -28,7 +29,7 @@ export const activateCuentabancariaestado = async (req, res) => {
   if (cuentabancariaestadoDeleted[0] === 0) {
     throw new ClientError("Cuentabancariaestado no existe", 404);
   }
-  console.debug("cuentabancariaestadoActivated:", cuentabancariaestadoDeleted);
+  logger.debug(line(), "cuentabancariaestadoActivated:", cuentabancariaestadoDeleted);
   response(res, 204, cuentabancariaestadoDeleted);
 };
 
@@ -42,7 +43,7 @@ export const deleteCuentabancariaestado = async (req, res) => {
     })
     .required();
   const cuentabancariaestadoValidated = cuentabancariaestadoSchema.validateSync({ cuentabancariaestadoid: id }, { abortEarly: false, stripUnknown: true });
-  console.debug("cuentabancariaestadoValidated:", cuentabancariaestadoValidated);
+  logger.debug(line(), "cuentabancariaestadoValidated:", cuentabancariaestadoValidated);
 
   var camposAuditoria = {};
   camposAuditoria.idusuariomod = session_idusuario ?? 1;
@@ -53,7 +54,7 @@ export const deleteCuentabancariaestado = async (req, res) => {
   if (cuentabancariaestadoDeleted[0] === 0) {
     throw new ClientError("Cuentabancariaestado no existe", 404);
   }
-  console.debug("cuentabancariaestadoDeleted:", cuentabancariaestadoDeleted);
+  logger.debug(line(), "cuentabancariaestadoDeleted:", cuentabancariaestadoDeleted);
   response(res, 204, cuentabancariaestadoDeleted);
 };
 
@@ -70,7 +71,7 @@ export const updateCuentabancariaestado = async (req, res) => {
     })
     .required();
   const cuentabancariaestadoValidated = cuentabancariaestadoUpdateSchema.validateSync({ cuentabancariaestadoid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
-  console.debug("cuentabancariaestadoValidated:", cuentabancariaestadoValidated);
+  logger.debug(line(), "cuentabancariaestadoValidated:", cuentabancariaestadoValidated);
 
   var camposAdicionales = {};
   camposAdicionales.cuentabancariaestadoid = id;
@@ -87,26 +88,26 @@ export const updateCuentabancariaestado = async (req, res) => {
   if (result[0] === 0) {
     throw new ClientError("Cuentabancariaestado no existe", 404);
   }
-  console.log(id);
+  logger.info(line(), id);
   const cuentabancariaestadoUpdated = await cuentabancariaestadoDao.getCuentaBancariaEstadoByCuentaBancariaEstadoid(req, id);
   if (!cuentabancariaestadoUpdated) {
     throw new ClientError("Cuentabancariaestado no existe", 404);
   }
 
   var cuentabancariaestadoObfuscated = jsonUtils.ofuscarAtributos(cuentabancariaestadoUpdated, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
-  //console.log(empresaObfuscated);
+  //logger.info(line(),empresaObfuscated);
 
   var cuentabancariaestadoFiltered = jsonUtils.removeAttributesPrivates(cuentabancariaestadoObfuscated);
   response(res, 200, cuentabancariaestadoFiltered);
 };
 
 export const getCuentasbancarias = async (req, res) => {
-  //console.log(req.session_user.usuario._idusuario);
+  //logger.info(line(),req.session_user.usuario._idusuario);
 
   const filter_estado = [1, 2];
   const cuentabancariaestados = await cuentabancariaestadoDao.getCuentaBancariaEstados(req, filter_estado);
   var cuentabancariaestadosJson = jsonUtils.sequelizeToJSON(cuentabancariaestados);
-  //console.log(empresaObfuscated);
+  //logger.info(line(),empresaObfuscated);
 
   //var cuentabancariaestadosFiltered = jsonUtils.removeAttributes(cuentabancariaestadosJson, ["score"]);
   //cuentabancariaestadosFiltered = jsonUtils.removeAttributesPrivates(cuentabancariaestadosFiltered);
@@ -124,7 +125,7 @@ export const createCuentabancariaestado = async (req, res) => {
     })
     .required();
   var cuentabancariaestadoValidated = cuentabancariaestadoCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
-  console.debug("cuentabancariaestadoValidated:", cuentabancariaestadoValidated);
+  logger.debug(line(), "cuentabancariaestadoValidated:", cuentabancariaestadoValidated);
 
   var camposAdicionales = {};
   camposAdicionales.cuentabancariaestadoid = uuidv4();
@@ -141,8 +142,8 @@ export const createCuentabancariaestado = async (req, res) => {
     ...cuentabancariaestadoValidated,
     ...camposAuditoria,
   });
-  //console.debug("Create cuentabancariaestado: ID:" + cuentabancariaestadoCreated._idcuentabancariaestado + " | " + camposAdicionales.cuentabancariaestadoid);
-  //console.debug("cuentabancariaestadoCreated:", cuentabancariaestadoCreated.dataValues);
+  //logger.debug(line(),"Create cuentabancariaestado: ID:" + cuentabancariaestadoCreated._idcuentabancariaestado + " | " + camposAdicionales.cuentabancariaestadoid);
+  //logger.debug(line(),"cuentabancariaestadoCreated:", cuentabancariaestadoCreated.dataValues);
   // Retiramos los IDs internos
   delete camposAdicionales.idempresa;
   response(res, 201, { ...camposAdicionales, ...cuentabancariaestadoValidated });

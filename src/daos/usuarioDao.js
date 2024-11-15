@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import Rol from "../models/ft_factoring/Rol.js";
 import { ClientError } from "../utils/CustomErrors.js";
+import logger, { line } from "../utils/logger.js";
 
 export const getUsuarioDatosContactoByIdusuario = async (req, idusuario, estado) => {
   try {
@@ -14,14 +15,14 @@ export const getUsuarioDatosContactoByIdusuario = async (req, idusuario, estado)
         },
       },
     });
-    console.log(usuario);
+    logger.info(line(), usuario);
 
     //const usuarios = await usuario.getUsuarios();
-    //console.log(usuarios);
+    //logger.info(line(),usuarios);
 
     return usuario;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -34,11 +35,11 @@ export const getUsuariosActivos = async (req) => {
         estado: 1,
       },
     });
-    //console.log(usuarioes);
+    //logger.info(line(),usuarioes);
     return usuarioes;
   } catch (error) {
-    console.error(error.original.code);
-    console.error(error);
+    logger.error(line(), error.original.code);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -47,11 +48,11 @@ export const getUsuarioByIdusuario = async (req, idusuario) => {
   try {
     const { models } = req.app.locals;
     const usuario = await models.Usuario.findByPk(idusuario, {});
-    //console.log(usuarios);
+    //logger.info(line(),usuarios);
 
     return usuario;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -65,10 +66,10 @@ export const autenticarUsuario = async (req, email) => {
         email: email,
       },
     });
-    //console.log(usuario);
+    //logger.info(line(),usuario);
     return usuario;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -87,10 +88,10 @@ export const getUsuarioAndRolesByEmail = async (req, email) => {
         email: email,
       },
     });
-    //console.log(usuario);
+    //logger.info(line(),usuario);
     return usuario;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -103,10 +104,10 @@ export const getUsuarioByUsuarioid = async (req, usuarioid) => {
         usuarioid: usuarioid,
       },
     });
-    //console.log(usuario);
+    //logger.info(line(),usuario);
     return usuario;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -119,10 +120,10 @@ export const getUsuarioByEmail = async (req, email) => {
         email: email,
       },
     });
-    //console.log(usuario);
+    //logger.info(line(),usuario);
     return usuario;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -135,10 +136,10 @@ export const getUsuarioByHash = async (req, hash) => {
         hash: hash,
       },
     });
-    //console.log(usuario);
+    //logger.info(line(),usuario);
     return usuario;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -151,10 +152,10 @@ export const getUsuarioByNumerodocumento = async (req, documentonumero) => {
         documentonumero: documentonumero,
       },
     });
-    //console.log(usuario);
+    //logger.info(line(),usuario);
     return usuario;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -168,10 +169,10 @@ export const findUsuarioPk = async (req, usuarioid) => {
         usuarioid: usuarioid,
       },
     });
-    //console.log(usuario);
+    //logger.info(line(),usuario);
     return usuario;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -180,10 +181,10 @@ export const insertUsuario = async (req, usuario) => {
   try {
     const { models } = req.app.locals;
     const usuario_nuevo = await models.Usuario.create(usuario);
-    // console.log(usuario_nuevo);
+    // logger.info(line(),usuario_nuevo);
     return usuario_nuevo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -198,7 +199,7 @@ export const updateUsuario = async (req, usuario) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -213,7 +214,7 @@ export const deleteUsuario = async (req, usuario) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

@@ -6,6 +6,7 @@ import * as monedaDao from "../daos/monedaDao.js";
 import { response } from "../utils/CustomResponseOk.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import * as jsonUtils from "../utils/jsonUtils.js";
+import logger, { line } from "../utils/logger.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
@@ -23,7 +24,7 @@ export const getFactoringestados = async (req, res) => {
 };
 
 export const getFactoringestadosMiosByEmpresaidActivos = async (req, res) => {
-  //console.log(req.session_user.usuario._idusuario);
+  //logger.info(line(),req.session_user.usuario._idusuario);
   const { id } = req.params;
   const factoringestadoSchema = yup
     .object()
@@ -35,7 +36,7 @@ export const getFactoringestadosMiosByEmpresaidActivos = async (req, res) => {
   var factoringestadoValidated = factoringestadoSchema.validateSync({ empresaid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
 
   const empresa = await empresaDao.getEmpresaByIdusuarioAndEmpresaid(req, req.session_user.usuario._idusuario, factoringestadoValidated.empresaid, 1);
-  //console.log(empresa);
+  //logger.info(line(),empresa);
   if (!empresa) {
     throw new ClientError("Empresa no existe", 404);
   }
@@ -45,7 +46,7 @@ export const getFactoringestadosMiosByEmpresaidActivos = async (req, res) => {
   const filter_estado = [1, 2];
   const factoringestados = await factoringestadoDao.getFactoringestadosByEmpresaidAndMoneda(req, filter_empresaid, filter_monedaid, filter_idfactoringestadoestado, filter_estado);
   var factoringestadosObfuscated = jsonUtils.ofuscarAtributos(factoringestados, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
-  //console.log(empresaObfuscated);
+  //logger.info(line(),empresaObfuscated);
 
   var factoringestadosFiltered = jsonUtils.removeAttributes(factoringestadosObfuscated, ["score"]);
   factoringestadosFiltered = jsonUtils.removeAttributesPrivates(factoringestadosFiltered);
@@ -66,7 +67,7 @@ export const getFactoringestado = async (req, res) => {
     throw new ClientError("Factoringestado no existe", 404);
   }
   var factoringestadoObfuscated = jsonUtils.ofuscarAtributos(factoringestado, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
-  //console.log(empresaObfuscated);
+  //logger.info(line(),empresaObfuscated);
 
   var factoringestadoFiltered = jsonUtils.removeAttributesPrivates(factoringestadoObfuscated);
   response(res, 200, factoringestadoFiltered);
@@ -86,7 +87,7 @@ export const createFactoringestado = async (req, res) => {
     })
     .required();
   var factoringestadoValidated = factoringestadoCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
-  console.debug("factoringestadoValidated:", factoringestadoValidated);
+  logger.debug(line(), "factoringestadoValidated:", factoringestadoValidated);
 
   var empresa = await empresaDao.findEmpresaPk(req, factoringestadoValidated.empresaid);
   if (!empresa) {
@@ -125,8 +126,8 @@ export const createFactoringestado = async (req, res) => {
   camposAuditoria.estado = 1;
 
   const factoringestadoCreated = await factoringestadoDao.insertFactoringestado(req, { ...camposFk, ...camposAdicionales, ...factoringestadoValidated, ...camposAuditoria });
-  console.debug("Create factoringestado: ID:" + factoringestadoCreated.idfactoringestado + " | " + camposAdicionales.factoringestadoid);
-  console.debug("factoringestadoCreated:", factoringestadoCreated.dataValues);
+  logger.debug(line(), "Create factoringestado: ID:" + factoringestadoCreated.idfactoringestado + " | " + camposAdicionales.factoringestadoid);
+  logger.debug(line(), "factoringestadoCreated:", factoringestadoCreated.dataValues);
   // Retiramos los IDs internos
   delete camposAdicionales.idempresa;
   response(res, 201, { ...camposAdicionales, ...factoringestadoValidated });
@@ -143,7 +144,7 @@ export const updateFactoringestado = async (req, res) => {
     })
     .required();
   const factoringestadoValidated = factoringestadoUpdateSchema.validateSync({ factoringestadoid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
-  console.debug("factoringestadoValidated:", factoringestadoValidated);
+  logger.debug(line(), "factoringestadoValidated:", factoringestadoValidated);
 
   var camposAdicionales = {};
   camposAdicionales.factoringestadoid = id;
@@ -156,14 +157,14 @@ export const updateFactoringestado = async (req, res) => {
   if (result[0] === 0) {
     throw new ClientError("Factoringestado no existe", 404);
   }
-  console.log(id);
+  logger.info(line(), id);
   const factoringestadoUpdated = await factoringestadoDao.getFactoringestadoByFactoringestadoid(req, id);
   if (!factoringestadoUpdated) {
     throw new ClientError("Factoringestado no existe", 404);
   }
 
   var factoringestadoObfuscated = jsonUtils.ofuscarAtributos(factoringestadoUpdated, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
-  //console.log(empresaObfuscated);
+  //logger.info(line(),empresaObfuscated);
 
   var factoringestadoFiltered = jsonUtils.removeAttributesPrivates(factoringestadoObfuscated);
   response(res, 200, factoringestadoFiltered);
@@ -178,7 +179,7 @@ export const deleteFactoringestado = async (req, res) => {
     })
     .required();
   const factoringestadoValidated = factoringestadoSchema.validateSync({ factoringestadoid: id }, { abortEarly: false, stripUnknown: true });
-  console.debug("factoringestadoValidated:", factoringestadoValidated);
+  logger.debug(line(), "factoringestadoValidated:", factoringestadoValidated);
 
   var camposAuditoria = {};
   camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
@@ -189,6 +190,6 @@ export const deleteFactoringestado = async (req, res) => {
   if (factoringestadoDeleted[0] === 0) {
     throw new ClientError("Factoringestado no existe", 404);
   }
-  console.debug("factoringestadoDeleted:", factoringestadoDeleted);
+  logger.debug(line(), "factoringestadoDeleted:", factoringestadoDeleted);
   response(res, 204, factoringestadoDeleted);
 };

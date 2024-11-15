@@ -1,30 +1,18 @@
-import winston from "winston";
-import { format } from "winston";
-import { transports } from "winston";
+import winston, { format, transports } from "winston";
 import path from "path";
 import chalk from "chalk";
 import util from "util";
-
-// Función para generar la fecha en formato requerido
-const generateLogFilename = (level) => {
-  const date = new Date();
-  const dateString =
-    `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, "0")}${String(date.getDate()).padStart(2, "0")}_` +
-    `${String(date.getHours()).padStart(2, "0")}${String(date.getMinutes()).padStart(2, "0")}${String(date.getSeconds()).padStart(2, "0")}_` +
-    `${date.getMilliseconds()}`;
-  return `${level}_${dateString}.log`;
-};
+import DailyRotateFile from "winston-daily-rotate-file";
 
 // Formato JSON para los logs
-const jsonFormat = format.printf(({ timestamp, level, message, requestId, userId, durationMs, context }) => {
+const jsonFormat = format.printf(({ timestamp, file, level, message, ms }) => {
   return JSON.stringify({
     timestamp,
+    archivo: file ? file.archivo : "desconocido",
+    linea: file ? file.linea : "desconocido",
     level,
     message,
-    requestId,
-    userId,
-    durationMs,
-    context,
+    ms,
   });
 });
 
@@ -37,44 +25,37 @@ const logger = winston.createLogger({
     new transports.Console({
       level: "silly",
       stderrLevels: ["error", "warn"],
-      handleExceptions: true, // Captura excepciones no controladas
-      handleRejections: true, // Captura promesas no manejadas
       format: format.combine(
         format.colorize(),
-        format.printf(({ timestamp, level, message }) => {
-          return `[${chalk.green(timestamp)}] ${level}: ${message}`;
+        format.ms(), // Number of milliseconds since the previous log message.
+        format.printf(({ timestamp, file, level, message, ms }) => {
+          return `[${chalk.green(timestamp)}] ${level}: ${message} ${ms} (${file.archivo}:${file.linea})`;
         })
       ),
     }),
-    // Log para nivel "silly"
-    new transports.File({
-      filename: path.join("logs", generateLogFilename("silly")),
-      level: "silly",
-      maxsize: 2 * 1024 * 1024, // 2MB
-      maxFiles: 10,
-      tailable: true,
-      handleExceptions: true, // Captura excepciones no controladas
-      handleRejections: true, // Captura promesas no manejadas
+    new DailyRotateFile({
+      filename: path.join("logs", "silly_%DATE%.log"), // Nombre de archivo con marca de fecha
+      datePattern: "YYYYMMDD_HH", // Patrón de fecha personalizado
+      level: "silly", // Nivel
+      maxSize: "5m", // Tamaño máximo por archivo
+      maxFiles: "2d", // Guardar los últimos x días de logs
+      zippedArchive: true, // Comprimir archivos rotados en .gz
     }),
-    // Log para nivel "warn"
-    new transports.File({
-      filename: path.join("logs", generateLogFilename("warn")),
-      level: "warn",
-      maxsize: 5 * 1024 * 1024, // 5MB
-      maxFiles: 10,
-      tailable: true,
-      handleExceptions: true, // Captura excepciones no controladas
-      handleRejections: true, // Captura promesas no manejadas
+    new DailyRotateFile({
+      filename: path.join("logs", "warn_%DATE%.log"), // Nombre de archivo con marca de fecha
+      datePattern: "YYYYMMDD", // Patrón de fecha personalizado
+      level: "warn", // Nivel
+      maxSize: "5m", // Tamaño máximo por archivo
+      maxFiles: "3d", // Guardar los últimos x días de logs
+      zippedArchive: true, // Comprimir archivos rotados en .gz
     }),
-    // Log para nivel "error"
-    new transports.File({
-      filename: path.join("logs", generateLogFilename("error")),
-      level: "error",
-      maxsize: 10 * 1024 * 1024, // 10MB
-      maxFiles: 10,
-      tailable: true,
-      handleExceptions: true, // Captura excepciones no controladas
-      handleRejections: true, // Captura promesas no manejadas
+    new DailyRotateFile({
+      filename: path.join("logs", "error_%DATE%.log"), // Nombre de archivo con marca de fecha
+      datePattern: "YYYYMMDD", // Patrón de fecha personalizado
+      level: "error", // Nivel
+      maxSize: "5m", // Tamaño máximo por archivo
+      maxFiles: "3d", // Guardar los últimos x días de logs
+      zippedArchive: true, // Comprimir archivos rotados en .gz
     }),
   ],
   exitOnError: false, // Evita que la aplicación se cierre en excepciones no controladas
@@ -83,17 +64,8 @@ const logger = winston.createLogger({
 // Guardar referencia al método log original
 const originalLogMethod = logger.log.bind(logger);
 
-// Captura global de errores no controlados en caso de que Winston no esté configurado
-process.on("uncaughtException", (err) => {
-  logger.error("Uncaught Exception:", err);
-});
-
-process.on("unhandledRejection", (reason, promise) => {
-  logger.error("Unhandled Rejection:", reason);
-});
-
 // Función auxiliar para concatenar argumentos
-function logSimulateConsole(level, ...args) {
+function logSimulateConsole(level, file, ...args) {
   const message = args
     .map((arg) => {
       if (arg instanceof Error) {
@@ -106,7 +78,7 @@ function logSimulateConsole(level, ...args) {
       return arg;
     })
     .join(`\n`);
-  originalLogMethod({ level, message }); // Usar el método original
+  originalLogMethod({ level, file, message }); // Usar el método original
 }
 
 // Sobreescribir  para usar `logSimulateConsole`
@@ -117,11 +89,31 @@ logger.silly = (...args) => logSimulateConsole("silly", ...args);
 logger.debug = (...args) => logSimulateConsole("debug", ...args);
 logger.verbose = (...args) => logSimulateConsole("verbose", ...args);
 logger.http = (...args) => logSimulateConsole("http", ...args);
-logger.info = (...args) => logSimulateConsole("info", ...args);
+logger.info = (file, ...args) => logSimulateConsole("info", file, ...args);
 logger.warn = (...args) => logSimulateConsole("warn", ...args);
 logger.error = (...args) => logSimulateConsole("error", ...args);
 
-//logger.log = (level, ...args) => logWithWinston(level, ...args);
+// Captura global de errores no controlados en caso de que Winston no esté configurado
+process.on("uncaughtException", (err) => {
+  // Si el error es una instancia de Error, capturamos el stack
+  if (err instanceof Error) {
+    // Logueamos el error con el stack trace
+    logger.error("Uncaught Exception:", err.message, "\nStack Trace:", err.stack);
+  } else {
+    // Si no es un objeto Error, logueamos el error de forma general
+    logger.error("Uncaught Exception:", err);
+  }
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  if (reason instanceof Error) {
+    // Si el 'reason' es una instancia de Error, podemos registrar el stack
+    logger.error("Unhandled Rejection at Promise:", promise, "Reason:", reason.stack || reason);
+  } else {
+    // Si el 'reason' no es un error, solo logueamos el valor
+    logger.error("Unhandled Rejection at Promise:", promise, "Reason:", reason);
+  }
+});
 
 /* Cómo usar
 logger.silly("Este es un mensaje muy detallado (silly)");
@@ -139,5 +131,27 @@ logger.warn("Warning: unusual activity detected", { ip: "192.168.1.1" });
 logger.error("Error processing request", new Error("Sample error"));
 
 */
+
+export function line() {
+  const error = new Error();
+  const stackLines = error.stack.split("\n");
+
+  // La segunda línea contiene la información sobre la invocación
+  const invocacion = stackLines[2];
+
+  // Expresión regular para extraer la ruta del archivo y el nombre del archivo
+  const regex = /file:\/\/(?:\/)?([A-Za-z]:[^:]+)\/([^:]+):(\d+):(\d+)/;
+  const match = invocacion.match(regex);
+
+  if (match) {
+    const ruta = match[1]; // La ruta donde se encuentra el archivo (sin el nombre)
+    const archivo = match[2]; // El nombre del archivo
+    const linea = match[3]; // El número de la línea
+    const columna = match[4]; // El número de la columna (opcional)
+
+    return { ruta, archivo, linea, columna };
+  }
+  return "";
+}
 
 export default logger;

@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import { poolFactoring } from "../config/bd/mysql2_db_factoring.js";
+import logger, { line } from "../utils/logger.js";
 
 export const insertarFactura = async (factura) => {
   const [rows] = await poolFactoring.query(
@@ -80,7 +81,7 @@ export const insertarFactura = async (factura) => {
       factura.codigo_archivo,
     ]
   );
-  //console.log(rows);
+  //logger.info(line(),rows);
 
   if (rows.length <= 0) {
     throw new Error("BD Logica. Uh oh!");

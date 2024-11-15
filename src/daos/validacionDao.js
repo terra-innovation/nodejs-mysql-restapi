@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
+import logger, { line } from "../utils/logger.js";
 
 export const getValidacionsByIdusuario = async (req, _idusuario, estados) => {
   try {
@@ -23,10 +24,10 @@ export const getValidacionsByIdusuario = async (req, _idusuario, estados) => {
         },
       },
     });
-    //console.log(validacions);
+    //logger.info(line(),validacions);
     return validacions;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -43,10 +44,10 @@ export const getValidacionByIdusuarioAndValor = async (req, _idusuario, valor, e
         },
       },
     });
-    //console.log(validacions);
+    //logger.info(line(),validacions);
     return validacions;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -63,10 +64,10 @@ export const getValidacionByIdusuarioAndIdvalidaciontipo = async (req, _idusuari
         },
       },
     });
-    //console.log(validacions);
+    //logger.info(line(),validacions);
     return validacions;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -83,10 +84,10 @@ export const getValidacionByIdusuarioAndCodigo = async (req, _idusuario, codigo,
         },
       },
     });
-    //console.log(validacions);
+    //logger.info(line(),validacions);
     return validacions;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -110,10 +111,10 @@ export const getValidacionByIdusuarioAndRuc = async (req, _idusuario, ruc, estad
         estado: estado,
       },
     });
-    //console.log(validacions);
+    //logger.info(line(),validacions);
     return validacions;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -137,10 +138,10 @@ export const getValidacionByIdusuarioAndValidacionid = async (req, _idusuario, v
         estado: estado,
       },
     });
-    //console.log(validacions);
+    //logger.info(line(),validacions);
     return validacions;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -155,10 +156,10 @@ export const getValidacions = async (req, estados) => {
         },
       },
     });
-    //console.log(validacions);
+    //logger.info(line(),validacions);
     return validacions;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -175,14 +176,14 @@ export const getValidacionByIdvalidacion = async (req, idvalidacion) => {
         },
       ],
     });
-    console.log(validacion);
+    logger.info(line(), validacion);
 
     //const colaboradores = await validacion.getColaboradors();
-    //console.log(colaboradores);
+    //logger.info(line(),colaboradores);
 
     return validacion;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -201,10 +202,10 @@ export const getValidacionByValidacionid = async (req, validacionid) => {
         validacionid: validacionid,
       },
     });
-    //console.log(validacion);
+    //logger.info(line(),validacion);
     return validacion;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -217,10 +218,10 @@ export const getValidacionByRuc = async (req, ruc) => {
         ruc: ruc,
       },
     });
-    //console.log(validacion);
+    //logger.info(line(),validacion);
     return validacion;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -234,10 +235,10 @@ export const findValidacionPk = async (req, validacionid) => {
         validacionid: validacionid,
       },
     });
-    //console.log(validacion);
+    //logger.info(line(),validacion);
     return validacion;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -246,10 +247,10 @@ export const insertValidacion = async (req, validacion) => {
   try {
     const { models } = req.app.locals;
     const validacion_nuevo = await models.Validacion.create(validacion);
-    // console.log(validacion_nuevo);
+    // logger.info(line(),validacion_nuevo);
     return validacion_nuevo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -264,7 +265,7 @@ export const updateValidacion = async (req, validacion) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -279,7 +280,7 @@ export const deleteValidacion = async (req, validacion) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -294,7 +295,7 @@ export const activateValidacion = async (req, validacion) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

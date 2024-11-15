@@ -2,12 +2,13 @@ import * as cuentabancariaDao from "../../daos/cuentabancariaDao.js";
 import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
+import logger, { line } from "../../utils/logger.js";
 import * as menuAdmin from "../../menu/menuAdmin.js";
 import * as menuEmpresario from "../../menu/menuEmpresario.js";
 import * as menuUsuario from "../../menu/menuUsuario.js";
 
 export const getMenu = async (req, res) => {
-  //console.log(req.session_user.usuario._idusuario);
+  logger.debug(line(), req.session_user.usuario._idusuario);
 
   const session_idusuario = req.session_user.usuario._idusuario;
   const menuDasboard = {

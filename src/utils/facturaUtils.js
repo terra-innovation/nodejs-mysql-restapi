@@ -142,8 +142,8 @@ export const getFactura = (json) => {
   facturaJson.dias_estimados_para_pago = restarFechas(facturaJson.fecha_pago_mayor_estimado, facturaJson.fecha_registro_para_calculos);
   facturaJson.importe_bruto = parseFloat(facturaJson.impuesto.valor_venta.monto_pago).toFixed(2);
   facturaJson.importe_neto = parseFloat(parseFloat(facturaJson.importe_bruto) - parseFloat(facturaJson.detraccion_monto)).toFixed(2);
-  //console.log(facturaJson);
-  //console.log("Done");
+  //logger.info(line(),facturaJson);
+  //logger.info(line(),"Done");
 
   return facturaJson;
 };

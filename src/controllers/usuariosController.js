@@ -6,6 +6,7 @@ import * as monedaDao from "../daos/monedaDao.js";
 import { response } from "../utils/CustomResponseOk.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import * as jsonUtils from "../utils/jsonUtils.js";
+import logger, { line } from "../utils/logger.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
@@ -14,20 +15,20 @@ import { Sequelize } from "sequelize";
 export const getUsuarios = async (req, res) => {
   const usuarios = await usuarioDao.getUsuariosActivas(req);
   var usuariosObfuscated = jsonUtils.ofuscarAtributos(usuarios, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
-  //console.log(empresaObfuscated);
+  //logger.info(line(),empresaObfuscated);
 
   var usuariosFiltered = jsonUtils.removeAttributesPrivates(usuariosObfuscated);
   response(res, 201, usuariosFiltered);
 };
 
 export const getUsuarioContactoMio = async (req, res) => {
-  //console.log(req.session_user.usuario._idusuario);
+  //logger.info(line(),req.session_user.usuario._idusuario);
   const filter_idusuario = req.session_user.usuario._idusuario;
   const filter_estado = [1, 2];
   const usuario = await usuarioDao.getUsuarioDatosContactoByIdusuario(req, filter_idusuario, filter_estado);
   var usuarioObfuscated = jsonUtils.ofuscarAtributos(usuario, ["email"], jsonUtils.PATRON_OFUSCAR_EMAIL);
   usuarioObfuscated = jsonUtils.ofuscarAtributos(usuarioObfuscated, ["celular"], jsonUtils.PATRON_OFUSCAR_TELEFONO);
-  //console.log(empresaObfuscated);
+  //logger.info(line(),empresaObfuscated);
   var usuarioFiltered = jsonUtils.removeAttributesPrivates(usuarioObfuscated);
   response(res, 201, usuarioFiltered);
 };
@@ -46,7 +47,7 @@ export const getUsuario = async (req, res) => {
     throw new ClientError("Usuario no existe", 404);
   }
   var usuarioObfuscated = jsonUtils.ofuscarAtributos(usuario, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
-  //console.log(empresaObfuscated);
+  //logger.info(line(),empresaObfuscated);
 
   var usuarioFiltered = jsonUtils.removeAttributesPrivates(usuarioObfuscated);
   response(res, 200, usuarioFiltered);
@@ -66,7 +67,7 @@ export const createUsuario = async (req, res) => {
     })
     .required();
   var usuarioValidated = usuarioCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
-  console.debug("usuarioValidated:", usuarioValidated);
+  logger.debug(line(), "usuarioValidated:", usuarioValidated);
 
   var empresa = await empresaDao.findEmpresaPk(req, usuarioValidated.empresaid);
   if (!empresa) {
@@ -105,8 +106,8 @@ export const createUsuario = async (req, res) => {
   camposAuditoria.estado = 1;
 
   const usuarioCreated = await usuarioDao.insertUsuario(req, { ...camposFk, ...camposAdicionales, ...usuarioValidated, ...camposAuditoria });
-  console.debug("Create usuario: ID:" + usuarioCreated.idusuario + " | " + camposAdicionales.usuarioid);
-  console.debug("usuarioCreated:", usuarioCreated.dataValues);
+  logger.debug(line(), "Create usuario: ID:" + usuarioCreated.idusuario + " | " + camposAdicionales.usuarioid);
+  logger.debug(line(), "usuarioCreated:", usuarioCreated.dataValues);
   // Retiramos los IDs internos
   delete camposAdicionales.idempresa;
   response(res, 201, { ...camposAdicionales, ...usuarioValidated });
@@ -123,7 +124,7 @@ export const updateUsuario = async (req, res) => {
     })
     .required();
   const usuarioValidated = usuarioUpdateSchema.validateSync({ usuarioid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
-  console.debug("usuarioValidated:", usuarioValidated);
+  logger.debug(line(), "usuarioValidated:", usuarioValidated);
 
   var camposAdicionales = {};
   camposAdicionales.usuarioid = id;
@@ -136,14 +137,14 @@ export const updateUsuario = async (req, res) => {
   if (result[0] === 0) {
     throw new ClientError("Usuario no existe", 404);
   }
-  console.log(id);
+  logger.info(line(), id);
   const usuarioUpdated = await usuarioDao.getUsuarioByUsuarioid(req, id);
   if (!usuarioUpdated) {
     throw new ClientError("Usuario no existe", 404);
   }
 
   var usuarioObfuscated = jsonUtils.ofuscarAtributos(usuarioUpdated, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
-  //console.log(empresaObfuscated);
+  //logger.info(line(),empresaObfuscated);
 
   var usuarioFiltered = jsonUtils.removeAttributesPrivates(usuarioObfuscated);
   response(res, 200, usuarioFiltered);
@@ -158,7 +159,7 @@ export const deleteUsuario = async (req, res) => {
     })
     .required();
   const usuarioValidated = usuarioSchema.validateSync({ usuarioid: id }, { abortEarly: false, stripUnknown: true });
-  console.debug("usuarioValidated:", usuarioValidated);
+  logger.debug(line(), "usuarioValidated:", usuarioValidated);
 
   var camposAuditoria = {};
   camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
@@ -169,6 +170,6 @@ export const deleteUsuario = async (req, res) => {
   if (usuarioDeleted[0] === 0) {
     throw new ClientError("Usuario no existe", 404);
   }
-  console.debug("usuarioDeleted:", usuarioDeleted);
+  logger.debug(line(), "usuarioDeleted:", usuarioDeleted);
   response(res, 204, usuarioDeleted);
 };

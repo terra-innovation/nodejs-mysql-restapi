@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
+import logger, { line } from "../utils/logger.js";
 
 export const getPersonapepdirectos = async (req, estados) => {
   try {
@@ -11,11 +12,11 @@ export const getPersonapepdirectos = async (req, estados) => {
         },
       },
     });
-    //console.log(personapepdirectos);
+    //logger.info(line(),personapepdirectos);
     return personapepdirectos;
   } catch (error) {
-    console.error(error.original.code);
-    console.error(error);
+    logger.error(line(), error.original.code);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -25,14 +26,14 @@ export const getPersonaPepDirectoByIdpersonapepdirecto = async (req, idpersonape
     const { models } = req.app.locals;
 
     const personapepdirecto = await models.PersonaPepDirecto.findByPk(idpersonapepdirecto, {});
-    console.log(personapepdirecto);
+    logger.info(line(), personapepdirecto);
 
     //const personapepdirectos = await personapepdirecto.getPersonapepdirectos();
-    //console.log(personapepdirectos);
+    //logger.info(line(),personapepdirectos);
 
     return personapepdirecto;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -45,10 +46,10 @@ export const getPersonaPepDirectoByPersonaPepDirectoid = async (req, personapepd
         personapepdirectoid: personapepdirectoid,
       },
     });
-    //console.log(personapepdirecto);
+    //logger.info(line(),personapepdirecto);
     return personapepdirecto;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -62,10 +63,10 @@ export const findPersonaPepDirectoPk = async (req, personapepdirectoid) => {
         personapepdirectoid: personapepdirectoid,
       },
     });
-    //console.log(personapepdirecto);
+    //logger.info(line(),personapepdirecto);
     return personapepdirecto;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -74,10 +75,10 @@ export const insertPersonaPepDirecto = async (req, personapepdirecto) => {
   try {
     const { models } = req.app.locals;
     const personapepdirecto_nuevo = await models.PersonaPepDirecto.create(personapepdirecto);
-    // console.log(personapepdirecto_nuevo);
+    // logger.info(line(),personapepdirecto_nuevo);
     return personapepdirecto_nuevo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -92,7 +93,7 @@ export const updatePersonaPepDirecto = async (req, personapepdirecto) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -107,7 +108,7 @@ export const deletePersonaPepDirecto = async (req, personapepdirecto) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

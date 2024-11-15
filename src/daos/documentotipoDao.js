@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
+import logger, { line } from "../utils/logger.js";
 
 export const getDocumentotiposByIdusuario = async (req, _idusuario, estados) => {
   try {
@@ -23,10 +24,10 @@ export const getDocumentotiposByIdusuario = async (req, _idusuario, estados) => 
         },
       },
     });
-    //console.log(documentotipos);
+    //logger.info(line(),documentotipos);
     return documentotipos;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -50,10 +51,10 @@ export const getDocumentotipoByIdusuarioAndRuc = async (req, _idusuario, ruc, es
         estado: estado,
       },
     });
-    //console.log(documentotipos);
+    //logger.info(line(),documentotipos);
     return documentotipos;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -77,10 +78,10 @@ export const getDocumentotipoByIdusuarioAndDocumentotipoid = async (req, _idusua
         estado: estado,
       },
     });
-    //console.log(documentotipos);
+    //logger.info(line(),documentotipos);
     return documentotipos;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -95,10 +96,10 @@ export const getDocumentotipos = async (req, estados) => {
         },
       },
     });
-    //console.log(documentotipos);
+    //logger.info(line(),documentotipos);
     return documentotipos;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -115,14 +116,14 @@ export const getDocumentotipoByIddocumentotipo = async (req, iddocumentotipo) =>
         },
       ],
     });
-    console.log(documentotipo);
+    logger.info(line(), documentotipo);
 
     //const colaboradores = await documentotipo.getColaboradors();
-    //console.log(colaboradores);
+    //logger.info(line(),colaboradores);
 
     return documentotipo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -141,10 +142,10 @@ export const getDocumentotipoByDocumentotipoid = async (req, documentotipoid) =>
         documentotipoid: documentotipoid,
       },
     });
-    //console.log(documentotipo);
+    //logger.info(line(),documentotipo);
     return documentotipo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -157,10 +158,10 @@ export const getDocumentotipoByRuc = async (req, ruc) => {
         ruc: ruc,
       },
     });
-    //console.log(documentotipo);
+    //logger.info(line(),documentotipo);
     return documentotipo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -174,10 +175,10 @@ export const findDocumentotipoPk = async (req, documentotipoid) => {
         documentotipoid: documentotipoid,
       },
     });
-    //console.log(documentotipo);
+    //logger.info(line(),documentotipo);
     return documentotipo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -186,10 +187,10 @@ export const insertDocumentotipo = async (req, documentotipo) => {
   try {
     const { models } = req.app.locals;
     const documentotipo_nuevo = await models.DocumentoTipo.create(documentotipo);
-    // console.log(documentotipo_nuevo);
+    // logger.info(line(),documentotipo_nuevo);
     return documentotipo_nuevo;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -204,7 +205,7 @@ export const updateDocumentotipo = async (req, documentotipo) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -219,7 +220,7 @@ export const deleteDocumentotipo = async (req, documentotipo) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -234,7 +235,7 @@ export const activateDocumentotipo = async (req, documentotipo) => {
     });
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(line(), error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

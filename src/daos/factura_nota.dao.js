@@ -1,4 +1,5 @@
 import { poolFactoring } from "../config/bd/mysql2_db_factoring.js";
+import logger, { line } from "../utils/logger.js";
 
 export const insertarFacturaNota = async (factura_nota) => {
   const [rows] = await poolFactoring.query(
@@ -14,7 +15,7 @@ export const insertarFacturaNota = async (factura_nota) => {
         )`,
     [factura_nota.facturanotaid, factura_nota._idfactura, factura_nota.id, factura_nota.descripcion]
   );
-  //console.log(rows);
+  //logger.info(line(),rows);
 
   if (rows.length <= 0) {
     throw new Error("BD Logica. Uh oh!");
