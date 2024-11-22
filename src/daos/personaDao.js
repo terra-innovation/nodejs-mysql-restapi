@@ -44,7 +44,7 @@ export const getPersonaByPersonaid = async (req, personaid) => {
         personaid: personaid,
       },
     });
-    logger.info(line(), persona);
+    logger.debug(line(), persona);
     return persona;
   } catch (error) {
     logger.error(line(), error);
@@ -75,29 +75,53 @@ export const getPersonas = async (req, estado) => {
     const personas = await models.Persona.findAll({
       include: [
         {
-          model: models.Empresa,
+          model: models.Usuario,
           required: true,
-          as: "empresa_empresa",
+          as: "usuario_usuario",
         },
         {
-          model: models.Banco,
+          model: models.DocumentoTipo,
           required: true,
-          as: "banco_banco",
+          as: "documentotipo_documento_tipo",
         },
         {
-          model: models.Moneda,
+          model: models.Pais,
           required: true,
-          as: "moneda_moneda",
+          as: "paisnacionalidad_pai",
         },
         {
-          model: models.CuentaTipo,
+          model: models.Pais,
           required: true,
-          as: "cuentatipo_cuenta_tipo",
+          as: "paisnacimiento_pai",
         },
         {
-          model: models.PersonaEstado,
+          model: models.Pais,
           required: true,
-          as: "personaestado_cuenta_bancaria_estado",
+          as: "paisresidencia_pai",
+        },
+        {
+          model: models.Distrito,
+          required: true,
+          as: "distritoresidencia_distrito",
+          include: [
+            {
+              model: models.Provincia,
+              requerid: true,
+              as: "provincia_provincium",
+              include: [
+                {
+                  model: models.Departamento,
+                  requerid: true,
+                  as: "departamento_departamento",
+                },
+              ],
+            },
+          ],
+        },
+        {
+          model: models.Genero,
+          required: true,
+          as: "genero_genero",
         },
       ],
       where: {

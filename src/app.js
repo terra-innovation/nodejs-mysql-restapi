@@ -22,6 +22,7 @@ import riesgosRoutes from "./routes/riesgos.routes.js";
 import admin_cuentabancariaRoutes from "./routes/admin/cuentabancaria.routes.js";
 import admin_cuentabancariaestadoRoutes from "./routes/admin/cuentabancariaestado.routes.js";
 import admin_empresaRoutes from "./routes/admin/empresa.routes.js";
+import admin_personaRoutes from "./routes/admin/persona.routes.js";
 
 import usuario_personaRoutes from "./routes/usuario/persona.routes.js";
 import usuario_personapepdirectoRoutes from "./routes/usuario/personapepdirecto.routes.js";
@@ -79,6 +80,7 @@ app.use("/api/v1", empresario_cuentabancariaRoutes);
 app.use("/api/v1", admin_cuentabancariaRoutes);
 app.use("/api/v1", admin_cuentabancariaestadoRoutes);
 app.use("/api/v1", admin_empresaRoutes);
+app.use("/api/v1", admin_personaRoutes);
 
 app.use("/api/v1", usuario_personaRoutes);
 app.use("/api/v1", usuario_personapepdirectoRoutes);

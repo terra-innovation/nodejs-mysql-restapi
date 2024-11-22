@@ -26,6 +26,28 @@ const menuMantenimiento = {
         },
       ],
     },
+    {
+      id: "admin-persona",
+      title: "Personas",
+      type: "collapse",
+      icon: "dashboard",
+      children: [
+        {
+          id: "admin-persona-lista",
+          title: "Personas",
+          type: "item",
+          url: "/admin/persona/lista",
+          breadcrumbs: true,
+        },
+        {
+          id: "admin-persona-verificacion",
+          title: "Verificación",
+          type: "item",
+          url: "/admin/persona/verificacion",
+          breadcrumbs: true,
+        },
+      ],
+    },
   ],
 };
 
