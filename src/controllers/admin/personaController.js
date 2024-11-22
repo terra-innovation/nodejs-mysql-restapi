@@ -17,6 +17,21 @@ import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { Sequelize } from "sequelize";
 
+export const getPersonasPendientesDeVerificacion = async (req, res) => {
+  //logger.info(line(),req.session_user.usuario._idusuario);
+
+  const filter_estado = [1, 2];
+  const filter_ispersonavalidated = [3];
+  const filter_idarchivotipo = [1, 2, 3];
+  const personas = await personaDao.getPersonasByIspersonavalidated(req, filter_estado, filter_ispersonavalidated, filter_idarchivotipo);
+  var personasJson = jsonUtils.sequelizeToJSON(personas);
+  //logger.info(line(),personaObfuscated);
+
+  //var personasFiltered = jsonUtils.removeAttributes(personasJson, ["score"]);
+  //personasFiltered = jsonUtils.removeAttributesPrivates(personasFiltered);
+  response(res, 201, personasJson);
+};
+
 export const activatePersona = async (req, res) => {
   const { id } = req.params;
   const personaSchema = yup
