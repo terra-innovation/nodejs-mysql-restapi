@@ -355,6 +355,7 @@ export const registerUsuario = async (req, res) => {
   camposAdicionales.usuarioid = uuidv4();
   camposAdicionales.password = encryptedPassword;
   camposAdicionales.hash = hash;
+  camposAdicionales._idpersonaverificacionestado = 1; // 1: No solicitado
 
   let camposAuditoria = {};
   camposAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;

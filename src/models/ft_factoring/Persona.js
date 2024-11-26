@@ -187,38 +187,10 @@ export default class Persona extends Model {
         ]
       },
       {
-        name: "FK_persona_idpaisnacionalidad",
-        using: "BTREE",
-        fields: [
-          { name: "_idpaisnacionalidad" },
-        ]
-      },
-      {
-        name: "FK_persona_idpaisnacimiento",
-        using: "BTREE",
-        fields: [
-          { name: "_idpaisnacimiento" },
-        ]
-      },
-      {
-        name: "FK_persona_idpaisresidencia",
-        using: "BTREE",
-        fields: [
-          { name: "_idpaisresidencia" },
-        ]
-      },
-      {
         name: "FK_persona_iddepartamentoresidencia",
         using: "BTREE",
         fields: [
           { name: "_iddepartamentoresidencia" },
-        ]
-      },
-      {
-        name: "FK_persona_idprovinciaresidencia",
-        using: "BTREE",
-        fields: [
-          { name: "_idprovinciaresidencia" },
         ]
       },
       {
@@ -233,6 +205,34 @@ export default class Persona extends Model {
         using: "BTREE",
         fields: [
           { name: "_idgenero" },
+        ]
+      },
+      {
+        name: "FK_persona_idpaisnacimiento",
+        using: "BTREE",
+        fields: [
+          { name: "_idpaisnacimiento" },
+        ]
+      },
+      {
+        name: "FK_persona_idpaisnacionalidad",
+        using: "BTREE",
+        fields: [
+          { name: "_idpaisnacionalidad" },
+        ]
+      },
+      {
+        name: "FK_persona_idpaisresidencia",
+        using: "BTREE",
+        fields: [
+          { name: "_idpaisresidencia" },
+        ]
+      },
+      {
+        name: "FK_persona_idprovinciaresidencia",
+        using: "BTREE",
+        fields: [
+          { name: "_idprovinciaresidencia" },
         ]
       },
     ]

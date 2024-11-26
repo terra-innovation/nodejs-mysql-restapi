@@ -2,7 +2,7 @@ import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getPersonasByIspersonavalidated = async (req, estado, ispersonavalidated, idarchivotipo) => {
+export const getPersonasByIdpersonaverificacionestado = async (req, estado, idpersonaverificacionestado, idarchivotipo) => {
   try {
     const { models } = req.app.locals;
     const personas = await models.Persona.findAll({
@@ -11,9 +11,10 @@ export const getPersonasByIspersonavalidated = async (req, estado, ispersonavali
           model: models.Usuario,
           required: true,
           as: "usuario_usuario",
+          include: [{ model: models.PersonaVerificacionEstado, required: true, as: "personaverificacionestado_persona_verificacion_estado" }],
           where: {
-            ispersonavalidated: {
-              [Sequelize.Op.in]: ispersonavalidated,
+            _idpersonaverificacionestado: {
+              [Sequelize.Op.in]: idpersonaverificacionestado,
             },
           },
         },

@@ -35,7 +35,7 @@ export const getPersonaMaster = async (req, res) => {
   personaMaster.distritos = distritos;
   personaMaster.documentotipos = documentotipos;
   personaMaster.generos = generos;
-  personaMaster.usuario = jsonUtils.filterFields(jsonUtils.sequelizeToJSON(usuario), ["usuarioid", "email", "celular", "isemailvalidated", "ispersonavalidated"]);
+  personaMaster.usuario = jsonUtils.filterFields(jsonUtils.sequelizeToJSON(usuario), ["usuarioid", "email", "celular", "isemailvalidated"]);
 
   let personaMasterJSON = jsonUtils.sequelizeToJSON(personaMaster);
   //jsonUtils.prettyPrint(personaMasterJSON);
@@ -224,7 +224,7 @@ export const verifyPersona = async (req, res) => {
 
   const usuarioUpdate = {};
   usuarioUpdate.usuarioid = usuarioConected.usuarioid;
-  usuarioUpdate.ispersonavalidated = 3; // 3: En proceso
+  usuarioUpdate._idpersonaverificacionestado = 2; // 2: Pendiente
   usuarioUpdate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
   usuarioUpdate.fechamod = Sequelize.fn("now", 3);
   usuarioUpdate.estado = 1;

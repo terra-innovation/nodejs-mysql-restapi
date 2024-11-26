@@ -31,6 +31,8 @@ import _Persona from "./Persona.js";
 import _PersonaDeclaracion from "./PersonaDeclaracion.js";
 import _PersonaPepDirecto from "./PersonaPepDirecto.js";
 import _PersonaPepIndirecto from "./PersonaPepIndirecto.js";
+import _PersonaVerificacion from "./PersonaVerificacion.js";
+import _PersonaVerificacionEstado from "./PersonaVerificacionEstado.js";
 import _Provincia from "./Provincia.js";
 import _RegionNatural from "./RegionNatural.js";
 import _Riesgo from "./Riesgo.js";
@@ -73,6 +75,8 @@ export default function initModels(sequelize) {
   const PersonaDeclaracion = _PersonaDeclaracion.init(sequelize, DataTypes);
   const PersonaPepDirecto = _PersonaPepDirecto.init(sequelize, DataTypes);
   const PersonaPepIndirecto = _PersonaPepIndirecto.init(sequelize, DataTypes);
+  const PersonaVerificacion = _PersonaVerificacion.init(sequelize, DataTypes);
+  const PersonaVerificacionEstado = _PersonaVerificacionEstado.init(sequelize, DataTypes);
   const Provincia = _Provincia.init(sequelize, DataTypes);
   const RegionNatural = _RegionNatural.init(sequelize, DataTypes);
   const Riesgo = _Riesgo.init(sequelize, DataTypes);
@@ -169,6 +173,12 @@ export default function initModels(sequelize) {
   Persona.hasMany(PersonaPepDirecto, { as: "persona_pep_directos", foreignKey: "_idpersona" });
   PersonaPepIndirecto.belongsTo(Persona, { as: "persona_persona", foreignKey: "_idpersona" });
   Persona.hasMany(PersonaPepIndirecto, { as: "persona_pep_indirectos", foreignKey: "_idpersona" });
+  PersonaVerificacion.belongsTo(Persona, { as: "persona_persona", foreignKey: "_idpersona" });
+  Persona.hasMany(PersonaVerificacion, { as: "persona_verificacions", foreignKey: "_idpersona" });
+  PersonaVerificacion.belongsTo(PersonaVerificacionEstado, { as: "personaverificacionestado_persona_verificacion_estado", foreignKey: "_idpersonaverificacionestado" });
+  PersonaVerificacionEstado.hasMany(PersonaVerificacion, { as: "persona_verificacions", foreignKey: "_idpersonaverificacionestado" });
+  Usuario.belongsTo(PersonaVerificacionEstado, { as: "personaverificacionestado_persona_verificacion_estado", foreignKey: "_idpersonaverificacionestado" });
+  PersonaVerificacionEstado.hasMany(Usuario, { as: "usuarios", foreignKey: "_idpersonaverificacionestado" });
   Distrito.belongsTo(Provincia, { as: "provincia_provincium", foreignKey: "_idprovincia" });
   Provincia.hasMany(Distrito, { as: "distritos", foreignKey: "_idprovincia" });
   Persona.belongsTo(Provincia, { as: "provinciaresidencia_provincium", foreignKey: "_idprovinciaresidencia" });
@@ -187,6 +197,8 @@ export default function initModels(sequelize) {
   Usuario.hasMany(Factoring, { as: "factorings", foreignKey: "_idcontactocedente" });
   Persona.belongsTo(Usuario, { as: "usuario_usuario", foreignKey: "_idusuario" });
   Usuario.hasOne(Persona, { as: "persona", foreignKey: "_idusuario" });
+  PersonaVerificacion.belongsTo(Usuario, { as: "usuarioverifica_usuario", foreignKey: "_idusuarioverifica" });
+  Usuario.hasMany(PersonaVerificacion, { as: "persona_verificacions", foreignKey: "_idusuarioverifica" });
   UsuarioEmpresa.belongsTo(Usuario, { as: "usuario_usuario", foreignKey: "_idusuario" });
   Usuario.hasMany(UsuarioEmpresa, { as: "usuario_empresas", foreignKey: "_idusuario" });
   UsuarioRol.belongsTo(Usuario, { as: "usuario_usuario", foreignKey: "_idusuario" });
@@ -228,6 +240,8 @@ export default function initModels(sequelize) {
     PersonaDeclaracion,
     PersonaPepDirecto,
     PersonaPepIndirecto,
+    PersonaVerificacion,
+    PersonaVerificacionEstado,
     Provincia,
     RegionNatural,
     Riesgo,

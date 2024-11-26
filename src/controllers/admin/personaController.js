@@ -21,9 +21,9 @@ export const getPersonasPendientesDeVerificacion = async (req, res) => {
   //logger.info(line(),req.session_user.usuario._idusuario);
 
   const filter_estado = [1, 2];
-  const filter_ispersonavalidated = [3];
+  const filter_idpersonaverificacionestado = [2, 3, 6, 7];
   const filter_idarchivotipo = [1, 2, 3];
-  const personas = await personaDao.getPersonasByIspersonavalidated(req, filter_estado, filter_ispersonavalidated, filter_idarchivotipo);
+  const personas = await personaDao.getPersonasByIdpersonaverificacionestado(req, filter_estado, filter_idpersonaverificacionestado, filter_idarchivotipo);
   var personasJson = jsonUtils.sequelizeToJSON(personas);
   //logger.info(line(),personaObfuscated);
 

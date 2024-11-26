@@ -1,26 +1,27 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class Usuario extends Model {
+export default class PersonaVerificacion extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    _idusuario: {
+    _idpersonaverificacion: {
       autoIncrement: true,
       type: DataTypes.BIGINT,
       allowNull: false,
       primaryKey: true
     },
-    usuarioid: {
+    personaverificacionid: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: Sequelize.Sequelize.fn('uuid')
+      defaultValue: Sequelize.Sequelize.fn('uuid'),
+      unique: "UQ_personaid"
     },
-    _iddocumentotipo: {
-      type: DataTypes.INTEGER,
+    _idpersona: {
+      type: DataTypes.BIGINT,
       allowNull: false,
       references: {
-        model: 'documento_tipo',
-        key: '_iddocumentotipo'
+        model: 'persona',
+        key: '_idpersona'
       }
     },
     _idpersonaverificacionestado: {
@@ -31,51 +32,21 @@ export default class Usuario extends Model {
         key: '_idpersonaverificacionestado'
       }
     },
-    documentonumero: {
-      type: DataTypes.STRING(50),
+    _idusuarioverifica: {
+      type: DataTypes.BIGINT,
       allowNull: false,
-      unique: "documentonumero"
+      references: {
+        model: 'usuario',
+        key: '_idusuario'
+      }
     },
-    usuarionombres: {
-      type: DataTypes.STRING(50),
+    comentariousuario: {
+      type: DataTypes.TEXT,
       allowNull: false
     },
-    apellidopaterno: {
-      type: DataTypes.STRING(50),
+    comentariointerno: {
+      type: DataTypes.TEXT,
       allowNull: false
-    },
-    apellidomaterno: {
-      type: DataTypes.STRING(50),
-      allowNull: false
-    },
-    email: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
-      unique: "email"
-    },
-    celular: {
-      type: DataTypes.STRING(20),
-      allowNull: false
-    },
-    password: {
-      type: DataTypes.STRING(200),
-      allowNull: false
-    },
-    isemailvalidated: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: 0
-    },
-    ispersonavalidated: {
-      type: DataTypes.SMALLINT,
-      allowNull: false,
-      defaultValue: 0,
-      comment: "1: Si; 0: No; 3: En proceso"
-    },
-    hash: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
-      unique: "hash"
     },
     idusuariocrea: {
       type: DataTypes.INTEGER,
@@ -104,7 +75,7 @@ export default class Usuario extends Model {
     }
   }, {
     sequelize,
-    tableName: 'usuario',
+    tableName: 'persona_verificacion',
     timestamps: false,
     indexes: [
       {
@@ -112,45 +83,36 @@ export default class Usuario extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idusuario" },
+          { name: "_idpersonaverificacion" },
         ]
       },
       {
-        name: "documentonumero",
+        name: "UQ_personaid",
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "documentonumero" },
+          { name: "personaverificacionid" },
         ]
       },
       {
-        name: "email",
-        unique: true,
+        name: "FK_persona_verificacion_idpersona",
         using: "BTREE",
         fields: [
-          { name: "email" },
+          { name: "_idpersona" },
         ]
       },
       {
-        name: "hash",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "hash" },
-        ]
-      },
-      {
-        name: "FK_usuario_iddocuemntotipo",
-        using: "BTREE",
-        fields: [
-          { name: "_iddocumentotipo" },
-        ]
-      },
-      {
-        name: "FK_usuario_idpersonaverificacionestado",
+        name: "FK_persona_verificacion_idpersonaverificacionestado",
         using: "BTREE",
         fields: [
           { name: "_idpersonaverificacionestado" },
+        ]
+      },
+      {
+        name: "FK_persona_verificacion_idusuarioverifica",
+        using: "BTREE",
+        fields: [
+          { name: "_idusuarioverifica" },
         ]
       },
     ]
