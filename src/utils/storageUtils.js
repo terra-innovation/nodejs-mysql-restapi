@@ -1,4 +1,4 @@
-export const STORAGE_PATH_PROCESAR = "./src/storage/procesar";
-export const STORAGE_PATH_FAIL = "./src/storage/fail";
-export const STORAGE_PATH_INVALID = "./src/storage/invalid";
-export const STORAGE_PATH_SUCCESS = "./src/storage/success";
+export const STORAGE_PATH_PROCESAR = "./storage/procesar";
+export const STORAGE_PATH_FAIL = "./storage/fail";
+export const STORAGE_PATH_INVALID = "./storage/invalid";
+export const STORAGE_PATH_SUCCESS = "./storage/success";

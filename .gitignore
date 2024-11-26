@@ -3,8 +3,8 @@ coverage
 .env
 .history
 sequelize-auto.config.json
-src/storage/fail/*
-src/storage/invalid/*
-src/storage/procesar/*
-src/storage/success/*
+storage/fail/*
+storage/invalid/*
+storage/procesar/*
+storage/success/*
 logs/*
