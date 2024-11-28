@@ -14,5 +14,4 @@ router.get("/admin/persona/master", verifyToken, checkRole([2]), catchedAsync(pe
 router.delete("/admin/persona/eliminar/:id", verifyToken, checkRole([2]), catchedAsync(personaController.deletePersona));
 router.patch("/admin/persona/activar/:id", verifyToken, checkRole([2]), catchedAsync(personaController.activatePersona));
 
-router.get("/admin/persona/verificar", verifyToken, checkRole([2]), catchedAsync(personaController.getPersonasPendientesDeVerificacion));
 export default router;

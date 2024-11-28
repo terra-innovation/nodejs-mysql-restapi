@@ -5,6 +5,7 @@ import * as provinciaDao from "../../daos/provinciaDao.js";
 import * as distritoDao from "../../daos/distritoDao.js";
 import * as generoDao from "../../daos/generoDao.js";
 import * as personadeclaracionDao from "../../daos/personadeclaracionDao.js";
+import * as personaverificacionDao from "../../daos/personaverificacionDao.js";
 import * as usuarioDao from "../../daos/usuarioDao.js";
 import * as archivoDao from "../../daos/archivoDao.js";
 import * as archivopersonaDao from "../../daos/archivopersonaDao.js";
@@ -221,6 +222,21 @@ export const verifyPersona = async (req, res) => {
   personaDeclaracionCreate.estado = 1;
 
   await personadeclaracionDao.insertPersonadeclaracion(req, personaDeclaracionCreate);
+
+  const personaVerificacionCreate = {};
+  personaVerificacionCreate.personaverificacionid = uuidv4();
+  personaVerificacionCreate._idpersona = personaCreated._idpersona;
+  personaVerificacionCreate._idpersonaverificacionestado = 2; // 2: Pendiente
+  personaVerificacionCreate._idusuarioverifica = req.session_user?.usuario?._idusuario;
+  personaVerificacionCreate.comentariousuario = "";
+  personaVerificacionCreate.comentariointerno = "";
+  personaVerificacionCreate.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
+  personaVerificacionCreate.fechacrea = Sequelize.fn("now", 3);
+  personaVerificacionCreate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
+  personaVerificacionCreate.fechamod = Sequelize.fn("now", 3);
+  personaVerificacionCreate.estado = 1;
+
+  await personaverificacionDao.insertPersonaVerificacion(req, personaVerificacionCreate);
 
   const usuarioUpdate = {};
   usuarioUpdate.usuarioid = usuarioConected.usuarioid;

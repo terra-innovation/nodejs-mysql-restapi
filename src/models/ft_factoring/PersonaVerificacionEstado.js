@@ -27,6 +27,16 @@ export default class PersonaVerificacionEstado extends Model {
       type: DataTypes.STRING(50),
       allowNull: false
     },
+    ispersonavalidated: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: 0
+    },
+    isestadofinal: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: 0
+    },
     idusuariocrea: {
       type: DataTypes.INTEGER,
       allowNull: false,

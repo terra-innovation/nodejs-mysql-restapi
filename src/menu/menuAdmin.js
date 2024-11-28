@@ -43,7 +43,7 @@ const menuMantenimiento = {
           id: "admin-persona-verificacion",
           title: "Verificación",
           type: "item",
-          url: "/admin/persona/verificacion",
+          url: "/admin/personaverificacion/lista",
           breadcrumbs: true,
         },
       ],

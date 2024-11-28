@@ -67,7 +67,7 @@ export default class Usuario extends Model {
       defaultValue: 0
     },
     ispersonavalidated: {
-      type: DataTypes.SMALLINT,
+      type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: 0,
       comment: "1: Si; 0: No; 3: En proceso"
