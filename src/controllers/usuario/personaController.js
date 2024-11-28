@@ -9,6 +9,7 @@ import * as personaverificacionDao from "../../daos/personaverificacionDao.js";
 import * as usuarioDao from "../../daos/usuarioDao.js";
 import * as archivoDao from "../../daos/archivoDao.js";
 import * as archivopersonaDao from "../../daos/archivopersonaDao.js";
+import * as personaverificacionestadoDao from "../../daos/personaverificacionestadoDao.js";
 import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
@@ -138,6 +139,13 @@ export const verifyPersona = async (req, res) => {
     throw new ClientError("Datos no válidos", 404);
   }
 
+  const personaverificacionestado_pendiente = 2; // 2: Pendiente
+  const personaverificacionestado = await personaverificacionestadoDao.getPersonaverificacionestadoByIdpersonaverificacionestado(req, personaverificacionestado_pendiente);
+  if (!personaverificacionestado) {
+    logger.warn(line(), "Persona verificación estado no existe: [" + personaverificacionestado_pendiente + "]");
+    throw new ClientError("Datos no válidos", 404);
+  }
+
   const usuarioConected = await usuarioDao.getUsuarioByIdusuario(req, personaValidated._idusuario);
   const provinciaResidencia = await provinciaDao.getProvinciaByIdprovincia(req, distritoResidencia._idprovincia);
 
@@ -226,7 +234,7 @@ export const verifyPersona = async (req, res) => {
   const personaVerificacionCreate = {};
   personaVerificacionCreate.personaverificacionid = uuidv4();
   personaVerificacionCreate._idpersona = personaCreated._idpersona;
-  personaVerificacionCreate._idpersonaverificacionestado = 2; // 2: Pendiente
+  personaVerificacionCreate._idpersonaverificacionestado = personaverificacionestado._idpersonaverificacionestado; // 2: Pendiente
   personaVerificacionCreate._idusuarioverifica = req.session_user?.usuario?._idusuario;
   personaVerificacionCreate.comentariousuario = "";
   personaVerificacionCreate.comentariointerno = "";
@@ -240,7 +248,8 @@ export const verifyPersona = async (req, res) => {
 
   const usuarioUpdate = {};
   usuarioUpdate.usuarioid = usuarioConected.usuarioid;
-  usuarioUpdate._idpersonaverificacionestado = 2; // 2: Pendiente
+  usuarioUpdate._idpersonaverificacionestado = personaverificacionestado._idpersonaverificacionestado; // 2: Pendiente
+  usuarioUpdate.ispersonavalidated = personaverificacionestado.ispersonavalidated;
   usuarioUpdate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
   usuarioUpdate.fechamod = Sequelize.fn("now", 3);
   usuarioUpdate.estado = 1;

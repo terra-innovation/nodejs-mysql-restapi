@@ -296,7 +296,7 @@ export const getPersonaByPersonaid = async (req, personaid) => {
         personaid: personaid,
       },
     });
-    logger.debug(line(), persona);
+    //logger.debug(line(), persona);
     return persona;
   } catch (error) {
     logger.error(line(), error);

@@ -157,20 +157,18 @@ export const createPersonaverificacion = async (req, res) => {
     })
     .required();
   var personaverificacionValidated = personaverificacionCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
-  logger.debug(line(), "personaverificacionValidated:", personaverificacionValidated);
+  //logger.debug(line(), "personaverificacionValidated:", personaverificacionValidated);
 
-  const persona = await personaDao.findPersonaPk(req, personaverificacionValidated.personaid);
+  const persona = await personaDao.getPersonaByPersonaid(req, personaverificacionValidated.personaid);
   if (!persona) {
     logger.warn(line(), "Persona no existe: [" + personaverificacionValidated.personaid + "]");
     throw new ClientError("Datos no válidos", 404);
   }
-
-  const personaverificacionestado = await personaverificacionestadoDao.findPersonaverificacionestadoPk(req, personaverificacionValidated.personaverificacionestadoid);
+  const personaverificacionestado = await personaverificacionestadoDao.getPersonaverificacionestadoByPersonaverificacionestadoid(req, personaverificacionValidated.personaverificacionestadoid);
   if (!personaverificacionestado) {
     logger.warn(line(), "Persona verificación estado no existe: [" + personaverificacionValidated.personaverificacionestadoid + "]");
     throw new ClientError("Datos no válidos", 404);
   }
-
   var camposFk = {};
   camposFk._idpersona = persona._idpersona;
   camposFk._idpersonaverificacionestado = personaverificacionestado._idpersonaverificacionestado;
@@ -192,16 +190,14 @@ export const createPersonaverificacion = async (req, res) => {
     ...personaverificacionValidated,
     ...camposAuditoria,
   });
-
-  const personaUpdate = await personaDao.getPersonaByIdpersona(req, persona._idpersona);
-  const personaverificacionestadoUpdate = await personaverificacionestadoDao.getPersonaverificacionestadoByIdpersonaverificacionestado(req, personaverificacionestado._idpersonaverificacionestado);
-
+  logger.debug(line(), "personaverificacionCreated");
   const usuarioUpdate = {};
-  usuarioUpdate.usuarioid = personaUpdate.usuario_usuario.usuarioid;
+  usuarioUpdate.usuarioid = persona.usuario_usuario.usuarioid;
   usuarioUpdate._idpersonaverificacionestado = personaverificacionestado._idpersonaverificacionestado;
-  usuarioUpdate.ispersonavalidated = personaverificacionestadoUpdate.ispersonavalidated;
+  usuarioUpdate.ispersonavalidated = personaverificacionestado.ispersonavalidated;
 
   await usuarioDao.updateUsuario(req, usuarioUpdate);
+  logger.debug(line(), "usuarioUpdate");
 
   response(res, 201, {});
 };

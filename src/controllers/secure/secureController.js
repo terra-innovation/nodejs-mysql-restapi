@@ -1,6 +1,7 @@
 import * as usuarioDao from "../../daos/usuarioDao.js";
 import * as documentotipoDao from "../../daos/documentotipoDao.js";
 import * as validacionDao from "../../daos/validacionDao.js";
+import * as personaverificacionestadoDao from "../../daos/personaverificacionestadoDao.js";
 import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
@@ -337,6 +338,13 @@ export const registerUsuario = async (req, res) => {
     throw new ClientError("El correo electrónico ya se encuentra registrado. ", 404);
   }
 
+  const personaverificacionestado_no_solicitado = 1; // 1: No solicitado
+  const personaverificacionestado = await personaverificacionestadoDao.getPersonaverificacionestadoByIdpersonaverificacionestado(req, personaverificacionestado_no_solicitado);
+  if (!personaverificacionestado) {
+    logger.warn(line(), "Persona verificación estado no existe: [" + personaverificacionestado_no_solicitado + "]");
+    throw new ClientError("Datos no válidos", 404);
+  }
+
   const emailvalidationcode = Math.floor(100000 + Math.random() * 900000); // Código aleaatorio de 6 dígitos
   const hash = crypto
     .createHash("sha1")
@@ -355,7 +363,8 @@ export const registerUsuario = async (req, res) => {
   camposAdicionales.usuarioid = uuidv4();
   camposAdicionales.password = encryptedPassword;
   camposAdicionales.hash = hash;
-  camposAdicionales._idpersonaverificacionestado = 1; // 1: No solicitado
+  camposAdicionales._idpersonaverificacionestado = personaverificacionestado._idpersonaverificacionestado;
+  camposAdicionales._idpersonaverificacionestado = personaverificacionestado.ispersonavalidated;
 
   let camposAuditoria = {};
   camposAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
