@@ -5,24 +5,19 @@ export default class PersonaPepDirecto extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
     _idpersonapepdirecto: {
-      autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement: true
     },
     personapepdirectoid: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: Sequelize.Sequelize.fn('uuid'),
-      unique: "UQ_personapepdirectoid"
+      defaultValue: Sequelize.Sequelize.fn('uuid')
     },
     _idpersona: {
       type: DataTypes.BIGINT,
-      allowNull: true,
-      references: {
-        model: 'persona',
-        key: '_idpersona'
-      }
+      allowNull: true
     },
     rucentidad: {
       type: DataTypes.STRING(11),

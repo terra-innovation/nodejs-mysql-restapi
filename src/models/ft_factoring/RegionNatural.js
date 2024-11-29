@@ -12,8 +12,7 @@ export default class RegionNatural extends Model {
     regionnaturalid: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: Sequelize.Sequelize.fn('uuid'),
-      unique: "UQ_distritoid"
+      defaultValue: Sequelize.Sequelize.fn('uuid')
     },
     nombreregionnatural: {
       type: DataTypes.STRING(200),

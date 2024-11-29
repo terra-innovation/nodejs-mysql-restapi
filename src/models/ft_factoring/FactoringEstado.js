@@ -5,16 +5,15 @@ export default class FactoringEstado extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
     _idfactoringestado: {
-      autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement: true
     },
     factoringestadoid: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: Sequelize.Sequelize.fn('uuid'),
-      unique: "UQ_factoring_estado_factoringestadoid"
+      defaultValue: Sequelize.Sequelize.fn('uuid')
     },
     estado1: {
       type: DataTypes.STRING(50),

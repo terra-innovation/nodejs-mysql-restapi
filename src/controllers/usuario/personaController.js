@@ -31,13 +31,15 @@ export const getPersonaMaster = async (req, res) => {
   const documentotipos = await documentotipoDao.getDocumentotipos(req, filter_estados);
   const generos = await generoDao.getGeneros(req, filter_estados);
   const usuario = await usuarioDao.getUsuarioByIdusuario(req, session_idusuario);
+  const personaverificacionestado = await personaverificacionestadoDao.getPersonaverificacionestadoByIdpersonaverificacionestado(req, usuario._idpersonaverificacionestado);
 
   let personaMaster = {};
-  personaMaster.paises = paises;
-  personaMaster.distritos = distritos;
-  personaMaster.documentotipos = documentotipos;
-  personaMaster.generos = generos;
-  personaMaster.usuario = jsonUtils.filterFields(jsonUtils.sequelizeToJSON(usuario), ["usuarioid", "email", "celular", "isemailvalidated"]);
+  //personaMaster.paises = paises;
+  //personaMaster.distritos = distritos;
+  //personaMaster.documentotipos = documentotipos;
+  //personaMaster.generos = generos;
+  personaMaster.usuario = jsonUtils.filterFields(jsonUtils.sequelizeToJSON(usuario), ["usuarioid", "email", "celular", "isemailvalidated", "ispersonavalidated"]);
+  personaMaster.personaverificacionestado = personaverificacionestado;
 
   let personaMasterJSON = jsonUtils.sequelizeToJSON(personaMaster);
   //jsonUtils.prettyPrint(personaMasterJSON);

@@ -5,16 +5,15 @@ export default class Moneda extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
     _idmoneda: {
-      autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement: true
     },
     monedaid: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: Sequelize.Sequelize.fn('uuid'),
-      unique: "UQ_bancoid"
+      defaultValue: Sequelize.Sequelize.fn('uuid')
     },
     nombre: {
       type: DataTypes.STRING(50),

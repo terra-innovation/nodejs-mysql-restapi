@@ -12,11 +12,16 @@ export default class Departamento extends Model {
     departamentoid: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: Sequelize.Sequelize.fn('uuid')
+      defaultValue: Sequelize.Sequelize.fn('uuid'),
+      unique: "UQ_departamentoid"
     },
     _idpais: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'pais',
+        key: '_idpais'
+      }
     },
     codigodepartamento: {
       type: DataTypes.STRING(10),

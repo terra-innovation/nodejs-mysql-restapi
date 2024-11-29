@@ -30,12 +30,20 @@ export default class PersonaVerificacionEstado extends Model {
     ispersonavalidated: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: 0
+      defaultValue: 0,
+      comment: "True si la persona ha sido validada correctamente"
     },
     isestadofinal: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: 0
+      defaultValue: 0,
+      comment: "True si es estado final y el usuario ya no puede editar"
+    },
+    isusuarioedit: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: 0,
+      comment: "True si el usuario puede editar su solicitud de verificación"
     },
     idusuariocrea: {
       type: DataTypes.INTEGER,

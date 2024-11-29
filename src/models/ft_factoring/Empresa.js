@@ -5,26 +5,23 @@ export default class Empresa extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
     _idempresa: {
-      autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement: true
     },
     empresaid: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: Sequelize.Sequelize.fn('uuid'),
-      unique: "UQ_empresaid"
+      defaultValue: Sequelize.Sequelize.fn('uuid')
     },
     code: {
       type: DataTypes.STRING(20),
-      allowNull: false,
-      unique: "UQ_code"
+      allowNull: false
     },
     ruc: {
       type: DataTypes.STRING(11),
-      allowNull: false,
-      unique: "UQ_ruc"
+      allowNull: false
     },
     razon_social: {
       type: DataTypes.STRING(200),
