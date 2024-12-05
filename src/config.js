@@ -31,3 +31,5 @@ export const SMTP_ZOHO_SECURE = process.env.SMTP_ZOHO_SECURE || true;
 export const MAIL_CONTACTO_FINANZATECH_NAME = process.env.MAIL_CONTACTO_FINANZATECH_NAME || "";
 export const MAIL_CONTACTO_FINANZATECH_USER = process.env.MAIL_CONTACTO_FINANZATECH_USER || "";
 export const MAIL_CONTACTO_FINANZATECH_PASS = process.env.MAIL_CONTACTO_FINANZATECH_PASS || "";
+
+export const MAIL_BACKUP = process.env.MAIL_BACKUP || "";

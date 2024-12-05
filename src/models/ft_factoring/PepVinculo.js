@@ -5,16 +5,15 @@ export default class PepVinculo extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
     _idpepvinculo: {
-      autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement: true
     },
     pepvinculoid: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: Sequelize.Sequelize.fn('uuid'),
-      unique: "UQ_pepvinculoid"
+      defaultValue: Sequelize.Sequelize.fn('uuid')
     },
     nombrepepvinculo: {
       type: DataTypes.STRING(200),

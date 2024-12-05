@@ -12,6 +12,8 @@ import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
 import logger, { line } from "../../utils/logger.js";
+import EmailSender from "../../utils/email/emailSender.js";
+import TemplateManager from "../../utils/email/TemplateManager.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
@@ -152,8 +154,8 @@ export const createPersonaverificacion = async (req, res) => {
     .shape({
       personaid: yup.string().min(36).max(36).required(),
       personaverificacionestadoid: yup.string().min(36).max(36).required(),
-      comentariousuario: yup.string().max(1000),
-      comentariointerno: yup.string().max(1000).required(),
+      comentariousuario: yup.string().trim().max(1000),
+      comentariointerno: yup.string().trim().max(1000).required(),
     })
     .required();
   var personaverificacionValidated = personaverificacionCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
@@ -198,6 +200,47 @@ export const createPersonaverificacion = async (req, res) => {
 
   await usuarioDao.updateUsuario(req, usuarioUpdate);
   logger.debug(line(), "usuarioUpdate");
+
+  /* Prepara y envia un correo */
+  const templateManager = new TemplateManager();
+  const emailSender = new EmailSender();
+
+  if (personaverificacionValidated.comentariousuario) {
+    const dataEmail = {
+      codigo_usuario: persona.usuario_usuario.code,
+      nombres: persona.usuario_usuario.usuarionombres,
+      razon_no_aceptada: personaverificacionValidated.comentariousuario,
+      fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
+    };
+    const emailTemplate = await templateManager.templateCuentaUsarioVerificadaMasInformacion(dataEmail);
+
+    const mailOptions = {
+      to: persona.usuario_usuario.email,
+      subject: emailTemplate.subject,
+      text: emailTemplate.text,
+      html: emailTemplate.html,
+    };
+
+    await emailSender.sendContactoFinanzatech(mailOptions);
+  }
+
+  /* Si la verificación tiene código 4 que es aprobado, se le envía un correo de éxito */
+  if (personaverificacionestado._idpersonaverificacionestado == 4) {
+    const dataEmail = {
+      codigo_usuario: persona.usuario_usuario.code,
+      nombres: persona.usuario_usuario.usuarionombres,
+      fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
+    };
+    const emailTemplate = await templateManager.templateCuentaUsarioVerificadaExito(dataEmail);
+
+    const mailOptions = {
+      to: persona.usuario_usuario.email,
+      subject: emailTemplate.subject,
+      text: emailTemplate.text,
+      html: emailTemplate.html,
+    };
+    await emailSender.sendContactoFinanzatech(mailOptions);
+  }
 
   response(res, 201, {});
 };

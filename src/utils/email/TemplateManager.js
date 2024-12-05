@@ -2,6 +2,8 @@ import * as config from "../../config.js";
 import fs from "fs/promises";
 import path from "path";
 import * as yup from "yup";
+import { htmlToText } from "html-to-text";
+import logger, { line } from "../../utils/logger.js";
 
 class TemplaceManager {
   constructor() {
@@ -15,8 +17,6 @@ class TemplaceManager {
 
   async renderTemplate(templateName, params) {
     let template = await this.loadTemplate(templateName);
-
-    // Reemplazar los placeholders en la plantilla
     Object.keys(params).forEach((key) => {
       const regex = new RegExp(`{{${key}}}`, "g");
       template = template.replace(regex, params[key]);
@@ -25,8 +25,22 @@ class TemplaceManager {
     return template;
   }
 
+  async renderSubject(subject, params) {
+    Object.keys(params).forEach((key) => {
+      const regex = new RegExp(`{{${key}}}`, "g");
+      subject = subject.replace(regex, params[key]);
+    });
+    return subject;
+  }
+
+  async convertirHTMLaTextoPlano(html) {
+    const textoPlano = htmlToText(html, {
+      wordwrap: 130, // Opcional: establece el límite de líneas para el texto plano
+    });
+    return textoPlano;
+  }
+
   async templateCodigoVerificacion(params) {
-    const methodName = "templateCodigoVerificacion";
     try {
       const paramsSchema = yup
         .object()
@@ -48,35 +62,62 @@ class TemplaceManager {
       };
       return codigoverificacionMailOptions;
     } catch (error) {
-      logger.error(line(), `Error en ${methodName}:`, error);
+      logger.error(line(), error);
       throw error;
     }
   }
 
-  async templateCodigoVerificacion(params) {
-    const methodName = "templateCodigoVerificacion";
+  async templateCuentaUsarioVerificadaMasInformacion(params) {
     try {
       const paramsSchema = yup
         .object()
         .shape({
-          name: yup.string().trim().required().min(1).max(100),
-          codigo: yup.string().trim().required().min(1).max(100),
+          codigo_usuario: yup.string().trim().required().min(1).max(20),
+          nombres: yup.string().trim().required().min(1).max(100),
+          razon_no_aceptada: yup.string().trim().required().min(1).max(1000),
           fecha_actual: yup.string().trim().required().min(1).max(200),
-          duracion_minutos: yup.number().required().min(1).max(200),
-          fechacrea: yup.string().trim().required().min(1).max(200),
         })
         .required();
       var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
-      const codigoverificacionEmail = await this.renderTemplate("codigo-verificacion.html", paramsValidated);
+      const bodyEmailTHTML = await this.renderTemplate("cuenta-usuario-verificada-mas-informacion.html", paramsValidated);
+      const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
+      const subjectEmailText = await this.renderSubject("Información importante sobre sus documentos [{{codigo_usuario}}]", paramsValidated);
 
       const codigoverificacionMailOptions = {
-        subject: "Código de verificación de Finanza Tech " + paramsValidated.fechacrea,
-        text: "Hola. Su código de verificación es: " + paramsValidated.codigo,
-        html: codigoverificacionEmail,
+        subject: subjectEmailText,
+        text: bodyEmailText,
+        html: bodyEmailTHTML,
       };
       return codigoverificacionMailOptions;
     } catch (error) {
-      logger.error(line(), `Error en ${methodName}:`, error);
+      logger.error(line(), error);
+      throw error;
+    }
+  }
+
+  async templateCuentaUsarioVerificadaExito(params) {
+    try {
+      const paramsSchema = yup
+        .object()
+        .shape({
+          codigo_usuario: yup.string().trim().required().min(1).max(20),
+          nombres: yup.string().trim().required().min(1).max(100),
+          fecha_actual: yup.string().trim().required().min(1).max(200),
+        })
+        .required();
+      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+      const bodyEmailTHTML = await this.renderTemplate("cuenta-usuario-verificada-exito.html", paramsValidated);
+      const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
+      const subjectEmailText = await this.renderSubject("¡Tu cuenta de usuario ha sido verificada con éxito! [{{codigo_usuario}}]", paramsValidated);
+
+      const codigoverificacionMailOptions = {
+        subject: subjectEmailText,
+        text: bodyEmailText,
+        html: bodyEmailTHTML,
+      };
+      return codigoverificacionMailOptions;
+    } catch (error) {
+      logger.error(line(), error);
       throw error;
     }
   }

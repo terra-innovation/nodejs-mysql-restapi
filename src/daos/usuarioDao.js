@@ -139,7 +139,7 @@ export const getUsuarioByHash = async (req, hash) => {
     //logger.info(line(),usuario);
     return usuario;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), error.message, error.stack);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -147,7 +147,7 @@ export const getUsuarioByHash = async (req, hash) => {
 export const getUsuarioByNumerodocumento = async (req, documentonumero) => {
   try {
     const { models } = req.app.locals;
-    const usuario = await models.Usuario.findAll({
+    const usuario = await models.Usuario.findOne({
       where: {
         documentonumero: documentonumero,
       },
@@ -184,7 +184,7 @@ export const insertUsuario = async (req, usuario) => {
     // logger.info(line(),usuario_nuevo);
     return usuario_nuevo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), error.original, error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

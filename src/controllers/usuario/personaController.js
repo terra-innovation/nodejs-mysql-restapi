@@ -34,10 +34,10 @@ export const getPersonaMaster = async (req, res) => {
   const personaverificacionestado = await personaverificacionestadoDao.getPersonaverificacionestadoByIdpersonaverificacionestado(req, usuario._idpersonaverificacionestado);
 
   let personaMaster = {};
-  //personaMaster.paises = paises;
-  //personaMaster.distritos = distritos;
-  //personaMaster.documentotipos = documentotipos;
-  //personaMaster.generos = generos;
+  personaMaster.paises = paises;
+  personaMaster.distritos = distritos;
+  personaMaster.documentotipos = documentotipos;
+  personaMaster.generos = generos;
   personaMaster.usuario = jsonUtils.filterFields(jsonUtils.sequelizeToJSON(usuario), ["usuarioid", "email", "celular", "isemailvalidated", "ispersonavalidated"]);
   personaMaster.personaverificacionestado = personaverificacionestado;
 
@@ -141,10 +141,10 @@ export const verifyPersona = async (req, res) => {
     throw new ClientError("Datos no válidos", 404);
   }
 
-  const personaverificacionestado_pendiente = 2; // 2: Pendiente
-  const personaverificacionestado = await personaverificacionestadoDao.getPersonaverificacionestadoByIdpersonaverificacionestado(req, personaverificacionestado_pendiente);
+  const personaverificacionestado_en_revision = 3; // 3: En revisión
+  const personaverificacionestado = await personaverificacionestadoDao.getPersonaverificacionestadoByIdpersonaverificacionestado(req, personaverificacionestado_en_revision);
   if (!personaverificacionestado) {
-    logger.warn(line(), "Persona verificación estado no existe: [" + personaverificacionestado_pendiente + "]");
+    logger.warn(line(), "Persona verificación estado no existe: [" + personaverificacionestado_en_revision + "]");
     throw new ClientError("Datos no válidos", 404);
   }
 
@@ -236,7 +236,7 @@ export const verifyPersona = async (req, res) => {
   const personaVerificacionCreate = {};
   personaVerificacionCreate.personaverificacionid = uuidv4();
   personaVerificacionCreate._idpersona = personaCreated._idpersona;
-  personaVerificacionCreate._idpersonaverificacionestado = personaverificacionestado._idpersonaverificacionestado; // 2: Pendiente
+  personaVerificacionCreate._idpersonaverificacionestado = personaverificacionestado._idpersonaverificacionestado; // 3: En revisión
   personaVerificacionCreate._idusuarioverifica = req.session_user?.usuario?._idusuario;
   personaVerificacionCreate.comentariousuario = "";
   personaVerificacionCreate.comentariointerno = "";

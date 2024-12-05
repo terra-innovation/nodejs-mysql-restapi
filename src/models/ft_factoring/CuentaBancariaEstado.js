@@ -5,15 +5,16 @@ export default class CuentaBancariaEstado extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
     _idcuentabancariaestado: {
+      autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true,
-      autoIncrement: true
+      primaryKey: true
     },
     cuentabancariaestadoid: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: Sequelize.Sequelize.fn('uuid')
+      defaultValue: Sequelize.Sequelize.fn('uuid'),
+      unique: "UQ_bancoid"
     },
     nombre: {
       type: DataTypes.STRING(50),

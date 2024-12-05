@@ -13,7 +13,13 @@ export default class Usuario extends Model {
     usuarioid: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: Sequelize.Sequelize.fn('uuid')
+      defaultValue: Sequelize.Sequelize.fn('uuid'),
+      unique: "UQ_usuario_usuarioid"
+    },
+    code: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
+      unique: "UQ_usuario_code"
     },
     _iddocumentotipo: {
       type: DataTypes.INTEGER,
@@ -137,6 +143,22 @@ export default class Usuario extends Model {
         using: "BTREE",
         fields: [
           { name: "hash" },
+        ]
+      },
+      {
+        name: "UQ_usuario_usuarioid",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "usuarioid" },
+        ]
+      },
+      {
+        name: "UQ_usuario_code",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "code" },
         ]
       },
       {

@@ -26,7 +26,7 @@ export const getPersonaverificacionestadoByIdpersonaverificacionestado = async (
     const { models } = req.app.locals;
 
     const personaverificacionestado = await models.PersonaVerificacionEstado.findByPk(idpersonaverificacionestado, {});
-    logger.info(line(), personaverificacionestado);
+    //logger.info(line(), personaverificacionestado);
 
     //const personaverificacionestados = await personaverificacionestado.getPersonaverificacionestados();
     //logger.info(line(),personaverificacionestados);

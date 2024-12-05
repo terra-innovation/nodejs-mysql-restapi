@@ -5,35 +5,56 @@ export default class CuentaBancaria extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
     _idcuentabancaria: {
+      autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true,
-      autoIncrement: true
+      primaryKey: true
     },
     cuentabancariaid: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: Sequelize.Sequelize.fn('uuid')
+      defaultValue: Sequelize.Sequelize.fn('uuid'),
+      unique: "UQ_cuenta_bancaria_cuentabancariaid"
     },
     _idempresa: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'empresa',
+        key: '_idempresa'
+      }
     },
     _idbanco: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'banco',
+        key: '_idbanco'
+      }
     },
     _idcuentatipo: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'cuenta_tipo',
+        key: '_idcuentatipo'
+      }
     },
     _idmoneda: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'moneda',
+        key: '_idmoneda'
+      }
     },
     _idcuentabancariaestado: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'cuenta_bancaria_estado',
+        key: '_idcuentabancariaestado'
+      }
     },
     numero: {
       type: DataTypes.STRING(20),

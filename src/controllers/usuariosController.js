@@ -97,6 +97,7 @@ export const createUsuario = async (req, res) => {
 
   var camposAdicionales = {};
   camposAdicionales.usuarioid = uuidv4();
+  camposAdicionales.code = uuidv4().split("-")[0];
 
   var camposAuditoria = {};
   camposAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
