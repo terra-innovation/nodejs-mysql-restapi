@@ -1,13 +1,8 @@
 import * as personaverificacionDao from "../../daos/personaverificacionDao.js";
 import * as personaverificacionestadoDao from "../../daos/personaverificacionestadoDao.js";
 import * as personaDao from "../../daos/personaDao.js";
-import * as documentotipoDao from "../../daos/documentotipoDao.js";
-import * as paisDao from "../../daos/paisDao.js";
-import * as provinciaDao from "../../daos/provinciaDao.js";
-import * as distritoDao from "../../daos/distritoDao.js";
-import * as generoDao from "../../daos/generoDao.js";
 import * as usuarioDao from "../../daos/usuarioDao.js";
-import * as archivoDao from "../../daos/archivoDao.js";
+import * as usuarioservicioDao from "../../daos/usuarioservicioDao.js";
 import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
@@ -200,6 +195,11 @@ export const createPersonaverificacion = async (req, res) => {
 
   await usuarioDao.updateUsuario(req, usuarioUpdate);
   logger.debug(line(), "usuarioUpdate");
+
+  /* Si la verificación tiene código 4 que es aprobado, se habilitan los servicios para que pueda suscribirse */
+  if (personaverificacionestado._idpersonaverificacionestado == 4) {
+    await usuarioservicioDao.habilitarServiciosParaUsuario(req, persona.usuario_usuario._idusuario);
+  }
 
   /* Prepara y envia un correo */
   const templateManager = new TemplateManager();

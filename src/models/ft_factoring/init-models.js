@@ -37,9 +37,13 @@ import _Provincia from "./Provincia.js";
 import _RegionNatural from "./RegionNatural.js";
 import _Riesgo from "./Riesgo.js";
 import _Rol from "./Rol.js";
+import _Servicio from "./Servicio.js";
 import _Usuario from "./Usuario.js";
 import _UsuarioEmpresa from "./UsuarioEmpresa.js";
 import _UsuarioRol from "./UsuarioRol.js";
+import _UsuarioServicio from "./UsuarioServicio.js";
+import _UsuarioServicioEstado from "./UsuarioServicioEstado.js";
+import _UsuarioServicioVerificacion from "./UsuarioServicioVerificacion.js";
 import _Validacion from "./Validacion.js";
 import _ValidacionTipo from "./ValidacionTipo.js";
 
@@ -81,9 +85,13 @@ export default function initModels(sequelize) {
   const RegionNatural = _RegionNatural.init(sequelize, DataTypes);
   const Riesgo = _Riesgo.init(sequelize, DataTypes);
   const Rol = _Rol.init(sequelize, DataTypes);
+  const Servicio = _Servicio.init(sequelize, DataTypes);
   const Usuario = _Usuario.init(sequelize, DataTypes);
   const UsuarioEmpresa = _UsuarioEmpresa.init(sequelize, DataTypes);
   const UsuarioRol = _UsuarioRol.init(sequelize, DataTypes);
+  const UsuarioServicio = _UsuarioServicio.init(sequelize, DataTypes);
+  const UsuarioServicioEstado = _UsuarioServicioEstado.init(sequelize, DataTypes);
+  const UsuarioServicioVerificacion = _UsuarioServicioVerificacion.init(sequelize, DataTypes);
   const Validacion = _Validacion.init(sequelize, DataTypes);
   const ValidacionTipo = _ValidacionTipo.init(sequelize, DataTypes);
 
@@ -141,8 +149,12 @@ export default function initModels(sequelize) {
   Factura.hasMany(FactoringFactura, { as: "factoring_facturas", foreignKey: "_idfactura" });
   FacturaImpuesto.belongsTo(Factura, { as: "factura_factura", foreignKey: "_idfactura" });
   Factura.hasMany(FacturaImpuesto, { as: "factura_impuestos", foreignKey: "_idfactura" });
+  FacturaItem.belongsTo(Factura, { as: "factura_factura", foreignKey: "_idfactura" });
+  Factura.hasMany(FacturaItem, { as: "factura_items", foreignKey: "_idfactura" });
   FacturaMedioPago.belongsTo(Factura, { as: "factura_factura", foreignKey: "_idfactura" });
   Factura.hasMany(FacturaMedioPago, { as: "factura_medio_pagos", foreignKey: "_idfactura" });
+  FacturaNota.belongsTo(Factura, { as: "factura_factura", foreignKey: "_idfactura" });
+  Factura.hasMany(FacturaNota, { as: "factura_nota", foreignKey: "_idfactura" });
   FacturaTerminoPago.belongsTo(Factura, { as: "factura_factura", foreignKey: "_idfactura" });
   Factura.hasMany(FacturaTerminoPago, { as: "factura_termino_pagos", foreignKey: "_idfactura" });
   Persona.belongsTo(Genero, { as: "genero_genero", foreignKey: "_idgenero" });
@@ -151,6 +163,8 @@ export default function initModels(sequelize) {
   Moneda.hasMany(CuentaBancaria, { as: "cuenta_bancaria", foreignKey: "_idmoneda" });
   Factoring.belongsTo(Moneda, { as: "moneda_moneda", foreignKey: "_idmoneda" });
   Moneda.hasMany(Factoring, { as: "factorings", foreignKey: "_idmoneda" });
+  Departamento.belongsTo(Pais, { as: "pais_pai", foreignKey: "_idpais" });
+  Pais.hasMany(Departamento, { as: "departamentos", foreignKey: "_idpais" });
   Persona.belongsTo(Pais, { as: "paisnacionalidad_pai", foreignKey: "_idpaisnacionalidad" });
   Pais.hasMany(Persona, { as: "personas", foreignKey: "_idpaisnacionalidad" });
   Persona.belongsTo(Pais, { as: "paisnacimiento_pai", foreignKey: "_idpaisnacimiento" });
@@ -187,6 +201,8 @@ export default function initModels(sequelize) {
   Riesgo.hasMany(Factoring, { as: "riesgocedente_factorings", foreignKey: "_idriesgocedente" });
   UsuarioRol.belongsTo(Rol, { as: "rol_rol", foreignKey: "_idrol" });
   Rol.hasMany(UsuarioRol, { as: "usuario_rols", foreignKey: "_idrol" });
+  UsuarioServicio.belongsTo(Servicio, { as: "servicio_servicio", foreignKey: "_idservicio" });
+  Servicio.hasMany(UsuarioServicio, { as: "usuario_servicios", foreignKey: "_idservicio" });
   Factoring.belongsTo(Usuario, { as: "contactocedente_usuario", foreignKey: "_idcontactocedente" });
   Usuario.hasMany(Factoring, { as: "factorings", foreignKey: "_idcontactocedente" });
   Persona.belongsTo(Usuario, { as: "usuario_usuario", foreignKey: "_idusuario" });
@@ -197,8 +213,18 @@ export default function initModels(sequelize) {
   Usuario.hasMany(UsuarioEmpresa, { as: "usuario_empresas", foreignKey: "_idusuario" });
   UsuarioRol.belongsTo(Usuario, { as: "usuario_usuario", foreignKey: "_idusuario" });
   Usuario.hasMany(UsuarioRol, { as: "usuario_rols", foreignKey: "_idusuario" });
+  UsuarioServicio.belongsTo(Usuario, { as: "usuario_usuario", foreignKey: "_idusuario" });
+  Usuario.hasMany(UsuarioServicio, { as: "usuario_servicios", foreignKey: "_idusuario" });
+  UsuarioServicioVerificacion.belongsTo(Usuario, { as: "usuarioverifica_usuario", foreignKey: "_idusuarioverifica" });
+  Usuario.hasMany(UsuarioServicioVerificacion, { as: "usuario_servicio_verificacions", foreignKey: "_idusuarioverifica" });
   Validacion.belongsTo(Usuario, { as: "usuario_usuario", foreignKey: "_idusuario" });
   Usuario.hasMany(Validacion, { as: "validacions", foreignKey: "_idusuario" });
+  UsuarioServicioVerificacion.belongsTo(UsuarioServicio, { as: "usuarioservicio_usuario_servicio", foreignKey: "_idusuarioservicio" });
+  UsuarioServicio.hasMany(UsuarioServicioVerificacion, { as: "usuario_servicio_verificacions", foreignKey: "_idusuarioservicio" });
+  UsuarioServicio.belongsTo(UsuarioServicioEstado, { as: "usuarioservicioestado_usuario_servicio_estado", foreignKey: "_idusuarioservicioestado" });
+  UsuarioServicioEstado.hasMany(UsuarioServicio, { as: "usuario_servicios", foreignKey: "_idusuarioservicioestado" });
+  UsuarioServicioVerificacion.belongsTo(UsuarioServicioEstado, { as: "usuarioservicioestado_usuario_servicio_estado", foreignKey: "_idusuarioservicioestado" });
+  UsuarioServicioEstado.hasMany(UsuarioServicioVerificacion, { as: "usuario_servicio_verificacions", foreignKey: "_idusuarioservicioestado" });
   Validacion.belongsTo(ValidacionTipo, { as: "validaciontipo_validacion_tipo", foreignKey: "_idvalidaciontipo" });
   ValidacionTipo.hasMany(Validacion, { as: "validacions", foreignKey: "_idvalidaciontipo" });
 
@@ -240,9 +266,13 @@ export default function initModels(sequelize) {
     RegionNatural,
     Riesgo,
     Rol,
+    Servicio,
     Usuario,
     UsuarioEmpresa,
     UsuarioRol,
+    UsuarioServicio,
+    UsuarioServicioEstado,
+    UsuarioServicioVerificacion,
     Validacion,
     ValidacionTipo,
   };

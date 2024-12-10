@@ -12,13 +12,21 @@ const menuFormulario = {
       icon: "IdcardOutlined",
       breadcrumbs: true,
     },
+    {
+      id: "usuario-servicio-lista",
+      title: "Servicios",
+      type: "item",
+      url: "/usuario/servicio/lista",
+      icon: "IdcardOutlined",
+      breadcrumbs: true,
+    },
   ],
 };
 
 const menuTitulo = {
   id: "usuario-menu",
   type: "group",
-  title: "Menu EmUsuario",
+  title: "Menu Usuario",
 };
 
 export const menuUsuario = [

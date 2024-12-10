@@ -5,10 +5,10 @@ export default class FacturaNota extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
     _idfacturanota: {
+      autoIncrement: true,
       type: DataTypes.BIGINT,
       allowNull: false,
-      primaryKey: true,
-      autoIncrement: true
+      primaryKey: true
     },
     facturanotaid: {
       type: DataTypes.STRING(50),
@@ -17,7 +17,11 @@ export default class FacturaNota extends Model {
     },
     _idfactura: {
       type: DataTypes.BIGINT,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'factura',
+        key: '_idfactura'
+      }
     },
     id: {
       type: DataTypes.STRING(20),

@@ -1,23 +1,32 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class PepVinculo extends Model {
+export default class Servicio extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    _idpepvinculo: {
+    _idservicio: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    pepvinculoid: {
+    servicioid: {
       type: DataTypes.STRING(50),
       allowNull: false,
       defaultValue: Sequelize.Sequelize.fn('uuid'),
-      unique: "UQ_pepvinculoid"
+      unique: "UQ_servicio_servicioid"
     },
-    nombrepepvinculo: {
-      type: DataTypes.STRING(200),
+    code: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
+      unique: "UQ_servicio_code"
+    },
+    nombre: {
+      type: DataTypes.STRING(50),
+      allowNull: false
+    },
+    alias: {
+      type: DataTypes.STRING(50),
       allowNull: false
     },
     idusuariocrea: {
@@ -47,7 +56,7 @@ export default class PepVinculo extends Model {
     }
   }, {
     sequelize,
-    tableName: 'pep_vinculo',
+    tableName: 'servicio',
     timestamps: false,
     indexes: [
       {
@@ -55,15 +64,23 @@ export default class PepVinculo extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idpepvinculo" },
+          { name: "_idservicio" },
         ]
       },
       {
-        name: "UQ_pepvinculoid",
+        name: "UQ_servicio_servicioid",
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "pepvinculoid" },
+          { name: "servicioid" },
+        ]
+      },
+      {
+        name: "UQ_servicio_code",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "code" },
         ]
       },
     ]
