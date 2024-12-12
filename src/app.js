@@ -29,6 +29,7 @@ import admin_personaverificacionRoutes from "./routes/admin/personaverificacion.
 import usuario_personaRoutes from "./routes/usuario/persona.routes.js";
 import usuario_personapepdirectoRoutes from "./routes/usuario/personapepdirecto.routes.js";
 import usuario_personapepindirectoRoutes from "./routes/usuario/personapepindirecto.routes.js";
+import usuario_usuarioservicioRoutes from "./routes/usuario/usuarioservicio.routes.js";
 
 import secureRoutes from "./routes/secure/secure.routes.js";
 import { customResponseError } from "./utils/CustomResponseError.js";
@@ -89,6 +90,7 @@ app.use("/api/v1", admin_personaverificacionRoutes);
 app.use("/api/v1", usuario_personaRoutes);
 app.use("/api/v1", usuario_personapepdirectoRoutes);
 app.use("/api/v1", usuario_personapepindirectoRoutes);
+app.use("/api/v1", usuario_usuarioservicioRoutes);
 app.use("/api/v1", secureRoutes);
 
 // Para cuando no existe la ruta

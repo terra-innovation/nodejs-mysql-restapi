@@ -4,6 +4,43 @@ import logger, { line } from "../utils/logger.js";
 
 import { v4 as uuidv4 } from "uuid";
 
+export const getUsuarioserviciosByIdusuario = async (req, idusuario, estados) => {
+  try {
+    const { models } = req.app.locals;
+    const usuarioservicios = await models.UsuarioServicio.findAll({
+      include: [
+        {
+          model: models.Usuario,
+          required: true,
+          as: "usuario_usuario",
+        },
+        {
+          model: models.Servicio,
+          required: true,
+          as: "servicio_servicio",
+        },
+        {
+          model: models.UsuarioServicioEstado,
+          required: true,
+          as: "usuarioservicioestado_usuario_servicio_estado",
+        },
+      ],
+      where: {
+        _idusuario: idusuario,
+        estado: {
+          [Sequelize.Op.in]: estados,
+        },
+      },
+    });
+    //logger.info(line(),usuarioservicios);
+    return usuarioservicios;
+  } catch (error) {
+    logger.error(line(), error.original.code);
+    logger.error(line(), error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const habilitarServiciosParaUsuario = async (req, idusuario) => {
   try {
     const { models } = req.app.locals;

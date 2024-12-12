@@ -29,6 +29,10 @@ export default class Servicio extends Model {
       type: DataTypes.STRING(50),
       allowNull: false
     },
+    descripcion: {
+      type: DataTypes.STRING(500),
+      allowNull: false
+    },
     idusuariocrea: {
       type: DataTypes.INTEGER,
       allowNull: false,
