@@ -16,7 +16,7 @@ const menuFormulario = {
       id: "usuario-servicio-lista",
       title: "Servicios",
       type: "item",
-      url: "/usuario/servicio/lista",
+      url: "/usuario/usuarioservicio/lista",
       icon: "IdcardOutlined",
       breadcrumbs: true,
     },
