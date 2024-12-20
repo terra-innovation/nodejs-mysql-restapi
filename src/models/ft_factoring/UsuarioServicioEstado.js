@@ -15,6 +15,11 @@ export default class UsuarioServicioEstado extends Model {
       defaultValue: Sequelize.Sequelize.fn('uuid'),
       unique: "UQ_usuarioservicioestado_usuarioservicioestadoid"
     },
+    code: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
+      unique: "UQ_usuarioservicioestado_code"
+    },
     nombre: {
       type: DataTypes.STRING(50),
       allowNull: false
@@ -71,6 +76,14 @@ export default class UsuarioServicioEstado extends Model {
         using: "BTREE",
         fields: [
           { name: "usuarioservicioestadoid" },
+        ]
+      },
+      {
+        name: "UQ_usuarioservicioestado_code",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "code" },
         ]
       },
     ]

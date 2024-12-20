@@ -1,4 +1,5 @@
 import util from "util";
+import logger, { line } from "./logger.js";
 
 // Función para filtrar campos en un JSON
 export function filterFields(json, fields) {
@@ -99,6 +100,7 @@ export function ofuscarAtributosDefault(json) {
   jsonOfuscado = ofuscarAtributos(jsonOfuscado, ["nombrecolaborador", "usuarionombres", "apellidopaterno", "apellidomaterno"], PATRON_OFUSCAR_NOMBRE);
   jsonOfuscado = ofuscarAtributos(jsonOfuscado, ["telefono", "celular", "documentonumero"], PATRON_OFUSCAR_TELEFONO);
   jsonOfuscado = ofuscarAtributos(jsonOfuscado, ["numero", "cci"], PATRON_OFUSCAR_CUENTA);
+  jsonOfuscado = ofuscarAtributos(jsonOfuscado, ["password"], PATRON_OFUSCAR_PASSWORD);
   return jsonOfuscado;
 }
 
@@ -126,6 +128,8 @@ export function ofuscarAtributos(objeto, atributosOfuscar, patron) {
             valorOfuscado = ofuscarTelefono(valor);
           } else if (patron === PATRON_OFUSCAR_NOMBRE) {
             valorOfuscado = ofuscarNombre(valor);
+          } else if (patron === PATRON_OFUSCAR_PASSWORD) {
+            valorOfuscado = ofuscarPassword(valor);
           } else {
             // Si el patrón no es reconocido, mantener el valor sin cambios
             valorOfuscado = valor;
@@ -160,6 +164,14 @@ export function ofuscarEmail(email) {
     const medioOfuscado = "*".repeat(nombreUsuario.length - 2);
     return primeraLetra + medioOfuscado + ultimaLetra + "@" + dominio;
   }
+}
+
+export function ofuscarPassword(password) {
+  // Verifica si el texto tiene al menos 10 caracteres
+  if (password && password.length <= 0) {
+    return password;
+  }
+  return "*** *** ***";
 }
 
 export function ofuscarCuenta(cuenta) {
@@ -220,3 +232,4 @@ export const PATRON_OFUSCAR_EMAIL = "OFUSCAR_EMAIL";
 export const PATRON_OFUSCAR_CUENTA = "OFUSCAR_CUENTA";
 export const PATRON_OFUSCAR_TELEFONO = "OFUSCAR_TELEFONO";
 export const PATRON_OFUSCAR_NOMBRE = "OFUSCAR_NOMBRE";
+export const PATRON_OFUSCAR_PASSWORD = "OFUSCAR_PASSWORD";

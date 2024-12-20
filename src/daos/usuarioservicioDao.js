@@ -124,6 +124,23 @@ export const getUsuarioservicioByUsuarioservicioid = async (req, usuarioservicio
   try {
     const { models } = req.app.locals;
     const usuarioservicio = await models.UsuarioServicio.findOne({
+      include: [
+        {
+          model: models.Usuario,
+          required: true,
+          as: "usuario_usuario",
+        },
+        {
+          model: models.Servicio,
+          required: true,
+          as: "servicio_servicio",
+        },
+        {
+          model: models.UsuarioServicioEstado,
+          required: true,
+          as: "usuarioservicioestado_usuario_servicio_estado",
+        },
+      ],
       where: {
         usuarioservicioid: usuarioservicioid,
       },

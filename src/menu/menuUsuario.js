@@ -20,6 +20,14 @@ const menuFormulario = {
       icon: "IdcardOutlined",
       breadcrumbs: true,
     },
+    {
+      id: "usuario-servicio-suscripcion-empresafactoring",
+      title: "Suscripción empresa factoring",
+      type: "item",
+      url: "/usuario/usuarioservicio/suscripcion/empresafactoring",
+      icon: "IdcardOutlined",
+      breadcrumbs: true,
+    },
   ],
 };
 
