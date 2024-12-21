@@ -3,6 +3,9 @@ import * as documentotipoDao from "../../daos/documentotipoDao.js";
 import * as paisDao from "../../daos/paisDao.js";
 import * as provinciaDao from "../../daos/provinciaDao.js";
 import * as distritoDao from "../../daos/distritoDao.js";
+import * as bancoDao from "../../daos/bancoDao.js";
+import * as cuentatipoDao from "../../daos/cuentatipoDao.js";
+import * as monedaDao from "../../daos/monedaDao.js";
 import * as generoDao from "../../daos/generoDao.js";
 import * as usuarioDao from "../../daos/usuarioDao.js";
 import { response } from "../../utils/CustomResponseOk.js";
@@ -32,10 +35,19 @@ export const getUsuarioservicioMaster = async (req, res) => {
   const filter_estados = [1];
 
   const usuarioservicio = await usuarioservicioDao.getUsuarioservicioByUsuarioservicioid(req, usuarioservicioValidated.usuarioservicioid);
+  const paises = await paisDao.getPaises(req, filter_estados);
+  const distritos = await distritoDao.getDistritos(req, filter_estados);
+  const bancos = await bancoDao.getBancos(req, filter_estados);
+  const monedas = await monedaDao.getMonedas(req, filter_estados);
+  const cuentatipos = await cuentatipoDao.getCuentatipos(req, filter_estados);
 
   let usuarioservicioMaster = {};
-
   usuarioservicioMaster.usuarioservicio = usuarioservicio;
+  usuarioservicioMaster.paises = paises;
+  usuarioservicioMaster.distritos = distritos;
+  usuarioservicioMaster.bancos = bancos;
+  usuarioservicioMaster.monedas = monedas;
+  usuarioservicioMaster.cuentatipos = cuentatipos;
 
   let usuarioservicioMasterJSON = jsonUtils.sequelizeToJSON(usuarioservicioMaster);
   //jsonUtils.prettyPrint(usuarioservicioMasterJSON);
