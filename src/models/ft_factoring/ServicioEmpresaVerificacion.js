@@ -1,27 +1,38 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class UsuarioServicio extends Model {
+export default class ServicioEmpresaVerificacion extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    _idusuarioservicio: {
-      autoIncrement: true,
+    _idservicioempresaverificacion: {
       type: DataTypes.BIGINT,
       allowNull: false,
       primaryKey: true
     },
-    usuarioservicioid: {
+    servicioempresaverificacionid: {
       type: DataTypes.STRING(50),
       allowNull: false,
       defaultValue: Sequelize.Sequelize.fn('uuid'),
-      unique: "UQ_usuarioservicio_usuarioservicioid"
+      unique: "UQ_servicioempresaverificacion_servicioempresaverificacionid"
     },
-    code: {
-      type: DataTypes.STRING(20),
+    _idservicioempresa: {
+      type: DataTypes.BIGINT,
       allowNull: false,
-      unique: "UQ_usuarioservicio_code"
+      defaultValue: 0,
+      references: {
+        model: 'servicio_empresa',
+        key: '_idservicioempresa'
+      }
     },
-    _idusuario: {
+    _idservicioempresaestado: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'servicio_empresa_estado',
+        key: '_idservicioempresaestado'
+      }
+    },
+    _idusuarioverifica: {
       type: DataTypes.BIGINT,
       allowNull: false,
       references: {
@@ -29,21 +40,13 @@ export default class UsuarioServicio extends Model {
         key: '_idusuario'
       }
     },
-    _idservicio: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'servicio',
-        key: '_idservicio'
-      }
+    comentariousuario: {
+      type: DataTypes.TEXT,
+      allowNull: false
     },
-    _idusuarioservicioestado: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'usuario_servicio_estado',
-        key: '_idusuarioservicioestado'
-      }
+    comentariointerno: {
+      type: DataTypes.TEXT,
+      allowNull: false
     },
     idusuariocrea: {
       type: DataTypes.INTEGER,
@@ -72,7 +75,7 @@ export default class UsuarioServicio extends Model {
     }
   }, {
     sequelize,
-    tableName: 'usuario_servicio',
+    tableName: 'servicio_empresa_verificacion',
     timestamps: false,
     indexes: [
       {
@@ -80,46 +83,36 @@ export default class UsuarioServicio extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idusuarioservicio" },
+          { name: "_idservicioempresaverificacion" },
         ]
       },
       {
-        name: "UQ_usuarioservicio_usuarioservicioid",
+        name: "UQ_servicioempresaverificacion_servicioempresaverificacionid",
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "usuarioservicioid" },
+          { name: "servicioempresaverificacionid" },
         ]
       },
       {
-        name: "UQ_usuarioservicio_idusuario__idservicio",
-        unique: true,
+        name: "FK_servicioempresaverificacion_idservicioempresa",
         using: "BTREE",
         fields: [
-          { name: "_idusuario" },
-          { name: "_idservicio" },
+          { name: "_idservicioempresa" },
         ]
       },
       {
-        name: "UQ_usuarioservicio_code",
-        unique: true,
+        name: "FK_servicioempresaverificacion_idservicioempresaestado",
         using: "BTREE",
         fields: [
-          { name: "code" },
+          { name: "_idservicioempresaestado" },
         ]
       },
       {
-        name: "FK_usuarioservicio_idservicio",
+        name: "FK_servicioempresaverificacion_idusuarioverifica",
         using: "BTREE",
         fields: [
-          { name: "_idservicio" },
-        ]
-      },
-      {
-        name: "FK_usuarioservicio_idusuarioservicioestado",
-        using: "BTREE",
-        fields: [
-          { name: "_idusuarioservicioestado" },
+          { name: "_idusuarioverifica" },
         ]
       },
     ]

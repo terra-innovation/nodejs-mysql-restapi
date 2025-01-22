@@ -1,25 +1,24 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class Servicio extends Model {
+export default class ServicioEmpresaEstado extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    _idservicio: {
-      autoIncrement: true,
+    _idservicioempresaestado: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    servicioid: {
+    servicioempresaestadoid: {
       type: DataTypes.STRING(50),
       allowNull: false,
       defaultValue: Sequelize.Sequelize.fn('uuid'),
-      unique: "UQ_servicio_servicioid"
+      unique: "UQ_servicioempresaestado_servicioempresaestadoid"
     },
     code: {
       type: DataTypes.STRING(20),
       allowNull: false,
-      unique: "UQ_servicio_code"
+      unique: "UQ_servicioempresaestado_code"
     },
     nombre: {
       type: DataTypes.STRING(50),
@@ -29,12 +28,8 @@ export default class Servicio extends Model {
       type: DataTypes.STRING(50),
       allowNull: false
     },
-    descripcion: {
-      type: DataTypes.STRING(500),
-      allowNull: false
-    },
-    urlcontrato: {
-      type: DataTypes.STRING(500),
+    color: {
+      type: DataTypes.STRING(50),
       allowNull: false
     },
     idusuariocrea: {
@@ -64,7 +59,7 @@ export default class Servicio extends Model {
     }
   }, {
     sequelize,
-    tableName: 'servicio',
+    tableName: 'servicio_empresa_estado',
     timestamps: false,
     indexes: [
       {
@@ -72,19 +67,19 @@ export default class Servicio extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idservicio" },
+          { name: "_idservicioempresaestado" },
         ]
       },
       {
-        name: "UQ_servicio_servicioid",
+        name: "UQ_servicioempresaestado_servicioempresaestadoid",
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "servicioid" },
+          { name: "servicioempresaestadoid" },
         ]
       },
       {
-        name: "UQ_servicio_code",
+        name: "UQ_servicioempresaestado_code",
         unique: true,
         using: "BTREE",
         fields: [

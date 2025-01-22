@@ -17,11 +17,39 @@ export default class Colaborador extends Model {
     },
     _idempresa: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'empresa',
         key: '_idempresa'
       }
+    },
+    _idpersona: {
+      type: DataTypes.BIGINT,
+      allowNull: true,
+      references: {
+        model: 'persona',
+        key: '_idpersona'
+      }
+    },
+    _idcolaboradortipo: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'colaborador_tipo',
+        key: '_idcolaboradortipo'
+      }
+    },
+    _iddocumentotipo: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'documento_tipo',
+        key: '_iddocumentotipo'
+      }
+    },
+    documentonumero: {
+      type: DataTypes.STRING(50),
+      allowNull: true
     },
     nombrecolaborador: {
       type: DataTypes.STRING(100),
@@ -37,6 +65,14 @@ export default class Colaborador extends Model {
     },
     telefono: {
       type: DataTypes.STRING(20),
+      allowNull: false
+    },
+    poderpartidanumero: {
+      type: DataTypes.STRING(20),
+      allowNull: false
+    },
+    poderpartidaciudad: {
+      type: DataTypes.STRING(50),
       allowNull: false
     },
     idusuariocrea: {
@@ -82,6 +118,27 @@ export default class Colaborador extends Model {
         using: "BTREE",
         fields: [
           { name: "_idempresa" },
+        ]
+      },
+      {
+        name: "FK_colaborador_idcolaboradortipo",
+        using: "BTREE",
+        fields: [
+          { name: "_idcolaboradortipo" },
+        ]
+      },
+      {
+        name: "FK_colaborador_iddocumentotipo",
+        using: "BTREE",
+        fields: [
+          { name: "_iddocumentotipo" },
+        ]
+      },
+      {
+        name: "FK_colaborador_idpersona",
+        using: "BTREE",
+        fields: [
+          { name: "_idpersona" },
         ]
       },
     ]

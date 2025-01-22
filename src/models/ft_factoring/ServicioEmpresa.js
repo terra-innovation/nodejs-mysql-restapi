@@ -1,33 +1,24 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class UsuarioServicio extends Model {
+export default class ServicioEmpresa extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    _idusuarioservicio: {
-      autoIncrement: true,
+    _idservicioempresa: {
       type: DataTypes.BIGINT,
       allowNull: false,
       primaryKey: true
     },
-    usuarioservicioid: {
+    servicioempresaid: {
       type: DataTypes.STRING(50),
       allowNull: false,
       defaultValue: Sequelize.Sequelize.fn('uuid'),
-      unique: "UQ_usuarioservicio_usuarioservicioid"
+      unique: "UQ_servicioempresa_servicioempresaid"
     },
     code: {
       type: DataTypes.STRING(20),
       allowNull: false,
-      unique: "UQ_usuarioservicio_code"
-    },
-    _idusuario: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-      references: {
-        model: 'usuario',
-        key: '_idusuario'
-      }
+      unique: "UQ_servicioempresa_code"
     },
     _idservicio: {
       type: DataTypes.INTEGER,
@@ -37,12 +28,20 @@ export default class UsuarioServicio extends Model {
         key: '_idservicio'
       }
     },
-    _idusuarioservicioestado: {
+    _idempresa: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'usuario_servicio_estado',
-        key: '_idusuarioservicioestado'
+        model: 'empresa',
+        key: '_idempresa'
+      }
+    },
+    _idservicioempresaestado: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'servicio_empresa_estado',
+        key: '_idservicioempresaestado'
       }
     },
     idusuariocrea: {
@@ -72,7 +71,7 @@ export default class UsuarioServicio extends Model {
     }
   }, {
     sequelize,
-    tableName: 'usuario_servicio',
+    tableName: 'servicio_empresa',
     timestamps: false,
     indexes: [
       {
@@ -80,28 +79,20 @@ export default class UsuarioServicio extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idusuarioservicio" },
+          { name: "_idservicioempresa" },
         ]
       },
       {
-        name: "UQ_usuarioservicio_usuarioservicioid",
+        name: "UQ_servicioempresa_idservicio__idempresa",
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "usuarioservicioid" },
-        ]
-      },
-      {
-        name: "UQ_usuarioservicio_idusuario__idservicio",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "_idusuario" },
           { name: "_idservicio" },
+          { name: "_idempresa" },
         ]
       },
       {
-        name: "UQ_usuarioservicio_code",
+        name: "UQ_servicioempresa_code",
         unique: true,
         using: "BTREE",
         fields: [
@@ -109,17 +100,25 @@ export default class UsuarioServicio extends Model {
         ]
       },
       {
-        name: "FK_usuarioservicio_idservicio",
+        name: "UQ_servicioempresa_servicioempresaid",
+        unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idservicio" },
+          { name: "servicioempresaid" },
         ]
       },
       {
-        name: "FK_usuarioservicio_idusuarioservicioestado",
+        name: "FK_servicioempresa_idempresa",
         using: "BTREE",
         fields: [
-          { name: "_idusuarioservicioestado" },
+          { name: "_idempresa" },
+        ]
+      },
+      {
+        name: "FK_servicioempresa_idservicioempresaestado",
+        using: "BTREE",
+        fields: [
+          { name: "_idservicioempresaestado" },
         ]
       },
     ]

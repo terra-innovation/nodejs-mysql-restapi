@@ -1,11 +1,15 @@
 import _sequelize from "sequelize";
 const DataTypes = _sequelize.DataTypes;
 import _Archivo from "./Archivo.js";
+import _ArchivoColaborador from "./ArchivoColaborador.js";
+import _ArchivoCuentaBancaria from "./ArchivoCuentaBancaria.js";
+import _ArchivoEmpresa from "./ArchivoEmpresa.js";
 import _ArchivoEstado from "./ArchivoEstado.js";
 import _ArchivoPersona from "./ArchivoPersona.js";
 import _ArchivoTipo from "./ArchivoTipo.js";
 import _Banco from "./Banco.js";
 import _Colaborador from "./Colaborador.js";
+import _ColaboradorTipo from "./ColaboradorTipo.js";
 import _CuentaBancaria from "./CuentaBancaria.js";
 import _CuentaBancariaEstado from "./CuentaBancariaEstado.js";
 import _CuentaTipo from "./CuentaTipo.js";
@@ -13,6 +17,8 @@ import _Departamento from "./Departamento.js";
 import _Distrito from "./Distrito.js";
 import _DocumentoTipo from "./DocumentoTipo.js";
 import _Empresa from "./Empresa.js";
+import _EmpresaCuentaBancaria from "./EmpresaCuentaBancaria.js";
+import _EmpresaDeclaracion from "./EmpresaDeclaracion.js";
 import _Factoring from "./Factoring.js";
 import _FactoringEstado from "./FactoringEstado.js";
 import _FactoringFactura from "./FactoringFactura.js";
@@ -28,6 +34,7 @@ import _Moneda from "./Moneda.js";
 import _Pais from "./Pais.js";
 import _PepVinculo from "./PepVinculo.js";
 import _Persona from "./Persona.js";
+import _PersonaCuentaBancaria from "./PersonaCuentaBancaria.js";
 import _PersonaDeclaracion from "./PersonaDeclaracion.js";
 import _PersonaPepDirecto from "./PersonaPepDirecto.js";
 import _PersonaPepIndirecto from "./PersonaPepIndirecto.js";
@@ -38,8 +45,14 @@ import _RegionNatural from "./RegionNatural.js";
 import _Riesgo from "./Riesgo.js";
 import _Rol from "./Rol.js";
 import _Servicio from "./Servicio.js";
+import _ServicioEmpresa from "./ServicioEmpresa.js";
+import _ServicioEmpresaEstado from "./ServicioEmpresaEstado.js";
+import _ServicioEmpresaVerificacion from "./ServicioEmpresaVerificacion.js";
 import _Usuario from "./Usuario.js";
 import _UsuarioEmpresa from "./UsuarioEmpresa.js";
+import _UsuarioEmpresaServicio from "./UsuarioEmpresaServicio.js";
+import _UsuarioEmpresaServicioEstado from "./UsuarioEmpresaServicioEstado.js";
+import _UsuarioEmpresaServicioRol from "./UsuarioEmpresaServicioRol.js";
 import _UsuarioRol from "./UsuarioRol.js";
 import _UsuarioServicio from "./UsuarioServicio.js";
 import _UsuarioServicioEstado from "./UsuarioServicioEstado.js";
@@ -49,11 +62,15 @@ import _ValidacionTipo from "./ValidacionTipo.js";
 
 export default function initModels(sequelize) {
   const Archivo = _Archivo.init(sequelize, DataTypes);
+  const ArchivoColaborador = _ArchivoColaborador.init(sequelize, DataTypes);
+  const ArchivoCuentaBancaria = _ArchivoCuentaBancaria.init(sequelize, DataTypes);
+  const ArchivoEmpresa = _ArchivoEmpresa.init(sequelize, DataTypes);
   const ArchivoEstado = _ArchivoEstado.init(sequelize, DataTypes);
   const ArchivoPersona = _ArchivoPersona.init(sequelize, DataTypes);
   const ArchivoTipo = _ArchivoTipo.init(sequelize, DataTypes);
   const Banco = _Banco.init(sequelize, DataTypes);
   const Colaborador = _Colaborador.init(sequelize, DataTypes);
+  const ColaboradorTipo = _ColaboradorTipo.init(sequelize, DataTypes);
   const CuentaBancaria = _CuentaBancaria.init(sequelize, DataTypes);
   const CuentaBancariaEstado = _CuentaBancariaEstado.init(sequelize, DataTypes);
   const CuentaTipo = _CuentaTipo.init(sequelize, DataTypes);
@@ -61,6 +78,8 @@ export default function initModels(sequelize) {
   const Distrito = _Distrito.init(sequelize, DataTypes);
   const DocumentoTipo = _DocumentoTipo.init(sequelize, DataTypes);
   const Empresa = _Empresa.init(sequelize, DataTypes);
+  const EmpresaCuentaBancaria = _EmpresaCuentaBancaria.init(sequelize, DataTypes);
+  const EmpresaDeclaracion = _EmpresaDeclaracion.init(sequelize, DataTypes);
   const Factoring = _Factoring.init(sequelize, DataTypes);
   const FactoringEstado = _FactoringEstado.init(sequelize, DataTypes);
   const FactoringFactura = _FactoringFactura.init(sequelize, DataTypes);
@@ -76,6 +95,7 @@ export default function initModels(sequelize) {
   const Pais = _Pais.init(sequelize, DataTypes);
   const PepVinculo = _PepVinculo.init(sequelize, DataTypes);
   const Persona = _Persona.init(sequelize, DataTypes);
+  const PersonaCuentaBancaria = _PersonaCuentaBancaria.init(sequelize, DataTypes);
   const PersonaDeclaracion = _PersonaDeclaracion.init(sequelize, DataTypes);
   const PersonaPepDirecto = _PersonaPepDirecto.init(sequelize, DataTypes);
   const PersonaPepIndirecto = _PersonaPepIndirecto.init(sequelize, DataTypes);
@@ -86,8 +106,14 @@ export default function initModels(sequelize) {
   const Riesgo = _Riesgo.init(sequelize, DataTypes);
   const Rol = _Rol.init(sequelize, DataTypes);
   const Servicio = _Servicio.init(sequelize, DataTypes);
+  const ServicioEmpresa = _ServicioEmpresa.init(sequelize, DataTypes);
+  const ServicioEmpresaEstado = _ServicioEmpresaEstado.init(sequelize, DataTypes);
+  const ServicioEmpresaVerificacion = _ServicioEmpresaVerificacion.init(sequelize, DataTypes);
   const Usuario = _Usuario.init(sequelize, DataTypes);
   const UsuarioEmpresa = _UsuarioEmpresa.init(sequelize, DataTypes);
+  const UsuarioEmpresaServicio = _UsuarioEmpresaServicio.init(sequelize, DataTypes);
+  const UsuarioEmpresaServicioEstado = _UsuarioEmpresaServicioEstado.init(sequelize, DataTypes);
+  const UsuarioEmpresaServicioRol = _UsuarioEmpresaServicioRol.init(sequelize, DataTypes);
   const UsuarioRol = _UsuarioRol.init(sequelize, DataTypes);
   const UsuarioServicio = _UsuarioServicio.init(sequelize, DataTypes);
   const UsuarioServicioEstado = _UsuarioServicioEstado.init(sequelize, DataTypes);
@@ -95,14 +121,30 @@ export default function initModels(sequelize) {
   const Validacion = _Validacion.init(sequelize, DataTypes);
   const ValidacionTipo = _ValidacionTipo.init(sequelize, DataTypes);
 
+  Archivo.belongsToMany(Colaborador, { as: "colaborador_colaboradors", through: ArchivoColaborador, foreignKey: "_idarchivo", otherKey: "_idcolaborador" });
+  Archivo.belongsToMany(CuentaBancaria, { as: "cuentabancaria_cuenta_bancaria", through: ArchivoCuentaBancaria, foreignKey: "_idarchivo", otherKey: "_idcuentabancaria" });
+  Archivo.belongsToMany(Empresa, { as: "empresa_empresas", through: ArchivoEmpresa, foreignKey: "_idarchivo", otherKey: "_idempresa" });
   Archivo.belongsToMany(Persona, { as: "persona_personas", through: ArchivoPersona, foreignKey: "_idarchivo", otherKey: "_idpersona" });
+  Colaborador.belongsToMany(Archivo, { as: "archivo_archivos", through: ArchivoColaborador, foreignKey: "_idcolaborador", otherKey: "_idarchivo" });
+  CuentaBancaria.belongsToMany(Archivo, { as: "archivo_archivo_archivo_cuenta_bancaria", through: ArchivoCuentaBancaria, foreignKey: "_idcuentabancaria", otherKey: "_idarchivo" });
+  CuentaBancaria.belongsToMany(Empresa, { as: "empresa_empresa_empresa_cuenta_bancaria", through: EmpresaCuentaBancaria, foreignKey: "_idcuentabancaria", otherKey: "_idempresa" });
+  CuentaBancaria.belongsToMany(Persona, { as: "persona_persona_persona_cuenta_bancaria", through: PersonaCuentaBancaria, foreignKey: "_idcuentabancaria", otherKey: "_idpersona" });
+  Empresa.belongsToMany(Archivo, { as: "archivo_archivo_archivo_empresas", through: ArchivoEmpresa, foreignKey: "_idempresa", otherKey: "_idarchivo" });
+  Empresa.belongsToMany(CuentaBancaria, { as: "cuentabancaria_cuenta_bancaria_empresa_cuenta_bancaria", through: EmpresaCuentaBancaria, foreignKey: "_idempresa", otherKey: "_idcuentabancaria" });
   Empresa.belongsToMany(Usuario, { as: "usuario_usuarios", through: UsuarioEmpresa, foreignKey: "_idempresa", otherKey: "_idusuario" });
   Factoring.belongsToMany(Factura, { as: "factura_facturas", through: FactoringFactura, foreignKey: "_idfactoring", otherKey: "_idfactura" });
   Factura.belongsToMany(Factoring, { as: "factoring_factorings", through: FactoringFactura, foreignKey: "_idfactura", otherKey: "_idfactoring" });
-  Persona.belongsToMany(Archivo, { as: "archivo_archivos", through: ArchivoPersona, foreignKey: "_idpersona", otherKey: "_idarchivo" });
+  Persona.belongsToMany(Archivo, { as: "archivo_archivo_archivo_personas", through: ArchivoPersona, foreignKey: "_idpersona", otherKey: "_idarchivo" });
+  Persona.belongsToMany(CuentaBancaria, { as: "cuentabancaria_cuenta_bancaria_persona_cuenta_bancaria", through: PersonaCuentaBancaria, foreignKey: "_idpersona", otherKey: "_idcuentabancaria" });
   Rol.belongsToMany(Usuario, { as: "usuario_usuario_usuario_rols", through: UsuarioRol, foreignKey: "_idrol", otherKey: "_idusuario" });
-  Usuario.belongsToMany(Empresa, { as: "empresa_empresas", through: UsuarioEmpresa, foreignKey: "_idusuario", otherKey: "_idempresa" });
+  Usuario.belongsToMany(Empresa, { as: "empresa_empresa_usuario_empresas", through: UsuarioEmpresa, foreignKey: "_idusuario", otherKey: "_idempresa" });
   Usuario.belongsToMany(Rol, { as: "rol_rols", through: UsuarioRol, foreignKey: "_idusuario", otherKey: "_idrol" });
+  ArchivoColaborador.belongsTo(Archivo, { as: "archivo_archivo", foreignKey: "_idarchivo" });
+  Archivo.hasMany(ArchivoColaborador, { as: "archivo_colaboradors", foreignKey: "_idarchivo" });
+  ArchivoCuentaBancaria.belongsTo(Archivo, { as: "archivo_archivo", foreignKey: "_idarchivo" });
+  Archivo.hasMany(ArchivoCuentaBancaria, { as: "archivo_cuenta_bancaria", foreignKey: "_idarchivo" });
+  ArchivoEmpresa.belongsTo(Archivo, { as: "archivo_archivo", foreignKey: "_idarchivo" });
+  Archivo.hasMany(ArchivoEmpresa, { as: "archivo_empresas", foreignKey: "_idarchivo" });
   ArchivoPersona.belongsTo(Archivo, { as: "archivo_archivo", foreignKey: "_idarchivo" });
   Archivo.hasMany(ArchivoPersona, { as: "archivo_personas", foreignKey: "_idarchivo" });
   Archivo.belongsTo(ArchivoEstado, { as: "archivoestado_archivo_estado", foreignKey: "_idarchivoestado" });
@@ -111,34 +153,56 @@ export default function initModels(sequelize) {
   ArchivoTipo.hasMany(Archivo, { as: "archivos", foreignKey: "_idarchivotipo" });
   CuentaBancaria.belongsTo(Banco, { as: "banco_banco", foreignKey: "_idbanco" });
   Banco.hasMany(CuentaBancaria, { as: "cuenta_bancaria", foreignKey: "_idbanco" });
+  ArchivoColaborador.belongsTo(Colaborador, { as: "colaborador_colaborador", foreignKey: "_idcolaborador" });
+  Colaborador.hasMany(ArchivoColaborador, { as: "archivo_colaboradors", foreignKey: "_idcolaborador" });
   Factoring.belongsTo(Colaborador, { as: "contactoaceptante_colaborador", foreignKey: "_idcontactoaceptante" });
   Colaborador.hasMany(Factoring, { as: "factorings", foreignKey: "_idcontactoaceptante" });
+  Colaborador.belongsTo(ColaboradorTipo, { as: "colaboradortipo_colaborador_tipo", foreignKey: "_idcolaboradortipo" });
+  ColaboradorTipo.hasMany(Colaborador, { as: "colaboradors", foreignKey: "_idcolaboradortipo" });
+  ArchivoCuentaBancaria.belongsTo(CuentaBancaria, { as: "cuentabancaria_cuenta_bancarium", foreignKey: "_idcuentabancaria" });
+  CuentaBancaria.hasMany(ArchivoCuentaBancaria, { as: "archivo_cuenta_bancaria", foreignKey: "_idcuentabancaria" });
+  EmpresaCuentaBancaria.belongsTo(CuentaBancaria, { as: "cuentabancaria_cuenta_bancarium", foreignKey: "_idcuentabancaria" });
+  CuentaBancaria.hasMany(EmpresaCuentaBancaria, { as: "empresa_cuenta_bancaria", foreignKey: "_idcuentabancaria" });
   Factoring.belongsTo(CuentaBancaria, { as: "cuentabancaria_cuenta_bancarium", foreignKey: "_idcuentabancaria" });
   CuentaBancaria.hasMany(Factoring, { as: "factorings", foreignKey: "_idcuentabancaria" });
+  PersonaCuentaBancaria.belongsTo(CuentaBancaria, { as: "cuentabancaria_cuenta_bancarium", foreignKey: "_idcuentabancaria" });
+  CuentaBancaria.hasMany(PersonaCuentaBancaria, { as: "persona_cuenta_bancaria", foreignKey: "_idcuentabancaria" });
   CuentaBancaria.belongsTo(CuentaBancariaEstado, { as: "cuentabancariaestado_cuenta_bancaria_estado", foreignKey: "_idcuentabancariaestado" });
   CuentaBancariaEstado.hasMany(CuentaBancaria, { as: "cuenta_bancaria", foreignKey: "_idcuentabancariaestado" });
   CuentaBancaria.belongsTo(CuentaTipo, { as: "cuentatipo_cuenta_tipo", foreignKey: "_idcuentatipo" });
   CuentaTipo.hasMany(CuentaBancaria, { as: "cuenta_bancaria", foreignKey: "_idcuentatipo" });
+  Empresa.belongsTo(Departamento, { as: "departamentosede_departamento", foreignKey: "_iddepartamentosede" });
+  Departamento.hasMany(Empresa, { as: "empresas", foreignKey: "_iddepartamentosede" });
   Persona.belongsTo(Departamento, { as: "departamentoresidencia_departamento", foreignKey: "_iddepartamentoresidencia" });
   Departamento.hasMany(Persona, { as: "personas", foreignKey: "_iddepartamentoresidencia" });
   Provincia.belongsTo(Departamento, { as: "departamento_departamento", foreignKey: "_iddepartamento" });
   Departamento.hasMany(Provincia, { as: "provincia", foreignKey: "_iddepartamento" });
+  Empresa.belongsTo(Distrito, { as: "distritosede_distrito", foreignKey: "_iddistritosede" });
+  Distrito.hasMany(Empresa, { as: "empresas", foreignKey: "_iddistritosede" });
   Persona.belongsTo(Distrito, { as: "distritoresidencia_distrito", foreignKey: "_iddistritoresidencia" });
   Distrito.hasMany(Persona, { as: "personas", foreignKey: "_iddistritoresidencia" });
+  Colaborador.belongsTo(DocumentoTipo, { as: "documentotipo_documento_tipo", foreignKey: "_iddocumentotipo" });
+  DocumentoTipo.hasMany(Colaborador, { as: "colaboradors", foreignKey: "_iddocumentotipo" });
   Persona.belongsTo(DocumentoTipo, { as: "documentotipo_documento_tipo", foreignKey: "_iddocumentotipo" });
   DocumentoTipo.hasMany(Persona, { as: "personas", foreignKey: "_iddocumentotipo" });
   Usuario.belongsTo(DocumentoTipo, { as: "documentotipo_documento_tipo", foreignKey: "_iddocumentotipo" });
   DocumentoTipo.hasMany(Usuario, { as: "usuarios", foreignKey: "_iddocumentotipo" });
+  ArchivoEmpresa.belongsTo(Empresa, { as: "empresa_empresa", foreignKey: "_idempresa" });
+  Empresa.hasMany(ArchivoEmpresa, { as: "archivo_empresas", foreignKey: "_idempresa" });
   Colaborador.belongsTo(Empresa, { as: "empresa_empresa", foreignKey: "_idempresa" });
   Empresa.hasMany(Colaborador, { as: "colaboradors", foreignKey: "_idempresa" });
-  CuentaBancaria.belongsTo(Empresa, { as: "empresa_empresa", foreignKey: "_idempresa" });
-  Empresa.hasMany(CuentaBancaria, { as: "cuenta_bancaria", foreignKey: "_idempresa" });
+  EmpresaCuentaBancaria.belongsTo(Empresa, { as: "empresa_empresa", foreignKey: "_idempresa" });
+  Empresa.hasMany(EmpresaCuentaBancaria, { as: "empresa_cuenta_bancaria", foreignKey: "_idempresa" });
   Factoring.belongsTo(Empresa, { as: "aceptante_empresa", foreignKey: "_idaceptante" });
   Empresa.hasMany(Factoring, { as: "factorings", foreignKey: "_idaceptante" });
   Factoring.belongsTo(Empresa, { as: "cedente_empresa", foreignKey: "_idcedente" });
   Empresa.hasMany(Factoring, { as: "cedente_factorings", foreignKey: "_idcedente" });
+  ServicioEmpresa.belongsTo(Empresa, { as: "empresa_empresa", foreignKey: "_idempresa" });
+  Empresa.hasMany(ServicioEmpresa, { as: "servicio_empresas", foreignKey: "_idempresa" });
   UsuarioEmpresa.belongsTo(Empresa, { as: "empresa_empresa", foreignKey: "_idempresa" });
   Empresa.hasMany(UsuarioEmpresa, { as: "usuario_empresas", foreignKey: "_idempresa" });
+  UsuarioEmpresaServicio.belongsTo(Empresa, { as: "empresa_empresa", foreignKey: "_idempresa" });
+  Empresa.hasMany(UsuarioEmpresaServicio, { as: "usuario_empresa_servicios", foreignKey: "_idempresa" });
   FactoringFactura.belongsTo(Factoring, { as: "factoring_factoring", foreignKey: "_idfactoring" });
   Factoring.hasMany(FactoringFactura, { as: "factoring_facturas", foreignKey: "_idfactoring" });
   Factoring.belongsTo(FactoringEstado, { as: "factoringestado_factoring_estado", foreignKey: "_idfactoringestado" });
@@ -165,6 +229,8 @@ export default function initModels(sequelize) {
   Moneda.hasMany(Factoring, { as: "factorings", foreignKey: "_idmoneda" });
   Departamento.belongsTo(Pais, { as: "pais_pai", foreignKey: "_idpais" });
   Pais.hasMany(Departamento, { as: "departamentos", foreignKey: "_idpais" });
+  Empresa.belongsTo(Pais, { as: "paissede_pai", foreignKey: "_idpaissede" });
+  Pais.hasMany(Empresa, { as: "empresas", foreignKey: "_idpaissede" });
   Persona.belongsTo(Pais, { as: "paisnacionalidad_pai", foreignKey: "_idpaisnacionalidad" });
   Pais.hasMany(Persona, { as: "personas", foreignKey: "_idpaisnacionalidad" });
   Persona.belongsTo(Pais, { as: "paisnacimiento_pai", foreignKey: "_idpaisnacimiento" });
@@ -175,6 +241,10 @@ export default function initModels(sequelize) {
   PepVinculo.hasMany(PersonaPepIndirecto, { as: "persona_pep_indirectos", foreignKey: "_idpepevinculo" });
   ArchivoPersona.belongsTo(Persona, { as: "persona_persona", foreignKey: "_idpersona" });
   Persona.hasMany(ArchivoPersona, { as: "archivo_personas", foreignKey: "_idpersona" });
+  Colaborador.belongsTo(Persona, { as: "persona_persona", foreignKey: "_idpersona" });
+  Persona.hasMany(Colaborador, { as: "colaboradors", foreignKey: "_idpersona" });
+  PersonaCuentaBancaria.belongsTo(Persona, { as: "persona_persona", foreignKey: "_idpersona" });
+  Persona.hasMany(PersonaCuentaBancaria, { as: "persona_cuenta_bancaria", foreignKey: "_idpersona" });
   PersonaDeclaracion.belongsTo(Persona, { as: "persona_persona", foreignKey: "_idpersona" });
   Persona.hasMany(PersonaDeclaracion, { as: "persona_declaracions", foreignKey: "_idpersona" });
   PersonaPepDirecto.belongsTo(Persona, { as: "persona_persona", foreignKey: "_idpersona" });
@@ -189,6 +259,8 @@ export default function initModels(sequelize) {
   PersonaVerificacionEstado.hasMany(Usuario, { as: "usuarios", foreignKey: "_idpersonaverificacionestado" });
   Distrito.belongsTo(Provincia, { as: "provincia_provincium", foreignKey: "_idprovincia" });
   Provincia.hasMany(Distrito, { as: "distritos", foreignKey: "_idprovincia" });
+  Empresa.belongsTo(Provincia, { as: "provinciasede_provincium", foreignKey: "_idprovinciasede" });
+  Provincia.hasMany(Empresa, { as: "empresas", foreignKey: "_idprovinciasede" });
   Persona.belongsTo(Provincia, { as: "provinciaresidencia_provincium", foreignKey: "_idprovinciaresidencia" });
   Provincia.hasMany(Persona, { as: "personas", foreignKey: "_idprovinciaresidencia" });
   Distrito.belongsTo(RegionNatural, { as: "regionnatural_region_natural", foreignKey: "_idregionnatural" });
@@ -201,16 +273,30 @@ export default function initModels(sequelize) {
   Riesgo.hasMany(Factoring, { as: "riesgocedente_factorings", foreignKey: "_idriesgocedente" });
   UsuarioRol.belongsTo(Rol, { as: "rol_rol", foreignKey: "_idrol" });
   Rol.hasMany(UsuarioRol, { as: "usuario_rols", foreignKey: "_idrol" });
+  ServicioEmpresa.belongsTo(Servicio, { as: "servicio_servicio", foreignKey: "_idservicio" });
+  Servicio.hasMany(ServicioEmpresa, { as: "servicio_empresas", foreignKey: "_idservicio" });
+  UsuarioEmpresaServicio.belongsTo(Servicio, { as: "servicio_servicio", foreignKey: "_idservicio" });
+  Servicio.hasMany(UsuarioEmpresaServicio, { as: "usuario_empresa_servicios", foreignKey: "_idservicio" });
   UsuarioServicio.belongsTo(Servicio, { as: "servicio_servicio", foreignKey: "_idservicio" });
   Servicio.hasMany(UsuarioServicio, { as: "usuario_servicios", foreignKey: "_idservicio" });
+  ServicioEmpresaVerificacion.belongsTo(ServicioEmpresa, { as: "servicioempresa_servicio_empresa", foreignKey: "_idservicioempresa" });
+  ServicioEmpresa.hasMany(ServicioEmpresaVerificacion, { as: "servicio_empresa_verificacions", foreignKey: "_idservicioempresa" });
+  ServicioEmpresa.belongsTo(ServicioEmpresaEstado, { as: "servicioempresaestado_servicio_empresa_estado", foreignKey: "_idservicioempresaestado" });
+  ServicioEmpresaEstado.hasMany(ServicioEmpresa, { as: "servicio_empresas", foreignKey: "_idservicioempresaestado" });
+  ServicioEmpresaVerificacion.belongsTo(ServicioEmpresaEstado, { as: "servicioempresaestado_servicio_empresa_estado", foreignKey: "_idservicioempresaestado" });
+  ServicioEmpresaEstado.hasMany(ServicioEmpresaVerificacion, { as: "servicio_empresa_verificacions", foreignKey: "_idservicioempresaestado" });
   Factoring.belongsTo(Usuario, { as: "contactocedente_usuario", foreignKey: "_idcontactocedente" });
   Usuario.hasMany(Factoring, { as: "factorings", foreignKey: "_idcontactocedente" });
   Persona.belongsTo(Usuario, { as: "usuario_usuario", foreignKey: "_idusuario" });
   Usuario.hasOne(Persona, { as: "persona", foreignKey: "_idusuario" });
   PersonaVerificacion.belongsTo(Usuario, { as: "usuarioverifica_usuario", foreignKey: "_idusuarioverifica" });
   Usuario.hasMany(PersonaVerificacion, { as: "persona_verificacions", foreignKey: "_idusuarioverifica" });
+  ServicioEmpresaVerificacion.belongsTo(Usuario, { as: "usuarioverifica_usuario", foreignKey: "_idusuarioverifica" });
+  Usuario.hasMany(ServicioEmpresaVerificacion, { as: "servicio_empresa_verificacions", foreignKey: "_idusuarioverifica" });
   UsuarioEmpresa.belongsTo(Usuario, { as: "usuario_usuario", foreignKey: "_idusuario" });
   Usuario.hasMany(UsuarioEmpresa, { as: "usuario_empresas", foreignKey: "_idusuario" });
+  UsuarioEmpresaServicio.belongsTo(Usuario, { as: "usuario_usuario", foreignKey: "_idusuario" });
+  Usuario.hasMany(UsuarioEmpresaServicio, { as: "usuario_empresa_servicios", foreignKey: "_idusuario" });
   UsuarioRol.belongsTo(Usuario, { as: "usuario_usuario", foreignKey: "_idusuario" });
   Usuario.hasMany(UsuarioRol, { as: "usuario_rols", foreignKey: "_idusuario" });
   UsuarioServicio.belongsTo(Usuario, { as: "usuario_usuario", foreignKey: "_idusuario" });
@@ -230,11 +316,15 @@ export default function initModels(sequelize) {
 
   return {
     Archivo,
+    ArchivoColaborador,
+    ArchivoCuentaBancaria,
+    ArchivoEmpresa,
     ArchivoEstado,
     ArchivoPersona,
     ArchivoTipo,
     Banco,
     Colaborador,
+    ColaboradorTipo,
     CuentaBancaria,
     CuentaBancariaEstado,
     CuentaTipo,
@@ -242,6 +332,8 @@ export default function initModels(sequelize) {
     Distrito,
     DocumentoTipo,
     Empresa,
+    EmpresaCuentaBancaria,
+    EmpresaDeclaracion,
     Factoring,
     FactoringEstado,
     FactoringFactura,
@@ -257,6 +349,7 @@ export default function initModels(sequelize) {
     Pais,
     PepVinculo,
     Persona,
+    PersonaCuentaBancaria,
     PersonaDeclaracion,
     PersonaPepDirecto,
     PersonaPepIndirecto,
@@ -267,8 +360,14 @@ export default function initModels(sequelize) {
     Riesgo,
     Rol,
     Servicio,
+    ServicioEmpresa,
+    ServicioEmpresaEstado,
+    ServicioEmpresaVerificacion,
     Usuario,
     UsuarioEmpresa,
+    UsuarioEmpresaServicio,
+    UsuarioEmpresaServicioEstado,
+    UsuarioEmpresaServicioRol,
     UsuarioRol,
     UsuarioServicio,
     UsuarioServicioEstado,

@@ -2,6 +2,55 @@ import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
+export const getCuentasbancariasByIdempresaAndAlias = async (req, idempresa, alias, estado) => {
+  try {
+    const { models } = req.app.locals;
+    const cuentasbancarias = await models.CuentaBancaria.findAll({
+      include: [
+        {
+          model: models.EmpresaCuentaBancaria,
+          required: true,
+          as: "empresa_cuenta_bancaria",
+          where: {
+            _idempresa: idempresa,
+          },
+        },
+        {
+          model: models.Banco,
+          required: true,
+          as: "banco_banco",
+        },
+        {
+          model: models.Moneda,
+          required: true,
+          as: "moneda_moneda",
+        },
+        {
+          model: models.CuentaTipo,
+          required: true,
+          as: "cuentatipo_cuenta_tipo",
+        },
+        {
+          model: models.CuentaBancariaEstado,
+          required: true,
+          as: "cuentabancariaestado_cuenta_bancaria_estado",
+        },
+      ],
+      where: {
+        alias: alias,
+        estado: {
+          [Sequelize.Op.in]: estado,
+        },
+      },
+    });
+    //logger.info(line(),cuentasbancarias);
+    return cuentasbancarias;
+  } catch (error) {
+    logger.error(line(), error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getCuentasbancariasByIdbancoAndNumero = async (req, idbanco, numero, estado) => {
   try {
     const { models } = req.app.locals;
@@ -10,7 +59,7 @@ export const getCuentasbancariasByIdbancoAndNumero = async (req, idbanco, numero
         {
           model: models.Empresa,
           required: true,
-          as: "empresa_empresa",
+          as: "empresa_empresa_empresa_cuenta_bancaria",
         },
         {
           model: models.Banco,

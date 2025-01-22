@@ -1,41 +1,26 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class Servicio extends Model {
+export default class ArchivoCuentaBancaria extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    _idservicio: {
-      autoIncrement: true,
+    _idarchivo: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      references: {
+        model: 'archivo',
+        key: '_idarchivo'
+      }
     },
-    servicioid: {
-      type: DataTypes.STRING(50),
+    _idcuentabancaria: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: Sequelize.Sequelize.fn('uuid'),
-      unique: "UQ_servicio_servicioid"
-    },
-    code: {
-      type: DataTypes.STRING(20),
-      allowNull: false,
-      unique: "UQ_servicio_code"
-    },
-    nombre: {
-      type: DataTypes.STRING(50),
-      allowNull: false
-    },
-    alias: {
-      type: DataTypes.STRING(50),
-      allowNull: false
-    },
-    descripcion: {
-      type: DataTypes.STRING(500),
-      allowNull: false
-    },
-    urlcontrato: {
-      type: DataTypes.STRING(500),
-      allowNull: false
+      primaryKey: true,
+      references: {
+        model: 'cuenta_bancaria',
+        key: '_idcuentabancaria'
+      }
     },
     idusuariocrea: {
       type: DataTypes.INTEGER,
@@ -64,7 +49,7 @@ export default class Servicio extends Model {
     }
   }, {
     sequelize,
-    tableName: 'servicio',
+    tableName: 'archivo_cuenta_bancaria',
     timestamps: false,
     indexes: [
       {
@@ -72,23 +57,15 @@ export default class Servicio extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idservicio" },
+          { name: "_idarchivo" },
+          { name: "_idcuentabancaria" },
         ]
       },
       {
-        name: "UQ_servicio_servicioid",
-        unique: true,
+        name: "FK_archivo_cuenta_bancaria_idcuentabancaria",
         using: "BTREE",
         fields: [
-          { name: "servicioid" },
-        ]
-      },
-      {
-        name: "UQ_servicio_code",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "code" },
+          { name: "_idcuentabancaria" },
         ]
       },
     ]

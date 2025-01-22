@@ -21,6 +21,38 @@ export default class Empresa extends Model {
       allowNull: false,
       unique: "UQ_code"
     },
+    _idpaissede: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'pais',
+        key: '_idpais'
+      }
+    },
+    _iddepartamentosede: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'departamento',
+        key: '_iddepartamento'
+      }
+    },
+    _idprovinciasede: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'provincia',
+        key: '_idprovincia'
+      }
+    },
+    _iddistritosede: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'distrito',
+        key: '_iddistrito'
+      }
+    },
     ruc: {
       type: DataTypes.STRING(11),
       allowNull: false,
@@ -39,6 +71,14 @@ export default class Empresa extends Model {
       allowNull: true
     },
     domicilio_fiscal: {
+      type: DataTypes.STRING(200),
+      allowNull: true
+    },
+    direccion_sede: {
+      type: DataTypes.STRING(200),
+      allowNull: true
+    },
+    direccion_sede_referencia: {
       type: DataTypes.STRING(200),
       allowNull: true
     },
@@ -106,6 +146,34 @@ export default class Empresa extends Model {
         using: "BTREE",
         fields: [
           { name: "ruc" },
+        ]
+      },
+      {
+        name: "FK_empresa_idpaissede",
+        using: "BTREE",
+        fields: [
+          { name: "_idpaissede" },
+        ]
+      },
+      {
+        name: "FK_empresa_iddepartamentosede",
+        using: "BTREE",
+        fields: [
+          { name: "_iddepartamentosede" },
+        ]
+      },
+      {
+        name: "FK_empresa_idprovinciasede",
+        using: "BTREE",
+        fields: [
+          { name: "_idprovinciasede" },
+        ]
+      },
+      {
+        name: "FK_empresa_iddistritosede",
+        using: "BTREE",
+        fields: [
+          { name: "_iddistritosede" },
         ]
       },
     ]
