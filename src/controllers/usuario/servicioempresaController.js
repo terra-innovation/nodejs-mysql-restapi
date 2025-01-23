@@ -17,7 +17,8 @@ import * as servicioempresaestadoDao from "../../daos/servicioempresaestadoDao.j
 import * as usuarioservicioempresaDao from "../../daos/usuarioservicioempresaDao.js";
 import * as usuarioservicioempresaestadoDao from "../../daos/usuarioservicioempresaestadoDao.js";
 import * as usuarioservicioempresarolDao from "../../daos/usuarioservicioempresarolDao.js";
-import * as archivopersonaDao from "../../daos/archivopersonaDao.js";
+import * as archivoDao from "../../daos/archivoDao.js";
+import * as archivoempresaDao from "../../daos/archivoempresaDao.js";
 import * as personaverificacionestadoDao from "../../daos/personaverificacionestadoDao.js";
 import * as generoDao from "../../daos/generoDao.js";
 import * as empresaDao from "../../daos/empresaDao.js";
@@ -358,6 +359,10 @@ export const suscribirEmpresaServicio = async (req, res) => {
 
   logger.debug(line(), "usuarioservicioempresaCreated:", usuarioservicioempresaCreated);
 
+  const ficharucCreated = await crearArchivoFichaRuc(req, empresaservicioValidated, empresaCreated);
+
+  logger.debug(line(), "ficharucCreated:", ficharucCreated);
+
   /*
 
   //let personaCreated = { _idpersona: 4 };
@@ -372,4 +377,52 @@ export const suscribirEmpresaServicio = async (req, res) => {
   }
 */
   response(res, 200, {});
+};
+
+const crearArchivoFichaRuc = async (req, empresaservicioValidated, empresaCreated) => {
+  //Copiamos el archivo
+  const { ficha_ruc } = empresaservicioValidated;
+  const { anio_upload, mes_upload, dia_upload, filename, path: archivoOrigen } = ficha_ruc[0];
+  const carpetaDestino = path.join(anio_upload, mes_upload, dia_upload);
+  const rutaDestino = path.join(storageUtils.STORAGE_PATH_SUCCESS, anio_upload, mes_upload, dia_upload, filename); // Crear la ruta completa del archivo de destino
+  fs.mkdirSync(path.dirname(rutaDestino), { recursive: true }); // Crear directorio si no existe
+  fs.copyFileSync(archivoOrigen, rutaDestino); // Copia el archivo
+
+  const { codigo_archivo, originalname, size, mimetype, encoding, extension } = ficha_ruc[0];
+
+  let camposArchivoNuevo = {
+    archivoid: uuidv4(),
+    _idarchivotipo: 4,
+    _idarchivoestado: 1,
+    codigo: codigo_archivo,
+    nombrereal: originalname,
+    nombrealmacenamiento: filename,
+    ruta: carpetaDestino,
+    tamanio: size,
+    mimetype: mimetype,
+    encoding: encoding,
+    extension: extension,
+    observacion: "",
+    fechavencimiento: null,
+    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    fechacrea: Sequelize.fn("now", 3),
+    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    fechamod: Sequelize.fn("now", 3),
+    estado: 1,
+  };
+  const archivoCreated = await archivoDao.insertArchivo(req, camposArchivoNuevo);
+
+  await archivoempresaDao.insertArchivoEmpresa(req, {
+    _idarchivo: archivoCreated._idarchivo,
+    _idempresa: empresaCreated._idempresa,
+    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    fechacrea: Sequelize.fn("now", 3),
+    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    fechamod: Sequelize.fn("now", 3),
+    estado: 1,
+  });
+
+  fs.unlinkSync(archivoOrigen);
+
+  return archivoCreated;
 };
