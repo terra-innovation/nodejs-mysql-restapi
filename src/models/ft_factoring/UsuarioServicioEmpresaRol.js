@@ -1,21 +1,34 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class ArchivoEstado extends Model {
+export default class UsuarioServicioEmpresaRol extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    _idarchivoestado: {
+    _idusuarioservicioempresarol: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true,
-      autoIncrement: true
+      primaryKey: true
     },
-    archivoestadoid: {
+    usuarioservicioempresarolid: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: Sequelize.Sequelize.fn('uuid')
+      defaultValue: Sequelize.Sequelize.fn('uuid'),
+      unique: "UQ_usuarioservicioempresarol_usuarioempresaserviciorolid"
+    },
+    code: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
+      unique: "UQ_usuarioservicioempresarol_code"
     },
     nombre: {
+      type: DataTypes.STRING(50),
+      allowNull: false
+    },
+    alias: {
+      type: DataTypes.STRING(50),
+      allowNull: false
+    },
+    color: {
       type: DataTypes.STRING(50),
       allowNull: false
     },
@@ -46,7 +59,7 @@ export default class ArchivoEstado extends Model {
     }
   }, {
     sequelize,
-    tableName: 'archivo_estado',
+    tableName: 'usuario_servicio_empresa_rol',
     timestamps: false,
     indexes: [
       {
@@ -54,15 +67,23 @@ export default class ArchivoEstado extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idarchivoestado" },
+          { name: "_idusuarioservicioempresarol" },
         ]
       },
       {
-        name: "UQ_archivoestadoid",
+        name: "UQ_usuarioservicioempresarol_code",
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "archivoestadoid" },
+          { name: "code" },
+        ]
+      },
+      {
+        name: "UQ_usuarioservicioempresarol_usuarioempresaserviciorolid",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "usuarioservicioempresarolid" },
         ]
       },
     ]

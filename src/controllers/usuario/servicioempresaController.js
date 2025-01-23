@@ -12,6 +12,11 @@ import * as cuentabancariaestadoDao from "../../daos/cuentabancariaestadoDao.js"
 import * as empresacuentabancariaDao from "../../daos/empresacuentabancariaDao.js";
 import * as colaboradortipoDao from "../../daos/colaboradortipoDao.js";
 import * as colaboradorDao from "../../daos/colaboradorDao.js";
+import * as servicioempresaDao from "../../daos/servicioempresaDao.js";
+import * as servicioempresaestadoDao from "../../daos/servicioempresaestadoDao.js";
+import * as usuarioservicioempresaDao from "../../daos/usuarioservicioempresaDao.js";
+import * as usuarioservicioempresaestadoDao from "../../daos/usuarioservicioempresaestadoDao.js";
+import * as usuarioservicioempresarolDao from "../../daos/usuarioservicioempresarolDao.js";
 import * as archivopersonaDao from "../../daos/archivopersonaDao.js";
 import * as personaverificacionestadoDao from "../../daos/personaverificacionestadoDao.js";
 import * as generoDao from "../../daos/generoDao.js";
@@ -33,7 +38,6 @@ import { Sequelize } from "sequelize";
 export const suscribirEmpresaServicio = async (req, res) => {
   const _idusuario = req.session_user?.usuario?._idusuario;
   const filter_estado = [1, 2];
-  let NAME_REGX = /^[a-zA-Z ]+$/;
   const empresaservicioSuscripcionSchema = yup
     .object()
     .shape({
@@ -152,6 +156,27 @@ export const suscribirEmpresaServicio = async (req, res) => {
   const cuentabancariaestado = await cuentabancariaestadoDao.getCuentaBancariaEstadoByIdcuentabancariaestado(req, cuentabancariaestado_pendiente);
   if (!cuentabancariaestado) {
     logger.warn(line(), "Cuenta bancaria estado no existe: [" + cuentabancariaestado_pendiente + "]");
+    throw new ClientError("Datos no válidos", 404);
+  }
+
+  const servicioempresaestado_en_revision = 1;
+  const servicioempresaestado = await servicioempresaestadoDao.getServicioempresaestadoByIdservicioempresaestado(req, servicioempresaestado_en_revision);
+  if (!servicioempresaestado) {
+    logger.warn(line(), "Servicio empresa estado no existe: [" + servicioempresaestado_en_revision + "]");
+    throw new ClientError("Datos no válidos", 404);
+  }
+
+  const usuarioservicioempresaestado_sin_acceso = 1;
+  const usuarioservicioempresaestado = await usuarioservicioempresaestadoDao.getUsuarioservicioempresaestadoByIdusuarioservicioempresaestado(req, usuarioservicioempresaestado_sin_acceso);
+  if (!usuarioservicioempresaestado) {
+    logger.warn(line(), "Usuario servicio empresa estado no existe: [" + usuarioservicioempresaestado_sin_acceso + "]");
+    throw new ClientError("Datos no válidos", 404);
+  }
+
+  const usuarioservicioempresarol_administrador = 1;
+  const usuarioservicioempresarol = await usuarioservicioempresarolDao.getUsuarioservicioempresarolByIdusuarioservicioempresarol(req, usuarioservicioempresarol_administrador);
+  if (!usuarioservicioempresarol) {
+    logger.warn(line(), "Usuario servicio empresa estado no existe: [" + usuarioservicioempresarol_administrador + "]");
     throw new ClientError("Datos no válidos", 404);
   }
 
@@ -277,6 +302,61 @@ export const suscribirEmpresaServicio = async (req, res) => {
   });
 
   logger.debug(line(), "empresacuentabancariaCreated:", empresacuentabancariaCreated);
+
+  /* Registramos el Servicio para la Empresa en la tabla servicio_empresa */
+
+  let camposServicioempresaNuevoFk = {};
+  camposServicioempresaNuevoFk._idservicio = 1;
+  camposServicioempresaNuevoFk._idempresa = empresaCreated._idempresa;
+  camposServicioempresaNuevoFk._idusuariosuscriptor = usuarioConected._idusuario;
+  camposServicioempresaNuevoFk._idservicioempresaestado = servicioempresaestado._idservicioempresaestado;
+
+  let camposServicioempresaNuevoAdicionales = {};
+  camposServicioempresaNuevoAdicionales.servicioempresaid = uuidv4();
+  camposServicioempresaNuevoAdicionales.code = uuidv4().split("-")[0];
+
+  let camposServicioempresaNuevoAuditoria = {};
+  camposServicioempresaNuevoAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
+  camposServicioempresaNuevoAuditoria.fechacrea = Sequelize.fn("now", 3);
+  camposServicioempresaNuevoAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
+  camposServicioempresaNuevoAuditoria.fechamod = Sequelize.fn("now", 3);
+  camposServicioempresaNuevoAuditoria.estado = 1;
+
+  const servicioempresaCreated = await servicioempresaDao.insertServicioempresa(req, {
+    ...camposServicioempresaNuevoFk,
+    ...camposServicioempresaNuevoAdicionales,
+    ...camposServicioempresaNuevoAuditoria,
+  });
+
+  logger.debug(line(), "servicioempresaCreated:", servicioempresaCreated);
+
+  /* Registramos el acceso del usuario a la Empresa en la tabla usuario_servicio_empresa */
+
+  let camposUsuarioservicioempresaNuevoFk = {};
+  camposUsuarioservicioempresaNuevoFk._idusuario = usuarioConected._idusuario;
+  camposUsuarioservicioempresaNuevoFk._idservicio = 1;
+  camposUsuarioservicioempresaNuevoFk._idempresa = empresaCreated._idempresa;
+  camposUsuarioservicioempresaNuevoFk._idusuarioservicioempresaestado = usuarioservicioempresaestado._idusuarioservicioempresaestado;
+  camposUsuarioservicioempresaNuevoFk._idusuarioservicioempresarol = usuarioservicioempresarol._idusuarioservicioempresarol;
+
+  let camposUsuarioservicioempresaNuevoAdicionales = {};
+  camposUsuarioservicioempresaNuevoAdicionales.usuarioservicioempresaid = uuidv4();
+  camposUsuarioservicioempresaNuevoAdicionales.code = uuidv4().split("-")[0];
+
+  let camposUsuarioservicioempresaNuevoAuditoria = {};
+  camposUsuarioservicioempresaNuevoAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
+  camposUsuarioservicioempresaNuevoAuditoria.fechacrea = Sequelize.fn("now", 3);
+  camposUsuarioservicioempresaNuevoAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
+  camposUsuarioservicioempresaNuevoAuditoria.fechamod = Sequelize.fn("now", 3);
+  camposUsuarioservicioempresaNuevoAuditoria.estado = 1;
+
+  const usuarioservicioempresaCreated = await usuarioservicioempresaDao.insertUsuarioservicioempresa(req, {
+    ...camposUsuarioservicioempresaNuevoFk,
+    ...camposUsuarioservicioempresaNuevoAdicionales,
+    ...camposUsuarioservicioempresaNuevoAuditoria,
+  });
+
+  logger.debug(line(), "usuarioservicioempresaCreated:", usuarioservicioempresaCreated);
 
   /*
 

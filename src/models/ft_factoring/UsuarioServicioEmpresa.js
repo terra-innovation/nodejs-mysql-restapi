@@ -1,32 +1,32 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class ServicioEmpresa extends Model {
+export default class UsuarioServicioEmpresa extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    _idservicioempresa: {
+    _idusuarioservicioempresa: {
       autoIncrement: true,
-      type: DataTypes.BIGINT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    servicioempresaid: {
+    usuarioservicioempresaid: {
       type: DataTypes.STRING(50),
       allowNull: false,
       defaultValue: Sequelize.Sequelize.fn('uuid'),
-      unique: "UQ_servicioempresa_servicioempresaid"
+      unique: "UQ_usuarioservicioempresa_usuarioempresaservicioid"
     },
     code: {
       type: DataTypes.STRING(20),
       allowNull: false,
-      unique: "UQ_servicioempresa_code"
+      unique: "UQ_usuarioservicioempresa_code"
     },
-    _idservicio: {
-      type: DataTypes.INTEGER,
+    _idusuario: {
+      type: DataTypes.BIGINT,
       allowNull: false,
       references: {
-        model: 'servicio',
-        key: '_idservicio'
+        model: 'usuario',
+        key: '_idusuario'
       }
     },
     _idempresa: {
@@ -37,20 +37,28 @@ export default class ServicioEmpresa extends Model {
         key: '_idempresa'
       }
     },
-    _idusuariosuscriptor: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-      references: {
-        model: 'usuario',
-        key: '_idusuario'
-      }
-    },
-    _idservicioempresaestado: {
+    _idservicio: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'servicio_empresa_estado',
-        key: '_idservicioempresaestado'
+        model: 'servicio',
+        key: '_idservicio'
+      }
+    },
+    _idusuarioservicioempresaestado: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'usuario_servicio_empresa_estado',
+        key: '_idusuarioservicioempresaestado'
+      }
+    },
+    _idusuarioservicioempresarol: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'usuario_servicio_empresa_rol',
+        key: '_idusuarioservicioempresarol'
       }
     },
     idusuariocrea: {
@@ -80,7 +88,7 @@ export default class ServicioEmpresa extends Model {
     }
   }, {
     sequelize,
-    tableName: 'servicio_empresa',
+    tableName: 'usuario_servicio_empresa',
     timestamps: false,
     indexes: [
       {
@@ -88,20 +96,21 @@ export default class ServicioEmpresa extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idservicioempresa" },
+          { name: "_idusuarioservicioempresa" },
         ]
       },
       {
-        name: "UQ_servicioempresa_idservicio__idempresa",
+        name: "UQ_usuarioservicioempresa_idusuario__idempresa__idservicio",
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idservicio" },
+          { name: "_idusuario" },
           { name: "_idempresa" },
+          { name: "_idservicio" },
         ]
       },
       {
-        name: "UQ_servicioempresa_code",
+        name: "UQ_usuarioservicioempresa_code",
         unique: true,
         using: "BTREE",
         fields: [
@@ -109,32 +118,39 @@ export default class ServicioEmpresa extends Model {
         ]
       },
       {
-        name: "UQ_servicioempresa_servicioempresaid",
+        name: "UQ_usuarioservicioempresa_usuarioempresaservicioid",
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "servicioempresaid" },
+          { name: "usuarioservicioempresaid" },
         ]
       },
       {
-        name: "FK_servicioempresa_idempresa",
+        name: "FK_usuarioservicioempresa_idempresa",
         using: "BTREE",
         fields: [
           { name: "_idempresa" },
         ]
       },
       {
-        name: "FK_servicioempresa_idservicioempresaestado",
+        name: "FK_usuarioservicioempresa_idservicio",
         using: "BTREE",
         fields: [
-          { name: "_idservicioempresaestado" },
+          { name: "_idservicio" },
         ]
       },
       {
-        name: "FK_servicioempresa_idusuariosuscriptor",
+        name: "FK_usuarioservicioempresa_idusuarioempresaservicioestado",
         using: "BTREE",
         fields: [
-          { name: "_idusuariosuscriptor" },
+          { name: "_idusuarioservicioempresaestado" },
+        ]
+      },
+      {
+        name: "FK_usuarioservicioempresa_idusuarioservicioempresarol",
+        using: "BTREE",
+        fields: [
+          { name: "_idusuarioservicioempresarol" },
         ]
       },
     ]

@@ -49,12 +49,11 @@ import _ServicioEmpresa from "./ServicioEmpresa.js";
 import _ServicioEmpresaEstado from "./ServicioEmpresaEstado.js";
 import _ServicioEmpresaVerificacion from "./ServicioEmpresaVerificacion.js";
 import _Usuario from "./Usuario.js";
-import _UsuarioEmpresa from "./UsuarioEmpresa.js";
-import _UsuarioEmpresaServicio from "./UsuarioEmpresaServicio.js";
-import _UsuarioEmpresaServicioEstado from "./UsuarioEmpresaServicioEstado.js";
-import _UsuarioEmpresaServicioRol from "./UsuarioEmpresaServicioRol.js";
 import _UsuarioRol from "./UsuarioRol.js";
 import _UsuarioServicio from "./UsuarioServicio.js";
+import _UsuarioServicioEmpresa from "./UsuarioServicioEmpresa.js";
+import _UsuarioServicioEmpresaEstado from "./UsuarioServicioEmpresaEstado.js";
+import _UsuarioServicioEmpresaRol from "./UsuarioServicioEmpresaRol.js";
 import _UsuarioServicioEstado from "./UsuarioServicioEstado.js";
 import _UsuarioServicioVerificacion from "./UsuarioServicioVerificacion.js";
 import _Validacion from "./Validacion.js";
@@ -110,12 +109,11 @@ export default function initModels(sequelize) {
   const ServicioEmpresaEstado = _ServicioEmpresaEstado.init(sequelize, DataTypes);
   const ServicioEmpresaVerificacion = _ServicioEmpresaVerificacion.init(sequelize, DataTypes);
   const Usuario = _Usuario.init(sequelize, DataTypes);
-  const UsuarioEmpresa = _UsuarioEmpresa.init(sequelize, DataTypes);
-  const UsuarioEmpresaServicio = _UsuarioEmpresaServicio.init(sequelize, DataTypes);
-  const UsuarioEmpresaServicioEstado = _UsuarioEmpresaServicioEstado.init(sequelize, DataTypes);
-  const UsuarioEmpresaServicioRol = _UsuarioEmpresaServicioRol.init(sequelize, DataTypes);
   const UsuarioRol = _UsuarioRol.init(sequelize, DataTypes);
   const UsuarioServicio = _UsuarioServicio.init(sequelize, DataTypes);
+  const UsuarioServicioEmpresa = _UsuarioServicioEmpresa.init(sequelize, DataTypes);
+  const UsuarioServicioEmpresaEstado = _UsuarioServicioEmpresaEstado.init(sequelize, DataTypes);
+  const UsuarioServicioEmpresaRol = _UsuarioServicioEmpresaRol.init(sequelize, DataTypes);
   const UsuarioServicioEstado = _UsuarioServicioEstado.init(sequelize, DataTypes);
   const UsuarioServicioVerificacion = _UsuarioServicioVerificacion.init(sequelize, DataTypes);
   const Validacion = _Validacion.init(sequelize, DataTypes);
@@ -131,13 +129,11 @@ export default function initModels(sequelize) {
   CuentaBancaria.belongsToMany(Persona, { as: "persona_persona_persona_cuenta_bancaria", through: PersonaCuentaBancaria, foreignKey: "_idcuentabancaria", otherKey: "_idpersona" });
   Empresa.belongsToMany(Archivo, { as: "archivo_archivo_archivo_empresas", through: ArchivoEmpresa, foreignKey: "_idempresa", otherKey: "_idarchivo" });
   Empresa.belongsToMany(CuentaBancaria, { as: "cuentabancaria_cuenta_bancaria_empresa_cuenta_bancaria", through: EmpresaCuentaBancaria, foreignKey: "_idempresa", otherKey: "_idcuentabancaria" });
-  Empresa.belongsToMany(Usuario, { as: "usuario_usuarios", through: UsuarioEmpresa, foreignKey: "_idempresa", otherKey: "_idusuario" });
   Factoring.belongsToMany(Factura, { as: "factura_facturas", through: FactoringFactura, foreignKey: "_idfactoring", otherKey: "_idfactura" });
   Factura.belongsToMany(Factoring, { as: "factoring_factorings", through: FactoringFactura, foreignKey: "_idfactura", otherKey: "_idfactoring" });
   Persona.belongsToMany(Archivo, { as: "archivo_archivo_archivo_personas", through: ArchivoPersona, foreignKey: "_idpersona", otherKey: "_idarchivo" });
   Persona.belongsToMany(CuentaBancaria, { as: "cuentabancaria_cuenta_bancaria_persona_cuenta_bancaria", through: PersonaCuentaBancaria, foreignKey: "_idpersona", otherKey: "_idcuentabancaria" });
-  Rol.belongsToMany(Usuario, { as: "usuario_usuario_usuario_rols", through: UsuarioRol, foreignKey: "_idrol", otherKey: "_idusuario" });
-  Usuario.belongsToMany(Empresa, { as: "empresa_empresa_usuario_empresas", through: UsuarioEmpresa, foreignKey: "_idusuario", otherKey: "_idempresa" });
+  Rol.belongsToMany(Usuario, { as: "usuario_usuarios", through: UsuarioRol, foreignKey: "_idrol", otherKey: "_idusuario" });
   Usuario.belongsToMany(Rol, { as: "rol_rols", through: UsuarioRol, foreignKey: "_idusuario", otherKey: "_idrol" });
   ArchivoColaborador.belongsTo(Archivo, { as: "archivo_archivo", foreignKey: "_idarchivo" });
   Archivo.hasMany(ArchivoColaborador, { as: "archivo_colaboradors", foreignKey: "_idarchivo" });
@@ -199,10 +195,8 @@ export default function initModels(sequelize) {
   Empresa.hasMany(Factoring, { as: "cedente_factorings", foreignKey: "_idcedente" });
   ServicioEmpresa.belongsTo(Empresa, { as: "empresa_empresa", foreignKey: "_idempresa" });
   Empresa.hasMany(ServicioEmpresa, { as: "servicio_empresas", foreignKey: "_idempresa" });
-  UsuarioEmpresa.belongsTo(Empresa, { as: "empresa_empresa", foreignKey: "_idempresa" });
-  Empresa.hasMany(UsuarioEmpresa, { as: "usuario_empresas", foreignKey: "_idempresa" });
-  UsuarioEmpresaServicio.belongsTo(Empresa, { as: "empresa_empresa", foreignKey: "_idempresa" });
-  Empresa.hasMany(UsuarioEmpresaServicio, { as: "usuario_empresa_servicios", foreignKey: "_idempresa" });
+  UsuarioServicioEmpresa.belongsTo(Empresa, { as: "empresa_empresa", foreignKey: "_idempresa" });
+  Empresa.hasMany(UsuarioServicioEmpresa, { as: "usuario_servicio_empresas", foreignKey: "_idempresa" });
   FactoringFactura.belongsTo(Factoring, { as: "factoring_factoring", foreignKey: "_idfactoring" });
   Factoring.hasMany(FactoringFactura, { as: "factoring_facturas", foreignKey: "_idfactoring" });
   Factoring.belongsTo(FactoringEstado, { as: "factoringestado_factoring_estado", foreignKey: "_idfactoringestado" });
@@ -275,10 +269,10 @@ export default function initModels(sequelize) {
   Rol.hasMany(UsuarioRol, { as: "usuario_rols", foreignKey: "_idrol" });
   ServicioEmpresa.belongsTo(Servicio, { as: "servicio_servicio", foreignKey: "_idservicio" });
   Servicio.hasMany(ServicioEmpresa, { as: "servicio_empresas", foreignKey: "_idservicio" });
-  UsuarioEmpresaServicio.belongsTo(Servicio, { as: "servicio_servicio", foreignKey: "_idservicio" });
-  Servicio.hasMany(UsuarioEmpresaServicio, { as: "usuario_empresa_servicios", foreignKey: "_idservicio" });
   UsuarioServicio.belongsTo(Servicio, { as: "servicio_servicio", foreignKey: "_idservicio" });
   Servicio.hasMany(UsuarioServicio, { as: "usuario_servicios", foreignKey: "_idservicio" });
+  UsuarioServicioEmpresa.belongsTo(Servicio, { as: "servicio_servicio", foreignKey: "_idservicio" });
+  Servicio.hasMany(UsuarioServicioEmpresa, { as: "usuario_servicio_empresas", foreignKey: "_idservicio" });
   ServicioEmpresaVerificacion.belongsTo(ServicioEmpresa, { as: "servicioempresa_servicio_empresa", foreignKey: "_idservicioempresa" });
   ServicioEmpresa.hasMany(ServicioEmpresaVerificacion, { as: "servicio_empresa_verificacions", foreignKey: "_idservicioempresa" });
   ServicioEmpresa.belongsTo(ServicioEmpresaEstado, { as: "servicioempresaestado_servicio_empresa_estado", foreignKey: "_idservicioempresaestado" });
@@ -291,22 +285,26 @@ export default function initModels(sequelize) {
   Usuario.hasOne(Persona, { as: "persona", foreignKey: "_idusuario" });
   PersonaVerificacion.belongsTo(Usuario, { as: "usuarioverifica_usuario", foreignKey: "_idusuarioverifica" });
   Usuario.hasMany(PersonaVerificacion, { as: "persona_verificacions", foreignKey: "_idusuarioverifica" });
+  ServicioEmpresa.belongsTo(Usuario, { as: "usuariosuscriptor_usuario", foreignKey: "_idusuariosuscriptor" });
+  Usuario.hasMany(ServicioEmpresa, { as: "servicio_empresas", foreignKey: "_idusuariosuscriptor" });
   ServicioEmpresaVerificacion.belongsTo(Usuario, { as: "usuarioverifica_usuario", foreignKey: "_idusuarioverifica" });
   Usuario.hasMany(ServicioEmpresaVerificacion, { as: "servicio_empresa_verificacions", foreignKey: "_idusuarioverifica" });
-  UsuarioEmpresa.belongsTo(Usuario, { as: "usuario_usuario", foreignKey: "_idusuario" });
-  Usuario.hasMany(UsuarioEmpresa, { as: "usuario_empresas", foreignKey: "_idusuario" });
-  UsuarioEmpresaServicio.belongsTo(Usuario, { as: "usuario_usuario", foreignKey: "_idusuario" });
-  Usuario.hasMany(UsuarioEmpresaServicio, { as: "usuario_empresa_servicios", foreignKey: "_idusuario" });
   UsuarioRol.belongsTo(Usuario, { as: "usuario_usuario", foreignKey: "_idusuario" });
   Usuario.hasMany(UsuarioRol, { as: "usuario_rols", foreignKey: "_idusuario" });
   UsuarioServicio.belongsTo(Usuario, { as: "usuario_usuario", foreignKey: "_idusuario" });
   Usuario.hasMany(UsuarioServicio, { as: "usuario_servicios", foreignKey: "_idusuario" });
+  UsuarioServicioEmpresa.belongsTo(Usuario, { as: "usuario_usuario", foreignKey: "_idusuario" });
+  Usuario.hasMany(UsuarioServicioEmpresa, { as: "usuario_servicio_empresas", foreignKey: "_idusuario" });
   UsuarioServicioVerificacion.belongsTo(Usuario, { as: "usuarioverifica_usuario", foreignKey: "_idusuarioverifica" });
   Usuario.hasMany(UsuarioServicioVerificacion, { as: "usuario_servicio_verificacions", foreignKey: "_idusuarioverifica" });
   Validacion.belongsTo(Usuario, { as: "usuario_usuario", foreignKey: "_idusuario" });
   Usuario.hasMany(Validacion, { as: "validacions", foreignKey: "_idusuario" });
   UsuarioServicioVerificacion.belongsTo(UsuarioServicio, { as: "usuarioservicio_usuario_servicio", foreignKey: "_idusuarioservicio" });
   UsuarioServicio.hasMany(UsuarioServicioVerificacion, { as: "usuario_servicio_verificacions", foreignKey: "_idusuarioservicio" });
+  UsuarioServicioEmpresa.belongsTo(UsuarioServicioEmpresaEstado, { as: "usuarioservicioempresaestado_usuario_servicio_empresa_estado", foreignKey: "_idusuarioservicioempresaestado" });
+  UsuarioServicioEmpresaEstado.hasMany(UsuarioServicioEmpresa, { as: "usuario_servicio_empresas", foreignKey: "_idusuarioservicioempresaestado" });
+  UsuarioServicioEmpresa.belongsTo(UsuarioServicioEmpresaRol, { as: "usuarioservicioempresarol_usuario_servicio_empresa_rol", foreignKey: "_idusuarioservicioempresarol" });
+  UsuarioServicioEmpresaRol.hasMany(UsuarioServicioEmpresa, { as: "usuario_servicio_empresas", foreignKey: "_idusuarioservicioempresarol" });
   UsuarioServicio.belongsTo(UsuarioServicioEstado, { as: "usuarioservicioestado_usuario_servicio_estado", foreignKey: "_idusuarioservicioestado" });
   UsuarioServicioEstado.hasMany(UsuarioServicio, { as: "usuario_servicios", foreignKey: "_idusuarioservicioestado" });
   UsuarioServicioVerificacion.belongsTo(UsuarioServicioEstado, { as: "usuarioservicioestado_usuario_servicio_estado", foreignKey: "_idusuarioservicioestado" });
@@ -364,12 +362,11 @@ export default function initModels(sequelize) {
     ServicioEmpresaEstado,
     ServicioEmpresaVerificacion,
     Usuario,
-    UsuarioEmpresa,
-    UsuarioEmpresaServicio,
-    UsuarioEmpresaServicioEstado,
-    UsuarioEmpresaServicioRol,
     UsuarioRol,
     UsuarioServicio,
+    UsuarioServicioEmpresa,
+    UsuarioServicioEmpresaEstado,
+    UsuarioServicioEmpresaRol,
     UsuarioServicioEstado,
     UsuarioServicioVerificacion,
     Validacion,
