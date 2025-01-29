@@ -6,7 +6,7 @@ export default class UsuarioServicioVerificacion extends Model {
   return super.init({
     _idusuarioservicioverificacion: {
       autoIncrement: true,
-      type: DataTypes.BIGINT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
@@ -17,9 +17,8 @@ export default class UsuarioServicioVerificacion extends Model {
       unique: "UQ_usuarioservicioverificacion_usuarioservicioverificacionid"
     },
     _idusuarioservicio: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: 0,
       references: {
         model: 'usuario_servicio',
         key: '_idusuarioservicio'
@@ -96,13 +95,6 @@ export default class UsuarioServicioVerificacion extends Model {
         ]
       },
       {
-        name: "FK_usuarioservicioverificacion_idusuarioservicio",
-        using: "BTREE",
-        fields: [
-          { name: "_idusuarioservicio" },
-        ]
-      },
-      {
         name: "FK_usuarioservicioverificacion_idusuarioservicioestado",
         using: "BTREE",
         fields: [
@@ -114,6 +106,13 @@ export default class UsuarioServicioVerificacion extends Model {
         using: "BTREE",
         fields: [
           { name: "_idusuarioverifica" },
+        ]
+      },
+      {
+        name: "FK_usuarioservicioverificacion_idusuarioservicio",
+        using: "BTREE",
+        fields: [
+          { name: "_idusuarioservicio" },
         ]
       },
     ]

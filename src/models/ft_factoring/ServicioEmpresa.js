@@ -6,7 +6,7 @@ export default class ServicioEmpresa extends Model {
   return super.init({
     _idservicioempresa: {
       autoIncrement: true,
-      type: DataTypes.BIGINT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },

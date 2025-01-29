@@ -6,7 +6,7 @@ import path from "path";
 import * as storageUtils from "../utils/storageUtils.js";
 import logger, { line } from "../utils/logger.js";
 
-let storage_empresaservicio = multer.diskStorage({
+let storage_usuarioservicio = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, storageUtils.STORAGE_PATH_PROCESAR);
   },
@@ -29,7 +29,7 @@ let storage_empresaservicio = multer.diskStorage({
 });
 
 export const upload_persona = multer({
-  storage: storage_empresaservicio,
+  storage: storage_usuarioservicio,
   limits: {
     fileSize: 5 * 1024 * 1024, // Para formularios multiparte, el tamaño máximo de los archivos (en bytes)
     files: 4, // Para los formularios multiparte, el número máximo de campos para archivos

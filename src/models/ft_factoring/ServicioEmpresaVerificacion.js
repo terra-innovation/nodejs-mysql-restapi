@@ -5,7 +5,8 @@ export default class ServicioEmpresaVerificacion extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
     _idservicioempresaverificacion: {
-      type: DataTypes.BIGINT,
+      autoIncrement: true,
+      type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
@@ -16,9 +17,8 @@ export default class ServicioEmpresaVerificacion extends Model {
       unique: "UQ_servicioempresaverificacion_servicioempresaverificacionid"
     },
     _idservicioempresa: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: 0,
       references: {
         model: 'servicio_empresa',
         key: '_idservicioempresa'
@@ -95,13 +95,6 @@ export default class ServicioEmpresaVerificacion extends Model {
         ]
       },
       {
-        name: "FK_servicioempresaverificacion_idservicioempresa",
-        using: "BTREE",
-        fields: [
-          { name: "_idservicioempresa" },
-        ]
-      },
-      {
         name: "FK_servicioempresaverificacion_idservicioempresaestado",
         using: "BTREE",
         fields: [
@@ -113,6 +106,13 @@ export default class ServicioEmpresaVerificacion extends Model {
         using: "BTREE",
         fields: [
           { name: "_idusuarioverifica" },
+        ]
+      },
+      {
+        name: "FK_servicioempresaverificacion_idservicioempresa",
+        using: "BTREE",
+        fields: [
+          { name: "_idservicioempresa" },
         ]
       },
     ]
