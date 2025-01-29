@@ -184,41 +184,14 @@ export const verifyPersona = async (req, res) => {
 
   //let personaCreated = { _idpersona: 4 };
 
-  const identificacionanversoCreated = await crearIdentificacionAnverso(req, personaValidated);
+  const identificacionanversoCreated = await crearIdentificacionAnverso(req, personaValidated, personaCreated);
+  logger.debug(line(), "identificacionanversoCreated:", identificacionanversoCreated);
 
-  await archivopersonaDao.insertArchivoPersona(req, {
-    _idarchivo: identificacionanversoCreated._idarchivo,
-    _idpersona: personaCreated._idpersona,
-    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
-    fechacrea: Sequelize.fn("now", 3),
-    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
-    fechamod: Sequelize.fn("now", 3),
-    estado: 1,
-  });
+  const identificacionreversoCreated = await crearIdentificacionReverso(req, personaValidated, personaCreated);
+  logger.debug(line(), "identificacionreversoCreated:", identificacionreversoCreated);
 
-  const identificacionreversoCreated = await crearIdentificacionReverso(req, personaValidated);
-
-  await archivopersonaDao.insertArchivoPersona(req, {
-    _idarchivo: identificacionreversoCreated._idarchivo,
-    _idpersona: personaCreated._idpersona,
-    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
-    fechacrea: Sequelize.fn("now", 3),
-    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
-    fechamod: Sequelize.fn("now", 3),
-    estado: 1,
-  });
-
-  const identificacionselfiCreated = await crearIdentificacionSelfi(req, personaValidated);
-
-  await archivopersonaDao.insertArchivoPersona(req, {
-    _idarchivo: identificacionselfiCreated._idarchivo,
-    _idpersona: personaCreated._idpersona,
-    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
-    fechacrea: Sequelize.fn("now", 3),
-    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
-    fechamod: Sequelize.fn("now", 3),
-    estado: 1,
-  });
+  const identificacionselfiCreated = await crearIdentificacionSelfi(req, personaValidated, personaCreated);
+  logger.debug(line(), "identificacionselfiCreated:", identificacionselfiCreated);
 
   const personaDeclaracionCreate = {};
   personaDeclaracionCreate.personadeclaracionid = uuidv4();
@@ -261,7 +234,7 @@ export const verifyPersona = async (req, res) => {
   response(res, 200, {});
 };
 
-const crearIdentificacionSelfi = async (req, personaValidated) => {
+const crearIdentificacionSelfi = async (req, personaValidated, personaCreated) => {
   //Copiamos el archivo
   const { identificacion_selfi } = personaValidated;
   const { anio_upload, mes_upload, dia_upload, filename, path: archivoOrigen } = identificacion_selfi[0];
@@ -293,11 +266,22 @@ const crearIdentificacionSelfi = async (req, personaValidated) => {
     estado: 1,
   };
   const identificacionselfiCreated = await archivoDao.insertArchivo(req, identificacionselfiNew);
+
+  await archivopersonaDao.insertArchivoPersona(req, {
+    _idarchivo: identificacionselfiCreated._idarchivo,
+    _idpersona: personaCreated._idpersona,
+    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    fechacrea: Sequelize.fn("now", 3),
+    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    fechamod: Sequelize.fn("now", 3),
+    estado: 1,
+  });
+
   fs.unlinkSync(archivoOrigen);
   return identificacionselfiCreated;
 };
 
-const crearIdentificacionReverso = async (req, personaValidated) => {
+const crearIdentificacionReverso = async (req, personaValidated, personaCreated) => {
   //Copiamos el archivo
   const { identificacion_reverso } = personaValidated;
   const { anio_upload, mes_upload, dia_upload, filename, path: archivoOrigen } = identificacion_reverso[0];
@@ -329,11 +313,22 @@ const crearIdentificacionReverso = async (req, personaValidated) => {
     estado: 1,
   };
   const identificacionreversoCreated = await archivoDao.insertArchivo(req, identificacionreversoNew);
+
+  await archivopersonaDao.insertArchivoPersona(req, {
+    _idarchivo: identificacionreversoCreated._idarchivo,
+    _idpersona: personaCreated._idpersona,
+    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    fechacrea: Sequelize.fn("now", 3),
+    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    fechamod: Sequelize.fn("now", 3),
+    estado: 1,
+  });
+
   fs.unlinkSync(archivoOrigen);
   return identificacionreversoCreated;
 };
 
-const crearIdentificacionAnverso = async (req, personaValidated) => {
+const crearIdentificacionAnverso = async (req, personaValidated, personaCreated) => {
   //Copiamos el archivo
   const { identificacion_anverso } = personaValidated;
   const { anio_upload, mes_upload, dia_upload, filename, path: archivoOrigen } = identificacion_anverso[0];
@@ -365,6 +360,17 @@ const crearIdentificacionAnverso = async (req, personaValidated) => {
     estado: 1,
   };
   const identificacionanversoCreated = await archivoDao.insertArchivo(req, identificacionanversoNew);
+
+  await archivopersonaDao.insertArchivoPersona(req, {
+    _idarchivo: identificacionanversoCreated._idarchivo,
+    _idpersona: personaCreated._idpersona,
+    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    fechacrea: Sequelize.fn("now", 3),
+    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    fechamod: Sequelize.fn("now", 3),
+    estado: 1,
+  });
+
   fs.unlinkSync(archivoOrigen);
   return identificacionanversoCreated;
 };

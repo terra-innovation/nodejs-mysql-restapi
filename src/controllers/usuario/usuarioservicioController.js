@@ -432,19 +432,6 @@ export const suscribirUsuarioServicio = async (req, res) => {
   const usuarioservicioUpdated = await usuarioservicioDao.updateUsuarioservicio(req, camposUsuarioservicioUpdate);
   logger.debug(line(), "usuarioservicioUpdated:", usuarioservicioUpdated);
 
-  /*
-
-  //let personaCreated = { _idpersona: 4 };
-
-  await usuarioDao.updateUsuario(req, {});
-
-  const personaverificacionestado_en_revision = 3; // 3: En revisión
-  const personaverificacionestado = await personaverificacionestadoDao.getPersonaverificacionestadoByIdpersonaverificacionestado(req, personaverificacionestado_en_revision);
-  if (!personaverificacionestado) {
-    logger.warn(line(), "Persona verificación estado no existe: [" + personaverificacionestado_en_revision + "]");
-    throw new ClientError("Datos no válidos", 404);
-  }
-*/
   response(res, 200, {});
 };
 
