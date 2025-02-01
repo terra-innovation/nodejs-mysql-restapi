@@ -499,7 +499,7 @@ const crearArchivoEncabezadoCuentaBancaria = async (req, usuarioservicioValidate
 
   let camposArchivoNuevo = {
     archivoid: uuidv4(),
-    _idarchivotipo: 5,
+    _idarchivotipo: 7,
     _idarchivoestado: 1,
     codigo: codigo_archivo,
     nombrereal: originalname,
@@ -547,7 +547,7 @@ const crearArchivoVigenciaPoderRepresentanteLegal = async (req, usuarioservicioV
 
   let camposArchivoNuevo = {
     archivoid: uuidv4(),
-    _idarchivotipo: 5,
+    _idarchivotipo: 6,
     _idarchivoestado: 1,
     codigo: codigo_archivo,
     nombrereal: originalname,

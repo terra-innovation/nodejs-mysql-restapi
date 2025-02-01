@@ -82,6 +82,30 @@ export const getFactoringempresasByVerificacion = async (req, estadologico, _ids
                 },
               ],
             },
+            {
+              model: models.Pais,
+              required: true,
+              as: "paissede_pai",
+            },
+            {
+              model: models.Distrito,
+              required: true,
+              as: "distritosede_distrito",
+              include: [
+                {
+                  model: models.Provincia,
+                  requerid: true,
+                  as: "provincia_provincium",
+                  include: [
+                    {
+                      model: models.Departamento,
+                      requerid: true,
+                      as: "departamento_departamento",
+                    },
+                  ],
+                },
+              ],
+            },
           ],
         },
         {
