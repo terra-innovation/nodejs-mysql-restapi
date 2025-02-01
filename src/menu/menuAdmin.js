@@ -5,6 +5,28 @@ const menuMantenimiento = {
   icon: "dashboard",
   children: [
     {
+      id: "admin-factoring-empresa",
+      title: "Factoring empresa",
+      type: "collapse",
+      icon: "dashboard",
+      children: [
+        {
+          id: "admin-factoring-empresa-lista",
+          title: "Empresas",
+          type: "item",
+          url: "/admin/servicio/factoring/empresa/lista",
+          breadcrumbs: true,
+        },
+        {
+          id: "admin-factoring-empresa-verificacion",
+          title: "Verificación",
+          type: "item",
+          url: "/admin/servicio/factoring/empresa/verificacion/lista",
+          breadcrumbs: true,
+        },
+      ],
+    },
+    {
       id: "admin-mantenimiento-cuentas-bancarias",
       title: "Mantenimiento",
       type: "collapse",

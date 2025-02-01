@@ -2,6 +2,116 @@ import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
+export const getFactoringempresasByVerificacion = async (req, estadologico, _idservicio, _idarchivotipos) => {
+  try {
+    const { models } = req.app.locals;
+    const personas = await models.ServicioEmpresa.findAll({
+      include: [
+        {
+          model: models.Servicio,
+          required: true,
+          as: "servicio_servicio",
+        },
+        {
+          model: models.Empresa,
+          required: true,
+          as: "empresa_empresa",
+          include: [
+            {
+              model: models.Archivo,
+              required: true,
+              as: "archivo_archivo_archivo_empresas",
+              include: [
+                {
+                  model: models.ArchivoTipo,
+                  required: true,
+                  as: "archivotipo_archivo_tipo",
+                },
+              ],
+              where: {
+                _idarchivotipo: {
+                  [Sequelize.Op.in]: _idarchivotipos,
+                },
+              },
+            },
+            {
+              model: models.CuentaBancaria,
+              required: true,
+              as: "cuentabancaria_cuenta_bancaria_empresa_cuenta_bancaria",
+              include: [
+                {
+                  model: models.Archivo,
+                  required: true,
+                  as: "archivo_archivo_archivo_cuenta_bancaria",
+                  include: [
+                    {
+                      model: models.ArchivoTipo,
+                      required: true,
+                      as: "archivotipo_archivo_tipo",
+                    },
+                  ],
+                  where: {
+                    _idarchivotipo: {
+                      [Sequelize.Op.in]: _idarchivotipos,
+                    },
+                  },
+                },
+              ],
+            },
+            {
+              model: models.Colaborador,
+              required: true,
+              as: "colaboradors",
+              include: [
+                {
+                  model: models.Archivo,
+                  required: true,
+                  as: "archivo_archivos",
+                  include: [
+                    {
+                      model: models.ArchivoTipo,
+                      required: true,
+                      as: "archivotipo_archivo_tipo",
+                    },
+                  ],
+                  where: {
+                    _idarchivotipo: {
+                      [Sequelize.Op.in]: _idarchivotipos,
+                    },
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        {
+          model: models.Usuario,
+          required: true,
+          as: "usuariosuscriptor_usuario",
+        },
+        {
+          model: models.ServicioEmpresaEstado,
+          required: true,
+          as: "servicioempresaestado_servicio_empresa_estado",
+        },
+      ],
+      where: {
+        _idservicio: {
+          [Sequelize.Op.in]: _idservicio,
+        },
+        estado: {
+          [Sequelize.Op.in]: estadologico,
+        },
+      },
+    });
+    //logger.info(line(),personas);
+    return personas;
+  } catch (error) {
+    logger.error(line(), error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getServicioempresas = async (req, estados) => {
   try {
     const { models } = req.app.locals;

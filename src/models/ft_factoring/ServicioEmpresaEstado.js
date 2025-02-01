@@ -32,6 +32,21 @@ export default class ServicioEmpresaEstado extends Model {
       type: DataTypes.STRING(50),
       allowNull: false
     },
+    issuccessfulvalidation: {
+      type: DataTypes.TINYINT,
+      allowNull: false,
+      defaultValue: 0
+    },
+    isestadofinal: {
+      type: DataTypes.TINYINT,
+      allowNull: false,
+      defaultValue: 0
+    },
+    isusuarioedit: {
+      type: DataTypes.TINYINT,
+      allowNull: false,
+      defaultValue: 0
+    },
     idusuariocrea: {
       type: DataTypes.INTEGER,
       allowNull: false,

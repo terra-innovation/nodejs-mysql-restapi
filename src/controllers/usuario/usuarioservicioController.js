@@ -38,7 +38,7 @@ import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { Sequelize } from "sequelize";
 
-export const suscribirUsuarioServicio = async (req, res) => {
+export const suscribirUsuarioServicioFactoringEmpresa = async (req, res) => {
   const _idusuario = req.session_user?.usuario?._idusuario;
   const { id } = req.params;
   const filter_estado = [1, 2];

@@ -37,6 +37,10 @@ export default class Servicio extends Model {
       type: DataTypes.STRING(500),
       allowNull: false
     },
+    pathroute: {
+      type: DataTypes.STRING(100),
+      allowNull: false
+    },
     idusuariocrea: {
       type: DataTypes.INTEGER,
       allowNull: false,

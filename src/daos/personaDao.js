@@ -77,7 +77,7 @@ export const getPersonasByVerificacion = async (req, estado, idarchivotipo) => {
         {
           model: models.Archivo,
           required: true,
-          as: "archivo_archivos",
+          as: "archivo_archivo_archivo_personas",
           include: [
             {
               model: models.ArchivoTipo,
