@@ -40,6 +40,26 @@ export const getFactoringempresasByVerificacion = async (req, estadologico, _ids
               as: "cuentabancaria_cuenta_bancaria_empresa_cuenta_bancaria",
               include: [
                 {
+                  model: models.Banco,
+                  required: true,
+                  as: "banco_banco",
+                },
+                {
+                  model: models.Moneda,
+                  required: true,
+                  as: "moneda_moneda",
+                },
+                {
+                  model: models.CuentaTipo,
+                  required: true,
+                  as: "cuentatipo_cuenta_tipo",
+                },
+                {
+                  model: models.CuentaBancariaEstado,
+                  required: true,
+                  as: "cuentabancariaestado_cuenta_bancaria_estado",
+                },
+                {
                   model: models.Archivo,
                   required: true,
                   as: "archivo_archivo_archivo_cuenta_bancaria",
@@ -63,6 +83,16 @@ export const getFactoringempresasByVerificacion = async (req, estadologico, _ids
               required: true,
               as: "colaboradors",
               include: [
+                {
+                  model: models.ColaboradorTipo,
+                  required: true,
+                  as: "colaboradortipo_colaborador_tipo",
+                },
+                {
+                  model: models.DocumentoTipo,
+                  required: true,
+                  as: "documentotipo_documento_tipo",
+                },
                 {
                   model: models.Archivo,
                   required: true,
