@@ -148,6 +148,23 @@ export const getFactoringempresasByVerificacion = async (req, estadologico, _ids
           required: true,
           as: "servicioempresaestado_servicio_empresa_estado",
         },
+        {
+          model: models.ServicioEmpresaVerificacion,
+          required: true,
+          as: "servicio_empresa_verificacions",
+          include: [
+            {
+              model: models.ServicioEmpresaEstado,
+              required: true,
+              as: "servicioempresaestado_servicio_empresa_estado",
+            },
+            {
+              model: models.Usuario,
+              required: true,
+              as: "usuarioverifica_usuario",
+            },
+          ],
+        },
       ],
       where: {
         _idservicio: {

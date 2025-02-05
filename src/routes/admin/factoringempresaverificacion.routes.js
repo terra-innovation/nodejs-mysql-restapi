@@ -1,15 +1,15 @@
 import { Router } from "express";
 import { catchedAsync } from "../../utils/catchedAsync.js";
-import * as factoringempresaController from "../../controllers/admin/factoringempresaController.js";
+import * as factoringempresaverificacionController from "../../controllers/admin/factoringempresaverificacionController.js";
 import { verifyToken, checkRole } from "../../middlewares/authMiddleware.js";
 
 const router = Router();
 
 //Usuario
-router.get("/admin/servicio/factoring/empresa/verificacion/listar", verifyToken, checkRole([2]), catchedAsync(factoringempresaController.getFactoringempresasByVerificacion));
-//router.post("/admin/personaverificacion/crear", verifyToken, checkRole([2]), catchedAsync(personaverificacionController.createPersonaverificacion));
+router.get("/admin/servicio/factoring/empresa/verificacion/listar", verifyToken, checkRole([2]), catchedAsync(factoringempresaverificacionController.getFactoringempresasByVerificacion));
+router.post("/admin/servicio/factoring/empresa/verificacion/crear", verifyToken, checkRole([2]), catchedAsync(factoringempresaverificacionController.createFactoringempresaverificacion));
 //router.patch("/admin/personaverificacion/actualizar/:id", verifyToken, checkRole([2]), catchedAsync(personaverificacionController.updatePersonaverificacion));
-//router.get("/admin/personaverificacion/master", verifyToken, checkRole([2]), catchedAsync(personaverificacionController.getPersonaverificacionMaster));
+router.get("/admin/servicio/factoring/empresa/verificacion/master", verifyToken, checkRole([2]), catchedAsync(factoringempresaverificacionController.getFactoringempresaverificacionMaster));
 //router.delete("/admin/personaverificacion/eliminar/:id", verifyToken, checkRole([2]), catchedAsync(personaverificacionController.deletePersonaverificacion));
 //router.patch("/admin/personaverificacion/activar/:id", verifyToken, checkRole([2]), catchedAsync(personaverificacionController.activatePersonaverificacion));
 
