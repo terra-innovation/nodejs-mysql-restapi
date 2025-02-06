@@ -24,6 +24,7 @@ import * as yup from "yup";
 import { Sequelize } from "sequelize";
 
 export const getPersonaMaster = async (req, res) => {
+  logger.debug(line(), "funcion::getPersonaMaster");
   const session_idusuario = req.session_user?.usuario?._idusuario;
   const filter_estados = [1];
   const paises = await paisDao.getPaises(req, filter_estados);
@@ -31,7 +32,7 @@ export const getPersonaMaster = async (req, res) => {
   const documentotipos = await documentotipoDao.getDocumentotipos(req, filter_estados);
   const generos = await generoDao.getGeneros(req, filter_estados);
   const usuario = await usuarioDao.getUsuarioByIdusuario(req, session_idusuario);
-  const personaverificacionestado = await personaverificacionestadoDao.getPersonaverificacionestadoByIdpersonaverificacionestado(req, usuario._idpersonaverificacionestado);
+  const personaverificacionestado = await personaverificacionestadoDao.getPersonaverificacionestadoByIdpersonaverificacionestado(req, usuario.persona?._idpersonaverificacionestado);
 
   let personaMaster = {};
   personaMaster.paises = paises;
@@ -39,7 +40,10 @@ export const getPersonaMaster = async (req, res) => {
   personaMaster.documentotipos = documentotipos;
   personaMaster.generos = generos;
   personaMaster.usuario = jsonUtils.filterFields(jsonUtils.sequelizeToJSON(usuario), ["usuarioid", "email", "celular", "isemailvalidated", "ispersonavalidated"]);
-  personaMaster.personaverificacionestado = personaverificacionestado;
+
+  if (personaverificacionestado) {
+    personaMaster.personaverificacionestado = personaverificacionestado;
+  }
 
   let personaMasterJSON = jsonUtils.sequelizeToJSON(personaMaster);
   //jsonUtils.prettyPrint(personaMasterJSON);
@@ -51,6 +55,7 @@ export const getPersonaMaster = async (req, res) => {
 };
 
 export const verifyPersona = async (req, res) => {
+  logger.debug(line(), "funcion::verifyPersona");
   const _idusuario = req.session_user?.usuario?._idusuario;
   let NAME_REGX = /^[a-zA-Z ]+$/;
   const personaVerifySchema = yup
@@ -153,6 +158,7 @@ export const verifyPersona = async (req, res) => {
 
   let camposFk = {};
   camposFk._idusuario = usuarioConected._idusuario;
+  camposFk._idpersonaverificacionestado = personaverificacionestado._idpersonaverificacionestado; // 3: En revisión
   camposFk._iddocumentotipo = documentotipo._iddocumentotipo;
   camposFk._idpaisnacionalidad = paisNacionalidad._idpais;
   camposFk._idpaisnacimiento = paisNacimiento._idpais;
@@ -165,6 +171,7 @@ export const verifyPersona = async (req, res) => {
 
   let camposAdicionales = {};
   camposAdicionales.personaid = uuidv4();
+  camposAdicionales.code = uuidv4().split("-")[0];
   camposAdicionales.email = usuarioConected.email;
   camposAdicionales.celular = usuarioConected.celular;
 
@@ -223,7 +230,6 @@ export const verifyPersona = async (req, res) => {
 
   const usuarioUpdate = {};
   usuarioUpdate.usuarioid = usuarioConected.usuarioid;
-  usuarioUpdate._idpersonaverificacionestado = personaverificacionestado._idpersonaverificacionestado; // 2: Pendiente
   usuarioUpdate.ispersonavalidated = personaverificacionestado.ispersonavalidated;
   usuarioUpdate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
   usuarioUpdate.fechamod = Sequelize.fn("now", 3);

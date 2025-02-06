@@ -11,7 +11,11 @@ export const getPersonasByVerificacion = async (req, estado, idarchivotipo) => {
           model: models.Usuario,
           required: true,
           as: "usuario_usuario",
-          include: [{ model: models.PersonaVerificacionEstado, required: true, as: "personaverificacionestado_persona_verificacion_estado" }],
+        },
+        {
+          model: models.PersonaVerificacionEstado,
+          required: true,
+          as: "personaverificacionestado_persona_verificacion_estado",
         },
         {
           model: models.DocumentoTipo,

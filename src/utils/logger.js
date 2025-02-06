@@ -68,7 +68,7 @@ const logger = winston.createLogger({
         format.colorize(),
         format.ms(), // Number of milliseconds since the previous log message.
         format.printf(({ timestamp, file, level, message, ms }) => {
-          return `[${chalk.green(timestamp)}] ${level}: ${message} ${ms} (${file.archivo}:${file.linea})`;
+          return `[${chalk.green(timestamp)}] ${level}: ${message} ${ms} (${file.ruta}/${file.archivo}:${file.linea})`;
         })
       ),
     }),

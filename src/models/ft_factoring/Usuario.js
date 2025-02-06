@@ -29,14 +29,6 @@ export default class Usuario extends Model {
         key: '_iddocumentotipo'
       }
     },
-    _idpersonaverificacionestado: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'persona_verificacion_estado',
-        key: '_idpersonaverificacionestado'
-      }
-    },
     documentonumero: {
       type: DataTypes.STRING(50),
       allowNull: false,
@@ -166,13 +158,6 @@ export default class Usuario extends Model {
         using: "BTREE",
         fields: [
           { name: "_iddocumentotipo" },
-        ]
-      },
-      {
-        name: "FK_usuario_idpersonaverificacionestado",
-        using: "BTREE",
-        fields: [
-          { name: "_idpersonaverificacionestado" },
         ]
       },
     ]

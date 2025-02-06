@@ -247,10 +247,10 @@ export default function initModels(sequelize) {
   Persona.hasMany(PersonaPepIndirecto, { as: "persona_pep_indirectos", foreignKey: "_idpersona" });
   PersonaVerificacion.belongsTo(Persona, { as: "persona_persona", foreignKey: "_idpersona" });
   Persona.hasMany(PersonaVerificacion, { as: "persona_verificacions", foreignKey: "_idpersona" });
+  Persona.belongsTo(PersonaVerificacionEstado, { as: "personaverificacionestado_persona_verificacion_estado", foreignKey: "_idpersonaverificacionestado" });
+  PersonaVerificacionEstado.hasMany(Persona, { as: "personas", foreignKey: "_idpersonaverificacionestado" });
   PersonaVerificacion.belongsTo(PersonaVerificacionEstado, { as: "personaverificacionestado_persona_verificacion_estado", foreignKey: "_idpersonaverificacionestado" });
   PersonaVerificacionEstado.hasMany(PersonaVerificacion, { as: "persona_verificacions", foreignKey: "_idpersonaverificacionestado" });
-  Usuario.belongsTo(PersonaVerificacionEstado, { as: "personaverificacionestado_persona_verificacion_estado", foreignKey: "_idpersonaverificacionestado" });
-  PersonaVerificacionEstado.hasMany(Usuario, { as: "usuarios", foreignKey: "_idpersonaverificacionestado" });
   Distrito.belongsTo(Provincia, { as: "provincia_provincium", foreignKey: "_idprovincia" });
   Provincia.hasMany(Distrito, { as: "distritos", foreignKey: "_idprovincia" });
   Empresa.belongsTo(Provincia, { as: "provinciasede_provincium", foreignKey: "_idprovinciasede" });

@@ -364,7 +364,6 @@ export const registerUsuario = async (req, res) => {
   camposAdicionales.code = uuidv4().split("-")[0];
   camposAdicionales.password = encryptedPassword;
   camposAdicionales.hash = hash;
-  camposAdicionales._idpersonaverificacionestado = personaverificacionestado._idpersonaverificacionestado;
   camposAdicionales.ispersonavalidated = personaverificacionestado.ispersonavalidated;
 
   let camposAuditoria = {};
@@ -447,17 +446,9 @@ export const validateEmail = async (req, res) => {
         validacionUpdate.fechamod = Sequelize.fn("now", 3);
         const validacionUpdated = await validacionDao.updateValidacion(req, validacionUpdate);
 
-        const personaverificacionestado_pendiente = 2; // 2: Pendiente
-        const personaverificacionestado = await personaverificacionestadoDao.getPersonaverificacionestadoByIdpersonaverificacionestado(req, personaverificacionestado_pendiente);
-        if (!personaverificacionestado) {
-          logger.warn(line(), "Persona verificación estado no existe: [" + personaverificacionestado_pendiente + "]");
-          throw new ClientError("Datos no válidos", 404);
-        }
-
         var usuarioUpdate = {};
         usuarioUpdate.usuarioid = usuario.usuarioid;
         usuarioUpdate.isemailvalidated = 1; // true
-        usuarioUpdate._idpersonaverificacionestado = personaverificacionestado._idpersonaverificacionestado;
         const usuarioUpdated = await usuarioDao.updateUsuario(req, usuarioUpdate);
       } else {
         logger.warn(line(), "El código de verificación ha expirado: ", validacionValidated);

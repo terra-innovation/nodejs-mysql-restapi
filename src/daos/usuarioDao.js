@@ -47,7 +47,15 @@ export const getUsuariosActivos = async (req) => {
 export const getUsuarioByIdusuario = async (req, idusuario) => {
   try {
     const { models } = req.app.locals;
-    const usuario = await models.Usuario.findByPk(idusuario, {});
+    const usuario = await models.Usuario.findByPk(idusuario, {
+      include: [
+        {
+          model: models.Persona,
+          required: false,
+          as: "persona",
+        },
+      ],
+    });
     //logger.info(line(),usuarios);
 
     return usuario;

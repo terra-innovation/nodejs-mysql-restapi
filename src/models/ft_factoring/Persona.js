@@ -16,6 +16,11 @@ export default class Persona extends Model {
       defaultValue: Sequelize.Sequelize.fn('uuid'),
       unique: "UQ_personaid"
     },
+    code: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
+      unique: "UQ_code"
+    },
     _idusuario: {
       type: DataTypes.BIGINT,
       allowNull: false,
@@ -24,6 +29,14 @@ export default class Persona extends Model {
         key: '_idusuario'
       },
       unique: "FK_persona_idusuario"
+    },
+    _idpersonaverificacionestado: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'persona_verificacion_estado',
+        key: '_idpersonaverificacionestado'
+      }
     },
     _iddocumentotipo: {
       type: DataTypes.INTEGER,
@@ -180,6 +193,14 @@ export default class Persona extends Model {
         ]
       },
       {
+        name: "UQ_code",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "code" },
+        ]
+      },
+      {
         name: "FK_persona_iddocumentotipo",
         using: "BTREE",
         fields: [
@@ -233,6 +254,13 @@ export default class Persona extends Model {
         using: "BTREE",
         fields: [
           { name: "_idprovinciaresidencia" },
+        ]
+      },
+      {
+        name: "FK_persona_idpersonaverificacionestado",
+        using: "BTREE",
+        fields: [
+          { name: "_idpersonaverificacionestado" },
         ]
       },
     ]

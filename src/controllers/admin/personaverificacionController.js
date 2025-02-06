@@ -63,6 +63,7 @@ export const deletePersonaverificacion = async (req, res) => {
 };
 
 export const getPersonaverificacionMaster = async (req, res) => {
+  logger.debug(line(), "funcion::getPersonaverificacionMaster");
   const session_idusuario = req.session_user?.usuario?._idusuario;
   const filter_estados = [1];
   const personaverificacionestados = await personaverificacionestadoDao.getPersonaverificacionestados(req, filter_estados);
@@ -80,6 +81,7 @@ export const getPersonaverificacionMaster = async (req, res) => {
 };
 
 export const updatePersonaverificacion = async (req, res) => {
+  logger.debug(line(), "funcion::updatePersonaverificacion");
   const { id } = req.params;
   let NAME_REGX = /^[a-zA-Z ]+$/;
   const personaverificacionUpdateSchema = yup
@@ -128,6 +130,7 @@ export const updatePersonaverificacion = async (req, res) => {
 };
 
 export const getPersonaverificacions = async (req, res) => {
+  logger.debug(line(), "funcion::getPersonaverificacions");
   //logger.info(line(),req.session_user.usuario._idusuario);
 
   const filter_estado = [1, 2];
@@ -142,6 +145,7 @@ export const getPersonaverificacions = async (req, res) => {
 };
 
 export const createPersonaverificacion = async (req, res) => {
+  logger.debug(line(), "funcion::createPersonaverificacion");
   const session_idusuario = req.session_user.usuario._idusuario;
   const filter_estado = [1, 2];
   const personaverificacionCreateSchema = yup
@@ -188,13 +192,27 @@ export const createPersonaverificacion = async (req, res) => {
     ...camposAuditoria,
   });
   logger.debug(line(), "personaverificacionCreated");
-  const usuarioUpdate = {};
-  usuarioUpdate.usuarioid = persona.usuario_usuario.usuarioid;
-  usuarioUpdate._idpersonaverificacionestado = personaverificacionestado._idpersonaverificacionestado;
-  usuarioUpdate.ispersonavalidated = personaverificacionestado.ispersonavalidated;
 
-  await usuarioDao.updateUsuario(req, usuarioUpdate);
-  logger.debug(line(), "usuarioUpdate");
+  const personaUpdate = {};
+  personaUpdate.personaid = persona.personaid;
+  personaUpdate._idpersonaverificacionestado = personaverificacionestado._idpersonaverificacionestado;
+  personaUpdate.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+  personaUpdate.fechamod = Sequelize.fn("now", 3);
+
+  await personaDao.updatePersona(req, personaUpdate);
+  logger.debug(line(), "personaUpdate");
+
+  // Actualizamos el usuario solo si la validación de la persona es aprobado
+  if (personaverificacionestado.ispersonavalidated) {
+    const usuarioUpdate = {};
+    usuarioUpdate.usuarioid = persona.usuario_usuario.usuarioid;
+    usuarioUpdate.ispersonavalidated = personaverificacionestado.ispersonavalidated;
+    usuarioUpdate.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+    usuarioUpdate.fechamod = Sequelize.fn("now", 3);
+
+    await usuarioDao.updateUsuario(req, usuarioUpdate);
+    logger.debug(line(), "usuarioUpdate");
+  }
 
   /* Si la verificación tiene código 4 que es aprobado, se habilitan los servicios para que pueda suscribirse */
   if (personaverificacionestado._idpersonaverificacionestado == 4) {
