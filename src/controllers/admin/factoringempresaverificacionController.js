@@ -1,4 +1,6 @@
 import * as servicioempresaDao from "../../daos/servicioempresaDao.js";
+import * as personaDao from "../../daos/personaDao.js";
+import * as empresaDao from "../../daos/empresaDao.js";
 import * as servicioempresaestadoDao from "../../daos/servicioempresaestadoDao.js";
 import * as servicioempresaverificacionDao from "../../daos/servicioempresaverificacionDao.js";
 import { response } from "../../utils/CustomResponseOk.js";
@@ -31,6 +33,19 @@ export const createFactoringempresaverificacion = async (req, res) => {
     logger.warn(line(), "Servicio empresa no existe: [" + servicioempresaverificacionValidated.servicioempresaid + "]");
     throw new ClientError("Datos no válidos", 404);
   }
+
+  const personasuscriptor = await personaDao.getPersonaByIdusuario(req, servicioempresa._idusuariosuscriptor);
+  if (!personasuscriptor) {
+    logger.warn(line(), "Usuario suscriptor no existe: [" + servicioempresa._idusuariosuscriptor + "]");
+    throw new ClientError("Datos no válidos", 404);
+  }
+
+  const empresa = await empresaDao.getEmpresaByIdempresa(req, servicioempresa._idempresa);
+  if (!empresa) {
+    logger.warn(line(), "Empresa no existe: [" + servicioempresa._idempresa + "]");
+    throw new ClientError("Datos no válidos", 404);
+  }
+
   const servicioempresaestado = await servicioempresaestadoDao.getServicioempresaestadoByServicioempresaestadoid(req, servicioempresaverificacionValidated.servicioempresaestadoid);
   if (!servicioempresaestado) {
     logger.warn(line(), "Servicio empresa estado no existe: [" + servicioempresaverificacionValidated.servicioempresaestadoid + "]");
@@ -72,18 +87,20 @@ export const createFactoringempresaverificacion = async (req, res) => {
   const templateManager = new TemplateManager();
   const emailSender = new EmailSender();
 
-  /*
   if (servicioempresaverificacionValidated.comentariousuario) {
+    // Email de más información
     const dataEmail = {
-      codigo_usuario: persona.usuario_usuario.code,
-      nombres: persona.usuario_usuario.usuarionombres,
+      codigo_servicio_empresa: servicioempresa.code,
+      nombres: personasuscriptor.usuario_usuario.usuarionombres,
+      fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
+      empresa_razon_social: empresa.razon_social,
+      empresa_ruc: empresa.ruc,
       razon_no_aceptada: servicioempresaverificacionValidated.comentariousuario,
-      fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
     };
-    const emailTemplate = await templateManager.templateCuentaUsarioVerificadaMasInformacion(dataEmail);
+    const emailTemplate = await templateManager.templateFactoringEmpresaVerificacionMasInformacion(dataEmail);
 
     const mailOptions = {
-      to: persona.usuario_usuario.email,
+      to: personasuscriptor.usuario_usuario.email,
       subject: emailTemplate.subject,
       text: emailTemplate.text,
       html: emailTemplate.html,
@@ -92,24 +109,44 @@ export const createFactoringempresaverificacion = async (req, res) => {
     await emailSender.sendContactoFinanzatech(mailOptions);
   }
 
-  -- Si la verificación tiene código 4 que es aprobado, se le envía un correo de éxito 
-  if (servicioempresaestado._idservicioempresaestado == 4) {
+  if (servicioempresaestado._idservicioempresaestado == 3) {
+    // Email de aprobado
     const dataEmail = {
-      codigo_usuario: persona.usuario_usuario.code,
-      nombres: persona.usuario_usuario.usuarionombres,
+      codigo_servicio_empresa: servicioempresa.code,
+      nombres: personasuscriptor.usuario_usuario.usuarionombres,
       fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
+      empresa_razon_social: empresa.razon_social,
+      empresa_ruc: empresa.ruc,
     };
-    const emailTemplate = await templateManager.templateCuentaUsarioVerificadaExito(dataEmail);
+    const emailTemplate = await templateManager.templateFactoringEmpresaVerificacionAprobado(dataEmail);
 
     const mailOptions = {
-      to: persona.usuario_usuario.email,
+      to: personasuscriptor.usuario_usuario.email,
+      subject: emailTemplate.subject,
+      text: emailTemplate.text,
+      html: emailTemplate.html,
+    };
+    await emailSender.sendContactoFinanzatech(mailOptions);
+  } else if (servicioempresaestado._idservicioempresaestado == 2) {
+    // Email de rechazado
+    const dataEmail = {
+      codigo_servicio_empresa: servicioempresa.code,
+      nombres: personasuscriptor.usuario_usuario.usuarionombres,
+      fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
+      empresa_razon_social: empresa.razon_social,
+      empresa_ruc: empresa.ruc,
+    };
+    const emailTemplate = await templateManager.templateFactoringEmpresaVerificacionRechazado(dataEmail);
+
+    const mailOptions = {
+      to: personasuscriptor.usuario_usuario.email,
       subject: emailTemplate.subject,
       text: emailTemplate.text,
       html: emailTemplate.html,
     };
     await emailSender.sendContactoFinanzatech(mailOptions);
   }
-*/
+
   response(res, 201, {});
 };
 

@@ -40,6 +40,94 @@ class TemplaceManager {
     return textoPlano;
   }
 
+  async templateFactoringEmpresaVerificacionMasInformacion(params) {
+    try {
+      const paramsSchema = yup
+        .object()
+        .shape({
+          codigo_servicio_empresa: yup.string().trim().required().min(1).max(20),
+          nombres: yup.string().trim().required().min(1).max(100),
+          fecha_actual: yup.string().trim().required().min(1).max(200),
+          empresa_razon_social: yup.string().trim().required().min(1).max(500),
+          empresa_ruc: yup.string().trim().required().min(1).max(20),
+          razon_no_aceptada: yup.string().trim().required().min(1).max(1000),
+        })
+        .required();
+      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+      const bodyEmailTHTML = await this.renderTemplate("factoring-empresa-verificacion-mas-informacion.html", paramsValidated);
+      const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
+      const subjectEmailText = await this.renderSubject("Información adicional requerida para su suscripción al Factoring Electrónico [{{codigo_servicio_empresa}}]", paramsValidated);
+
+      const codigoverificacionMailOptions = {
+        subject: subjectEmailText,
+        text: bodyEmailText,
+        html: bodyEmailTHTML,
+      };
+      return codigoverificacionMailOptions;
+    } catch (error) {
+      logger.error(line(), error);
+      throw error;
+    }
+  }
+
+  async templateFactoringEmpresaVerificacionRechazado(params) {
+    try {
+      const paramsSchema = yup
+        .object()
+        .shape({
+          codigo_servicio_empresa: yup.string().trim().required().min(1).max(20),
+          nombres: yup.string().trim().required().min(1).max(100),
+          fecha_actual: yup.string().trim().required().min(1).max(200),
+          empresa_razon_social: yup.string().trim().required().min(1).max(500),
+          empresa_ruc: yup.string().trim().required().min(1).max(20),
+        })
+        .required();
+      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+      const bodyEmailTHTML = await this.renderTemplate("factoring-empresa-verificacion-rechazado.html", paramsValidated);
+      const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
+      const subjectEmailText = await this.renderSubject("Actualización sobre su solicitud de suscripción al servicio de Factoring Electrónico [{{codigo_servicio_empresa}}]", paramsValidated);
+
+      const codigoverificacionMailOptions = {
+        subject: subjectEmailText,
+        text: bodyEmailText,
+        html: bodyEmailTHTML,
+      };
+      return codigoverificacionMailOptions;
+    } catch (error) {
+      logger.error(line(), error);
+      throw error;
+    }
+  }
+
+  async templateFactoringEmpresaVerificacionAprobado(params) {
+    try {
+      const paramsSchema = yup
+        .object()
+        .shape({
+          codigo_servicio_empresa: yup.string().trim().required().min(1).max(20),
+          nombres: yup.string().trim().required().min(1).max(100),
+          fecha_actual: yup.string().trim().required().min(1).max(200),
+          empresa_razon_social: yup.string().trim().required().min(1).max(500),
+          empresa_ruc: yup.string().trim().required().min(1).max(20),
+        })
+        .required();
+      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+      const bodyEmailTHTML = await this.renderTemplate("factoring-empresa-verificacion-aprobado.html", paramsValidated);
+      const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
+      const subjectEmailText = await this.renderSubject("¡Bienvenido a Factoring Electrónico! [{{codigo_servicio_empresa}}]", paramsValidated);
+
+      const codigoverificacionMailOptions = {
+        subject: subjectEmailText,
+        text: bodyEmailText,
+        html: bodyEmailTHTML,
+      };
+      return codigoverificacionMailOptions;
+    } catch (error) {
+      logger.error(line(), error);
+      throw error;
+    }
+  }
+
   async templateCodigoVerificacion(params) {
     try {
       const paramsSchema = yup

@@ -19,7 +19,7 @@ const menuMantenimiento = {
         },
         {
           id: "admin-factoring-empresa-verificacion",
-          title: "Verificación",
+          title: "Verificación empresa",
           type: "item",
           url: "/admin/servicio/factoring/empresa/verificacion/lista",
           breadcrumbs: true,
