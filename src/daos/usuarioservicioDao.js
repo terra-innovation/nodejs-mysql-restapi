@@ -103,6 +103,40 @@ export const getUsuarioservicios = async (req, estados) => {
   }
 };
 
+export const getUsuarioservicioByIdusuarioIdservicio = async (req, _idusuario, _idservicio) => {
+  try {
+    const { models } = req.app.locals;
+    const usuarioservicio = await models.UsuarioServicio.findOne({
+      include: [
+        {
+          model: models.Usuario,
+          required: true,
+          as: "usuario_usuario",
+        },
+        {
+          model: models.Servicio,
+          required: true,
+          as: "servicio_servicio",
+        },
+        {
+          model: models.UsuarioServicioEstado,
+          required: true,
+          as: "usuarioservicioestado_usuario_servicio_estado",
+        },
+      ],
+      where: {
+        _idusuario: _idusuario,
+        _idservicio: _idservicio,
+      },
+    });
+    //logger.info(line(),usuarioservicio);
+    return usuarioservicio;
+  } catch (error) {
+    logger.error(line(), error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getUsuarioservicioByIdusuarioservicio = async (req, idusuarioservicio) => {
   try {
     const { models } = req.app.locals;

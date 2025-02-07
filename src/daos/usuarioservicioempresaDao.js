@@ -2,6 +2,24 @@ import { Sequelize } from "sequelize";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
+export const getUsuarioservicioempresaByIdusuarioIdServicioIdempresa = async (req, _idusuario, _idservicio, _idempresa) => {
+  try {
+    const { models } = req.app.locals;
+    const usuarioservicioempresa = await models.UsuarioServicioEmpresa.findOne({
+      where: {
+        _idusuario: _idusuario,
+        _idservicio: _idservicio,
+        _idempresa: _idempresa,
+      },
+    });
+    //logger.info(line(),usuarioservicioempresa);
+    return usuarioservicioempresa;
+  } catch (error) {
+    logger.error(line(), error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getUsuarioservicioempresas = async (req, estados) => {
   try {
     const { models } = req.app.locals;

@@ -3,6 +3,12 @@ import * as personaDao from "../../daos/personaDao.js";
 import * as empresaDao from "../../daos/empresaDao.js";
 import * as servicioempresaestadoDao from "../../daos/servicioempresaestadoDao.js";
 import * as servicioempresaverificacionDao from "../../daos/servicioempresaverificacionDao.js";
+import * as usuarioservicioDao from "../../daos/usuarioservicioDao.js";
+import * as usuarioservicioestadoDao from "../../daos/usuarioservicioestadoDao.js";
+import * as usuarioservicioverificacionDao from "../../daos/usuarioservicioverificacionDao.js";
+import * as usuarioservicioempresaDao from "../../daos/usuarioservicioempresaDao.js";
+import * as usuarioservicioempresaestadoDao from "../../daos/usuarioservicioempresaestadoDao.js";
+import * as usuarioservicioempresarolDao from "../../daos/usuarioservicioempresarolDao.js";
 import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
@@ -51,6 +57,8 @@ export const createFactoringempresaverificacion = async (req, res) => {
     logger.warn(line(), "Servicio empresa estado no existe: [" + servicioempresaverificacionValidated.servicioempresaestadoid + "]");
     throw new ClientError("Datos no válidos", 404);
   }
+
+  // Inserta un nuevo registro en la tabla servicioempresaverificacion con el nuevo estado
   var camposFk = {};
   camposFk._idservicioempresa = servicioempresa._idservicioempresa;
   camposFk._idservicioempresaestado = servicioempresaestado._idservicioempresaestado;
@@ -74,6 +82,7 @@ export const createFactoringempresaverificacion = async (req, res) => {
   });
   logger.debug(line(), "servicioempresaverificacionCreated", servicioempresaverificacionCreated);
 
+  // Actualiza la tabla servicioempresa con el nuevo estado
   const servicioempresaUpdate = {};
   servicioempresaUpdate.servicioempresaid = servicioempresaverificacionValidated.servicioempresaid;
   servicioempresaUpdate._idservicioempresaestado = servicioempresaestado._idservicioempresaestado;
@@ -83,7 +92,102 @@ export const createFactoringempresaverificacion = async (req, res) => {
   await servicioempresaDao.updateServicioempresa(req, servicioempresaUpdate);
   logger.debug(line(), "servicioempresaUpdate", servicioempresaUpdate);
 
-  /* Prepara y envia un correo */
+  // Si el estado es estado 3 (Suscrito)
+  if (servicioempresaestado._idservicioempresaestado == 3) {
+    await darAccesoAlUsuarioServicioEmpresa(req, servicioempresa, personasuscriptor);
+    await darAccesoAlUsuarioServicio(req, servicioempresaverificacionValidated, servicioempresa, empresa, personasuscriptor);
+  }
+
+  await enviarCorreoSegunCorrespondeNuevoEstadoDeServicioEmpresa(req, servicioempresaverificacionValidated, servicioempresa, servicioempresaestado, empresa, personasuscriptor);
+
+  response(res, 201, {});
+};
+
+const darAccesoAlUsuarioServicioEmpresa = async (req, servicioempresa, personasuscriptor) => {
+  const usuarioservicioempresa = await usuarioservicioempresaDao.getUsuarioservicioempresaByIdusuarioIdServicioIdempresa(req, personasuscriptor._idusuario, servicioempresa._idservicio, servicioempresa._idempresa);
+  if (!usuarioservicioempresa) {
+    logger.warn(line(), "Usuario servicio empresa no existe: [" + personasuscriptor._idusuario + " - " + servicioempresa._idservicio + " - " + servicioempresa._idempresa + "]");
+    throw new ClientError("Datos no válidos", 404);
+  }
+
+  const usuarioservicioempresaestado_con_acceso = 2; // Con acceso
+  const usuarioservicioempresaestado = await usuarioservicioempresaestadoDao.getUsuarioservicioempresaestadoByIdusuarioservicioempresaestado(req, usuarioservicioempresaestado_con_acceso);
+  if (!usuarioservicioempresaestado) {
+    logger.warn(line(), "Usuario servicio empresa estado no existe: [" + usuarioservicioempresaestado_con_acceso + "]");
+    throw new ClientError("Datos no válidos", 404);
+  }
+
+  const usuarioservicioempresarol_administrador = 1; // Administrador
+  const usuarioservicioempresarol = await usuarioservicioempresarolDao.getUsuarioservicioempresarolByIdusuarioservicioempresarol(req, usuarioservicioempresarol_administrador);
+  if (!usuarioservicioempresarol) {
+    logger.warn(line(), "Usuario servicio empresa rol no existe: [" + usuarioservicioempresarol_administrador + "]");
+    throw new ClientError("Datos no válidos", 404);
+  }
+
+  // Actualiza la tabla usuarioservicioempresa con el nuevo estado
+  const usuarioservicioempresaUpdate = {};
+  usuarioservicioempresaUpdate.usuarioservicioempresaid = usuarioservicioempresa.usuarioservicioempresaid;
+  usuarioservicioempresaUpdate._idusuarioservicioempresaestado = usuarioservicioempresaestado._idusuarioservicioempresaestado;
+  usuarioservicioempresaUpdate._idusuarioservicioempresarol = usuarioservicioempresarol._idusuarioservicioempresarol;
+  usuarioservicioempresaUpdate.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+  usuarioservicioempresaUpdate.fechamod = Sequelize.fn("now", 3);
+
+  const usuarioservicioempresaUpdated = await usuarioservicioempresaDao.updateUsuarioservicioempresa(req, usuarioservicioempresaUpdate);
+  logger.debug(line(), "usuarioservicioempresaUpdated", usuarioservicioempresaUpdated);
+};
+
+const darAccesoAlUsuarioServicio = async (req, servicioempresaverificacionValidated, servicioempresa, empresa, personasuscriptor) => {
+  const usuarioservicio = await usuarioservicioDao.getUsuarioservicioByIdusuarioIdservicio(req, personasuscriptor._idusuario, servicioempresa._idservicio);
+  if (!usuarioservicio) {
+    logger.warn(line(), "Usuario servicio no existe: [" + personasuscriptor._idusuario + " - " + servicioempresa._idservicio + "]");
+    throw new ClientError("Datos no válidos", 404);
+  }
+
+  const usuarioservicioestado_suscrito = 2; // Suscrito
+  const usuarioservicioestado = await usuarioservicioestadoDao.getUsuarioservicioestadoByIdusuarioservicioestado(req, usuarioservicioestado_suscrito);
+  if (!usuarioservicioestado) {
+    logger.warn(line(), "Usuario servicio empresa estado no existe: [" + usuarioservicioestado_suscrito + "]");
+    throw new ClientError("Datos no válidos", 404);
+  }
+
+  // Inserta un nuevo registro en la tabla usuarioservicioverificacion con el nuevo estado
+  var camposUsuarioservicioverificacionFk = {};
+  camposUsuarioservicioverificacionFk._idusuarioservicio = usuarioservicio._idusuarioservicio;
+  camposUsuarioservicioverificacionFk._idusuarioservicioestado = usuarioservicioestado._idusuarioservicioestado;
+  camposUsuarioservicioverificacionFk._idusuarioverifica = req.session_user.usuario._idusuario;
+
+  var camposUsuarioservicioverificacionAdicionales = {};
+  camposUsuarioservicioverificacionAdicionales.usuarioservicioverificacionid = uuidv4();
+  camposUsuarioservicioverificacionAdicionales.comentariousuario = servicioempresaverificacionValidated.comentariousuario;
+  camposUsuarioservicioverificacionAdicionales.comentariointerno = servicioempresaverificacionValidated.comentariointerno + " // Proceso automático. Se concedió acceso por la verificación de la empresa: " + empresa.code + " - " + empresa.ruc + " - " + empresa.razon_social;
+
+  var camposUsuarioservicioverificacionAuditoria = {};
+  camposUsuarioservicioverificacionAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
+  camposUsuarioservicioverificacionAuditoria.fechacrea = Sequelize.fn("now", 3);
+  camposUsuarioservicioverificacionAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+  camposUsuarioservicioverificacionAuditoria.fechamod = Sequelize.fn("now", 3);
+  camposUsuarioservicioverificacionAuditoria.estado = 1;
+
+  const usuarioservicioverificacionCreated = await usuarioservicioverificacionDao.insertUsuarioservicioverificacion(req, {
+    ...camposUsuarioservicioverificacionFk,
+    ...camposUsuarioservicioverificacionAdicionales,
+    ...camposUsuarioservicioverificacionAuditoria,
+  });
+  logger.debug(line(), "usuarioservicioverificacionCreated", usuarioservicioverificacionCreated);
+
+  // Actualiza la tabla usuarioservicio con el nuevo estado
+  const usuarioservicioUpdate = {};
+  usuarioservicioUpdate.usuarioservicioid = usuarioservicio.usuarioservicioid;
+  usuarioservicioUpdate._idusuarioservicioestado = usuarioservicioestado._idusuarioservicioestado;
+  usuarioservicioUpdate.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+  usuarioservicioUpdate.fechamod = Sequelize.fn("now", 3);
+
+  const usuarioservicioUpdated = await usuarioservicioDao.updateUsuarioservicio(req, usuarioservicioUpdate);
+  logger.debug(line(), "usuarioservicioUpdated", usuarioservicioUpdated);
+};
+
+const enviarCorreoSegunCorrespondeNuevoEstadoDeServicioEmpresa = async (req, servicioempresaverificacionValidated, servicioempresa, servicioempresaestado, empresa, personasuscriptor) => {
+  // Prepara y envia un correo
   const templateManager = new TemplateManager();
   const emailSender = new EmailSender();
 
@@ -146,8 +250,6 @@ export const createFactoringempresaverificacion = async (req, res) => {
     };
     await emailSender.sendContactoFinanzatech(mailOptions);
   }
-
-  response(res, 201, {});
 };
 
 export const getFactoringempresasByVerificacion = async (req, res) => {
