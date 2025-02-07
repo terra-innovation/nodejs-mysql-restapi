@@ -45,6 +45,11 @@ export default class PersonaVerificacionEstado extends Model {
       defaultValue: 0,
       comment: "True si el usuario puede editar su solicitud de verificación"
     },
+    isenabledcomentariousuario: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: 0
+    },
     idusuariocrea: {
       type: DataTypes.INTEGER,
       allowNull: false,

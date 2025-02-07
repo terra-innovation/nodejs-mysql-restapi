@@ -47,6 +47,11 @@ export default class ServicioEmpresaEstado extends Model {
       allowNull: false,
       defaultValue: 0
     },
+    isenabledcomentariousuario: {
+      type: DataTypes.TINYINT,
+      allowNull: false,
+      defaultValue: 0
+    },
     idusuariocrea: {
       type: DataTypes.INTEGER,
       allowNull: false,

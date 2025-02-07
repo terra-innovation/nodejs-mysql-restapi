@@ -219,27 +219,35 @@ export const createPersonaverificacion = async (req, res) => {
     await usuarioservicioDao.habilitarServiciosParaUsuario(req, persona.usuario_usuario._idusuario);
   }
 
-  /* Prepara y envia un correo */
+  await enviarCorreoSegunCorrespondeNuevoEstadoDePersona(req, personaverificacionValidated, personaverificacionestado, persona);
+
+  response(res, 201, {});
+};
+
+const enviarCorreoSegunCorrespondeNuevoEstadoDePersona = async (req, personaverificacionValidated, personaverificacionestado, persona) => {
+  // Prepara y envia un correo
   const templateManager = new TemplateManager();
   const emailSender = new EmailSender();
 
-  if (personaverificacionValidated.comentariousuario) {
-    const dataEmail = {
-      codigo_usuario: persona.usuario_usuario.code,
-      nombres: persona.usuario_usuario.usuarionombres,
-      razon_no_aceptada: personaverificacionValidated.comentariousuario,
-      fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
-    };
-    const emailTemplate = await templateManager.templateCuentaUsarioVerificadaMasInformacion(dataEmail);
+  if (personaverificacionestado.isenabledcomentariousuario) {
+    if (personaverificacionValidated.comentariousuario) {
+      const dataEmail = {
+        codigo_usuario: persona.usuario_usuario.code,
+        nombres: persona.usuario_usuario.usuarionombres,
+        razon_no_aceptada: personaverificacionValidated.comentariousuario,
+        fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
+      };
+      const emailTemplate = await templateManager.templateCuentaUsarioVerificadaMasInformacion(dataEmail);
 
-    const mailOptions = {
-      to: persona.usuario_usuario.email,
-      subject: emailTemplate.subject,
-      text: emailTemplate.text,
-      html: emailTemplate.html,
-    };
+      const mailOptions = {
+        to: persona.usuario_usuario.email,
+        subject: emailTemplate.subject,
+        text: emailTemplate.text,
+        html: emailTemplate.html,
+      };
 
-    await emailSender.sendContactoFinanzatech(mailOptions);
+      await emailSender.sendContactoFinanzatech(mailOptions);
+    }
   }
 
   /* Si la verificación tiene código 4 que es aprobado, se le envía un correo de éxito */
@@ -259,6 +267,4 @@ export const createPersonaverificacion = async (req, res) => {
     };
     await emailSender.sendContactoFinanzatech(mailOptions);
   }
-
-  response(res, 201, {});
 };

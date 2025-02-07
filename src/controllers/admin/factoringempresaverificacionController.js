@@ -191,26 +191,28 @@ const enviarCorreoSegunCorrespondeNuevoEstadoDeServicioEmpresa = async (req, ser
   const templateManager = new TemplateManager();
   const emailSender = new EmailSender();
 
-  if (servicioempresaverificacionValidated.comentariousuario) {
-    // Email de más información
-    const dataEmail = {
-      codigo_servicio_empresa: servicioempresa.code,
-      nombres: personasuscriptor.usuario_usuario.usuarionombres,
-      fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
-      empresa_razon_social: empresa.razon_social,
-      empresa_ruc: empresa.ruc,
-      razon_no_aceptada: servicioempresaverificacionValidated.comentariousuario,
-    };
-    const emailTemplate = await templateManager.templateFactoringEmpresaVerificacionMasInformacion(dataEmail);
+  if (servicioempresaestado.isenabledcomentariousuario) {
+    if (servicioempresaverificacionValidated.comentariousuario) {
+      // Email de más información
+      const dataEmail = {
+        codigo_servicio_empresa: servicioempresa.code,
+        nombres: personasuscriptor.usuario_usuario.usuarionombres,
+        fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
+        empresa_razon_social: empresa.razon_social,
+        empresa_ruc: empresa.ruc,
+        razon_no_aceptada: servicioempresaverificacionValidated.comentariousuario,
+      };
+      const emailTemplate = await templateManager.templateFactoringEmpresaVerificacionMasInformacion(dataEmail);
 
-    const mailOptions = {
-      to: personasuscriptor.usuario_usuario.email,
-      subject: emailTemplate.subject,
-      text: emailTemplate.text,
-      html: emailTemplate.html,
-    };
+      const mailOptions = {
+        to: personasuscriptor.usuario_usuario.email,
+        subject: emailTemplate.subject,
+        text: emailTemplate.text,
+        html: emailTemplate.html,
+      };
 
-    await emailSender.sendContactoFinanzatech(mailOptions);
+      await emailSender.sendContactoFinanzatech(mailOptions);
+    }
   }
 
   if (servicioempresaestado._idservicioempresaestado == 3) {
