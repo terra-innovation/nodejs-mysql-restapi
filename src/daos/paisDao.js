@@ -1,16 +1,17 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getPaises = async (req, estados) => {
+export const getPaises = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const paises = await models.Pais.findAll({
+    const paises = await modelsFT.Pais.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),paises);
     return paises;
@@ -21,11 +22,9 @@ export const getPaises = async (req, estados) => {
   }
 };
 
-export const getPaisByIdpais = async (req, idpais) => {
+export const getPaisByIdpais = async (transaction, idpais) => {
   try {
-    const { models } = req.app.locals;
-
-    const pais = await models.Pais.findByPk(idpais, {});
+    const pais = await modelsFT.Pais.findByPk(idpais, { transaction });
     logger.info(line(), pais);
 
     //const paises = await pais.getPaises();
@@ -38,13 +37,13 @@ export const getPaisByIdpais = async (req, idpais) => {
   }
 };
 
-export const getPaisByPaisid = async (req, paisid) => {
+export const getPaisByPaisid = async (transaction, paisid) => {
   try {
-    const { models } = req.app.locals;
-    const pais = await models.Pais.findOne({
+    const pais = await modelsFT.Pais.findOne({
       where: {
         paisid: paisid,
       },
+      transaction,
     });
     //logger.info(line(),pais);
     return pais;
@@ -54,14 +53,14 @@ export const getPaisByPaisid = async (req, paisid) => {
   }
 };
 
-export const findPaisPk = async (req, paisid) => {
+export const findPaisPk = async (transaction, paisid) => {
   try {
-    const { models } = req.app.locals;
-    const pais = await models.Pais.findOne({
+    const pais = await modelsFT.Pais.findOne({
       attributes: ["_idpais"],
       where: {
         paisid: paisid,
       },
+      transaction,
     });
     //logger.info(line(),pais);
     return pais;
@@ -71,10 +70,9 @@ export const findPaisPk = async (req, paisid) => {
   }
 };
 
-export const insertPais = async (req, pais) => {
+export const insertPais = async (transaction, pais) => {
   try {
-    const { models } = req.app.locals;
-    const pais_nuevo = await models.Pais.create(pais);
+    const pais_nuevo = await modelsFT.Pais.create(pais, { transaction });
     // logger.info(line(),pais_nuevo);
     return pais_nuevo;
   } catch (error) {
@@ -83,13 +81,13 @@ export const insertPais = async (req, pais) => {
   }
 };
 
-export const updatePais = async (req, pais) => {
+export const updatePais = async (transaction, pais) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Pais.update(pais, {
+    const result = await modelsFT.Pais.update(pais, {
       where: {
         paisid: pais.paisid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -98,13 +96,13 @@ export const updatePais = async (req, pais) => {
   }
 };
 
-export const deletePais = async (req, pais) => {
+export const deletePais = async (transaction, pais) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Pais.update(pais, {
+    const result = await modelsFT.Pais.update(pais, {
       where: {
         paisid: pais.paisid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

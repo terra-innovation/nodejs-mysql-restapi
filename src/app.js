@@ -19,6 +19,7 @@ import factoringestadosRoutes from "./routes/factoringestados.routes.js";
 import factoringtiposRoutes from "./routes/factoringtipos.routes.js";
 import riesgosRoutes from "./routes/riesgos.routes.js";
 
+import admin_zlaboratorioRoutes from "./routes/admin/zlaboratorio.routes.js";
 import admin_cuentabancariaRoutes from "./routes/admin/cuentabancaria.routes.js";
 import admin_cuentabancariaestadoRoutes from "./routes/admin/cuentabancariaestado.routes.js";
 import admin_empresaRoutes from "./routes/admin/empresa.routes.js";
@@ -35,7 +36,7 @@ import usuario_usuarioservicioRoutes from "./routes/usuario/usuarioservicio.rout
 import secureRoutes from "./routes/secure/secure.routes.js";
 import { customResponseError } from "./utils/CustomResponseError.js";
 import { ValidationError } from "yup";
-import sequelize from "./config/bd/sequelize_db_factoring.js";
+import { sequelizeFT } from "./config/bd/sequelize_db_factoring.js";
 import initModels from "./models/ft_factoring/init-models.js";
 
 import usuario_menuRoutes from "./routes/usuario/menu.routes.js";
@@ -80,7 +81,10 @@ app.use("/api/v1", factoringsRoutes);
 app.use("/api/v1", factoringestadosRoutes);
 app.use("/api/v1", factoringtiposRoutes);
 app.use("/api/v1", riesgosRoutes);
+
 app.use("/api/v1", empresario_cuentabancariaRoutes);
+
+app.use("/api/v1", admin_zlaboratorioRoutes);
 app.use("/api/v1", admin_cuentabancariaRoutes);
 app.use("/api/v1", admin_cuentabancariaestadoRoutes);
 app.use("/api/v1", admin_empresaRoutes);
@@ -102,8 +106,8 @@ app.use((req, res, next) => {
 });
 
 // Para conexión de BBDD sequelizer
-app.locals.sequelize = sequelize;
-app.locals.models = initModels(sequelize);
+app.locals.sequelize = sequelizeFT;
+app.locals.models = initModels(sequelizeFT);
 
 // Middleware de manejo de errores global
 app.use((err, req, res, next) => {

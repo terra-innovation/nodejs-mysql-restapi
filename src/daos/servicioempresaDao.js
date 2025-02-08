@@ -1,29 +1,29 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getFactoringempresasByVerificacion = async (req, estadologico, _idservicio, _idarchivotipos) => {
+export const getFactoringempresasByVerificacion = async (transaction, estadologico, _idservicio, _idarchivotipos) => {
   try {
-    const { models } = req.app.locals;
-    const personas = await models.ServicioEmpresa.findAll({
+    const personas = await modelsFT.ServicioEmpresa.findAll({
       include: [
         {
-          model: models.Servicio,
+          model: modelsFT.Servicio,
           required: true,
           as: "servicio_servicio",
         },
         {
-          model: models.Empresa,
+          model: modelsFT.Empresa,
           required: true,
           as: "empresa_empresa",
           include: [
             {
-              model: models.Archivo,
+              model: modelsFT.Archivo,
               required: true,
               as: "archivo_archivo_archivo_empresas",
               include: [
                 {
-                  model: models.ArchivoTipo,
+                  model: modelsFT.ArchivoTipo,
                   required: true,
                   as: "archivotipo_archivo_tipo",
                 },
@@ -35,37 +35,37 @@ export const getFactoringempresasByVerificacion = async (req, estadologico, _ids
               },
             },
             {
-              model: models.CuentaBancaria,
+              model: modelsFT.CuentaBancaria,
               required: true,
               as: "cuentabancaria_cuenta_bancaria_empresa_cuenta_bancaria",
               include: [
                 {
-                  model: models.Banco,
+                  model: modelsFT.Banco,
                   required: true,
                   as: "banco_banco",
                 },
                 {
-                  model: models.Moneda,
+                  model: modelsFT.Moneda,
                   required: true,
                   as: "moneda_moneda",
                 },
                 {
-                  model: models.CuentaTipo,
+                  model: modelsFT.CuentaTipo,
                   required: true,
                   as: "cuentatipo_cuenta_tipo",
                 },
                 {
-                  model: models.CuentaBancariaEstado,
+                  model: modelsFT.CuentaBancariaEstado,
                   required: true,
                   as: "cuentabancariaestado_cuenta_bancaria_estado",
                 },
                 {
-                  model: models.Archivo,
+                  model: modelsFT.Archivo,
                   required: true,
                   as: "archivo_archivo_archivo_cuenta_bancaria",
                   include: [
                     {
-                      model: models.ArchivoTipo,
+                      model: modelsFT.ArchivoTipo,
                       required: true,
                       as: "archivotipo_archivo_tipo",
                     },
@@ -79,27 +79,27 @@ export const getFactoringempresasByVerificacion = async (req, estadologico, _ids
               ],
             },
             {
-              model: models.Colaborador,
+              model: modelsFT.Colaborador,
               required: true,
               as: "colaboradors",
               include: [
                 {
-                  model: models.ColaboradorTipo,
+                  model: modelsFT.ColaboradorTipo,
                   required: true,
                   as: "colaboradortipo_colaborador_tipo",
                 },
                 {
-                  model: models.DocumentoTipo,
+                  model: modelsFT.DocumentoTipo,
                   required: true,
                   as: "documentotipo_documento_tipo",
                 },
                 {
-                  model: models.Archivo,
+                  model: modelsFT.Archivo,
                   required: true,
                   as: "archivo_archivos",
                   include: [
                     {
-                      model: models.ArchivoTipo,
+                      model: modelsFT.ArchivoTipo,
                       required: true,
                       as: "archivotipo_archivo_tipo",
                     },
@@ -113,22 +113,22 @@ export const getFactoringempresasByVerificacion = async (req, estadologico, _ids
               ],
             },
             {
-              model: models.Pais,
+              model: modelsFT.Pais,
               required: true,
               as: "paissede_pai",
             },
             {
-              model: models.Distrito,
+              model: modelsFT.Distrito,
               required: true,
               as: "distritosede_distrito",
               include: [
                 {
-                  model: models.Provincia,
+                  model: modelsFT.Provincia,
                   requerid: true,
                   as: "provincia_provincium",
                   include: [
                     {
-                      model: models.Departamento,
+                      model: modelsFT.Departamento,
                       requerid: true,
                       as: "departamento_departamento",
                     },
@@ -139,27 +139,27 @@ export const getFactoringempresasByVerificacion = async (req, estadologico, _ids
           ],
         },
         {
-          model: models.Usuario,
+          model: modelsFT.Usuario,
           required: true,
           as: "usuariosuscriptor_usuario",
         },
         {
-          model: models.ServicioEmpresaEstado,
+          model: modelsFT.ServicioEmpresaEstado,
           required: true,
           as: "servicioempresaestado_servicio_empresa_estado",
         },
         {
-          model: models.ServicioEmpresaVerificacion,
+          model: modelsFT.ServicioEmpresaVerificacion,
           required: true,
           as: "servicio_empresa_verificacions",
           include: [
             {
-              model: models.ServicioEmpresaEstado,
+              model: modelsFT.ServicioEmpresaEstado,
               required: true,
               as: "servicioempresaestado_servicio_empresa_estado",
             },
             {
-              model: models.Usuario,
+              model: modelsFT.Usuario,
               required: true,
               as: "usuarioverifica_usuario",
             },
@@ -174,6 +174,7 @@ export const getFactoringempresasByVerificacion = async (req, estadologico, _ids
           [Sequelize.Op.in]: estadologico,
         },
       },
+      transaction,
     });
     //logger.info(line(),personas);
     return personas;
@@ -183,15 +184,15 @@ export const getFactoringempresasByVerificacion = async (req, estadologico, _ids
   }
 };
 
-export const getServicioempresas = async (req, estados) => {
+export const getServicioempresas = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const servicioempresas = await models.ServicioEmpresa.findAll({
+    const servicioempresas = await modelsFT.ServicioEmpresa.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),servicioempresas);
     return servicioempresas;
@@ -202,11 +203,9 @@ export const getServicioempresas = async (req, estados) => {
   }
 };
 
-export const getServicioempresaByIdservicioempresa = async (req, idservicioempresa) => {
+export const getServicioempresaByIdservicioempresa = async (transaction, idservicioempresa) => {
   try {
-    const { models } = req.app.locals;
-
-    const servicioempresa = await models.ServicioEmpresa.findByPk(idservicioempresa, {});
+    const servicioempresa = await modelsFT.ServicioEmpresa.findByPk(idservicioempresa, { transaction });
     logger.info(line(), servicioempresa);
 
     //const servicioempresas = await servicioempresa.getServicioempresas();
@@ -219,13 +218,13 @@ export const getServicioempresaByIdservicioempresa = async (req, idservicioempre
   }
 };
 
-export const getServicioempresaByServicioempresaid = async (req, servicioempresaid) => {
+export const getServicioempresaByServicioempresaid = async (transaction, servicioempresaid) => {
   try {
-    const { models } = req.app.locals;
-    const servicioempresa = await models.ServicioEmpresa.findOne({
+    const servicioempresa = await modelsFT.ServicioEmpresa.findOne({
       where: {
         servicioempresaid: servicioempresaid,
       },
+      transaction,
     });
     //logger.info(line(),servicioempresa);
     return servicioempresa;
@@ -235,14 +234,14 @@ export const getServicioempresaByServicioempresaid = async (req, servicioempresa
   }
 };
 
-export const findServicioempresaPk = async (req, servicioempresaid) => {
+export const findServicioempresaPk = async (transaction, servicioempresaid) => {
   try {
-    const { models } = req.app.locals;
-    const servicioempresa = await models.ServicioEmpresa.findOne({
+    const servicioempresa = await modelsFT.ServicioEmpresa.findOne({
       attributes: ["_idservicioempresa"],
       where: {
         servicioempresaid: servicioempresaid,
       },
+      transaction,
     });
     //logger.info(line(),servicioempresa);
     return servicioempresa;
@@ -252,10 +251,9 @@ export const findServicioempresaPk = async (req, servicioempresaid) => {
   }
 };
 
-export const insertServicioempresa = async (req, servicioempresa) => {
+export const insertServicioempresa = async (transaction, servicioempresa) => {
   try {
-    const { models } = req.app.locals;
-    const servicioempresa_nuevo = await models.ServicioEmpresa.create(servicioempresa);
+    const servicioempresa_nuevo = await modelsFT.ServicioEmpresa.create(servicioempresa, { transaction });
     // logger.info(line(),servicioempresa_nuevo);
     return servicioempresa_nuevo;
   } catch (error) {
@@ -264,13 +262,13 @@ export const insertServicioempresa = async (req, servicioempresa) => {
   }
 };
 
-export const updateServicioempresa = async (req, servicioempresa) => {
+export const updateServicioempresa = async (transaction, servicioempresa) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.ServicioEmpresa.update(servicioempresa, {
+    const result = await modelsFT.ServicioEmpresa.update(servicioempresa, {
       where: {
         servicioempresaid: servicioempresa.servicioempresaid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -279,13 +277,13 @@ export const updateServicioempresa = async (req, servicioempresa) => {
   }
 };
 
-export const deleteServicioempresa = async (req, servicioempresa) => {
+export const deleteServicioempresa = async (transaction, servicioempresa) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.ServicioEmpresa.update(servicioempresa, {
+    const result = await modelsFT.ServicioEmpresa.update(servicioempresa, {
       where: {
         servicioempresaid: servicioempresa.servicioempresaid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

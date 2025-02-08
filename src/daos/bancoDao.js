@@ -1,16 +1,17 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getBancos = async (req, estados) => {
+export const getBancos = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const bancos = await models.Banco.findAll({
+    const bancos = await modelsFT.Banco.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),bancos);
     return bancos;
@@ -21,11 +22,9 @@ export const getBancos = async (req, estados) => {
   }
 };
 
-export const getBancoByIdbanco = async (req, idbanco) => {
+export const getBancoByIdbanco = async (transaction, idbanco) => {
   try {
-    const { models } = req.app.locals;
-
-    const banco = await models.Banco.findByPk(idbanco, {});
+    const banco = await modelsFT.Banco.findByPk(idbanco, { transaction });
     logger.info(line(), banco);
 
     //const bancos = await banco.getBancos();
@@ -38,13 +37,13 @@ export const getBancoByIdbanco = async (req, idbanco) => {
   }
 };
 
-export const getBancoByBancoid = async (req, bancoid) => {
+export const getBancoByBancoid = async (transaction, bancoid) => {
   try {
-    const { models } = req.app.locals;
-    const banco = await models.Banco.findOne({
+    const banco = await modelsFT.Banco.findOne({
       where: {
         bancoid: bancoid,
       },
+      transaction,
     });
     //logger.info(line(),banco);
     return banco;
@@ -54,14 +53,14 @@ export const getBancoByBancoid = async (req, bancoid) => {
   }
 };
 
-export const findBancoPk = async (req, bancoid) => {
+export const findBancoPk = async (transaction, bancoid) => {
   try {
-    const { models } = req.app.locals;
-    const banco = await models.Banco.findOne({
+    const banco = await modelsFT.Banco.findOne({
       attributes: ["_idbanco"],
       where: {
         bancoid: bancoid,
       },
+      transaction,
     });
     //logger.info(line(),banco);
     return banco;
@@ -71,10 +70,9 @@ export const findBancoPk = async (req, bancoid) => {
   }
 };
 
-export const insertBanco = async (req, banco) => {
+export const insertBanco = async (transaction, banco) => {
   try {
-    const { models } = req.app.locals;
-    const banco_nuevo = await models.Banco.create(banco);
+    const banco_nuevo = await modelsFT.Banco.create(banco, { transaction });
     // logger.info(line(),banco_nuevo);
     return banco_nuevo;
   } catch (error) {
@@ -83,13 +81,13 @@ export const insertBanco = async (req, banco) => {
   }
 };
 
-export const updateBanco = async (req, banco) => {
+export const updateBanco = async (transaction, banco) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Banco.update(banco, {
+    const result = await modelsFT.Banco.update(banco, {
       where: {
         bancoid: banco.bancoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -98,13 +96,13 @@ export const updateBanco = async (req, banco) => {
   }
 };
 
-export const deleteBanco = async (req, banco) => {
+export const deleteBanco = async (transaction, banco) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Banco.update(banco, {
+    const result = await modelsFT.Banco.update(banco, {
       where: {
         bancoid: banco.bancoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

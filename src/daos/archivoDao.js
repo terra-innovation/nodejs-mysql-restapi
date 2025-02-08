@@ -1,16 +1,17 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getArchivos = async (req, estados) => {
+export const getArchivos = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const archivos = await models.Archivo.findAll({
+    const archivos = await modelsFT.Archivo.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),archivos);
     return archivos;
@@ -21,11 +22,9 @@ export const getArchivos = async (req, estados) => {
   }
 };
 
-export const getArchivoByIdarchivo = async (req, idarchivo) => {
+export const getArchivoByIdarchivo = async (transaction, idarchivo) => {
   try {
-    const { models } = req.app.locals;
-
-    const archivo = await models.Archivo.findByPk(idarchivo, {});
+    const archivo = await modelsFT.Archivo.findByPk(idarchivo, { transaction });
     logger.info(line(), archivo);
 
     //const archivos = await archivo.getArchivos();
@@ -38,13 +37,13 @@ export const getArchivoByIdarchivo = async (req, idarchivo) => {
   }
 };
 
-export const getArchivoByArchivoid = async (req, archivoid) => {
+export const getArchivoByArchivoid = async (transaction, archivoid) => {
   try {
-    const { models } = req.app.locals;
-    const archivo = await models.Archivo.findOne({
+    const archivo = await modelsFT.Archivo.findOne({
       where: {
         archivoid: archivoid,
       },
+      transaction,
     });
     //logger.info(line(),archivo);
     return archivo;
@@ -54,14 +53,14 @@ export const getArchivoByArchivoid = async (req, archivoid) => {
   }
 };
 
-export const findArchivoPk = async (req, archivoid) => {
+export const findArchivoPk = async (transaction, archivoid) => {
   try {
-    const { models } = req.app.locals;
-    const archivo = await models.Archivo.findOne({
+    const archivo = await modelsFT.Archivo.findOne({
       attributes: ["_idarchivo"],
       where: {
         archivoid: archivoid,
       },
+      transaction,
     });
     //logger.info(line(),archivo);
     return archivo;
@@ -71,10 +70,9 @@ export const findArchivoPk = async (req, archivoid) => {
   }
 };
 
-export const insertArchivo = async (req, archivo) => {
+export const insertArchivo = async (transaction, archivo) => {
   try {
-    const { models } = req.app.locals;
-    const archivo_nuevo = await models.Archivo.create(archivo);
+    const archivo_nuevo = await modelsFT.Archivo.create(archivo, { transaction });
     // logger.info(line(),archivo_nuevo);
     return archivo_nuevo;
   } catch (error) {
@@ -83,13 +81,13 @@ export const insertArchivo = async (req, archivo) => {
   }
 };
 
-export const updateArchivo = async (req, archivo) => {
+export const updateArchivo = async (transaction, archivo) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Archivo.update(archivo, {
+    const result = await modelsFT.Archivo.update(archivo, {
       where: {
         archivoid: archivo.archivoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -98,13 +96,13 @@ export const updateArchivo = async (req, archivo) => {
   }
 };
 
-export const deleteArchivo = async (req, archivo) => {
+export const deleteArchivo = async (transaction, archivo) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Archivo.update(archivo, {
+    const result = await modelsFT.Archivo.update(archivo, {
       where: {
         archivoid: archivo.archivoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

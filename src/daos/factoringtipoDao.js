@@ -1,16 +1,17 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getFactoringtipos = async (req, estados) => {
+export const getFactoringtipos = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const factoringtipos = await models.FactoringTipo.findAll({
+    const factoringtipos = await modelsFT.FactoringTipo.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),factoringtipos);
     return factoringtipos;
@@ -21,11 +22,9 @@ export const getFactoringtipos = async (req, estados) => {
   }
 };
 
-export const getFactoringtipoByIdfactoringtipo = async (req, idfactoringtipo) => {
+export const getFactoringtipoByIdfactoringtipo = async (transaction, idfactoringtipo) => {
   try {
-    const { models } = req.app.locals;
-
-    const factoringtipo = await models.FactoringTipo.findByPk(idfactoringtipo, {});
+    const factoringtipo = await modelsFT.FactoringTipo.findByPk(idfactoringtipo, { transaction });
     logger.info(line(), factoringtipo);
 
     //const factoringtipos = await factoringtipo.getFactoringtipos();
@@ -38,13 +37,13 @@ export const getFactoringtipoByIdfactoringtipo = async (req, idfactoringtipo) =>
   }
 };
 
-export const getFactoringtipoByFactoringtipoid = async (req, factoringtipoid) => {
+export const getFactoringtipoByFactoringtipoid = async (transaction, factoringtipoid) => {
   try {
-    const { models } = req.app.locals;
-    const factoringtipo = await models.FactoringTipo.findOne({
+    const factoringtipo = await modelsFT.FactoringTipo.findOne({
       where: {
         factoringtipoid: factoringtipoid,
       },
+      transaction,
     });
     //logger.info(line(),factoringtipo);
     return factoringtipo;
@@ -54,14 +53,14 @@ export const getFactoringtipoByFactoringtipoid = async (req, factoringtipoid) =>
   }
 };
 
-export const findFactoringtipoPk = async (req, factoringtipoid) => {
+export const findFactoringtipoPk = async (transaction, factoringtipoid) => {
   try {
-    const { models } = req.app.locals;
-    const factoringtipo = await models.FactoringTipo.findOne({
+    const factoringtipo = await modelsFT.FactoringTipo.findOne({
       attributes: ["_idfactoringtipo"],
       where: {
         factoringtipoid: factoringtipoid,
       },
+      transaction,
     });
     //logger.info(line(),factoringtipo);
     return factoringtipo;
@@ -71,10 +70,9 @@ export const findFactoringtipoPk = async (req, factoringtipoid) => {
   }
 };
 
-export const insertFactoringtipo = async (req, factoringtipo) => {
+export const insertFactoringtipo = async (transaction, factoringtipo) => {
   try {
-    const { models } = req.app.locals;
-    const factoringtipo_nuevo = await models.FactoringTipo.create(factoringtipo);
+    const factoringtipo_nuevo = await modelsFT.FactoringTipo.create(factoringtipo, { transaction });
     // logger.info(line(),factoringtipo_nuevo);
     return factoringtipo_nuevo;
   } catch (error) {
@@ -83,13 +81,13 @@ export const insertFactoringtipo = async (req, factoringtipo) => {
   }
 };
 
-export const updateFactoringtipo = async (req, factoringtipo) => {
+export const updateFactoringtipo = async (transaction, factoringtipo) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.FactoringTipo.update(factoringtipo, {
+    const result = await modelsFT.FactoringTipo.update(factoringtipo, {
       where: {
         factoringtipoid: factoringtipo.factoringtipoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -98,13 +96,13 @@ export const updateFactoringtipo = async (req, factoringtipo) => {
   }
 };
 
-export const deleteFactoringtipo = async (req, factoringtipo) => {
+export const deleteFactoringtipo = async (transaction, factoringtipo) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.FactoringTipo.update(factoringtipo, {
+    const result = await modelsFT.FactoringTipo.update(factoringtipo, {
       where: {
         factoringtipoid: factoringtipo.factoringtipoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

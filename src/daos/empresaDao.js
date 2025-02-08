@@ -1,14 +1,14 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getEmpresasByIdusuario = async (req, _idusuario, estados) => {
+export const getEmpresasByIdusuario = async (transaction, _idusuario, estados) => {
   try {
-    const { models } = req.app.locals;
-    const empresas = await models.Empresa.findAll({
+    const empresas = await modelsFT.Empresa.findAll({
       include: [
         {
-          model: models.UsuarioEmpresa,
+          model: modelsFT.UsuarioEmpresa,
           as: "usuario_empresas",
           where: {
             _idusuario: _idusuario,
@@ -23,6 +23,7 @@ export const getEmpresasByIdusuario = async (req, _idusuario, estados) => {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),empresas);
     return empresas;
@@ -32,13 +33,12 @@ export const getEmpresasByIdusuario = async (req, _idusuario, estados) => {
   }
 };
 
-export const getEmpresaByIdusuarioAndRuc = async (req, _idusuario, ruc, estado) => {
+export const getEmpresaByIdusuarioAndRuc = async (transaction, _idusuario, ruc, estado) => {
   try {
-    const { models } = req.app.locals;
-    const empresas = await models.Empresa.findOne({
+    const empresas = await modelsFT.Empresa.findOne({
       include: [
         {
-          model: models.UsuarioEmpresa,
+          model: modelsFT.UsuarioEmpresa,
           as: "usuario_empresas",
           where: {
             _idusuario: _idusuario,
@@ -50,6 +50,7 @@ export const getEmpresaByIdusuarioAndRuc = async (req, _idusuario, ruc, estado) 
         ruc: ruc,
         estado: estado,
       },
+      transaction,
     });
     //logger.info(line(),empresas);
     return empresas;
@@ -59,13 +60,12 @@ export const getEmpresaByIdusuarioAndRuc = async (req, _idusuario, ruc, estado) 
   }
 };
 
-export const getEmpresaByIdusuarioAndEmpresaid = async (req, _idusuario, empresaid, estado) => {
+export const getEmpresaByIdusuarioAndEmpresaid = async (transaction, _idusuario, empresaid, estado) => {
   try {
-    const { models } = req.app.locals;
-    const empresas = await models.Empresa.findOne({
+    const empresas = await modelsFT.Empresa.findOne({
       include: [
         {
-          model: models.UsuarioEmpresa,
+          model: modelsFT.UsuarioEmpresa,
           as: "usuario_empresas",
           where: {
             _idusuario: _idusuario,
@@ -77,6 +77,7 @@ export const getEmpresaByIdusuarioAndEmpresaid = async (req, _idusuario, empresa
         empresaid: empresaid,
         estado: estado,
       },
+      transaction,
     });
     //logger.info(line(),empresas);
     return empresas;
@@ -86,15 +87,15 @@ export const getEmpresaByIdusuarioAndEmpresaid = async (req, _idusuario, empresa
   }
 };
 
-export const getEmpresas = async (req, estados) => {
+export const getEmpresas = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const empresas = await models.Empresa.findAll({
+    const empresas = await modelsFT.Empresa.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),empresas);
     return empresas;
@@ -104,17 +105,16 @@ export const getEmpresas = async (req, estados) => {
   }
 };
 
-export const getEmpresaByIdempresa = async (req, idempresa) => {
+export const getEmpresaByIdempresa = async (transaction, idempresa) => {
   try {
-    const { models } = req.app.locals;
-
-    const empresa = await models.Empresa.findByPk(idempresa, {
+    const empresa = await modelsFT.Empresa.findByPk(idempresa, {
       include: [
         {
-          model: models.Colaborador,
+          model: modelsFT.Colaborador,
           as: "colaboradors",
         },
       ],
+      transaction,
     });
     logger.info(line(), empresa);
 
@@ -128,19 +128,19 @@ export const getEmpresaByIdempresa = async (req, idempresa) => {
   }
 };
 
-export const getEmpresaByEmpresaid = async (req, empresaid) => {
+export const getEmpresaByEmpresaid = async (transaction, empresaid) => {
   try {
-    const { models } = req.app.locals;
-    const empresa = await models.Empresa.findAll({
+    const empresa = await modelsFT.Empresa.findAll({
       include: [
         {
-          model: models.Colaborador,
+          model: modelsFT.Colaborador,
           as: "colaboradors",
         },
       ],
       where: {
         empresaid: empresaid,
       },
+      transaction,
     });
     //logger.info(line(),empresa);
     return empresa;
@@ -150,13 +150,13 @@ export const getEmpresaByEmpresaid = async (req, empresaid) => {
   }
 };
 
-export const getEmpresaByRuc = async (req, ruc) => {
+export const getEmpresaByRuc = async (transaction, ruc) => {
   try {
-    const { models } = req.app.locals;
-    const empresa = await models.Empresa.findAll({
+    const empresa = await modelsFT.Empresa.findAll({
       where: {
         ruc: ruc,
       },
+      transaction,
     });
     //logger.info(line(),empresa);
     return empresa;
@@ -166,14 +166,14 @@ export const getEmpresaByRuc = async (req, ruc) => {
   }
 };
 
-export const findEmpresaPk = async (req, empresaid) => {
+export const findEmpresaPk = async (transaction, empresaid) => {
   try {
-    const { models } = req.app.locals;
-    const empresa = await models.Empresa.findOne({
+    const empresa = await modelsFT.Empresa.findOne({
       attributes: ["_idempresa"],
       where: {
         empresaid: empresaid,
       },
+      transaction,
     });
     //logger.info(line(),empresa);
     return empresa;
@@ -183,10 +183,9 @@ export const findEmpresaPk = async (req, empresaid) => {
   }
 };
 
-export const insertEmpresa = async (req, empresa) => {
+export const insertEmpresa = async (transaction, empresa) => {
   try {
-    const { models } = req.app.locals;
-    const empresa_nuevo = await models.Empresa.create(empresa);
+    const empresa_nuevo = await modelsFT.Empresa.create(empresa, { transaction });
     // logger.info(line(),empresa_nuevo);
     return empresa_nuevo;
   } catch (error) {
@@ -195,13 +194,13 @@ export const insertEmpresa = async (req, empresa) => {
   }
 };
 
-export const updateEmpresa = async (req, empresa) => {
+export const updateEmpresa = async (transaction, empresa) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Empresa.update(empresa, {
+    const result = await modelsFT.Empresa.update(empresa, {
       where: {
         empresaid: empresa.empresaid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -210,13 +209,13 @@ export const updateEmpresa = async (req, empresa) => {
   }
 };
 
-export const deleteEmpresa = async (req, empresa) => {
+export const deleteEmpresa = async (transaction, empresa) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Empresa.update(empresa, {
+    const result = await modelsFT.Empresa.update(empresa, {
       where: {
         empresaid: empresa.empresaid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -225,13 +224,13 @@ export const deleteEmpresa = async (req, empresa) => {
   }
 };
 
-export const activateEmpresa = async (req, empresa) => {
+export const activateEmpresa = async (transaction, empresa) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Empresa.update(empresa, {
+    const result = await modelsFT.Empresa.update(empresa, {
       where: {
         empresaid: empresa.empresaid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

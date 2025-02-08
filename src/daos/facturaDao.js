@@ -1,14 +1,15 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getFacturasActivas = async (req) => {
+export const getFacturasActivas = async (transaction) => {
   try {
-    const { models } = req.app.locals;
-    const facturas = await models.Factura.findAll({
+    const facturas = await modelsFT.Factura.findAll({
       where: {
         estado: 1,
       },
+      transaction,
     });
     //logger.info(line(),facturas);
     return facturas;
@@ -19,11 +20,9 @@ export const getFacturasActivas = async (req) => {
   }
 };
 
-export const getFacturaByIdfactura = async (req, idfactura) => {
+export const getFacturaByIdfactura = async (transaction, idfactura) => {
   try {
-    const { models } = req.app.locals;
-
-    const factura = await models.Factura.findByPk(idfactura, {});
+    const factura = await modelsFT.Factura.findByPk(idfactura, { transaction });
     logger.info(line(), factura);
 
     //const facturas = await factura.getFacturas();
@@ -36,13 +35,13 @@ export const getFacturaByIdfactura = async (req, idfactura) => {
   }
 };
 
-export const getFacturaByFacturaid = async (req, facturaid) => {
+export const getFacturaByFacturaid = async (transaction, facturaid) => {
   try {
-    const { models } = req.app.locals;
-    const factura = await models.Factura.findOne({
+    const factura = await modelsFT.Factura.findOne({
       where: {
         facturaid: facturaid,
       },
+      transaction,
     });
     //logger.info(line(),factura);
     return factura;
@@ -52,14 +51,14 @@ export const getFacturaByFacturaid = async (req, facturaid) => {
   }
 };
 
-export const findFacturaPk = async (req, facturaid) => {
+export const findFacturaPk = async (transaction, facturaid) => {
   try {
-    const { models } = req.app.locals;
-    const factura = await models.Factura.findOne({
+    const factura = await modelsFT.Factura.findOne({
       attributes: ["_idfactura"],
       where: {
         facturaid: facturaid,
       },
+      transaction,
     });
     //logger.info(line(),factura);
     return factura;
@@ -69,10 +68,9 @@ export const findFacturaPk = async (req, facturaid) => {
   }
 };
 
-export const insertFactura = async (req, factura) => {
+export const insertFactura = async (transaction, factura) => {
   try {
-    const { models } = req.app.locals;
-    const factura_nuevo = await models.Factura.create(factura);
+    const factura_nuevo = await modelsFT.Factura.create(factura, { transaction });
     // logger.info(line(),factura_nuevo);
     return factura_nuevo;
   } catch (error) {
@@ -81,13 +79,13 @@ export const insertFactura = async (req, factura) => {
   }
 };
 
-export const updateFactura = async (req, factura) => {
+export const updateFactura = async (transaction, factura) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Factura.update(factura, {
+    const result = await modelsFT.Factura.update(factura, {
       where: {
         facturaid: factura.facturaid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -96,13 +94,13 @@ export const updateFactura = async (req, factura) => {
   }
 };
 
-export const deleteFactura = async (req, factura) => {
+export const deleteFactura = async (transaction, factura) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Factura.update(factura, {
+    const result = await modelsFT.Factura.update(factura, {
       where: {
         facturaid: factura.facturaid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

@@ -1,19 +1,19 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import Rol from "../models/ft_factoring/Rol.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getUsuarioDatosContactoByIdusuario = async (req, idusuario, estado) => {
+export const getUsuarioDatosContactoByIdusuario = async (transaction, idusuario, estado) => {
   try {
-    const { models } = req.app.locals;
-
-    const usuario = await models.Usuario.findByPk(idusuario, {
+    const usuario = await modelsFT.Usuario.findByPk(idusuario, {
       attributes: ["usuarioid", "usuarionombres", "apellidopaterno", "apellidomaterno", "email", "celular"],
       where: {
         estado: {
           [Sequelize.Op.in]: estado,
         },
       },
+      transaction,
     });
     logger.info(line(), usuario);
 
@@ -27,13 +27,13 @@ export const getUsuarioDatosContactoByIdusuario = async (req, idusuario, estado)
   }
 };
 
-export const getUsuariosActivos = async (req) => {
+export const getUsuariosActivos = async (transaction) => {
   try {
-    const { models } = req.app.locals;
-    const usuarioes = await models.Usuario.findAll({
+    const usuarioes = await modelsFT.Usuario.findAll({
       where: {
         estado: 1,
       },
+      transaction,
     });
     //logger.info(line(),usuarioes);
     return usuarioes;
@@ -44,17 +44,17 @@ export const getUsuariosActivos = async (req) => {
   }
 };
 
-export const getUsuarioByIdusuario = async (req, idusuario) => {
+export const getUsuarioByIdusuario = async (transaction, idusuario) => {
   try {
-    const { models } = req.app.locals;
-    const usuario = await models.Usuario.findByPk(idusuario, {
+    const usuario = await modelsFT.Usuario.findByPk(idusuario, {
       include: [
         {
-          model: models.Persona,
+          model: modelsFT.Persona,
           required: false,
           as: "persona",
         },
       ],
+      transaction,
     });
     //logger.info(line(),usuarios);
 
@@ -65,14 +65,14 @@ export const getUsuarioByIdusuario = async (req, idusuario) => {
   }
 };
 
-export const autenticarUsuario = async (req, email) => {
+export const autenticarUsuario = async (transaction, email) => {
   try {
-    const { models } = req.app.locals;
-    const usuario = await models.Usuario.findAll({
+    const usuario = await modelsFT.Usuario.findAll({
       attributes: ["_idusuario", "usuarioid", "email", "password"],
       where: {
         email: email,
       },
+      transaction,
     });
     //logger.info(line(),usuario);
     return usuario;
@@ -82,10 +82,9 @@ export const autenticarUsuario = async (req, email) => {
   }
 };
 
-export const getUsuarioAndRolesByEmail = async (req, email) => {
+export const getUsuarioAndRolesByEmail = async (transaction, email) => {
   try {
-    const { models } = req.app.locals;
-    const usuario = await models.Usuario.findAll({
+    const usuario = await modelsFT.Usuario.findAll({
       include: [
         {
           model: Rol,
@@ -95,6 +94,7 @@ export const getUsuarioAndRolesByEmail = async (req, email) => {
       where: {
         email: email,
       },
+      transaction,
     });
     //logger.info(line(),usuario);
     return usuario;
@@ -104,13 +104,13 @@ export const getUsuarioAndRolesByEmail = async (req, email) => {
   }
 };
 
-export const getUsuarioByUsuarioid = async (req, usuarioid) => {
+export const getUsuarioByUsuarioid = async (transaction, usuarioid) => {
   try {
-    const { models } = req.app.locals;
-    const usuario = await models.Usuario.findAll({
+    const usuario = await modelsFT.Usuario.findAll({
       where: {
         usuarioid: usuarioid,
       },
+      transaction,
     });
     //logger.info(line(),usuario);
     return usuario;
@@ -120,13 +120,13 @@ export const getUsuarioByUsuarioid = async (req, usuarioid) => {
   }
 };
 
-export const getUsuarioByEmail = async (req, email) => {
+export const getUsuarioByEmail = async (transaction, email) => {
   try {
-    const { models } = req.app.locals;
-    const usuario = await models.Usuario.findOne({
+    const usuario = await modelsFT.Usuario.findOne({
       where: {
         email: email,
       },
+      transaction,
     });
     //logger.info(line(),usuario);
     return usuario;
@@ -136,13 +136,13 @@ export const getUsuarioByEmail = async (req, email) => {
   }
 };
 
-export const getUsuarioByHash = async (req, hash) => {
+export const getUsuarioByHash = async (transaction, hash) => {
   try {
-    const { models } = req.app.locals;
-    const usuario = await models.Usuario.findOne({
+    const usuario = await modelsFT.Usuario.findOne({
       where: {
         hash: hash,
       },
+      transaction,
     });
     //logger.info(line(),usuario);
     return usuario;
@@ -152,13 +152,13 @@ export const getUsuarioByHash = async (req, hash) => {
   }
 };
 
-export const getUsuarioByNumerodocumento = async (req, documentonumero) => {
+export const getUsuarioByNumerodocumento = async (transaction, documentonumero) => {
   try {
-    const { models } = req.app.locals;
-    const usuario = await models.Usuario.findOne({
+    const usuario = await modelsFT.Usuario.findOne({
       where: {
         documentonumero: documentonumero,
       },
+      transaction,
     });
     //logger.info(line(),usuario);
     return usuario;
@@ -168,14 +168,14 @@ export const getUsuarioByNumerodocumento = async (req, documentonumero) => {
   }
 };
 
-export const findUsuarioPk = async (req, usuarioid) => {
+export const findUsuarioPk = async (transaction, usuarioid) => {
   try {
-    const { models } = req.app.locals;
-    const usuario = await models.Usuario.findAll({
+    const usuario = await modelsFT.Usuario.findAll({
       attributes: ["_idusuario"],
       where: {
         usuarioid: usuarioid,
       },
+      transaction,
     });
     //logger.info(line(),usuario);
     return usuario;
@@ -185,10 +185,9 @@ export const findUsuarioPk = async (req, usuarioid) => {
   }
 };
 
-export const insertUsuario = async (req, usuario) => {
+export const insertUsuario = async (transaction, usuario) => {
   try {
-    const { models } = req.app.locals;
-    const usuario_nuevo = await models.Usuario.create(usuario);
+    const usuario_nuevo = await modelsFT.Usuario.create(usuario, { transaction });
     // logger.info(line(),usuario_nuevo);
     return usuario_nuevo;
   } catch (error) {
@@ -197,13 +196,13 @@ export const insertUsuario = async (req, usuario) => {
   }
 };
 
-export const updateUsuario = async (req, usuario) => {
+export const updateUsuario = async (transaction, usuario) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Usuario.update(usuario, {
+    const result = await modelsFT.Usuario.update(usuario, {
       where: {
         usuarioid: usuario.usuarioid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -212,13 +211,13 @@ export const updateUsuario = async (req, usuario) => {
   }
 };
 
-export const deleteUsuario = async (req, usuario) => {
+export const deleteUsuario = async (transaction, usuario) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Usuario.update(usuario, {
+    const result = await modelsFT.Usuario.update(usuario, {
       where: {
         usuarioid: usuario.usuarioid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

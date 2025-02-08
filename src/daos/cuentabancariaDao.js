@@ -1,14 +1,14 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getCuentasbancariasByIdempresaAndAlias = async (req, idempresa, alias, estado) => {
+export const getCuentasbancariasByIdempresaAndAlias = async (transaction, idempresa, alias, estado) => {
   try {
-    const { models } = req.app.locals;
-    const cuentasbancarias = await models.CuentaBancaria.findAll({
+    const cuentasbancarias = await modelsFT.CuentaBancaria.findAll({
       include: [
         {
-          model: models.EmpresaCuentaBancaria,
+          model: modelsFT.EmpresaCuentaBancaria,
           required: true,
           as: "empresa_cuenta_bancaria",
           where: {
@@ -16,22 +16,22 @@ export const getCuentasbancariasByIdempresaAndAlias = async (req, idempresa, ali
           },
         },
         {
-          model: models.Banco,
+          model: modelsFT.Banco,
           required: true,
           as: "banco_banco",
         },
         {
-          model: models.Moneda,
+          model: modelsFT.Moneda,
           required: true,
           as: "moneda_moneda",
         },
         {
-          model: models.CuentaTipo,
+          model: modelsFT.CuentaTipo,
           required: true,
           as: "cuentatipo_cuenta_tipo",
         },
         {
-          model: models.CuentaBancariaEstado,
+          model: modelsFT.CuentaBancariaEstado,
           required: true,
           as: "cuentabancariaestado_cuenta_bancaria_estado",
         },
@@ -42,6 +42,7 @@ export const getCuentasbancariasByIdempresaAndAlias = async (req, idempresa, ali
           [Sequelize.Op.in]: estado,
         },
       },
+      transaction,
     });
     //logger.info(line(),cuentasbancarias);
     return cuentasbancarias;
@@ -51,33 +52,32 @@ export const getCuentasbancariasByIdempresaAndAlias = async (req, idempresa, ali
   }
 };
 
-export const getCuentasbancariasByIdbancoAndNumero = async (req, idbanco, numero, estado) => {
+export const getCuentasbancariasByIdbancoAndNumero = async (transaction, idbanco, numero, estado) => {
   try {
-    const { models } = req.app.locals;
-    const cuentasbancarias = await models.CuentaBancaria.findAll({
+    const cuentasbancarias = await modelsFT.CuentaBancaria.findAll({
       include: [
         {
-          model: models.Empresa,
+          model: modelsFT.Empresa,
           required: true,
           as: "empresa_empresa_empresa_cuenta_bancaria",
         },
         {
-          model: models.Banco,
+          model: modelsFT.Banco,
           required: true,
           as: "banco_banco",
         },
         {
-          model: models.Moneda,
+          model: modelsFT.Moneda,
           required: true,
           as: "moneda_moneda",
         },
         {
-          model: models.CuentaTipo,
+          model: modelsFT.CuentaTipo,
           required: true,
           as: "cuentatipo_cuenta_tipo",
         },
         {
-          model: models.CuentaBancariaEstado,
+          model: modelsFT.CuentaBancariaEstado,
           required: true,
           as: "cuentabancariaestado_cuenta_bancaria_estado",
         },
@@ -89,6 +89,7 @@ export const getCuentasbancariasByIdbancoAndNumero = async (req, idbanco, numero
           [Sequelize.Op.in]: estado,
         },
       },
+      transaction,
     });
     //logger.info(line(),cuentasbancarias);
     return cuentasbancarias;
@@ -98,18 +99,17 @@ export const getCuentasbancariasByIdbancoAndNumero = async (req, idbanco, numero
   }
 };
 
-export const getCuentasbancariasByIdusuarioAndAlias = async (req, idusuario, alias, estado) => {
+export const getCuentasbancariasByIdusuarioAndAlias = async (transaction, idusuario, alias, estado) => {
   try {
-    const { models } = req.app.locals;
-    const cuentasbancarias = await models.CuentaBancaria.findAll({
+    const cuentasbancarias = await modelsFT.CuentaBancaria.findAll({
       include: [
         {
-          model: models.Empresa,
+          model: modelsFT.Empresa,
           required: true,
           as: "empresa_empresa",
           include: [
             {
-              model: models.UsuarioEmpresa,
+              model: modelsFT.UsuarioEmpresa,
               required: true,
               as: "usuario_empresas",
               where: {
@@ -119,22 +119,22 @@ export const getCuentasbancariasByIdusuarioAndAlias = async (req, idusuario, ali
           ],
         },
         {
-          model: models.Banco,
+          model: modelsFT.Banco,
           required: true,
           as: "banco_banco",
         },
         {
-          model: models.Moneda,
+          model: modelsFT.Moneda,
           required: true,
           as: "moneda_moneda",
         },
         {
-          model: models.CuentaTipo,
+          model: modelsFT.CuentaTipo,
           required: true,
           as: "cuentatipo_cuenta_tipo",
         },
         {
-          model: models.CuentaBancariaEstado,
+          model: modelsFT.CuentaBancariaEstado,
           required: true,
           as: "cuentabancariaestado_cuenta_bancaria_estado",
         },
@@ -145,6 +145,7 @@ export const getCuentasbancariasByIdusuarioAndAlias = async (req, idusuario, ali
           [Sequelize.Op.in]: estado,
         },
       },
+      transaction,
     });
     //logger.info(line(),cuentasbancarias);
     return cuentasbancarias;
@@ -154,18 +155,17 @@ export const getCuentasbancariasByIdusuarioAndAlias = async (req, idusuario, ali
   }
 };
 
-export const getCuentasbancariasByIdusuario = async (req, idusuario, estado) => {
+export const getCuentasbancariasByIdusuario = async (transaction, idusuario, estado) => {
   try {
-    const { models } = req.app.locals;
-    const cuentasbancarias = await models.CuentaBancaria.findAll({
+    const cuentasbancarias = await modelsFT.CuentaBancaria.findAll({
       include: [
         {
-          model: models.Empresa,
+          model: modelsFT.Empresa,
           required: true,
           as: "empresa_empresa",
           include: [
             {
-              model: models.UsuarioEmpresa,
+              model: modelsFT.UsuarioEmpresa,
               required: true,
               as: "usuario_empresas",
               where: {
@@ -175,22 +175,22 @@ export const getCuentasbancariasByIdusuario = async (req, idusuario, estado) => 
           ],
         },
         {
-          model: models.Banco,
+          model: modelsFT.Banco,
           required: true,
           as: "banco_banco",
         },
         {
-          model: models.Moneda,
+          model: modelsFT.Moneda,
           required: true,
           as: "moneda_moneda",
         },
         {
-          model: models.CuentaTipo,
+          model: modelsFT.CuentaTipo,
           required: true,
           as: "cuentatipo_cuenta_tipo",
         },
         {
-          model: models.CuentaBancariaEstado,
+          model: modelsFT.CuentaBancariaEstado,
           required: true,
           as: "cuentabancariaestado_cuenta_bancaria_estado",
         },
@@ -200,6 +200,7 @@ export const getCuentasbancariasByIdusuario = async (req, idusuario, estado) => 
           [Sequelize.Op.in]: estado,
         },
       },
+      transaction,
     });
     //logger.info(line(),cuentasbancarias);
     return cuentasbancarias;
@@ -209,11 +210,9 @@ export const getCuentasbancariasByIdusuario = async (req, idusuario, estado) => 
   }
 };
 
-export const getCuentabancariaByIdcuentabancaria = async (req, idcuentabancaria) => {
+export const getCuentabancariaByIdcuentabancaria = async (transaction, idcuentabancaria) => {
   try {
-    const { models } = req.app.locals;
-
-    const cuentabancaria = await models.CuentaBancaria.findByPk(idcuentabancaria, {});
+    const cuentabancaria = await modelsFT.CuentaBancaria.findByPk(idcuentabancaria, { transaction });
     logger.info(line(), cuentabancaria);
 
     //const cuentasbancarias = await cuentabancaria.getCuentabancarias();
@@ -226,35 +225,34 @@ export const getCuentabancariaByIdcuentabancaria = async (req, idcuentabancaria)
   }
 };
 
-export const getCuentasbancariasByEmpresaidAndMoneda = async (req, empresaid, monedaid, _idcuentabancariaestado, estado) => {
+export const getCuentasbancariasByEmpresaidAndMoneda = async (transaction, empresaid, monedaid, _idcuentabancariaestado, estado) => {
   try {
-    const { models } = req.app.locals;
-    const cuentasbancarias = await models.CuentaBancaria.findAll({
+    const cuentasbancarias = await modelsFT.CuentaBancaria.findAll({
       include: [
         {
-          model: models.Empresa,
+          model: modelsFT.Empresa,
           as: "empresa_empresa",
           where: {
             empresaid: empresaid,
           },
         },
         {
-          model: models.Banco,
+          model: modelsFT.Banco,
           as: "banco_banco",
         },
         {
-          model: models.Moneda,
+          model: modelsFT.Moneda,
           as: "moneda_moneda",
           where: {
             monedaid: monedaid,
           },
         },
         {
-          model: models.CuentaTipo,
+          model: modelsFT.CuentaTipo,
           as: "cuentatipo_cuenta_tipo",
         },
         {
-          model: models.CuentaBancariaEstado,
+          model: modelsFT.CuentaBancariaEstado,
           as: "cuentabancariaestado_cuenta_bancaria_estado",
         },
       ],
@@ -266,6 +264,7 @@ export const getCuentasbancariasByEmpresaidAndMoneda = async (req, empresaid, mo
           [Sequelize.Op.in]: estado,
         },
       },
+      transaction,
     });
     //logger.info(line(),cuentasbancarias);
     return cuentasbancarias;
@@ -275,35 +274,35 @@ export const getCuentasbancariasByEmpresaidAndMoneda = async (req, empresaid, mo
   }
 };
 
-export const getCuentabancariaByCuentabancariaid = async (req, cuentabancariaid) => {
+export const getCuentabancariaByCuentabancariaid = async (transaction, cuentabancariaid) => {
   try {
-    const { models } = req.app.locals;
-    const cuentabancaria = await models.CuentaBancaria.findOne({
+    const cuentabancaria = await modelsFT.CuentaBancaria.findOne({
       include: [
         {
-          model: models.Empresa,
+          model: modelsFT.Empresa,
           as: "empresa_empresa",
         },
         {
-          model: models.Banco,
+          model: modelsFT.Banco,
           as: "banco_banco",
         },
         {
-          model: models.Moneda,
+          model: modelsFT.Moneda,
           as: "moneda_moneda",
         },
         {
-          model: models.CuentaTipo,
+          model: modelsFT.CuentaTipo,
           as: "cuentatipo_cuenta_tipo",
         },
         {
-          model: models.CuentaBancariaEstado,
+          model: modelsFT.CuentaBancariaEstado,
           as: "cuentabancariaestado_cuenta_bancaria_estado",
         },
       ],
       where: {
         cuentabancariaid: cuentabancariaid,
       },
+      transaction,
     });
     logger.info(line(), cuentabancaria);
     return cuentabancaria;
@@ -313,14 +312,14 @@ export const getCuentabancariaByCuentabancariaid = async (req, cuentabancariaid)
   }
 };
 
-export const findCuentabancariaPk = async (req, cuentabancariaid) => {
+export const findCuentabancariaPk = async (transaction, cuentabancariaid) => {
   try {
-    const { models } = req.app.locals;
-    const cuentabancaria = await models.CuentaBancaria.findOne({
+    const cuentabancaria = await modelsFT.CuentaBancaria.findOne({
       attributes: ["_idcuentabancaria"],
       where: {
         cuentabancariaid: cuentabancariaid,
       },
+      transaction,
     });
     //logger.info(line(),cuentabancaria);
     return cuentabancaria;
@@ -330,33 +329,32 @@ export const findCuentabancariaPk = async (req, cuentabancariaid) => {
   }
 };
 
-export const getCuentasbancarias = async (req, estado) => {
+export const getCuentasbancarias = async (transaction, estado) => {
   try {
-    const { models } = req.app.locals;
-    const cuentasbancarias = await models.CuentaBancaria.findAll({
+    const cuentasbancarias = await modelsFT.CuentaBancaria.findAll({
       include: [
         {
-          model: models.Empresa,
+          model: modelsFT.Empresa,
           required: true,
           as: "empresa_empresa",
         },
         {
-          model: models.Banco,
+          model: modelsFT.Banco,
           required: true,
           as: "banco_banco",
         },
         {
-          model: models.Moneda,
+          model: modelsFT.Moneda,
           required: true,
           as: "moneda_moneda",
         },
         {
-          model: models.CuentaTipo,
+          model: modelsFT.CuentaTipo,
           required: true,
           as: "cuentatipo_cuenta_tipo",
         },
         {
-          model: models.CuentaBancariaEstado,
+          model: modelsFT.CuentaBancariaEstado,
           required: true,
           as: "cuentabancariaestado_cuenta_bancaria_estado",
         },
@@ -366,6 +364,7 @@ export const getCuentasbancarias = async (req, estado) => {
           [Sequelize.Op.in]: estado,
         },
       },
+      transaction,
     });
     //logger.info(line(),cuentasbancarias);
     return cuentasbancarias;
@@ -375,10 +374,9 @@ export const getCuentasbancarias = async (req, estado) => {
   }
 };
 
-export const insertCuentabancaria = async (req, cuentabancaria) => {
+export const insertCuentabancaria = async (transaction, cuentabancaria) => {
   try {
-    const { models } = req.app.locals;
-    const cuentabancaria_nuevo = await models.CuentaBancaria.create(cuentabancaria);
+    const cuentabancaria_nuevo = await modelsFT.CuentaBancaria.create(cuentabancaria, { transaction });
     // logger.info(line(),cuentabancaria_nuevo);
     return cuentabancaria_nuevo;
   } catch (error) {
@@ -387,15 +385,15 @@ export const insertCuentabancaria = async (req, cuentabancaria) => {
   }
 };
 
-export const updateCuentabancariaOnlyAliasByCuentabancariaid = async (req, cuentabancaria) => {
+export const updateCuentabancariaOnlyAliasByCuentabancariaid = async (transaction, cuentabancaria) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.CuentaBancaria.update(
+    const result = await modelsFT.CuentaBancaria.update(
       { alias: cuentabancaria.alias, idusuariomod: cuentabancaria.idusuariomod, fechamod: cuentabancaria.fechamod },
       {
         where: {
           cuentabancariaid: cuentabancaria.cuentabancariaid,
         },
+        transaction,
       }
     );
     return result;
@@ -405,13 +403,13 @@ export const updateCuentabancariaOnlyAliasByCuentabancariaid = async (req, cuent
   }
 };
 
-export const updateCuentabancaria = async (req, cuentabancaria) => {
+export const updateCuentabancaria = async (transaction, cuentabancaria) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.CuentaBancaria.update(cuentabancaria, {
+    const result = await modelsFT.CuentaBancaria.update(cuentabancaria, {
       where: {
         cuentabancariaid: cuentabancaria.cuentabancariaid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -420,13 +418,13 @@ export const updateCuentabancaria = async (req, cuentabancaria) => {
   }
 };
 
-export const deleteCuentabancaria = async (req, cuentabancaria) => {
+export const deleteCuentabancaria = async (transaction, cuentabancaria) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.CuentaBancaria.update(cuentabancaria, {
+    const result = await modelsFT.CuentaBancaria.update(cuentabancaria, {
       where: {
         cuentabancariaid: cuentabancaria.cuentabancariaid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -435,13 +433,13 @@ export const deleteCuentabancaria = async (req, cuentabancaria) => {
   }
 };
 
-export const activateCuentabancaria = async (req, cuentabancaria) => {
+export const activateCuentabancaria = async (transaction, cuentabancaria) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.CuentaBancaria.update(cuentabancaria, {
+    const result = await modelsFT.CuentaBancaria.update(cuentabancaria, {
       where: {
         cuentabancariaid: cuentabancaria.cuentabancariaid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

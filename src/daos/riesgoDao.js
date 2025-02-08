@@ -1,16 +1,17 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getRiesgos = async (req, estados) => {
+export const getRiesgos = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const riesgos = await models.Riesgo.findAll({
+    const riesgos = await modelsFT.Riesgo.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),riesgos);
     return riesgos;
@@ -20,11 +21,9 @@ export const getRiesgos = async (req, estados) => {
   }
 };
 
-export const getRiesgoByIdriesgo = async (req, idriesgo) => {
+export const getRiesgoByIdriesgo = async (transaction, idriesgo) => {
   try {
-    const { models } = req.app.locals;
-
-    const riesgo = await models.Riesgo.findByPk(idriesgo, {});
+    const riesgo = await modelsFT.Riesgo.findByPk(idriesgo, { transaction });
     logger.info(line(), riesgo);
 
     //const riesgos = await riesgo.getRiesgos();
@@ -37,13 +36,13 @@ export const getRiesgoByIdriesgo = async (req, idriesgo) => {
   }
 };
 
-export const getRiesgoByRiesgoid = async (req, riesgoid) => {
+export const getRiesgoByRiesgoid = async (transaction, riesgoid) => {
   try {
-    const { models } = req.app.locals;
-    const riesgo = await models.Riesgo.findOne({
+    const riesgo = await modelsFT.Riesgo.findOne({
       where: {
         riesgoid: riesgoid,
       },
+      transaction,
     });
     //logger.info(line(),riesgo);
     return riesgo;
@@ -53,14 +52,14 @@ export const getRiesgoByRiesgoid = async (req, riesgoid) => {
   }
 };
 
-export const findRiesgoPk = async (req, riesgoid) => {
+export const findRiesgoPk = async (transaction, riesgoid) => {
   try {
-    const { models } = req.app.locals;
-    const riesgo = await models.Riesgo.findOne({
+    const riesgo = await modelsFT.Riesgo.findOne({
       attributes: ["_idriesgo"],
       where: {
         riesgoid: riesgoid,
       },
+      transaction,
     });
     //logger.info(line(),riesgo);
     return riesgo;
@@ -70,10 +69,9 @@ export const findRiesgoPk = async (req, riesgoid) => {
   }
 };
 
-export const insertRiesgo = async (req, riesgo) => {
+export const insertRiesgo = async (transaction, riesgo) => {
   try {
-    const { models } = req.app.locals;
-    const riesgo_nuevo = await models.Riesgo.create(riesgo);
+    const riesgo_nuevo = await modelsFT.Riesgo.create(riesgo, { transaction });
     // logger.info(line(),riesgo_nuevo);
     return riesgo_nuevo;
   } catch (error) {
@@ -82,13 +80,13 @@ export const insertRiesgo = async (req, riesgo) => {
   }
 };
 
-export const updateRiesgo = async (req, riesgo) => {
+export const updateRiesgo = async (transaction, riesgo) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Riesgo.update(riesgo, {
+    const result = await modelsFT.Riesgo.update(riesgo, {
       where: {
         riesgoid: riesgo.riesgoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -97,13 +95,13 @@ export const updateRiesgo = async (req, riesgo) => {
   }
 };
 
-export const deleteRiesgo = async (req, riesgo) => {
+export const deleteRiesgo = async (transaction, riesgo) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Riesgo.update(riesgo, {
+    const result = await modelsFT.Riesgo.update(riesgo, {
       where: {
         riesgoid: riesgo.riesgoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

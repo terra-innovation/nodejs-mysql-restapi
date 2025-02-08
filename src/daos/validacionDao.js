@@ -1,14 +1,14 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getValidacionsByIdusuario = async (req, _idusuario, estados) => {
+export const getValidacionsByIdusuario = async (transaction, _idusuario, estados) => {
   try {
-    const { models } = req.app.locals;
-    const validacions = await models.Validacion.findAll({
+    const validacions = await modelsFT.Validacion.findAll({
       include: [
         {
-          model: models.UsuarioValidacion,
+          model: modelsFT.UsuarioValidacion,
           as: "usuario_validacions",
           where: {
             _idusuario: _idusuario,
@@ -23,6 +23,7 @@ export const getValidacionsByIdusuario = async (req, _idusuario, estados) => {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),validacions);
     return validacions;
@@ -32,10 +33,9 @@ export const getValidacionsByIdusuario = async (req, _idusuario, estados) => {
   }
 };
 
-export const getValidacionByIdusuarioAndValor = async (req, _idusuario, valor, estados) => {
+export const getValidacionByIdusuarioAndValor = async (transaction, _idusuario, valor, estados) => {
   try {
-    const { models } = req.app.locals;
-    const validacions = await models.Validacion.findOne({
+    const validacions = await modelsFT.Validacion.findOne({
       where: {
         _idusuario: _idusuario,
         valor: valor,
@@ -43,6 +43,7 @@ export const getValidacionByIdusuarioAndValor = async (req, _idusuario, valor, e
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),validacions);
     return validacions;
@@ -52,10 +53,9 @@ export const getValidacionByIdusuarioAndValor = async (req, _idusuario, valor, e
   }
 };
 
-export const getValidacionByIdusuarioAndIdvalidaciontipo = async (req, _idusuario, _idvalidaciontipo, estados) => {
+export const getValidacionByIdusuarioAndIdvalidaciontipo = async (transaction, _idusuario, _idvalidaciontipo, estados) => {
   try {
-    const { models } = req.app.locals;
-    const validacions = await models.Validacion.findOne({
+    const validacions = await modelsFT.Validacion.findOne({
       where: {
         _idusuario: _idusuario,
         _idvalidaciontipo: _idvalidaciontipo,
@@ -63,6 +63,7 @@ export const getValidacionByIdusuarioAndIdvalidaciontipo = async (req, _idusuari
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),validacions);
     return validacions;
@@ -72,10 +73,9 @@ export const getValidacionByIdusuarioAndIdvalidaciontipo = async (req, _idusuari
   }
 };
 
-export const getValidacionByIdusuarioAndCodigo = async (req, _idusuario, codigo, estados) => {
+export const getValidacionByIdusuarioAndCodigo = async (transaction, _idusuario, codigo, estados) => {
   try {
-    const { models } = req.app.locals;
-    const validacions = await models.Validacion.findOne({
+    const validacions = await modelsFT.Validacion.findOne({
       where: {
         _idusuario: _idusuario,
         codigo: codigo,
@@ -83,6 +83,7 @@ export const getValidacionByIdusuarioAndCodigo = async (req, _idusuario, codigo,
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),validacions);
     return validacions;
@@ -92,13 +93,12 @@ export const getValidacionByIdusuarioAndCodigo = async (req, _idusuario, codigo,
   }
 };
 
-export const getValidacionByIdusuarioAndRuc = async (req, _idusuario, ruc, estado) => {
+export const getValidacionByIdusuarioAndRuc = async (transaction, _idusuario, ruc, estado) => {
   try {
-    const { models } = req.app.locals;
-    const validacions = await models.Validacion.findOne({
+    const validacions = await modelsFT.Validacion.findOne({
       include: [
         {
-          model: models.UsuarioValidacion,
+          model: modelsFT.UsuarioValidacion,
           as: "usuario_validacions",
           where: {
             _idusuario: _idusuario,
@@ -110,6 +110,7 @@ export const getValidacionByIdusuarioAndRuc = async (req, _idusuario, ruc, estad
         ruc: ruc,
         estado: estado,
       },
+      transaction,
     });
     //logger.info(line(),validacions);
     return validacions;
@@ -119,13 +120,12 @@ export const getValidacionByIdusuarioAndRuc = async (req, _idusuario, ruc, estad
   }
 };
 
-export const getValidacionByIdusuarioAndValidacionid = async (req, _idusuario, validacionid, estado) => {
+export const getValidacionByIdusuarioAndValidacionid = async (transaction, _idusuario, validacionid, estado) => {
   try {
-    const { models } = req.app.locals;
-    const validacions = await models.Validacion.findOne({
+    const validacions = await modelsFT.Validacion.findOne({
       include: [
         {
-          model: models.UsuarioValidacion,
+          model: modelsFT.UsuarioValidacion,
           as: "usuario_validacions",
           where: {
             _idusuario: _idusuario,
@@ -137,6 +137,7 @@ export const getValidacionByIdusuarioAndValidacionid = async (req, _idusuario, v
         validacionid: validacionid,
         estado: estado,
       },
+      transaction,
     });
     //logger.info(line(),validacions);
     return validacions;
@@ -146,15 +147,15 @@ export const getValidacionByIdusuarioAndValidacionid = async (req, _idusuario, v
   }
 };
 
-export const getValidacions = async (req, estados) => {
+export const getValidacions = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const validacions = await models.Validacion.findAll({
+    const validacions = await modelsFT.Validacion.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),validacions);
     return validacions;
@@ -164,17 +165,16 @@ export const getValidacions = async (req, estados) => {
   }
 };
 
-export const getValidacionByIdvalidacion = async (req, idvalidacion) => {
+export const getValidacionByIdvalidacion = async (transaction, idvalidacion) => {
   try {
-    const { models } = req.app.locals;
-
-    const validacion = await models.Validacion.findByPk(idvalidacion, {
+    const validacion = await modelsFT.Validacion.findByPk(idvalidacion, {
       include: [
         {
-          model: models.Colaborador,
+          model: modelsFT.Colaborador,
           as: "colaboradors",
         },
       ],
+      transaction,
     });
     logger.info(line(), validacion);
 
@@ -188,19 +188,19 @@ export const getValidacionByIdvalidacion = async (req, idvalidacion) => {
   }
 };
 
-export const getValidacionByValidacionid = async (req, validacionid) => {
+export const getValidacionByValidacionid = async (transaction, validacionid) => {
   try {
-    const { models } = req.app.locals;
-    const validacion = await models.Validacion.findAll({
+    const validacion = await modelsFT.Validacion.findAll({
       include: [
         {
-          model: models.Colaborador,
+          model: modelsFT.Colaborador,
           as: "colaboradors",
         },
       ],
       where: {
         validacionid: validacionid,
       },
+      transaction,
     });
     //logger.info(line(),validacion);
     return validacion;
@@ -210,13 +210,13 @@ export const getValidacionByValidacionid = async (req, validacionid) => {
   }
 };
 
-export const getValidacionByRuc = async (req, ruc) => {
+export const getValidacionByRuc = async (transaction, ruc) => {
   try {
-    const { models } = req.app.locals;
-    const validacion = await models.Validacion.findAll({
+    const validacion = await modelsFT.Validacion.findAll({
       where: {
         ruc: ruc,
       },
+      transaction,
     });
     //logger.info(line(),validacion);
     return validacion;
@@ -226,14 +226,14 @@ export const getValidacionByRuc = async (req, ruc) => {
   }
 };
 
-export const findValidacionPk = async (req, validacionid) => {
+export const findValidacionPk = async (transaction, validacionid) => {
   try {
-    const { models } = req.app.locals;
-    const validacion = await models.Validacion.findOne({
+    const validacion = await modelsFT.Validacion.findOne({
       attributes: ["_idvalidacion"],
       where: {
         validacionid: validacionid,
       },
+      transaction,
     });
     //logger.info(line(),validacion);
     return validacion;
@@ -243,10 +243,9 @@ export const findValidacionPk = async (req, validacionid) => {
   }
 };
 
-export const insertValidacion = async (req, validacion) => {
+export const insertValidacion = async (transaction, validacion) => {
   try {
-    const { models } = req.app.locals;
-    const validacion_nuevo = await models.Validacion.create(validacion);
+    const validacion_nuevo = await modelsFT.Validacion.create(validacion, { transaction });
     // logger.info(line(),validacion_nuevo);
     return validacion_nuevo;
   } catch (error) {
@@ -255,13 +254,13 @@ export const insertValidacion = async (req, validacion) => {
   }
 };
 
-export const updateValidacion = async (req, validacion) => {
+export const updateValidacion = async (transaction, validacion) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Validacion.update(validacion, {
+    const result = await modelsFT.Validacion.update(validacion, {
       where: {
         validacionid: validacion.validacionid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -270,13 +269,13 @@ export const updateValidacion = async (req, validacion) => {
   }
 };
 
-export const deleteValidacion = async (req, validacion) => {
+export const deleteValidacion = async (transaction, validacion) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Validacion.update(validacion, {
+    const result = await modelsFT.Validacion.update(validacion, {
       where: {
         validacionid: validacion.validacionid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -285,13 +284,13 @@ export const deleteValidacion = async (req, validacion) => {
   }
 };
 
-export const activateValidacion = async (req, validacion) => {
+export const activateValidacion = async (transaction, validacion) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Validacion.update(validacion, {
+    const result = await modelsFT.Validacion.update(validacion, {
       where: {
         validacionid: validacion.validacionid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

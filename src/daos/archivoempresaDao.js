@@ -1,16 +1,17 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getArchivoempresas = async (req, estados) => {
+export const getArchivoempresas = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const archivoempresas = await models.ArchivoEmpresa.findAll({
+    const archivoempresas = await modelsFT.ArchivoEmpresa.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),archivoempresas);
     return archivoempresas;
@@ -21,11 +22,9 @@ export const getArchivoempresas = async (req, estados) => {
   }
 };
 
-export const getArchivoEmpresaByIdarchivoempresa = async (req, idarchivoempresa) => {
+export const getArchivoEmpresaByIdarchivoempresa = async (transaction, idarchivoempresa) => {
   try {
-    const { models } = req.app.locals;
-
-    const archivoempresa = await models.ArchivoEmpresa.findByPk(idarchivoempresa, {});
+    const archivoempresa = await modelsFT.ArchivoEmpresa.findByPk(idarchivoempresa, { transaction });
     logger.info(line(), archivoempresa);
 
     //const archivoempresas = await archivoempresa.getArchivoempresas();
@@ -38,13 +37,13 @@ export const getArchivoEmpresaByIdarchivoempresa = async (req, idarchivoempresa)
   }
 };
 
-export const getArchivoEmpresaByArchivoEmpresaid = async (req, archivoempresaid) => {
+export const getArchivoEmpresaByArchivoEmpresaid = async (transaction, archivoempresaid) => {
   try {
-    const { models } = req.app.locals;
-    const archivoempresa = await models.ArchivoEmpresa.findOne({
+    const archivoempresa = await modelsFT.ArchivoEmpresa.findOne({
       where: {
         archivoempresaid: archivoempresaid,
       },
+      transaction,
     });
     //logger.info(line(),archivoempresa);
     return archivoempresa;
@@ -54,14 +53,14 @@ export const getArchivoEmpresaByArchivoEmpresaid = async (req, archivoempresaid)
   }
 };
 
-export const findArchivoEmpresaPk = async (req, archivoempresaid) => {
+export const findArchivoEmpresaPk = async (transaction, archivoempresaid) => {
   try {
-    const { models } = req.app.locals;
-    const archivoempresa = await models.ArchivoEmpresa.findOne({
+    const archivoempresa = await modelsFT.ArchivoEmpresa.findOne({
       attributes: ["_idarchivoempresa"],
       where: {
         archivoempresaid: archivoempresaid,
       },
+      transaction,
     });
     //logger.info(line(),archivoempresa);
     return archivoempresa;
@@ -71,10 +70,9 @@ export const findArchivoEmpresaPk = async (req, archivoempresaid) => {
   }
 };
 
-export const insertArchivoEmpresa = async (req, archivoempresa) => {
+export const insertArchivoEmpresa = async (transaction, archivoempresa) => {
   try {
-    const { models } = req.app.locals;
-    const archivoempresa_nuevo = await models.ArchivoEmpresa.create(archivoempresa);
+    const archivoempresa_nuevo = await modelsFT.ArchivoEmpresa.create(archivoempresa, { transaction });
     // logger.info(line(),archivoempresa_nuevo);
     return archivoempresa_nuevo;
   } catch (error) {
@@ -83,13 +81,13 @@ export const insertArchivoEmpresa = async (req, archivoempresa) => {
   }
 };
 
-export const updateArchivoEmpresa = async (req, archivoempresa) => {
+export const updateArchivoEmpresa = async (transaction, archivoempresa) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.ArchivoEmpresa.update(archivoempresa, {
+    const result = await modelsFT.ArchivoEmpresa.update(archivoempresa, {
       where: {
         archivoempresaid: archivoempresa.archivoempresaid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -98,13 +96,13 @@ export const updateArchivoEmpresa = async (req, archivoempresa) => {
   }
 };
 
-export const deleteArchivoEmpresa = async (req, archivoempresa) => {
+export const deleteArchivoEmpresa = async (transaction, archivoempresa) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.ArchivoEmpresa.update(archivoempresa, {
+    const result = await modelsFT.ArchivoEmpresa.update(archivoempresa, {
       where: {
         archivoempresaid: archivoempresa.archivoempresaid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

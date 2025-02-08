@@ -1,11 +1,11 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getFactoringByFactoringidAndIdcontactocedente = async (req, factoringid, idcontactocedete, estados) => {
+export const getFactoringByFactoringidAndIdcontactocedente = async (transaction, factoringid, idcontactocedete, estados) => {
   try {
-    const { models } = req.app.locals;
-    const factoring = await models.Factoring.findOne({
+    const factoring = await modelsFT.Factoring.findOne({
       include: [
         {
           all: true,
@@ -18,6 +18,7 @@ export const getFactoringByFactoringidAndIdcontactocedente = async (req, factori
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.debug(line(),"factoring: ", factoring);
     return factoring;
@@ -27,10 +28,9 @@ export const getFactoringByFactoringidAndIdcontactocedente = async (req, factori
   }
 };
 
-export const getFactoringsCotizacionesByIdcontactocedente = async (req, idcontactocedete, estados) => {
+export const getFactoringsCotizacionesByIdcontactocedente = async (transaction, idcontactocedete, estados) => {
   try {
-    const { models } = req.app.locals;
-    const factorings = await models.Factoring.findAll({
+    const factorings = await modelsFT.Factoring.findAll({
       include: [
         {
           all: true,
@@ -42,6 +42,7 @@ export const getFactoringsCotizacionesByIdcontactocedente = async (req, idcontac
         },
         _idcontactocedente: idcontactocedete,
       },
+      transaction,
     });
     //logger.info(line(),factorings);
     return factorings;
@@ -51,10 +52,9 @@ export const getFactoringsCotizacionesByIdcontactocedente = async (req, idcontac
   }
 };
 
-export const getFactoringsActivas = async (req) => {
+export const getFactoringsActivas = async (transaction) => {
   try {
-    const { models } = req.app.locals;
-    const factorings = await models.Factoring.findAll({
+    const factorings = await modelsFT.Factoring.findAll({
       include: [
         {
           all: true,
@@ -63,6 +63,7 @@ export const getFactoringsActivas = async (req) => {
       where: {
         estado: 1,
       },
+      transaction,
     });
     //logger.info(line(),factorings);
     return factorings;
@@ -72,11 +73,9 @@ export const getFactoringsActivas = async (req) => {
   }
 };
 
-export const getFactoringByIdfactoring = async (req, idfactoring) => {
+export const getFactoringByIdfactoring = async (transaction, idfactoring) => {
   try {
-    const { models } = req.app.locals;
-
-    const factoring = await models.Factoring.findByPk(idfactoring, {});
+    const factoring = await modelsFT.Factoring.findByPk(idfactoring, { transaction });
     logger.info(line(), factoring);
 
     //const factorings = await factoring.getFactorings();
@@ -89,10 +88,9 @@ export const getFactoringByIdfactoring = async (req, idfactoring) => {
   }
 };
 
-export const getFactoringByFactoringid = async (req, factoringid) => {
+export const getFactoringByFactoringid = async (transaction, factoringid) => {
   try {
-    const { models } = req.app.locals;
-    const factoring = await models.Factoring.findOne({
+    const factoring = await modelsFT.Factoring.findOne({
       include: [
         {
           all: true,
@@ -101,6 +99,7 @@ export const getFactoringByFactoringid = async (req, factoringid) => {
       where: {
         factoringid: factoringid,
       },
+      transaction,
     });
     //logger.debug(line(),"factoring: ", factoring);
     return factoring;
@@ -110,14 +109,14 @@ export const getFactoringByFactoringid = async (req, factoringid) => {
   }
 };
 
-export const findFactoringPk = async (req, factoringid) => {
+export const findFactoringPk = async (transaction, factoringid) => {
   try {
-    const { models } = req.app.locals;
-    const factoring = await models.Factoring.findOne({
+    const factoring = await modelsFT.Factoring.findOne({
       attributes: ["_idfactoring"],
       where: {
         factoringid: factoringid,
       },
+      transaction,
     });
     //logger.info(line(),factoring);
     return factoring;
@@ -127,10 +126,9 @@ export const findFactoringPk = async (req, factoringid) => {
   }
 };
 
-export const insertFactoring = async (req, factoring) => {
+export const insertFactoring = async (transaction, factoring) => {
   try {
-    const { models } = req.app.locals;
-    const factoring_nuevo = await models.Factoring.create(factoring);
+    const factoring_nuevo = await modelsFT.Factoring.create(factoring, { transaction });
     // logger.info(line(),factoring_nuevo);
     return factoring_nuevo;
   } catch (error) {
@@ -139,13 +137,13 @@ export const insertFactoring = async (req, factoring) => {
   }
 };
 
-export const updateFactoring = async (req, factoring) => {
+export const updateFactoring = async (transaction, factoring) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Factoring.update(factoring, {
+    const result = await modelsFT.Factoring.update(factoring, {
       where: {
         factoringid: factoring.factoringid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -154,13 +152,13 @@ export const updateFactoring = async (req, factoring) => {
   }
 };
 
-export const deleteFactoring = async (req, factoring) => {
+export const deleteFactoring = async (transaction, factoring) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Factoring.update(factoring, {
+    const result = await modelsFT.Factoring.update(factoring, {
       where: {
         factoringid: factoring.factoringid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

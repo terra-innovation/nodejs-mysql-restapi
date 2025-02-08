@@ -1,19 +1,19 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getDistritos = async (req, estados) => {
+export const getDistritos = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const distritos = await models.Distrito.findAll({
+    const distritos = await modelsFT.Distrito.findAll({
       include: [
         {
-          model: models.Provincia,
+          model: modelsFT.Provincia,
           required: true,
           as: "provincia_provincium",
           include: [
             {
-              model: models.Departamento,
+              model: modelsFT.Departamento,
               required: true,
               as: "departamento_departamento",
             },
@@ -25,6 +25,7 @@ export const getDistritos = async (req, estados) => {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),distritos);
     return distritos;
@@ -34,11 +35,9 @@ export const getDistritos = async (req, estados) => {
   }
 };
 
-export const getDistritoByIddistrito = async (req, iddistrito) => {
+export const getDistritoByIddistrito = async (transaction, iddistrito) => {
   try {
-    const { models } = req.app.locals;
-
-    const distrito = await models.Distrito.findByPk(iddistrito, {});
+    const distrito = await modelsFT.Distrito.findByPk(iddistrito, {});
     logger.info(line(), distrito);
 
     //const distritos = await distrito.getDistritos();
@@ -51,13 +50,13 @@ export const getDistritoByIddistrito = async (req, iddistrito) => {
   }
 };
 
-export const getDistritoByDistritoid = async (req, distritoid) => {
+export const getDistritoByDistritoid = async (transaction, distritoid) => {
   try {
-    const { models } = req.app.locals;
-    const distrito = await models.Distrito.findOne({
+    const distrito = await modelsFT.Distrito.findOne({
       where: {
         distritoid: distritoid,
       },
+      transaction,
     });
     //logger.info(line(),distrito);
     return distrito;
@@ -67,14 +66,14 @@ export const getDistritoByDistritoid = async (req, distritoid) => {
   }
 };
 
-export const findDistritoPk = async (req, distritoid) => {
+export const findDistritoPk = async (transaction, distritoid) => {
   try {
-    const { models } = req.app.locals;
-    const distrito = await models.Distrito.findOne({
+    const distrito = await modelsFT.Distrito.findOne({
       attributes: ["_iddistrito"],
       where: {
         distritoid: distritoid,
       },
+      transaction,
     });
     //logger.info(line(),distrito);
     return distrito;
@@ -84,10 +83,9 @@ export const findDistritoPk = async (req, distritoid) => {
   }
 };
 
-export const insertDistrito = async (req, distrito) => {
+export const insertDistrito = async (transaction, distrito) => {
   try {
-    const { models } = req.app.locals;
-    const distrito_nuevo = await models.Distrito.create(distrito);
+    const distrito_nuevo = await modelsFT.Distrito.create(distrito, { transaction });
     // logger.info(line(),distrito_nuevo);
     return distrito_nuevo;
   } catch (error) {
@@ -96,13 +94,13 @@ export const insertDistrito = async (req, distrito) => {
   }
 };
 
-export const updateDistrito = async (req, distrito) => {
+export const updateDistrito = async (transaction, distrito) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Distrito.update(distrito, {
+    const result = await modelsFT.Distrito.update(distrito, {
       where: {
         distritoid: distrito.distritoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -111,13 +109,13 @@ export const updateDistrito = async (req, distrito) => {
   }
 };
 
-export const deleteDistrito = async (req, distrito) => {
+export const deleteDistrito = async (transaction, distrito) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Distrito.update(distrito, {
+    const result = await modelsFT.Distrito.update(distrito, {
       where: {
         distritoid: distrito.distritoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

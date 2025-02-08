@@ -1,16 +1,17 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getDepartamentos = async (req, estados) => {
+export const getDepartamentos = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const departamentos = await models.Departamento.findAll({
+    const departamentos = await modelsFT.Departamento.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),departamentos);
     return departamentos;
@@ -21,11 +22,9 @@ export const getDepartamentos = async (req, estados) => {
   }
 };
 
-export const getDepartamentoByIddepartamento = async (req, iddepartamento) => {
+export const getDepartamentoByIddepartamento = async (transaction, iddepartamento) => {
   try {
-    const { models } = req.app.locals;
-
-    const departamento = await models.Departamento.findByPk(iddepartamento, {});
+    const departamento = await modelsFT.Departamento.findByPk(iddepartamento, { transaction });
     logger.info(line(), departamento);
 
     //const departamentos = await departamento.getDepartamentos();
@@ -38,13 +37,13 @@ export const getDepartamentoByIddepartamento = async (req, iddepartamento) => {
   }
 };
 
-export const getDepartamentoByDepartamentoid = async (req, departamentoid) => {
+export const getDepartamentoByDepartamentoid = async (transaction, departamentoid) => {
   try {
-    const { models } = req.app.locals;
-    const departamento = await models.Departamento.findOne({
+    const departamento = await modelsFT.Departamento.findOne({
       where: {
         departamentoid: departamentoid,
       },
+      transaction,
     });
     //logger.info(line(),departamento);
     return departamento;
@@ -54,14 +53,14 @@ export const getDepartamentoByDepartamentoid = async (req, departamentoid) => {
   }
 };
 
-export const findDepartamentoPk = async (req, departamentoid) => {
+export const findDepartamentoPk = async (transaction, departamentoid) => {
   try {
-    const { models } = req.app.locals;
-    const departamento = await models.Departamento.findOne({
+    const departamento = await modelsFT.Departamento.findOne({
       attributes: ["_iddepartamento"],
       where: {
         departamentoid: departamentoid,
       },
+      transaction,
     });
     //logger.info(line(),departamento);
     return departamento;
@@ -71,10 +70,9 @@ export const findDepartamentoPk = async (req, departamentoid) => {
   }
 };
 
-export const insertDepartamento = async (req, departamento) => {
+export const insertDepartamento = async (transaction, departamento) => {
   try {
-    const { models } = req.app.locals;
-    const departamento_nuevo = await models.Departamento.create(departamento);
+    const departamento_nuevo = await modelsFT.Departamento.create(departamento, { transaction });
     // logger.info(line(),departamento_nuevo);
     return departamento_nuevo;
   } catch (error) {
@@ -83,13 +81,13 @@ export const insertDepartamento = async (req, departamento) => {
   }
 };
 
-export const updateDepartamento = async (req, departamento) => {
+export const updateDepartamento = async (transaction, departamento) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Departamento.update(departamento, {
+    const result = await modelsFT.Departamento.update(departamento, {
       where: {
         departamentoid: departamento.departamentoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -98,13 +96,13 @@ export const updateDepartamento = async (req, departamento) => {
   }
 };
 
-export const deleteDepartamento = async (req, departamento) => {
+export const deleteDepartamento = async (transaction, departamento) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Departamento.update(departamento, {
+    const result = await modelsFT.Departamento.update(departamento, {
       where: {
         departamentoid: departamento.departamentoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

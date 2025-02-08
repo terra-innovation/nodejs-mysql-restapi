@@ -15,6 +15,10 @@ export default class PersonaVerificacionEstado extends Model {
       defaultValue: Sequelize.Sequelize.fn('uuid'),
       unique: "UQ_personaverificacionestadoid"
     },
+    code: {
+      type: DataTypes.STRING(20),
+      allowNull: false
+    },
     nombre: {
       type: DataTypes.STRING(50),
       allowNull: false

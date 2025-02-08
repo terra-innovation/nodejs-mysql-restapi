@@ -1,16 +1,17 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getFactoringestados = async (req, estados) => {
+export const getFactoringestados = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const factoringestados = await models.FactoringEstado.findAll({
+    const factoringestados = await modelsFT.FactoringEstado.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),factoringestados);
     return factoringestados;
@@ -20,11 +21,9 @@ export const getFactoringestados = async (req, estados) => {
   }
 };
 
-export const getFactoringestadoByIdfactoringestado = async (req, idfactoringestado) => {
+export const getFactoringestadoByIdfactoringestado = async (transaction, idfactoringestado) => {
   try {
-    const { models } = req.app.locals;
-
-    const factoringestado = await models.FactoringEstado.findByPk(idfactoringestado, {});
+    const factoringestado = await modelsFT.FactoringEstado.findByPk(idfactoringestado, { transaction });
     logger.info(line(), factoringestado);
 
     //const factoringestados = await factoringestado.getFactoringestados();
@@ -37,13 +36,13 @@ export const getFactoringestadoByIdfactoringestado = async (req, idfactoringesta
   }
 };
 
-export const getFactoringestadoByFactoringestadoid = async (req, factoringestadoid) => {
+export const getFactoringestadoByFactoringestadoid = async (transaction, factoringestadoid) => {
   try {
-    const { models } = req.app.locals;
-    const factoringestado = await models.FactoringEstado.findOne({
+    const factoringestado = await modelsFT.FactoringEstado.findOne({
       where: {
         factoringestadoid: factoringestadoid,
       },
+      transaction,
     });
     //logger.info(line(),factoringestado);
     return factoringestado;
@@ -53,14 +52,14 @@ export const getFactoringestadoByFactoringestadoid = async (req, factoringestado
   }
 };
 
-export const findFactoringestadoPk = async (req, factoringestadoid) => {
+export const findFactoringestadoPk = async (transaction, factoringestadoid) => {
   try {
-    const { models } = req.app.locals;
-    const factoringestado = await models.FactoringEstado.findOne({
+    const factoringestado = await modelsFT.FactoringEstado.findOne({
       attributes: ["_idfactoringestado"],
       where: {
         factoringestadoid: factoringestadoid,
       },
+      transaction,
     });
     //logger.info(line(),factoringestado);
     return factoringestado;
@@ -70,10 +69,9 @@ export const findFactoringestadoPk = async (req, factoringestadoid) => {
   }
 };
 
-export const insertFactoringestado = async (req, factoringestado) => {
+export const insertFactoringestado = async (transaction, factoringestado) => {
   try {
-    const { models } = req.app.locals;
-    const factoringestado_nuevo = await models.FactoringEstado.create(factoringestado);
+    const factoringestado_nuevo = await modelsFT.FactoringEstado.create(factoringestado, { transaction });
     // logger.info(line(),factoringestado_nuevo);
     return factoringestado_nuevo;
   } catch (error) {
@@ -82,13 +80,13 @@ export const insertFactoringestado = async (req, factoringestado) => {
   }
 };
 
-export const updateFactoringestado = async (req, factoringestado) => {
+export const updateFactoringestado = async (transaction, factoringestado) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.FactoringEstado.update(factoringestado, {
+    const result = await modelsFT.FactoringEstado.update(factoringestado, {
       where: {
         factoringestadoid: factoringestado.factoringestadoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -97,13 +95,13 @@ export const updateFactoringestado = async (req, factoringestado) => {
   }
 };
 
-export const deleteFactoringestado = async (req, factoringestado) => {
+export const deleteFactoringestado = async (transaction, factoringestado) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.FactoringEstado.update(factoringestado, {
+    const result = await modelsFT.FactoringEstado.update(factoringestado, {
       where: {
         factoringestadoid: factoringestado.factoringestadoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

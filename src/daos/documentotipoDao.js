@@ -1,14 +1,14 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getDocumentotiposByIdusuario = async (req, _idusuario, estados) => {
+export const getDocumentotiposByIdusuario = async (transaction, _idusuario, estados) => {
   try {
-    const { models } = req.app.locals;
-    const documentotipos = await models.DocumentoTipo.findAll({
+    const documentotipos = await modelsFT.DocumentoTipo.findAll({
       include: [
         {
-          model: models.UsuarioDocumentotipo,
+          model: modelsFT.UsuarioDocumentotipo,
           as: "usuario_documentotipos",
           where: {
             _idusuario: _idusuario,
@@ -23,6 +23,7 @@ export const getDocumentotiposByIdusuario = async (req, _idusuario, estados) => 
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),documentotipos);
     return documentotipos;
@@ -32,13 +33,12 @@ export const getDocumentotiposByIdusuario = async (req, _idusuario, estados) => 
   }
 };
 
-export const getDocumentotipoByIdusuarioAndRuc = async (req, _idusuario, ruc, estado) => {
+export const getDocumentotipoByIdusuarioAndRuc = async (transaction, _idusuario, ruc, estado) => {
   try {
-    const { models } = req.app.locals;
-    const documentotipos = await models.DocumentoTipo.findOne({
+    const documentotipos = await modelsFT.DocumentoTipo.findOne({
       include: [
         {
-          model: models.UsuarioDocumentotipo,
+          model: modelsFT.UsuarioDocumentotipo,
           as: "usuario_documentotipos",
           where: {
             _idusuario: _idusuario,
@@ -50,6 +50,7 @@ export const getDocumentotipoByIdusuarioAndRuc = async (req, _idusuario, ruc, es
         ruc: ruc,
         estado: estado,
       },
+      transaction,
     });
     //logger.info(line(),documentotipos);
     return documentotipos;
@@ -59,13 +60,12 @@ export const getDocumentotipoByIdusuarioAndRuc = async (req, _idusuario, ruc, es
   }
 };
 
-export const getDocumentotipoByIdusuarioAndDocumentotipoid = async (req, _idusuario, documentotipoid, estado) => {
+export const getDocumentotipoByIdusuarioAndDocumentotipoid = async (transaction, _idusuario, documentotipoid, estado) => {
   try {
-    const { models } = req.app.locals;
-    const documentotipos = await models.DocumentoTipo.findOne({
+    const documentotipos = await modelsFT.DocumentoTipo.findOne({
       include: [
         {
-          model: models.UsuarioDocumentotipo,
+          model: modelsFT.UsuarioDocumentotipo,
           as: "usuario_documentotipos",
           where: {
             _idusuario: _idusuario,
@@ -77,6 +77,7 @@ export const getDocumentotipoByIdusuarioAndDocumentotipoid = async (req, _idusua
         documentotipoid: documentotipoid,
         estado: estado,
       },
+      transaction,
     });
     //logger.info(line(),documentotipos);
     return documentotipos;
@@ -86,15 +87,15 @@ export const getDocumentotipoByIdusuarioAndDocumentotipoid = async (req, _idusua
   }
 };
 
-export const getDocumentotipos = async (req, estados) => {
+export const getDocumentotipos = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const documentotipos = await models.DocumentoTipo.findAll({
+    const documentotipos = await modelsFT.DocumentoTipo.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),documentotipos);
     return documentotipos;
@@ -104,17 +105,16 @@ export const getDocumentotipos = async (req, estados) => {
   }
 };
 
-export const getDocumentotipoByIddocumentotipo = async (req, iddocumentotipo) => {
+export const getDocumentotipoByIddocumentotipo = async (transaction, iddocumentotipo) => {
   try {
-    const { models } = req.app.locals;
-
-    const documentotipo = await models.DocumentoTipo.findByPk(iddocumentotipo, {
+    const documentotipo = await modelsFT.DocumentoTipo.findByPk(iddocumentotipo, {
       include: [
         {
-          model: models.Colaborador,
+          model: modelsFT.Colaborador,
           as: "colaboradors",
         },
       ],
+      transaction,
     });
     logger.info(line(), documentotipo);
 
@@ -128,19 +128,19 @@ export const getDocumentotipoByIddocumentotipo = async (req, iddocumentotipo) =>
   }
 };
 
-export const getDocumentotipoByDocumentotipoid = async (req, documentotipoid) => {
+export const getDocumentotipoByDocumentotipoid = async (transaction, documentotipoid) => {
   try {
-    const { models } = req.app.locals;
-    const documentotipo = await models.DocumentoTipo.findAll({
+    const documentotipo = await modelsFT.DocumentoTipo.findAll({
       include: [
         {
-          model: models.Colaborador,
+          model: modelsFT.Colaborador,
           as: "colaboradors",
         },
       ],
       where: {
         documentotipoid: documentotipoid,
       },
+      transaction,
     });
     //logger.info(line(),documentotipo);
     return documentotipo;
@@ -150,13 +150,13 @@ export const getDocumentotipoByDocumentotipoid = async (req, documentotipoid) =>
   }
 };
 
-export const getDocumentotipoByRuc = async (req, ruc) => {
+export const getDocumentotipoByRuc = async (transaction, ruc) => {
   try {
-    const { models } = req.app.locals;
-    const documentotipo = await models.DocumentoTipo.findAll({
+    const documentotipo = await modelsFT.DocumentoTipo.findAll({
       where: {
         ruc: ruc,
       },
+      transaction,
     });
     //logger.info(line(),documentotipo);
     return documentotipo;
@@ -166,14 +166,14 @@ export const getDocumentotipoByRuc = async (req, ruc) => {
   }
 };
 
-export const findDocumentotipoPk = async (req, documentotipoid) => {
+export const findDocumentotipoPk = async (transaction, documentotipoid) => {
   try {
-    const { models } = req.app.locals;
-    const documentotipo = await models.DocumentoTipo.findOne({
+    const documentotipo = await modelsFT.DocumentoTipo.findOne({
       attributes: ["_iddocumentotipo"],
       where: {
         documentotipoid: documentotipoid,
       },
+      transaction,
     });
     //logger.info(line(),documentotipo);
     return documentotipo;
@@ -183,10 +183,9 @@ export const findDocumentotipoPk = async (req, documentotipoid) => {
   }
 };
 
-export const insertDocumentotipo = async (req, documentotipo) => {
+export const insertDocumentotipo = async (transaction, documentotipo) => {
   try {
-    const { models } = req.app.locals;
-    const documentotipo_nuevo = await models.DocumentoTipo.create(documentotipo);
+    const documentotipo_nuevo = await modelsFT.DocumentoTipo.create(documentotipo, { transaction });
     // logger.info(line(),documentotipo_nuevo);
     return documentotipo_nuevo;
   } catch (error) {
@@ -195,13 +194,13 @@ export const insertDocumentotipo = async (req, documentotipo) => {
   }
 };
 
-export const updateDocumentotipo = async (req, documentotipo) => {
+export const updateDocumentotipo = async (transaction, documentotipo) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.DocumentoTipo.update(documentotipo, {
+    const result = await modelsFT.DocumentoTipo.update(documentotipo, {
       where: {
         documentotipoid: documentotipo.documentotipoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -210,13 +209,13 @@ export const updateDocumentotipo = async (req, documentotipo) => {
   }
 };
 
-export const deleteDocumentotipo = async (req, documentotipo) => {
+export const deleteDocumentotipo = async (transaction, documentotipo) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.DocumentoTipo.update(documentotipo, {
+    const result = await modelsFT.DocumentoTipo.update(documentotipo, {
       where: {
         documentotipoid: documentotipo.documentotipoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -225,13 +224,13 @@ export const deleteDocumentotipo = async (req, documentotipo) => {
   }
 };
 
-export const activateDocumentotipo = async (req, documentotipo) => {
+export const activateDocumentotipo = async (transaction, documentotipo) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.DocumentoTipo.update(documentotipo, {
+    const result = await modelsFT.DocumentoTipo.update(documentotipo, {
       where: {
         documentotipoid: documentotipo.documentotipoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

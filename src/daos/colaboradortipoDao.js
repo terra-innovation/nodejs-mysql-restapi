@@ -1,16 +1,17 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getColaboradortipos = async (req, estados) => {
+export const getColaboradortipos = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const colaboradortipos = await models.ColaboradorTipo.findAll({
+    const colaboradortipos = await modelsFT.ColaboradorTipo.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),colaboradortipos);
     return colaboradortipos;
@@ -21,11 +22,9 @@ export const getColaboradortipos = async (req, estados) => {
   }
 };
 
-export const getColaboradortipoByIdcolaboradortipo = async (req, idcolaboradortipo) => {
+export const getColaboradortipoByIdcolaboradortipo = async (transaction, idcolaboradortipo) => {
   try {
-    const { models } = req.app.locals;
-
-    const colaboradortipo = await models.ColaboradorTipo.findByPk(idcolaboradortipo, {});
+    const colaboradortipo = await modelsFT.ColaboradorTipo.findByPk(idcolaboradortipo, { transaction });
     logger.info(line(), colaboradortipo);
 
     //const colaboradortipos = await colaboradortipo.getColaboradortipos();
@@ -38,13 +37,13 @@ export const getColaboradortipoByIdcolaboradortipo = async (req, idcolaboradorti
   }
 };
 
-export const getColaboradortipoByColaboradortipoid = async (req, colaboradortipoid) => {
+export const getColaboradortipoByColaboradortipoid = async (transaction, colaboradortipoid) => {
   try {
-    const { models } = req.app.locals;
-    const colaboradortipo = await models.ColaboradorTipo.findOne({
+    const colaboradortipo = await modelsFT.ColaboradorTipo.findOne({
       where: {
         colaboradortipoid: colaboradortipoid,
       },
+      transaction,
     });
     //logger.info(line(),colaboradortipo);
     return colaboradortipo;
@@ -54,14 +53,14 @@ export const getColaboradortipoByColaboradortipoid = async (req, colaboradortipo
   }
 };
 
-export const findColaboradortipoPk = async (req, colaboradortipoid) => {
+export const findColaboradortipoPk = async (transaction, colaboradortipoid) => {
   try {
-    const { models } = req.app.locals;
-    const colaboradortipo = await models.ColaboradorTipo.findOne({
+    const colaboradortipo = await modelsFT.ColaboradorTipo.findOne({
       attributes: ["_idcolaboradortipo"],
       where: {
         colaboradortipoid: colaboradortipoid,
       },
+      transaction,
     });
     //logger.info(line(),colaboradortipo);
     return colaboradortipo;
@@ -71,10 +70,9 @@ export const findColaboradortipoPk = async (req, colaboradortipoid) => {
   }
 };
 
-export const insertColaboradortipo = async (req, colaboradortipo) => {
+export const insertColaboradortipo = async (transaction, colaboradortipo) => {
   try {
-    const { models } = req.app.locals;
-    const colaboradortipo_nuevo = await models.ColaboradorTipo.create(colaboradortipo);
+    const colaboradortipo_nuevo = await modelsFT.ColaboradorTipo.create(colaboradortipo, { transaction });
     // logger.info(line(),colaboradortipo_nuevo);
     return colaboradortipo_nuevo;
   } catch (error) {
@@ -83,13 +81,13 @@ export const insertColaboradortipo = async (req, colaboradortipo) => {
   }
 };
 
-export const updateColaboradortipo = async (req, colaboradortipo) => {
+export const updateColaboradortipo = async (transaction, colaboradortipo) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.ColaboradorTipo.update(colaboradortipo, {
+    const result = await modelsFT.ColaboradorTipo.update(colaboradortipo, {
       where: {
         colaboradortipoid: colaboradortipo.colaboradortipoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -98,13 +96,13 @@ export const updateColaboradortipo = async (req, colaboradortipo) => {
   }
 };
 
-export const deleteColaboradortipo = async (req, colaboradortipo) => {
+export const deleteColaboradortipo = async (transaction, colaboradortipo) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.ColaboradorTipo.update(colaboradortipo, {
+    const result = await modelsFT.ColaboradorTipo.update(colaboradortipo, {
       where: {
         colaboradortipoid: colaboradortipo.colaboradortipoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

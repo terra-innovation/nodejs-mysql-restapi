@@ -1,16 +1,17 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getPersonaverificacionestados = async (req, estados) => {
+export const getPersonaverificacionestados = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const personaverificacionestados = await models.PersonaVerificacionEstado.findAll({
+    const personaverificacionestados = await modelsFT.PersonaVerificacionEstado.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),personaverificacionestados);
     return personaverificacionestados;
@@ -21,11 +22,9 @@ export const getPersonaverificacionestados = async (req, estados) => {
   }
 };
 
-export const getPersonaverificacionestadoByIdpersonaverificacionestado = async (req, idpersonaverificacionestado) => {
+export const getPersonaverificacionestadoByIdpersonaverificacionestado = async (transaction, idpersonaverificacionestado) => {
   try {
-    const { models } = req.app.locals;
-
-    const personaverificacionestado = await models.PersonaVerificacionEstado.findByPk(idpersonaverificacionestado, {});
+    const personaverificacionestado = await modelsFT.PersonaVerificacionEstado.findByPk(idpersonaverificacionestado, { transaction });
     //logger.info(line(), personaverificacionestado);
 
     //const personaverificacionestados = await personaverificacionestado.getPersonaverificacionestados();
@@ -38,13 +37,13 @@ export const getPersonaverificacionestadoByIdpersonaverificacionestado = async (
   }
 };
 
-export const getPersonaverificacionestadoByPersonaverificacionestadoid = async (req, personaverificacionestadoid) => {
+export const getPersonaverificacionestadoByPersonaverificacionestadoid = async (transaction, personaverificacionestadoid) => {
   try {
-    const { models } = req.app.locals;
-    const personaverificacionestado = await models.PersonaVerificacionEstado.findOne({
+    const personaverificacionestado = await modelsFT.PersonaVerificacionEstado.findOne({
       where: {
         personaverificacionestadoid: personaverificacionestadoid,
       },
+      transaction,
     });
     //logger.info(line(),personaverificacionestado);
     return personaverificacionestado;
@@ -54,14 +53,14 @@ export const getPersonaverificacionestadoByPersonaverificacionestadoid = async (
   }
 };
 
-export const findPersonaverificacionestadoPk = async (req, personaverificacionestadoid) => {
+export const findPersonaverificacionestadoPk = async (transaction, personaverificacionestadoid) => {
   try {
-    const { models } = req.app.locals;
-    const personaverificacionestado = await models.PersonaVerificacionEstado.findOne({
+    const personaverificacionestado = await modelsFT.PersonaVerificacionEstado.findOne({
       attributes: ["_idpersonaverificacionestado"],
       where: {
         personaverificacionestadoid: personaverificacionestadoid,
       },
+      transaction,
     });
     //logger.info(line(),personaverificacionestado);
     return personaverificacionestado;
@@ -71,10 +70,9 @@ export const findPersonaverificacionestadoPk = async (req, personaverificaciones
   }
 };
 
-export const insertPersonaverificacionestado = async (req, personaverificacionestado) => {
+export const insertPersonaverificacionestado = async (transaction, personaverificacionestado) => {
   try {
-    const { models } = req.app.locals;
-    const personaverificacionestado_nuevo = await models.PersonaVerificacionEstado.create(personaverificacionestado);
+    const personaverificacionestado_nuevo = await modelsFT.PersonaVerificacionEstado.create(personaverificacionestado, { transaction });
     // logger.info(line(),personaverificacionestado_nuevo);
     return personaverificacionestado_nuevo;
   } catch (error) {
@@ -83,13 +81,13 @@ export const insertPersonaverificacionestado = async (req, personaverificaciones
   }
 };
 
-export const updatePersonaverificacionestado = async (req, personaverificacionestado) => {
+export const updatePersonaverificacionestado = async (transaction, personaverificacionestado) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.PersonaVerificacionEstado.update(personaverificacionestado, {
+    const result = await modelsFT.PersonaVerificacionEstado.update(personaverificacionestado, {
       where: {
         personaverificacionestadoid: personaverificacionestado.personaverificacionestadoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -98,13 +96,13 @@ export const updatePersonaverificacionestado = async (req, personaverificaciones
   }
 };
 
-export const deletePersonaverificacionestado = async (req, personaverificacionestado) => {
+export const deletePersonaverificacionestado = async (transaction, personaverificacionestado) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.PersonaVerificacionEstado.update(personaverificacionestado, {
+    const result = await modelsFT.PersonaVerificacionEstado.update(personaverificacionestado, {
       where: {
         personaverificacionestadoid: personaverificacionestado.personaverificacionestadoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

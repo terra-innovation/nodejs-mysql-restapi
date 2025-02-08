@@ -1,54 +1,54 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getPersonasByVerificacion = async (req, estado, idarchivotipo) => {
+export const getPersonasByVerificacion = async (transaction, estado, idarchivotipo) => {
   try {
-    const { models } = req.app.locals;
-    const personas = await models.Persona.findAll({
+    const personas = await modelsFT.Persona.findAll({
       include: [
         {
-          model: models.Usuario,
+          model: modelsFT.Usuario,
           required: true,
           as: "usuario_usuario",
         },
         {
-          model: models.PersonaVerificacionEstado,
+          model: modelsFT.PersonaVerificacionEstado,
           required: true,
           as: "personaverificacionestado_persona_verificacion_estado",
         },
         {
-          model: models.DocumentoTipo,
+          model: modelsFT.DocumentoTipo,
           required: true,
           as: "documentotipo_documento_tipo",
         },
         {
-          model: models.Pais,
+          model: modelsFT.Pais,
           required: true,
           as: "paisnacionalidad_pai",
         },
         {
-          model: models.Pais,
+          model: modelsFT.Pais,
           required: true,
           as: "paisnacimiento_pai",
         },
         {
-          model: models.Pais,
+          model: modelsFT.Pais,
           required: true,
           as: "paisresidencia_pai",
         },
         {
-          model: models.Distrito,
+          model: modelsFT.Distrito,
           required: true,
           as: "distritoresidencia_distrito",
           include: [
             {
-              model: models.Provincia,
+              model: modelsFT.Provincia,
               requerid: true,
               as: "provincia_provincium",
               include: [
                 {
-                  model: models.Departamento,
+                  model: modelsFT.Departamento,
                   requerid: true,
                   as: "departamento_departamento",
                 },
@@ -57,34 +57,34 @@ export const getPersonasByVerificacion = async (req, estado, idarchivotipo) => {
           ],
         },
         {
-          model: models.Genero,
+          model: modelsFT.Genero,
           required: true,
           as: "genero_genero",
         },
         {
-          model: models.PersonaVerificacion,
+          model: modelsFT.PersonaVerificacion,
           required: true,
           as: "persona_verificacions",
           include: [
             {
-              model: models.PersonaVerificacionEstado,
+              model: modelsFT.PersonaVerificacionEstado,
               required: true,
               as: "personaverificacionestado_persona_verificacion_estado",
             },
             {
-              model: models.Usuario,
+              model: modelsFT.Usuario,
               required: true,
               as: "usuarioverifica_usuario",
             },
           ],
         },
         {
-          model: models.Archivo,
+          model: modelsFT.Archivo,
           required: true,
           as: "archivo_archivo_archivo_personas",
           include: [
             {
-              model: models.ArchivoTipo,
+              model: modelsFT.ArchivoTipo,
               required: true,
               as: "archivotipo_archivo_tipo",
             },
@@ -101,6 +101,7 @@ export const getPersonasByVerificacion = async (req, estado, idarchivotipo) => {
           [Sequelize.Op.in]: estado,
         },
       },
+      transaction,
     });
     //logger.info(line(),personas);
     return personas;
@@ -110,48 +111,47 @@ export const getPersonasByVerificacion = async (req, estado, idarchivotipo) => {
   }
 };
 
-export const getPersonaByIdusuario = async (req, idusuario) => {
+export const getPersonaByIdusuario = async (transaction, idusuario) => {
   try {
-    const { models } = req.app.locals;
-    const persona = await models.Persona.findOne({
+    const persona = await modelsFT.Persona.findOne({
       include: [
         {
-          model: models.Usuario,
+          model: modelsFT.Usuario,
           required: true,
           as: "usuario_usuario",
         },
         {
-          model: models.DocumentoTipo,
+          model: modelsFT.DocumentoTipo,
           required: true,
           as: "documentotipo_documento_tipo",
         },
         {
-          model: models.Pais,
+          model: modelsFT.Pais,
           required: true,
           as: "paisnacionalidad_pai",
         },
         {
-          model: models.Pais,
+          model: modelsFT.Pais,
           required: true,
           as: "paisnacimiento_pai",
         },
         {
-          model: models.Pais,
+          model: modelsFT.Pais,
           required: true,
           as: "paisresidencia_pai",
         },
         {
-          model: models.Distrito,
+          model: modelsFT.Distrito,
           required: true,
           as: "distritoresidencia_distrito",
           include: [
             {
-              model: models.Provincia,
+              model: modelsFT.Provincia,
               requerid: true,
               as: "provincia_provincium",
               include: [
                 {
-                  model: models.Departamento,
+                  model: modelsFT.Departamento,
                   requerid: true,
                   as: "departamento_departamento",
                 },
@@ -160,7 +160,7 @@ export const getPersonaByIdusuario = async (req, idusuario) => {
           ],
         },
         {
-          model: models.Genero,
+          model: modelsFT.Genero,
           required: true,
           as: "genero_genero",
         },
@@ -168,6 +168,7 @@ export const getPersonaByIdusuario = async (req, idusuario) => {
       where: {
         _idusuario: idusuario,
       },
+      transaction,
     });
     return persona;
   } catch (error) {
@@ -176,49 +177,47 @@ export const getPersonaByIdusuario = async (req, idusuario) => {
   }
 };
 
-export const getPersonaByIdpersona = async (req, idpersona) => {
+export const getPersonaByIdpersona = async (transaction, idpersona) => {
   try {
-    const { models } = req.app.locals;
-
-    const persona = await models.Persona.findByPk(idpersona, {
+    const persona = await modelsFT.Persona.findByPk(idpersona, {
       include: [
         {
-          model: models.Usuario,
+          model: modelsFT.Usuario,
           required: true,
           as: "usuario_usuario",
         },
         {
-          model: models.DocumentoTipo,
+          model: modelsFT.DocumentoTipo,
           required: true,
           as: "documentotipo_documento_tipo",
         },
         {
-          model: models.Pais,
+          model: modelsFT.Pais,
           required: true,
           as: "paisnacionalidad_pai",
         },
         {
-          model: models.Pais,
+          model: modelsFT.Pais,
           required: true,
           as: "paisnacimiento_pai",
         },
         {
-          model: models.Pais,
+          model: modelsFT.Pais,
           required: true,
           as: "paisresidencia_pai",
         },
         {
-          model: models.Distrito,
+          model: modelsFT.Distrito,
           required: true,
           as: "distritoresidencia_distrito",
           include: [
             {
-              model: models.Provincia,
+              model: modelsFT.Provincia,
               requerid: true,
               as: "provincia_provincium",
               include: [
                 {
-                  model: models.Departamento,
+                  model: modelsFT.Departamento,
                   requerid: true,
                   as: "departamento_departamento",
                 },
@@ -227,11 +226,12 @@ export const getPersonaByIdpersona = async (req, idpersona) => {
           ],
         },
         {
-          model: models.Genero,
+          model: modelsFT.Genero,
           required: true,
           as: "genero_genero",
         },
       ],
+      transaction,
     });
 
     return persona;
@@ -241,48 +241,47 @@ export const getPersonaByIdpersona = async (req, idpersona) => {
   }
 };
 
-export const getPersonaByPersonaid = async (req, personaid) => {
+export const getPersonaByPersonaid = async (transaction, personaid) => {
   try {
-    const { models } = req.app.locals;
-    const persona = await models.Persona.findOne({
+    const persona = await modelsFT.Persona.findOne({
       include: [
         {
-          model: models.Usuario,
+          model: modelsFT.Usuario,
           required: true,
           as: "usuario_usuario",
         },
         {
-          model: models.DocumentoTipo,
+          model: modelsFT.DocumentoTipo,
           required: true,
           as: "documentotipo_documento_tipo",
         },
         {
-          model: models.Pais,
+          model: modelsFT.Pais,
           required: true,
           as: "paisnacionalidad_pai",
         },
         {
-          model: models.Pais,
+          model: modelsFT.Pais,
           required: true,
           as: "paisnacimiento_pai",
         },
         {
-          model: models.Pais,
+          model: modelsFT.Pais,
           required: true,
           as: "paisresidencia_pai",
         },
         {
-          model: models.Distrito,
+          model: modelsFT.Distrito,
           required: true,
           as: "distritoresidencia_distrito",
           include: [
             {
-              model: models.Provincia,
+              model: modelsFT.Provincia,
               requerid: true,
               as: "provincia_provincium",
               include: [
                 {
-                  model: models.Departamento,
+                  model: modelsFT.Departamento,
                   requerid: true,
                   as: "departamento_departamento",
                 },
@@ -291,7 +290,7 @@ export const getPersonaByPersonaid = async (req, personaid) => {
           ],
         },
         {
-          model: models.Genero,
+          model: modelsFT.Genero,
           required: true,
           as: "genero_genero",
         },
@@ -299,6 +298,7 @@ export const getPersonaByPersonaid = async (req, personaid) => {
       where: {
         personaid: personaid,
       },
+      transaction,
     });
     //logger.debug(line(), persona);
     return persona;
@@ -308,14 +308,14 @@ export const getPersonaByPersonaid = async (req, personaid) => {
   }
 };
 
-export const findPersonaPk = async (req, personaid) => {
+export const findPersonaPk = async (transaction, personaid) => {
   try {
-    const { models } = req.app.locals;
-    const persona = await models.Persona.findOne({
+    const persona = await modelsFT.Persona.findOne({
       attributes: ["_idpersona"],
       where: {
         personaid: personaid,
       },
+      transaction,
     });
     //logger.info(line(),persona);
     return persona;
@@ -325,48 +325,47 @@ export const findPersonaPk = async (req, personaid) => {
   }
 };
 
-export const getPersonas = async (req, estado) => {
+export const getPersonas = async (transaction, estado) => {
   try {
-    const { models } = req.app.locals;
-    const personas = await models.Persona.findAll({
+    const personas = await modelsFT.Persona.findAll({
       include: [
         {
-          model: models.Usuario,
+          model: modelsFT.Usuario,
           required: true,
           as: "usuario_usuario",
         },
         {
-          model: models.DocumentoTipo,
+          model: modelsFT.DocumentoTipo,
           required: true,
           as: "documentotipo_documento_tipo",
         },
         {
-          model: models.Pais,
+          model: modelsFT.Pais,
           required: true,
           as: "paisnacionalidad_pai",
         },
         {
-          model: models.Pais,
+          model: modelsFT.Pais,
           required: true,
           as: "paisnacimiento_pai",
         },
         {
-          model: models.Pais,
+          model: modelsFT.Pais,
           required: true,
           as: "paisresidencia_pai",
         },
         {
-          model: models.Distrito,
+          model: modelsFT.Distrito,
           required: true,
           as: "distritoresidencia_distrito",
           include: [
             {
-              model: models.Provincia,
+              model: modelsFT.Provincia,
               requerid: true,
               as: "provincia_provincium",
               include: [
                 {
-                  model: models.Departamento,
+                  model: modelsFT.Departamento,
                   requerid: true,
                   as: "departamento_departamento",
                 },
@@ -375,7 +374,7 @@ export const getPersonas = async (req, estado) => {
           ],
         },
         {
-          model: models.Genero,
+          model: modelsFT.Genero,
           required: true,
           as: "genero_genero",
         },
@@ -385,6 +384,7 @@ export const getPersonas = async (req, estado) => {
           [Sequelize.Op.in]: estado,
         },
       },
+      transaction,
     });
     //logger.info(line(),personas);
     return personas;
@@ -394,10 +394,9 @@ export const getPersonas = async (req, estado) => {
   }
 };
 
-export const insertPersona = async (req, persona) => {
+export const insertPersona = async (transaction, persona) => {
   try {
-    const { models } = req.app.locals;
-    const persona_nuevo = await models.Persona.create(persona);
+    const persona_nuevo = await modelsFT.Persona.create(persona, { transaction });
     // logger.info(line(),persona_nuevo);
     return persona_nuevo;
   } catch (error) {
@@ -406,13 +405,13 @@ export const insertPersona = async (req, persona) => {
   }
 };
 
-export const updatePersona = async (req, persona) => {
+export const updatePersona = async (transaction, persona) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Persona.update(persona, {
+    const result = await modelsFT.Persona.update(persona, {
       where: {
         personaid: persona.personaid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -421,13 +420,13 @@ export const updatePersona = async (req, persona) => {
   }
 };
 
-export const deletePersona = async (req, persona) => {
+export const deletePersona = async (transaction, persona) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Persona.update(persona, {
+    const result = await modelsFT.Persona.update(persona, {
       where: {
         personaid: persona.personaid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -436,13 +435,13 @@ export const deletePersona = async (req, persona) => {
   }
 };
 
-export const activatePersona = async (req, persona) => {
+export const activatePersona = async (transaction, persona) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Persona.update(persona, {
+    const result = await modelsFT.Persona.update(persona, {
       where: {
         personaid: persona.personaid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

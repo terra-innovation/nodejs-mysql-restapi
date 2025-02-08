@@ -1,11 +1,11 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getFactoringsfacturasEmpresasActivas = async (req) => {
+export const getFactoringsfacturasEmpresasActivas = async (transaction) => {
   try {
-    const { models } = req.app.locals;
-    const factoringsfacturasempresas = await models.FactoringFactura.findAll({
+    const factoringsfacturasempresas = await modelsFT.FactoringFactura.findAll({
       include: [
         {
           all: true,
@@ -14,6 +14,7 @@ export const getFactoringsfacturasEmpresasActivas = async (req) => {
       where: {
         estado: 1,
       },
+      transaction,
     });
     //logger.info(line(),factoringsfacturasempresas);
     return factoringsfacturasempresas;
@@ -23,11 +24,9 @@ export const getFactoringsfacturasEmpresasActivas = async (req) => {
   }
 };
 
-export const getFactoringfacturaByIdfactoringfactura = async (req, idfactoringfactura) => {
+export const getFactoringfacturaByIdfactoringfactura = async (transaction, idfactoringfactura) => {
   try {
-    const { models } = req.app.locals;
-
-    const factoringfactura = await models.FactoringFactura.findByPk(idfactoringfactura, {});
+    const factoringfactura = await modelsFT.FactoringFactura.findByPk(idfactoringfactura, { transaction });
     logger.info(line(), factoringfactura);
 
     //const factoringsfacturasempresas = await factoringfactura.getFactoringsfacturasEmpresas();
@@ -40,13 +39,13 @@ export const getFactoringfacturaByIdfactoringfactura = async (req, idfactoringfa
   }
 };
 
-export const getFactoringfacturaByFactoringfacturaid = async (req, factoringfacturaid) => {
+export const getFactoringfacturaByFactoringfacturaid = async (transaction, factoringfacturaid) => {
   try {
-    const { models } = req.app.locals;
-    const factoringfactura = await models.FactoringFactura.findOne({
+    const factoringfactura = await modelsFT.FactoringFactura.findOne({
       where: {
         factoringfacturaid: factoringfacturaid,
       },
+      transaction,
     });
     //logger.info(line(),factoringfactura);
     return factoringfactura;
@@ -56,14 +55,14 @@ export const getFactoringfacturaByFactoringfacturaid = async (req, factoringfact
   }
 };
 
-export const findFactoringfacturaPk = async (req, factoringfacturaid) => {
+export const findFactoringfacturaPk = async (transaction, factoringfacturaid) => {
   try {
-    const { models } = req.app.locals;
-    const factoringfactura = await models.FactoringFactura.findOne({
+    const factoringfactura = await modelsFT.FactoringFactura.findOne({
       attributes: ["_idfactoringfactura"],
       where: {
         factoringfacturaid: factoringfacturaid,
       },
+      transaction,
     });
     //logger.info(line(),factoringfactura);
     return factoringfactura;
@@ -73,10 +72,9 @@ export const findFactoringfacturaPk = async (req, factoringfacturaid) => {
   }
 };
 
-export const insertFactoringfactura = async (req, factoringfactura) => {
+export const insertFactoringfactura = async (transaction, factoringfactura) => {
   try {
-    const { models } = req.app.locals;
-    const factoringfactura_nuevo = await models.FactoringFactura.create(factoringfactura);
+    const factoringfactura_nuevo = await modelsFT.FactoringFactura.create(factoringfactura, { transaction });
     // logger.info(line(),factoringfactura_nuevo);
     return factoringfactura_nuevo;
   } catch (error) {
@@ -85,13 +83,13 @@ export const insertFactoringfactura = async (req, factoringfactura) => {
   }
 };
 
-export const updateFactoringfactura = async (req, factoringfactura) => {
+export const updateFactoringfactura = async (transaction, factoringfactura) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.FactoringFactura.update(factoringfactura, {
+    const result = await modelsFT.FactoringFactura.update(factoringfactura, {
       where: {
         factoringfacturaid: factoringfactura.factoringfacturaid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -100,13 +98,13 @@ export const updateFactoringfactura = async (req, factoringfactura) => {
   }
 };
 
-export const deleteFactoringfactura = async (req, factoringfactura) => {
+export const deleteFactoringfactura = async (transaction, factoringfactura) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.FactoringFactura.update(factoringfactura, {
+    const result = await modelsFT.FactoringFactura.update(factoringfactura, {
       where: {
         factoringfacturaid: factoringfactura.factoringfacturaid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

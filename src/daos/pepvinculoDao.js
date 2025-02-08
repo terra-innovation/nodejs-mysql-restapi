@@ -1,16 +1,17 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getPepvinculos = async (req, estados) => {
+export const getPepvinculos = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const pepvinculos = await models.PepVinculo.findAll({
+    const pepvinculos = await modelsFT.PepVinculo.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),pepvinculos);
     return pepvinculos;
@@ -21,11 +22,9 @@ export const getPepvinculos = async (req, estados) => {
   }
 };
 
-export const getPepvinculoByIdpepvinculo = async (req, idpepvinculo) => {
+export const getPepvinculoByIdpepvinculo = async (transaction, idpepvinculo) => {
   try {
-    const { models } = req.app.locals;
-
-    const pepvinculo = await models.PepVinculo.findByPk(idpepvinculo, {});
+    const pepvinculo = await modelsFT.PepVinculo.findByPk(idpepvinculo, { transaction });
     logger.info(line(), pepvinculo);
 
     //const pepvinculos = await pepvinculo.getPepvinculos();
@@ -38,13 +37,13 @@ export const getPepvinculoByIdpepvinculo = async (req, idpepvinculo) => {
   }
 };
 
-export const getPepvinculoByPepvinculoid = async (req, pepvinculoid) => {
+export const getPepvinculoByPepvinculoid = async (transaction, pepvinculoid) => {
   try {
-    const { models } = req.app.locals;
-    const pepvinculo = await models.PepVinculo.findOne({
+    const pepvinculo = await modelsFT.PepVinculo.findOne({
       where: {
         pepvinculoid: pepvinculoid,
       },
+      transaction,
     });
     //logger.info(line(),pepvinculo);
     return pepvinculo;
@@ -54,14 +53,14 @@ export const getPepvinculoByPepvinculoid = async (req, pepvinculoid) => {
   }
 };
 
-export const findPepvinculoPk = async (req, pepvinculoid) => {
+export const findPepvinculoPk = async (transaction, pepvinculoid) => {
   try {
-    const { models } = req.app.locals;
-    const pepvinculo = await models.PepVinculo.findOne({
+    const pepvinculo = await modelsFT.PepVinculo.findOne({
       attributes: ["_idpepvinculo"],
       where: {
         pepvinculoid: pepvinculoid,
       },
+      transaction,
     });
     //logger.info(line(),pepvinculo);
     return pepvinculo;
@@ -71,10 +70,9 @@ export const findPepvinculoPk = async (req, pepvinculoid) => {
   }
 };
 
-export const insertPepvinculo = async (req, pepvinculo) => {
+export const insertPepvinculo = async (transaction, pepvinculo) => {
   try {
-    const { models } = req.app.locals;
-    const pepvinculo_nuevo = await models.PepVinculo.create(pepvinculo);
+    const pepvinculo_nuevo = await modelsFT.PepVinculo.create(pepvinculo, { transaction });
     // logger.info(line(),pepvinculo_nuevo);
     return pepvinculo_nuevo;
   } catch (error) {
@@ -83,13 +81,13 @@ export const insertPepvinculo = async (req, pepvinculo) => {
   }
 };
 
-export const updatePepvinculo = async (req, pepvinculo) => {
+export const updatePepvinculo = async (transaction, pepvinculo) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.PepVinculo.update(pepvinculo, {
+    const result = await modelsFT.PepVinculo.update(pepvinculo, {
       where: {
         pepvinculoid: pepvinculo.pepvinculoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -98,13 +96,13 @@ export const updatePepvinculo = async (req, pepvinculo) => {
   }
 };
 
-export const deletePepvinculo = async (req, pepvinculo) => {
+export const deletePepvinculo = async (transaction, pepvinculo) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.PepVinculo.update(pepvinculo, {
+    const result = await modelsFT.PepVinculo.update(pepvinculo, {
       where: {
         pepvinculoid: pepvinculo.pepvinculoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

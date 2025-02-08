@@ -1,16 +1,17 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getMonedas = async (req, estados) => {
+export const getMonedas = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const monedas = await models.Moneda.findAll({
+    const monedas = await modelsFT.Moneda.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),monedas);
     return monedas;
@@ -21,11 +22,9 @@ export const getMonedas = async (req, estados) => {
   }
 };
 
-export const getMonedaByIdmoneda = async (req, idmoneda) => {
+export const getMonedaByIdmoneda = async (transaction, idmoneda) => {
   try {
-    const { models } = req.app.locals;
-
-    const moneda = await models.Moneda.findByPk(idmoneda, {});
+    const moneda = await modelsFT.Moneda.findByPk(idmoneda, { transaction });
     logger.info(line(), moneda);
 
     //const monedas = await moneda.getMonedas();
@@ -38,13 +37,13 @@ export const getMonedaByIdmoneda = async (req, idmoneda) => {
   }
 };
 
-export const getMonedaByCodigo = async (req, codigo) => {
+export const getMonedaByCodigo = async (transaction, codigo) => {
   try {
-    const { models } = req.app.locals;
-    const moneda = await models.Moneda.findOne({
+    const moneda = await modelsFT.Moneda.findOne({
       where: {
         codigo: codigo,
       },
+      transaction,
     });
     //logger.info(line(),moneda);
     return moneda;
@@ -54,13 +53,13 @@ export const getMonedaByCodigo = async (req, codigo) => {
   }
 };
 
-export const getMonedaByMonedaid = async (req, monedaid) => {
+export const getMonedaByMonedaid = async (transaction, monedaid) => {
   try {
-    const { models } = req.app.locals;
-    const moneda = await models.Moneda.findOne({
+    const moneda = await modelsFT.Moneda.findOne({
       where: {
         monedaid: monedaid,
       },
+      transaction,
     });
     //logger.info(line(),moneda);
     return moneda;
@@ -70,14 +69,14 @@ export const getMonedaByMonedaid = async (req, monedaid) => {
   }
 };
 
-export const findMonedaPk = async (req, monedaid) => {
+export const findMonedaPk = async (transaction, monedaid) => {
   try {
-    const { models } = req.app.locals;
-    const moneda = await models.Moneda.findOne({
+    const moneda = await modelsFT.Moneda.findOne({
       attributes: ["_idmoneda"],
       where: {
         monedaid: monedaid,
       },
+      transaction,
     });
     //logger.info(line(),moneda);
     return moneda;
@@ -87,10 +86,9 @@ export const findMonedaPk = async (req, monedaid) => {
   }
 };
 
-export const insertMoneda = async (req, moneda) => {
+export const insertMoneda = async (transaction, moneda) => {
   try {
-    const { models } = req.app.locals;
-    const moneda_nuevo = await models.Moneda.create(moneda);
+    const moneda_nuevo = await modelsFT.Moneda.create(moneda, { transaction });
     // logger.info(line(),moneda_nuevo);
     return moneda_nuevo;
   } catch (error) {
@@ -99,13 +97,13 @@ export const insertMoneda = async (req, moneda) => {
   }
 };
 
-export const updateMoneda = async (req, moneda) => {
+export const updateMoneda = async (transaction, moneda) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Moneda.update(moneda, {
+    const result = await modelsFT.Moneda.update(moneda, {
       where: {
         monedaid: moneda.monedaid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -114,13 +112,13 @@ export const updateMoneda = async (req, moneda) => {
   }
 };
 
-export const deleteMoneda = async (req, moneda) => {
+export const deleteMoneda = async (transaction, moneda) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Moneda.update(moneda, {
+    const result = await modelsFT.Moneda.update(moneda, {
       where: {
         monedaid: moneda.monedaid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

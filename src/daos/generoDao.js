@@ -1,16 +1,17 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getGeneros = async (req, estados) => {
+export const getGeneros = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const generos = await models.Genero.findAll({
+    const generos = await modelsFT.Genero.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),generos);
     return generos;
@@ -21,11 +22,9 @@ export const getGeneros = async (req, estados) => {
   }
 };
 
-export const getGeneroByIdgenero = async (req, idgenero) => {
+export const getGeneroByIdgenero = async (transaction, idgenero) => {
   try {
-    const { models } = req.app.locals;
-
-    const genero = await models.Genero.findByPk(idgenero, {});
+    const genero = await modelsFT.Genero.findByPk(idgenero, { transaction });
     logger.info(line(), genero);
 
     //const generos = await genero.getGeneros();
@@ -38,13 +37,13 @@ export const getGeneroByIdgenero = async (req, idgenero) => {
   }
 };
 
-export const getGeneroByGeneroid = async (req, generoid) => {
+export const getGeneroByGeneroid = async (transaction, generoid) => {
   try {
-    const { models } = req.app.locals;
-    const genero = await models.Genero.findOne({
+    const genero = await modelsFT.Genero.findOne({
       where: {
         generoid: generoid,
       },
+      transaction,
     });
     //logger.info(line(),genero);
     return genero;
@@ -54,14 +53,14 @@ export const getGeneroByGeneroid = async (req, generoid) => {
   }
 };
 
-export const findGeneroPk = async (req, generoid) => {
+export const findGeneroPk = async (transaction, generoid) => {
   try {
-    const { models } = req.app.locals;
-    const genero = await models.Genero.findOne({
+    const genero = await modelsFT.Genero.findOne({
       attributes: ["_idgenero"],
       where: {
         generoid: generoid,
       },
+      transaction,
     });
     //logger.info(line(),genero);
     return genero;
@@ -71,10 +70,9 @@ export const findGeneroPk = async (req, generoid) => {
   }
 };
 
-export const insertGenero = async (req, genero) => {
+export const insertGenero = async (transaction, genero) => {
   try {
-    const { models } = req.app.locals;
-    const genero_nuevo = await models.Genero.create(genero);
+    const genero_nuevo = await modelsFT.Genero.create(genero, { transaction });
     // logger.info(line(),genero_nuevo);
     return genero_nuevo;
   } catch (error) {
@@ -83,13 +81,13 @@ export const insertGenero = async (req, genero) => {
   }
 };
 
-export const updateGenero = async (req, genero) => {
+export const updateGenero = async (transaction, genero) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Genero.update(genero, {
+    const result = await modelsFT.Genero.update(genero, {
       where: {
         generoid: genero.generoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -98,13 +96,13 @@ export const updateGenero = async (req, genero) => {
   }
 };
 
-export const deleteGenero = async (req, genero) => {
+export const deleteGenero = async (transaction, genero) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Genero.update(genero, {
+    const result = await modelsFT.Genero.update(genero, {
       where: {
         generoid: genero.generoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

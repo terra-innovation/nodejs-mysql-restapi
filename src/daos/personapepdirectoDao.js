@@ -1,16 +1,17 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getPersonapepdirectos = async (req, estados) => {
+export const getPersonapepdirectos = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const personapepdirectos = await models.PersonaPepDirecto.findAll({
+    const personapepdirectos = await modelsFT.PersonaPepDirecto.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),personapepdirectos);
     return personapepdirectos;
@@ -21,11 +22,9 @@ export const getPersonapepdirectos = async (req, estados) => {
   }
 };
 
-export const getPersonaPepDirectoByIdpersonapepdirecto = async (req, idpersonapepdirecto) => {
+export const getPersonaPepDirectoByIdpersonapepdirecto = async (transaction, idpersonapepdirecto) => {
   try {
-    const { models } = req.app.locals;
-
-    const personapepdirecto = await models.PersonaPepDirecto.findByPk(idpersonapepdirecto, {});
+    const personapepdirecto = await modelsFT.PersonaPepDirecto.findByPk(idpersonapepdirecto, { transaction });
     logger.info(line(), personapepdirecto);
 
     //const personapepdirectos = await personapepdirecto.getPersonapepdirectos();
@@ -38,13 +37,13 @@ export const getPersonaPepDirectoByIdpersonapepdirecto = async (req, idpersonape
   }
 };
 
-export const getPersonaPepDirectoByPersonaPepDirectoid = async (req, personapepdirectoid) => {
+export const getPersonaPepDirectoByPersonaPepDirectoid = async (transaction, personapepdirectoid) => {
   try {
-    const { models } = req.app.locals;
-    const personapepdirecto = await models.PersonaPepDirecto.findOne({
+    const personapepdirecto = await modelsFT.PersonaPepDirecto.findOne({
       where: {
         personapepdirectoid: personapepdirectoid,
       },
+      transaction,
     });
     //logger.info(line(),personapepdirecto);
     return personapepdirecto;
@@ -54,14 +53,14 @@ export const getPersonaPepDirectoByPersonaPepDirectoid = async (req, personapepd
   }
 };
 
-export const findPersonaPepDirectoPk = async (req, personapepdirectoid) => {
+export const findPersonaPepDirectoPk = async (transaction, personapepdirectoid) => {
   try {
-    const { models } = req.app.locals;
-    const personapepdirecto = await models.PersonaPepDirecto.findOne({
+    const personapepdirecto = await modelsFT.PersonaPepDirecto.findOne({
       attributes: ["_idpersonapepdirecto"],
       where: {
         personapepdirectoid: personapepdirectoid,
       },
+      transaction,
     });
     //logger.info(line(),personapepdirecto);
     return personapepdirecto;
@@ -71,10 +70,9 @@ export const findPersonaPepDirectoPk = async (req, personapepdirectoid) => {
   }
 };
 
-export const insertPersonaPepDirecto = async (req, personapepdirecto) => {
+export const insertPersonaPepDirecto = async (transaction, personapepdirecto) => {
   try {
-    const { models } = req.app.locals;
-    const personapepdirecto_nuevo = await models.PersonaPepDirecto.create(personapepdirecto);
+    const personapepdirecto_nuevo = await modelsFT.PersonaPepDirecto.create(personapepdirecto, { transaction });
     // logger.info(line(),personapepdirecto_nuevo);
     return personapepdirecto_nuevo;
   } catch (error) {
@@ -83,13 +81,13 @@ export const insertPersonaPepDirecto = async (req, personapepdirecto) => {
   }
 };
 
-export const updatePersonaPepDirecto = async (req, personapepdirecto) => {
+export const updatePersonaPepDirecto = async (transaction, personapepdirecto) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.PersonaPepDirecto.update(personapepdirecto, {
+    const result = await modelsFT.PersonaPepDirecto.update(personapepdirecto, {
       where: {
         personapepdirectoid: personapepdirecto.personapepdirectoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -98,13 +96,13 @@ export const updatePersonaPepDirecto = async (req, personapepdirecto) => {
   }
 };
 
-export const deletePersonaPepDirecto = async (req, personapepdirecto) => {
+export const deletePersonaPepDirecto = async (transaction, personapepdirecto) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.PersonaPepDirecto.update(personapepdirecto, {
+    const result = await modelsFT.PersonaPepDirecto.update(personapepdirecto, {
       where: {
         personapepdirectoid: personapepdirecto.personapepdirectoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

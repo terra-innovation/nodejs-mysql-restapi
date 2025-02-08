@@ -1,8 +1,9 @@
 import { Sequelize } from "sequelize";
+import initModels from "../../models/ft_factoring/init-models.js";
 import * as config from "../../config.js";
 import logger, { line } from "../../utils/logger.js";
 
-const sequelize = new Sequelize(config.DB_FACTORING_DATABASE, config.DB_FACTORING_USER, config.DB_FACTORING_PASSWORD, {
+export const sequelizeFT = new Sequelize(config.DB_FACTORING_DATABASE, config.DB_FACTORING_USER, config.DB_FACTORING_PASSWORD, {
   host: config.DB_FACTORING_HOST,
   port: config.DB_FACTORING_PORT,
   dialect: "mysql",
@@ -19,9 +20,11 @@ const sequelize = new Sequelize(config.DB_FACTORING_DATABASE, config.DB_FACTORIN
   logging: false,
 });
 
+export const modelsFT = initModels(sequelizeFT);
+
 async function connect() {
   try {
-    await sequelize.authenticate();
+    await sequelizeFT.authenticate();
     logger.info(line(), "[Sequelize] Database " + config.DB_FACTORING_DATABASE + ": Successful connection.");
   } catch (error) {
     //logger.error("Unable to connect to the database:", error);
@@ -38,5 +41,3 @@ async function connect() {
 }
 
 connect();
-
-export default sequelize;

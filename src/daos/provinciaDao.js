@@ -1,16 +1,17 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getProvincias = async (req, estados) => {
+export const getProvincias = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const provincias = await models.Provincia.findAll({
+    const provincias = await modelsFT.Provincia.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),provincias);
     return provincias;
@@ -21,11 +22,9 @@ export const getProvincias = async (req, estados) => {
   }
 };
 
-export const getProvinciaByIdprovincia = async (req, idprovincia) => {
+export const getProvinciaByIdprovincia = async (transaction, idprovincia) => {
   try {
-    const { models } = req.app.locals;
-
-    const provincia = await models.Provincia.findByPk(idprovincia, {});
+    const provincia = await modelsFT.Provincia.findByPk(idprovincia, { transaction });
     //logger.info(line(),provincias);
 
     return provincia;
@@ -35,13 +34,13 @@ export const getProvinciaByIdprovincia = async (req, idprovincia) => {
   }
 };
 
-export const getProvinciaByProvinciaid = async (req, provinciaid) => {
+export const getProvinciaByProvinciaid = async (transaction, provinciaid) => {
   try {
-    const { models } = req.app.locals;
-    const provincia = await models.Provincia.findOne({
+    const provincia = await modelsFT.Provincia.findOne({
       where: {
         provinciaid: provinciaid,
       },
+      transaction,
     });
     //logger.info(line(),provincia);
     return provincia;
@@ -51,14 +50,14 @@ export const getProvinciaByProvinciaid = async (req, provinciaid) => {
   }
 };
 
-export const findProvinciaPk = async (req, provinciaid) => {
+export const findProvinciaPk = async (transaction, provinciaid) => {
   try {
-    const { models } = req.app.locals;
-    const provincia = await models.Provincia.findOne({
+    const provincia = await modelsFT.Provincia.findOne({
       attributes: ["_idprovincia"],
       where: {
         provinciaid: provinciaid,
       },
+      transaction,
     });
     //logger.info(line(),provincia);
     return provincia;
@@ -68,10 +67,9 @@ export const findProvinciaPk = async (req, provinciaid) => {
   }
 };
 
-export const insertProvincia = async (req, provincia) => {
+export const insertProvincia = async (transaction, provincia) => {
   try {
-    const { models } = req.app.locals;
-    const provincia_nuevo = await models.Provincia.create(provincia);
+    const provincia_nuevo = await modelsFT.Provincia.create(provincia, { transaction });
     // logger.info(line(),provincia_nuevo);
     return provincia_nuevo;
   } catch (error) {
@@ -80,13 +78,13 @@ export const insertProvincia = async (req, provincia) => {
   }
 };
 
-export const updateProvincia = async (req, provincia) => {
+export const updateProvincia = async (transaction, provincia) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Provincia.update(provincia, {
+    const result = await modelsFT.Provincia.update(provincia, {
       where: {
         provinciaid: provincia.provinciaid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -95,13 +93,13 @@ export const updateProvincia = async (req, provincia) => {
   }
 };
 
-export const deleteProvincia = async (req, provincia) => {
+export const deleteProvincia = async (transaction, provincia) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Provincia.update(provincia, {
+    const result = await modelsFT.Provincia.update(provincia, {
       where: {
         provinciaid: provincia.provinciaid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

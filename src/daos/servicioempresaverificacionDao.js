@@ -1,16 +1,17 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getServicioempresaverificacions = async (req, estados) => {
+export const getServicioempresaverificacions = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const servicioempresaverificacions = await models.ServicioEmpresaVerificacion.findAll({
+    const servicioempresaverificacions = await modelsFT.ServicioEmpresaVerificacion.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),servicioempresaverificacions);
     return servicioempresaverificacions;
@@ -21,11 +22,9 @@ export const getServicioempresaverificacions = async (req, estados) => {
   }
 };
 
-export const getServicioempresaverificacionByIdservicioempresaverificacion = async (req, idservicioempresaverificacion) => {
+export const getServicioempresaverificacionByIdservicioempresaverificacion = async (transaction, idservicioempresaverificacion) => {
   try {
-    const { models } = req.app.locals;
-
-    const servicioempresaverificacion = await models.ServicioEmpresaVerificacion.findByPk(idservicioempresaverificacion, {});
+    const servicioempresaverificacion = await modelsFT.ServicioEmpresaVerificacion.findByPk(idservicioempresaverificacion, { transaction });
     logger.info(line(), servicioempresaverificacion);
 
     //const servicioempresaverificacions = await servicioempresaverificacion.getServicioempresaverificacions();
@@ -38,13 +37,13 @@ export const getServicioempresaverificacionByIdservicioempresaverificacion = asy
   }
 };
 
-export const getServicioempresaverificacionByServicioempresaverificacionid = async (req, servicioempresaverificacionid) => {
+export const getServicioempresaverificacionByServicioempresaverificacionid = async (transaction, servicioempresaverificacionid) => {
   try {
-    const { models } = req.app.locals;
-    const servicioempresaverificacion = await models.ServicioEmpresaVerificacion.findOne({
+    const servicioempresaverificacion = await modelsFT.ServicioEmpresaVerificacion.findOne({
       where: {
         servicioempresaverificacionid: servicioempresaverificacionid,
       },
+      transaction,
     });
     //logger.info(line(),servicioempresaverificacion);
     return servicioempresaverificacion;
@@ -54,14 +53,14 @@ export const getServicioempresaverificacionByServicioempresaverificacionid = asy
   }
 };
 
-export const findServicioempresaverificacionPk = async (req, servicioempresaverificacionid) => {
+export const findServicioempresaverificacionPk = async (transaction, servicioempresaverificacionid) => {
   try {
-    const { models } = req.app.locals;
-    const servicioempresaverificacion = await models.ServicioEmpresaVerificacion.findOne({
+    const servicioempresaverificacion = await modelsFT.ServicioEmpresaVerificacion.findOne({
       attributes: ["_idservicioempresaverificacion"],
       where: {
         servicioempresaverificacionid: servicioempresaverificacionid,
       },
+      transaction,
     });
     //logger.info(line(),servicioempresaverificacion);
     return servicioempresaverificacion;
@@ -71,10 +70,9 @@ export const findServicioempresaverificacionPk = async (req, servicioempresaveri
   }
 };
 
-export const insertServicioempresaverificacion = async (req, servicioempresaverificacion) => {
+export const insertServicioempresaverificacion = async (transaction, servicioempresaverificacion) => {
   try {
-    const { models } = req.app.locals;
-    const servicioempresaverificacion_nuevo = await models.ServicioEmpresaVerificacion.create(servicioempresaverificacion);
+    const servicioempresaverificacion_nuevo = await modelsFT.ServicioEmpresaVerificacion.create(servicioempresaverificacion, { transaction });
     // logger.info(line(),servicioempresaverificacion_nuevo);
     return servicioempresaverificacion_nuevo;
   } catch (error) {
@@ -83,13 +81,13 @@ export const insertServicioempresaverificacion = async (req, servicioempresaveri
   }
 };
 
-export const updateServicioempresaverificacion = async (req, servicioempresaverificacion) => {
+export const updateServicioempresaverificacion = async (transaction, servicioempresaverificacion) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.ServicioEmpresaVerificacion.update(servicioempresaverificacion, {
+    const result = await modelsFT.ServicioEmpresaVerificacion.update(servicioempresaverificacion, {
       where: {
         servicioempresaverificacionid: servicioempresaverificacion.servicioempresaverificacionid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -98,13 +96,13 @@ export const updateServicioempresaverificacion = async (req, servicioempresaveri
   }
 };
 
-export const deleteServicioempresaverificacion = async (req, servicioempresaverificacion) => {
+export const deleteServicioempresaverificacion = async (transaction, servicioempresaverificacion) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.ServicioEmpresaVerificacion.update(servicioempresaverificacion, {
+    const result = await modelsFT.ServicioEmpresaVerificacion.update(servicioempresaverificacion, {
       where: {
         servicioempresaverificacionid: servicioempresaverificacion.servicioempresaverificacionid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

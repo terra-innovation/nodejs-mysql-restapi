@@ -1,16 +1,17 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getUsuarioservicioempresaByIdusuarioIdServicioIdempresa = async (req, _idusuario, _idservicio, _idempresa) => {
+export const getUsuarioservicioempresaByIdusuarioIdServicioIdempresa = async (transaction, _idusuario, _idservicio, _idempresa) => {
   try {
-    const { models } = req.app.locals;
-    const usuarioservicioempresa = await models.UsuarioServicioEmpresa.findOne({
+    const usuarioservicioempresa = await modelsFT.UsuarioServicioEmpresa.findOne({
       where: {
         _idusuario: _idusuario,
         _idservicio: _idservicio,
         _idempresa: _idempresa,
       },
+      transaction,
     });
     //logger.info(line(),usuarioservicioempresa);
     return usuarioservicioempresa;
@@ -20,15 +21,15 @@ export const getUsuarioservicioempresaByIdusuarioIdServicioIdempresa = async (re
   }
 };
 
-export const getUsuarioservicioempresas = async (req, estados) => {
+export const getUsuarioservicioempresas = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const usuarioservicioempresas = await models.UsuarioServicioEmpresa.findAll({
+    const usuarioservicioempresas = await modelsFT.UsuarioServicioEmpresa.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),usuarioservicioempresas);
     return usuarioservicioempresas;
@@ -39,11 +40,9 @@ export const getUsuarioservicioempresas = async (req, estados) => {
   }
 };
 
-export const getUsuarioservicioempresaByIdusuarioservicioempresa = async (req, idusuarioservicioempresa) => {
+export const getUsuarioservicioempresaByIdusuarioservicioempresa = async (transaction, idusuarioservicioempresa) => {
   try {
-    const { models } = req.app.locals;
-
-    const usuarioservicioempresa = await models.UsuarioServicioEmpresa.findByPk(idusuarioservicioempresa, {});
+    const usuarioservicioempresa = await modelsFT.UsuarioServicioEmpresa.findByPk(idusuarioservicioempresa, { transaction });
     logger.info(line(), usuarioservicioempresa);
 
     //const usuarioservicioempresas = await usuarioservicioempresa.getUsuarioservicioempresas();
@@ -56,13 +55,13 @@ export const getUsuarioservicioempresaByIdusuarioservicioempresa = async (req, i
   }
 };
 
-export const getUsuarioservicioempresaByUsuarioservicioempresaid = async (req, usuarioservicioempresaid) => {
+export const getUsuarioservicioempresaByUsuarioservicioempresaid = async (transaction, usuarioservicioempresaid) => {
   try {
-    const { models } = req.app.locals;
-    const usuarioservicioempresa = await models.UsuarioServicioEmpresa.findOne({
+    const usuarioservicioempresa = await modelsFT.UsuarioServicioEmpresa.findOne({
       where: {
         usuarioservicioempresaid: usuarioservicioempresaid,
       },
+      transaction,
     });
     //logger.info(line(),usuarioservicioempresa);
     return usuarioservicioempresa;
@@ -72,14 +71,14 @@ export const getUsuarioservicioempresaByUsuarioservicioempresaid = async (req, u
   }
 };
 
-export const findUsuarioservicioempresaPk = async (req, usuarioservicioempresaid) => {
+export const findUsuarioservicioempresaPk = async (transaction, usuarioservicioempresaid) => {
   try {
-    const { models } = req.app.locals;
-    const usuarioservicioempresa = await models.UsuarioServicioEmpresa.findOne({
+    const usuarioservicioempresa = await modelsFT.UsuarioServicioEmpresa.findOne({
       attributes: ["_idusuarioservicioempresa"],
       where: {
         usuarioservicioempresaid: usuarioservicioempresaid,
       },
+      transaction,
     });
     //logger.info(line(),usuarioservicioempresa);
     return usuarioservicioempresa;
@@ -89,10 +88,9 @@ export const findUsuarioservicioempresaPk = async (req, usuarioservicioempresaid
   }
 };
 
-export const insertUsuarioservicioempresa = async (req, usuarioservicioempresa) => {
+export const insertUsuarioservicioempresa = async (transaction, usuarioservicioempresa) => {
   try {
-    const { models } = req.app.locals;
-    const usuarioservicioempresa_nuevo = await models.UsuarioServicioEmpresa.create(usuarioservicioempresa);
+    const usuarioservicioempresa_nuevo = await modelsFT.UsuarioServicioEmpresa.create(usuarioservicioempresa, { transaction });
     // logger.info(line(),usuarioservicioempresa_nuevo);
     return usuarioservicioempresa_nuevo;
   } catch (error) {
@@ -101,13 +99,13 @@ export const insertUsuarioservicioempresa = async (req, usuarioservicioempresa) 
   }
 };
 
-export const updateUsuarioservicioempresa = async (req, usuarioservicioempresa) => {
+export const updateUsuarioservicioempresa = async (transaction, usuarioservicioempresa) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.UsuarioServicioEmpresa.update(usuarioservicioempresa, {
+    const result = await modelsFT.UsuarioServicioEmpresa.update(usuarioservicioempresa, {
       where: {
         usuarioservicioempresaid: usuarioservicioempresa.usuarioservicioempresaid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -116,13 +114,13 @@ export const updateUsuarioservicioempresa = async (req, usuarioservicioempresa) 
   }
 };
 
-export const deleteUsuarioservicioempresa = async (req, usuarioservicioempresa) => {
+export const deleteUsuarioservicioempresa = async (transaction, usuarioservicioempresa) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.UsuarioServicioEmpresa.update(usuarioservicioempresa, {
+    const result = await modelsFT.UsuarioServicioEmpresa.update(usuarioservicioempresa, {
       where: {
         usuarioservicioempresaid: usuarioservicioempresa.usuarioservicioempresaid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

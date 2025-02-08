@@ -1,16 +1,17 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getUsuarioservicioverificacions = async (req, estados) => {
+export const getUsuarioservicioverificacions = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const usuarioservicioverificacions = await models.UsuarioServicioVerificacion.findAll({
+    const usuarioservicioverificacions = await modelsFT.UsuarioServicioVerificacion.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),usuarioservicioverificacions);
     return usuarioservicioverificacions;
@@ -21,11 +22,9 @@ export const getUsuarioservicioverificacions = async (req, estados) => {
   }
 };
 
-export const getUsuarioservicioverificacionByIdbanco = async (req, idbanco) => {
+export const getUsuarioservicioverificacionByIdbanco = async (transaction, idbanco) => {
   try {
-    const { models } = req.app.locals;
-
-    const banco = await models.UsuarioServicioVerificacion.findByPk(idbanco, {});
+    const banco = await modelsFT.UsuarioServicioVerificacion.findByPk(idbanco, { transaction });
     logger.info(line(), banco);
 
     //const usuarioservicioverificacions = await banco.getUsuarioservicioverificacions();
@@ -38,13 +37,13 @@ export const getUsuarioservicioverificacionByIdbanco = async (req, idbanco) => {
   }
 };
 
-export const getUsuarioservicioverificacionByUsuarioservicioverificacionid = async (req, bancoid) => {
+export const getUsuarioservicioverificacionByUsuarioservicioverificacionid = async (transaction, bancoid) => {
   try {
-    const { models } = req.app.locals;
-    const banco = await models.UsuarioServicioVerificacion.findOne({
+    const banco = await modelsFT.UsuarioServicioVerificacion.findOne({
       where: {
         bancoid: bancoid,
       },
+      transaction,
     });
     //logger.info(line(),banco);
     return banco;
@@ -54,14 +53,14 @@ export const getUsuarioservicioverificacionByUsuarioservicioverificacionid = asy
   }
 };
 
-export const findUsuarioservicioverificacionPk = async (req, bancoid) => {
+export const findUsuarioservicioverificacionPk = async (transaction, bancoid) => {
   try {
-    const { models } = req.app.locals;
-    const banco = await models.UsuarioServicioVerificacion.findOne({
+    const banco = await modelsFT.UsuarioServicioVerificacion.findOne({
       attributes: ["_idbanco"],
       where: {
         bancoid: bancoid,
       },
+      transaction,
     });
     //logger.info(line(),banco);
     return banco;
@@ -71,10 +70,9 @@ export const findUsuarioservicioverificacionPk = async (req, bancoid) => {
   }
 };
 
-export const insertUsuarioservicioverificacion = async (req, banco) => {
+export const insertUsuarioservicioverificacion = async (transaction, banco) => {
   try {
-    const { models } = req.app.locals;
-    const banco_nuevo = await models.UsuarioServicioVerificacion.create(banco);
+    const banco_nuevo = await modelsFT.UsuarioServicioVerificacion.create(banco, { transaction });
     // logger.info(line(),banco_nuevo);
     return banco_nuevo;
   } catch (error) {
@@ -83,13 +81,13 @@ export const insertUsuarioservicioverificacion = async (req, banco) => {
   }
 };
 
-export const updateUsuarioservicioverificacion = async (req, banco) => {
+export const updateUsuarioservicioverificacion = async (transaction, banco) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.UsuarioServicioVerificacion.update(banco, {
+    const result = await modelsFT.UsuarioServicioVerificacion.update(banco, {
       where: {
         bancoid: banco.bancoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -98,13 +96,13 @@ export const updateUsuarioservicioverificacion = async (req, banco) => {
   }
 };
 
-export const deleteUsuarioservicioverificacion = async (req, banco) => {
+export const deleteUsuarioservicioverificacion = async (transaction, banco) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.UsuarioServicioVerificacion.update(banco, {
+    const result = await modelsFT.UsuarioServicioVerificacion.update(banco, {
       where: {
         bancoid: banco.bancoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

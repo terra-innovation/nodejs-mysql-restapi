@@ -1,12 +1,12 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import Empresa from "../models/ft_factoring/Empresa.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getColaboradoresActivas = async (req) => {
+export const getColaboradoresActivas = async (transaction) => {
   try {
-    const { models } = req.app.locals;
-    const colaboradores = await models.Colaborador.findAll({
+    const colaboradores = await modelsFT.Colaborador.findAll({
       include: [
         {
           model: Empresa,
@@ -22,6 +22,7 @@ export const getColaboradoresActivas = async (req) => {
       where: {
         estado: 1,
       },
+      transaction,
     });
     //logger.info(line(),colaboradores);
     return colaboradores;
@@ -32,11 +33,9 @@ export const getColaboradoresActivas = async (req) => {
   }
 };
 
-export const getColaboradorByIdcolaborador = async (req, idcolaborador) => {
+export const getColaboradorByIdcolaborador = async (transaction, idcolaborador) => {
   try {
-    const { models } = req.app.locals;
-
-    const colaborador = await models.Colaborador.findByPk(idcolaborador, {});
+    const colaborador = await modelsFT.Colaborador.findByPk(idcolaborador, { transaction });
     logger.info(line(), colaborador);
 
     //const colaboradores = await colaborador.getColaboradors();
@@ -49,10 +48,9 @@ export const getColaboradorByIdcolaborador = async (req, idcolaborador) => {
   }
 };
 
-export const getColaboradorByColaboradorid = async (req, colaboradorid) => {
+export const getColaboradorByColaboradorid = async (transaction, colaboradorid) => {
   try {
-    const { models } = req.app.locals;
-    const colaborador = await models.Colaborador.findAll({
+    const colaborador = await modelsFT.Colaborador.findAll({
       include: [
         {
           model: Empresa,
@@ -68,6 +66,7 @@ export const getColaboradorByColaboradorid = async (req, colaboradorid) => {
       where: {
         colaboradorid: colaboradorid,
       },
+      transaction,
     });
     //logger.info(line(),colaborador);
     return colaborador;
@@ -77,14 +76,14 @@ export const getColaboradorByColaboradorid = async (req, colaboradorid) => {
   }
 };
 
-export const findColaboradorPk = async (req, colaboradorid) => {
+export const findColaboradorPk = async (transaction, colaboradorid) => {
   try {
-    const { models } = req.app.locals;
-    const colaborador = await models.Colaborador.findAll({
+    const colaborador = await modelsFT.Colaborador.findAll({
       attributes: ["idcolaborador"],
       where: {
         colaboradorid: colaboradorid,
       },
+      transaction,
     });
     //logger.info(line(),colaborador);
     return colaborador;
@@ -94,10 +93,9 @@ export const findColaboradorPk = async (req, colaboradorid) => {
   }
 };
 
-export const insertColaborador = async (req, colaborador) => {
+export const insertColaborador = async (transaction, colaborador) => {
   try {
-    const { models } = req.app.locals;
-    const colaborador_nuevo = await models.Colaborador.create(colaborador);
+    const colaborador_nuevo = await modelsFT.Colaborador.create(colaborador, { transaction });
     // logger.info(line(),colaborador_nuevo);
     return colaborador_nuevo;
   } catch (error) {
@@ -106,13 +104,13 @@ export const insertColaborador = async (req, colaborador) => {
   }
 };
 
-export const updateColaborador = async (req, colaborador) => {
+export const updateColaborador = async (transaction, colaborador) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Colaborador.update(colaborador, {
+    const result = await modelsFT.Colaborador.update(colaborador, {
       where: {
         colaboradorid: colaborador.colaboradorid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -121,13 +119,13 @@ export const updateColaborador = async (req, colaborador) => {
   }
 };
 
-export const deleteColaborador = async (req, colaborador) => {
+export const deleteColaborador = async (transaction, colaborador) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.Colaborador.update(colaborador, {
+    const result = await modelsFT.Colaborador.update(colaborador, {
       where: {
         colaboradorid: colaborador.colaboradorid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

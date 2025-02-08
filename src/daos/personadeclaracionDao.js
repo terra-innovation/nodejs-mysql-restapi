@@ -1,16 +1,17 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getPersonadeclaracions = async (req, estados) => {
+export const getPersonadeclaracions = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const personadeclaracions = await models.PersonaDeclaracion.findAll({
+    const personadeclaracions = await modelsFT.PersonaDeclaracion.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),personadeclaracions);
     return personadeclaracions;
@@ -21,11 +22,9 @@ export const getPersonadeclaracions = async (req, estados) => {
   }
 };
 
-export const getPersonadeclaracionByIdpersonadeclaracion = async (req, idpersonadeclaracion) => {
+export const getPersonadeclaracionByIdpersonadeclaracion = async (transaction, idpersonadeclaracion) => {
   try {
-    const { models } = req.app.locals;
-
-    const personadeclaracion = await models.PersonaDeclaracion.findByPk(idpersonadeclaracion, {});
+    const personadeclaracion = await modelsFT.PersonaDeclaracion.findByPk(idpersonadeclaracion, { transaction });
     logger.info(line(), personadeclaracion);
 
     //const personadeclaracions = await personadeclaracion.getPersonadeclaracions();
@@ -38,13 +37,13 @@ export const getPersonadeclaracionByIdpersonadeclaracion = async (req, idpersona
   }
 };
 
-export const getPersonadeclaracionByPersonadeclaracionid = async (req, personadeclaracionid) => {
+export const getPersonadeclaracionByPersonadeclaracionid = async (transaction, personadeclaracionid) => {
   try {
-    const { models } = req.app.locals;
-    const personadeclaracion = await models.PersonaDeclaracion.findOne({
+    const personadeclaracion = await modelsFT.PersonaDeclaracion.findOne({
       where: {
         personadeclaracionid: personadeclaracionid,
       },
+      transaction,
     });
     //logger.info(line(),personadeclaracion);
     return personadeclaracion;
@@ -54,14 +53,14 @@ export const getPersonadeclaracionByPersonadeclaracionid = async (req, personade
   }
 };
 
-export const findPersonadeclaracionPk = async (req, personadeclaracionid) => {
+export const findPersonadeclaracionPk = async (transaction, personadeclaracionid) => {
   try {
-    const { models } = req.app.locals;
-    const personadeclaracion = await models.PersonaDeclaracion.findOne({
+    const personadeclaracion = await modelsFT.PersonaDeclaracion.findOne({
       attributes: ["_idpersonadeclaracion"],
       where: {
         personadeclaracionid: personadeclaracionid,
       },
+      transaction,
     });
     //logger.info(line(),personadeclaracion);
     return personadeclaracion;
@@ -71,10 +70,9 @@ export const findPersonadeclaracionPk = async (req, personadeclaracionid) => {
   }
 };
 
-export const insertPersonadeclaracion = async (req, personadeclaracion) => {
+export const insertPersonadeclaracion = async (transaction, personadeclaracion) => {
   try {
-    const { models } = req.app.locals;
-    const personadeclaracion_nuevo = await models.PersonaDeclaracion.create(personadeclaracion);
+    const personadeclaracion_nuevo = await modelsFT.PersonaDeclaracion.create(personadeclaracion, { transaction });
     // logger.info(line(),personadeclaracion_nuevo);
     return personadeclaracion_nuevo;
   } catch (error) {
@@ -83,13 +81,13 @@ export const insertPersonadeclaracion = async (req, personadeclaracion) => {
   }
 };
 
-export const updatePersonadeclaracion = async (req, personadeclaracion) => {
+export const updatePersonadeclaracion = async (transaction, personadeclaracion) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.PersonaDeclaracion.update(personadeclaracion, {
+    const result = await modelsFT.PersonaDeclaracion.update(personadeclaracion, {
       where: {
         personadeclaracionid: personadeclaracion.personadeclaracionid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -98,13 +96,13 @@ export const updatePersonadeclaracion = async (req, personadeclaracion) => {
   }
 };
 
-export const deletePersonadeclaracion = async (req, personadeclaracion) => {
+export const deletePersonadeclaracion = async (transaction, personadeclaracion) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.PersonaDeclaracion.update(personadeclaracion, {
+    const result = await modelsFT.PersonaDeclaracion.update(personadeclaracion, {
       where: {
         personadeclaracionid: personadeclaracion.personadeclaracionid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

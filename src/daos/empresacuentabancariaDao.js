@@ -1,16 +1,17 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getEmpresacuentabancarias = async (req, estados) => {
+export const getEmpresacuentabancarias = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const empresacuentabancarias = await models.EmpresaCuentaBancaria.findAll({
+    const empresacuentabancarias = await modelsFT.EmpresaCuentaBancaria.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),empresacuentabancarias);
     return empresacuentabancarias;
@@ -21,11 +22,9 @@ export const getEmpresacuentabancarias = async (req, estados) => {
   }
 };
 
-export const getEmpresacuentabancariaByIdempresacuentabancaria = async (req, idempresacuentabancaria) => {
+export const getEmpresacuentabancariaByIdempresacuentabancaria = async (transaction, idempresacuentabancaria) => {
   try {
-    const { models } = req.app.locals;
-
-    const empresacuentabancaria = await models.EmpresaCuentaBancaria.findByPk(idempresacuentabancaria, {});
+    const empresacuentabancaria = await modelsFT.EmpresaCuentaBancaria.findByPk(idempresacuentabancaria, { transaction });
     logger.info(line(), empresacuentabancaria);
 
     //const empresacuentabancarias = await empresacuentabancaria.getEmpresacuentabancarias();
@@ -38,13 +37,13 @@ export const getEmpresacuentabancariaByIdempresacuentabancaria = async (req, ide
   }
 };
 
-export const getEmpresacuentabancariaByEmpresacuentabancariaid = async (req, empresacuentabancariaid) => {
+export const getEmpresacuentabancariaByEmpresacuentabancariaid = async (transaction, empresacuentabancariaid) => {
   try {
-    const { models } = req.app.locals;
-    const empresacuentabancaria = await models.EmpresaCuentaBancaria.findOne({
+    const empresacuentabancaria = await modelsFT.EmpresaCuentaBancaria.findOne({
       where: {
         empresacuentabancariaid: empresacuentabancariaid,
       },
+      transaction,
     });
     //logger.info(line(),empresacuentabancaria);
     return empresacuentabancaria;
@@ -54,14 +53,14 @@ export const getEmpresacuentabancariaByEmpresacuentabancariaid = async (req, emp
   }
 };
 
-export const findEmpresacuentabancariaPk = async (req, empresacuentabancariaid) => {
+export const findEmpresacuentabancariaPk = async (transaction, empresacuentabancariaid) => {
   try {
-    const { models } = req.app.locals;
-    const empresacuentabancaria = await models.EmpresaCuentaBancaria.findOne({
+    const empresacuentabancaria = await modelsFT.EmpresaCuentaBancaria.findOne({
       attributes: ["_idempresacuentabancaria"],
       where: {
         empresacuentabancariaid: empresacuentabancariaid,
       },
+      transaction,
     });
     //logger.info(line(),empresacuentabancaria);
     return empresacuentabancaria;
@@ -71,10 +70,9 @@ export const findEmpresacuentabancariaPk = async (req, empresacuentabancariaid) 
   }
 };
 
-export const insertEmpresacuentabancaria = async (req, empresacuentabancaria) => {
+export const insertEmpresacuentabancaria = async (transaction, empresacuentabancaria) => {
   try {
-    const { models } = req.app.locals;
-    const empresacuentabancaria_nuevo = await models.EmpresaCuentaBancaria.create(empresacuentabancaria);
+    const empresacuentabancaria_nuevo = await modelsFT.EmpresaCuentaBancaria.create(empresacuentabancaria, { transaction });
     // logger.info(line(),empresacuentabancaria_nuevo);
     return empresacuentabancaria_nuevo;
   } catch (error) {
@@ -83,13 +81,13 @@ export const insertEmpresacuentabancaria = async (req, empresacuentabancaria) =>
   }
 };
 
-export const updateEmpresacuentabancaria = async (req, empresacuentabancaria) => {
+export const updateEmpresacuentabancaria = async (transaction, empresacuentabancaria) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.EmpresaCuentaBancaria.update(empresacuentabancaria, {
+    const result = await modelsFT.EmpresaCuentaBancaria.update(empresacuentabancaria, {
       where: {
         empresacuentabancariaid: empresacuentabancaria.empresacuentabancariaid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -98,13 +96,13 @@ export const updateEmpresacuentabancaria = async (req, empresacuentabancaria) =>
   }
 };
 
-export const deleteEmpresacuentabancaria = async (req, empresacuentabancaria) => {
+export const deleteEmpresacuentabancaria = async (transaction, empresacuentabancaria) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.EmpresaCuentaBancaria.update(empresacuentabancaria, {
+    const result = await modelsFT.EmpresaCuentaBancaria.update(empresacuentabancaria, {
       where: {
         empresacuentabancariaid: empresacuentabancaria.empresacuentabancariaid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

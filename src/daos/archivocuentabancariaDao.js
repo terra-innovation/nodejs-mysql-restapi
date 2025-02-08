@@ -1,16 +1,17 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getArchivocuentabancarias = async (req, estados) => {
+export const getArchivocuentabancarias = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const archivocuentabancarias = await models.ArchivoCuentaBancaria.findAll({
+    const archivocuentabancarias = await modelsFT.ArchivoCuentaBancaria.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),archivocuentabancarias);
     return archivocuentabancarias;
@@ -21,11 +22,9 @@ export const getArchivocuentabancarias = async (req, estados) => {
   }
 };
 
-export const getArchivoCuentaBancariaByIdarchivocuentabancaria = async (req, idarchivocuentabancaria) => {
+export const getArchivoCuentaBancariaByIdarchivocuentabancaria = async (transaction, idarchivocuentabancaria) => {
   try {
-    const { models } = req.app.locals;
-
-    const archivocuentabancaria = await models.ArchivoCuentaBancaria.findByPk(idarchivocuentabancaria, {});
+    const archivocuentabancaria = await modelsFT.ArchivoCuentaBancaria.findByPk(idarchivocuentabancaria, { transaction });
     logger.info(line(), archivocuentabancaria);
 
     //const archivocuentabancarias = await archivocuentabancaria.getArchivocuentabancarias();
@@ -38,13 +37,13 @@ export const getArchivoCuentaBancariaByIdarchivocuentabancaria = async (req, ida
   }
 };
 
-export const getArchivoCuentaBancariaByArchivoCuentaBancariaid = async (req, archivocuentabancariaid) => {
+export const getArchivoCuentaBancariaByArchivoCuentaBancariaid = async (transaction, archivocuentabancariaid) => {
   try {
-    const { models } = req.app.locals;
-    const archivocuentabancaria = await models.ArchivoCuentaBancaria.findOne({
+    const archivocuentabancaria = await modelsFT.ArchivoCuentaBancaria.findOne({
       where: {
         archivocuentabancariaid: archivocuentabancariaid,
       },
+      transaction,
     });
     //logger.info(line(),archivocuentabancaria);
     return archivocuentabancaria;
@@ -54,14 +53,14 @@ export const getArchivoCuentaBancariaByArchivoCuentaBancariaid = async (req, arc
   }
 };
 
-export const findArchivoCuentaBancariaPk = async (req, archivocuentabancariaid) => {
+export const findArchivoCuentaBancariaPk = async (transaction, archivocuentabancariaid) => {
   try {
-    const { models } = req.app.locals;
-    const archivocuentabancaria = await models.ArchivoCuentaBancaria.findOne({
+    const archivocuentabancaria = await modelsFT.ArchivoCuentaBancaria.findOne({
       attributes: ["_idarchivocuentabancaria"],
       where: {
         archivocuentabancariaid: archivocuentabancariaid,
       },
+      transaction,
     });
     //logger.info(line(),archivocuentabancaria);
     return archivocuentabancaria;
@@ -71,10 +70,9 @@ export const findArchivoCuentaBancariaPk = async (req, archivocuentabancariaid) 
   }
 };
 
-export const insertArchivoCuentaBancaria = async (req, archivocuentabancaria) => {
+export const insertArchivoCuentaBancaria = async (transaction, archivocuentabancaria) => {
   try {
-    const { models } = req.app.locals;
-    const archivocuentabancaria_nuevo = await models.ArchivoCuentaBancaria.create(archivocuentabancaria);
+    const archivocuentabancaria_nuevo = await modelsFT.ArchivoCuentaBancaria.create(archivocuentabancaria, { transaction });
     // logger.info(line(),archivocuentabancaria_nuevo);
     return archivocuentabancaria_nuevo;
   } catch (error) {
@@ -83,13 +81,13 @@ export const insertArchivoCuentaBancaria = async (req, archivocuentabancaria) =>
   }
 };
 
-export const updateArchivoCuentaBancaria = async (req, archivocuentabancaria) => {
+export const updateArchivoCuentaBancaria = async (transaction, archivocuentabancaria) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.ArchivoCuentaBancaria.update(archivocuentabancaria, {
+    const result = await modelsFT.ArchivoCuentaBancaria.update(archivocuentabancaria, {
       where: {
         archivocuentabancariaid: archivocuentabancaria.archivocuentabancariaid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -98,13 +96,13 @@ export const updateArchivoCuentaBancaria = async (req, archivocuentabancaria) =>
   }
 };
 
-export const deleteArchivoCuentaBancaria = async (req, archivocuentabancaria) => {
+export const deleteArchivoCuentaBancaria = async (transaction, archivocuentabancaria) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.ArchivoCuentaBancaria.update(archivocuentabancaria, {
+    const result = await modelsFT.ArchivoCuentaBancaria.update(archivocuentabancaria, {
       where: {
         archivocuentabancariaid: archivocuentabancaria.archivocuentabancariaid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

@@ -58,6 +58,8 @@ import _UsuarioServicioEstado from "./UsuarioServicioEstado.js";
 import _UsuarioServicioVerificacion from "./UsuarioServicioVerificacion.js";
 import _Validacion from "./Validacion.js";
 import _ValidacionTipo from "./ValidacionTipo.js";
+import _ZlaboratorioPedido from "./ZlaboratorioPedido.js";
+import _ZlaboratorioUsuario from "./ZlaboratorioUsuario.js";
 
 export default function initModels(sequelize) {
   const Archivo = _Archivo.init(sequelize, DataTypes);
@@ -118,6 +120,8 @@ export default function initModels(sequelize) {
   const UsuarioServicioVerificacion = _UsuarioServicioVerificacion.init(sequelize, DataTypes);
   const Validacion = _Validacion.init(sequelize, DataTypes);
   const ValidacionTipo = _ValidacionTipo.init(sequelize, DataTypes);
+  const ZlaboratorioPedido = _ZlaboratorioPedido.init(sequelize, DataTypes);
+  const ZlaboratorioUsuario = _ZlaboratorioUsuario.init(sequelize, DataTypes);
 
   Archivo.belongsToMany(Colaborador, { as: "colaborador_colaboradors", through: ArchivoColaborador, foreignKey: "_idarchivo", otherKey: "_idcolaborador" });
   Archivo.belongsToMany(CuentaBancaria, { as: "cuentabancaria_cuenta_bancaria", through: ArchivoCuentaBancaria, foreignKey: "_idarchivo", otherKey: "_idcuentabancaria" });
@@ -311,6 +315,8 @@ export default function initModels(sequelize) {
   UsuarioServicioEstado.hasMany(UsuarioServicioVerificacion, { as: "usuario_servicio_verificacions", foreignKey: "_idusuarioservicioestado" });
   Validacion.belongsTo(ValidacionTipo, { as: "validaciontipo_validacion_tipo", foreignKey: "_idvalidaciontipo" });
   ValidacionTipo.hasMany(Validacion, { as: "validacions", foreignKey: "_idvalidaciontipo" });
+  ZlaboratorioPedido.belongsTo(ZlaboratorioUsuario, { as: "usuario_zlaboratorio_usuario", foreignKey: "_idusuario" });
+  ZlaboratorioUsuario.hasMany(ZlaboratorioPedido, { as: "zlaboratorio_pedidos", foreignKey: "_idusuario" });
 
   return {
     Archivo,
@@ -371,5 +377,7 @@ export default function initModels(sequelize) {
     UsuarioServicioVerificacion,
     Validacion,
     ValidacionTipo,
+    ZlaboratorioPedido,
+    ZlaboratorioUsuario,
   };
 }

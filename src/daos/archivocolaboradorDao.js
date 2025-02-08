@@ -1,16 +1,17 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getArchivocolaboradors = async (req, estados) => {
+export const getArchivocolaboradors = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const archivocolaboradors = await models.ArchivoColaborador.findAll({
+    const archivocolaboradors = await modelsFT.ArchivoColaborador.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),archivocolaboradors);
     return archivocolaboradors;
@@ -21,11 +22,9 @@ export const getArchivocolaboradors = async (req, estados) => {
   }
 };
 
-export const getArchivoColaboradorByIdarchivocolaborador = async (req, idarchivocolaborador) => {
+export const getArchivoColaboradorByIdarchivocolaborador = async (transaction, idarchivocolaborador) => {
   try {
-    const { models } = req.app.locals;
-
-    const archivocolaborador = await models.ArchivoColaborador.findByPk(idarchivocolaborador, {});
+    const archivocolaborador = await modelsFT.ArchivoColaborador.findByPk(idarchivocolaborador, { transaction });
     logger.info(line(), archivocolaborador);
 
     //const archivocolaboradors = await archivocolaborador.getArchivocolaboradors();
@@ -38,13 +37,13 @@ export const getArchivoColaboradorByIdarchivocolaborador = async (req, idarchivo
   }
 };
 
-export const getArchivoColaboradorByArchivoColaboradorid = async (req, archivocolaboradorid) => {
+export const getArchivoColaboradorByArchivoColaboradorid = async (transaction, archivocolaboradorid) => {
   try {
-    const { models } = req.app.locals;
-    const archivocolaborador = await models.ArchivoColaborador.findOne({
+    const archivocolaborador = await modelsFT.ArchivoColaborador.findOne({
       where: {
         archivocolaboradorid: archivocolaboradorid,
       },
+      transaction,
     });
     //logger.info(line(),archivocolaborador);
     return archivocolaborador;
@@ -54,14 +53,14 @@ export const getArchivoColaboradorByArchivoColaboradorid = async (req, archivoco
   }
 };
 
-export const findArchivoColaboradorPk = async (req, archivocolaboradorid) => {
+export const findArchivoColaboradorPk = async (transaction, archivocolaboradorid) => {
   try {
-    const { models } = req.app.locals;
-    const archivocolaborador = await models.ArchivoColaborador.findOne({
+    const archivocolaborador = await modelsFT.ArchivoColaborador.findOne({
       attributes: ["_idarchivocolaborador"],
       where: {
         archivocolaboradorid: archivocolaboradorid,
       },
+      transaction,
     });
     //logger.info(line(),archivocolaborador);
     return archivocolaborador;
@@ -71,10 +70,9 @@ export const findArchivoColaboradorPk = async (req, archivocolaboradorid) => {
   }
 };
 
-export const insertArchivoColaborador = async (req, archivocolaborador) => {
+export const insertArchivoColaborador = async (transaction, archivocolaborador) => {
   try {
-    const { models } = req.app.locals;
-    const archivocolaborador_nuevo = await models.ArchivoColaborador.create(archivocolaborador);
+    const archivocolaborador_nuevo = await modelsFT.ArchivoColaborador.create(archivocolaborador, { transaction });
     // logger.info(line(),archivocolaborador_nuevo);
     return archivocolaborador_nuevo;
   } catch (error) {
@@ -83,13 +81,13 @@ export const insertArchivoColaborador = async (req, archivocolaborador) => {
   }
 };
 
-export const updateArchivoColaborador = async (req, archivocolaborador) => {
+export const updateArchivoColaborador = async (transaction, archivocolaborador) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.ArchivoColaborador.update(archivocolaborador, {
+    const result = await modelsFT.ArchivoColaborador.update(archivocolaborador, {
       where: {
         archivocolaboradorid: archivocolaborador.archivocolaboradorid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -98,13 +96,13 @@ export const updateArchivoColaborador = async (req, archivocolaborador) => {
   }
 };
 
-export const deleteArchivoColaborador = async (req, archivocolaborador) => {
+export const deleteArchivoColaborador = async (transaction, archivocolaborador) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.ArchivoColaborador.update(archivocolaborador, {
+    const result = await modelsFT.ArchivoColaborador.update(archivocolaborador, {
       where: {
         archivocolaboradorid: archivocolaborador.archivocolaboradorid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

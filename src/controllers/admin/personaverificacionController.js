@@ -215,8 +215,9 @@ export const createPersonaverificacion = async (req, res) => {
   }
 
   /* Si la verificación tiene código 4 que es aprobado, se habilitan los servicios para que pueda suscribirse */
+  const idusuario_session = req.session_user.usuario._idusuario ?? 1;
   if (personaverificacionestado._idpersonaverificacionestado == 4) {
-    await usuarioservicioDao.habilitarServiciosParaUsuario(req, persona.usuario_usuario._idusuario);
+    await usuarioservicioDao.habilitarServiciosParaUsuario(req, persona.usuario_usuario._idusuario, idusuario_session);
   }
 
   await enviarCorreoSegunCorrespondeNuevoEstadoDePersona(req, personaverificacionValidated, personaverificacionestado, persona);

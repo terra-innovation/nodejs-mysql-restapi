@@ -1,16 +1,17 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getCuentatipos = async (req, estados) => {
+export const getCuentatipos = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const cuentatipos = await models.CuentaTipo.findAll({
+    const cuentatipos = await modelsFT.CuentaTipo.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),cuentatipos);
     return cuentatipos;
@@ -21,11 +22,9 @@ export const getCuentatipos = async (req, estados) => {
   }
 };
 
-export const getCuentatipoByIdcuentatipo = async (req, idcuentatipo) => {
+export const getCuentatipoByIdcuentatipo = async (transaction, idcuentatipo) => {
   try {
-    const { models } = req.app.locals;
-
-    const cuentatipo = await models.CuentaTipo.findByPk(idcuentatipo, {});
+    const cuentatipo = await modelsFT.CuentaTipo.findByPk(idcuentatipo, { transaction });
     logger.info(line(), cuentatipo);
 
     //const cuentatipos = await cuentatipo.getCuentatipos();
@@ -38,13 +37,13 @@ export const getCuentatipoByIdcuentatipo = async (req, idcuentatipo) => {
   }
 };
 
-export const getCuentatipoByCuentatipoid = async (req, cuentatipoid) => {
+export const getCuentatipoByCuentatipoid = async (transaction, cuentatipoid) => {
   try {
-    const { models } = req.app.locals;
-    const cuentatipo = await models.CuentaTipo.findOne({
+    const cuentatipo = await modelsFT.CuentaTipo.findOne({
       where: {
         cuentatipoid: cuentatipoid,
       },
+      transaction,
     });
     //logger.info(line(),cuentatipo);
     return cuentatipo;
@@ -54,14 +53,14 @@ export const getCuentatipoByCuentatipoid = async (req, cuentatipoid) => {
   }
 };
 
-export const findCuentatipoPk = async (req, cuentatipoid) => {
+export const findCuentatipoPk = async (transaction, cuentatipoid) => {
   try {
-    const { models } = req.app.locals;
-    const cuentatipo = await models.CuentaTipo.findOne({
+    const cuentatipo = await modelsFT.CuentaTipo.findOne({
       attributes: ["_idcuentatipo"],
       where: {
         cuentatipoid: cuentatipoid,
       },
+      transaction,
     });
     //logger.info(line(),cuentatipo);
     return cuentatipo;
@@ -71,10 +70,9 @@ export const findCuentatipoPk = async (req, cuentatipoid) => {
   }
 };
 
-export const insertCuentatipo = async (req, cuentatipo) => {
+export const insertCuentatipo = async (transaction, cuentatipo) => {
   try {
-    const { models } = req.app.locals;
-    const cuentatipo_nuevo = await models.CuentaTipo.create(cuentatipo);
+    const cuentatipo_nuevo = await modelsFT.CuentaTipo.create(cuentatipo, { transaction });
     // logger.info(line(),cuentatipo_nuevo);
     return cuentatipo_nuevo;
   } catch (error) {
@@ -83,13 +81,13 @@ export const insertCuentatipo = async (req, cuentatipo) => {
   }
 };
 
-export const updateCuentatipo = async (req, cuentatipo) => {
+export const updateCuentatipo = async (transaction, cuentatipo) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.CuentaTipo.update(cuentatipo, {
+    const result = await modelsFT.CuentaTipo.update(cuentatipo, {
       where: {
         cuentatipoid: cuentatipo.cuentatipoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -98,13 +96,13 @@ export const updateCuentatipo = async (req, cuentatipo) => {
   }
 };
 
-export const deleteCuentatipo = async (req, cuentatipo) => {
+export const deleteCuentatipo = async (transaction, cuentatipo) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.CuentaTipo.update(cuentatipo, {
+    const result = await modelsFT.CuentaTipo.update(cuentatipo, {
       where: {
         cuentatipoid: cuentatipo.cuentatipoid,
       },
+      transaction,
     });
     return result;
   } catch (error) {

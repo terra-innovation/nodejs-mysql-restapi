@@ -1,16 +1,17 @@
 import { Sequelize } from "sequelize";
+import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getUsuarioservicioempresarols = async (req, estados) => {
+export const getUsuarioservicioempresarols = async (transaction, estados) => {
   try {
-    const { models } = req.app.locals;
-    const usuarioservicioempresarols = await models.UsuarioServicioEmpresaRol.findAll({
+    const usuarioservicioempresarols = await modelsFT.UsuarioServicioEmpresaRol.findAll({
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
         },
       },
+      transaction,
     });
     //logger.info(line(),usuarioservicioempresarols);
     return usuarioservicioempresarols;
@@ -21,11 +22,9 @@ export const getUsuarioservicioempresarols = async (req, estados) => {
   }
 };
 
-export const getUsuarioservicioempresarolByIdusuarioservicioempresarol = async (req, idusuarioservicioempresarol) => {
+export const getUsuarioservicioempresarolByIdusuarioservicioempresarol = async (transaction, idusuarioservicioempresarol) => {
   try {
-    const { models } = req.app.locals;
-
-    const usuarioservicioempresarol = await models.UsuarioServicioEmpresaRol.findByPk(idusuarioservicioempresarol, {});
+    const usuarioservicioempresarol = await modelsFT.UsuarioServicioEmpresaRol.findByPk(idusuarioservicioempresarol, { transaction });
     logger.info(line(), usuarioservicioempresarol);
 
     //const usuarioservicioempresarols = await usuarioservicioempresarol.getUsuarioservicioempresarols();
@@ -38,13 +37,13 @@ export const getUsuarioservicioempresarolByIdusuarioservicioempresarol = async (
   }
 };
 
-export const getUsuarioservicioempresarolByUsuarioservicioempresarolid = async (req, usuarioservicioempresarolid) => {
+export const getUsuarioservicioempresarolByUsuarioservicioempresarolid = async (transaction, usuarioservicioempresarolid) => {
   try {
-    const { models } = req.app.locals;
-    const usuarioservicioempresarol = await models.UsuarioServicioEmpresaRol.findOne({
+    const usuarioservicioempresarol = await modelsFT.UsuarioServicioEmpresaRol.findOne({
       where: {
         usuarioservicioempresarolid: usuarioservicioempresarolid,
       },
+      transaction,
     });
     //logger.info(line(),usuarioservicioempresarol);
     return usuarioservicioempresarol;
@@ -54,14 +53,14 @@ export const getUsuarioservicioempresarolByUsuarioservicioempresarolid = async (
   }
 };
 
-export const findUsuarioservicioempresarolPk = async (req, usuarioservicioempresarolid) => {
+export const findUsuarioservicioempresarolPk = async (transaction, usuarioservicioempresarolid) => {
   try {
-    const { models } = req.app.locals;
-    const usuarioservicioempresarol = await models.UsuarioServicioEmpresaRol.findOne({
+    const usuarioservicioempresarol = await modelsFT.UsuarioServicioEmpresaRol.findOne({
       attributes: ["_idusuarioservicioempresarol"],
       where: {
         usuarioservicioempresarolid: usuarioservicioempresarolid,
       },
+      transaction,
     });
     //logger.info(line(),usuarioservicioempresarol);
     return usuarioservicioempresarol;
@@ -71,10 +70,9 @@ export const findUsuarioservicioempresarolPk = async (req, usuarioservicioempres
   }
 };
 
-export const insertUsuarioservicioempresarol = async (req, usuarioservicioempresarol) => {
+export const insertUsuarioservicioempresarol = async (transaction, usuarioservicioempresarol) => {
   try {
-    const { models } = req.app.locals;
-    const usuarioservicioempresarol_nuevo = await models.UsuarioServicioEmpresaRol.create(usuarioservicioempresarol);
+    const usuarioservicioempresarol_nuevo = await modelsFT.UsuarioServicioEmpresaRol.create(usuarioservicioempresarol, { transaction });
     // logger.info(line(),usuarioservicioempresarol_nuevo);
     return usuarioservicioempresarol_nuevo;
   } catch (error) {
@@ -83,13 +81,13 @@ export const insertUsuarioservicioempresarol = async (req, usuarioservicioempres
   }
 };
 
-export const updateUsuarioservicioempresarol = async (req, usuarioservicioempresarol) => {
+export const updateUsuarioservicioempresarol = async (transaction, usuarioservicioempresarol) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.UsuarioServicioEmpresaRol.update(usuarioservicioempresarol, {
+    const result = await modelsFT.UsuarioServicioEmpresaRol.update(usuarioservicioempresarol, {
       where: {
         usuarioservicioempresarolid: usuarioservicioempresarol.usuarioservicioempresarolid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
@@ -98,13 +96,13 @@ export const updateUsuarioservicioempresarol = async (req, usuarioservicioempres
   }
 };
 
-export const deleteUsuarioservicioempresarol = async (req, usuarioservicioempresarol) => {
+export const deleteUsuarioservicioempresarol = async (transaction, usuarioservicioempresarol) => {
   try {
-    const { models } = req.app.locals;
-    const result = await models.UsuarioServicioEmpresaRol.update(usuarioservicioempresarol, {
+    const result = await modelsFT.UsuarioServicioEmpresaRol.update(usuarioservicioempresarol, {
       where: {
         usuarioservicioempresarolid: usuarioservicioempresarol.usuarioservicioempresarolid,
       },
+      transaction,
     });
     return result;
   } catch (error) {
