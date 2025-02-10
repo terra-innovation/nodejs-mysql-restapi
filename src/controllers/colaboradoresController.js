@@ -3,17 +3,27 @@ import * as empresaDao from "../daos/empresaDao.js";
 import { response } from "../utils/CustomResponseOk.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
+import { sequelizeFT } from "../config/bd/sequelize_db_factoring.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { Sequelize } from "sequelize";
 
 export const getColaboradores = async (req, res) => {
-  const colaboradores = await colaboradorDao.getColaboradoresActivas(req);
-  response(res, 201, colaboradores);
+  logger.debug(line(), "controller::getColaboradores");
+  const transaction = await sequelizeFT.transaction();
+  try {
+    const colaboradores = await colaboradorDao.getColaboradoresActivas(transaction);
+    await transaction.commit();
+    response(res, 201, colaboradores);
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
 };
 
 export const getColaborador = async (req, res) => {
+  logger.debug(line(), "controller::getColaborador");
   const { id } = req.params;
   const colaboradorSchema = yup
     .object()
@@ -22,14 +32,22 @@ export const getColaborador = async (req, res) => {
     })
     .required();
   var colaboradorValidated = colaboradorSchema.validateSync({ colaboradorid: id }, { abortEarly: false, stripUnknown: true });
-  const rows = await colaboradorDao.getColaboradorByColaboradorid(req, colaboradorValidated.colaboradorid);
-  if (rows.length <= 0) {
-    throw new ClientError("Colaborador no existe", 404);
+  const transaction = await sequelizeFT.transaction();
+  try {
+    const rows = await colaboradorDao.getColaboradorByColaboradorid(transaction, colaboradorValidated.colaboradorid);
+    if (rows.length <= 0) {
+      throw new ClientError("Colaborador no existe", 404);
+    }
+    await transaction.commit();
+    response(res, 200, rows[0]);
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
   }
-  response(res, 200, rows[0]);
 };
 
 export const createColaborador = async (req, res) => {
+  logger.debug(line(), "controller::createColaborador");
   const colaboradorCreateSchema = yup
     .object()
     .shape({
@@ -43,33 +61,41 @@ export const createColaborador = async (req, res) => {
   var colaboradorValidated = colaboradorCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
   logger.debug(line(), "colaboradorValidated:", colaboradorValidated);
 
-  var empresa = await empresaDao.findEmpresaPk(req, colaboradorValidated.empresaid);
-  if (empresa.length === 0) {
-    throw new ClientError("Empresa no existe", 404);
+  const transaction = await sequelizeFT.transaction();
+  try {
+    var empresa = await empresaDao.findEmpresaPk(transaction, colaboradorValidated.empresaid);
+    if (empresa.length === 0) {
+      throw new ClientError("Empresa no existe", 404);
+    }
+
+    var camposFk = {};
+    camposFk.idempresa = empresa[0].idempresa;
+
+    var camposAdicionales = {};
+    camposAdicionales.colaboradorid = uuidv4();
+
+    var camposAuditoria = {};
+    camposAuditoria.idusuariocrea = 1;
+    camposAuditoria.fechacrea = Sequelize.fn("now", 3);
+    camposAuditoria.idusuariomod = 1;
+    camposAuditoria.fechamod = Sequelize.fn("now", 3);
+    camposAuditoria.estado = 1;
+
+    const colaboradorCreated = await colaboradorDao.insertColaborador(transaction, { ...camposFk, ...camposAdicionales, ...colaboradorValidated, ...camposAuditoria });
+    logger.debug(line(), "Create colaborador: ID:" + colaboradorCreated.idcolaborador + " | " + camposAdicionales.colaboradorid);
+    logger.debug(line(), "colaboradorCreated:", colaboradorCreated.dataValues);
+    // Retiramos los IDs internos
+    delete camposAdicionales.idempresa;
+    await transaction.commit();
+    response(res, 201, { ...camposAdicionales, ...colaboradorValidated });
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
   }
-
-  var camposFk = {};
-  camposFk.idempresa = empresa[0].idempresa;
-
-  var camposAdicionales = {};
-  camposAdicionales.colaboradorid = uuidv4();
-
-  var camposAuditoria = {};
-  camposAuditoria.idusuariocrea = 1;
-  camposAuditoria.fechacrea = Sequelize.fn("now", 3);
-  camposAuditoria.idusuariomod = 1;
-  camposAuditoria.fechamod = Sequelize.fn("now", 3);
-  camposAuditoria.estado = 1;
-
-  const colaboradorCreated = await colaboradorDao.insertColaborador(req, { ...camposFk, ...camposAdicionales, ...colaboradorValidated, ...camposAuditoria });
-  logger.debug(line(), "Create colaborador: ID:" + colaboradorCreated.idcolaborador + " | " + camposAdicionales.colaboradorid);
-  logger.debug(line(), "colaboradorCreated:", colaboradorCreated.dataValues);
-  // Retiramos los IDs internos
-  delete camposAdicionales.idempresa;
-  response(res, 201, { ...camposAdicionales, ...colaboradorValidated });
 };
 
 export const updateColaborador = async (req, res) => {
+  logger.debug(line(), "controller::updateColaborador");
   const { id } = req.params;
   const colaboradorUpdateSchema = yup
     .object()
@@ -85,26 +111,34 @@ export const updateColaborador = async (req, res) => {
   const colaboradorValidated = colaboradorUpdateSchema.validateSync({ colaboradorid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
   logger.debug(line(), "colaboradorValidated:", colaboradorValidated);
 
-  var camposAdicionales = {};
-  camposAdicionales.colaboradorid = id;
+  const transaction = await sequelizeFT.transaction();
+  try {
+    var camposAdicionales = {};
+    camposAdicionales.colaboradorid = id;
 
-  var camposAuditoria = {};
-  camposAuditoria.idusuariomod = 1;
-  camposAuditoria.fechamod = Sequelize.fn("now", 3);
+    var camposAuditoria = {};
+    camposAuditoria.idusuariomod = 1;
+    camposAuditoria.fechamod = Sequelize.fn("now", 3);
 
-  const result = await colaboradorDao.updateColaborador(req, { ...camposAdicionales, ...colaboradorValidated, ...camposAuditoria });
-  if (result[0] === 0) {
-    throw new ClientError("Colaborador no existe", 404);
+    const result = await colaboradorDao.updateColaborador(transaction, { ...camposAdicionales, ...colaboradorValidated, ...camposAuditoria });
+    if (result[0] === 0) {
+      throw new ClientError("Colaborador no existe", 404);
+    }
+    const colaborador_actualizada = await colaboradorDao.getColaboradorByColaboradorid(transaction, id);
+    if (colaborador_actualizada.length === 0) {
+      throw new ClientError("Colaborador no existe", 404);
+    }
+    logger.debug(line(), "colaboradorUpdated:", colaborador_actualizada[0].dataValues);
+    await transaction.commit();
+    response(res, 200, colaborador_actualizada[0]);
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
   }
-  const colaborador_actualizada = await colaboradorDao.getColaboradorByColaboradorid(req, id);
-  if (colaborador_actualizada.length === 0) {
-    throw new ClientError("Colaborador no existe", 404);
-  }
-  logger.debug(line(), "colaboradorUpdated:", colaborador_actualizada[0].dataValues);
-  response(res, 200, colaborador_actualizada[0]);
 };
 
 export const deleteColaborador = async (req, res) => {
+  logger.debug(line(), "controller::deleteColaborador");
   const { id } = req.params;
   const colaboradorSchema = yup
     .object()
@@ -115,19 +149,26 @@ export const deleteColaborador = async (req, res) => {
   const colaboradorValidated = colaboradorSchema.validateSync({ colaboradorid: id }, { abortEarly: false, stripUnknown: true });
   logger.debug(line(), "colaboradorValidated:", colaboradorValidated);
 
-  var camposAuditoria = {};
-  camposAuditoria.idusuariomod = 1;
-  camposAuditoria.fechamod = Sequelize.fn("now", 3);
-  camposAuditoria.estado = 2;
+  const transaction = await sequelizeFT.transaction();
+  try {
+    var camposAuditoria = {};
+    camposAuditoria.idusuariomod = 1;
+    camposAuditoria.fechamod = Sequelize.fn("now", 3);
+    camposAuditoria.estado = 2;
 
-  const result = await colaboradorDao.deleteColaborador(req, { ...colaboradorValidated, ...camposAuditoria });
-  if (result[0] === 0) {
-    throw new ClientError("Colaborador no existe", 404);
+    const result = await colaboradorDao.deleteColaborador(transaction, { ...colaboradorValidated, ...camposAuditoria });
+    if (result[0] === 0) {
+      throw new ClientError("Colaborador no existe", 404);
+    }
+    const colaborador_actualizada = await colaboradorDao.getColaboradorByColaboradorid(transaction, id);
+    if (colaborador_actualizada.length === 0) {
+      throw new ClientError("Colaborador no existe", 404);
+    }
+    logger.debug(line(), "colaboradorDeleted:", colaborador_actualizada[0].dataValues);
+    await transaction.commit();
+    response(res, 204, colaborador_actualizada[0]);
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
   }
-  const colaborador_actualizada = await colaboradorDao.getColaboradorByColaboradorid(req, id);
-  if (colaborador_actualizada.length === 0) {
-    throw new ClientError("Colaborador no existe", 404);
-  }
-  logger.debug(line(), "colaboradorDeleted:", colaborador_actualizada[0].dataValues);
-  response(res, 204, colaborador_actualizada[0]);
 };

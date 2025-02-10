@@ -11,6 +11,7 @@ import { response } from "../utils/CustomResponseOk.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import * as jsonUtils from "../utils/jsonUtils.js";
 import logger, { line } from "../utils/logger.js";
+import { sequelizeFT } from "../config/bd/sequelize_db_factoring.js";
 
 import * as facturaUtils from "../utils/facturaUtils.js";
 import * as storageUtils from "../utils/storageUtils.js";
@@ -22,151 +23,159 @@ import { Sequelize } from "sequelize";
 import * as luxon from "luxon";
 
 export const uploadInvoice = async (req, res) => {
-  logger.info(line(), "Ingreso a uploadInvoice");
+  logger.debug(line(), "controller::uploadInvoice");
 
   //logger.info(line(),req.file);
   //logger.info(line(),req.files);
   //logger.info(line(),req.body);
 
   for (const file of req.files) {
-    //logger.info(line(),file);
+    const transaction = await sequelizeFT.transaction();
+    try {
+      //logger.info(line(),file);
 
-    var archivoXML = fs.readFileSync(file.path, "latin1");
-    // logger.info(line(),archivoXML);
-    archivoXML = archivoXML.replace(/cbc:/g, "");
-    archivoXML = archivoXML.replace(/cac:/g, "");
-    archivoXML = archivoXML.replace(/n1:/g, "");
-    archivoXML = archivoXML.replace(/n2:/g, "");
+      var archivoXML = fs.readFileSync(file.path, "latin1");
+      // logger.info(line(),archivoXML);
+      archivoXML = archivoXML.replace(/cbc:/g, "");
+      archivoXML = archivoXML.replace(/cac:/g, "");
+      archivoXML = archivoXML.replace(/n1:/g, "");
+      archivoXML = archivoXML.replace(/n2:/g, "");
 
-    var archivoJson = await parseStringPromise(archivoXML);
-    //jsonUtils.prettyPrint(archivoJson.Invoice);
+      var archivoJson = await parseStringPromise(archivoXML);
+      //jsonUtils.prettyPrint(archivoJson.Invoice);
 
-    //jsonUtils.prettyPrint(result.Invoice);
-    //Limpiamos los valores de posibles valore sno deseados
-    // Definir los regex y los valores de reemplazo
-    const regexsYReemplazos = [
-      [/\n|\r|\t/g, " "], // Reemplazar saltos de línea, retornos de carro y tabuladores por un espacio
-      [/\s{2,}/g, " "], // Reemplazar dos o más espacios por un solo espacio
-      [/^\s+|\s+$/g, ""], // Trim: Eliminar espacios en blanco al principio y al final de la cadena
-    ];
+      //jsonUtils.prettyPrint(result.Invoice);
+      //Limpiamos los valores de posibles valore sno deseados
+      // Definir los regex y los valores de reemplazo
+      const regexsYReemplazos = [
+        [/\n|\r|\t/g, " "], // Reemplazar saltos de línea, retornos de carro y tabuladores por un espacio
+        [/\s{2,}/g, " "], // Reemplazar dos o más espacios por un solo espacio
+        [/^\s+|\s+$/g, ""], // Trim: Eliminar espacios en blanco al principio y al final de la cadena
+      ];
 
-    var result = jsonUtils.reemplazarValores(archivoJson, regexsYReemplazos);
-    if (!result || !result?.Invoice) {
-      logger.error(line(), "En el archivo XML no existe el objeto result o result.Invoice");
-      throw new ClientError("El archivo carece de una estructura válida");
-    }
-    var codigo_tipo_documento = result?.Invoice?.InvoiceTypeCode?.[0]._ ?? result?.Invoice?.InvoiceTypeCode?.[0] ?? null;
-    if (!codigo_tipo_documento || codigo_tipo_documento != "01") {
-      logger.error(line(), "El código del tipo de documento [" + codigo_tipo_documento + "] del archivo XML no corresponde al de una factura.");
-      throw new ClientError("El archivo carece de una estructura válida");
-    }
+      var result = jsonUtils.reemplazarValores(archivoJson, regexsYReemplazos);
+      if (!result || !result?.Invoice) {
+        logger.error(line(), "En el archivo XML no existe el objeto result o result.Invoice");
+        throw new ClientError("El archivo carece de una estructura válida");
+      }
+      var codigo_tipo_documento = result?.Invoice?.InvoiceTypeCode?.[0]._ ?? result?.Invoice?.InvoiceTypeCode?.[0] ?? null;
+      if (!codigo_tipo_documento || codigo_tipo_documento != "01") {
+        logger.error(line(), "El código del tipo de documento [" + codigo_tipo_documento + "] del archivo XML no corresponde al de una factura.");
+        throw new ClientError("El archivo carece de una estructura válida");
+      }
 
-    var facturaJson = facturaUtils.getFactura(result);
-    facturaJson.codigo_archivo = file.codigo_archivo;
+      var facturaJson = facturaUtils.getFactura(result);
+      facturaJson.codigo_archivo = file.codigo_archivo;
 
-    var factura = {
-      proveedor_ruc: facturaJson.proveedor.ruc,
-      proveedor_razon_social: facturaJson.proveedor.razon_social,
-      proveedor_direccion: facturaJson.proveedor.direccion,
-      proveedor_codigo_pais: facturaJson.proveedor.codigo_pais,
-      proveedor_ubigeo: facturaJson.proveedor.ubigeo,
-      proveedor_provincia: facturaJson.proveedor.provincia,
-      proveedor_departamento: facturaJson.proveedor.departamento,
-      proveedor_urbanizacion: facturaJson.proveedor.urbanizacion,
-      proveedor_distrito: facturaJson.proveedor.distrito,
-      cliente_ruc: facturaJson.cliente.ruc,
-      cliente_razon_social: facturaJson.cliente.razon_social,
-      impuestos_monto: facturaJson.impuesto.monto,
-      impuestos_valor_venta_monto_venta: facturaJson.impuesto.valor_venta.monto_venta,
-      impuestos_valor_venta_monto_venta_mas_impuesto: facturaJson.impuesto.valor_venta.monto_venta_mas_impuesto,
-      impuestos_valor_venta_monto_pago: facturaJson.impuesto.valor_venta.monto_pago,
-      ...facturaJson,
-    };
-    var factura_insertada = await facturaDao.insertarFactura(factura);
-    facturaJson.medios_pago?.forEach(async function (medio_pago) {
-      var factura_medio_pago = {
-        _idfactura: factura_insertada.insertId,
-        ...medio_pago,
+      var factura = {
+        proveedor_ruc: facturaJson.proveedor.ruc,
+        proveedor_razon_social: facturaJson.proveedor.razon_social,
+        proveedor_direccion: facturaJson.proveedor.direccion,
+        proveedor_codigo_pais: facturaJson.proveedor.codigo_pais,
+        proveedor_ubigeo: facturaJson.proveedor.ubigeo,
+        proveedor_provincia: facturaJson.proveedor.provincia,
+        proveedor_departamento: facturaJson.proveedor.departamento,
+        proveedor_urbanizacion: facturaJson.proveedor.urbanizacion,
+        proveedor_distrito: facturaJson.proveedor.distrito,
+        cliente_ruc: facturaJson.cliente.ruc,
+        cliente_razon_social: facturaJson.cliente.razon_social,
+        impuestos_monto: facturaJson.impuesto.monto,
+        impuestos_valor_venta_monto_venta: facturaJson.impuesto.valor_venta.monto_venta,
+        impuestos_valor_venta_monto_venta_mas_impuesto: facturaJson.impuesto.valor_venta.monto_venta_mas_impuesto,
+        impuestos_valor_venta_monto_pago: facturaJson.impuesto.valor_venta.monto_pago,
+        ...facturaJson,
       };
-      await insertarFacturaMedioPago(factura_medio_pago);
-    });
-    facturaJson.terminos_pago.forEach(async function (termino_pago) {
-      var factura_medio_pago = {
-        _idfactura: factura_insertada.insertId,
-        ...termino_pago,
-      };
-      await insertarFacturaTerminoPago(factura_medio_pago);
-    });
-    facturaJson.items.forEach(async function (item) {
-      var factura_item = {
-        _idfactura: factura_insertada.insertId,
-        ...item,
-      };
-      await insertarFacturaItem(factura_item);
-    });
-    facturaJson.impuesto.impuestos.forEach(async function (impuesto) {
-      var factura_impuesto = {
-        _idfactura: factura_insertada.insertId,
-        ...impuesto,
-      };
-      await insertarFacturaImpuesto(factura_impuesto);
-    });
-    facturaJson.notas?.forEach(async function (nota) {
-      var factura_nota = {
-        _idfactura: factura_insertada.insertId,
-        ...nota,
-      };
-      await insertarFacturaNota(factura_nota);
-    });
+      var factura_insertada = await facturaDao.insertarFactura(factura);
+      facturaJson.medios_pago?.forEach(async function (medio_pago) {
+        var factura_medio_pago = {
+          _idfactura: factura_insertada.insertId,
+          ...medio_pago,
+        };
+        await insertarFacturaMedioPago(factura_medio_pago);
+      });
+      facturaJson.terminos_pago.forEach(async function (termino_pago) {
+        var factura_medio_pago = {
+          _idfactura: factura_insertada.insertId,
+          ...termino_pago,
+        };
+        await insertarFacturaTerminoPago(factura_medio_pago);
+      });
+      facturaJson.items.forEach(async function (item) {
+        var factura_item = {
+          _idfactura: factura_insertada.insertId,
+          ...item,
+        };
+        await insertarFacturaItem(factura_item);
+      });
+      facturaJson.impuesto.impuestos.forEach(async function (impuesto) {
+        var factura_impuesto = {
+          _idfactura: factura_insertada.insertId,
+          ...impuesto,
+        };
+        await insertarFacturaImpuesto(factura_impuesto);
+      });
+      facturaJson.notas?.forEach(async function (nota) {
+        var factura_nota = {
+          _idfactura: factura_insertada.insertId,
+          ...nota,
+        };
+        await insertarFacturaNota(factura_nota);
+      });
 
-    const empresa = await empresaDao.getEmpresaByIdusuarioAndRuc(req, req.session_user.usuario._idusuario, factura.proveedor_ruc, 1);
-    //logger.info(line(),empresa);
-    if (!empresa) {
-      throw new ClientError("Seleccione una factura perteneciente a una de las empresas asociadas a su cuenta. La empresa [" + factura.proveedor_razon_social + " (" + factura.proveedor_ruc + ")] no está asociada a su cuenta.", 404);
+      const empresa = await empresaDao.getEmpresaByIdusuarioAndRuc(transaction, req.session_user.usuario._idusuario, factura.proveedor_ruc, 1);
+      //logger.info(line(),empresa);
+      if (!empresa) {
+        throw new ClientError("Seleccione una factura perteneciente a una de las empresas asociadas a su cuenta. La empresa [" + factura.proveedor_razon_social + " (" + factura.proveedor_ruc + ")] no está asociada a su cuenta.", 404);
+      }
+
+      if (!facturaJson.codigo_tipo_documento || facturaJson.codigo_tipo_documento != "01") {
+        throw new ClientError("Seleccione una factura válida", 404);
+      }
+
+      if (!facturaJson.pago_cantidad_cuotas || facturaJson.pago_cantidad_cuotas <= 0) {
+        throw new ClientError("Seleccione una factura que cuya forma de pago sea al Crédito. La factura que ha seleccionado es de pago al Contado.", 404);
+      }
+
+      if (!facturaJson.pago_cantidad_cuotas || facturaJson.pago_cantidad_cuotas != 1) {
+        throw new ClientError("Seleccione una factura que sea al Crédito y de una sola cuota. La factura que ha seleccionado es de " + facturaJson.pago_cantidad_cuotas + " cuotas.", 404);
+      }
+
+      if (facturaJson.dias_desde_emision > 8) {
+        //throw new ClientError("Seleccione una factura que no haya transcurrido más de 8 días desde su fecha de emisión", 404);
+      }
+
+      var REGLA_MINIMO_DE_DIAS_PARA_PAGO = 8;
+      if (facturaJson.dias_estimados_para_pago <= REGLA_MINIMO_DE_DIAS_PARA_PAGO) {
+        throw new ClientError("Seleccione una factura cuya fecha de vencimiento sea superior a " + REGLA_MINIMO_DE_DIAS_PARA_PAGO + " días.", 404);
+      }
+
+      var cliente = await getEmpresaByRUCSinoExisteCrear(transaction, facturaJson.cliente.ruc, facturaJson.cliente);
+      facturaJson.cliente.empresaid = cliente[0].empresaid;
+
+      var proveedor = await getEmpresaByRUCSinoExisteCrear(transaction, facturaJson.proveedor.ruc, facturaJson.proveedor);
+      facturaJson.proveedor.empresaid = proveedor[0].empresaid;
+
+      var moneda = await monedaDao.getMonedaByCodigo(transaction, facturaJson.codigo_tipo_moneda);
+      facturaJson.monedaid = moneda.monedaid;
+
+      var facturaFiltered = jsonUtils.removeAttributesPrivates(facturaJson);
+      facturaFiltered = jsonUtils.removeAttributes(facturaJson, ["items", "terminos_pago", "notas", "medios_pago"]);
+
+      const origen = storageUtils.STORAGE_PATH_PROCESAR + "/" + file.filename;
+      const destino = storageUtils.STORAGE_PATH_SUCCESS + "/" + file.filename;
+      fs.renameSync(origen, destino);
+
+      await transaction.commit();
+      response(res, 200, facturaFiltered);
+    } catch (error) {
+      await transaction.rollback();
+      throw error;
     }
-
-    if (!facturaJson.codigo_tipo_documento || facturaJson.codigo_tipo_documento != "01") {
-      throw new ClientError("Seleccione una factura válida", 404);
-    }
-
-    if (!facturaJson.pago_cantidad_cuotas || facturaJson.pago_cantidad_cuotas <= 0) {
-      throw new ClientError("Seleccione una factura que cuya forma de pago sea al Crédito. La factura que ha seleccionado es de pago al Contado.", 404);
-    }
-
-    if (!facturaJson.pago_cantidad_cuotas || facturaJson.pago_cantidad_cuotas != 1) {
-      throw new ClientError("Seleccione una factura que sea al Crédito y de una sola cuota. La factura que ha seleccionado es de " + facturaJson.pago_cantidad_cuotas + " cuotas.", 404);
-    }
-
-    if (facturaJson.dias_desde_emision > 8) {
-      //throw new ClientError("Seleccione una factura que no haya transcurrido más de 8 días desde su fecha de emisión", 404);
-    }
-
-    var REGLA_MINIMO_DE_DIAS_PARA_PAGO = 8;
-    if (facturaJson.dias_estimados_para_pago <= REGLA_MINIMO_DE_DIAS_PARA_PAGO) {
-      throw new ClientError("Seleccione una factura cuya fecha de vencimiento sea superior a " + REGLA_MINIMO_DE_DIAS_PARA_PAGO + " días.", 404);
-    }
-
-    var cliente = await getEmpresaByRUCSinoExisteCrear(req, facturaJson.cliente.ruc, facturaJson.cliente);
-    facturaJson.cliente.empresaid = cliente[0].empresaid;
-
-    var proveedor = await getEmpresaByRUCSinoExisteCrear(req, facturaJson.proveedor.ruc, facturaJson.proveedor);
-    facturaJson.proveedor.empresaid = proveedor[0].empresaid;
-
-    var moneda = await monedaDao.getMonedaByCodigo(req, facturaJson.codigo_tipo_moneda);
-    facturaJson.monedaid = moneda.monedaid;
-
-    var facturaFiltered = jsonUtils.removeAttributesPrivates(facturaJson);
-    facturaFiltered = jsonUtils.removeAttributes(facturaJson, ["items", "terminos_pago", "notas", "medios_pago"]);
-
-    const origen = storageUtils.STORAGE_PATH_PROCESAR + "/" + file.filename;
-    const destino = storageUtils.STORAGE_PATH_SUCCESS + "/" + file.filename;
-    fs.renameSync(origen, destino);
-
-    response(res, 200, facturaFiltered);
   }
 };
 
 export const getEmployees = async (req, res) => {
+  logger.debug(line(), "controller::getEmployees");
   try {
     const [rows] = await poolFactoring.query("SELECT * FROM employee");
     res.json(rows);
@@ -177,6 +186,7 @@ export const getEmployees = async (req, res) => {
 };
 
 export const getTrabajadoresPorRuc = async (req, res) => {
+  logger.debug(line(), "controller::getTrabajadoresPorRuc");
   try {
     const { ruc } = req.params;
     const query = `
@@ -200,6 +210,7 @@ export const getTrabajadoresPorRuc = async (req, res) => {
 };
 
 export const deleteEmployee = async (req, res) => {
+  logger.debug(line(), "controller::deleteEmployee");
   try {
     const { id } = req.params;
     const [rows] = await poolFactoring.query("DELETE FROM employee WHERE id = ?", [id]);
@@ -216,6 +227,7 @@ export const deleteEmployee = async (req, res) => {
 };
 
 export const createEmployee = async (req, res) => {
+  logger.debug(line(), "controller::createEmployee");
   try {
     const { name, salary } = req.body;
     const [rows] = await poolFactoring.query("INSERT INTO employee (name, salary) VALUES (?, ?)", [name, salary]);
@@ -227,6 +239,7 @@ export const createEmployee = async (req, res) => {
 };
 
 export const updateEmployee = async (req, res) => {
+  logger.debug(line(), "controller::updateEmployee");
   try {
     const { id } = req.params;
     const { name, salary } = req.body;
@@ -244,8 +257,8 @@ export const updateEmployee = async (req, res) => {
   }
 };
 
-const getEmpresaByRUCSinoExisteCrear = async (req, ruc, empresa) => {
-  var cliente = await empresaDao.getEmpresaByRuc(req, ruc);
+const getEmpresaByRUCSinoExisteCrear = async (transaction, ruc, empresa) => {
+  var cliente = await empresaDao.getEmpresaByRuc(transaction, ruc);
   if (cliente.length == 0) {
     const empresaCreateSchema = yup
       .object()
@@ -256,6 +269,7 @@ const getEmpresaByRUCSinoExisteCrear = async (req, ruc, empresa) => {
       .required();
     var empresaValidated = empresaCreateSchema.validateSync(empresa, { abortEarly: false, stripUnknown: true });
     logger.debug(line(), "empresaValidated:", empresaValidated);
+
     var camposAdicionales = {};
     camposAdicionales.empresaid = uuidv4();
     camposAdicionales.code = uuidv4().split("-")[0];
@@ -267,11 +281,11 @@ const getEmpresaByRUCSinoExisteCrear = async (req, ruc, empresa) => {
     camposAuditoria.fechamod = Sequelize.fn("now", 3);
     camposAuditoria.estado = 1;
 
-    const empresaCreated = await empresaDao.insertEmpresa(req, { ...camposAdicionales, ...empresaValidated, ...camposAuditoria });
+    const empresaCreated = await empresaDao.insertEmpresa(transaction, { ...camposAdicionales, ...empresaValidated, ...camposAuditoria });
     logger.debug(line(), "Create empresa: ID:" + empresaCreated.idempresa + " | " + camposAdicionales.empresaid);
     logger.debug(line(), "empresaCreated:", empresaCreated.dataValues);
     if (empresaCreated) {
-      cliente = await empresaDao.getEmpresaByRuc(req, ruc);
+      cliente = await empresaDao.getEmpresaByRuc(transaction, ruc);
     }
   }
   return cliente;

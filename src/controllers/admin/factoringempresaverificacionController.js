@@ -13,6 +13,7 @@ import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
 import logger, { line } from "../../utils/logger.js";
+import { sequelizeFT } from "../../config/bd/sequelize_db_factoring.js";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { Sequelize } from "sequelize";
@@ -20,6 +21,7 @@ import EmailSender from "../../utils/email/emailSender.js";
 import TemplateManager from "../../utils/email/TemplateManager.js";
 
 export const createFactoringempresaverificacion = async (req, res) => {
+  logger.debug(line(), "controller::createFactoringempresaverificacion");
   const session_idusuario = req.session_user.usuario._idusuario;
   const filter_estado = [1, 2];
   const servicioempresaverificacionCreateSchema = yup
@@ -34,91 +36,98 @@ export const createFactoringempresaverificacion = async (req, res) => {
   var servicioempresaverificacionValidated = servicioempresaverificacionCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
   //logger.debug(line(), "servicioempresaverificacionValidated:", servicioempresaverificacionValidated);
 
-  const servicioempresa = await servicioempresaDao.getServicioempresaByServicioempresaid(req, servicioempresaverificacionValidated.servicioempresaid);
-  if (!servicioempresa) {
-    logger.warn(line(), "Servicio empresa no existe: [" + servicioempresaverificacionValidated.servicioempresaid + "]");
-    throw new ClientError("Datos no válidos", 404);
+  const transaction = await sequelizeFT.transaction();
+  try {
+    const servicioempresa = await servicioempresaDao.getServicioempresaByServicioempresaid(transaction, servicioempresaverificacionValidated.servicioempresaid);
+    if (!servicioempresa) {
+      logger.warn(line(), "Servicio empresa no existe: [" + servicioempresaverificacionValidated.servicioempresaid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    const personasuscriptor = await personaDao.getPersonaByIdusuario(transaction, servicioempresa._idusuariosuscriptor);
+    if (!personasuscriptor) {
+      logger.warn(line(), "Usuario suscriptor no existe: [" + servicioempresa._idusuariosuscriptor + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    const empresa = await empresaDao.getEmpresaByIdempresa(transaction, servicioempresa._idempresa);
+    if (!empresa) {
+      logger.warn(line(), "Empresa no existe: [" + servicioempresa._idempresa + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    const servicioempresaestado = await servicioempresaestadoDao.getServicioempresaestadoByServicioempresaestadoid(transaction, servicioempresaverificacionValidated.servicioempresaestadoid);
+    if (!servicioempresaestado) {
+      logger.warn(line(), "Servicio empresa estado no existe: [" + servicioempresaverificacionValidated.servicioempresaestadoid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    // Inserta un nuevo registro en la tabla servicioempresaverificacion con el nuevo estado
+    var camposFk = {};
+    camposFk._idservicioempresa = servicioempresa._idservicioempresa;
+    camposFk._idservicioempresaestado = servicioempresaestado._idservicioempresaestado;
+    camposFk._idusuarioverifica = req.session_user.usuario._idusuario;
+
+    var camposAdicionales = {};
+    camposAdicionales.servicioempresaverificacionid = uuidv4();
+
+    var camposAuditoria = {};
+    camposAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
+    camposAuditoria.fechacrea = Sequelize.fn("now", 3);
+    camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+    camposAuditoria.fechamod = Sequelize.fn("now", 3);
+    camposAuditoria.estado = 1;
+
+    const servicioempresaverificacionCreated = await servicioempresaverificacionDao.insertServicioempresaverificacion(transaction, {
+      ...camposFk,
+      ...camposAdicionales,
+      ...servicioempresaverificacionValidated,
+      ...camposAuditoria,
+    });
+    logger.debug(line(), "servicioempresaverificacionCreated", servicioempresaverificacionCreated);
+
+    // Actualiza la tabla servicioempresa con el nuevo estado
+    const servicioempresaUpdate = {};
+    servicioempresaUpdate.servicioempresaid = servicioempresaverificacionValidated.servicioempresaid;
+    servicioempresaUpdate._idservicioempresaestado = servicioempresaestado._idservicioempresaestado;
+    servicioempresaUpdate.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+    servicioempresaUpdate.fechamod = Sequelize.fn("now", 3);
+
+    await servicioempresaDao.updateServicioempresa(transaction, servicioempresaUpdate);
+    logger.debug(line(), "servicioempresaUpdate", servicioempresaUpdate);
+
+    // Si el estado es estado 3 (Suscrito)
+    if (servicioempresaestado._idservicioempresaestado == 3) {
+      await darAccesoAlUsuarioServicioEmpresa(req, transaction, servicioempresa, personasuscriptor);
+      await darAccesoAlUsuarioServicio(req, transaction, servicioempresaverificacionValidated, servicioempresa, empresa, personasuscriptor);
+    }
+
+    await enviarCorreoSegunCorrespondeNuevoEstadoDeServicioEmpresa(servicioempresaverificacionValidated, servicioempresa, servicioempresaestado, empresa, personasuscriptor);
+
+    await transaction.commit();
+    response(res, 201, {});
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
   }
-
-  const personasuscriptor = await personaDao.getPersonaByIdusuario(req, servicioempresa._idusuariosuscriptor);
-  if (!personasuscriptor) {
-    logger.warn(line(), "Usuario suscriptor no existe: [" + servicioempresa._idusuariosuscriptor + "]");
-    throw new ClientError("Datos no válidos", 404);
-  }
-
-  const empresa = await empresaDao.getEmpresaByIdempresa(req, servicioempresa._idempresa);
-  if (!empresa) {
-    logger.warn(line(), "Empresa no existe: [" + servicioempresa._idempresa + "]");
-    throw new ClientError("Datos no válidos", 404);
-  }
-
-  const servicioempresaestado = await servicioempresaestadoDao.getServicioempresaestadoByServicioempresaestadoid(req, servicioempresaverificacionValidated.servicioempresaestadoid);
-  if (!servicioempresaestado) {
-    logger.warn(line(), "Servicio empresa estado no existe: [" + servicioempresaverificacionValidated.servicioempresaestadoid + "]");
-    throw new ClientError("Datos no válidos", 404);
-  }
-
-  // Inserta un nuevo registro en la tabla servicioempresaverificacion con el nuevo estado
-  var camposFk = {};
-  camposFk._idservicioempresa = servicioempresa._idservicioempresa;
-  camposFk._idservicioempresaestado = servicioempresaestado._idservicioempresaestado;
-  camposFk._idusuarioverifica = req.session_user.usuario._idusuario;
-
-  var camposAdicionales = {};
-  camposAdicionales.servicioempresaverificacionid = uuidv4();
-
-  var camposAuditoria = {};
-  camposAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
-  camposAuditoria.fechacrea = Sequelize.fn("now", 3);
-  camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
-  camposAuditoria.fechamod = Sequelize.fn("now", 3);
-  camposAuditoria.estado = 1;
-
-  const servicioempresaverificacionCreated = await servicioempresaverificacionDao.insertServicioempresaverificacion(req, {
-    ...camposFk,
-    ...camposAdicionales,
-    ...servicioempresaverificacionValidated,
-    ...camposAuditoria,
-  });
-  logger.debug(line(), "servicioempresaverificacionCreated", servicioempresaverificacionCreated);
-
-  // Actualiza la tabla servicioempresa con el nuevo estado
-  const servicioempresaUpdate = {};
-  servicioempresaUpdate.servicioempresaid = servicioempresaverificacionValidated.servicioempresaid;
-  servicioempresaUpdate._idservicioempresaestado = servicioempresaestado._idservicioempresaestado;
-  servicioempresaUpdate.idusuariomod = req.session_user.usuario._idusuario ?? 1;
-  servicioempresaUpdate.fechamod = Sequelize.fn("now", 3);
-
-  await servicioempresaDao.updateServicioempresa(req, servicioempresaUpdate);
-  logger.debug(line(), "servicioempresaUpdate", servicioempresaUpdate);
-
-  // Si el estado es estado 3 (Suscrito)
-  if (servicioempresaestado._idservicioempresaestado == 3) {
-    await darAccesoAlUsuarioServicioEmpresa(req, servicioempresa, personasuscriptor);
-    await darAccesoAlUsuarioServicio(req, servicioempresaverificacionValidated, servicioempresa, empresa, personasuscriptor);
-  }
-
-  await enviarCorreoSegunCorrespondeNuevoEstadoDeServicioEmpresa(req, servicioempresaverificacionValidated, servicioempresa, servicioempresaestado, empresa, personasuscriptor);
-
-  response(res, 201, {});
 };
 
-const darAccesoAlUsuarioServicioEmpresa = async (req, servicioempresa, personasuscriptor) => {
-  const usuarioservicioempresa = await usuarioservicioempresaDao.getUsuarioservicioempresaByIdusuarioIdServicioIdempresa(req, personasuscriptor._idusuario, servicioempresa._idservicio, servicioempresa._idempresa);
+const darAccesoAlUsuarioServicioEmpresa = async (req, transaction, servicioempresa, personasuscriptor) => {
+  const usuarioservicioempresa = await usuarioservicioempresaDao.getUsuarioservicioempresaByIdusuarioIdServicioIdempresa(transaction, personasuscriptor._idusuario, servicioempresa._idservicio, servicioempresa._idempresa);
   if (!usuarioservicioempresa) {
     logger.warn(line(), "Usuario servicio empresa no existe: [" + personasuscriptor._idusuario + " - " + servicioempresa._idservicio + " - " + servicioempresa._idempresa + "]");
     throw new ClientError("Datos no válidos", 404);
   }
 
   const usuarioservicioempresaestado_con_acceso = 2; // Con acceso
-  const usuarioservicioempresaestado = await usuarioservicioempresaestadoDao.getUsuarioservicioempresaestadoByIdusuarioservicioempresaestado(req, usuarioservicioempresaestado_con_acceso);
+  const usuarioservicioempresaestado = await usuarioservicioempresaestadoDao.getUsuarioservicioempresaestadoByIdusuarioservicioempresaestado(transaction, usuarioservicioempresaestado_con_acceso);
   if (!usuarioservicioempresaestado) {
     logger.warn(line(), "Usuario servicio empresa estado no existe: [" + usuarioservicioempresaestado_con_acceso + "]");
     throw new ClientError("Datos no válidos", 404);
   }
 
   const usuarioservicioempresarol_administrador = 1; // Administrador
-  const usuarioservicioempresarol = await usuarioservicioempresarolDao.getUsuarioservicioempresarolByIdusuarioservicioempresarol(req, usuarioservicioempresarol_administrador);
+  const usuarioservicioempresarol = await usuarioservicioempresarolDao.getUsuarioservicioempresarolByIdusuarioservicioempresarol(transaction, usuarioservicioempresarol_administrador);
   if (!usuarioservicioempresarol) {
     logger.warn(line(), "Usuario servicio empresa rol no existe: [" + usuarioservicioempresarol_administrador + "]");
     throw new ClientError("Datos no válidos", 404);
@@ -132,19 +141,19 @@ const darAccesoAlUsuarioServicioEmpresa = async (req, servicioempresa, personasu
   usuarioservicioempresaUpdate.idusuariomod = req.session_user.usuario._idusuario ?? 1;
   usuarioservicioempresaUpdate.fechamod = Sequelize.fn("now", 3);
 
-  const usuarioservicioempresaUpdated = await usuarioservicioempresaDao.updateUsuarioservicioempresa(req, usuarioservicioempresaUpdate);
+  const usuarioservicioempresaUpdated = await usuarioservicioempresaDao.updateUsuarioservicioempresa(transaction, usuarioservicioempresaUpdate);
   logger.debug(line(), "usuarioservicioempresaUpdated", usuarioservicioempresaUpdated);
 };
 
-const darAccesoAlUsuarioServicio = async (req, servicioempresaverificacionValidated, servicioempresa, empresa, personasuscriptor) => {
-  const usuarioservicio = await usuarioservicioDao.getUsuarioservicioByIdusuarioIdservicio(req, personasuscriptor._idusuario, servicioempresa._idservicio);
+const darAccesoAlUsuarioServicio = async (req, transaction, servicioempresaverificacionValidated, servicioempresa, empresa, personasuscriptor) => {
+  const usuarioservicio = await usuarioservicioDao.getUsuarioservicioByIdusuarioIdservicio(transaction, personasuscriptor._idusuario, servicioempresa._idservicio);
   if (!usuarioservicio) {
     logger.warn(line(), "Usuario servicio no existe: [" + personasuscriptor._idusuario + " - " + servicioempresa._idservicio + "]");
     throw new ClientError("Datos no válidos", 404);
   }
 
   const usuarioservicioestado_suscrito = 2; // Suscrito
-  const usuarioservicioestado = await usuarioservicioestadoDao.getUsuarioservicioestadoByIdusuarioservicioestado(req, usuarioservicioestado_suscrito);
+  const usuarioservicioestado = await usuarioservicioestadoDao.getUsuarioservicioestadoByIdusuarioservicioestado(transaction, usuarioservicioestado_suscrito);
   if (!usuarioservicioestado) {
     logger.warn(line(), "Usuario servicio empresa estado no existe: [" + usuarioservicioestado_suscrito + "]");
     throw new ClientError("Datos no válidos", 404);
@@ -168,7 +177,7 @@ const darAccesoAlUsuarioServicio = async (req, servicioempresaverificacionValida
   camposUsuarioservicioverificacionAuditoria.fechamod = Sequelize.fn("now", 3);
   camposUsuarioservicioverificacionAuditoria.estado = 1;
 
-  const usuarioservicioverificacionCreated = await usuarioservicioverificacionDao.insertUsuarioservicioverificacion(req, {
+  const usuarioservicioverificacionCreated = await usuarioservicioverificacionDao.insertUsuarioservicioverificacion(transaction, {
     ...camposUsuarioservicioverificacionFk,
     ...camposUsuarioservicioverificacionAdicionales,
     ...camposUsuarioservicioverificacionAuditoria,
@@ -182,11 +191,11 @@ const darAccesoAlUsuarioServicio = async (req, servicioempresaverificacionValida
   usuarioservicioUpdate.idusuariomod = req.session_user.usuario._idusuario ?? 1;
   usuarioservicioUpdate.fechamod = Sequelize.fn("now", 3);
 
-  const usuarioservicioUpdated = await usuarioservicioDao.updateUsuarioservicio(req, usuarioservicioUpdate);
+  const usuarioservicioUpdated = await usuarioservicioDao.updateUsuarioservicio(transaction, usuarioservicioUpdate);
   logger.debug(line(), "usuarioservicioUpdated", usuarioservicioUpdated);
 };
 
-const enviarCorreoSegunCorrespondeNuevoEstadoDeServicioEmpresa = async (req, servicioempresaverificacionValidated, servicioempresa, servicioempresaestado, empresa, personasuscriptor) => {
+const enviarCorreoSegunCorrespondeNuevoEstadoDeServicioEmpresa = async (servicioempresaverificacionValidated, servicioempresa, servicioempresaestado, empresa, personasuscriptor) => {
   // Prepara y envia un correo
   const templateManager = new TemplateManager();
   const emailSender = new EmailSender();
@@ -255,33 +264,49 @@ const enviarCorreoSegunCorrespondeNuevoEstadoDeServicioEmpresa = async (req, ser
 };
 
 export const getFactoringempresasByVerificacion = async (req, res) => {
+  logger.debug(line(), "controller::getFactoringempresasByVerificacion");
   //logger.info(line(),req.session_user.usuario._idusuario);
 
-  const filter_estadologico = [1, 2];
-  const filter_idservicio = [1];
-  const filter_idarchivotipos = [4, 5, 6, 7];
-  const factoringempresas = await servicioempresaDao.getFactoringempresasByVerificacion(req, filter_estadologico, filter_idservicio, filter_idarchivotipos);
-  var factoringempresasJson = jsonUtils.sequelizeToJSON(factoringempresas);
-  //logger.info(line(),factoringempresaObfuscated);
+  const transaction = await sequelizeFT.transaction();
+  try {
+    const filter_estadologico = [1, 2];
+    const filter_idservicio = [1];
+    const filter_idarchivotipos = [4, 5, 6, 7];
+    const factoringempresas = await servicioempresaDao.getFactoringempresasByVerificacion(transaction, filter_estadologico, filter_idservicio, filter_idarchivotipos);
+    var factoringempresasJson = jsonUtils.sequelizeToJSON(factoringempresas);
+    //logger.info(line(),factoringempresaObfuscated);
 
-  //var factoringempresasFiltered = jsonUtils.removeAttributes(factoringempresasJson, ["score"]);
-  //factoringempresasFiltered = jsonUtils.removeAttributesPrivates(factoringempresasFiltered);
-  response(res, 201, factoringempresasJson);
+    //var factoringempresasFiltered = jsonUtils.removeAttributes(factoringempresasJson, ["score"]);
+    //factoringempresasFiltered = jsonUtils.removeAttributesPrivates(factoringempresasFiltered);
+    await transaction.commit();
+    response(res, 201, factoringempresasJson);
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
 };
 
 export const getFactoringempresaverificacionMaster = async (req, res) => {
-  const session_idusuario = req.session_user?.usuario?._idusuario;
-  const filter_estados = [1];
-  const servicioempresaestados = await servicioempresaestadoDao.getServicioempresaestados(req, filter_estados);
+  logger.debug(line(), "controller::getFactoringempresaverificacionMaster");
+  const transaction = await sequelizeFT.transaction();
+  try {
+    const session_idusuario = req.session_user?.usuario?._idusuario;
+    const filter_estados = [1];
+    const servicioempresaestados = await servicioempresaestadoDao.getServicioempresaestados(transaction, filter_estados);
 
-  let servicioempresaverificacionMaster = {};
-  servicioempresaverificacionMaster.servicioempresaestados = servicioempresaestados;
+    let servicioempresaverificacionMaster = {};
+    servicioempresaverificacionMaster.servicioempresaestados = servicioempresaestados;
 
-  let servicioempresaverificacionMasterJSON = jsonUtils.sequelizeToJSON(servicioempresaverificacionMaster);
-  //jsonUtils.prettyPrint(servicioempresaverificacionMasterJSON);
-  let servicioempresaverificacionMasterObfuscated = jsonUtils.ofuscarAtributosDefault(servicioempresaverificacionMasterJSON);
-  //jsonUtils.prettyPrint(servicioempresaverificacionMasterObfuscated);
-  let servicioempresaverificacionMasterFiltered = jsonUtils.removeAttributesPrivates(servicioempresaverificacionMasterObfuscated);
-  //jsonUtils.prettyPrint(servicioempresaverificacionMaster);
-  response(res, 201, servicioempresaverificacionMasterFiltered);
+    let servicioempresaverificacionMasterJSON = jsonUtils.sequelizeToJSON(servicioempresaverificacionMaster);
+    //jsonUtils.prettyPrint(servicioempresaverificacionMasterJSON);
+    let servicioempresaverificacionMasterObfuscated = jsonUtils.ofuscarAtributosDefault(servicioempresaverificacionMasterJSON);
+    //jsonUtils.prettyPrint(servicioempresaverificacionMasterObfuscated);
+    let servicioempresaverificacionMasterFiltered = jsonUtils.removeAttributesPrivates(servicioempresaverificacionMasterObfuscated);
+    //jsonUtils.prettyPrint(servicioempresaverificacionMaster);
+    await transaction.commit();
+    response(res, 201, servicioempresaverificacionMasterFiltered);
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
 };

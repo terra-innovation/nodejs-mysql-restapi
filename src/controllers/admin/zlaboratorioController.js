@@ -1,16 +1,17 @@
-import { sequelizeFT } from "../../config/bd/sequelize_db_factoring.js";
 import * as zlaboratoriousuarioDao from "../../daos/zlaboratoriousuarioDao.js";
 import * as zlaboratoriopedidoDao from "../../daos/zlaboratoriopedidoDao.js";
 import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
 import logger, { line } from "../../utils/logger.js";
+import { sequelizeFT } from "../../config/bd/sequelize_db_factoring.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { Sequelize } from "sequelize";
 
 export const validateTransaction = async (req, res) => {
+  logger.debug(line(), "controller::validateTransaction");
   const session_idusuario = req.session_user.usuario._idusuario;
   const filter_estado = [1, 2];
   const usuariopedidoCreateSchema = yup
@@ -75,7 +76,6 @@ export const validateTransaction = async (req, res) => {
     const deleteZlaboratorioUsuario = await zlaboratoriousuarioDao.deleteZlaboratorioUsuario(transaction, pedidoCreated);
 
     await transaction.commit();
-
     response(res, 201, { ...deleteZlaboratorioUsuario });
   } catch (error) {
     await transaction.rollback();

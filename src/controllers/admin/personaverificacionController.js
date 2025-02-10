@@ -7,6 +7,7 @@ import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
 import logger, { line } from "../../utils/logger.js";
+import { sequelizeFT } from "../../config/bd/sequelize_db_factoring.js";
 import EmailSender from "../../utils/email/emailSender.js";
 import TemplateManager from "../../utils/email/TemplateManager.js";
 
@@ -15,6 +16,7 @@ import * as yup from "yup";
 import { Sequelize } from "sequelize";
 
 export const activatePersonaverificacion = async (req, res) => {
+  logger.debug(line(), "controller::activatePersonaverificacion");
   const { id } = req.params;
   const personaverificacionSchema = yup
     .object()
@@ -25,20 +27,28 @@ export const activatePersonaverificacion = async (req, res) => {
   const personaverificacionValidated = personaverificacionSchema.validateSync({ personaverificacionid: id }, { abortEarly: false, stripUnknown: true });
   logger.debug(line(), "personaverificacionValidated:", personaverificacionValidated);
 
-  var camposAuditoria = {};
-  camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
-  camposAuditoria.fechamod = Sequelize.fn("now", 3);
-  camposAuditoria.estado = 1;
+  const transaction = await sequelizeFT.transaction();
+  try {
+    var camposAuditoria = {};
+    camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+    camposAuditoria.fechamod = Sequelize.fn("now", 3);
+    camposAuditoria.estado = 1;
 
-  const personaverificacionDeleted = await personaverificacionDao.activatePersonaverificacion(req, { ...personaverificacionValidated, ...camposAuditoria });
-  if (personaverificacionDeleted[0] === 0) {
-    throw new ClientError("Personaverificacion no existe", 404);
+    const personaverificacionDeleted = await personaverificacionDao.activatePersonaverificacion(transaction, { ...personaverificacionValidated, ...camposAuditoria });
+    if (personaverificacionDeleted[0] === 0) {
+      throw new ClientError("Personaverificacion no existe", 404);
+    }
+    logger.debug(line(), "personaverificacionActivated:", personaverificacionDeleted);
+    await transaction.commit();
+    response(res, 204, personaverificacionDeleted);
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
   }
-  logger.debug(line(), "personaverificacionActivated:", personaverificacionDeleted);
-  response(res, 204, personaverificacionDeleted);
 };
 
 export const deletePersonaverificacion = async (req, res) => {
+  logger.debug(line(), "controller::deletePersonaverificacion");
   const { id } = req.params;
   const personaverificacionSchema = yup
     .object()
@@ -49,39 +59,53 @@ export const deletePersonaverificacion = async (req, res) => {
   const personaverificacionValidated = personaverificacionSchema.validateSync({ personaverificacionid: id }, { abortEarly: false, stripUnknown: true });
   logger.debug(line(), "personaverificacionValidated:", personaverificacionValidated);
 
-  var camposAuditoria = {};
-  camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
-  camposAuditoria.fechamod = Sequelize.fn("now", 3);
-  camposAuditoria.estado = 2;
+  const transaction = await sequelizeFT.transaction();
+  try {
+    var camposAuditoria = {};
+    camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+    camposAuditoria.fechamod = Sequelize.fn("now", 3);
+    camposAuditoria.estado = 2;
 
-  const personaverificacionDeleted = await personaverificacionDao.deletePersonaverificacion(req, { ...personaverificacionValidated, ...camposAuditoria });
-  if (personaverificacionDeleted[0] === 0) {
-    throw new ClientError("Personaverificacion no existe", 404);
+    const personaverificacionDeleted = await personaverificacionDao.deletePersonaverificacion(transaction, { ...personaverificacionValidated, ...camposAuditoria });
+    if (personaverificacionDeleted[0] === 0) {
+      throw new ClientError("Personaverificacion no existe", 404);
+    }
+    logger.debug(line(), "personaverificacionDeleted:", personaverificacionDeleted);
+    await transaction.commit();
+    response(res, 204, personaverificacionDeleted);
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
   }
-  logger.debug(line(), "personaverificacionDeleted:", personaverificacionDeleted);
-  response(res, 204, personaverificacionDeleted);
 };
 
 export const getPersonaverificacionMaster = async (req, res) => {
-  logger.debug(line(), "funcion::getPersonaverificacionMaster");
-  const session_idusuario = req.session_user?.usuario?._idusuario;
-  const filter_estados = [1];
-  const personaverificacionestados = await personaverificacionestadoDao.getPersonaverificacionestados(req, filter_estados);
+  logger.debug(line(), "controller::getPersonaverificacionMaster");
+  const transaction = await sequelizeFT.transaction();
+  try {
+    const session_idusuario = req.session_user?.usuario?._idusuario;
+    const filter_estados = [1];
+    const personaverificacionestados = await personaverificacionestadoDao.getPersonaverificacionestados(transaction, filter_estados);
 
-  let personaverificacionMaster = {};
-  personaverificacionMaster.personaverificacionestados = personaverificacionestados;
+    let personaverificacionMaster = {};
+    personaverificacionMaster.personaverificacionestados = personaverificacionestados;
 
-  let personaverificacionMasterJSON = jsonUtils.sequelizeToJSON(personaverificacionMaster);
-  //jsonUtils.prettyPrint(personaverificacionMasterJSON);
-  let personaverificacionMasterObfuscated = jsonUtils.ofuscarAtributosDefault(personaverificacionMasterJSON);
-  //jsonUtils.prettyPrint(personaverificacionMasterObfuscated);
-  let personaverificacionMasterFiltered = jsonUtils.removeAttributesPrivates(personaverificacionMasterObfuscated);
-  //jsonUtils.prettyPrint(personaverificacionMaster);
-  response(res, 201, personaverificacionMasterFiltered);
+    let personaverificacionMasterJSON = jsonUtils.sequelizeToJSON(personaverificacionMaster);
+    //jsonUtils.prettyPrint(personaverificacionMasterJSON);
+    let personaverificacionMasterObfuscated = jsonUtils.ofuscarAtributosDefault(personaverificacionMasterJSON);
+    //jsonUtils.prettyPrint(personaverificacionMasterObfuscated);
+    let personaverificacionMasterFiltered = jsonUtils.removeAttributesPrivates(personaverificacionMasterObfuscated);
+    //jsonUtils.prettyPrint(personaverificacionMaster);
+    await transaction.commit();
+    response(res, 201, personaverificacionMasterFiltered);
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
 };
 
 export const updatePersonaverificacion = async (req, res) => {
-  logger.debug(line(), "funcion::updatePersonaverificacion");
+  logger.debug(line(), "controller::updatePersonaverificacion");
   const { id } = req.params;
   let NAME_REGX = /^[a-zA-Z ]+$/;
   const personaverificacionUpdateSchema = yup
@@ -104,48 +128,62 @@ export const updatePersonaverificacion = async (req, res) => {
   const personaverificacionValidated = personaverificacionUpdateSchema.validateSync({ personaverificacionid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
   logger.debug(line(), "personaverificacionValidated:", personaverificacionValidated);
 
-  var camposFk = {};
+  const transaction = await sequelizeFT.transaction();
+  try {
+    var camposFk = {};
 
-  var camposAdicionales = {};
-  camposAdicionales.personaverificacionid = personaverificacionValidated.personaverificacionid;
+    var camposAdicionales = {};
+    camposAdicionales.personaverificacionid = personaverificacionValidated.personaverificacionid;
 
-  var camposAuditoria = {};
-  camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
-  camposAuditoria.fechamod = Sequelize.fn("now", 3);
+    var camposAuditoria = {};
+    camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+    camposAuditoria.fechamod = Sequelize.fn("now", 3);
 
-  const result = await personaverificacionDao.updatePersonaverificacion(req, {
-    ...camposFk,
-    ...camposAdicionales,
-    ...personaverificacionValidated,
-    ...camposAuditoria,
-  });
-  if (result[0] === 0) {
-    throw new ClientError("Personaverificacion no existe", 404);
+    const result = await personaverificacionDao.updatePersonaverificacion(transaction, {
+      ...camposFk,
+      ...camposAdicionales,
+      ...personaverificacionValidated,
+      ...camposAuditoria,
+    });
+    if (result[0] === 0) {
+      throw new ClientError("Personaverificacion no existe", 404);
+    }
+    const personaverificacionUpdated = await personaverificacionDao.getPersonaverificacionByPersonaverificacionid(transaction, id);
+    if (!personaverificacionUpdated) {
+      throw new ClientError("Personaverificacion no existe", 404);
+    }
+    await transaction.commit();
+    response(res, 200, {});
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
   }
-  const personaverificacionUpdated = await personaverificacionDao.getPersonaverificacionByPersonaverificacionid(req, id);
-  if (!personaverificacionUpdated) {
-    throw new ClientError("Personaverificacion no existe", 404);
-  }
-  response(res, 200, {});
 };
 
 export const getPersonaverificacions = async (req, res) => {
-  logger.debug(line(), "funcion::getPersonaverificacions");
-  //logger.info(line(),req.session_user.usuario._idusuario);
+  logger.debug(line(), "controller::getPersonaverificacions");
+  const transaction = await sequelizeFT.transaction();
+  try {
+    //logger.info(line(),req.session_user.usuario._idusuario);
 
-  const filter_estado = [1, 2];
-  const filter_idarchivotipo = [1, 2, 3];
-  const personaverificacionverificacions = await personaDao.getPersonasByVerificacion(req, filter_estado, filter_idarchivotipo);
-  var personaverificacionverificacionsJson = jsonUtils.sequelizeToJSON(personaverificacionverificacions);
-  //logger.info(line(),personaverificacionObfuscated);
+    const filter_estado = [1, 2];
+    const filter_idarchivotipo = [1, 2, 3];
+    const personaverificacionverificacions = await personaDao.getPersonasByVerificacion(transaction, filter_estado, filter_idarchivotipo);
+    var personaverificacionverificacionsJson = jsonUtils.sequelizeToJSON(personaverificacionverificacions);
+    //logger.info(line(),personaverificacionObfuscated);
 
-  //var personaverificacionverificacionsFiltered = jsonUtils.removeAttributes(personaverificacionverificacionsJson, ["score"]);
-  //personaverificacionverificacionsFiltered = jsonUtils.removeAttributesPrivates(personaverificacionverificacionsFiltered);
-  response(res, 201, personaverificacionverificacionsJson);
+    //var personaverificacionverificacionsFiltered = jsonUtils.removeAttributes(personaverificacionverificacionsJson, ["score"]);
+    //personaverificacionverificacionsFiltered = jsonUtils.removeAttributesPrivates(personaverificacionverificacionsFiltered);
+    await transaction.commit();
+    response(res, 201, personaverificacionverificacionsJson);
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
 };
 
 export const createPersonaverificacion = async (req, res) => {
-  logger.debug(line(), "funcion::createPersonaverificacion");
+  logger.debug(line(), "controller::createPersonaverificacion");
   const session_idusuario = req.session_user.usuario._idusuario;
   const filter_estado = [1, 2];
   const personaverificacionCreateSchema = yup
@@ -160,72 +198,79 @@ export const createPersonaverificacion = async (req, res) => {
   var personaverificacionValidated = personaverificacionCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
   //logger.debug(line(), "personaverificacionValidated:", personaverificacionValidated);
 
-  const persona = await personaDao.getPersonaByPersonaid(req, personaverificacionValidated.personaid);
-  if (!persona) {
-    logger.warn(line(), "Persona no existe: [" + personaverificacionValidated.personaid + "]");
-    throw new ClientError("Datos no válidos", 404);
+  const transaction = await sequelizeFT.transaction();
+  try {
+    const persona = await personaDao.getPersonaByPersonaid(transaction, personaverificacionValidated.personaid);
+    if (!persona) {
+      logger.warn(line(), "Persona no existe: [" + personaverificacionValidated.personaid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+    const personaverificacionestado = await personaverificacionestadoDao.getPersonaverificacionestadoByPersonaverificacionestadoid(transaction, personaverificacionValidated.personaverificacionestadoid);
+    if (!personaverificacionestado) {
+      logger.warn(line(), "Persona verificación estado no existe: [" + personaverificacionValidated.personaverificacionestadoid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+    var camposFk = {};
+    camposFk._idpersona = persona._idpersona;
+    camposFk._idpersonaverificacionestado = personaverificacionestado._idpersonaverificacionestado;
+    camposFk._idusuarioverifica = req.session_user.usuario._idusuario;
+
+    var camposAdicionales = {};
+    camposAdicionales.personaverificacionid = uuidv4();
+
+    var camposAuditoria = {};
+    camposAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
+    camposAuditoria.fechacrea = Sequelize.fn("now", 3);
+    camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+    camposAuditoria.fechamod = Sequelize.fn("now", 3);
+    camposAuditoria.estado = 1;
+
+    const personaverificacionCreated = await personaverificacionDao.insertPersonaVerificacion(transaction, {
+      ...camposFk,
+      ...camposAdicionales,
+      ...personaverificacionValidated,
+      ...camposAuditoria,
+    });
+    logger.debug(line(), "personaverificacionCreated");
+
+    const personaUpdate = {};
+    personaUpdate.personaid = persona.personaid;
+    personaUpdate._idpersonaverificacionestado = personaverificacionestado._idpersonaverificacionestado;
+    personaUpdate.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+    personaUpdate.fechamod = Sequelize.fn("now", 3);
+
+    await personaDao.updatePersona(transaction, personaUpdate);
+    logger.debug(line(), "personaUpdate");
+
+    // Actualizamos el usuario solo si la validación de la persona es aprobado
+    if (personaverificacionestado.ispersonavalidated) {
+      const usuarioUpdate = {};
+      usuarioUpdate.usuarioid = persona.usuario_usuario.usuarioid;
+      usuarioUpdate.ispersonavalidated = personaverificacionestado.ispersonavalidated;
+      usuarioUpdate.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      usuarioUpdate.fechamod = Sequelize.fn("now", 3);
+
+      await usuarioDao.updateUsuario(transaction, usuarioUpdate);
+      logger.debug(line(), "usuarioUpdate");
+    }
+
+    /* Si la verificación tiene código 4 que es aprobado, se habilitan los servicios para que pueda suscribirse */
+    const idusuario_session = req.session_user.usuario._idusuario ?? 1;
+    if (personaverificacionestado._idpersonaverificacionestado == 4) {
+      await usuarioservicioDao.habilitarServiciosParaUsuario(transaction, persona.usuario_usuario._idusuario, idusuario_session);
+    }
+
+    await enviarCorreoSegunCorrespondeNuevoEstadoDePersona(personaverificacionValidated, personaverificacionestado, persona);
+
+    await transaction.commit();
+    response(res, 201, {});
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
   }
-  const personaverificacionestado = await personaverificacionestadoDao.getPersonaverificacionestadoByPersonaverificacionestadoid(req, personaverificacionValidated.personaverificacionestadoid);
-  if (!personaverificacionestado) {
-    logger.warn(line(), "Persona verificación estado no existe: [" + personaverificacionValidated.personaverificacionestadoid + "]");
-    throw new ClientError("Datos no válidos", 404);
-  }
-  var camposFk = {};
-  camposFk._idpersona = persona._idpersona;
-  camposFk._idpersonaverificacionestado = personaverificacionestado._idpersonaverificacionestado;
-  camposFk._idusuarioverifica = req.session_user.usuario._idusuario;
-
-  var camposAdicionales = {};
-  camposAdicionales.personaverificacionid = uuidv4();
-
-  var camposAuditoria = {};
-  camposAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
-  camposAuditoria.fechacrea = Sequelize.fn("now", 3);
-  camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
-  camposAuditoria.fechamod = Sequelize.fn("now", 3);
-  camposAuditoria.estado = 1;
-
-  const personaverificacionCreated = await personaverificacionDao.insertPersonaVerificacion(req, {
-    ...camposFk,
-    ...camposAdicionales,
-    ...personaverificacionValidated,
-    ...camposAuditoria,
-  });
-  logger.debug(line(), "personaverificacionCreated");
-
-  const personaUpdate = {};
-  personaUpdate.personaid = persona.personaid;
-  personaUpdate._idpersonaverificacionestado = personaverificacionestado._idpersonaverificacionestado;
-  personaUpdate.idusuariomod = req.session_user.usuario._idusuario ?? 1;
-  personaUpdate.fechamod = Sequelize.fn("now", 3);
-
-  await personaDao.updatePersona(req, personaUpdate);
-  logger.debug(line(), "personaUpdate");
-
-  // Actualizamos el usuario solo si la validación de la persona es aprobado
-  if (personaverificacionestado.ispersonavalidated) {
-    const usuarioUpdate = {};
-    usuarioUpdate.usuarioid = persona.usuario_usuario.usuarioid;
-    usuarioUpdate.ispersonavalidated = personaverificacionestado.ispersonavalidated;
-    usuarioUpdate.idusuariomod = req.session_user.usuario._idusuario ?? 1;
-    usuarioUpdate.fechamod = Sequelize.fn("now", 3);
-
-    await usuarioDao.updateUsuario(req, usuarioUpdate);
-    logger.debug(line(), "usuarioUpdate");
-  }
-
-  /* Si la verificación tiene código 4 que es aprobado, se habilitan los servicios para que pueda suscribirse */
-  const idusuario_session = req.session_user.usuario._idusuario ?? 1;
-  if (personaverificacionestado._idpersonaverificacionestado == 4) {
-    await usuarioservicioDao.habilitarServiciosParaUsuario(req, persona.usuario_usuario._idusuario, idusuario_session);
-  }
-
-  await enviarCorreoSegunCorrespondeNuevoEstadoDePersona(req, personaverificacionValidated, personaverificacionestado, persona);
-
-  response(res, 201, {});
 };
 
-const enviarCorreoSegunCorrespondeNuevoEstadoDePersona = async (req, personaverificacionValidated, personaverificacionestado, persona) => {
+const enviarCorreoSegunCorrespondeNuevoEstadoDePersona = async (personaverificacionValidated, personaverificacionestado, persona) => {
   // Prepara y envia un correo
   const templateManager = new TemplateManager();
   const emailSender = new EmailSender();

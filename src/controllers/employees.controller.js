@@ -1,6 +1,8 @@
 import { poolFactoring } from "../config/bd/mysql2_db_factoring.js";
+import logger, { line } from "../utils/logger.js";
 
 export const getEmployees = async (req, res) => {
+  logger.debug(line(), "controller::getEmployees");
   try {
     const [rows] = await poolFactoring.query("SELECT * FROM employee");
     res.json(rows);
@@ -10,6 +12,7 @@ export const getEmployees = async (req, res) => {
 };
 
 export const getEmployee = async (req, res) => {
+  logger.debug(line(), "controller::getEmployee");
   try {
     const { id } = req.params;
     const [rows] = await poolFactoring.query("SELECT * FROM employee WHERE id = ?", [id]);
@@ -25,6 +28,7 @@ export const getEmployee = async (req, res) => {
 };
 
 export const deleteEmployee = async (req, res) => {
+  logger.debug(line(), "controller::deleteEmployee");
   try {
     const { id } = req.params;
     const [rows] = await poolFactoring.query("DELETE FROM employee WHERE id = ?", [id]);
@@ -40,6 +44,7 @@ export const deleteEmployee = async (req, res) => {
 };
 
 export const createEmployee = async (req, res) => {
+  logger.debug(line(), "controller::createEmployee");
   try {
     const { name, salary } = req.body;
     const [rows] = await poolFactoring.query("INSERT INTO employee (name, salary) VALUES (?, ?)", [name, salary]);
@@ -50,6 +55,7 @@ export const createEmployee = async (req, res) => {
 };
 
 export const updateEmployee = async (req, res) => {
+  logger.debug(line(), "controller::updateEmployee");
   try {
     const { id } = req.params;
     const { name, salary } = req.body;

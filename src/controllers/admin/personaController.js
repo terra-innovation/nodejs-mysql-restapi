@@ -12,27 +12,37 @@ import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
 import logger, { line } from "../../utils/logger.js";
+import { sequelizeFT } from "../../config/bd/sequelize_db_factoring.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { Sequelize } from "sequelize";
 
 export const getPersonasPendientesDeVerificacion = async (req, res) => {
-  //logger.info(line(),req.session_user.usuario._idusuario);
+  logger.debug(line(), "controller::getPersonasPendientesDeVerificacion");
+  const transaction = await sequelizeFT.transaction();
+  try {
+    //logger.info(line(),req.session_user.usuario._idusuario);
 
-  const filter_estado = [1, 2];
-  const filter_idpersonaverificacionestado = [2, 3, 6, 7];
-  const filter_idarchivotipo = [1, 2, 3];
-  const personas = await personaDao.getPersonasByIdpersonaverificacionestado(req, filter_estado, filter_idpersonaverificacionestado, filter_idarchivotipo);
-  var personasJson = jsonUtils.sequelizeToJSON(personas);
-  //logger.info(line(),personaObfuscated);
+    const filter_estado = [1, 2];
+    const filter_idpersonaverificacionestado = [2, 3, 6, 7];
+    const filter_idarchivotipo = [1, 2, 3];
+    const personas = await personaDao.getPersonasByIdpersonaverificacionestado(transaction, filter_estado, filter_idpersonaverificacionestado, filter_idarchivotipo);
+    var personasJson = jsonUtils.sequelizeToJSON(personas);
+    //logger.info(line(),personaObfuscated);
 
-  //var personasFiltered = jsonUtils.removeAttributes(personasJson, ["score"]);
-  //personasFiltered = jsonUtils.removeAttributesPrivates(personasFiltered);
-  response(res, 201, personasJson);
+    //var personasFiltered = jsonUtils.removeAttributes(personasJson, ["score"]);
+    //personasFiltered = jsonUtils.removeAttributesPrivates(personasFiltered);
+    await transaction.commit();
+    response(res, 201, personasJson);
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
 };
 
 export const activatePersona = async (req, res) => {
+  logger.debug(line(), "controller::activatePersona");
   const { id } = req.params;
   const personaSchema = yup
     .object()
@@ -43,20 +53,28 @@ export const activatePersona = async (req, res) => {
   const personaValidated = personaSchema.validateSync({ personaid: id }, { abortEarly: false, stripUnknown: true });
   logger.debug(line(), "personaValidated:", personaValidated);
 
-  var camposAuditoria = {};
-  camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
-  camposAuditoria.fechamod = Sequelize.fn("now", 3);
-  camposAuditoria.estado = 1;
+  const transaction = await sequelizeFT.transaction();
+  try {
+    var camposAuditoria = {};
+    camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+    camposAuditoria.fechamod = Sequelize.fn("now", 3);
+    camposAuditoria.estado = 1;
 
-  const personaDeleted = await personaDao.activatePersona(req, { ...personaValidated, ...camposAuditoria });
-  if (personaDeleted[0] === 0) {
-    throw new ClientError("Persona no existe", 404);
+    const personaDeleted = await personaDao.activatePersona(transaction, { ...personaValidated, ...camposAuditoria });
+    if (personaDeleted[0] === 0) {
+      throw new ClientError("Persona no existe", 404);
+    }
+    logger.debug(line(), "personaActivated:", personaDeleted);
+    await transaction.commit();
+    response(res, 204, personaDeleted);
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
   }
-  logger.debug(line(), "personaActivated:", personaDeleted);
-  response(res, 204, personaDeleted);
 };
 
 export const deletePersona = async (req, res) => {
+  logger.debug(line(), "controller::deletePersona");
   const { id } = req.params;
   const personaSchema = yup
     .object()
@@ -67,43 +85,59 @@ export const deletePersona = async (req, res) => {
   const personaValidated = personaSchema.validateSync({ personaid: id }, { abortEarly: false, stripUnknown: true });
   logger.debug(line(), "personaValidated:", personaValidated);
 
-  var camposAuditoria = {};
-  camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
-  camposAuditoria.fechamod = Sequelize.fn("now", 3);
-  camposAuditoria.estado = 2;
+  const transaction = await sequelizeFT.transaction();
+  try {
+    var camposAuditoria = {};
+    camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+    camposAuditoria.fechamod = Sequelize.fn("now", 3);
+    camposAuditoria.estado = 2;
 
-  const personaDeleted = await personaDao.deletePersona(req, { ...personaValidated, ...camposAuditoria });
-  if (personaDeleted[0] === 0) {
-    throw new ClientError("Persona no existe", 404);
+    const personaDeleted = await personaDao.deletePersona(transaction, { ...personaValidated, ...camposAuditoria });
+    if (personaDeleted[0] === 0) {
+      throw new ClientError("Persona no existe", 404);
+    }
+    logger.debug(line(), "personaDeleted:", personaDeleted);
+    await transaction.commit();
+    response(res, 204, personaDeleted);
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
   }
-  logger.debug(line(), "personaDeleted:", personaDeleted);
-  response(res, 204, personaDeleted);
 };
 
 export const getPersonaMaster = async (req, res) => {
-  const session_idusuario = req.session_user?.usuario?._idusuario;
-  const filter_estados = [1];
-  const paises = await paisDao.getPaises(req, filter_estados);
-  const distritos = await distritoDao.getDistritos(req, filter_estados);
-  const documentotipos = await documentotipoDao.getDocumentotipos(req, filter_estados);
-  const generos = await generoDao.getGeneros(req, filter_estados);
+  logger.debug(line(), "controller::getPersonaMaster");
+  const transaction = await sequelizeFT.transaction();
+  try {
+    const session_idusuario = req.session_user?.usuario?._idusuario;
+    const filter_estados = [1];
+    const paises = await paisDao.getPaises(transaction, filter_estados);
+    const distritos = await distritoDao.getDistritos(transaction, filter_estados);
+    const documentotipos = await documentotipoDao.getDocumentotipos(transaction, filter_estados);
+    const generos = await generoDao.getGeneros(transaction, filter_estados);
 
-  let personaMaster = {};
-  personaMaster.paises = paises;
-  personaMaster.distritos = distritos;
-  personaMaster.documentotipos = documentotipos;
-  personaMaster.generos = generos;
+    let personaMaster = {};
+    personaMaster.paises = paises;
+    personaMaster.distritos = distritos;
+    personaMaster.documentotipos = documentotipos;
+    personaMaster.generos = generos;
 
-  let personaMasterJSON = jsonUtils.sequelizeToJSON(personaMaster);
-  //jsonUtils.prettyPrint(personaMasterJSON);
-  let personaMasterObfuscated = jsonUtils.ofuscarAtributosDefault(personaMasterJSON);
-  //jsonUtils.prettyPrint(personaMasterObfuscated);
-  let personaMasterFiltered = jsonUtils.removeAttributesPrivates(personaMasterObfuscated);
-  //jsonUtils.prettyPrint(personaMaster);
-  response(res, 201, personaMasterFiltered);
+    let personaMasterJSON = jsonUtils.sequelizeToJSON(personaMaster);
+    //jsonUtils.prettyPrint(personaMasterJSON);
+    let personaMasterObfuscated = jsonUtils.ofuscarAtributosDefault(personaMasterJSON);
+    //jsonUtils.prettyPrint(personaMasterObfuscated);
+    let personaMasterFiltered = jsonUtils.removeAttributesPrivates(personaMasterObfuscated);
+    //jsonUtils.prettyPrint(personaMaster);
+    await transaction.commit();
+    response(res, 201, personaMasterFiltered);
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
 };
 
 export const updatePersona = async (req, res) => {
+  logger.debug(line(), "controller::updatePersona");
   const { id } = req.params;
   let NAME_REGX = /^[a-zA-Z ]+$/;
   const personaUpdateSchema = yup
@@ -126,45 +160,61 @@ export const updatePersona = async (req, res) => {
   const personaValidated = personaUpdateSchema.validateSync({ personaid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
   logger.debug(line(), "personaValidated:", personaValidated);
 
-  var camposFk = {};
+  const transaction = await sequelizeFT.transaction();
+  try {
+    var camposFk = {};
 
-  var camposAdicionales = {};
-  camposAdicionales.personaid = personaValidated.personaid;
+    var camposAdicionales = {};
+    camposAdicionales.personaid = personaValidated.personaid;
 
-  var camposAuditoria = {};
-  camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
-  camposAuditoria.fechamod = Sequelize.fn("now", 3);
+    var camposAuditoria = {};
+    camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+    camposAuditoria.fechamod = Sequelize.fn("now", 3);
 
-  const result = await personaDao.updatePersona(req, {
-    ...camposFk,
-    ...camposAdicionales,
-    ...personaValidated,
-    ...camposAuditoria,
-  });
-  if (result[0] === 0) {
-    throw new ClientError("Persona no existe", 404);
+    const result = await personaDao.updatePersona(transaction, {
+      ...camposFk,
+      ...camposAdicionales,
+      ...personaValidated,
+      ...camposAuditoria,
+    });
+    if (result[0] === 0) {
+      throw new ClientError("Persona no existe", 404);
+    }
+    const personaUpdated = await personaDao.getPersonaByPersonaid(transaction, id);
+    if (!personaUpdated) {
+      throw new ClientError("Persona no existe", 404);
+    }
+    await transaction.commit();
+    response(res, 200, {});
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
   }
-  const personaUpdated = await personaDao.getPersonaByPersonaid(req, id);
-  if (!personaUpdated) {
-    throw new ClientError("Persona no existe", 404);
-  }
-  response(res, 200, {});
 };
 
 export const getPersonas = async (req, res) => {
-  //logger.info(line(),req.session_user.usuario._idusuario);
+  logger.debug(line(), "controller::getPersonas");
+  const transaction = await sequelizeFT.transaction();
+  try {
+    //logger.info(line(),req.session_user.usuario._idusuario);
 
-  const filter_estado = [1, 2];
-  const personas = await personaDao.getPersonas(req, filter_estado);
-  var personasJson = jsonUtils.sequelizeToJSON(personas);
-  //logger.info(line(),personaObfuscated);
+    const filter_estado = [1, 2];
+    const personas = await personaDao.getPersonas(transaction, filter_estado);
+    var personasJson = jsonUtils.sequelizeToJSON(personas);
+    //logger.info(line(),personaObfuscated);
 
-  //var personasFiltered = jsonUtils.removeAttributes(personasJson, ["score"]);
-  //personasFiltered = jsonUtils.removeAttributesPrivates(personasFiltered);
-  response(res, 201, personasJson);
+    //var personasFiltered = jsonUtils.removeAttributes(personasJson, ["score"]);
+    //personasFiltered = jsonUtils.removeAttributesPrivates(personasFiltered);
+    await transaction.commit();
+    response(res, 201, personasJson);
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
 };
 
 export const createPersona = async (req, res) => {
+  logger.debug(line(), "controller::createPersona");
   const session_idusuario = req.session_user.usuario._idusuario;
   const filter_estado = [1, 2];
   const personaCreateSchema = yup
@@ -184,33 +234,40 @@ export const createPersona = async (req, res) => {
   var personaValidated = personaCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
   logger.debug(line(), "personaValidated:", personaValidated);
 
-  var personas_por_ruc = await personaDao.getPersonaByRuc(req, personaValidated.ruc);
-  if (personas_por_ruc && personas_por_ruc.length > 0) {
-    throw new ClientError("La persona [" + personaValidated.ruc + "] se encuentra registrada. Ingrese un ruc diferente.", 404);
+  const transaction = await sequelizeFT.transaction();
+  try {
+    var personas_por_ruc = await personaDao.getPersonaByRuc(transaction, personaValidated.ruc);
+    if (personas_por_ruc && personas_por_ruc.length > 0) {
+      throw new ClientError("La persona [" + personaValidated.ruc + "] se encuentra registrada. Ingrese un ruc diferente.", 404);
+    }
+
+    var camposFk = {};
+
+    var camposAdicionales = {};
+    camposAdicionales.personaid = uuidv4();
+    camposAdicionales.code = uuidv4().split("-")[0];
+
+    var camposAuditoria = {};
+    camposAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
+    camposAuditoria.fechacrea = Sequelize.fn("now", 3);
+    camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+    camposAuditoria.fechamod = Sequelize.fn("now", 3);
+    camposAuditoria.estado = 1;
+
+    const personaCreated = await personaDao.insertPersona(transaction, {
+      ...camposFk,
+      ...camposAdicionales,
+      ...personaValidated,
+      ...camposAuditoria,
+    });
+    //logger.debug(line(),"Create persona: ID:" + personaCreated._idpersona + " | " + camposAdicionales.personaid);
+    //logger.debug(line(),"personaCreated:", personaCreated.dataValues);
+    // Retiramos los IDs internos
+    delete camposAdicionales.idpersona;
+    await transaction.commit();
+    response(res, 201, { ...camposAdicionales, ...personaValidated });
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
   }
-
-  var camposFk = {};
-
-  var camposAdicionales = {};
-  camposAdicionales.personaid = uuidv4();
-  camposAdicionales.code = uuidv4().split("-")[0];
-
-  var camposAuditoria = {};
-  camposAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
-  camposAuditoria.fechacrea = Sequelize.fn("now", 3);
-  camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
-  camposAuditoria.fechamod = Sequelize.fn("now", 3);
-  camposAuditoria.estado = 1;
-
-  const personaCreated = await personaDao.insertPersona(req, {
-    ...camposFk,
-    ...camposAdicionales,
-    ...personaValidated,
-    ...camposAuditoria,
-  });
-  //logger.debug(line(),"Create persona: ID:" + personaCreated._idpersona + " | " + camposAdicionales.personaid);
-  //logger.debug(line(),"personaCreated:", personaCreated.dataValues);
-  // Retiramos los IDs internos
-  delete camposAdicionales.idpersona;
-  response(res, 201, { ...camposAdicionales, ...personaValidated });
 };
