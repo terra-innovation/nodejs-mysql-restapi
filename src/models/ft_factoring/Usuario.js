@@ -55,10 +55,6 @@ export default class Usuario extends Model {
       type: DataTypes.STRING(20),
       allowNull: false
     },
-    password: {
-      type: DataTypes.STRING(200),
-      allowNull: false
-    },
     isemailvalidated: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

@@ -1,6 +1,7 @@
 import * as usuarioDao from "../../daos/usuarioDao.js";
 import * as documentotipoDao from "../../daos/documentotipoDao.js";
 import * as validacionDao from "../../daos/validacionDao.js";
+import * as credencialDao from "../../daos/credencialDao.js";
 import * as personaverificacionestadoDao from "../../daos/personaverificacionestadoDao.js";
 import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
@@ -62,17 +63,25 @@ export const resetPassword = async (req, res) => {
         const fechaActual = new Date();
         if (fechaActual <= fechaConAjustes) {
           // Validación conforme
-          const encryptedPassword = await bcrypt.hash(validacionValidated.password, 10);
+          //Encrypt user password. Cumple estándares PCI-DSS o la GDPR: hashing y salting
+          const salt = bcrypt.genSaltSync(12); // 12 es el costo del salting
+          const encryptedPassword = bcrypt.hashSync(validacionValidated.password, salt);
 
-          let usuarioUpdate = {};
-          usuarioUpdate.usuarioid = usuario.usuarioid;
-          usuarioUpdate.password = encryptedPassword;
-          usuarioUpdate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
-          usuarioUpdate.fechamod = Sequelize.fn("now", 3);
+          const credencial = await credencialDao.getCredencialByIdusuario(transaction, usuario._idusuario);
+          if (!credencial) {
+            logger.warn(line(), "Credencial no existe por idusuario: ", usuario._idusuario);
+            throw new ClientError("El código de verificación no es válido o ha expidado", 404);
+          }
 
-          const usuarioUpdated = await usuarioDao.updateUsuario(transaction, usuarioUpdate);
-          if (usuarioUpdated[0] == 0) {
-            logger.warn(line(), "No fue posible actualizar el usuario: ", usuarioUpdated);
+          let credencialUpdate = {};
+          credencialUpdate.credencialid = credencial.credencialid;
+          credencialUpdate.password = encryptedPassword;
+          credencialUpdate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
+          credencialUpdate.fechamod = Sequelize.fn("now", 3);
+
+          const credencialUpdated = await credencialDao.updateCredencial(transaction, credencialUpdate);
+          if (credencialUpdated[0] == 0) {
+            logger.warn(line(), "No fue posible actualizar el usuario: ", credencialUpdated);
             throw new ClientError("El código de verificación no es válido o ha expidado", 404);
           }
 
@@ -296,30 +305,27 @@ export const sendVerificactionCode = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   logger.debug(line(), "controller::loginUser");
+
+  let EMAIL_REGX = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+
+  const loginUserSchema = Yup.object()
+    .shape({
+      email: Yup.string().trim().required("Correo electrónico es requerido").email("Debe ser un correo válido").matches(EMAIL_REGX, "Debe ser un correo válido.").min(5, "Mínimo 5 caracteres").max(50, "Máximo 50 caracteres"),
+      password: Yup.string().required("Contraseña es requerido").min(6, "Mínimo 6 caracteres").max(20, "Máximo 20 caracteres"),
+    })
+    .required();
+  const loginUserValidated = loginUserSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
+
   const transaction = await sequelizeFT.transaction();
   try {
-    // Get user input
-    const { correo, clave } = req.body;
-
-    let EMAIL_REGX = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
-
-    const loginUserSchema = Yup.object()
-      .shape({
-        email: Yup.string().trim().required("Correo electrónico es requerido").email("Debe ser un correo válido").matches(EMAIL_REGX, "Debe ser un correo válido.").min(5, "Mínimo 5 caracteres").max(50, "Máximo 50 caracteres"),
-        password: Yup.string().required("Contraseña es requerido").min(6, "Mínimo 6 caracteres").max(20, "Máximo 20 caracteres"),
-      })
-      .required();
-    const loginUserValidated = loginUserSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
-
     // Validate if user exist in our database
     const usuario_login = await usuarioDao.autenticarUsuario(transaction, loginUserValidated.email);
-    if (usuario_login.length <= 0) {
-      throw new ClientError("Usuario no existe", 404);
+    if (!usuario_login) {
+      logger.warn(line(), "Usuario no existe: [" + loginUserValidated.email + "]");
+      throw new ClientError("Usuario y/o contraseña no válida", 404);
     }
 
-    jsonUtils.prettyPrint(usuario_login);
-
-    if (usuario_login[0].email && (await bcrypt.compare(loginUserValidated.password, usuario_login[0].password))) {
+    if (usuario_login.email && usuario_login.credencial.password && bcrypt.compareSync(loginUserValidated.password, usuario_login.credencial.password)) {
       // Consultamos todos los datos del usuario y sus roles
       const usuario_autenticado = await usuarioDao.getUsuarioAndRolesByEmail(transaction, loginUserValidated.email);
       // Obtén el primer registro de usuario_autenticado
@@ -333,7 +339,8 @@ export const loginUser = async (req, res) => {
       await transaction.commit();
       response(res, 201, { token });
     } else {
-      throw new ClientError("Credenciales no válidas", 404);
+      logger.warn(line(), "Credenciales no válidas: [" + loginUserValidated.email + "]");
+      throw new ClientError("Usuario y/o contraseña no válida", 404);
     }
   } catch (error) {
     await transaction.rollback();
@@ -395,34 +402,58 @@ export const registerUsuario = async (req, res) => {
       .update(usuarioValidated.email + "|" + usuarioValidated.documentotipoid + "|" + usuarioValidated.documentonumero + "|" + Sequelize.fn("now", 3))
       .digest("hex");
 
-    //Encrypt user password
-    const encryptedPassword = await bcrypt.hash(usuarioValidated.password, 10);
+    //Encrypt user password. Cumple estándares PCI-DSS o la GDPR: hashing y salting
+    const salt = bcrypt.genSaltSync(12); // 12 es el costo del salting
+    const encryptedPassword = bcrypt.hashSync(usuarioValidated.password, salt);
 
     delete usuarioValidated.password;
 
-    let camposFk = {};
-    camposFk._iddocumentotipo = documentotipo._iddocumentotipo;
+    let camposUsuarioFk = {};
+    camposUsuarioFk._iddocumentotipo = documentotipo._iddocumentotipo;
 
-    let camposAdicionales = {};
-    camposAdicionales.usuarioid = uuidv4();
-    camposAdicionales.code = uuidv4().split("-")[0];
-    camposAdicionales.password = encryptedPassword;
-    camposAdicionales.hash = hash;
-    camposAdicionales.ispersonavalidated = personaverificacionestado.ispersonavalidated;
+    let camposUsuarioAdicionales = {};
+    camposUsuarioAdicionales.usuarioid = uuidv4();
+    camposUsuarioAdicionales.code = uuidv4().split("-")[0];
+    camposUsuarioAdicionales.password = encryptedPassword;
+    camposUsuarioAdicionales.hash = hash;
+    camposUsuarioAdicionales.ispersonavalidated = personaverificacionestado.ispersonavalidated;
 
-    let camposAuditoria = {};
-    camposAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
-    camposAuditoria.fechacrea = Sequelize.fn("now", 3);
-    camposAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
-    camposAuditoria.fechamod = Sequelize.fn("now", 3);
-    camposAuditoria.estado = 1;
+    let camposUsuarioAuditoria = {};
+    camposUsuarioAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
+    camposUsuarioAuditoria.fechacrea = Sequelize.fn("now", 3);
+    camposUsuarioAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
+    camposUsuarioAuditoria.fechamod = Sequelize.fn("now", 3);
+    camposUsuarioAuditoria.estado = 1;
 
     const usuarioCreated = await usuarioDao.insertUsuario(transaction, {
-      ...camposFk,
-      ...camposAdicionales,
+      ...camposUsuarioFk,
+      ...camposUsuarioAdicionales,
       ...usuarioValidated,
-      ...camposAuditoria,
+      ...camposUsuarioAuditoria,
     });
+    logger.debug(line(), "usuarioCreated", usuarioCreated);
+
+    let camposCredencialFk = {};
+    camposCredencialFk._idusuario = usuarioCreated._idusuario;
+
+    let camposCredencialAdicionales = {};
+    camposCredencialAdicionales.usuarioid = uuidv4();
+    camposCredencialAdicionales.code = uuidv4().split("-")[0];
+    camposCredencialAdicionales.password = encryptedPassword;
+
+    let camposCredencialoAuditoria = {};
+    camposCredencialoAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
+    camposCredencialoAuditoria.fechacrea = Sequelize.fn("now", 3);
+    camposCredencialoAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
+    camposCredencialoAuditoria.fechamod = Sequelize.fn("now", 3);
+    camposCredencialoAuditoria.estado = 1;
+
+    const credencialCreated = await credencialDao.insertCredencial(transaction, {
+      ...camposCredencialFk,
+      ...camposCredencialAdicionales,
+      ...camposCredencialoAuditoria,
+    });
+    logger.debug(line(), "credencialCreated", credencialCreated);
 
     let validacion = {};
     validacion._idusuario = usuarioCreated._idusuario;
@@ -439,9 +470,10 @@ export const registerUsuario = async (req, res) => {
     validacion.estado = 1;
 
     const validacionCreated = await validacionDao.insertValidacion(transaction, validacion);
+    logger.debug(line(), "validacionCreated", validacionCreated);
 
     const usuarioReturned = {};
-    usuarioReturned.hash = camposAdicionales.hash;
+    usuarioReturned.hash = camposUsuarioAdicionales.hash;
     usuarioReturned.email = usuarioValidated.email;
     usuarioReturned.codigo = validacion.codigo;
 

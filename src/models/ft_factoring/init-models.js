@@ -10,6 +10,7 @@ import _ArchivoTipo from "./ArchivoTipo.js";
 import _Banco from "./Banco.js";
 import _Colaborador from "./Colaborador.js";
 import _ColaboradorTipo from "./ColaboradorTipo.js";
+import _Credencial from "./Credencial.js";
 import _CuentaBancaria from "./CuentaBancaria.js";
 import _CuentaBancariaEstado from "./CuentaBancariaEstado.js";
 import _CuentaTipo from "./CuentaTipo.js";
@@ -72,6 +73,7 @@ export default function initModels(sequelize) {
   const Banco = _Banco.init(sequelize, DataTypes);
   const Colaborador = _Colaborador.init(sequelize, DataTypes);
   const ColaboradorTipo = _ColaboradorTipo.init(sequelize, DataTypes);
+  const Credencial = _Credencial.init(sequelize, DataTypes);
   const CuentaBancaria = _CuentaBancaria.init(sequelize, DataTypes);
   const CuentaBancariaEstado = _CuentaBancariaEstado.init(sequelize, DataTypes);
   const CuentaTipo = _CuentaTipo.init(sequelize, DataTypes);
@@ -283,6 +285,8 @@ export default function initModels(sequelize) {
   ServicioEmpresaEstado.hasMany(ServicioEmpresa, { as: "servicio_empresas", foreignKey: "_idservicioempresaestado" });
   ServicioEmpresaVerificacion.belongsTo(ServicioEmpresaEstado, { as: "servicioempresaestado_servicio_empresa_estado", foreignKey: "_idservicioempresaestado" });
   ServicioEmpresaEstado.hasMany(ServicioEmpresaVerificacion, { as: "servicio_empresa_verificacions", foreignKey: "_idservicioempresaestado" });
+  Credencial.belongsTo(Usuario, { as: "usuario_usuario", foreignKey: "_idusuario" });
+  Usuario.hasOne(Credencial, { as: "credencial", foreignKey: "_idusuario" });
   Factoring.belongsTo(Usuario, { as: "contactocedente_usuario", foreignKey: "_idcontactocedente" });
   Usuario.hasMany(Factoring, { as: "factorings", foreignKey: "_idcontactocedente" });
   Persona.belongsTo(Usuario, { as: "usuario_usuario", foreignKey: "_idusuario" });
@@ -329,6 +333,7 @@ export default function initModels(sequelize) {
     Banco,
     Colaborador,
     ColaboradorTipo,
+    Credencial,
     CuentaBancaria,
     CuentaBancariaEstado,
     CuentaTipo,

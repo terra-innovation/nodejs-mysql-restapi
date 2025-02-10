@@ -67,8 +67,16 @@ export const getUsuarioByIdusuario = async (transaction, idusuario) => {
 
 export const autenticarUsuario = async (transaction, email) => {
   try {
-    const usuario = await modelsFT.Usuario.findAll({
-      attributes: ["_idusuario", "usuarioid", "email", "password"],
+    const usuario = await modelsFT.Usuario.findOne({
+      attributes: ["_idusuario", "usuarioid", "email"],
+      include: [
+        {
+          attributes: ["password"],
+          model: modelsFT.Credencial,
+          required: false,
+          as: "credencial",
+        },
+      ],
       where: {
         email: email,
       },
@@ -87,7 +95,7 @@ export const getUsuarioAndRolesByEmail = async (transaction, email) => {
     const usuario = await modelsFT.Usuario.findAll({
       include: [
         {
-          model: Rol,
+          model: modelsFT.Rol,
           as: "rol_rols",
         },
       ],
