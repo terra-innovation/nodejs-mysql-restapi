@@ -8,8 +8,8 @@ export const getEmpresasByIdusuario = async (transaction, _idusuario, estados) =
     const empresas = await modelsFT.Empresa.findAll({
       include: [
         {
-          model: modelsFT.UsuarioEmpresa,
-          as: "usuario_empresas",
+          model: modelsFT.UsuarioServicioEmpresa,
+          as: "usuario_servicio_empresas",
           where: {
             _idusuario: _idusuario,
             estado: {
@@ -65,8 +65,8 @@ export const getEmpresaByIdusuarioAndEmpresaid = async (transaction, _idusuario,
     const empresas = await modelsFT.Empresa.findOne({
       include: [
         {
-          model: modelsFT.UsuarioEmpresa,
-          as: "usuario_empresas",
+          model: modelsFT.UsuarioServicioEmpresa,
+          as: "usuario_servicio_empresas",
           where: {
             _idusuario: _idusuario,
             estado: estado,
@@ -130,7 +130,7 @@ export const getEmpresaByIdempresa = async (transaction, idempresa) => {
 
 export const getEmpresaByEmpresaid = async (transaction, empresaid) => {
   try {
-    const empresa = await modelsFT.Empresa.findAll({
+    const empresa = await modelsFT.Empresa.findOne({
       include: [
         {
           model: modelsFT.Colaborador,

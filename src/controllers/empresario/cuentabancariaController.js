@@ -1,5 +1,6 @@
 import * as cuentabancariaDao from "../../daos/cuentabancariaDao.js";
 import * as empresaDao from "../../daos/empresaDao.js";
+import * as empresacuentabancariaDao from "../../daos/empresacuentabancariaDao.js";
 import * as bancoDao from "../../daos/bancoDao.js";
 import * as cuentatipoDao from "../../daos/cuentatipoDao.js";
 import * as monedaDao from "../../daos/monedaDao.js";
@@ -56,6 +57,7 @@ export const updateCuentabancariaOnlyAlias = async (req, res) => {
   const cuentabancariaUpdateSchema = yup
     .object()
     .shape({
+      empresaid: yup.string().trim().required().min(36).max(36),
       cuentabancariaid: yup.string().trim().required().min(36).max(36),
       alias: yup.string().required().max(50),
     })
@@ -65,6 +67,25 @@ export const updateCuentabancariaOnlyAlias = async (req, res) => {
 
   const transaction = await sequelizeFT.transaction();
   try {
+    const _idusuario_session = req.session_user.usuario._idusuario;
+    const cuentabancaria = await cuentabancariaDao.getCuentabancariaByCuentabancariaid(transaction, cuentabancariaValidated.cuentabancariaid);
+    if (!cuentabancaria) {
+      logger.warn(line(), "Cuenta bancaria no existe: [" + cuentabancariaValidated.cuentabancariaid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    const empresa = await empresaDao.getEmpresaByEmpresaid(transaction, cuentabancariaValidated.empresaid);
+    if (!empresa) {
+      logger.warn(line(), "Empresa no existe: [" + cuentabancariaValidated.empresaid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    const cuentabancariaAllowed = await cuentabancariaDao.getCuentabancariaByIdcuentabancariaIdempresaIdusuario(transaction, cuentabancaria._idcuentabancaria, empresa._idempresa, _idusuario_session);
+    if (!cuentabancariaAllowed) {
+      logger.warn(line(), "Cuenta bancaria no permitida: [" + cuentabancaria._idcuentabancaria + ", " + empresa._idempresa + ", " + _idusuario_session + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
     var camposAdicionales = {};
     camposAdicionales.cuentabancariaid = id;
 
@@ -72,26 +93,15 @@ export const updateCuentabancariaOnlyAlias = async (req, res) => {
     camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
     camposAuditoria.fechamod = Sequelize.fn("now", 3);
 
-    const result = await cuentabancariaDao.updateCuentabancaria(transaction, {
+    const cuentabancariaUpdated = await cuentabancariaDao.updateCuentabancaria(transaction, {
       ...camposAdicionales,
       ...cuentabancariaValidated,
       ...camposAuditoria,
     });
-    if (result[0] === 0) {
-      throw new ClientError("Cuentabancaria no existe", 404);
-    }
-    logger.info(line(), id);
-    const cuentabancariaUpdated = await cuentabancariaDao.getCuentabancariaByCuentabancariaid(transaction, id);
-    if (!cuentabancariaUpdated) {
-      throw new ClientError("Cuentabancaria no existe", 404);
-    }
+    logger.debug(line(), "cuentabancariaUpdated", cuentabancariaUpdated);
 
-    var cuentabancariaObfuscated = jsonUtils.ofuscarAtributos(cuentabancariaUpdated, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
-    //logger.info(line(),empresaObfuscated);
-
-    var cuentabancariaFiltered = jsonUtils.removeAttributesPrivates(cuentabancariaObfuscated);
     await transaction.commit();
-    response(res, 200, cuentabancariaFiltered);
+    response(res, 200, {});
   } catch (error) {
     await transaction.rollback();
     throw error;
@@ -174,35 +184,46 @@ export const createCuentabancaria = async (req, res) => {
     if (cuentasbancarias_por_alias && cuentasbancarias_por_alias.length > 0) {
       throw new ClientError("El alias [" + cuentabancariaValidated.alias + "] se encuentra registrado. Ingrese un alias diferente.", 404);
     }
-    var camposFk = {};
-    camposFk._idempresa = empresa._idempresa;
-    camposFk._idbanco = banco._idbanco;
-    camposFk._idcuentatipo = cuentatipo._idcuentatipo;
-    camposFk._idmoneda = moneda._idmoneda;
-    camposFk._idcuentabancariaestado = 1; // Por defecto
+    var camposCuentaBancariaFk = {};
+    camposCuentaBancariaFk._idempresa = empresa._idempresa;
+    camposCuentaBancariaFk._idbanco = banco._idbanco;
+    camposCuentaBancariaFk._idcuentatipo = cuentatipo._idcuentatipo;
+    camposCuentaBancariaFk._idmoneda = moneda._idmoneda;
+    camposCuentaBancariaFk._idcuentabancariaestado = 1; // Por defecto
 
-    var camposAdicionales = {};
-    camposAdicionales.cuentabancariaid = uuidv4();
+    var camposCuentaBancariaAdicionales = {};
+    camposCuentaBancariaAdicionales.cuentabancariaid = uuidv4();
 
-    var camposAuditoria = {};
-    camposAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
-    camposAuditoria.fechacrea = Sequelize.fn("now", 3);
-    camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
-    camposAuditoria.fechamod = Sequelize.fn("now", 3);
-    camposAuditoria.estado = 1;
+    var camposCuentaBancariaAuditoria = {};
+    camposCuentaBancariaAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
+    camposCuentaBancariaAuditoria.fechacrea = Sequelize.fn("now", 3);
+    camposCuentaBancariaAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+    camposCuentaBancariaAuditoria.fechamod = Sequelize.fn("now", 3);
+    camposCuentaBancariaAuditoria.estado = 1;
 
     const cuentabancariaCreated = await cuentabancariaDao.insertCuentabancaria(transaction, {
-      ...camposFk,
-      ...camposAdicionales,
+      ...camposCuentaBancariaFk,
+      ...camposCuentaBancariaAdicionales,
       ...cuentabancariaValidated,
-      ...camposAuditoria,
+      ...camposCuentaBancariaAuditoria,
     });
-    //logger.debug(line(),"Create cuentabancaria: ID:" + cuentabancariaCreated._idcuentabancaria + " | " + camposAdicionales.cuentabancariaid);
-    //logger.debug(line(),"cuentabancariaCreated:", cuentabancariaCreated.dataValues);
+    logger.debug(line(), "cuentabancariaCreated:", cuentabancariaCreated);
+
+    var camposEmpresaCuentaBancariaCreate = {};
+    camposEmpresaCuentaBancariaCreate._idempresa = empresa_por_idusuario._idempresa;
+    camposEmpresaCuentaBancariaCreate._idcuentabancaria = cuentabancariaCreated._idcuentabancaria;
+    camposEmpresaCuentaBancariaCreate.fechacrea = Sequelize.fn("now", 3);
+    camposEmpresaCuentaBancariaCreate.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+    camposEmpresaCuentaBancariaCreate.fechamod = Sequelize.fn("now", 3);
+    camposEmpresaCuentaBancariaCreate.estado = 1;
+
+    const empresacuentabancariaCreated = await empresacuentabancariaDao.insertEmpresacuentabancaria(transaction, camposEmpresaCuentaBancariaCreate);
+    logger.debug(line(), "empresacuentabancariaCreated:", empresacuentabancariaCreated);
+
     // Retiramos los IDs internos
-    delete camposAdicionales.idempresa;
+    delete camposCuentaBancariaAdicionales.idempresa;
     await transaction.commit();
-    response(res, 201, { ...camposAdicionales, ...cuentabancariaValidated });
+    response(res, 201, { ...camposCuentaBancariaAdicionales, ...cuentabancariaValidated });
   } catch (error) {
     await transaction.rollback();
     throw error;

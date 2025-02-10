@@ -104,17 +104,24 @@ export const getCuentasbancariasByIdusuarioAndAlias = async (transaction, idusua
     const cuentasbancarias = await modelsFT.CuentaBancaria.findAll({
       include: [
         {
-          model: modelsFT.Empresa,
+          model: modelsFT.EmpresaCuentaBancaria,
           required: true,
-          as: "empresa_empresa",
+          as: "empresa_cuenta_bancaria",
           include: [
             {
-              model: modelsFT.UsuarioEmpresa,
+              model: modelsFT.Empresa,
               required: true,
-              as: "usuario_empresas",
-              where: {
-                _idusuario: idusuario,
-              },
+              as: "empresa_empresa",
+              include: [
+                {
+                  model: modelsFT.UsuarioServicioEmpresa,
+                  required: true,
+                  as: "usuario_servicio_empresas",
+                  where: {
+                    _idusuario: idusuario,
+                  },
+                },
+              ],
             },
           ],
         },
@@ -160,17 +167,24 @@ export const getCuentasbancariasByIdusuario = async (transaction, idusuario, est
     const cuentasbancarias = await modelsFT.CuentaBancaria.findAll({
       include: [
         {
-          model: modelsFT.Empresa,
+          model: modelsFT.EmpresaCuentaBancaria,
           required: true,
-          as: "empresa_empresa",
+          as: "empresa_cuenta_bancaria",
           include: [
             {
-              model: modelsFT.UsuarioEmpresa,
+              model: modelsFT.Empresa,
               required: true,
-              as: "usuario_empresas",
-              where: {
-                _idusuario: idusuario,
-              },
+              as: "empresa_empresa",
+              include: [
+                {
+                  model: modelsFT.UsuarioServicioEmpresa,
+                  required: true,
+                  as: "usuario_servicio_empresas",
+                  where: {
+                    _idusuario: idusuario,
+                  },
+                },
+              ],
             },
           ],
         },
@@ -274,13 +288,80 @@ export const getCuentasbancariasByEmpresaidAndMoneda = async (transaction, empre
   }
 };
 
+export const getCuentabancariaByIdcuentabancariaIdempresaIdusuario = async (transaction, _idcuentabancaria, _idempresa, _idusuario) => {
+  try {
+    const cuentabancaria = await modelsFT.CuentaBancaria.findOne({
+      include: [
+        {
+          model: modelsFT.EmpresaCuentaBancaria,
+          required: true,
+          as: "empresa_cuenta_bancaria",
+          include: [
+            {
+              model: modelsFT.Empresa,
+              required: true,
+              as: "empresa_empresa",
+              where: {
+                _idempresa: _idempresa,
+              },
+              include: [
+                {
+                  model: modelsFT.UsuarioServicioEmpresa,
+                  required: true,
+                  as: "usuario_servicio_empresas",
+                  where: {
+                    _idusuario: _idusuario,
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        {
+          model: modelsFT.Banco,
+          as: "banco_banco",
+        },
+        {
+          model: modelsFT.Moneda,
+          as: "moneda_moneda",
+        },
+        {
+          model: modelsFT.CuentaTipo,
+          as: "cuentatipo_cuenta_tipo",
+        },
+        {
+          model: modelsFT.CuentaBancariaEstado,
+          as: "cuentabancariaestado_cuenta_bancaria_estado",
+        },
+      ],
+      where: {
+        _idcuentabancaria: _idcuentabancaria,
+      },
+      transaction,
+    });
+    //logger.debug(line(), cuentabancaria);
+    return cuentabancaria;
+  } catch (error) {
+    logger.error(line(), error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getCuentabancariaByCuentabancariaid = async (transaction, cuentabancariaid) => {
   try {
     const cuentabancaria = await modelsFT.CuentaBancaria.findOne({
       include: [
         {
-          model: modelsFT.Empresa,
-          as: "empresa_empresa",
+          model: modelsFT.EmpresaCuentaBancaria,
+          required: true,
+          as: "empresa_cuenta_bancaria",
+          include: [
+            {
+              model: modelsFT.Empresa,
+              required: true,
+              as: "empresa_empresa",
+            },
+          ],
         },
         {
           model: modelsFT.Banco,
@@ -304,7 +385,7 @@ export const getCuentabancariaByCuentabancariaid = async (transaction, cuentaban
       },
       transaction,
     });
-    logger.info(line(), cuentabancaria);
+    //logger.debug(line(), cuentabancaria);
     return cuentabancaria;
   } catch (error) {
     logger.error(line(), error);
