@@ -167,7 +167,7 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req, res) => {
     }
 
     const cuentabancariaestado_pendiente = 1;
-    const cuentabancariaestado = await cuentabancariaestadoDao.getCuentaBancariaEstadoByIdcuentabancariaestado(transaction, cuentabancariaestado_pendiente);
+    const cuentabancariaestado = await cuentabancariaestadoDao.getCuentabancariaestadoByIdcuentabancariaestado(transaction, cuentabancariaestado_pendiente);
     if (!cuentabancariaestado) {
       logger.warn(line(), "Cuenta bancaria estado no existe: [" + cuentabancariaestado_pendiente + "]");
       throw new ClientError("Datos no válidos", 404);
@@ -289,6 +289,7 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req, res) => {
 
     let camposCuentabancariaNuevoAdicionales = {};
     camposCuentabancariaNuevoAdicionales.cuentabancariaid = uuidv4();
+    camposCuentabancariaNuevoAdicionales.code = uuidv4().split("-")[0];
 
     let camposCuentabancariaNuevoAuditoria = {};
     camposCuentabancariaNuevoAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
@@ -310,6 +311,10 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req, res) => {
     camposEmpresacuentabancariaNuevoFk._idempresa = empresaCreated._idempresa;
     camposEmpresacuentabancariaNuevoFk._idcuentabancaria = cuentabancariaCreated._idcuentabancaria;
 
+    let camposEmpresacuentabancariaNuevoAdicionales = {};
+    camposEmpresacuentabancariaNuevoAdicionales.empresacuentabancariaid = uuidv4();
+    camposEmpresacuentabancariaNuevoAdicionales.code = uuidv4().split("-")[0];
+
     let camposEmpresacuentabancariaNuevoAuditoria = {};
     camposEmpresacuentabancariaNuevoAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
     camposEmpresacuentabancariaNuevoAuditoria.fechacrea = Sequelize.fn("now", 3);
@@ -319,6 +324,7 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req, res) => {
 
     const empresacuentabancariaCreated = await empresacuentabancariaDao.insertEmpresacuentabancaria(transaction, {
       ...camposEmpresacuentabancariaNuevoFk,
+      ...camposEmpresacuentabancariaNuevoAdicionales,
       ...camposEmpresacuentabancariaNuevoAuditoria,
     });
 

@@ -35,46 +35,53 @@ export const getFactoringempresasByVerificacion = async (transaction, estadologi
               },
             },
             {
-              model: modelsFT.CuentaBancaria,
+              model: modelsFT.EmpresaCuentaBancaria,
               required: true,
-              as: "cuentabancaria_cuenta_bancaria_empresa_cuenta_bancaria",
+              as: "empresa_cuenta_bancaria",
               include: [
                 {
-                  model: modelsFT.Banco,
+                  model: modelsFT.CuentaBancaria,
                   required: true,
-                  as: "banco_banco",
-                },
-                {
-                  model: modelsFT.Moneda,
-                  required: true,
-                  as: "moneda_moneda",
-                },
-                {
-                  model: modelsFT.CuentaTipo,
-                  required: true,
-                  as: "cuentatipo_cuenta_tipo",
-                },
-                {
-                  model: modelsFT.CuentaBancariaEstado,
-                  required: true,
-                  as: "cuentabancariaestado_cuenta_bancaria_estado",
-                },
-                {
-                  model: modelsFT.Archivo,
-                  required: true,
-                  as: "archivo_archivo_archivo_cuenta_bancaria",
+                  as: "cuentabancaria_cuenta_bancarium",
                   include: [
                     {
-                      model: modelsFT.ArchivoTipo,
+                      model: modelsFT.Banco,
                       required: true,
-                      as: "archivotipo_archivo_tipo",
+                      as: "banco_banco",
+                    },
+                    {
+                      model: modelsFT.Moneda,
+                      required: true,
+                      as: "moneda_moneda",
+                    },
+                    {
+                      model: modelsFT.CuentaTipo,
+                      required: true,
+                      as: "cuentatipo_cuenta_tipo",
+                    },
+                    {
+                      model: modelsFT.CuentaBancariaEstado,
+                      required: true,
+                      as: "cuentabancariaestado_cuenta_bancaria_estado",
+                    },
+                    {
+                      model: modelsFT.Archivo,
+                      required: true,
+                      as: "archivo_archivo_archivo_cuenta_bancaria",
+                      include: [
+                        {
+                          model: modelsFT.ArchivoTipo,
+                          required: true,
+                          as: "archivotipo_archivo_tipo",
+                        },
+                      ],
+                      where: {
+                        _idarchivotipo: {
+                          [Sequelize.Op.in]: _idarchivotipos,
+                        },
+                      },
                     },
                   ],
-                  where: {
-                    _idarchivotipo: {
-                      [Sequelize.Op.in]: _idarchivotipos,
-                    },
-                  },
                 },
               ],
             },
