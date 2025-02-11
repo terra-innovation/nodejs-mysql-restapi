@@ -57,11 +57,6 @@ export const getCuentasbancariasByIdbancoAndNumero = async (transaction, idbanco
     const cuentasbancarias = await modelsFT.CuentaBancaria.findAll({
       include: [
         {
-          model: modelsFT.Empresa,
-          required: true,
-          as: "empresa_empresa_empresa_cuenta_bancaria",
-        },
-        {
           model: modelsFT.Banco,
           required: true,
           as: "banco_banco",

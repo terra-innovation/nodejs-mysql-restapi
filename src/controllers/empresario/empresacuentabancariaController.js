@@ -57,7 +57,6 @@ export const updateEmpresacuentabancariaOnlyAlias = async (req, res) => {
   const empresacuentabancariaUpdateSchema = yup
     .object()
     .shape({
-      empresaid: yup.string().trim().required().min(36).max(36),
       empresacuentabancariaid: yup.string().trim().required().min(36).max(36),
       alias: yup.string().required().max(50),
     })
@@ -67,38 +66,35 @@ export const updateEmpresacuentabancariaOnlyAlias = async (req, res) => {
 
   const transaction = await sequelizeFT.transaction();
   try {
+    const filter_estado = [1, 2];
     const _idusuario_session = req.session_user.usuario._idusuario;
     const empresacuentabancaria = await empresacuentabancariaDao.getEmpresacuentabancariaByEmpresacuentabancariaid(transaction, empresacuentabancariaValidated.empresacuentabancariaid);
     if (!empresacuentabancaria) {
-      logger.warn(line(), "Cuenta bancaria no existe: [" + empresacuentabancariaValidated.empresacuentabancariaid + "]");
+      logger.warn(line(), "Empresa cuenta bancaria no existe: [" + empresacuentabancariaValidated.empresacuentabancariaid + "]");
       throw new ClientError("Datos no válidos", 404);
     }
 
-    const empresa = await empresaDao.getEmpresaByEmpresaid(transaction, empresacuentabancariaValidated.empresaid);
-    if (!empresa) {
-      logger.warn(line(), "Empresa no existe: [" + empresacuentabancariaValidated.empresaid + "]");
-      throw new ClientError("Datos no válidos", 404);
-    }
-
-    const empresacuentabancariaAllowed = await empresacuentabancariaDao.getEmpresacuentabancariaByIdempresacuentabancariaIdempresaIdusuario(transaction, empresacuentabancaria._idempresacuentabancaria, empresa._idempresa, _idusuario_session);
+    const empresacuentabancariaAllowed = await empresacuentabancariaDao.getEmpresacuentabancariaByIdempresaAndIdusuario(transaction, empresacuentabancaria._idempresa, _idusuario_session, filter_estado);
     if (!empresacuentabancariaAllowed) {
-      logger.warn(line(), "Cuenta bancaria no permitida: [" + empresacuentabancaria._idempresacuentabancaria + ", " + empresa._idempresa + ", " + _idusuario_session + "]");
+      logger.warn(line(), "Empresa no asociada al usuario: [" + empresacuentabancaria._idempresa + ", " + _idusuario_session + "]");
       throw new ClientError("Datos no válidos", 404);
     }
 
-    var camposAdicionales = {};
-    camposAdicionales.empresacuentabancariaid = id;
+    const cuentabancaria = await cuentabancariaDao.getCuentabancariaByIdcuentabancaria(transaction, empresacuentabancaria._idcuentabancaria);
 
-    var camposAuditoria = {};
-    camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
-    camposAuditoria.fechamod = Sequelize.fn("now", 3);
+    var camposCuentaBancariaAdicionales = {};
+    camposCuentaBancariaAdicionales.cuentabancariaid = cuentabancaria.cuentabancariaid;
 
-    const empresacuentabancariaUpdated = await empresacuentabancariaDao.updateEmpresacuentabancaria(transaction, {
-      ...camposAdicionales,
+    var camposCuentaBancariaAuditoria = {};
+    camposCuentaBancariaAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+    camposCuentaBancariaAuditoria.fechamod = Sequelize.fn("now", 3);
+
+    const cuentabancariaUpdated = await cuentabancariaDao.updateCuentabancaria(transaction, {
+      ...camposCuentaBancariaAdicionales,
       ...empresacuentabancariaValidated,
-      ...camposAuditoria,
+      ...camposCuentaBancariaAuditoria,
     });
-    logger.debug(line(), "empresacuentabancariaUpdated", empresacuentabancariaUpdated);
+    logger.debug(line(), "cuentabancariaUpdated", cuentabancariaUpdated);
 
     await transaction.commit();
     response(res, 200, {});
@@ -153,35 +149,42 @@ export const createEmpresacuentabancaria = async (req, res) => {
   try {
     var empresa = await empresaDao.findEmpresaPk(transaction, empresacuentabancariaValidated.empresaid);
     if (!empresa) {
-      throw new ClientError("Empresa no existe", 404);
+      logger.warn(line(), "Empresa no existe: [" + empresacuentabancariaValidated.empresaid + "]");
+      throw new ClientError("Datos no válidos", 404);
     }
 
     var banco = await bancoDao.findBancoPk(transaction, empresacuentabancariaValidated.bancoid);
     if (!banco) {
-      throw new ClientError("Banco no existe", 404);
+      logger.warn(line(), "Banco no existe: [" + empresacuentabancariaValidated.bancoid + "]");
+      throw new ClientError("Datos no válidos", 404);
     }
 
     var cuentatipo = await cuentatipoDao.findCuentatipoPk(transaction, empresacuentabancariaValidated.cuentatipoid);
     if (!cuentatipo) {
-      throw new ClientError("Cuenta tipo no existe", 404);
+      logger.warn(line(), "Cuenta tipo no existe: [" + empresacuentabancariaValidated.cuentatipoid + "]");
+      throw new ClientError("Datos no válidos", 404);
     }
     var moneda = await monedaDao.findMonedaPk(transaction, empresacuentabancariaValidated.monedaid);
     if (!moneda) {
-      throw new ClientError("Moneda no existe", 404);
+      logger.warn(line(), "Moneda no existe: [" + empresacuentabancariaValidated.monedaid + "]");
+      throw new ClientError("Datos no válidos", 404);
     }
 
     var empresa_por_idusuario = await empresaDao.getEmpresaByIdusuarioAndEmpresaid(transaction, session_idusuario, empresacuentabancariaValidated.empresaid, filter_estado);
     if (!empresa_por_idusuario) {
-      throw new ClientError("Empresa no asociada al usuario", 404);
+      logger.warn(line(), "Empresa no asociada al usuario: [" + session_idusuario + ", " + empresacuentabancariaValidated.monedaid + "]");
+      throw new ClientError("Datos no válidos", 404);
     }
 
-    var cuentasbancarias_por_numero = await empresacuentabancariaDao.getCuentasbancariasByIdbancoAndNumero(transaction, banco._idbanco, empresacuentabancariaValidated.numero, filter_estado);
+    var cuentasbancarias_por_numero = await cuentabancariaDao.getCuentasbancariasByIdbancoAndNumero(transaction, banco._idbanco, empresacuentabancariaValidated.numero, filter_estado);
     if (cuentasbancarias_por_numero && cuentasbancarias_por_numero.length > 0) {
+      logger.warn(line(), "El número de cuenta [" + empresacuentabancariaValidated.numero + "] se encuentra registrado. Ingrese un número de cuenta diferente.");
       throw new ClientError("El número de cuenta [" + empresacuentabancariaValidated.numero + "] se encuentra registrado. Ingrese un número de cuenta diferente.", 404);
     }
 
-    var cuentasbancarias_por_alias = await empresacuentabancariaDao.getCuentasbancariasByIdusuarioAndAlias(transaction, session_idusuario, empresacuentabancariaValidated.alias, filter_estado);
+    var cuentasbancarias_por_alias = await empresacuentabancariaDao.getEmpresacuentabancariasByIdempresaAndAlias(transaction, empresa_por_idusuario._idempresa, empresacuentabancariaValidated.alias, filter_estado);
     if (cuentasbancarias_por_alias && cuentasbancarias_por_alias.length > 0) {
+      logger.warn(line(), "El alias [" + empresacuentabancariaValidated.alias + "] se encuentra registrado. Ingrese un alias diferente.");
       throw new ClientError("El alias [" + empresacuentabancariaValidated.alias + "] se encuentra registrado. Ingrese un alias diferente.", 404);
     }
     var camposCuentaBancariaFk = {};
@@ -189,10 +192,11 @@ export const createEmpresacuentabancaria = async (req, res) => {
     camposCuentaBancariaFk._idbanco = banco._idbanco;
     camposCuentaBancariaFk._idcuentatipo = cuentatipo._idcuentatipo;
     camposCuentaBancariaFk._idmoneda = moneda._idmoneda;
-    camposCuentaBancariaFk._idempresacuentabancariaestado = 1; // Por defecto
+    camposCuentaBancariaFk._idcuentabancariaestado = 1; // Por defecto
 
     var camposCuentaBancariaAdicionales = {};
-    camposCuentaBancariaAdicionales.empresacuentabancariaid = uuidv4();
+    camposCuentaBancariaAdicionales.cuentabancariaid = uuidv4();
+    camposCuentaBancariaAdicionales.code = uuidv4().split("-")[0];
 
     var camposCuentaBancariaAuditoria = {};
     camposCuentaBancariaAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
@@ -201,7 +205,7 @@ export const createEmpresacuentabancaria = async (req, res) => {
     camposCuentaBancariaAuditoria.fechamod = Sequelize.fn("now", 3);
     camposCuentaBancariaAuditoria.estado = 1;
 
-    const cuentabancariaCreated = await cuentabancariaDao.insertEmpresacuentabancaria(transaction, {
+    const cuentabancariaCreated = await cuentabancariaDao.insertCuentabancaria(transaction, {
       ...camposCuentaBancariaFk,
       ...camposCuentaBancariaAdicionales,
       ...empresacuentabancariaValidated,
@@ -212,6 +216,9 @@ export const createEmpresacuentabancaria = async (req, res) => {
     var camposEmpresaCuentaBancariaCreate = {};
     camposEmpresaCuentaBancariaCreate._idempresa = empresa_por_idusuario._idempresa;
     camposEmpresaCuentaBancariaCreate._idcuentabancaria = cuentabancariaCreated._idcuentabancaria;
+    camposEmpresaCuentaBancariaCreate.empresacuentabancariaid = uuidv4();
+    camposEmpresaCuentaBancariaCreate.code = uuidv4().split("-")[0];
+    camposEmpresaCuentaBancariaCreate.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
     camposEmpresaCuentaBancariaCreate.fechacrea = Sequelize.fn("now", 3);
     camposEmpresaCuentaBancariaCreate.idusuariomod = req.session_user.usuario._idusuario ?? 1;
     camposEmpresaCuentaBancariaCreate.fechamod = Sequelize.fn("now", 3);
@@ -220,10 +227,10 @@ export const createEmpresacuentabancaria = async (req, res) => {
     const empresacuentabancariaCreated = await empresacuentabancariaDao.insertEmpresacuentabancaria(transaction, camposEmpresaCuentaBancariaCreate);
     logger.debug(line(), "empresacuentabancariaCreated:", empresacuentabancariaCreated);
 
-    // Retiramos los IDs internos
-    delete camposCuentaBancariaAdicionales.idempresa;
+    const empresacuentabancariaFiltered = jsonUtils.removeAttributesPrivates(camposEmpresaCuentaBancariaCreate);
+
     await transaction.commit();
-    response(res, 201, { ...camposCuentaBancariaAdicionales, ...empresacuentabancariaValidated });
+    response(res, 201, { ...empresacuentabancariaFiltered });
   } catch (error) {
     await transaction.rollback();
     throw error;
