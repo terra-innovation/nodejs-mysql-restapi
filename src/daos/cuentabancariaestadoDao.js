@@ -3,7 +3,7 @@ import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getCuentaBancariaEstados = async (transaction, estados) => {
+export const getCuentabancariaestados = async (transaction, estados) => {
   try {
     const cuentabancariaestados = await modelsFT.CuentaBancariaEstado.findAll({
       where: {
@@ -22,12 +22,12 @@ export const getCuentaBancariaEstados = async (transaction, estados) => {
   }
 };
 
-export const getCuentaBancariaEstadoByIdcuentabancariaestado = async (transaction, idcuentabancariaestado) => {
+export const getCuentabancariaestadoByIdcuentabancariaestado = async (transaction, idcuentabancariaestado) => {
   try {
     const cuentabancariaestado = await modelsFT.CuentaBancariaEstado.findByPk(idcuentabancariaestado, { transaction });
     logger.info(line(), cuentabancariaestado);
 
-    //const cuentabancariaestados = await cuentabancariaestado.getCuentaBancariaEstados();
+    //const cuentabancariaestados = await cuentabancariaestado.getCuentabancariaestados();
     //logger.info(line(),cuentabancariaestados);
 
     return cuentabancariaestado;
@@ -37,7 +37,7 @@ export const getCuentaBancariaEstadoByIdcuentabancariaestado = async (transactio
   }
 };
 
-export const getCuentaBancariaEstadoByCuentaBancariaEstadoid = async (transaction, cuentabancariaestadoid) => {
+export const getCuentabancariaestadoByCuentabancariaestadoid = async (transaction, cuentabancariaestadoid) => {
   try {
     const cuentabancariaestado = await modelsFT.CuentaBancariaEstado.findOne({
       where: {
@@ -53,7 +53,7 @@ export const getCuentaBancariaEstadoByCuentaBancariaEstadoid = async (transactio
   }
 };
 
-export const findCuentaBancariaEstadoPk = async (transaction, cuentabancariaestadoid) => {
+export const findCuentabancariaestadoPk = async (transaction, cuentabancariaestadoid) => {
   try {
     const cuentabancariaestado = await modelsFT.CuentaBancariaEstado.findOne({
       attributes: ["_idcuentabancariaestado"],
@@ -70,7 +70,7 @@ export const findCuentaBancariaEstadoPk = async (transaction, cuentabancariaesta
   }
 };
 
-export const insertCuentaBancariaEstado = async (transaction, cuentabancariaestado) => {
+export const insertCuentabancariaestado = async (transaction, cuentabancariaestado) => {
   try {
     const cuentabancariaestado_nuevo = await modelsFT.CuentaBancariaEstado.create(cuentabancariaestado, { transaction });
     // logger.info(line(),cuentabancariaestado_nuevo);
@@ -81,7 +81,7 @@ export const insertCuentaBancariaEstado = async (transaction, cuentabancariaesta
   }
 };
 
-export const updateCuentaBancariaEstado = async (transaction, cuentabancariaestado) => {
+export const updateCuentabancariaestado = async (transaction, cuentabancariaestado) => {
   try {
     const result = await modelsFT.CuentaBancariaEstado.update(cuentabancariaestado, {
       where: {
@@ -96,7 +96,7 @@ export const updateCuentaBancariaEstado = async (transaction, cuentabancariaesta
   }
 };
 
-export const deleteCuentaBancariaEstado = async (transaction, cuentabancariaestado) => {
+export const deleteCuentabancariaestado = async (transaction, cuentabancariaestado) => {
   try {
     const result = await modelsFT.CuentaBancariaEstado.update(cuentabancariaestado, {
       where: {
@@ -111,7 +111,7 @@ export const deleteCuentaBancariaEstado = async (transaction, cuentabancariaesta
   }
 };
 
-export const activateCuentaBancariaEstado = async (transaction, cuentabancariaestado) => {
+export const activateCuentabancariaestado = async (transaction, cuentabancariaestado) => {
   try {
     const result = await modelsFT.CuentaBancariaEstado.update(cuentabancariaestado, {
       where: {

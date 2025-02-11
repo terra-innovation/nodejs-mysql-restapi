@@ -109,7 +109,7 @@ export const updateCuentabancariaestado = async (req, res) => {
       throw new ClientError("Cuentabancariaestado no existe", 404);
     }
     logger.info(line(), id);
-    const cuentabancariaestadoUpdated = await cuentabancariaestadoDao.getCuentaBancariaEstadoByCuentaBancariaEstadoid(transaction, id);
+    const cuentabancariaestadoUpdated = await cuentabancariaestadoDao.getCuentabancariaestadoByCuentabancariaestadoid(transaction, id);
     if (!cuentabancariaestadoUpdated) {
       throw new ClientError("Cuentabancariaestado no existe", 404);
     }

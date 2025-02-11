@@ -8,7 +8,7 @@ const menuAdministracion = {
       id: "empresario-cuentas-bancarias",
       title: "Cuentas bancarias",
       type: "item",
-      url: "/empresario/cuentabancaria/lista",
+      url: "/empresario/empresacuentabancaria/lista",
       icon: "IdcardOutlined",
       breadcrumbs: true,
     },

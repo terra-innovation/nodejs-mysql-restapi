@@ -20,7 +20,7 @@ import factoringtiposRoutes from "./routes/factoringtipos.routes.js";
 import riesgosRoutes from "./routes/riesgos.routes.js";
 
 import admin_zlaboratorioRoutes from "./routes/admin/zlaboratorio.routes.js";
-import admin_cuentabancariaRoutes from "./routes/admin/cuentabancaria.routes.js";
+import admin_empresacuentabancariaRoutes from "./routes/admin/empresacuentabancaria.routes.js";
 import admin_cuentabancariaestadoRoutes from "./routes/admin/cuentabancariaestado.routes.js";
 import admin_empresaRoutes from "./routes/admin/empresa.routes.js";
 import admin_personaRoutes from "./routes/admin/persona.routes.js";
@@ -85,7 +85,7 @@ app.use("/api/v1", riesgosRoutes);
 app.use("/api/v1", empresario_empresacuentabancariaRoutes);
 
 app.use("/api/v1", admin_zlaboratorioRoutes);
-app.use("/api/v1", admin_cuentabancariaRoutes);
+app.use("/api/v1", admin_empresacuentabancariaRoutes);
 app.use("/api/v1", admin_cuentabancariaestadoRoutes);
 app.use("/api/v1", admin_empresaRoutes);
 app.use("/api/v1", admin_personaRoutes);

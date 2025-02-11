@@ -129,6 +129,47 @@ export const getEmpresacuentabancariasByIdusuario = async (transaction, _idusuar
 export const getEmpresacuentabancarias = async (transaction, estados) => {
   try {
     const empresacuentabancarias = await modelsFT.EmpresaCuentaBancaria.findAll({
+      include: [
+        {
+          model: modelsFT.Empresa,
+          required: true,
+          as: "empresa_empresa",
+          include: [
+            {
+              model: modelsFT.UsuarioServicioEmpresa,
+              required: true,
+              as: "usuario_servicio_empresas",
+            },
+          ],
+        },
+        {
+          model: modelsFT.CuentaBancaria,
+          required: true,
+          as: "cuentabancaria_cuenta_bancarium",
+          include: [
+            {
+              model: modelsFT.Banco,
+              required: true,
+              as: "banco_banco",
+            },
+            {
+              model: modelsFT.Moneda,
+              required: true,
+              as: "moneda_moneda",
+            },
+            {
+              model: modelsFT.CuentaTipo,
+              required: true,
+              as: "cuentatipo_cuenta_tipo",
+            },
+            {
+              model: modelsFT.CuentaBancariaEstado,
+              required: true,
+              as: "cuentabancariaestado_cuenta_bancaria_estado",
+            },
+          ],
+        },
+      ],
       where: {
         estado: {
           [Sequelize.Op.in]: estados,
