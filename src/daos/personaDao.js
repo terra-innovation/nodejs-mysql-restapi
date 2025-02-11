@@ -378,6 +378,11 @@ export const getPersonas = async (transaction, estado) => {
           required: true,
           as: "genero_genero",
         },
+        {
+          model: modelsFT.PersonaVerificacionEstado,
+          required: true,
+          as: "personaverificacionestado_persona_verificacion_estado",
+        },
       ],
       where: {
         estado: {

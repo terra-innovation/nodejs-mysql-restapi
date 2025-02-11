@@ -111,14 +111,14 @@ export const getEmpresacuentabancariaMaster = async (req, res) => {
     const bancos = await bancoDao.getBancos(transaction, filter_estados);
     const monedas = await monedaDao.getMonedas(transaction, filter_estados);
     const cuentatipos = await cuentatipoDao.getCuentatipos(transaction, filter_estados);
-    const empresacuentabancariaestados = await cuentabancariaestadoDao.getCuentaBancariaEstados(transaction, filter_estados);
+    const cuentabancariaestados = await cuentabancariaestadoDao.getCuentabancariaestados(transaction, filter_estados);
 
     var cuentasbancariasMaster = {};
     cuentasbancariasMaster.empresas = empresas;
     cuentasbancariasMaster.bancos = bancos;
     cuentasbancariasMaster.monedas = monedas;
     cuentasbancariasMaster.cuentatipos = cuentatipos;
-    cuentasbancariasMaster.empresacuentabancariaestados = empresacuentabancariaestados;
+    cuentasbancariasMaster.cuentabancariaestados = cuentabancariaestados;
 
     var cuentasbancariasMasterJSON = jsonUtils.sequelizeToJSON(cuentasbancariasMaster);
     //jsonUtils.prettyPrint(cuentasbancariasMasterJSON);

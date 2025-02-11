@@ -33,10 +33,10 @@ const menuMantenimiento = {
       icon: "dashboard",
       children: [
         {
-          id: "admin-mantenimiento-cuentas-bancarias",
-          title: "Cuentas bancarias",
+          id: "admin-mantenimiento-empresa-cuentas-bancarias",
+          title: "Empresas cuentas bancarias",
           type: "item",
-          url: "/admin/cuentabancaria/lista",
+          url: "/admin/empresacuentabancaria/lista",
           breadcrumbs: true,
         },
         {
