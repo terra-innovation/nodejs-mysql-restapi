@@ -4,10 +4,25 @@ const { Model, Sequelize } = _sequelize;
 export default class EmpresaCuentaBancaria extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
+    _idempresacuentabancaria: {
+      autoIncrement: true,
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true
+    },
+    empresacuentabancariaid: {
+      type: DataTypes.STRING(50),
+      allowNull: false,
+      unique: "UQ_empresacuentabancaria_empresacuentabancariaid"
+    },
+    code: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
+      unique: "UQ_empresacuentabancaria_code"
+    },
     _idempresa: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true,
       references: {
         model: 'empresa',
         key: '_idempresa'
@@ -16,7 +31,6 @@ export default class EmpresaCuentaBancaria extends Model {
     _idcuentabancaria: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true,
       references: {
         model: 'cuenta_bancaria',
         key: '_idcuentabancaria'
@@ -57,12 +71,36 @@ export default class EmpresaCuentaBancaria extends Model {
         unique: true,
         using: "BTREE",
         fields: [
+          { name: "_idempresacuentabancaria" },
+        ]
+      },
+      {
+        name: "UQ_empresacuentabancaria_empresacuentabancariaid",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "empresacuentabancariaid" },
+        ]
+      },
+      {
+        name: "UQ_empresacuentabancaria_code",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "code" },
+        ]
+      },
+      {
+        name: "FK_empresacuentabancaria_idempresa_idcuentabancaria",
+        unique: true,
+        using: "BTREE",
+        fields: [
           { name: "_idempresa" },
           { name: "_idcuentabancaria" },
         ]
       },
       {
-        name: "FK_empresa_cuenta_bancaria_idcuentabancaria",
+        name: "FK_empresacuentabancaria_idcuentabancaria",
         using: "BTREE",
         fields: [
           { name: "_idcuentabancaria" },

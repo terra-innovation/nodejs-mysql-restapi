@@ -131,10 +131,8 @@ export default function initModels(sequelize) {
   Archivo.belongsToMany(Persona, { as: "persona_personas", through: ArchivoPersona, foreignKey: "_idarchivo", otherKey: "_idpersona" });
   Colaborador.belongsToMany(Archivo, { as: "archivo_archivos", through: ArchivoColaborador, foreignKey: "_idcolaborador", otherKey: "_idarchivo" });
   CuentaBancaria.belongsToMany(Archivo, { as: "archivo_archivo_archivo_cuenta_bancaria", through: ArchivoCuentaBancaria, foreignKey: "_idcuentabancaria", otherKey: "_idarchivo" });
-  CuentaBancaria.belongsToMany(Empresa, { as: "empresa_empresa_empresa_cuenta_bancaria", through: EmpresaCuentaBancaria, foreignKey: "_idcuentabancaria", otherKey: "_idempresa" });
   CuentaBancaria.belongsToMany(Persona, { as: "persona_persona_persona_cuenta_bancaria", through: PersonaCuentaBancaria, foreignKey: "_idcuentabancaria", otherKey: "_idpersona" });
   Empresa.belongsToMany(Archivo, { as: "archivo_archivo_archivo_empresas", through: ArchivoEmpresa, foreignKey: "_idempresa", otherKey: "_idarchivo" });
-  Empresa.belongsToMany(CuentaBancaria, { as: "cuentabancaria_cuenta_bancaria_empresa_cuenta_bancaria", through: EmpresaCuentaBancaria, foreignKey: "_idempresa", otherKey: "_idcuentabancaria" });
   Factoring.belongsToMany(Factura, { as: "factura_facturas", through: FactoringFactura, foreignKey: "_idfactoring", otherKey: "_idfactura" });
   Factura.belongsToMany(Factoring, { as: "factoring_factorings", through: FactoringFactura, foreignKey: "_idfactura", otherKey: "_idfactoring" });
   Persona.belongsToMany(Archivo, { as: "archivo_archivo_archivo_personas", through: ArchivoPersona, foreignKey: "_idpersona", otherKey: "_idarchivo" });
