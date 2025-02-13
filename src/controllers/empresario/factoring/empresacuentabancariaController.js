@@ -49,6 +49,7 @@ export const getEmpresacuentabancarias = async (req, res) => {
     //logger.info(line(),empresaObfuscated);
 
     var empresacuentabancariasFiltered = jsonUtils.removeAttributes(empresacuentabancariasJson, ["score"]);
+    empresacuentabancariasFiltered = jsonUtils.ofuscarAtributosDefault(empresacuentabancariasFiltered);
     empresacuentabancariasFiltered = jsonUtils.removeAttributesPrivates(empresacuentabancariasFiltered);
     await transaction.commit();
     response(res, 201, empresacuentabancariasFiltered);

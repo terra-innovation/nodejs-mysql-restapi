@@ -184,7 +184,7 @@ export function ofuscarCuenta(cuenta) {
   const ultimosCuatroDigitos = cuenta.slice(-4);
 
   // Genera una cadena de asteriscos de longitud 6 seguida de un espacio
-  const asteriscos = "*".repeat(6);
+  const asteriscos = "*".repeat(4);
 
   // Devuelve la cadena de asteriscos seguida de los últimos cuatro dígitos
   return `${asteriscos} ${ultimosCuatroDigitos}`;
