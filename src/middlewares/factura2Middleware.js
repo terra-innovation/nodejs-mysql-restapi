@@ -1,12 +1,12 @@
-import * as fs from "fs";
 import * as luxon from "luxon";
 import multer from "multer";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import logger, { line } from "../utils/logger.js";
 import * as storageUtils from "../utils/storageUtils.js";
+import * as fs from "fs";
 
-let storage_usuarioservicio = multer.diskStorage({
+let storage_factura = multer.diskStorage({
   destination: (req, file, cb) => {
     const anio_upload = luxon.DateTime.now().toFormat("yyyy");
     const mes_upload = luxon.DateTime.now().toFormat("MM");
@@ -35,31 +35,26 @@ let storage_usuarioservicio = multer.diskStorage({
   },
 });
 
-export const upload_persona = multer({
-  storage: storage_usuarioservicio,
+export const upload_factura = multer({
+  storage: storage_factura,
   limits: {
-    fileSize: 5 * 1024 * 1024, // Para formularios multiparte, el tamaño máximo de los archivos (en bytes)
-    files: 4, // Para los formularios multiparte, el número máximo de campos para archivos
+    fileSize: 2 * 1024 * 1024, // Para formularios multiparte, el tamaño máximo de los archivos (en bytes)
+    files: 1, // Para los formularios multiparte, el número máximo de campos para archivos
     fieldSize: 0.5 * 1024 * 1024, //Tamaño máximo de los valores para cada campo (en bytes)
-    fields: 20, // Número máximo de campos que no son archivos
+    fields: 0, // Número máximo de campos que no son archivos
   },
   fileFilter: async function (req, file, cb) {
-    const validImageTypes = ["image/png", "image/jpeg", "image/jpg", "application/pdf"];
+    const validImageTypes = ["text/xml", "application/xml"];
     if (!validImageTypes.includes(file.mimetype)) {
       cb(new Error(`Formato de archivo inválido [${file.mimetype}]. Tipos permitidos: ${validImageTypes.join(", ")}`));
     }
     cb(null, true);
   },
-}).fields([
-  { name: "ficha_ruc", maxCount: 1 },
-  { name: "reporte_tributario_para_terceros", maxCount: 1 },
-  { name: "certificado_vigencia_poder", maxCount: 1 },
-  { name: "encabezado_cuenta_bancaria", maxCount: 1 },
-]);
+}).fields([{ name: "factura_xml", maxCount: 1 }]);
 
 // Middleware de multer para manejar la subida de archivos
 export const upload = (req, res, next) => {
-  upload_persona(req, res, function (err) {
+  upload_factura(req, res, function (err) {
     if (err instanceof multer.MulterError) {
       // A Multer error occurred when uploading.
       logger.error(line(), err);

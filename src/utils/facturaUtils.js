@@ -1,5 +1,63 @@
 import * as luxon from "luxon";
 import { v4 as uuidv4 } from "uuid";
+import { parseStringPromise } from "xml2js";
+import * as fs from "fs";
+import * as jsonUtils from "../utils/jsonUtils.js";
+import logger, { line } from "../utils/logger.js";
+import { Sequelize } from "sequelize";
+
+export const buildFacturaJson = (result, codigo_archivo, _idusuario) => {
+  const facturaJson = getFactura(result);
+  facturaJson.codigo_archivo = codigo_archivo;
+  const factura = {
+    proveedor_ruc: facturaJson.proveedor.ruc,
+    proveedor_razon_social: facturaJson.proveedor.razon_social,
+    proveedor_direccion: facturaJson.proveedor.direccion,
+    proveedor_codigo_pais: facturaJson.proveedor.codigo_pais,
+    proveedor_ubigeo: facturaJson.proveedor.ubigeo,
+    proveedor_provincia: facturaJson.proveedor.provincia,
+    proveedor_departamento: facturaJson.proveedor.departamento,
+    proveedor_urbanizacion: facturaJson.proveedor.urbanizacion,
+    proveedor_distrito: facturaJson.proveedor.distrito,
+    cliente_ruc: facturaJson.cliente.ruc,
+    cliente_razon_social: facturaJson.cliente.razon_social,
+    impuestos_monto: facturaJson.impuesto.monto,
+    impuestos_valor_venta_monto_venta: facturaJson.impuesto.valor_venta.monto_venta,
+    impuestos_valor_venta_monto_venta_mas_impuesto: facturaJson.impuesto.valor_venta.monto_venta_mas_impuesto,
+    impuestos_valor_venta_monto_pago: facturaJson.impuesto.valor_venta.monto_pago,
+    idusuariocrea: _idusuario,
+    fechacrea: Sequelize.fn("now", 3),
+    idusuariomod: _idusuario,
+    fechamod: Sequelize.fn("now", 3),
+    estado: 1,
+    ...facturaJson,
+  };
+  return factura;
+};
+
+export const getInvoiceTypeCode = (invoice) => {
+  return invoice?.Invoice?.InvoiceTypeCode?.[0]._ ?? invoice?.Invoice?.InvoiceTypeCode?.[0] ?? null;
+};
+
+export const procesarFacturaXML = async (file) => {
+  let archivoXML = fs.readFileSync(file.path, "latin1");
+  archivoXML = archivoXML.replace(/cbc:/g, "").replace(/cac:/g, "").replace(/n1:/g, "").replace(/n2:/g, "");
+  let archivoJson = await parseStringPromise(archivoXML);
+
+  const regexsYReemplazos = [
+    [/\n|\r|\t/g, " "],
+    [/\s{2,}/g, " "],
+    [/^\s+|\s+$/g, ""],
+  ];
+
+  const result = jsonUtils.reemplazarValores(archivoJson, regexsYReemplazos);
+  if (!result || !result?.Invoice) {
+    logger.warn(line(), "En el archivo XML no existe el objeto result o result.Invoice");
+
+    return null;
+  }
+  return result;
+};
 
 export const getFactura = (json) => {
   //Validamos el tipo de documento

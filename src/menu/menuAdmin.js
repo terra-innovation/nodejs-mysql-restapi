@@ -11,13 +11,6 @@ const menuMantenimiento = {
       icon: "dashboard",
       children: [
         {
-          id: "admin-factoring-empresa-lista",
-          title: "Empresas",
-          type: "item",
-          url: "/admin/servicio/factoring/empresa/lista",
-          breadcrumbs: true,
-        },
-        {
           id: "admin-factoring-empresa-verificacion",
           title: "Verificación empresa",
           type: "item",

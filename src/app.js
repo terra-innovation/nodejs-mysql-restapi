@@ -12,12 +12,14 @@ import facturaRoutes from "./routes/factura.routes.js";
 import empresasRoutes from "./routes/empresasRoutes.js";
 import colaboradoresRoutes from "./routes/colaboradoresRoutes.js";
 import cuentasbancariasRoutes from "./routes/cuentasbancarias.routes.js";
-import empresario_empresacuentabancariaRoutes from "./routes/empresario/empresacuentabancaria.routes.js";
 import usuariosRoutes from "./routes/usuarios.routes.js";
 import factoringsRoutes from "./routes/factorings.routes.js";
 import factoringestadosRoutes from "./routes/factoringestados.routes.js";
 import factoringtiposRoutes from "./routes/factoringtipos.routes.js";
 import riesgosRoutes from "./routes/riesgos.routes.js";
+
+import empresario_empresacuentabancariaRoutes from "./routes/empresario/empresacuentabancaria.routes.js";
+import empresario_facturaRoutes from "./routes/empresario/factura.routes.js";
 
 import admin_zlaboratorioRoutes from "./routes/admin/zlaboratorio.routes.js";
 import admin_empresacuentabancariaRoutes from "./routes/admin/empresacuentabancaria.routes.js";
@@ -83,6 +85,7 @@ app.use("/api/v1", factoringtiposRoutes);
 app.use("/api/v1", riesgosRoutes);
 
 app.use("/api/v1", empresario_empresacuentabancariaRoutes);
+app.use("/api/v1", empresario_facturaRoutes);
 
 app.use("/api/v1", admin_zlaboratorioRoutes);
 app.use("/api/v1", admin_empresacuentabancariaRoutes);

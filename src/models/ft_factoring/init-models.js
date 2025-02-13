@@ -1,10 +1,10 @@
 import _sequelize from "sequelize";
-const DataTypes = _sequelize.DataTypes;
 import _Archivo from "./Archivo.js";
 import _ArchivoColaborador from "./ArchivoColaborador.js";
 import _ArchivoCuentaBancaria from "./ArchivoCuentaBancaria.js";
 import _ArchivoEmpresa from "./ArchivoEmpresa.js";
 import _ArchivoEstado from "./ArchivoEstado.js";
+import _ArchivoFactura from "./ArchivoFactura.js";
 import _ArchivoPersona from "./ArchivoPersona.js";
 import _ArchivoTipo from "./ArchivoTipo.js";
 import _Banco from "./Banco.js";
@@ -61,6 +61,7 @@ import _Validacion from "./Validacion.js";
 import _ValidacionTipo from "./ValidacionTipo.js";
 import _ZlaboratorioPedido from "./ZlaboratorioPedido.js";
 import _ZlaboratorioUsuario from "./ZlaboratorioUsuario.js";
+const DataTypes = _sequelize.DataTypes;
 
 export default function initModels(sequelize) {
   const Archivo = _Archivo.init(sequelize, DataTypes);
@@ -68,6 +69,7 @@ export default function initModels(sequelize) {
   const ArchivoCuentaBancaria = _ArchivoCuentaBancaria.init(sequelize, DataTypes);
   const ArchivoEmpresa = _ArchivoEmpresa.init(sequelize, DataTypes);
   const ArchivoEstado = _ArchivoEstado.init(sequelize, DataTypes);
+  const ArchivoFactura = _ArchivoFactura.init(sequelize, DataTypes);
   const ArchivoPersona = _ArchivoPersona.init(sequelize, DataTypes);
   const ArchivoTipo = _ArchivoTipo.init(sequelize, DataTypes);
   const Banco = _Banco.init(sequelize, DataTypes);
@@ -128,15 +130,15 @@ export default function initModels(sequelize) {
   Archivo.belongsToMany(Colaborador, { as: "colaborador_colaboradors", through: ArchivoColaborador, foreignKey: "_idarchivo", otherKey: "_idcolaborador" });
   Archivo.belongsToMany(CuentaBancaria, { as: "cuentabancaria_cuenta_bancaria", through: ArchivoCuentaBancaria, foreignKey: "_idarchivo", otherKey: "_idcuentabancaria" });
   Archivo.belongsToMany(Empresa, { as: "empresa_empresas", through: ArchivoEmpresa, foreignKey: "_idarchivo", otherKey: "_idempresa" });
+  Archivo.belongsToMany(Factura, { as: "factura_facturas", through: ArchivoFactura, foreignKey: "_idarchivo", otherKey: "_idfactura" });
   Archivo.belongsToMany(Persona, { as: "persona_personas", through: ArchivoPersona, foreignKey: "_idarchivo", otherKey: "_idpersona" });
   Colaborador.belongsToMany(Archivo, { as: "archivo_archivos", through: ArchivoColaborador, foreignKey: "_idcolaborador", otherKey: "_idarchivo" });
   CuentaBancaria.belongsToMany(Archivo, { as: "archivo_archivo_archivo_cuenta_bancaria", through: ArchivoCuentaBancaria, foreignKey: "_idcuentabancaria", otherKey: "_idarchivo" });
-  CuentaBancaria.belongsToMany(Persona, { as: "persona_persona_persona_cuenta_bancaria", through: PersonaCuentaBancaria, foreignKey: "_idcuentabancaria", otherKey: "_idpersona" });
   Empresa.belongsToMany(Archivo, { as: "archivo_archivo_archivo_empresas", through: ArchivoEmpresa, foreignKey: "_idempresa", otherKey: "_idarchivo" });
-  Factoring.belongsToMany(Factura, { as: "factura_facturas", through: FactoringFactura, foreignKey: "_idfactoring", otherKey: "_idfactura" });
+  Factoring.belongsToMany(Factura, { as: "factura_factura_factoring_facturas", through: FactoringFactura, foreignKey: "_idfactoring", otherKey: "_idfactura" });
+  Factura.belongsToMany(Archivo, { as: "archivo_archivo_archivo_facturas", through: ArchivoFactura, foreignKey: "_idfactura", otherKey: "_idarchivo" });
   Factura.belongsToMany(Factoring, { as: "factoring_factorings", through: FactoringFactura, foreignKey: "_idfactura", otherKey: "_idfactoring" });
   Persona.belongsToMany(Archivo, { as: "archivo_archivo_archivo_personas", through: ArchivoPersona, foreignKey: "_idpersona", otherKey: "_idarchivo" });
-  Persona.belongsToMany(CuentaBancaria, { as: "cuentabancaria_cuenta_bancaria_persona_cuenta_bancaria", through: PersonaCuentaBancaria, foreignKey: "_idpersona", otherKey: "_idcuentabancaria" });
   Rol.belongsToMany(Usuario, { as: "usuario_usuarios", through: UsuarioRol, foreignKey: "_idrol", otherKey: "_idusuario" });
   Usuario.belongsToMany(Rol, { as: "rol_rols", through: UsuarioRol, foreignKey: "_idusuario", otherKey: "_idrol" });
   ArchivoColaborador.belongsTo(Archivo, { as: "archivo_archivo", foreignKey: "_idarchivo" });
@@ -145,6 +147,8 @@ export default function initModels(sequelize) {
   Archivo.hasMany(ArchivoCuentaBancaria, { as: "archivo_cuenta_bancaria", foreignKey: "_idarchivo" });
   ArchivoEmpresa.belongsTo(Archivo, { as: "archivo_archivo", foreignKey: "_idarchivo" });
   Archivo.hasMany(ArchivoEmpresa, { as: "archivo_empresas", foreignKey: "_idarchivo" });
+  ArchivoFactura.belongsTo(Archivo, { as: "archivo_archivo", foreignKey: "_idarchivo" });
+  Archivo.hasMany(ArchivoFactura, { as: "archivo_facturas", foreignKey: "_idarchivo" });
   ArchivoPersona.belongsTo(Archivo, { as: "archivo_archivo", foreignKey: "_idarchivo" });
   Archivo.hasMany(ArchivoPersona, { as: "archivo_personas", foreignKey: "_idarchivo" });
   Archivo.belongsTo(ArchivoEstado, { as: "archivoestado_archivo_estado", foreignKey: "_idarchivoestado" });
@@ -207,6 +211,8 @@ export default function initModels(sequelize) {
   FactoringEstado.hasMany(Factoring, { as: "factorings", foreignKey: "_idfactoringestado" });
   Factoring.belongsTo(FactoringTipo, { as: "factoringtipo_factoring_tipo", foreignKey: "_idfactoringtipo" });
   FactoringTipo.hasMany(Factoring, { as: "factorings", foreignKey: "_idfactoringtipo" });
+  ArchivoFactura.belongsTo(Factura, { as: "factura_factura", foreignKey: "_idfactura" });
+  Factura.hasMany(ArchivoFactura, { as: "archivo_facturas", foreignKey: "_idfactura" });
   FactoringFactura.belongsTo(Factura, { as: "factura_factura", foreignKey: "_idfactura" });
   Factura.hasMany(FactoringFactura, { as: "factoring_facturas", foreignKey: "_idfactura" });
   FacturaImpuesto.belongsTo(Factura, { as: "factura_factura", foreignKey: "_idfactura" });
@@ -326,6 +332,7 @@ export default function initModels(sequelize) {
     ArchivoCuentaBancaria,
     ArchivoEmpresa,
     ArchivoEstado,
+    ArchivoFactura,
     ArchivoPersona,
     ArchivoTipo,
     Banco,

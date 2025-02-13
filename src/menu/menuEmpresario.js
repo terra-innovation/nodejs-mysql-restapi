@@ -1,3 +1,20 @@
+const menuFactoringElectronico = {
+  id: "empresario-group-factoring-electronico",
+  title: "Factorgin Electrónico",
+  icon: "IdcardOutlined",
+  type: "group",
+  children: [
+    {
+      id: "empresario-vendes-facturas",
+      title: "Vender factura",
+      type: "item",
+      url: "/empresario/factoring/nuevo",
+      icon: "IdcardOutlined",
+      breadcrumbs: true,
+    },
+  ],
+};
+
 const menuAdministracion = {
   id: "empresario-group-administracion",
   title: "Administración",
@@ -27,5 +44,6 @@ export const menuEmpresario = [
     type: "group",
   },
   menuTitulo,
+  menuFactoringElectronico,
   menuAdministracion,
 ];

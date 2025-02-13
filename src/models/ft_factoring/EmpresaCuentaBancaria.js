@@ -13,6 +13,7 @@ export default class EmpresaCuentaBancaria extends Model {
     empresacuentabancariaid: {
       type: DataTypes.STRING(50),
       allowNull: false,
+      defaultValue: Sequelize.Sequelize.fn('uuid'),
       unique: "UQ_empresacuentabancaria_empresacuentabancariaid"
     },
     code: {
@@ -91,7 +92,7 @@ export default class EmpresaCuentaBancaria extends Model {
         ]
       },
       {
-        name: "FK_empresacuentabancaria_idempresa_idcuentabancaria",
+        name: "UQ_empresacuentabancaria_idempresa_idcuentabancaria",
         unique: true,
         using: "BTREE",
         fields: [

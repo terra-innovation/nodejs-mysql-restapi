@@ -167,6 +167,18 @@ export const getEmpresacuentabancarias = async (transaction, estados) => {
               required: true,
               as: "cuentabancariaestado_cuenta_bancaria_estado",
             },
+            {
+              model: modelsFT.Archivo,
+              required: false,
+              as: "archivo_archivo_archivo_cuenta_bancaria",
+              include: [
+                {
+                  model: modelsFT.ArchivoTipo,
+                  required: true,
+                  as: "archivotipo_archivo_tipo",
+                },
+              ],
+            },
           ],
         },
       ],

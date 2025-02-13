@@ -33,22 +33,26 @@ export const getEmpresasByIdusuario = async (transaction, _idusuario, estados) =
   }
 };
 
-export const getEmpresaByIdusuarioAndRuc = async (transaction, _idusuario, ruc, estado) => {
+export const getEmpresaByIdusuarioAndRuc = async (transaction, _idusuario, ruc, estados) => {
   try {
     const empresas = await modelsFT.Empresa.findOne({
       include: [
         {
-          model: modelsFT.UsuarioEmpresa,
-          as: "usuario_empresas",
+          model: modelsFT.UsuarioServicioEmpresa,
+          as: "usuario_servicio_empresas",
           where: {
             _idusuario: _idusuario,
-            estado: estado,
+            estado: {
+              [Sequelize.Op.in]: estados,
+            },
           },
         },
       ],
       where: {
         ruc: ruc,
-        estado: estado,
+        estado: {
+          [Sequelize.Op.in]: estados,
+        },
       },
       transaction,
     });
@@ -152,7 +156,7 @@ export const getEmpresaByEmpresaid = async (transaction, empresaid) => {
 
 export const getEmpresaByRuc = async (transaction, ruc) => {
   try {
-    const empresa = await modelsFT.Empresa.findAll({
+    const empresa = await modelsFT.Empresa.findOne({
       where: {
         ruc: ruc,
       },

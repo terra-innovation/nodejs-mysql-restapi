@@ -147,24 +147,25 @@ export const createEmpresacuentabancaria = async (req, res) => {
 
   const transaction = await sequelizeFT.transaction();
   try {
-    var empresa = await empresaDao.findEmpresaPk(transaction, empresacuentabancariaValidated.empresaid);
+    var empresa = await empresaDao.getEmpresaByEmpresaid(transaction, empresacuentabancariaValidated.empresaid);
     if (!empresa) {
       logger.warn(line(), "Empresa no existe: [" + empresacuentabancariaValidated.empresaid + "]");
       throw new ClientError("Datos no válidos", 404);
     }
 
-    var banco = await bancoDao.findBancoPk(transaction, empresacuentabancariaValidated.bancoid);
+    var banco = await bancoDao.getBancoByBancoid(transaction, empresacuentabancariaValidated.bancoid);
     if (!banco) {
       logger.warn(line(), "Banco no existe: [" + empresacuentabancariaValidated.bancoid + "]");
       throw new ClientError("Datos no válidos", 404);
     }
 
-    var cuentatipo = await cuentatipoDao.findCuentatipoPk(transaction, empresacuentabancariaValidated.cuentatipoid);
+    var cuentatipo = await cuentatipoDao.getCuentatipoByCuentatipoid(transaction, empresacuentabancariaValidated.cuentatipoid);
     if (!cuentatipo) {
       logger.warn(line(), "Cuenta tipo no existe: [" + empresacuentabancariaValidated.cuentatipoid + "]");
       throw new ClientError("Datos no válidos", 404);
     }
-    var moneda = await monedaDao.findMonedaPk(transaction, empresacuentabancariaValidated.monedaid);
+
+    var moneda = await monedaDao.getMonedaByMonedaid(transaction, empresacuentabancariaValidated.monedaid);
     if (!moneda) {
       logger.warn(line(), "Moneda no existe: [" + empresacuentabancariaValidated.monedaid + "]");
       throw new ClientError("Datos no válidos", 404);

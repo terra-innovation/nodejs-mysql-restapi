@@ -1,14 +1,21 @@
-import * as jsonUtils from "../utils/jsonUtils.js";
-import multer from "multer";
+import * as fs from "fs";
 import * as luxon from "luxon";
-import { v4 as uuidv4 } from "uuid";
+import multer from "multer";
 import path from "path";
-import * as storageUtils from "../utils/storageUtils.js";
+import { v4 as uuidv4 } from "uuid";
 import logger, { line } from "../utils/logger.js";
+import * as storageUtils from "../utils/storageUtils.js";
 
 let storage_persona = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, storageUtils.STORAGE_PATH_PROCESAR);
+    const anio_upload = luxon.DateTime.now().toFormat("yyyy");
+    const mes_upload = luxon.DateTime.now().toFormat("MM");
+    const dia_upload = luxon.DateTime.now().toFormat("dd");
+    const rutaDestino = path.join(storageUtils.STORAGE_PATH_PROCESAR, anio_upload, mes_upload, dia_upload);
+    const rutaDestinoFake = path.join(storageUtils.STORAGE_PATH_PROCESAR, anio_upload, mes_upload, dia_upload, "file.fake");
+    fs.mkdirSync(path.dirname(rutaDestinoFake), { recursive: true });
+
+    cb(null, rutaDestino);
   },
   filename: (req, file, cb) => {
     //logger.info(line(),file);
