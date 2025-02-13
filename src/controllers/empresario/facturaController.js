@@ -36,8 +36,13 @@ export const subirFactura = async (req, res) => {
         factura_xml: yup
           .mixed()
           .concat(validacionesYup.fileRequeridValidation())
-          .concat(validacionesYup.fileSizeValidation(2 * 1024 * 1024))
+          .concat(validacionesYup.fileSizeValidation(3 * 1024 * 1024))
           .concat(validacionesYup.fileTypeValidation(["text/xml", "application/xml"])),
+        factura_pdf: yup
+          .mixed()
+          .concat(validacionesYup.fileRequeridValidation())
+          .concat(validacionesYup.fileSizeValidation(3 * 1024 * 1024))
+          .concat(validacionesYup.fileTypeValidation(["application/pdf"])),
       })
       .required();
     const facturaValidated = facturaVerifySchema.validateSync({ ...req.files, ...req.body }, { abortEarly: false, stripUnknown: true });
@@ -66,6 +71,9 @@ export const subirFactura = async (req, res) => {
 
     const facturaxmlCreated = await crearFacturaXML(req, transaction, facturaValidated, facturaCreated);
     logger.debug(line(), "facturaxmlCreated:", facturaxmlCreated);
+
+    const facturapdfCreated = await crearFacturaPDF(req, transaction, facturaValidated, facturaCreated);
+    logger.debug(line(), "facturapdfCreated:", facturapdfCreated);
 
     var empresa = await empresaDao.getEmpresaByIdusuarioAndRuc(transaction, session_idusuario, facturaCreate.proveedor_ruc, filter_estado);
     if (!empresa) {
@@ -166,6 +174,53 @@ const procesarDatos = async (transaction, _idfactura, items, _idusuario, insertF
     results.push(result);
   }
   return results;
+};
+
+const crearFacturaPDF = async (req, transaction, facturaValidated, facturaCreated) => {
+  //Copiamos el archivo
+  const { factura_pdf } = facturaValidated;
+  const { anio_upload, mes_upload, dia_upload, filename, path: archivoOrigen } = factura_pdf[0];
+  const carpetaDestino = path.join(anio_upload, mes_upload, dia_upload);
+  const rutaDestino = path.join(storageUtils.STORAGE_PATH_SUCCESS, anio_upload, mes_upload, dia_upload, filename); // Crear la ruta completa del archivo de destino
+  fs.mkdirSync(path.dirname(rutaDestino), { recursive: true }); // Crear directorio si no existe
+  fs.copyFileSync(archivoOrigen, rutaDestino); // Copia el archivo
+
+  const { codigo_archivo, originalname, size, mimetype, encoding, extension } = factura_pdf[0];
+
+  let identificacionselfiNew = {
+    archivoid: uuidv4(),
+    _idarchivotipo: 9,
+    _idarchivoestado: 1,
+    codigo: codigo_archivo,
+    nombrereal: originalname,
+    nombrealmacenamiento: filename,
+    ruta: carpetaDestino,
+    tamanio: size,
+    mimetype: mimetype,
+    encoding: encoding,
+    extension: extension,
+    observacion: "",
+    fechavencimiento: null,
+    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    fechacrea: Sequelize.fn("now", 3),
+    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    fechamod: Sequelize.fn("now", 3),
+    estado: 1,
+  };
+  const identificacionselfiCreated = await archivoDao.insertArchivo(transaction, identificacionselfiNew);
+
+  await archivofacturaDao.insertArchivoFactura(transaction, {
+    _idarchivo: identificacionselfiCreated._idarchivo,
+    _idfactura: facturaCreated._idfactura,
+    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    fechacrea: Sequelize.fn("now", 3),
+    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    fechamod: Sequelize.fn("now", 3),
+    estado: 1,
+  });
+
+  fs.unlinkSync(archivoOrigen);
+  return identificacionselfiCreated;
 };
 
 const crearFacturaXML = async (req, transaction, facturaValidated, facturaCreated) => {

@@ -3,6 +3,43 @@ import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
+export const getFactoringByRucAceptanteAndCodigoFactura = async (transaction, ruc_aceptante, factura_serie, factura_numero, estados) => {
+  try {
+    const factoring = await modelsFT.Factoring.findOne({
+      include: [
+        {
+          model: modelsFT.Empresa,
+          required: true,
+          as: "aceptante_empresa",
+          where: {
+            ruc: ruc_aceptante,
+          },
+        },
+
+        {
+          model: modelsFT.Factura,
+          required: true,
+          as: "factura_factura_factoring_facturas",
+          where: {
+            serie: factura_serie,
+            numero_comprobante: factura_numero,
+          },
+        },
+      ],
+      where: {
+        estado: {
+          [Sequelize.Op.in]: estados,
+        },
+      },
+      transaction,
+    });
+    return factoring;
+  } catch (error) {
+    logger.error(line(), error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getFactoringByFactoringidAndIdcontactocedente = async (transaction, factoringid, idcontactocedete, estados) => {
   try {
     const factoring = await modelsFT.Factoring.findOne({

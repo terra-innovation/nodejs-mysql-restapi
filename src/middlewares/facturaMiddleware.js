@@ -38,19 +38,22 @@ let storage_factura = multer.diskStorage({
 export const upload_factura = multer({
   storage: storage_factura,
   limits: {
-    fileSize: 2 * 1024 * 1024, // Para formularios multiparte, el tamaño máximo de los archivos (en bytes)
-    files: 1, // Para los formularios multiparte, el número máximo de campos para archivos
+    fileSize: 3 * 1024 * 1024, // Para formularios multiparte, el tamaño máximo de los archivos (en bytes)
+    files: 2, // Para los formularios multiparte, el número máximo de campos para archivos
     fieldSize: 0.5 * 1024 * 1024, //Tamaño máximo de los valores para cada campo (en bytes)
     fields: 0, // Número máximo de campos que no son archivos
   },
   fileFilter: async function (req, file, cb) {
-    const validImageTypes = ["text/xml", "application/xml"];
-    if (!validImageTypes.includes(file.mimetype)) {
-      cb(new Error(`Formato de archivo inválido [${file.mimetype}]. Tipos permitidos: ${validImageTypes.join(", ")}`));
+    const validFileTypes = ["text/xml", "application/xml", "application/pdf"];
+    if (!validFileTypes.includes(file.mimetype)) {
+      cb(new Error(`Formato de archivo inválido [${file.mimetype}]. Tipos permitidos: ${validFileTypes.join(", ")}`));
     }
     cb(null, true);
   },
-}).fields([{ name: "factura_xml", maxCount: 1 }]);
+}).fields([
+  { name: "factura_xml", maxCount: 1 },
+  { name: "factura_pdf", maxCount: 1 },
+]);
 
 // Middleware de multer para manejar la subida de archivos
 export const upload = (req, res, next) => {
