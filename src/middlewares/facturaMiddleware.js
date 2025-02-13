@@ -1,59 +1,70 @@
-import * as jsonUtils from "../utils/jsonUtils.js";
-import multer from "multer";
 import * as luxon from "luxon";
+import multer from "multer";
+import path from "path";
 import { v4 as uuidv4 } from "uuid";
-import * as storageUtils from "../utils/storageUtils.js";
 import logger, { line } from "../utils/logger.js";
+import * as storageUtils from "../utils/storageUtils.js";
+import * as fs from "fs";
 
-let storage_invoice = multer.diskStorage({
+let storage_factura = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, storageUtils.STORAGE_PATH_PROCESAR);
+    const anio_upload = luxon.DateTime.now().toFormat("yyyy");
+    const mes_upload = luxon.DateTime.now().toFormat("MM");
+    const dia_upload = luxon.DateTime.now().toFormat("dd");
+    const rutaDestino = path.join(storageUtils.STORAGE_PATH_PROCESAR, anio_upload, mes_upload, dia_upload);
+    const rutaDestinoFake = path.join(storageUtils.STORAGE_PATH_PROCESAR, anio_upload, mes_upload, dia_upload, "file.fake");
+    fs.mkdirSync(path.dirname(rutaDestinoFake), { recursive: true });
+
+    cb(null, rutaDestino);
   },
   filename: (req, file, cb) => {
     //logger.info(line(),file);
+    const extension = path.extname(file.originalname).slice(1) || "";
+    const anio_upload = luxon.DateTime.now().toFormat("yyyy");
+    const mes_upload = luxon.DateTime.now().toFormat("MM");
+    const dia_upload = luxon.DateTime.now().toFormat("dd");
     const codigo_archivo = uuidv4().split("-")[0] + "-" + uuidv4().split("-")[1];
     const uniqueSuffix = luxon.DateTime.now().toFormat("yyyyMMdd_HHmmss_SSS") + "_" + codigo_archivo;
     const filename = uniqueSuffix + "_" + file.originalname;
     cb(null, filename);
     file.codigo_archivo = codigo_archivo;
+    file.extension = extension;
+    file.anio_upload = anio_upload;
+    file.mes_upload = mes_upload;
+    file.dia_upload = dia_upload;
   },
 });
 
-export const upload_invoice = multer({
-  storage: storage_invoice,
-  limits: { fileSize: 2 * 1024 * 1024, files: 5, fields: 10 },
+export const upload_factura = multer({
+  storage: storage_factura,
+  limits: {
+    fileSize: 2 * 1024 * 1024, // Para formularios multiparte, el tamaño máximo de los archivos (en bytes)
+    files: 1, // Para los formularios multiparte, el número máximo de campos para archivos
+    fieldSize: 0.5 * 1024 * 1024, //Tamaño máximo de los valores para cada campo (en bytes)
+    fields: 0, // Número máximo de campos que no son archivos
+  },
   fileFilter: async function (req, file, cb) {
-    //logger.info(line(),"fileFilter");
-    //logger.info(line(),"file.mimetype: " + file.mimetype);
-    if (file.mimetype !== "text/xml" && file.mimetype !== "application/xml") {
-      cb(new Error("Formato de archivo inválido"));
+    const validImageTypes = ["text/xml", "application/xml"];
+    if (!validImageTypes.includes(file.mimetype)) {
+      cb(new Error(`Formato de archivo inválido [${file.mimetype}]. Tipos permitidos: ${validImageTypes.join(", ")}`));
     }
     cb(null, true);
   },
-}).array("invoice", 1);
+}).fields([{ name: "factura_xml", maxCount: 1 }]);
 
 // Middleware de multer para manejar la subida de archivos
 export const upload = (req, res, next) => {
-  upload_invoice(req, res, function (err) {
-    logger.error(line(), err);
+  upload_factura(req, res, function (err) {
     if (err instanceof multer.MulterError) {
       // A Multer error occurred when uploading.
-      if (err.code == "LIMIT_FILE_SIZE") {
-        return res.status(404).send({ error: true, message: "El archivo supera el máximo tamaño permitido de 2 MB" });
-      } else if (err.code == "LIMIT_UNEXPECTED_FILE") {
-        return res.status(404).send({ error: true, message: "El máximo de archivos a cargar es 1" });
-      } else {
-        logger.error(line(), err);
-        return res.status(404).send({ error: true, message: "El archivo no fue posible cargar" });
-      }
+      logger.error(line(), err);
+      return res.status(404).send({ error: true, message: "Datos no válidos" });
     } else if (err) {
       logger.error(line(), err);
       // An unknown error occurred when uploading.
-      return res.status(500).json({ error: true, message: err.message });
-    } else if (!req.files) {
-      // FILE NOT SELECTED
-      return res.status(404).json({ error: true, message: "El archivo es requerido" });
+      return res.status(500).json({ error: true, message: "Ocurrio un error" });
     }
+
     next(); // Llamar a next() para continuar con la ejecución de la siguiente función middleware
   });
 };

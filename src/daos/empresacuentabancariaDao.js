@@ -3,6 +3,65 @@ import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
+export const getEmpresacuentabancariasForFactoring = async (transaction, _idempresa, _idmoneda, _idcuentabancariaestado, estados) => {
+  try {
+    const empresacuentabancaria = await modelsFT.EmpresaCuentaBancaria.findAll({
+      include: [
+        {
+          model: modelsFT.CuentaBancaria,
+          required: true,
+          as: "cuentabancaria_cuenta_bancarium",
+          include: [
+            {
+              model: modelsFT.Banco,
+              required: true,
+              as: "banco_banco",
+            },
+            {
+              model: modelsFT.Moneda,
+              required: true,
+              as: "moneda_moneda",
+              where: {
+                _idmoneda: _idmoneda,
+              },
+            },
+            {
+              model: modelsFT.CuentaTipo,
+              required: true,
+              as: "cuentatipo_cuenta_tipo",
+            },
+            {
+              model: modelsFT.CuentaBancariaEstado,
+              required: true,
+              as: "cuentabancariaestado_cuenta_bancaria_estado",
+              where: {
+                _idcuentabancariaestado: _idcuentabancariaestado,
+              },
+            },
+          ],
+          where: {
+            estado: {
+              [Sequelize.Op.in]: estados,
+            },
+          },
+        },
+      ],
+      where: {
+        _idempresa: _idempresa,
+        estado: {
+          [Sequelize.Op.in]: estados,
+        },
+      },
+      transaction,
+    });
+    //logger.info(line(),empresacuentabancaria);
+    return empresacuentabancaria;
+  } catch (error) {
+    logger.error(line(), error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getEmpresacuentabancariasByIdempresaAndAlias = async (transaction, _idempresa, alias, estados) => {
   try {
     const empresacuentabancaria = await modelsFT.EmpresaCuentaBancaria.findAll({
