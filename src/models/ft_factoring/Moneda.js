@@ -14,7 +14,12 @@ export default class Moneda extends Model {
       type: DataTypes.STRING(50),
       allowNull: false,
       defaultValue: Sequelize.Sequelize.fn('uuid'),
-      unique: "UQ_bancoid"
+      unique: "UQ_moneda_bancoid"
+    },
+    code: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
+      unique: "UQ_moneda_code"
     },
     nombre: {
       type: DataTypes.STRING(50),
@@ -30,6 +35,10 @@ export default class Moneda extends Model {
     },
     simbolo: {
       type: DataTypes.STRING(5),
+      allowNull: false
+    },
+    color: {
+      type: DataTypes.STRING(20),
       allowNull: false
     },
     idusuariocrea: {
@@ -71,11 +80,19 @@ export default class Moneda extends Model {
         ]
       },
       {
-        name: "UQ_bancoid",
+        name: "UQ_moneda_bancoid",
         unique: true,
         using: "BTREE",
         fields: [
           { name: "monedaid" },
+        ]
+      },
+      {
+        name: "UQ_moneda_code",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "code" },
         ]
       },
     ]

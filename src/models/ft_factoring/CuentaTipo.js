@@ -5,16 +5,15 @@ export default class CuentaTipo extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
     _idcuentatipo: {
-      autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement: true
     },
     cuentatipoid: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: Sequelize.Sequelize.fn('uuid'),
-      unique: "UQ_cuentatipoid"
+      defaultValue: Sequelize.Sequelize.fn('uuid')
     },
     nombre: {
       type: DataTypes.STRING(50),

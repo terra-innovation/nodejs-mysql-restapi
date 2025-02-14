@@ -42,7 +42,7 @@ export const getEmpresacuentabancarias = async (req, res) => {
       throw new ClientError("Datos no válidos", 404);
     }
 
-    var _idcuentabancariaestado = 2; // Verificado
+    var _idcuentabancariaestado = [2, 1]; // Verificado y Pendiente
 
     const empresacuentabancarias = await empresacuentabancariaDao.getEmpresacuentabancariasForFactoring(transaction, empresa_por_idusuario._idempresa, moneda._idmoneda, _idcuentabancariaestado, filter_estado);
     var empresacuentabancariasJson = jsonUtils.sequelizeToJSON(empresacuentabancarias);

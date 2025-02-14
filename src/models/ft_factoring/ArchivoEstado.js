@@ -5,16 +5,15 @@ export default class ArchivoEstado extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
     _idarchivoestado: {
-      autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement: true
     },
     archivoestadoid: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: Sequelize.Sequelize.fn('uuid'),
-      unique: "UQ_archivoestadoid"
+      defaultValue: Sequelize.Sequelize.fn('uuid')
     },
     nombre: {
       type: DataTypes.STRING(50),

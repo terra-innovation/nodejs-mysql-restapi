@@ -35,7 +35,9 @@ export const getEmpresacuentabancariasForFactoring = async (transaction, _idempr
               required: true,
               as: "cuentabancariaestado_cuenta_bancaria_estado",
               where: {
-                _idcuentabancariaestado: _idcuentabancariaestado,
+                _idcuentabancariaestado: {
+                  [Sequelize.Op.in]: _idcuentabancariaestado,
+                },
               },
             },
           ],
