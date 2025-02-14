@@ -3,16 +3,16 @@ import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
-export const getFactoringByRucAceptanteAndCodigoFactura = async (transaction, ruc_aceptante, factura_serie, factura_numero, estados) => {
+export const getFactoringByRucCedenteAndCodigoFactura = async (transaction, ruc_cedente, factura_serie, factura_numero, estados) => {
   try {
     const factoring = await modelsFT.Factoring.findOne({
       include: [
         {
           model: modelsFT.Empresa,
           required: true,
-          as: "aceptante_empresa",
+          as: "cedente_empresa",
           where: {
-            ruc: ruc_aceptante,
+            ruc: ruc_cedente,
           },
         },
 

@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import path from "path";
 import { sequelizeFT } from "../../config/bd/sequelize_db_factoring.js";
+import * as factoringDao from "../../daos/factoringDao.js";
 import * as monedaDao from "../../daos/monedaDao.js";
 import * as empresaDao from "../../daos/empresaDao.js";
 import * as archivoDao from "../../daos/archivoDao.js";
@@ -25,7 +26,7 @@ import * as yup from "yup";
 
 export const subirFactura = async (req, res) => {
   logger.debug(line(), "controller::verifyFactura");
-  const transaction = await sequelizeFT.transaction();
+  const transaction1 = await sequelizeFT.transaction();
   try {
     const session_idusuario = req.session_user?.usuario?._idusuario;
     const filter_estado = [1];
@@ -61,98 +62,120 @@ export const subirFactura = async (req, res) => {
     }
 
     const facturaCreate = facturaUtils.buildFacturaJson(facturaJson, facturaValidated.factura_xml[0].codigo_archivo, session_idusuario);
-    const facturaCreated = await facturaDao.insertFactura(transaction, facturaCreate);
+    const facturaCreated = await facturaDao.insertFactura(transaction1, facturaCreate);
 
-    await procesarDatos(transaction, facturaCreated._idfactura, facturaCreate.items, session_idusuario, facturaitemDao.insertFacturaitem);
-    await procesarDatos(transaction, facturaCreated._idfactura, facturaCreate.medios_pago, session_idusuario, facturamediopagoDao.insertFacturamediopago);
-    await procesarDatos(transaction, facturaCreated._idfactura, facturaCreate.terminos_pago, session_idusuario, facturaterminopagoDao.insertFacturaterminopago);
-    await procesarDatos(transaction, facturaCreated._idfactura, facturaCreate.impuesto.impuestos, session_idusuario, facturaimpuestoDao.insertFacturaimpuesto);
-    await procesarDatos(transaction, facturaCreated._idfactura, facturaCreate.notas, session_idusuario, facturanotaDao.insertFacturanota);
+    await procesarDatos(transaction1, facturaCreated._idfactura, facturaCreate.items, session_idusuario, facturaitemDao.insertFacturaitem);
+    await procesarDatos(transaction1, facturaCreated._idfactura, facturaCreate.medios_pago, session_idusuario, facturamediopagoDao.insertFacturamediopago);
+    await procesarDatos(transaction1, facturaCreated._idfactura, facturaCreate.terminos_pago, session_idusuario, facturaterminopagoDao.insertFacturaterminopago);
+    await procesarDatos(transaction1, facturaCreated._idfactura, facturaCreate.impuesto.impuestos, session_idusuario, facturaimpuestoDao.insertFacturaimpuesto);
+    await procesarDatos(transaction1, facturaCreated._idfactura, facturaCreate.notas, session_idusuario, facturanotaDao.insertFacturanota);
 
-    const facturaxmlCreated = await crearFacturaXML(req, transaction, facturaValidated, facturaCreated);
+    const facturaxmlCreated = await crearFacturaXML(req, transaction1, facturaValidated, facturaCreated);
     logger.debug(line(), "facturaxmlCreated:", facturaxmlCreated);
 
-    const facturapdfCreated = await crearFacturaPDF(req, transaction, facturaValidated, facturaCreated);
+    const facturapdfCreated = await crearFacturaPDF(req, transaction1, facturaValidated, facturaCreated);
     logger.debug(line(), "facturapdfCreated:", facturapdfCreated);
 
-    var empresa = await empresaDao.getEmpresaByIdusuarioAndRuc(transaction, session_idusuario, facturaCreate.proveedor_ruc, filter_estado);
-    if (!empresa) {
-      logger.warn(line(), "RUC no asociado al usuario: [" + session_idusuario + ", " + facturaCreate.proveedor_ruc + "]");
-      throw new ClientError("Seleccione una factura perteneciente a una de las empresas asociadas a su cuenta. La empresa [" + facturaCreate.proveedor_razon_social + " (" + facturaCreate.proveedor_ruc + ")] no está asociada a su cuenta.", 404);
+    await transaction1.commit();
+
+    const transaction2 = await sequelizeFT.transaction();
+    try {
+      // Validar si el factoring ya existe
+
+      // JCHR:20250213: Habillitar para producción
+      /*
+      const filter_estados_factoring = [1];
+      const factoring_existe = await factoringDao.getFactoringByRucCedenteAndCodigoFactura(transaction2, facturaCreate.proveedor_ruc, facturaCreate.serie, facturaCreate.numero_comprobante, filter_estados_factoring);
+      if (factoring_existe) {
+        logger.warn(line(), "Factoring ya existe: [" + facturaCreate.proveedor_ruc + ", " + facturaCreate.serie + ", " + facturaCreate.numero_comprobante + ", " + filter_estados_factoring + "]");
+        throw new ClientError("La factura seleccionada ya está vinculada a una operación de factoring activa. Por favor, elija otra factura para continuar con el proceso.", 404);
+      }
+        */
+
+      var empresa = await empresaDao.getEmpresaByIdusuarioAndRuc(transaction2, session_idusuario, facturaCreate.proveedor_ruc, filter_estado);
+      if (!empresa) {
+        logger.warn(line(), "RUC no asociado al usuario: [" + session_idusuario + ", " + facturaCreate.proveedor_ruc + "]");
+        throw new ClientError("Seleccione una factura perteneciente a una de las empresas asociadas a su cuenta. La empresa [" + facturaCreate.proveedor_razon_social + " (" + facturaCreate.proveedor_ruc + ")] no está asociada a su cuenta.", 404);
+      }
+
+      if (!facturaCreate.codigo_tipo_documento || facturaCreate.codigo_tipo_documento != "01") {
+        logger.warn(line(), "Seleccione una factura válida");
+        throw new ClientError("Seleccione una factura válida", 404);
+      }
+
+      if (!facturaCreate.pago_cantidad_cuotas || facturaCreate.pago_cantidad_cuotas <= 0) {
+        logger.warn(line(), "Seleccione una factura que cuya forma de pago sea al Crédito. La factura que ha seleccionado es de pago al Contado.");
+        throw new ClientError("Seleccione una factura que cuya forma de pago sea al Crédito. La factura que ha seleccionado es de pago al Contado.", 404);
+      }
+
+      if (!facturaCreate.pago_cantidad_cuotas || facturaCreate.pago_cantidad_cuotas != 1) {
+        logger.warn(line(), "Seleccione una factura que sea al Crédito y de una sola cuota. La factura que ha seleccionado es de " + facturaCreate.pago_cantidad_cuotas + " cuotas.");
+        throw new ClientError("Seleccione una factura que sea al Crédito y de una sola cuota. La factura que ha seleccionado es de " + facturaCreate.pago_cantidad_cuotas + " cuotas.", 404);
+      }
+
+      if (facturaCreate.dias_desde_emision > 8) {
+        //throw new ClientError("Seleccione una factura que no haya transcurrido más de 8 días desde su fecha de emisión", 404);
+      }
+
+      const REGLA_MINIMO_DE_DIAS_PARA_PAGO = 8;
+      if (facturaCreate.dias_estimados_para_pago <= REGLA_MINIMO_DE_DIAS_PARA_PAGO) {
+        logger.warn(line(), "Seleccione una factura cuya fecha de vencimiento sea superior a " + REGLA_MINIMO_DE_DIAS_PARA_PAGO + " días.");
+        throw new ClientError("Seleccione una factura cuya fecha de vencimiento sea superior a " + REGLA_MINIMO_DE_DIAS_PARA_PAGO + " días.", 404);
+      }
+
+      let cliente = await empresaDao.getEmpresaByRuc(transaction2, facturaCreate.cliente.ruc);
+      if (!cliente) {
+        const empresaCreate = {
+          ruc: facturaCreate.cliente.ruc,
+          razon_social: facturaCreate.cliente.razon_social,
+          empresaid: uuidv4(),
+          code: uuidv4().split("-")[0],
+          idusuariocrea: session_idusuario,
+          fechacrea: Sequelize.fn("now", 3),
+          idusuariomod: session_idusuario,
+          fechamod: Sequelize.fn("now", 3),
+          estado: 1,
+        };
+
+        cliente = await empresaDao.insertEmpresa(transaction2, empresaCreate);
+      }
+      facturaCreate.cliente.empresaid = cliente.empresaid;
+
+      let proveedor = await empresaDao.getEmpresaByRuc(transaction2, facturaCreate.proveedor.ruc);
+      if (!proveedor) {
+        const empresaCreate = {
+          ruc: facturaCreate.proveedor.ruc,
+          razon_social: facturaCreate.proveedor.razon_social,
+          empresaid: uuidv4(),
+          code: uuidv4().split("-")[0],
+          idusuariocrea: session_idusuario,
+          fechacrea: Sequelize.fn("now", 3),
+          idusuariomod: session_idusuario,
+          fechamod: Sequelize.fn("now", 3),
+          estado: 1,
+        };
+
+        proveedor = await empresaDao.insertEmpresa(transaction2, empresaCreate);
+      }
+      facturaCreate.proveedor.empresaid = proveedor.empresaid;
+
+      const moneda = await monedaDao.getMonedaByCodigo(transaction2, facturaCreate.codigo_tipo_moneda);
+      facturaCreate.monedaid = moneda.monedaid;
+
+      let facturaFiltered = jsonUtils.removeAttributesPrivates(facturaCreate);
+      facturaFiltered = jsonUtils.removeAttributes(facturaCreate, ["items", "terminos_pago", "notas", "medios_pago"]);
+      facturaFiltered = jsonUtils.removeAttributesPrivates(facturaFiltered, ["items", "terminos_pago", "notas", "medios_pago"]);
+
+      await transaction2.commit();
+      response(res, 200, facturaFiltered);
+    } catch (error) {
+      await transaction2.rollback();
+      throw error;
     }
-
-    if (!facturaCreate.codigo_tipo_documento || facturaCreate.codigo_tipo_documento != "01") {
-      logger.warn(line(), "Seleccione una factura válida");
-      throw new ClientError("Seleccione una factura válida", 404);
-    }
-
-    if (!facturaCreate.pago_cantidad_cuotas || facturaCreate.pago_cantidad_cuotas <= 0) {
-      logger.warn(line(), "Seleccione una factura que cuya forma de pago sea al Crédito. La factura que ha seleccionado es de pago al Contado.");
-      throw new ClientError("Seleccione una factura que cuya forma de pago sea al Crédito. La factura que ha seleccionado es de pago al Contado.", 404);
-    }
-
-    if (!facturaCreate.pago_cantidad_cuotas || facturaCreate.pago_cantidad_cuotas != 1) {
-      logger.warn(line(), "Seleccione una factura que sea al Crédito y de una sola cuota. La factura que ha seleccionado es de " + facturaCreate.pago_cantidad_cuotas + " cuotas.");
-      throw new ClientError("Seleccione una factura que sea al Crédito y de una sola cuota. La factura que ha seleccionado es de " + facturaCreate.pago_cantidad_cuotas + " cuotas.", 404);
-    }
-
-    if (facturaCreate.dias_desde_emision > 8) {
-      //throw new ClientError("Seleccione una factura que no haya transcurrido más de 8 días desde su fecha de emisión", 404);
-    }
-
-    const REGLA_MINIMO_DE_DIAS_PARA_PAGO = 8;
-    if (facturaCreate.dias_estimados_para_pago <= REGLA_MINIMO_DE_DIAS_PARA_PAGO) {
-      logger.warn(line(), "Seleccione una factura cuya fecha de vencimiento sea superior a " + REGLA_MINIMO_DE_DIAS_PARA_PAGO + " días.");
-      throw new ClientError("Seleccione una factura cuya fecha de vencimiento sea superior a " + REGLA_MINIMO_DE_DIAS_PARA_PAGO + " días.", 404);
-    }
-
-    let cliente = await empresaDao.getEmpresaByRuc(transaction, facturaCreate.cliente.ruc);
-    if (!cliente) {
-      const empresaCreate = {
-        ruc: facturaCreate.cliente.ruc,
-        razon_social: facturaCreate.cliente.razon_social,
-        empresaid: uuidv4(),
-        code: uuidv4().split("-")[0],
-        idusuariocrea: session_idusuario,
-        fechacrea: Sequelize.fn("now", 3),
-        idusuariomod: session_idusuario,
-        fechamod: Sequelize.fn("now", 3),
-        estado: 1,
-      };
-
-      cliente = await empresaDao.insertEmpresa(transaction, empresaCreate);
-    }
-    facturaCreate.cliente.empresaid = cliente.empresaid;
-
-    let proveedor = await empresaDao.getEmpresaByRuc(transaction, facturaCreate.proveedor.ruc);
-    if (!proveedor) {
-      const empresaCreate = {
-        ruc: facturaCreate.proveedor.ruc,
-        razon_social: facturaCreate.proveedor.razon_social,
-        empresaid: uuidv4(),
-        code: uuidv4().split("-")[0],
-        idusuariocrea: session_idusuario,
-        fechacrea: Sequelize.fn("now", 3),
-        idusuariomod: session_idusuario,
-        fechamod: Sequelize.fn("now", 3),
-        estado: 1,
-      };
-
-      proveedor = await empresaDao.insertEmpresa(transaction, empresaCreate);
-    }
-    facturaCreate.proveedor.empresaid = proveedor.empresaid;
-
-    const moneda = await monedaDao.getMonedaByCodigo(transaction, facturaCreate.codigo_tipo_moneda);
-    facturaCreate.monedaid = moneda.monedaid;
-
-    let facturaFiltered = jsonUtils.removeAttributesPrivates(facturaCreate);
-    facturaFiltered = jsonUtils.removeAttributes(facturaCreate, ["items", "terminos_pago", "notas", "medios_pago"]);
-    facturaFiltered = jsonUtils.removeAttributesPrivates(facturaFiltered, ["items", "terminos_pago", "notas", "medios_pago"]);
-
-    await transaction.commit();
-    response(res, 200, facturaFiltered);
   } catch (error) {
-    await transaction.rollback();
+    if (transaction1 && transaction1.finished !== "commit") {
+      await transaction1.rollback();
+    }
     throw error;
   }
 };

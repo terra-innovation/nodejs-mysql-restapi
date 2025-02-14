@@ -52,10 +52,12 @@ export const createFactoring = async (req, res) => {
       }
 
       // Validar si el factoring ya existe
-      /* JCHR:20250213: Habillitar para producción
-      const factoring_existe = await factoringDao.getFactoringByRucAceptanteAndCodigoFactura(transaction, factura.cliente_ruc, factura.serie, factura.numero_comprobante, filter_estados);
+      //JCHR:20250213: Habillitar para producción
+      /*
+      const filter_estados_factoring = [1];
+      const factoring_existe = await factoringDao.getFactoringByRucCedenteAndCodigoFactura(transaction, factura.proveedor_ruc, factura.serie, factura.numero_comprobante, filter_estados_factoring);
       if (factoring_existe) {
-        logger.warn(line(), "Factoring ya existe: [" + factura.cliente_ruc + ", " + factura.serie + ", " + factura.numero_comprobante + ", " + filter_estados + "]");
+        logger.warn(line(), "Factoring ya existe: [" + factura.proveedor_ruc + ", " + factura.serie + ", " + factura.numero_comprobante + ", " + filter_estados_factoring + "]");
         throw new ClientError("La factura seleccionada ya está vinculada a una operación de factoring activa. Por favor, elija otra factura para continuar con el proceso.", 404);
       }
         */
