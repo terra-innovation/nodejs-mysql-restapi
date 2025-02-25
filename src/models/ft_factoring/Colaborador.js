@@ -5,10 +5,10 @@ export default class Colaborador extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
     _idcolaborador: {
+      autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true,
-      autoIncrement: true
+      primaryKey: true
     },
     colaboradorid: {
       type: DataTypes.STRING(50),
@@ -17,19 +17,35 @@ export default class Colaborador extends Model {
     },
     _idempresa: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: true,
+      references: {
+        model: 'empresa',
+        key: '_idempresa'
+      }
     },
     _idpersona: {
       type: DataTypes.BIGINT,
-      allowNull: true
+      allowNull: true,
+      references: {
+        model: 'persona',
+        key: '_idpersona'
+      }
     },
     _idcolaboradortipo: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: true,
+      references: {
+        model: 'colaborador_tipo',
+        key: '_idcolaboradortipo'
+      }
     },
     _iddocumentotipo: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: true,
+      references: {
+        model: 'documento_tipo',
+        key: '_iddocumentotipo'
+      }
     },
     documentonumero: {
       type: DataTypes.STRING(50),

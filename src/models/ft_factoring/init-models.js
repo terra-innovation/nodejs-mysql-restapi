@@ -161,6 +161,8 @@ export default function initModels(sequelize) {
   Colaborador.hasMany(ArchivoColaborador, { as: "archivo_colaboradors", foreignKey: "_idcolaborador" });
   Factoring.belongsTo(Colaborador, { as: "contactoaceptante_colaborador", foreignKey: "_idcontactoaceptante" });
   Colaborador.hasMany(Factoring, { as: "factorings", foreignKey: "_idcontactoaceptante" });
+  Colaborador.belongsTo(ColaboradorTipo, { as: "colaboradortipo_colaborador_tipo", foreignKey: "_idcolaboradortipo" });
+  ColaboradorTipo.hasMany(Colaborador, { as: "colaboradors", foreignKey: "_idcolaboradortipo" });
   ArchivoCuentaBancaria.belongsTo(CuentaBancaria, { as: "cuentabancaria_cuenta_bancarium", foreignKey: "_idcuentabancaria" });
   CuentaBancaria.hasMany(ArchivoCuentaBancaria, { as: "archivo_cuenta_bancaria", foreignKey: "_idcuentabancaria" });
   EmpresaCuentaBancaria.belongsTo(CuentaBancaria, { as: "cuentabancaria_cuenta_bancarium", foreignKey: "_idcuentabancaria" });
@@ -183,12 +185,16 @@ export default function initModels(sequelize) {
   Distrito.hasMany(Empresa, { as: "empresas", foreignKey: "_iddistritosede" });
   Persona.belongsTo(Distrito, { as: "distritoresidencia_distrito", foreignKey: "_iddistritoresidencia" });
   Distrito.hasMany(Persona, { as: "personas", foreignKey: "_iddistritoresidencia" });
+  Colaborador.belongsTo(DocumentoTipo, { as: "documentotipo_documento_tipo", foreignKey: "_iddocumentotipo" });
+  DocumentoTipo.hasMany(Colaborador, { as: "colaboradors", foreignKey: "_iddocumentotipo" });
   Persona.belongsTo(DocumentoTipo, { as: "documentotipo_documento_tipo", foreignKey: "_iddocumentotipo" });
   DocumentoTipo.hasMany(Persona, { as: "personas", foreignKey: "_iddocumentotipo" });
   Usuario.belongsTo(DocumentoTipo, { as: "documentotipo_documento_tipo", foreignKey: "_iddocumentotipo" });
   DocumentoTipo.hasMany(Usuario, { as: "usuarios", foreignKey: "_iddocumentotipo" });
   ArchivoEmpresa.belongsTo(Empresa, { as: "empresa_empresa", foreignKey: "_idempresa" });
   Empresa.hasMany(ArchivoEmpresa, { as: "archivo_empresas", foreignKey: "_idempresa" });
+  Colaborador.belongsTo(Empresa, { as: "empresa_empresa", foreignKey: "_idempresa" });
+  Empresa.hasMany(Colaborador, { as: "colaboradors", foreignKey: "_idempresa" });
   EmpresaCuentaBancaria.belongsTo(Empresa, { as: "empresa_empresa", foreignKey: "_idempresa" });
   Empresa.hasMany(EmpresaCuentaBancaria, { as: "empresa_cuenta_bancaria", foreignKey: "_idempresa" });
   Factoring.belongsTo(Empresa, { as: "aceptante_empresa", foreignKey: "_idaceptante" });
@@ -225,6 +231,8 @@ export default function initModels(sequelize) {
   Moneda.hasMany(CuentaBancaria, { as: "cuenta_bancaria", foreignKey: "_idmoneda" });
   Factoring.belongsTo(Moneda, { as: "moneda_moneda", foreignKey: "_idmoneda" });
   Moneda.hasMany(Factoring, { as: "factorings", foreignKey: "_idmoneda" });
+  Departamento.belongsTo(Pais, { as: "pais_pai", foreignKey: "_idpais" });
+  Pais.hasMany(Departamento, { as: "departamentos", foreignKey: "_idpais" });
   Empresa.belongsTo(Pais, { as: "paissede_pai", foreignKey: "_idpaissede" });
   Pais.hasMany(Empresa, { as: "empresas", foreignKey: "_idpaissede" });
   Persona.belongsTo(Pais, { as: "paisnacionalidad_pai", foreignKey: "_idpaisnacionalidad" });
@@ -237,6 +245,8 @@ export default function initModels(sequelize) {
   PepVinculo.hasMany(PersonaPepIndirecto, { as: "persona_pep_indirectos", foreignKey: "_idpepevinculo" });
   ArchivoPersona.belongsTo(Persona, { as: "persona_persona", foreignKey: "_idpersona" });
   Persona.hasMany(ArchivoPersona, { as: "archivo_personas", foreignKey: "_idpersona" });
+  Colaborador.belongsTo(Persona, { as: "persona_persona", foreignKey: "_idpersona" });
+  Persona.hasMany(Colaborador, { as: "colaboradors", foreignKey: "_idpersona" });
   PersonaCuentaBancaria.belongsTo(Persona, { as: "persona_persona", foreignKey: "_idpersona" });
   Persona.hasMany(PersonaCuentaBancaria, { as: "persona_cuenta_bancaria", foreignKey: "_idpersona" });
   PersonaDeclaracion.belongsTo(Persona, { as: "persona_persona", foreignKey: "_idpersona" });
