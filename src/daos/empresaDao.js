@@ -3,6 +3,28 @@ import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
+export const getEmpresasByIdempresas = async (transaction, _idempresas, estados) => {
+  try {
+    const empresas = await modelsFT.Empresa.findAll({
+      include: [],
+      where: {
+        _idempresa: {
+          [Sequelize.Op.in]: _idempresas,
+        },
+        estado: {
+          [Sequelize.Op.in]: estados,
+        },
+      },
+      transaction,
+    });
+    //logger.info(line(),empresas);
+    return empresas;
+  } catch (error) {
+    logger.error(line(), error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getEmpresasByIdusuario = async (transaction, _idusuario, estados) => {
   try {
     const empresas = await modelsFT.Empresa.findAll({

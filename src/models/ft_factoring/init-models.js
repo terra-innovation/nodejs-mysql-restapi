@@ -11,6 +11,7 @@ import _ArchivoTipo from "./ArchivoTipo.js";
 import _Banco from "./Banco.js";
 import _Colaborador from "./Colaborador.js";
 import _ColaboradorTipo from "./ColaboradorTipo.js";
+import _Contacto from "./Contacto.js";
 import _Credencial from "./Credencial.js";
 import _CuentaBancaria from "./CuentaBancaria.js";
 import _CuentaBancariaEstado from "./CuentaBancariaEstado.js";
@@ -75,6 +76,7 @@ export default function initModels(sequelize) {
   const Banco = _Banco.init(sequelize, DataTypes);
   const Colaborador = _Colaborador.init(sequelize, DataTypes);
   const ColaboradorTipo = _ColaboradorTipo.init(sequelize, DataTypes);
+  const Contacto = _Contacto.init(sequelize, DataTypes);
   const Credencial = _Credencial.init(sequelize, DataTypes);
   const CuentaBancaria = _CuentaBancaria.init(sequelize, DataTypes);
   const CuentaBancariaEstado = _CuentaBancariaEstado.init(sequelize, DataTypes);
@@ -195,6 +197,8 @@ export default function initModels(sequelize) {
   Empresa.hasMany(ArchivoEmpresa, { as: "archivo_empresas", foreignKey: "_idempresa" });
   Colaborador.belongsTo(Empresa, { as: "empresa_empresa", foreignKey: "_idempresa" });
   Empresa.hasMany(Colaborador, { as: "colaboradors", foreignKey: "_idempresa" });
+  Contacto.belongsTo(Empresa, { as: "empresa_empresa", foreignKey: "_idempresa" });
+  Empresa.hasMany(Contacto, { as: "contactos", foreignKey: "_idempresa" });
   EmpresaCuentaBancaria.belongsTo(Empresa, { as: "empresa_empresa", foreignKey: "_idempresa" });
   Empresa.hasMany(EmpresaCuentaBancaria, { as: "empresa_cuenta_bancaria", foreignKey: "_idempresa" });
   Factoring.belongsTo(Empresa, { as: "aceptante_empresa", foreignKey: "_idaceptante" });
@@ -338,6 +342,7 @@ export default function initModels(sequelize) {
     Banco,
     Colaborador,
     ColaboradorTipo,
+    Contacto,
     Credencial,
     CuentaBancaria,
     CuentaBancariaEstado,

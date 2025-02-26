@@ -3,6 +3,32 @@ import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
+export const getFactoringsByIdcedentes = async (transaction, _idcedentes, estados) => {
+  try {
+    const factorings = await modelsFT.Factoring.findAll({
+      include: [
+        {
+          all: true,
+        },
+      ],
+      where: {
+        _idcedente: {
+          [Sequelize.Op.in]: _idcedentes,
+        },
+        estado: {
+          [Sequelize.Op.in]: estados,
+        },
+      },
+      transaction,
+    });
+    //logger.info(line(),factorings);
+    return factorings;
+  } catch (error) {
+    logger.error(line(), error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getFactoringByRucCedenteAndCodigoFactura = async (transaction, ruc_cedente, factura_serie, factura_numero, estados) => {
   try {
     const factoring = await modelsFT.Factoring.findOne({

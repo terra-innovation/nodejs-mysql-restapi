@@ -19,6 +19,7 @@ import factoringtiposRoutes from "./routes/factoringtipos.routes.js";
 import riesgosRoutes from "./routes/riesgos.routes.js";
 
 import empresario_empresacuentabancariaRoutes from "./routes/empresario/empresacuentabancaria.routes.js";
+import empresario_contactoRoutes from "./routes/empresario/contacto.routes.js";
 import empresario_factoring_facturaRoutes from "./routes/empresario/factoring/factura.routes.js";
 import empresario_factoring_empresacuentabancariaRoutes from "./routes/empresario/factoring/empresacuentabancaria.routes.js";
 import empresario_factoring_usuarioRoutes from "./routes/empresario/factoring/usuario.routes.js";
@@ -88,6 +89,7 @@ app.use("/api/v1", factoringtiposRoutes);
 app.use("/api/v1", riesgosRoutes);
 
 app.use("/api/v1", empresario_empresacuentabancariaRoutes);
+app.use("/api/v1", empresario_contactoRoutes);
 app.use("/api/v1", empresario_factoring_facturaRoutes);
 app.use("/api/v1", empresario_factoring_empresacuentabancariaRoutes);
 app.use("/api/v1", empresario_factoring_usuarioRoutes);
