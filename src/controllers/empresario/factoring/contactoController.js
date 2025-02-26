@@ -154,23 +154,45 @@ export const createContacto = async (req, res) => {
 
 export const getContactoMaster = async (req, res) => {
   logger.debug(line(), "controller::getContactoMaster");
+  const contactoSchema = yup
+    .object()
+    .shape({
+      facturaid: yup.string().trim().required().min(36).max(36),
+      empresaid: yup.string().trim().required().min(36).max(36),
+    })
+    .required();
+  const contactoValidated = contactoSchema.validateSync({ ...req.body }, { abortEarly: false, stripUnknown: true });
+  logger.debug(line(), "contactoValidated:", contactoValidated);
   const transaction = await sequelizeFT.transaction();
   try {
-    const filter_estados = [1];
     const session_idusuario = req.session_user.usuario._idusuario;
-    //logger.info(line(),req.session_user.usuario.rol_rols);
-    const roles = [2]; // Administrador
-    const rolesUsuario = req.session_user.usuario.rol_rols.map((role) => role._idrol);
-    const tieneRol = roles.some((rol) => rolesUsuario.includes(rol));
+    const filter_estados = [1];
+    var empresa = await empresaDao.getEmpresaByEmpresaid(transaction, contactoValidated.empresaid);
+    if (!empresa) {
+      logger.warn(line(), "Empresa no existe: [" + contactoValidated.empresaid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
 
-    const empresas_cedentes = await empresaDao.getEmpresasByIdusuario(transaction, session_idusuario, filter_estados);
-    const _idcedentes = empresas_cedentes.map((empresa) => empresa._idempresa);
-    const factorings = await factoringDao.getFactoringsByIdcedentes(transaction, _idcedentes, filter_estados);
-    const _idaceptantes = factorings.map((factoring) => factoring._idaceptante);
-    const aceptantes = await empresaDao.getEmpresasByIdempresas(transaction, _idaceptantes, filter_estados);
+    var factura = await facturaDao.getFacturaByFacturaid(transaction, contactoValidated.facturaid);
+    if (!factura) {
+      logger.warn(line(), "Factura no existe: [" + contactoValidated.facturaid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    var factura_upload = await facturaDao.getFacturaByIdfacturaAndIdusuarioupload(transaction, factura._idfactura, session_idusuario);
+    if (!factura_upload) {
+      logger.warn(line(), "Factura no asociada al usuario: ", factura.dataValues, session_idusuario);
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    const isEmpresaAllowed = empresa.ruc === factura_upload.cliente_ruc;
+    if (!isEmpresaAllowed) {
+      logger.warn(line(), "Empresa aceptante no asociada a la factura: ", empresa.dataValues, factura_upload.dataValues);
+      throw new ClientError("Datos no válidos", 404);
+    }
 
     var contactoMaster = {};
-    contactoMaster.aceptantes = aceptantes;
+    contactoMaster.aceptantes = [empresa];
 
     var contactoMasterJSON = jsonUtils.sequelizeToJSON(contactoMaster);
     //jsonUtils.prettyPrint(contactoMasterJSON);

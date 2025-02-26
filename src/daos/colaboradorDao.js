@@ -4,6 +4,23 @@ import Empresa from "../models/ft_factoring/Empresa.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
 
+export const getColaboradorByIdEmpresaAndIdpersona = async (transaction, _idempresa, _idpersona) => {
+  try {
+    const colaborador = await modelsFT.Colaborador.findOne({
+      include: [],
+      where: {
+        _idempresa: _idempresa,
+        _idpersona: _idpersona,
+      },
+      transaction,
+    });
+    return colaborador;
+  } catch (error) {
+    logger.error(line(), error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getColaboradoresActivas = async (transaction) => {
   try {
     const colaboradores = await modelsFT.Colaborador.findAll({
@@ -50,7 +67,7 @@ export const getColaboradorByIdcolaborador = async (transaction, idcolaborador) 
 
 export const getColaboradorByColaboradorid = async (transaction, colaboradorid) => {
   try {
-    const colaborador = await modelsFT.Colaborador.findAll({
+    const colaborador = await modelsFT.Colaborador.findOne({
       include: [
         {
           model: Empresa,

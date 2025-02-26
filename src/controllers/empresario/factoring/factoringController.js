@@ -1,9 +1,12 @@
 import { sequelizeFT } from "../../../config/bd/sequelize_db_factoring.js";
 import * as cuentabancariaDao from "../../../daos/cuentabancariaDao.js";
 import * as empresaDao from "../../../daos/empresaDao.js";
+import * as personaDao from "../../../daos/personaDao.js";
 import * as factoringDao from "../../../daos/factoringDao.js";
 import * as factoringfacturaDao from "../../../daos/factoringfacturaDao.js";
 import * as facturaDao from "../../../daos/facturaDao.js";
+import * as contactoDao from "../../../daos/contactoDao.js";
+import * as colaboradorDao from "../../../daos/colaboradorDao.js";
 import * as monedaDao from "../../../daos/monedaDao.js";
 import { ClientError } from "../../../utils/CustomErrors.js";
 import { response } from "../../../utils/CustomResponseOk.js";
@@ -31,6 +34,7 @@ export const createFactoring = async (req, res) => {
       aceptanteid: yup.string().trim().required().min(36).max(36),
       cuentabancariaid: yup.string().trim().required().min(36).max(36),
       monedaid: yup.string().trim().required().min(36).max(36),
+      contactoaceptanteid: yup.string().trim().required().min(36).max(36),
       monto_neto: yup.string().required(),
       fecha_pago_estimado: yup.string().required(),
       dias_pago_estimado: yup.string().required(),
@@ -41,6 +45,7 @@ export const createFactoring = async (req, res) => {
 
   const transaction = await sequelizeFT.transaction();
   try {
+    const session_idusuario = req.session_user.usuario._idusuario;
     const filter_estados = [1];
     const facturas = [];
 
@@ -89,11 +94,31 @@ export const createFactoring = async (req, res) => {
       throw new ClientError("Datos no válidos", 404);
     }
 
+    var persona = await personaDao.getPersonaByIdusuario(transaction, session_idusuario);
+    if (!persona) {
+      logger.warn(line(), "Persona no existe: [" + session_idusuario + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    var contactoaceptante = await contactoDao.getContactoByContactoid(transaction, factoringValidated.contactoaceptanteid);
+    if (!contactoaceptante) {
+      logger.warn(line(), "Contacto aceptante no existe: [" + factoringValidated.contactoaceptanteid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    var colaborador = await colaboradorDao.getColaboradorByIdEmpresaAndIdpersona(transaction, cedente._idempresa, persona._idpersona);
+    if (!colaborador) {
+      logger.warn(line(), "Contacto cedente no existe: [" + cedente._idempresa + ", " + persona._idpersona + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
     var camposFk = {};
     camposFk._idcedente = cedente._idempresa;
     camposFk._idaceptante = aceptante._idempresa;
     camposFk._idcuentabancaria = cuentabancaria._idcuentabancaria;
     camposFk._idmoneda = moneda._idmoneda;
+    camposFk._idcontactoaceptante = contactoaceptante._idcontacto;
+    camposFk._idcontactocedente = colaborador._idcolaborador;
     camposFk._idfactoringtipo = 1; // Por defecto
     camposFk._idfactoringestado = 1; // Por defecto
 
