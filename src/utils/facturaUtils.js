@@ -10,6 +10,7 @@ export const buildFacturaJson = (result, codigo_archivo, _idusuario) => {
   const facturaJson = getFactura(result);
   facturaJson.codigo_archivo = codigo_archivo;
   const factura = {
+    _idusuarioupload: _idusuario,
     proveedor_ruc: facturaJson.proveedor.ruc,
     proveedor_razon_social: facturaJson.proveedor.razon_social,
     proveedor_direccion: facturaJson.proveedor.direccion,

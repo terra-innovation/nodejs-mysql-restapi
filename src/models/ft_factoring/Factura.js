@@ -21,6 +21,14 @@ export default class Factura extends Model {
       allowNull: false,
       unique: "UQ_factura_code"
     },
+    _idusuarioupload: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+      references: {
+        model: 'usuario',
+        key: '_idusuario'
+      }
+    },
     UBLVersionID: {
       type: DataTypes.STRING(10),
       allowNull: true
@@ -213,6 +221,13 @@ export default class Factura extends Model {
         using: "BTREE",
         fields: [
           { name: "facturaid" },
+        ]
+      },
+      {
+        name: "FK_factura_idusuarioupload",
+        using: "BTREE",
+        fields: [
+          { name: "_idusuarioupload" },
         ]
       },
     ]

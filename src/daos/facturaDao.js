@@ -35,6 +35,23 @@ export const getFacturaByIdfactura = async (transaction, idfactura) => {
   }
 };
 
+export const getFacturaByIdfacturaAndIdusuarioupload = async (transaction, _idfactura, _idusuarioupload) => {
+  try {
+    const factura = await modelsFT.Factura.findOne({
+      where: {
+        _idfactura: _idfactura,
+        _idusuarioupload: _idusuarioupload,
+      },
+      transaction,
+    });
+    //logger.info(line(),factura);
+    return factura;
+  } catch (error) {
+    logger.error(line(), error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getFacturaByFacturaid = async (transaction, facturaid) => {
   try {
     const factura = await modelsFT.Factura.findOne({
