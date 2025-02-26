@@ -29,6 +29,14 @@ const menuAdministracion = {
       icon: "IdcardOutlined",
       breadcrumbs: true,
     },
+    {
+      id: "empresario-contactos",
+      title: "Contactos",
+      type: "item",
+      url: "/empresario/contacto/lista",
+      icon: "IdcardOutlined",
+      breadcrumbs: true,
+    },
   ],
 };
 
