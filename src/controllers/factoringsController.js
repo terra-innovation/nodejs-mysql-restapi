@@ -124,7 +124,8 @@ export const getFactorings = async (req, res) => {
   logger.debug(line(), "controller::getFactorings");
   const transaction = await sequelizeFT.transaction();
   try {
-    const factorings = await factoringDao.getFactoringsActivas(transaction);
+    const filter_estados = [1, 2];
+    const factorings = await factoringDao.getFactoringsByEstados(transaction, filter_estados);
     await transaction.commit();
     response(res, 201, factorings);
   } catch (error) {

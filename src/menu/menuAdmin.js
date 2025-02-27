@@ -11,10 +11,17 @@ const menuMantenimiento = {
       icon: "dashboard",
       children: [
         {
-          id: "admin-factoring-empresa-verificacion",
+          id: "admin-factoring-empresa-verificacion-lista",
           title: "Verificación empresa",
           type: "item",
           url: "/admin/servicio/factoring/empresa/verificacion/lista",
+          breadcrumbs: true,
+        },
+        {
+          id: "admin-factoring-factoring-lista",
+          title: "Operaciones",
+          type: "item",
+          url: "/admin/servicio/factoring/factoring/lista",
           breadcrumbs: true,
         },
       ],

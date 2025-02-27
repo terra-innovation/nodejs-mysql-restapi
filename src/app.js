@@ -34,6 +34,7 @@ import admin_personaRoutes from "./routes/admin/persona.routes.js";
 import admin_archivoRoutes from "./routes/admin/archivo.routes.js";
 import admin_personaverificacionRoutes from "./routes/admin/personaverificacion.routes.js";
 import admin_factorigempresaverificacionRoutes from "./routes/admin/factoringempresaverificacion.routes.js";
+import admin_servicio_factoring_factoringRoutes from "./routes/admin/servicio/factoring/factoring.routes.js";
 
 import usuario_personaRoutes from "./routes/usuario/persona.routes.js";
 import usuario_personapepdirectoRoutes from "./routes/usuario/personapepdirecto.routes.js";
@@ -105,6 +106,7 @@ app.use("/api/v1", admin_personaRoutes);
 app.use("/api/v1", admin_archivoRoutes);
 app.use("/api/v1", admin_personaverificacionRoutes);
 app.use("/api/v1", admin_factorigempresaverificacionRoutes);
+app.use("/api/v1", admin_servicio_factoring_factoringRoutes);
 
 app.use("/api/v1", usuario_personaRoutes);
 app.use("/api/v1", usuario_personapepdirectoRoutes);

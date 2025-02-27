@@ -115,7 +115,7 @@ export const getFactoringsCotizacionesByIdcontactocedente = async (transaction, 
   }
 };
 
-export const getFactoringsActivas = async (transaction) => {
+export const getFactoringsByEstados = async (transaction, estados) => {
   try {
     const factorings = await modelsFT.Factoring.findAll({
       include: [
@@ -124,7 +124,9 @@ export const getFactoringsActivas = async (transaction) => {
         },
       ],
       where: {
-        estado: 1,
+        estado: {
+          [Sequelize.Op.in]: estados,
+        },
       },
       transaction,
     });
