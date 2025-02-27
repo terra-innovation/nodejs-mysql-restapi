@@ -242,7 +242,8 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req, res) => {
 
     let camposColaboradorNuevo = {};
     camposColaboradorNuevo.documentonumero = personaConected.documentonumero;
-    camposColaboradorNuevo.nombrecolaborador = personaConected.personanombres + " " + personaConected.apellidopaterno + " " + personaConected.apellidomaterno;
+    camposColaboradorNuevo.nombrecolaborador = personaConected.personanombres;
+    camposColaboradorNuevo.apellidocolaborador = personaConected.apellidopaterno + " " + personaConected.apellidomaterno;
     camposColaboradorNuevo.cargo = usuarioservicioValidated.cargo;
     camposColaboradorNuevo.email = personaConected.email;
     camposColaboradorNuevo.telefono = personaConected.celular;

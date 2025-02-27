@@ -161,10 +161,12 @@ export default function initModels(sequelize) {
   Banco.hasMany(CuentaBancaria, { as: "cuenta_bancaria", foreignKey: "_idbanco" });
   ArchivoColaborador.belongsTo(Colaborador, { as: "colaborador_colaborador", foreignKey: "_idcolaborador" });
   Colaborador.hasMany(ArchivoColaborador, { as: "archivo_colaboradors", foreignKey: "_idcolaborador" });
-  Factoring.belongsTo(Colaborador, { as: "contactoaceptante_colaborador", foreignKey: "_idcontactoaceptante" });
-  Colaborador.hasMany(Factoring, { as: "factorings", foreignKey: "_idcontactoaceptante" });
+  Factoring.belongsTo(Colaborador, { as: "contactocedente_colaborador", foreignKey: "_idcontactocedente" });
+  Colaborador.hasMany(Factoring, { as: "factorings", foreignKey: "_idcontactocedente" });
   Colaborador.belongsTo(ColaboradorTipo, { as: "colaboradortipo_colaborador_tipo", foreignKey: "_idcolaboradortipo" });
   ColaboradorTipo.hasMany(Colaborador, { as: "colaboradors", foreignKey: "_idcolaboradortipo" });
+  Factoring.belongsTo(Contacto, { as: "contactoaceptante_contacto", foreignKey: "_idcontactoaceptante" });
+  Contacto.hasMany(Factoring, { as: "factorings", foreignKey: "_idcontactoaceptante" });
   ArchivoCuentaBancaria.belongsTo(CuentaBancaria, { as: "cuentabancaria_cuenta_bancarium", foreignKey: "_idcuentabancaria" });
   CuentaBancaria.hasMany(ArchivoCuentaBancaria, { as: "archivo_cuenta_bancaria", foreignKey: "_idcuentabancaria" });
   EmpresaCuentaBancaria.belongsTo(CuentaBancaria, { as: "cuentabancaria_cuenta_bancarium", foreignKey: "_idcuentabancaria" });
@@ -295,8 +297,6 @@ export default function initModels(sequelize) {
   ServicioEmpresaEstado.hasMany(ServicioEmpresaVerificacion, { as: "servicio_empresa_verificacions", foreignKey: "_idservicioempresaestado" });
   Credencial.belongsTo(Usuario, { as: "usuario_usuario", foreignKey: "_idusuario" });
   Usuario.hasOne(Credencial, { as: "credencial", foreignKey: "_idusuario" });
-  Factoring.belongsTo(Usuario, { as: "contactocedente_usuario", foreignKey: "_idcontactocedente" });
-  Usuario.hasMany(Factoring, { as: "factorings", foreignKey: "_idcontactocedente" });
   Factura.belongsTo(Usuario, { as: "usuarioupload_usuario", foreignKey: "_idusuarioupload" });
   Usuario.hasMany(Factura, { as: "facturas", foreignKey: "_idusuarioupload" });
   Persona.belongsTo(Usuario, { as: "usuario_usuario", foreignKey: "_idusuario" });

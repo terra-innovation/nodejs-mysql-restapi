@@ -96,17 +96,17 @@ export default class Factoring extends Model {
       allowNull: true,
       comment: "Contacto del aceptante",
       references: {
-        model: 'colaborador',
-        key: '_idcolaborador'
+        model: 'contacto',
+        key: '_idcontacto'
       }
     },
     _idcontactocedente: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.INTEGER,
       allowNull: true,
       comment: "Contacto del cedente",
       references: {
-        model: 'usuario',
-        key: '_idusuario'
+        model: 'colaborador',
+        key: '_idcolaborador'
       }
     },
     cantidad_facturas: {
