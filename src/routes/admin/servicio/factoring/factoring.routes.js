@@ -10,5 +10,6 @@ router.get("/admin/servicio/factoring/factoring/listar", verifyToken, checkRole(
 //router.post("/admin/servicio/factoring/factoring/crear", verifyToken, checkRole([2]), catchedAsync(factoringController.createFactoring));
 //router.patch("/admin/servicio/factoring/factoring/actualizar/:id", verifyToken, checkRole([2]), catchedAsync(factoringController.updateFactoringOnlyAlias));
 router.get("/admin/servicio/factoring/factoring/master", verifyToken, checkRole([2]), catchedAsync(factoringController.getFactoringMaster));
+router.post("/admin/servicio/factoring/factoring/simular/:id", verifyToken, checkRole([2]), catchedAsync(factoringController.simulateFactoring));
 
 export default router;
