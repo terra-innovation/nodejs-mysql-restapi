@@ -55,6 +55,10 @@ export default class Colaborador extends Model {
       type: DataTypes.STRING(100),
       allowNull: false
     },
+    apellidocolaborador: {
+      type: DataTypes.STRING(100),
+      allowNull: false
+    },
     cargo: {
       type: DataTypes.STRING(100),
       allowNull: false
