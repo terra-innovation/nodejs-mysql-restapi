@@ -27,9 +27,6 @@ export const getRiesgoByIdriesgo = async (transaction, idriesgo) => {
     const riesgo = await modelsFT.Riesgo.findByPk(idriesgo, { transaction });
     logger.info(line(), riesgo);
 
-    //const riesgos = await riesgo.getRiesgos();
-    //logger.info(line(),riesgos);
-
     return riesgo;
   } catch (error) {
     logger.error(line(), formatError(error));
