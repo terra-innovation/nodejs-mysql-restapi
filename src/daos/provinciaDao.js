@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
+import { formatError } from "../utils/errorUtils.js";
 import logger, { line } from "../utils/logger.js";
 
 export const getProvincias = async (transaction, estados) => {
@@ -17,7 +18,7 @@ export const getProvincias = async (transaction, estados) => {
     return provincias;
   } catch (error) {
     logger.error(line(), error.original.code);
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -29,7 +30,7 @@ export const getProvinciaByIdprovincia = async (transaction, idprovincia) => {
 
     return provincia;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -45,7 +46,7 @@ export const getProvinciaByProvinciaid = async (transaction, provinciaid) => {
     //logger.info(line(),provincia);
     return provincia;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -62,7 +63,7 @@ export const findProvinciaPk = async (transaction, provinciaid) => {
     //logger.info(line(),provincia);
     return provincia;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -73,7 +74,7 @@ export const insertProvincia = async (transaction, provincia) => {
     // logger.info(line(),provincia_nuevo);
     return provincia_nuevo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -88,7 +89,7 @@ export const updateProvincia = async (transaction, provincia) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -103,7 +104,7 @@ export const deleteProvincia = async (transaction, provincia) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };

@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
+import { formatError } from "../utils/errorUtils.js";
 import logger, { line } from "../utils/logger.js";
 
 export const getZlaboratorioUsuarios = async (transaction, estados) => {
@@ -17,7 +18,7 @@ export const getZlaboratorioUsuarios = async (transaction, estados) => {
     return zlaboratoriousuarios;
   } catch (error) {
     logger.error(line(), error.original.code);
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -32,7 +33,7 @@ export const getZlaboratorioUsuarioByIdzlaboratoriousuario = async (transaction,
 
     return zlaboratoriousuario;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -48,7 +49,7 @@ export const getZlaboratorioUsuarioByZlaboratorioUsuarioid = async (transaction,
     //logger.info(line(),zlaboratoriousuario);
     return zlaboratoriousuario;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -65,7 +66,7 @@ export const findZlaboratorioUsuarioPk = async (transaction, zlaboratoriousuario
     //logger.info(line(),zlaboratoriousuario);
     return zlaboratoriousuario;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -76,7 +77,7 @@ export const insertZlaboratorioUsuario = async (transaction, zlaboratoriousuario
     // logger.info(line(),zlaboratoriousuario_nuevo);
     return zlaboratoriousuario_nuevo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -91,7 +92,7 @@ export const updateZlaboratorioUsuario = async (transaction, zlaboratoriousuario
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -106,7 +107,7 @@ export const deleteZlaboratorioUsuario = async (transaction, zlaboratoriousuario
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };

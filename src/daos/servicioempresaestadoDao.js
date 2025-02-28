@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
+import { formatError } from "../utils/errorUtils.js";
 import logger, { line } from "../utils/logger.js";
 
 export const getServicioempresaestados = async (transaction, estados) => {
@@ -17,7 +18,7 @@ export const getServicioempresaestados = async (transaction, estados) => {
     return servicioempresaestados;
   } catch (error) {
     logger.error(line(), error.original.code);
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -32,7 +33,7 @@ export const getServicioempresaestadoByIdservicioempresaestado = async (transact
 
     return servicioempresaestado;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -48,7 +49,7 @@ export const getServicioempresaestadoByServicioempresaestadoid = async (transact
     //logger.info(line(),servicioempresaestado);
     return servicioempresaestado;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -65,7 +66,7 @@ export const findServicioempresaestadoPk = async (transaction, servicioempresaes
     //logger.info(line(),servicioempresaestado);
     return servicioempresaestado;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -76,7 +77,7 @@ export const insertServicioempresaestado = async (transaction, servicioempresaes
     // logger.info(line(),servicioempresaestado_nuevo);
     return servicioempresaestado_nuevo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -91,7 +92,7 @@ export const updateServicioempresaestado = async (transaction, servicioempresaes
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -106,7 +107,7 @@ export const deleteServicioempresaestado = async (transaction, servicioempresaes
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };

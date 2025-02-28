@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { poolFactoring } from "../config/bd/mysql2_db_factoring.js";
+import { formatError } from "../utils/errorUtils.js";
 import logger, { line } from "../utils/logger.js";
 
 export const insertarFactura = async (factura) => {

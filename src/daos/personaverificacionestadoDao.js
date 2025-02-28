@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
+import { formatError } from "../utils/errorUtils.js";
 import logger, { line } from "../utils/logger.js";
 
 export const getPersonaverificacionestados = async (transaction, estados) => {
@@ -17,7 +18,7 @@ export const getPersonaverificacionestados = async (transaction, estados) => {
     return personaverificacionestados;
   } catch (error) {
     logger.error(line(), error.original.code);
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -32,7 +33,7 @@ export const getPersonaverificacionestadoByIdpersonaverificacionestado = async (
 
     return personaverificacionestado;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -48,7 +49,7 @@ export const getPersonaverificacionestadoByPersonaverificacionestadoid = async (
     //logger.info(line(),personaverificacionestado);
     return personaverificacionestado;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -65,7 +66,7 @@ export const findPersonaverificacionestadoPk = async (transaction, personaverifi
     //logger.info(line(),personaverificacionestado);
     return personaverificacionestado;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -76,7 +77,7 @@ export const insertPersonaverificacionestado = async (transaction, personaverifi
     // logger.info(line(),personaverificacionestado_nuevo);
     return personaverificacionestado_nuevo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -91,7 +92,7 @@ export const updatePersonaverificacionestado = async (transaction, personaverifi
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -106,7 +107,7 @@ export const deletePersonaverificacionestado = async (transaction, personaverifi
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };

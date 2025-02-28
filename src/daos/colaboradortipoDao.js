@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
+import { formatError } from "../utils/errorUtils.js";
 import logger, { line } from "../utils/logger.js";
 
 export const getColaboradortipos = async (transaction, estados) => {
@@ -17,7 +18,7 @@ export const getColaboradortipos = async (transaction, estados) => {
     return colaboradortipos;
   } catch (error) {
     logger.error(line(), error.original.code);
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -32,7 +33,7 @@ export const getColaboradortipoByIdcolaboradortipo = async (transaction, idcolab
 
     return colaboradortipo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -48,7 +49,7 @@ export const getColaboradortipoByColaboradortipoid = async (transaction, colabor
     //logger.info(line(),colaboradortipo);
     return colaboradortipo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -65,7 +66,7 @@ export const findColaboradortipoPk = async (transaction, colaboradortipoid) => {
     //logger.info(line(),colaboradortipo);
     return colaboradortipo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -76,7 +77,7 @@ export const insertColaboradortipo = async (transaction, colaboradortipo) => {
     // logger.info(line(),colaboradortipo_nuevo);
     return colaboradortipo_nuevo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -91,7 +92,7 @@ export const updateColaboradortipo = async (transaction, colaboradortipo) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -106,7 +107,7 @@ export const deleteColaboradortipo = async (transaction, colaboradortipo) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };

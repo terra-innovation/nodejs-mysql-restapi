@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
+import { formatError } from "../utils/errorUtils.js";
 import logger, { line } from "../utils/logger.js";
 
 export const getFactoringsByIdcedentes = async (transaction, _idcedentes, estados) => {
@@ -24,7 +25,7 @@ export const getFactoringsByIdcedentes = async (transaction, _idcedentes, estado
     //logger.info(line(),factorings);
     return factorings;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -61,7 +62,7 @@ export const getFactoringByRucCedenteAndCodigoFactura = async (transaction, ruc_
     });
     return factoring;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -86,7 +87,7 @@ export const getFactoringByFactoringidAndIdcontactocedente = async (transaction,
     //logger.debug(line(),"factoring: ", factoring);
     return factoring;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -110,7 +111,7 @@ export const getFactoringsCotizacionesByIdcontactocedente = async (transaction, 
     //logger.info(line(),factorings);
     return factorings;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -133,7 +134,7 @@ export const getFactoringsByEstados = async (transaction, estados) => {
     //logger.info(line(),factorings);
     return factorings;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -148,7 +149,7 @@ export const getFactoringByIdfactoring = async (transaction, idfactoring) => {
 
     return factoring;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -169,7 +170,7 @@ export const getFactoringByFactoringid = async (transaction, factoringid) => {
     //logger.debug(line(),"factoring: ", factoring);
     return factoring;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -186,7 +187,7 @@ export const findFactoringPk = async (transaction, factoringid) => {
     //logger.info(line(),factoring);
     return factoring;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -197,7 +198,7 @@ export const insertFactoring = async (transaction, factoring) => {
     // logger.info(line(),factoring_nuevo);
     return factoring_nuevo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -212,7 +213,7 @@ export const updateFactoring = async (transaction, factoring) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -227,7 +228,7 @@ export const deleteFactoring = async (transaction, factoring) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };

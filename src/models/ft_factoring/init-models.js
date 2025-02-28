@@ -275,6 +275,8 @@ export default function initModels(sequelize) {
   Provincia.hasMany(Persona, { as: "personas", foreignKey: "_idprovinciaresidencia" });
   Distrito.belongsTo(RegionNatural, { as: "regionnatural_region_natural", foreignKey: "_idregionnatural" });
   RegionNatural.hasMany(Distrito, { as: "distritos", foreignKey: "_idregionnatural" });
+  Empresa.belongsTo(Riesgo, { as: "riesgo_riesgo", foreignKey: "_idriesgo" });
+  Riesgo.hasMany(Empresa, { as: "empresas", foreignKey: "_idriesgo" });
   Factoring.belongsTo(Riesgo, { as: "riesgooperacion_riesgo", foreignKey: "_idriesgooperacion" });
   Riesgo.hasMany(Factoring, { as: "factorings", foreignKey: "_idriesgooperacion" });
   Factoring.belongsTo(Riesgo, { as: "riesgoaceptante_riesgo", foreignKey: "_idriesgoaceptante" });

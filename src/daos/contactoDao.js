@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
+import { formatError } from "../utils/errorUtils.js";
 import logger, { line } from "../utils/logger.js";
 
 export const getContactosByIdempresaAndEmail = async (transaction, _idempresa, email, estados) => {
@@ -27,7 +28,7 @@ export const getContactosByIdempresaAndEmail = async (transaction, _idempresa, e
     //logger.info(line(),contactos);
     return contactos;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -57,7 +58,7 @@ export const getContactosByIdempresas = async (transaction, _idempresas, estados
     //logger.info(line(),contactos);
     return contactos;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -75,7 +76,7 @@ export const getContactos = async (transaction, estados) => {
     //logger.info(line(),contactos);
     return contactos;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -90,7 +91,7 @@ export const getContactoByIdcontacto = async (transaction, idcontacto) => {
 
     return contacto;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -106,7 +107,7 @@ export const getContactoByContactoid = async (transaction, contactoid) => {
     //logger.info(line(),contacto);
     return contacto;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -123,7 +124,7 @@ export const findContactoPk = async (transaction, contactoid) => {
     //logger.info(line(),contacto);
     return contacto;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -134,7 +135,7 @@ export const insertContacto = async (transaction, contacto) => {
     // logger.info(line(),contacto_nuevo);
     return contacto_nuevo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -149,7 +150,7 @@ export const updateContacto = async (transaction, contacto) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -164,7 +165,7 @@ export const deleteContacto = async (transaction, contacto) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };

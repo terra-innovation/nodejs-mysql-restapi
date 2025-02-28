@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
+import { formatError } from "../utils/errorUtils.js";
 import logger, { line } from "../utils/logger.js";
 
 export const getValidacionsByIdusuario = async (transaction, _idusuario, estados) => {
@@ -28,7 +29,7 @@ export const getValidacionsByIdusuario = async (transaction, _idusuario, estados
     //logger.info(line(),validacions);
     return validacions;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -48,7 +49,7 @@ export const getValidacionByIdusuarioAndValor = async (transaction, _idusuario, 
     //logger.info(line(),validacions);
     return validacions;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -68,7 +69,7 @@ export const getValidacionByIdusuarioAndIdvalidaciontipo = async (transaction, _
     //logger.info(line(),validacions);
     return validacions;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -88,7 +89,7 @@ export const getValidacionByIdusuarioAndCodigo = async (transaction, _idusuario,
     //logger.info(line(),validacions);
     return validacions;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -115,7 +116,7 @@ export const getValidacionByIdusuarioAndRuc = async (transaction, _idusuario, ru
     //logger.info(line(),validacions);
     return validacions;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -142,7 +143,7 @@ export const getValidacionByIdusuarioAndValidacionid = async (transaction, _idus
     //logger.info(line(),validacions);
     return validacions;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -160,7 +161,7 @@ export const getValidacions = async (transaction, estados) => {
     //logger.info(line(),validacions);
     return validacions;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -183,7 +184,7 @@ export const getValidacionByIdvalidacion = async (transaction, idvalidacion) => 
 
     return validacion;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -205,7 +206,7 @@ export const getValidacionByValidacionid = async (transaction, validacionid) => 
     //logger.info(line(),validacion);
     return validacion;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -221,7 +222,7 @@ export const getValidacionByRuc = async (transaction, ruc) => {
     //logger.info(line(),validacion);
     return validacion;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -238,7 +239,7 @@ export const findValidacionPk = async (transaction, validacionid) => {
     //logger.info(line(),validacion);
     return validacion;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -249,7 +250,7 @@ export const insertValidacion = async (transaction, validacion) => {
     // logger.info(line(),validacion_nuevo);
     return validacion_nuevo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -264,7 +265,7 @@ export const updateValidacion = async (transaction, validacion) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -279,7 +280,7 @@ export const deleteValidacion = async (transaction, validacion) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -294,7 +295,7 @@ export const activateValidacion = async (transaction, validacion) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };

@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
+import { formatError } from "../utils/errorUtils.js";
 import logger, { line } from "../utils/logger.js";
 
 export const getCuentasbancariasByIdempresaAndAlias = async (transaction, idempresa, alias, estado) => {
@@ -47,7 +48,7 @@ export const getCuentasbancariasByIdempresaAndAlias = async (transaction, idempr
     //logger.info(line(),cuentasbancarias);
     return cuentasbancarias;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -89,7 +90,7 @@ export const getCuentasbancariasByIdbancoAndNumero = async (transaction, idbanco
     //logger.info(line(),cuentasbancarias);
     return cuentasbancarias;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -152,7 +153,7 @@ export const getCuentasbancariasByIdusuarioAndAlias = async (transaction, idusua
     //logger.info(line(),cuentasbancarias);
     return cuentasbancarias;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -214,7 +215,7 @@ export const getCuentasbancariasByIdusuario = async (transaction, idusuario, est
     //logger.info(line(),cuentasbancarias);
     return cuentasbancarias;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -229,7 +230,7 @@ export const getCuentabancariaByIdcuentabancaria = async (transaction, idcuentab
 
     return cuentabancaria;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -278,7 +279,7 @@ export const getCuentasbancariasByEmpresaidAndMoneda = async (transaction, empre
     //logger.info(line(),cuentasbancarias);
     return cuentasbancarias;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -337,7 +338,7 @@ export const getCuentabancariaByIdcuentabancariaIdempresaIdusuario = async (tran
     //logger.debug(line(), cuentabancaria);
     return cuentabancaria;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -383,7 +384,7 @@ export const getCuentabancariaByCuentabancariaid = async (transaction, cuentaban
     //logger.debug(line(), cuentabancaria);
     return cuentabancaria;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -400,7 +401,7 @@ export const findCuentabancariaPk = async (transaction, cuentabancariaid) => {
     //logger.info(line(),cuentabancaria);
     return cuentabancaria;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -445,7 +446,7 @@ export const getCuentasbancarias = async (transaction, estado) => {
     //logger.info(line(),cuentasbancarias);
     return cuentasbancarias;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -456,7 +457,7 @@ export const insertCuentabancaria = async (transaction, cuentabancaria) => {
     // logger.info(line(),cuentabancaria_nuevo);
     return cuentabancaria_nuevo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -474,7 +475,7 @@ export const updateCuentabancariaOnlyAliasByCuentabancariaid = async (transactio
     );
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -489,7 +490,7 @@ export const updateCuentabancaria = async (transaction, cuentabancaria) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -504,7 +505,7 @@ export const deleteCuentabancaria = async (transaction, cuentabancaria) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -519,7 +520,7 @@ export const activateCuentabancaria = async (transaction, cuentabancaria) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };

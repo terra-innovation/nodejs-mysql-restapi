@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
+import { formatError } from "../utils/errorUtils.js";
 import logger, { line } from "../utils/logger.js";
 
 export const getFacturaimpuestos = async (transaction, estados) => {
@@ -17,7 +18,7 @@ export const getFacturaimpuestos = async (transaction, estados) => {
     return facturaimpuestos;
   } catch (error) {
     logger.error(line(), error.original.code);
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -32,7 +33,7 @@ export const getFacturaimpuestoByIdfacturaimpuesto = async (transaction, idfactu
 
     return facturaimpuesto;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -48,7 +49,7 @@ export const getFacturaimpuestoByFacturaimpuestoid = async (transaction, factura
     //logger.info(line(),facturaimpuesto);
     return facturaimpuesto;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -65,7 +66,7 @@ export const findFacturaimpuestoPk = async (transaction, facturaimpuestoid) => {
     //logger.info(line(),facturaimpuesto);
     return facturaimpuesto;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -76,7 +77,7 @@ export const insertFacturaimpuesto = async (transaction, facturaimpuesto) => {
     // logger.info(line(),facturaimpuesto_nuevo);
     return facturaimpuesto_nuevo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -91,7 +92,7 @@ export const updateFacturaimpuesto = async (transaction, facturaimpuesto) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -106,7 +107,7 @@ export const deleteFacturaimpuesto = async (transaction, facturaimpuesto) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };

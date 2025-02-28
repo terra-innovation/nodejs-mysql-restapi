@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
+import { formatError } from "../utils/errorUtils.js";
 import logger, { line } from "../utils/logger.js";
 
 export const getArchivocuentabancarias = async (transaction, estados) => {
@@ -17,7 +18,7 @@ export const getArchivocuentabancarias = async (transaction, estados) => {
     return archivocuentabancarias;
   } catch (error) {
     logger.error(line(), error.original.code);
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -32,7 +33,7 @@ export const getArchivoCuentaBancariaByIdarchivocuentabancaria = async (transact
 
     return archivocuentabancaria;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -48,7 +49,7 @@ export const getArchivoCuentaBancariaByArchivoCuentaBancariaid = async (transact
     //logger.info(line(),archivocuentabancaria);
     return archivocuentabancaria;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -65,7 +66,7 @@ export const findArchivoCuentaBancariaPk = async (transaction, archivocuentabanc
     //logger.info(line(),archivocuentabancaria);
     return archivocuentabancaria;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -76,7 +77,7 @@ export const insertArchivoCuentaBancaria = async (transaction, archivocuentabanc
     // logger.info(line(),archivocuentabancaria_nuevo);
     return archivocuentabancaria_nuevo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -91,7 +92,7 @@ export const updateArchivoCuentaBancaria = async (transaction, archivocuentabanc
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -106,7 +107,7 @@ export const deleteArchivoCuentaBancaria = async (transaction, archivocuentabanc
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };

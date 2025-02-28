@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
+import { formatError } from "../utils/errorUtils.js";
 import logger, { line } from "../utils/logger.js";
 
 export const getUsuarioservicioestados = async (transaction, estados) => {
@@ -17,7 +18,7 @@ export const getUsuarioservicioestados = async (transaction, estados) => {
     return usuarioservicioestados;
   } catch (error) {
     logger.error(line(), error.original.code);
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -32,7 +33,7 @@ export const getUsuarioservicioestadoByIdusuarioservicioestado = async (transact
 
     return usuarioservicioestado;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -48,7 +49,7 @@ export const getUsuarioservicioestadoByUsuarioservicioestadoid = async (transact
     //logger.info(line(),usuarioservicioestado);
     return usuarioservicioestado;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -65,7 +66,7 @@ export const findUsuarioservicioestadoPk = async (transaction, usuarioservicioes
     //logger.info(line(),usuarioservicioestado);
     return usuarioservicioestado;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -76,7 +77,7 @@ export const insertUsuarioservicioestado = async (transaction, usuarioservicioes
     // logger.info(line(),usuarioservicioestado_nuevo);
     return usuarioservicioestado_nuevo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -91,7 +92,7 @@ export const updateUsuarioservicioestado = async (transaction, usuarioservicioes
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -106,7 +107,7 @@ export const deleteUsuarioservicioestado = async (transaction, usuarioservicioes
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };

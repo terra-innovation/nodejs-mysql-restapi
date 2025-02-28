@@ -2,6 +2,7 @@ import { Sequelize } from "sequelize";
 import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import Rol from "../models/ft_factoring/Rol.js";
 import { ClientError } from "../utils/CustomErrors.js";
+import { formatError } from "../utils/errorUtils.js";
 import logger, { line } from "../utils/logger.js";
 
 export const getUsuarioDatosContactoByIdusuario = async (transaction, idusuario, estado) => {
@@ -22,7 +23,7 @@ export const getUsuarioDatosContactoByIdusuario = async (transaction, idusuario,
 
     return usuario;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -39,7 +40,7 @@ export const getUsuariosActivos = async (transaction) => {
     return usuarioes;
   } catch (error) {
     logger.error(line(), error.original.code);
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -60,7 +61,7 @@ export const getUsuarioByIdusuario = async (transaction, idusuario) => {
 
     return usuario;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -85,7 +86,7 @@ export const autenticarUsuario = async (transaction, email) => {
     //logger.info(line(),usuario);
     return usuario;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -107,7 +108,7 @@ export const getUsuarioAndRolesByEmail = async (transaction, email) => {
     //logger.info(line(),usuario);
     return usuario;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -123,7 +124,7 @@ export const getUsuarioByUsuarioid = async (transaction, usuarioid) => {
     //logger.info(line(),usuario);
     return usuario;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -139,7 +140,7 @@ export const getUsuarioByEmail = async (transaction, email) => {
     //logger.info(line(),usuario);
     return usuario;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -171,7 +172,7 @@ export const getUsuarioByNumerodocumento = async (transaction, documentonumero) 
     //logger.info(line(),usuario);
     return usuario;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -188,7 +189,7 @@ export const findUsuarioPk = async (transaction, usuarioid) => {
     //logger.info(line(),usuario);
     return usuario;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -214,7 +215,7 @@ export const updateUsuario = async (transaction, usuario) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -229,7 +230,7 @@ export const deleteUsuario = async (transaction, usuario) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };

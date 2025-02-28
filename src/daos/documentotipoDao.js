@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
+import { formatError } from "../utils/errorUtils.js";
 import logger, { line } from "../utils/logger.js";
 
 export const getDocumentotiposByIdusuario = async (transaction, _idusuario, estados) => {
@@ -28,7 +29,7 @@ export const getDocumentotiposByIdusuario = async (transaction, _idusuario, esta
     //logger.info(line(),documentotipos);
     return documentotipos;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -55,7 +56,7 @@ export const getDocumentotipoByIdusuarioAndRuc = async (transaction, _idusuario,
     //logger.info(line(),documentotipos);
     return documentotipos;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -82,7 +83,7 @@ export const getDocumentotipoByIdusuarioAndDocumentotipoid = async (transaction,
     //logger.info(line(),documentotipos);
     return documentotipos;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -100,7 +101,7 @@ export const getDocumentotipos = async (transaction, estados) => {
     //logger.info(line(),documentotipos);
     return documentotipos;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -123,7 +124,7 @@ export const getDocumentotipoByIddocumentotipo = async (transaction, iddocumento
 
     return documentotipo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -145,7 +146,7 @@ export const getDocumentotipoByDocumentotipoid = async (transaction, documentoti
     //logger.info(line(),documentotipo);
     return documentotipo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -161,7 +162,7 @@ export const getDocumentotipoByRuc = async (transaction, ruc) => {
     //logger.info(line(),documentotipo);
     return documentotipo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -178,7 +179,7 @@ export const findDocumentotipoPk = async (transaction, documentotipoid) => {
     //logger.info(line(),documentotipo);
     return documentotipo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -189,7 +190,7 @@ export const insertDocumentotipo = async (transaction, documentotipo) => {
     // logger.info(line(),documentotipo_nuevo);
     return documentotipo_nuevo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -204,7 +205,7 @@ export const updateDocumentotipo = async (transaction, documentotipo) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -219,7 +220,7 @@ export const deleteDocumentotipo = async (transaction, documentotipo) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -234,7 +235,7 @@ export const activateDocumentotipo = async (transaction, documentotipo) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };

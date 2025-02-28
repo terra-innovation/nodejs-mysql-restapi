@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
+import { formatError } from "../utils/errorUtils.js";
 import logger, { line } from "../utils/logger.js";
 
 export const getMonedas = async (transaction, estados) => {
@@ -17,7 +18,7 @@ export const getMonedas = async (transaction, estados) => {
     return monedas;
   } catch (error) {
     logger.error(line(), error.original.code);
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -32,7 +33,7 @@ export const getMonedaByIdmoneda = async (transaction, idmoneda) => {
 
     return moneda;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -48,7 +49,7 @@ export const getMonedaByCodigo = async (transaction, codigo) => {
     //logger.info(line(),moneda);
     return moneda;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -64,7 +65,7 @@ export const getMonedaByMonedaid = async (transaction, monedaid) => {
     //logger.info(line(),moneda);
     return moneda;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -81,7 +82,7 @@ export const findMonedaPk = async (transaction, monedaid) => {
     //logger.info(line(),moneda);
     return moneda;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -92,7 +93,7 @@ export const insertMoneda = async (transaction, moneda) => {
     // logger.info(line(),moneda_nuevo);
     return moneda_nuevo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -107,7 +108,7 @@ export const updateMoneda = async (transaction, moneda) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -122,7 +123,7 @@ export const deleteMoneda = async (transaction, moneda) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };

@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
+import { formatError } from "../utils/errorUtils.js";
 import logger, { line } from "../utils/logger.js";
 
 export const getFacturaterminopagos = async (transaction, estados) => {
@@ -17,7 +18,7 @@ export const getFacturaterminopagos = async (transaction, estados) => {
     return facturaterminopagos;
   } catch (error) {
     logger.error(line(), error.original.code);
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -32,7 +33,7 @@ export const getFacturaterminopagoByIdfacturaterminopago = async (transaction, i
 
     return facturaterminopago;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -48,7 +49,7 @@ export const getFacturaterminopagoByFacturaterminopagoid = async (transaction, f
     //logger.info(line(),facturaterminopago);
     return facturaterminopago;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -65,7 +66,7 @@ export const findFacturaterminopagoPk = async (transaction, facturaterminopagoid
     //logger.info(line(),facturaterminopago);
     return facturaterminopago;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -76,7 +77,7 @@ export const insertFacturaterminopago = async (transaction, facturaterminopago) 
     // logger.info(line(),facturaterminopago_nuevo);
     return facturaterminopago_nuevo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -91,7 +92,7 @@ export const updateFacturaterminopago = async (transaction, facturaterminopago) 
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -106,7 +107,7 @@ export const deleteFacturaterminopago = async (transaction, facturaterminopago) 
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };

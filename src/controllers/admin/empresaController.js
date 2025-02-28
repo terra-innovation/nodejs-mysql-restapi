@@ -1,7 +1,7 @@
 import * as empresaDao from "../../daos/empresaDao.js";
 import * as bancoDao from "../../daos/bancoDao.js";
 import * as cuentatipoDao from "../../daos/cuentatipoDao.js";
-import * as monedaDao from "../../daos/monedaDao.js";
+import * as riesgoDao from "../../daos/riesgoDao.js";
 import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
@@ -81,9 +81,9 @@ export const getEmpresaMaster = async (req, res) => {
   const transaction = await sequelizeFT.transaction();
   try {
     const filter_estados = [1];
-
+    const riesgos = await riesgoDao.getRiesgos(transaction, filter_estados);
     var empresasMaster = {};
-
+    empresasMaster.riesgos = riesgos;
     var empresasMasterJSON = jsonUtils.sequelizeToJSON(empresasMaster);
     //jsonUtils.prettyPrint(empresasMasterJSON);
     var empresasMasterObfuscated = empresasMasterJSON;
@@ -105,10 +105,10 @@ export const updateEmpresa = async (req, res) => {
     .object()
     .shape({
       empresaid: yup.string().trim().required().min(36).max(36),
+      riesgoid: yup.string().trim().required().min(36).max(36),
       razon_social: yup.string().trim().required().min(2).max(200),
       nombre_comercial: yup.string().min(2).max(200),
       domicilio_fiscal: yup.string().required().min(2).max(200),
-      score: yup.string().max(5),
     })
     .required();
   const empresaValidated = empresaUpdateSchema.validateSync({ empresaid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
@@ -116,7 +116,20 @@ export const updateEmpresa = async (req, res) => {
 
   const transaction = await sequelizeFT.transaction();
   try {
+    var riesgo = await riesgoDao.getRiesgoByRiesgoid(transaction, empresaValidated.riesgoid);
+    if (!riesgo) {
+      logger.warn(line(), "Riesgo no existe: [" + empresaValidated.riesgoid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    var empresa = await empresaDao.getEmpresaByEmpresaid(transaction, empresaValidated.empresaid);
+    if (!empresa) {
+      logger.warn(line(), "Empresa no existe: [" + empresaValidated.empresaid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
     var camposFk = {};
+    camposFk._idriesgo = riesgo._idriesgo;
 
     var camposAdicionales = {};
     camposAdicionales.empresaid = id;
@@ -125,27 +138,16 @@ export const updateEmpresa = async (req, res) => {
     camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
     camposAuditoria.fechamod = Sequelize.fn("now", 3);
 
-    const result = await empresaDao.updateEmpresa(transaction, {
+    const empresaUpdated = await empresaDao.updateEmpresa(transaction, {
       ...camposFk,
       ...camposAdicionales,
       ...empresaValidated,
       ...camposAuditoria,
     });
-    if (result[0] === 0) {
-      throw new ClientError("Empresa no existe", 404);
-    }
-    logger.info(line(), id);
-    const empresaUpdated = await empresaDao.getEmpresaByEmpresaid(transaction, id);
-    if (!empresaUpdated) {
-      throw new ClientError("Empresa no existe", 404);
-    }
+    logger.debug(line(), "empresaUpdated:", empresaUpdated);
 
-    var empresaObfuscated = jsonUtils.ofuscarAtributos(empresaUpdated, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
-    //logger.info(line(),empresaObfuscated);
-
-    var empresaFiltered = jsonUtils.removeAttributesPrivates(empresaObfuscated);
     await transaction.commit();
-    response(res, 200, empresaFiltered);
+    response(res, 200, { ...empresaValidated });
   } catch (error) {
     await transaction.rollback();
     throw error;
@@ -180,6 +182,7 @@ export const createEmpresa = async (req, res) => {
   const empresaCreateSchema = yup
     .object()
     .shape({
+      riesgoid: yup.string().trim().required().min(36).max(36),
       ruc: yup
         .string()
         .trim()
@@ -188,7 +191,6 @@ export const createEmpresa = async (req, res) => {
       razon_social: yup.string().trim().required().min(2).max(200),
       nombre_comercial: yup.string().min(2).max(200),
       domicilio_fiscal: yup.string().required().min(2).max(200),
-      score: yup.string().max(5),
     })
     .required();
   var empresaValidated = empresaCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
@@ -196,12 +198,20 @@ export const createEmpresa = async (req, res) => {
 
   const transaction = await sequelizeFT.transaction();
   try {
+    var riesgo = await riesgoDao.getRiesgoByRiesgoid(transaction, empresaValidated.riesgoid);
+    if (!riesgo) {
+      logger.warn(line(), "Riesgo no existe: [" + empresaValidated.riesgoid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
     var empresas_por_ruc = await empresaDao.getEmpresaByRuc(transaction, empresaValidated.ruc);
-    if (empresas_por_ruc && empresas_por_ruc.length > 0) {
+    if (empresas_por_ruc) {
+      logger.warn(line(), "La empresa [" + empresaValidated.ruc + "] se encuentra registrada. Ingrese un ruc diferente.");
       throw new ClientError("La empresa [" + empresaValidated.ruc + "] se encuentra registrada. Ingrese un ruc diferente.", 404);
     }
 
     var camposFk = {};
+    camposFk._idriesgo = riesgo._idriesgo;
 
     var camposAdicionales = {};
     camposAdicionales.empresaid = uuidv4();

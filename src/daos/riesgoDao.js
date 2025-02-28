@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
+import { formatError } from "../utils/errorUtils.js";
 import logger, { line } from "../utils/logger.js";
 
 export const getRiesgos = async (transaction, estados) => {
@@ -16,7 +17,7 @@ export const getRiesgos = async (transaction, estados) => {
     //logger.info(line(),riesgos);
     return riesgos;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -31,7 +32,7 @@ export const getRiesgoByIdriesgo = async (transaction, idriesgo) => {
 
     return riesgo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -47,7 +48,7 @@ export const getRiesgoByRiesgoid = async (transaction, riesgoid) => {
     //logger.info(line(),riesgo);
     return riesgo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -64,7 +65,7 @@ export const findRiesgoPk = async (transaction, riesgoid) => {
     //logger.info(line(),riesgo);
     return riesgo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -75,7 +76,7 @@ export const insertRiesgo = async (transaction, riesgo) => {
     // logger.info(line(),riesgo_nuevo);
     return riesgo_nuevo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -90,7 +91,7 @@ export const updateRiesgo = async (transaction, riesgo) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -105,7 +106,7 @@ export const deleteRiesgo = async (transaction, riesgo) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };

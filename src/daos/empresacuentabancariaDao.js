@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
+import { formatError } from "../utils/errorUtils.js";
 import logger, { line } from "../utils/logger.js";
 
 export const getEmpresacuentabancariasForFactoring = async (transaction, _idempresa, _idmoneda, _idcuentabancariaestado, estados) => {
@@ -59,7 +60,7 @@ export const getEmpresacuentabancariasForFactoring = async (transaction, _idempr
     //logger.info(line(),empresacuentabancaria);
     return empresacuentabancaria;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -120,7 +121,7 @@ export const getEmpresacuentabancariasByIdempresaAndAlias = async (transaction, 
     //logger.info(line(),empresacuentabancaria);
     return empresacuentabancaria;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -182,7 +183,7 @@ export const getEmpresacuentabancariasByIdusuario = async (transaction, _idusuar
     //logger.info(line(),empresacuentabancaria);
     return empresacuentabancaria;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -254,7 +255,7 @@ export const getEmpresacuentabancarias = async (transaction, estados) => {
     return empresacuentabancarias;
   } catch (error) {
     logger.error(line(), error.original.code);
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -317,7 +318,7 @@ export const getEmpresacuentabancariaByIdempresaAndIdusuario = async (transactio
     //logger.info(line(),empresacuentabancaria);
     return empresacuentabancaria;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -332,7 +333,7 @@ export const getEmpresacuentabancariaByIdempresacuentabancaria = async (transact
 
     return empresacuentabancaria;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -348,7 +349,7 @@ export const getEmpresacuentabancariaByEmpresacuentabancariaid = async (transact
     //logger.info(line(),empresacuentabancaria);
     return empresacuentabancaria;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -365,7 +366,7 @@ export const findEmpresacuentabancariaPk = async (transaction, empresacuentabanc
     //logger.info(line(),empresacuentabancaria);
     return empresacuentabancaria;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -376,7 +377,7 @@ export const insertEmpresacuentabancaria = async (transaction, empresacuentabanc
     // logger.info(line(),empresacuentabancaria_nuevo);
     return empresacuentabancaria_nuevo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -391,7 +392,7 @@ export const updateEmpresacuentabancaria = async (transaction, empresacuentabanc
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -406,7 +407,7 @@ export const deleteEmpresacuentabancaria = async (transaction, empresacuentabanc
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };

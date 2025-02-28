@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
+import { formatError } from "../utils/errorUtils.js";
 import logger, { line } from "../utils/logger.js";
 
 export const getFactoringsfacturasEmpresasActivas = async (transaction) => {
@@ -19,7 +20,7 @@ export const getFactoringsfacturasEmpresasActivas = async (transaction) => {
     //logger.info(line(),factoringsfacturasempresas);
     return factoringsfacturasempresas;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -34,7 +35,7 @@ export const getFactoringfacturaByIdfactoringfactura = async (transaction, idfac
 
     return factoringfactura;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -50,7 +51,7 @@ export const getFactoringfacturaByFactoringfacturaid = async (transaction, facto
     //logger.info(line(),factoringfactura);
     return factoringfactura;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -67,7 +68,7 @@ export const findFactoringfacturaPk = async (transaction, factoringfacturaid) =>
     //logger.info(line(),factoringfactura);
     return factoringfactura;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -78,7 +79,7 @@ export const insertFactoringfactura = async (transaction, factoringfactura) => {
     // logger.info(line(),factoringfactura_nuevo);
     return factoringfactura_nuevo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -93,7 +94,7 @@ export const updateFactoringfactura = async (transaction, factoringfactura) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -108,7 +109,7 @@ export const deleteFactoringfactura = async (transaction, factoringfactura) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };

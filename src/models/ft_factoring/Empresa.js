@@ -53,6 +53,14 @@ export default class Empresa extends Model {
         key: '_iddistrito'
       }
     },
+    _idriesgo: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'riesgo',
+        key: '_idriesgo'
+      }
+    },
     ruc: {
       type: DataTypes.STRING(11),
       allowNull: false,
@@ -80,10 +88,6 @@ export default class Empresa extends Model {
     },
     direccion_sede_referencia: {
       type: DataTypes.STRING(200),
-      allowNull: true
-    },
-    score: {
-      type: DataTypes.STRING(5),
       allowNull: true
     },
     idusuariocrea: {
@@ -174,6 +178,13 @@ export default class Empresa extends Model {
         using: "BTREE",
         fields: [
           { name: "_iddistritosede" },
+        ]
+      },
+      {
+        name: "FK_empresa_idriesgo",
+        using: "BTREE",
+        fields: [
+          { name: "_idriesgo" },
         ]
       },
     ]

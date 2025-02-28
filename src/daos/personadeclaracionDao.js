@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
+import { formatError } from "../utils/errorUtils.js";
 import logger, { line } from "../utils/logger.js";
 
 export const getPersonadeclaracions = async (transaction, estados) => {
@@ -17,7 +18,7 @@ export const getPersonadeclaracions = async (transaction, estados) => {
     return personadeclaracions;
   } catch (error) {
     logger.error(line(), error.original.code);
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -32,7 +33,7 @@ export const getPersonadeclaracionByIdpersonadeclaracion = async (transaction, i
 
     return personadeclaracion;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -48,7 +49,7 @@ export const getPersonadeclaracionByPersonadeclaracionid = async (transaction, p
     //logger.info(line(),personadeclaracion);
     return personadeclaracion;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -65,7 +66,7 @@ export const findPersonadeclaracionPk = async (transaction, personadeclaracionid
     //logger.info(line(),personadeclaracion);
     return personadeclaracion;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -76,7 +77,7 @@ export const insertPersonadeclaracion = async (transaction, personadeclaracion) 
     // logger.info(line(),personadeclaracion_nuevo);
     return personadeclaracion_nuevo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -91,7 +92,7 @@ export const updatePersonadeclaracion = async (transaction, personadeclaracion) 
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -106,7 +107,7 @@ export const deletePersonadeclaracion = async (transaction, personadeclaracion) 
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };

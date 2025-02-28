@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
+import { formatError } from "../utils/errorUtils.js";
 import logger, { line } from "../utils/logger.js";
 
 export const getFactoringestados = async (transaction, estados) => {
@@ -16,7 +17,7 @@ export const getFactoringestados = async (transaction, estados) => {
     //logger.info(line(),factoringestados);
     return factoringestados;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -31,7 +32,7 @@ export const getFactoringestadoByIdfactoringestado = async (transaction, idfacto
 
     return factoringestado;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -47,7 +48,7 @@ export const getFactoringestadoByFactoringestadoid = async (transaction, factori
     //logger.info(line(),factoringestado);
     return factoringestado;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -64,7 +65,7 @@ export const findFactoringestadoPk = async (transaction, factoringestadoid) => {
     //logger.info(line(),factoringestado);
     return factoringestado;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -75,7 +76,7 @@ export const insertFactoringestado = async (transaction, factoringestado) => {
     // logger.info(line(),factoringestado_nuevo);
     return factoringestado_nuevo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -90,7 +91,7 @@ export const updateFactoringestado = async (transaction, factoringestado) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -105,7 +106,7 @@ export const deleteFactoringestado = async (transaction, factoringestado) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };

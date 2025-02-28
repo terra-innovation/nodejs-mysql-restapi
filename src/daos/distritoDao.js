@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
+import { formatError } from "../utils/errorUtils.js";
 import logger, { line } from "../utils/logger.js";
 
 export const getDistritos = async (transaction, estados) => {
@@ -30,7 +31,7 @@ export const getDistritos = async (transaction, estados) => {
     //logger.info(line(),distritos);
     return distritos;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -45,7 +46,7 @@ export const getDistritoByIddistrito = async (transaction, iddistrito) => {
 
     return distrito;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -61,7 +62,7 @@ export const getDistritoByDistritoid = async (transaction, distritoid) => {
     //logger.info(line(),distrito);
     return distrito;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -78,7 +79,7 @@ export const findDistritoPk = async (transaction, distritoid) => {
     //logger.info(line(),distrito);
     return distrito;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -89,7 +90,7 @@ export const insertDistrito = async (transaction, distrito) => {
     // logger.info(line(),distrito_nuevo);
     return distrito_nuevo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -104,7 +105,7 @@ export const updateDistrito = async (transaction, distrito) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -119,7 +120,7 @@ export const deleteDistrito = async (transaction, distrito) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };

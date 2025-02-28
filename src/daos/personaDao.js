@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
+import { formatError } from "../utils/errorUtils.js";
 import logger, { line } from "../utils/logger.js";
 
 export const getPersonasByVerificacion = async (transaction, estado, idarchivotipo) => {
@@ -106,7 +107,7 @@ export const getPersonasByVerificacion = async (transaction, estado, idarchivoti
     //logger.info(line(),personas);
     return personas;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -172,7 +173,7 @@ export const getPersonaByIdusuario = async (transaction, idusuario) => {
     });
     return persona;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -236,7 +237,7 @@ export const getPersonaByIdpersona = async (transaction, idpersona) => {
 
     return persona;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -303,7 +304,7 @@ export const getPersonaByPersonaid = async (transaction, personaid) => {
     //logger.debug(line(), persona);
     return persona;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -320,7 +321,7 @@ export const findPersonaPk = async (transaction, personaid) => {
     //logger.info(line(),persona);
     return persona;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -394,7 +395,7 @@ export const getPersonas = async (transaction, estado) => {
     //logger.info(line(),personas);
     return personas;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -405,7 +406,7 @@ export const insertPersona = async (transaction, persona) => {
     // logger.info(line(),persona_nuevo);
     return persona_nuevo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -420,7 +421,7 @@ export const updatePersona = async (transaction, persona) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -435,7 +436,7 @@ export const deletePersona = async (transaction, persona) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -450,7 +451,7 @@ export const activatePersona = async (transaction, persona) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };

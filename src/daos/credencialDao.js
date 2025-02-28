@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
 import { ClientError } from "../utils/CustomErrors.js";
+import { formatError } from "../utils/errorUtils.js";
 import logger, { line } from "../utils/logger.js";
 
 export const getCredencials = async (transaction, estados) => {
@@ -17,7 +18,7 @@ export const getCredencials = async (transaction, estados) => {
     return credencials;
   } catch (error) {
     logger.error(line(), error.original.code);
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -33,7 +34,7 @@ export const getCredencialByIdusuario = async (transaction, _idusuario) => {
     //logger.info(line(),credencial);
     return credencial;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -48,7 +49,7 @@ export const getCredencialByIdcredencial = async (transaction, idcredencial) => 
 
     return credencial;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -64,7 +65,7 @@ export const getCredencialByCredencialid = async (transaction, credencialid) => 
     //logger.info(line(),credencial);
     return credencial;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -81,7 +82,7 @@ export const findCredencialPk = async (transaction, credencialid) => {
     //logger.info(line(),credencial);
     return credencial;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -92,7 +93,7 @@ export const insertCredencial = async (transaction, credencial) => {
     // logger.info(line(),credencial_nuevo);
     return credencial_nuevo;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -107,7 +108,7 @@ export const updateCredencial = async (transaction, credencial) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -122,7 +123,7 @@ export const deleteCredencial = async (transaction, credencial) => {
     });
     return result;
   } catch (error) {
-    logger.error(line(), error);
+    logger.error(line(), formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
