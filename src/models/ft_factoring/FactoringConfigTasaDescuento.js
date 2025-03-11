@@ -1,48 +1,44 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class Riesgo extends Model {
+export default class FactoringConfigTasaDescuento extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    _idriesgo: {
-      autoIncrement: true,
+    _idfactoringconfigtasadescuento: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    riesgoid: {
+    factoringconfigtasadescuentoid: {
       type: DataTypes.STRING(50),
       allowNull: false,
       defaultValue: Sequelize.Sequelize.fn('uuid'),
-      unique: "UQ_riesgo_riesgoid"
+      unique: "UQ_factoring_config_tasa_factoringconfigtasadescuentoid"
     },
     code: {
       type: DataTypes.STRING(20),
+      allowNull: false,
+      unique: "UQ_factoring_config_tasa_code"
+    },
+    _idriesgo: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'riesgo',
+        key: '_idriesgo'
+      }
+    },
+    version: {
+      type: DataTypes.FLOAT(6,3),
       allowNull: false
     },
-    nombre: {
-      type: DataTypes.STRING(100),
+    mensual_minimo: {
+      type: DataTypes.DECIMAL(20,10),
       allowNull: false
     },
-    alias: {
-      type: DataTypes.STRING(100),
+    mensual_maximo: {
+      type: DataTypes.DECIMAL(20,10),
       allowNull: false
-    },
-    score: {
-      type: DataTypes.DECIMAL(12,2),
-      allowNull: false
-    },
-    color: {
-      type: DataTypes.STRING(50),
-      allowNull: false
-    },
-    'descripción': {
-      type: DataTypes.STRING(500),
-      allowNull: true
-    },
-    porcentaje_comision_gestion: {
-      type: DataTypes.DECIMAL(12,2),
-      allowNull: true
     },
     idusuariocrea: {
       type: DataTypes.INTEGER,
@@ -55,7 +51,7 @@ export default class Riesgo extends Model {
       defaultValue: "current_timestamp(3)"
     },
     idusuariomod: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 1
     },
@@ -71,7 +67,7 @@ export default class Riesgo extends Model {
     }
   }, {
     sequelize,
-    tableName: 'riesgo',
+    tableName: 'factoring_config_tasa_descuento',
     timestamps: false,
     indexes: [
       {
@@ -79,15 +75,30 @@ export default class Riesgo extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idriesgo" },
+          { name: "_idfactoringconfigtasadescuento" },
         ]
       },
       {
-        name: "UQ_riesgo_riesgoid",
+        name: "UQ_factoring_config_tasa_factoringconfigtasadescuentoid",
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "riesgoid" },
+          { name: "factoringconfigtasadescuentoid" },
+        ]
+      },
+      {
+        name: "UQ_factoring_config_tasa_code",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "code" },
+        ]
+      },
+      {
+        name: "FK_factoring_config_tasa_idriesgo",
+        using: "BTREE",
+        fields: [
+          { name: "_idriesgo" },
         ]
       },
     ]

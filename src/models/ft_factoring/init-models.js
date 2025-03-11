@@ -23,8 +23,16 @@ import _Empresa from "./Empresa.js";
 import _EmpresaCuentaBancaria from "./EmpresaCuentaBancaria.js";
 import _EmpresaDeclaracion from "./EmpresaDeclaracion.js";
 import _Factoring from "./Factoring.js";
+import _FactoringConfigComision from "./FactoringConfigComision.js";
+import _FactoringConfigGarantia from "./FactoringConfigGarantia.js";
+import _FactoringConfigTasaDescuento from "./FactoringConfigTasaDescuento.js";
+import _FactoringEjecutado from "./FactoringEjecutado.js";
+import _FactoringEjecutadoEstado from "./FactoringEjecutadoEstado.js";
 import _FactoringEstado from "./FactoringEstado.js";
+import _FactoringEstrategia from "./FactoringEstrategia.js";
 import _FactoringFactura from "./FactoringFactura.js";
+import _FactoringPropuesta from "./FactoringPropuesta.js";
+import _FactoringPropuestaEstado from "./FactoringPropuestaEstado.js";
 import _FactoringTipo from "./FactoringTipo.js";
 import _Factura from "./Factura.js";
 import _FacturaImpuesto from "./FacturaImpuesto.js";
@@ -88,8 +96,16 @@ export default function initModels(sequelize) {
   const EmpresaCuentaBancaria = _EmpresaCuentaBancaria.init(sequelize, DataTypes);
   const EmpresaDeclaracion = _EmpresaDeclaracion.init(sequelize, DataTypes);
   const Factoring = _Factoring.init(sequelize, DataTypes);
+  const FactoringConfigComision = _FactoringConfigComision.init(sequelize, DataTypes);
+  const FactoringConfigGarantia = _FactoringConfigGarantia.init(sequelize, DataTypes);
+  const FactoringConfigTasaDescuento = _FactoringConfigTasaDescuento.init(sequelize, DataTypes);
+  const FactoringEjecutado = _FactoringEjecutado.init(sequelize, DataTypes);
+  const FactoringEjecutadoEstado = _FactoringEjecutadoEstado.init(sequelize, DataTypes);
   const FactoringEstado = _FactoringEstado.init(sequelize, DataTypes);
+  const FactoringEstrategia = _FactoringEstrategia.init(sequelize, DataTypes);
   const FactoringFactura = _FactoringFactura.init(sequelize, DataTypes);
+  const FactoringPropuesta = _FactoringPropuesta.init(sequelize, DataTypes);
+  const FactoringPropuestaEstado = _FactoringPropuestaEstado.init(sequelize, DataTypes);
   const FactoringTipo = _FactoringTipo.init(sequelize, DataTypes);
   const Factura = _Factura.init(sequelize, DataTypes);
   const FacturaImpuesto = _FacturaImpuesto.init(sequelize, DataTypes);
@@ -211,12 +227,26 @@ export default function initModels(sequelize) {
   Empresa.hasMany(ServicioEmpresa, { as: "servicio_empresas", foreignKey: "_idempresa" });
   UsuarioServicioEmpresa.belongsTo(Empresa, { as: "empresa_empresa", foreignKey: "_idempresa" });
   Empresa.hasMany(UsuarioServicioEmpresa, { as: "usuario_servicio_empresas", foreignKey: "_idempresa" });
+  FactoringEjecutado.belongsTo(Factoring, { as: "factoring_factoring", foreignKey: "_idfactoring" });
+  Factoring.hasMany(FactoringEjecutado, { as: "factoring_ejecutados", foreignKey: "_idfactoring" });
   FactoringFactura.belongsTo(Factoring, { as: "factoring_factoring", foreignKey: "_idfactoring" });
   Factoring.hasMany(FactoringFactura, { as: "factoring_facturas", foreignKey: "_idfactoring" });
+  FactoringPropuesta.belongsTo(Factoring, { as: "factoring_factoring", foreignKey: "_idfactoring" });
+  Factoring.hasMany(FactoringPropuesta, { as: "factoring_propuesta", foreignKey: "_idfactoring" });
+  Factoring.belongsTo(FactoringEjecutado, { as: "factoringejecutado_factoring_ejecutado", foreignKey: "_idfactoringejecutado" });
+  FactoringEjecutado.hasMany(Factoring, { as: "factorings", foreignKey: "_idfactoringejecutado" });
+  FactoringEjecutado.belongsTo(FactoringEjecutadoEstado, { as: "factoringejecutadoaestado_factoring_ejecutado_estado", foreignKey: "_idfactoringejecutadoaestado" });
+  FactoringEjecutadoEstado.hasMany(FactoringEjecutado, { as: "factoring_ejecutados", foreignKey: "_idfactoringejecutadoaestado" });
   Factoring.belongsTo(FactoringEstado, { as: "factoringestado_factoring_estado", foreignKey: "_idfactoringestado" });
   FactoringEstado.hasMany(Factoring, { as: "factorings", foreignKey: "_idfactoringestado" });
-  Factoring.belongsTo(FactoringTipo, { as: "factoringtipo_factoring_tipo", foreignKey: "_idfactoringtipo" });
-  FactoringTipo.hasMany(Factoring, { as: "factorings", foreignKey: "_idfactoringtipo" });
+  FactoringPropuesta.belongsTo(FactoringEstrategia, { as: "factoringestrategia_factoring_estrategium", foreignKey: "_idfactoringestrategia" });
+  FactoringEstrategia.hasMany(FactoringPropuesta, { as: "factoring_propuesta", foreignKey: "_idfactoringestrategia" });
+  Factoring.belongsTo(FactoringPropuesta, { as: "factoringpropuestaaceptada_factoring_propuestum", foreignKey: "_idfactoringpropuestaaceptada" });
+  FactoringPropuesta.hasMany(Factoring, { as: "factorings", foreignKey: "_idfactoringpropuestaaceptada" });
+  FactoringPropuesta.belongsTo(FactoringPropuestaEstado, { as: "factoringpropuestaestado_factoring_propuesta_estado", foreignKey: "_idfactoringpropuestaestado" });
+  FactoringPropuestaEstado.hasMany(FactoringPropuesta, { as: "factoring_propuesta", foreignKey: "_idfactoringpropuestaestado" });
+  FactoringPropuesta.belongsTo(FactoringTipo, { as: "factoringtipo_factoring_tipo", foreignKey: "_idfactoringtipo" });
+  FactoringTipo.hasMany(FactoringPropuesta, { as: "factoring_propuesta", foreignKey: "_idfactoringtipo" });
   ArchivoFactura.belongsTo(Factura, { as: "factura_factura", foreignKey: "_idfactura" });
   Factura.hasMany(ArchivoFactura, { as: "archivo_facturas", foreignKey: "_idfactura" });
   FactoringFactura.belongsTo(Factura, { as: "factura_factura", foreignKey: "_idfactura" });
@@ -277,12 +307,18 @@ export default function initModels(sequelize) {
   RegionNatural.hasMany(Distrito, { as: "distritos", foreignKey: "_idregionnatural" });
   Empresa.belongsTo(Riesgo, { as: "riesgo_riesgo", foreignKey: "_idriesgo" });
   Riesgo.hasMany(Empresa, { as: "empresas", foreignKey: "_idriesgo" });
-  Factoring.belongsTo(Riesgo, { as: "riesgooperacion_riesgo", foreignKey: "_idriesgooperacion" });
-  Riesgo.hasMany(Factoring, { as: "factorings", foreignKey: "_idriesgooperacion" });
-  Factoring.belongsTo(Riesgo, { as: "riesgoaceptante_riesgo", foreignKey: "_idriesgoaceptante" });
-  Riesgo.hasMany(Factoring, { as: "riesgoaceptante_factorings", foreignKey: "_idriesgoaceptante" });
-  Factoring.belongsTo(Riesgo, { as: "riesgocedente_riesgo", foreignKey: "_idriesgocedente" });
-  Riesgo.hasMany(Factoring, { as: "riesgocedente_factorings", foreignKey: "_idriesgocedente" });
+  FactoringConfigComision.belongsTo(Riesgo, { as: "riesgo_riesgo", foreignKey: "_idriesgo" });
+  Riesgo.hasMany(FactoringConfigComision, { as: "factoring_config_comisions", foreignKey: "_idriesgo" });
+  FactoringConfigGarantia.belongsTo(Riesgo, { as: "riesgo_riesgo", foreignKey: "_idriesgo" });
+  Riesgo.hasMany(FactoringConfigGarantia, { as: "factoring_config_garantia", foreignKey: "_idriesgo" });
+  FactoringConfigTasaDescuento.belongsTo(Riesgo, { as: "riesgo_riesgo", foreignKey: "_idriesgo" });
+  Riesgo.hasMany(FactoringConfigTasaDescuento, { as: "factoring_config_tasa_descuentos", foreignKey: "_idriesgo" });
+  FactoringPropuesta.belongsTo(Riesgo, { as: "riesgooperacion_riesgo", foreignKey: "_idriesgooperacion" });
+  Riesgo.hasMany(FactoringPropuesta, { as: "factoring_propuesta", foreignKey: "_idriesgooperacion" });
+  FactoringPropuesta.belongsTo(Riesgo, { as: "riesgoaceptante_riesgo", foreignKey: "_idriesgoaceptante" });
+  Riesgo.hasMany(FactoringPropuesta, { as: "riesgoaceptante_factoring_propuesta", foreignKey: "_idriesgoaceptante" });
+  FactoringPropuesta.belongsTo(Riesgo, { as: "riesgocedente_riesgo", foreignKey: "_idriesgocedente" });
+  Riesgo.hasMany(FactoringPropuesta, { as: "riesgocedente_factoring_propuesta", foreignKey: "_idriesgocedente" });
   UsuarioRol.belongsTo(Rol, { as: "rol_rol", foreignKey: "_idrol" });
   Rol.hasMany(UsuarioRol, { as: "usuario_rols", foreignKey: "_idrol" });
   ServicioEmpresa.belongsTo(Servicio, { as: "servicio_servicio", foreignKey: "_idservicio" });
@@ -358,8 +394,16 @@ export default function initModels(sequelize) {
     EmpresaCuentaBancaria,
     EmpresaDeclaracion,
     Factoring,
+    FactoringConfigComision,
+    FactoringConfigGarantia,
+    FactoringConfigTasaDescuento,
+    FactoringEjecutado,
+    FactoringEjecutadoEstado,
     FactoringEstado,
+    FactoringEstrategia,
     FactoringFactura,
+    FactoringPropuesta,
+    FactoringPropuestaEstado,
     FactoringTipo,
     Factura,
     FacturaImpuesto,

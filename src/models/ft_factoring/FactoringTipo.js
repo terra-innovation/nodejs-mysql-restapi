@@ -24,6 +24,10 @@ export default class FactoringTipo extends Model {
       type: DataTypes.STRING(50),
       allowNull: false
     },
+    color: {
+      type: DataTypes.STRING(50),
+      allowNull: false
+    },
     idusuariocrea: {
       type: DataTypes.INTEGER,
       allowNull: false,

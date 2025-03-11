@@ -1,48 +1,36 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class Riesgo extends Model {
+export default class FactoringEjecutadoEstado extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    _idriesgo: {
-      autoIncrement: true,
+    _idfactoringejecutadoestado: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    riesgoid: {
+    factoringejecutadoestadoid: {
       type: DataTypes.STRING(50),
       allowNull: false,
       defaultValue: Sequelize.Sequelize.fn('uuid'),
-      unique: "UQ_riesgo_riesgoid"
+      unique: "UQ_factoring_ejecutado_estado_factoringejecutadoestadoid"
     },
     code: {
       type: DataTypes.STRING(20),
-      allowNull: false
+      allowNull: false,
+      unique: "UQ_factoring_ejecutado_estado_code"
     },
     nombre: {
-      type: DataTypes.STRING(100),
+      type: DataTypes.STRING(50),
       allowNull: false
     },
     alias: {
-      type: DataTypes.STRING(100),
-      allowNull: false
-    },
-    score: {
-      type: DataTypes.DECIMAL(12,2),
+      type: DataTypes.STRING(50),
       allowNull: false
     },
     color: {
       type: DataTypes.STRING(50),
       allowNull: false
-    },
-    'descripción': {
-      type: DataTypes.STRING(500),
-      allowNull: true
-    },
-    porcentaje_comision_gestion: {
-      type: DataTypes.DECIMAL(12,2),
-      allowNull: true
     },
     idusuariocrea: {
       type: DataTypes.INTEGER,
@@ -55,7 +43,7 @@ export default class Riesgo extends Model {
       defaultValue: "current_timestamp(3)"
     },
     idusuariomod: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 1
     },
@@ -71,7 +59,7 @@ export default class Riesgo extends Model {
     }
   }, {
     sequelize,
-    tableName: 'riesgo',
+    tableName: 'factoring_ejecutado_estado',
     timestamps: false,
     indexes: [
       {
@@ -79,15 +67,23 @@ export default class Riesgo extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idriesgo" },
+          { name: "_idfactoringejecutadoestado" },
         ]
       },
       {
-        name: "UQ_riesgo_riesgoid",
+        name: "UQ_factoring_ejecutado_estado_factoringejecutadoestadoid",
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "riesgoid" },
+          { name: "factoringejecutadoestadoid" },
+        ]
+      },
+      {
+        name: "UQ_factoring_ejecutado_estado_code",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "code" },
         ]
       },
     ]
