@@ -4,6 +4,49 @@ import { ClientError } from "../utils/CustomErrors.js";
 import { formatError } from "../utils/errorUtils.js";
 import logger, { line } from "../utils/logger.js";
 
+export const getArchivofacturasByIdfactoring = async (transaction, _idfactoring, estados) => {
+  try {
+    const archivofacturas = await modelsFT.ArchivoFactura.findAll({
+      include: [
+        { all: true },
+        {
+          model: modelsFT.Archivo,
+          required: true,
+          as: "archivo_archivo",
+          include: [{ all: true }],
+        },
+        {
+          model: modelsFT.Factura,
+          required: true,
+          as: "factura_factura",
+          include: [
+            {
+              model: modelsFT.Factoring,
+              required: true,
+              as: "factoring_factorings",
+              where: {
+                _idfactoring: _idfactoring,
+              },
+            },
+          ],
+        },
+      ],
+      where: {
+        estado: {
+          [Sequelize.Op.in]: estados,
+        },
+      },
+      transaction,
+    });
+    //logger.info(line(),archivofacturas);
+    return archivofacturas;
+  } catch (error) {
+    logger.error(line(), error.original.code);
+    logger.error(line(), formatError(error));
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getArchivofacturas = async (transaction, estados) => {
   try {
     const archivofacturas = await modelsFT.ArchivoFactura.findAll({
