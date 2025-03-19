@@ -71,9 +71,11 @@ export const createFactoringpropuesta = async (req, res) => {
       throw new ClientError("Datos no válidos", 404);
     }
 
-    var dias_pago_estimado = luxon.DateTime.fromISO(factoring.fecha_pago_estimado).startOf("day").diff(luxon.DateTime.local().startOf("day"), "days").days; // Actualizamos la cantidad de dias para el pago
+    var tem_fix = factoringValidated.tem / 100;
+    var porcentaje_financiado_estimado_fix = factoringValidated.porcentaje_financiado_estimado / 100;
+    var dias_pago_estimado = luxon.DateTime.fromISO(factoring.fecha_pago_estimado.toISOString()).startOf("day").diff(luxon.DateTime.local().startOf("day"), "days").days; // Actualizamos la cantidad de dias para el pago
     var simulacion = {};
-    simulacion = await simulateFactoringLogicV2(riesgooperacion._idriesgo, factoring.cuentabancaria_cuenta_bancarium._idbanco, factoring.cantidad_facturas, factoring.monto_neto, dias_pago_estimado, factoringValidated.porcentaje_financiado_estimado, factoringValidated.tem);
+    simulacion = await simulateFactoringLogicV2(riesgooperacion._idriesgo, factoring.cuentabancaria_cuenta_bancarium._idbanco, factoring.cantidad_facturas, factoring.monto_neto, dias_pago_estimado, porcentaje_financiado_estimado_fix, tem_fix);
 
     logger.info(line(), "simulacion: ", simulacion);
 

@@ -207,6 +207,26 @@ export default class FactoringPropuesta extends Model {
       allowNull: true,
       comment: "Monto del costo de la operación de factoring"
     },
+    monto_costo_estimado_igv: {
+      type: DataTypes.DECIMAL(10,2),
+      allowNull: true,
+      comment: "Monto del igv del costo"
+    },
+    monto_gasto_estimado: {
+      type: DataTypes.DECIMAL(10,2),
+      allowNull: true,
+      comment: "Monto del gasto de la operación de factoring"
+    },
+    monto_gasto_estimado_igv: {
+      type: DataTypes.DECIMAL(10,2),
+      allowNull: true,
+      comment: "Monto del igv del gasto"
+    },
+    monto_total_igv: {
+      type: DataTypes.DECIMAL(10,2),
+      allowNull: true,
+      comment: "Monto total del igv"
+    },
     monto_dia_mora: {
       type: DataTypes.DECIMAL(10,2),
       allowNull: true,

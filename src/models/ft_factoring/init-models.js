@@ -11,6 +11,7 @@ import _ArchivoTipo from "./ArchivoTipo.js";
 import _Banco from "./Banco.js";
 import _Colaborador from "./Colaborador.js";
 import _ColaboradorTipo from "./ColaboradorTipo.js";
+import _ConfiguracionApp from "./ConfiguracionApp.js";
 import _Contacto from "./Contacto.js";
 import _Credencial from "./Credencial.js";
 import _CuentaBancaria from "./CuentaBancaria.js";
@@ -33,6 +34,7 @@ import _FactoringEstrategia from "./FactoringEstrategia.js";
 import _FactoringFactura from "./FactoringFactura.js";
 import _FactoringPropuesta from "./FactoringPropuesta.js";
 import _FactoringPropuestaEstado from "./FactoringPropuestaEstado.js";
+import _FactoringPropuestaFinanciero from "./FactoringPropuestaFinanciero.js";
 import _FactoringTipo from "./FactoringTipo.js";
 import _Factura from "./Factura.js";
 import _FacturaImpuesto from "./FacturaImpuesto.js";
@@ -40,6 +42,8 @@ import _FacturaItem from "./FacturaItem.js";
 import _FacturaMedioPago from "./FacturaMedioPago.js";
 import _FacturaNota from "./FacturaNota.js";
 import _FacturaTerminoPago from "./FacturaTerminoPago.js";
+import _FinancieroConcepto from "./FinancieroConcepto.js";
+import _FinancieroTipo from "./FinancieroTipo.js";
 import _Genero from "./Genero.js";
 import _Moneda from "./Moneda.js";
 import _Pais from "./Pais.js";
@@ -84,6 +88,7 @@ export default function initModels(sequelize) {
   const Banco = _Banco.init(sequelize, DataTypes);
   const Colaborador = _Colaborador.init(sequelize, DataTypes);
   const ColaboradorTipo = _ColaboradorTipo.init(sequelize, DataTypes);
+  const ConfiguracionApp = _ConfiguracionApp.init(sequelize, DataTypes);
   const Contacto = _Contacto.init(sequelize, DataTypes);
   const Credencial = _Credencial.init(sequelize, DataTypes);
   const CuentaBancaria = _CuentaBancaria.init(sequelize, DataTypes);
@@ -106,6 +111,7 @@ export default function initModels(sequelize) {
   const FactoringFactura = _FactoringFactura.init(sequelize, DataTypes);
   const FactoringPropuesta = _FactoringPropuesta.init(sequelize, DataTypes);
   const FactoringPropuestaEstado = _FactoringPropuestaEstado.init(sequelize, DataTypes);
+  const FactoringPropuestaFinanciero = _FactoringPropuestaFinanciero.init(sequelize, DataTypes);
   const FactoringTipo = _FactoringTipo.init(sequelize, DataTypes);
   const Factura = _Factura.init(sequelize, DataTypes);
   const FacturaImpuesto = _FacturaImpuesto.init(sequelize, DataTypes);
@@ -113,6 +119,8 @@ export default function initModels(sequelize) {
   const FacturaMedioPago = _FacturaMedioPago.init(sequelize, DataTypes);
   const FacturaNota = _FacturaNota.init(sequelize, DataTypes);
   const FacturaTerminoPago = _FacturaTerminoPago.init(sequelize, DataTypes);
+  const FinancieroConcepto = _FinancieroConcepto.init(sequelize, DataTypes);
+  const FinancieroTipo = _FinancieroTipo.init(sequelize, DataTypes);
   const Genero = _Genero.init(sequelize, DataTypes);
   const Moneda = _Moneda.init(sequelize, DataTypes);
   const Pais = _Pais.init(sequelize, DataTypes);
@@ -243,6 +251,8 @@ export default function initModels(sequelize) {
   FactoringEstrategia.hasMany(FactoringPropuesta, { as: "factoring_propuesta", foreignKey: "_idfactoringestrategia" });
   Factoring.belongsTo(FactoringPropuesta, { as: "factoringpropuestaaceptada_factoring_propuestum", foreignKey: "_idfactoringpropuestaaceptada" });
   FactoringPropuesta.hasMany(Factoring, { as: "factorings", foreignKey: "_idfactoringpropuestaaceptada" });
+  FactoringPropuestaFinanciero.belongsTo(FactoringPropuesta, { as: "factoringpropuesta_factoring_propuestum", foreignKey: "_idfactoringpropuesta" });
+  FactoringPropuesta.hasMany(FactoringPropuestaFinanciero, { as: "factoring_propuesta_financieros", foreignKey: "_idfactoringpropuesta" });
   FactoringPropuesta.belongsTo(FactoringPropuestaEstado, { as: "factoringpropuestaestado_factoring_propuesta_estado", foreignKey: "_idfactoringpropuestaestado" });
   FactoringPropuestaEstado.hasMany(FactoringPropuesta, { as: "factoring_propuesta", foreignKey: "_idfactoringpropuestaestado" });
   FactoringPropuesta.belongsTo(FactoringTipo, { as: "factoringtipo_factoring_tipo", foreignKey: "_idfactoringtipo" });
@@ -261,6 +271,10 @@ export default function initModels(sequelize) {
   Factura.hasMany(FacturaNota, { as: "factura_nota", foreignKey: "_idfactura" });
   FacturaTerminoPago.belongsTo(Factura, { as: "factura_factura", foreignKey: "_idfactura" });
   Factura.hasMany(FacturaTerminoPago, { as: "factura_termino_pagos", foreignKey: "_idfactura" });
+  FactoringPropuestaFinanciero.belongsTo(FinancieroConcepto, { as: "financieroconcepto_financiero_concepto", foreignKey: "_idfinancieroconcepto" });
+  FinancieroConcepto.hasMany(FactoringPropuestaFinanciero, { as: "factoring_propuesta_financieros", foreignKey: "_idfinancieroconcepto" });
+  FactoringPropuestaFinanciero.belongsTo(FinancieroTipo, { as: "financierotipo_financiero_tipo", foreignKey: "_idfinancierotipo" });
+  FinancieroTipo.hasMany(FactoringPropuestaFinanciero, { as: "factoring_propuesta_financieros", foreignKey: "_idfinancierotipo" });
   Persona.belongsTo(Genero, { as: "genero_genero", foreignKey: "_idgenero" });
   Genero.hasMany(Persona, { as: "personas", foreignKey: "_idgenero" });
   CuentaBancaria.belongsTo(Moneda, { as: "moneda_moneda", foreignKey: "_idmoneda" });
@@ -382,6 +396,7 @@ export default function initModels(sequelize) {
     Banco,
     Colaborador,
     ColaboradorTipo,
+    ConfiguracionApp,
     Contacto,
     Credencial,
     CuentaBancaria,
@@ -404,6 +419,7 @@ export default function initModels(sequelize) {
     FactoringFactura,
     FactoringPropuesta,
     FactoringPropuestaEstado,
+    FactoringPropuestaFinanciero,
     FactoringTipo,
     Factura,
     FacturaImpuesto,
@@ -411,6 +427,8 @@ export default function initModels(sequelize) {
     FacturaMedioPago,
     FacturaNota,
     FacturaTerminoPago,
+    FinancieroConcepto,
+    FinancieroTipo,
     Genero,
     Moneda,
     Pais,

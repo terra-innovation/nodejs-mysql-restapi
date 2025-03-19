@@ -1,33 +1,121 @@
 import { sequelizeFT } from "../config/bd/sequelize_db_factoring.js";
 import * as riesgoDao from "../daos/riesgoDao.js";
+import * as financierotipoDao from "../daos/financierotipoDao.js";
+import * as financieroconceptoDao from "../daos/financieroconceptoDao.js";
+import * as configuracionappDao from "../daos/configuracionappDao.js";
+import * as factoringconfigcomisionDao from "../daos/factoringconfigcomisionDao.js";
+import * as factoringconfiggarantiaDao from "../daos/factoringconfiggarantiaDao.js";
+import * as factoringconfigtasadescuentoDao from "../daos/factoringconfigtasadescuentoDao.js";
+
 import logger, { line } from "../utils/logger.js";
 
-export const simulateFactoringLogicV2 = async (_idriesgooperacion, _idbancocedente, cantidad_facturas, monto_neto, dias_pago_estimado, porcentaje_adelanto, tnm) => {
-  logger.debug(line(), "logic::simulateFactoringLogicV1");
+export const simulateFactoringLogicV2 = async (_idriesgooperacion, _idbancocedente, cantidad_facturas, monto_neto, dias_pago_estimado, porcentaje_financiado, tem) => {
+  logger.debug(line(), "logic::simulateFactoringLogicV2");
   var simulacion = {};
   const transaction = await sequelizeFT.transaction();
   try {
+    var constante_igv = await configuracionappDao.getIGV(transaction);
+    var constante_costo_cavali = await configuracionappDao.getCostoCAVALI(transaction);
+    var constante_comison_bcp = await configuracionappDao.getComisionBCP(transaction);
+
+    var riesgooperacion = await riesgoDao.getRiesgoByIdriesgo(transaction, _idriesgooperacion);
+    var cofigcomision = await factoringconfigcomisionDao.getFactoringconfigcomisionByIdriesgo(transaction, riesgooperacion._idriesgo, [1]);
+    var financiero_tipo_comision = await financierotipoDao.getComision(transaction);
+    var financiero_tipo_costo = await financierotipoDao.getCosto(transaction);
+    var financiero_tipo_gasto = await financierotipoDao.getGasto(transaction);
+
+    var financiero_concepto_comisionft = await financieroconceptoDao.getComisionFinanzaTech();
+    var financiero_concepto_cavali = await financieroconceptoDao.getCostoCAVALI();
+    var financiero_concepto_transaccion = await financieroconceptoDao.getCostoTransaccion();
+
     simulacion.dias_pago_estimado = dias_pago_estimado;
-    simulacion.montoCostoCAVALI = 4.54;
-    simulacion.montoComisionOperacionPorFactura = 10;
-    simulacion.montoCostoEstudioPorAceptante = 100;
-    simulacion.porcentajeComisionUsoSitio = 0.7;
-    simulacion.minimoComisionUsoSitio = 130;
-    simulacion.minimoComisionGestion = 20;
-    simulacion.porcentajeComisionGestion = (await riesgoDao.getRiesgoByIdriesgo(transaction, _idriesgooperacion)).porcentaje_comision_gestion;
-    simulacion.cantidadMeses = Math.ceil(simulacion.dias_pago_estimado / 30);
-    simulacion.montoComisionInterbancariaInmediataBCP = 4.8;
-    simulacion.porcentajeIGV = 18;
-    simulacion.tna = Number((tnm * 12).toFixed(5));
-    simulacion.tnd = Number((tnm / 30).toFixed(5));
-    simulacion.tea = Number(((Math.pow(1 + simulacion.tna / 100 / 360, 360) - 1) * 100).toFixed(5));
-    simulacion.tem = Number(((Math.pow(1 + simulacion.tna / 100, 1 / 12) - 1) * 100).toFixed(5));
-    simulacion.ted = Number(((Math.pow(1 + simulacion.tna / 100, 1 / 360) - 1) * 100).toFixed(5));
+
+    simulacion.tna = Number((tem * 12).toFixed(5));
+    simulacion.tnm = Number(tem.toFixed(5));
+    simulacion.tnd = Number((tem / 30).toFixed(5));
+    simulacion.tea = Number((Math.pow(1 + tem, 12) - 1).toFixed(5));
+    simulacion.tem = Number(tem.toFixed(5));
+    simulacion.ted = Number((Math.pow(1 + tem, 1 / 30) - 1).toFixed(5));
     simulacion.tnm_mora = 0.5;
     simulacion.tna_mora = Number((simulacion.tnm_mora * 12).toFixed(5));
     simulacion.tnd_mora = Number((simulacion.tna_mora / 360).toFixed(5));
-    simulacion.monto_adelanto = Number(((monto_neto * porcentaje_adelanto) / 100).toFixed(2));
-    simulacion.monto_garantia = Number((monto_neto - simulacion.monto_adelanto).toFixed(2));
+    simulacion.monto_neto = monto_neto;
+    simulacion.monto_garantia = Number((monto_neto * (1 - porcentaje_financiado)).toFixed(2));
+    simulacion.monto_efectivo = Number((monto_neto * porcentaje_financiado).toFixed(2));
+    simulacion.monto_financiado = simulacion.monto_efectivo;
+    simulacion.monto_descuento = Number((simulacion.monto_financiado * (Math.pow(1 + simulacion.ted, simulacion.dias_pago_estimado) - 1)).toFixed(2));
+
+    var comisiones = [];
+
+    let comisionft_porcentaje = Number((cofigcomision.factor1 * Math.exp(cofigcomision.factor2 / simulacion.monto_neto) * cofigcomision.factor3).toFixed(5));
+    let comisionft_monto = Number((comisionft_porcentaje * simulacion.monto_neto).toFixed(2));
+    let comisionft_igv = Number((comisionft_monto * constante_igv.valor).toFixed(2));
+    let comision_ft = {
+      _idfinancierotipo: financiero_tipo_comision._idfinancierotipo,
+      _idfinancieroconcepto: financiero_concepto_comisionft._idfinancieroconcepto,
+      monto: comisionft_monto,
+      igv: comisionft_igv,
+    };
+    comision_ft.total = Number((comision_ft.monto + comision_ft.igv).toFixed(2));
+    comisiones.push(comision_ft);
+
+    simulacion.comisiones = comisiones;
+
+    var costos = [];
+    let costo_cavali = {
+      _idfinancierotipo: financiero_tipo_costo._idfinancierotipo,
+      _idfinancieroconcepto: financiero_concepto_cavali._idfinancieroconcepto,
+      monto: Number(constante_costo_cavali.valor),
+      igv: Number((constante_costo_cavali.valor * constante_igv.valor).toFixed(2)),
+    };
+    costo_cavali.total = Number((costo_cavali.monto * 1 + costo_cavali.igv * 1).toFixed(2));
+    costos.push(costo_cavali);
+
+    let costo_transaccion = {
+      _idfinancierotipo: financiero_tipo_costo._idfinancierotipo,
+      _idfinancieroconcepto: financiero_concepto_transaccion._idfinancieroconcepto,
+      monto: Number(_idbancocedente == 1 ? 0 : constante_comison_bcp.valor),
+      igv: 0,
+    };
+    costo_transaccion.total = Number((costo_transaccion.monto + costo_transaccion.igv).toFixed(2));
+    costos.push(costo_transaccion);
+
+    simulacion.costos = costos;
+
+    var gastos = [];
+
+    simulacion.gastos = gastos;
+
+    simulacion.monto_comision = comisiones.reduce((acumulador, item) => {
+      return acumulador + item.monto;
+    }, 0);
+
+    simulacion.monto_comision_igv = comisiones.reduce((acumulador, item) => {
+      return acumulador + item.igv;
+    }, 0);
+
+    simulacion.monto_costo_estimado = costos.reduce((acumulador, item) => {
+      return acumulador + item.monto;
+    }, 0);
+
+    simulacion.monto_costo_estimado_igv = costos.reduce((acumulador, item) => {
+      return acumulador + item.igv;
+    }, 0);
+
+    simulacion.monto_gasto_estimado = gastos.reduce((acumulador, item) => {
+      return acumulador + item.monto;
+    }, 0);
+
+    simulacion.monto_gasto_estimado_igv = gastos.reduce((acumulador, item) => {
+      return acumulador + item.igv;
+    }, 0);
+
+    simulacion.monto_total_igv = Number(simulacion.monto_comision_igv + simulacion.monto_costo_estimado_igv + simulacion.monto_gasto_estimado_igv);
+
+    simulacion.monto_adelanto = Number((simulacion.monto_neto - simulacion.monto_garantia - simulacion.monto_descuento - simulacion.monto_comision - simulacion.monto_costo_estimado - simulacion.monto_gasto_estimado - simulacion.monto_total_igv).toFixed(2));
+
+    //simulacion.monto_garantia = Number((monto_neto - simulacion.monto_adelanto).toFixed(2));
+    /*
     simulacion.monto_costo_financiamiento_estimado = Number((simulacion.monto_adelanto * (simulacion.tnd / 100) * simulacion.dias_pago_estimado).toFixed(2));
     simulacion.monto_comision_operacion = Number((simulacion.montoComisionOperacionPorFactura * cantidad_facturas).toFixed(2));
     simulacion.monto_costo_estudio = simulacion.montoCostoEstudioPorAceptante;
@@ -43,6 +131,8 @@ export const simulateFactoringLogicV2 = async (_idriesgooperacion, _idbancoceden
 
     simulacion.monto_costo_factoring = simulacion.monto_comision_factor + simulacion.monto_costo_financiamiento_estimado;
     simulacion.monto_desembolso = simulacion.monto_adelanto - simulacion.monto_costo_factoring - simulacion.monto_igv;
+
+    */
 
     simulacion.porcentaje_desembolso = (simulacion.monto_desembolso / simulacion.monto_adelanto) * 100;
     simulacion.porcentaje_comision_factor = (simulacion.monto_comision_factor / simulacion.monto_adelanto) * 100;
