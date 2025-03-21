@@ -6,7 +6,8 @@ import logger, { line } from "../../utils/logger.js";
 export const sequelizeFT = new Sequelize(config.DB_FACTORING_DATABASE, config.DB_FACTORING_USER, config.DB_FACTORING_PASSWORD, {
   host: config.DB_FACTORING_HOST,
   port: config.DB_FACTORING_PORT,
-  dialect: "mysql",
+  dialect: "mariadb",
+  timezone: "America/Lima",
   dialectOptions: {
     supportBigNumbers: true,
     decimalNumbers: true,

@@ -77,65 +77,35 @@ export default class FactoringPropuesta extends Model {
         key: '_idfactoringestrategia'
       }
     },
-    tea: {
+    tda: {
       type: DataTypes.DECIMAL(10,5),
       allowNull: true,
-      comment: "Tasa efectiva anual de los intereses compensatorios"
+      comment: "Tasa de descuento anual de los intereses compensatorios"
     },
-    tem: {
+    tdm: {
       type: DataTypes.DECIMAL(10,5),
       allowNull: true,
-      comment: "Tasa efectiva mensual de los intereses compensatorios"
+      comment: "Tasa de descuento mensual de los intereses compensatorios"
     },
-    ted: {
+    tdd: {
       type: DataTypes.DECIMAL(10,5),
       allowNull: true,
-      comment: "Tasa efectiva diaria de los intereses compensatorios"
+      comment: "Tasa de descuento diaria de los intereses compensatorios"
     },
-    tna: {
+    tda_mora: {
       type: DataTypes.DECIMAL(10,5),
       allowNull: true,
-      comment: "Tasa nominal anual de los intereses compensatorios"
+      comment: "Tasa de descuento anual de los intereses moratorios"
     },
-    tnm: {
+    tdm_mora: {
       type: DataTypes.DECIMAL(10,5),
       allowNull: true,
-      comment: "Tasa nominal mensual de los intereses compensatorios"
+      comment: "Tasa de descuento mensual de los intereses moratorios"
     },
-    tnd: {
+    tdd_mora: {
       type: DataTypes.DECIMAL(10,5),
       allowNull: true,
-      comment: "Tasa nominal diaria de los intereses compensatorios"
-    },
-    tna_mora: {
-      type: DataTypes.DECIMAL(10,5),
-      allowNull: true,
-      comment: "Tasa nominal anual de los intereses moratorios"
-    },
-    tnm_mora: {
-      type: DataTypes.DECIMAL(10,5),
-      allowNull: true,
-      comment: "Tasa nominal mensual de los intereses moratorios"
-    },
-    tnd_mora: {
-      type: DataTypes.DECIMAL(10,5),
-      allowNull: true,
-      comment: "Tasa nominal diara de los intereses moratorios"
-    },
-    tcna: {
-      type: DataTypes.DECIMAL(10,5),
-      allowNull: true,
-      comment: "Tasa de costo nominal anual"
-    },
-    tcnm: {
-      type: DataTypes.DECIMAL(10,5),
-      allowNull: true,
-      comment: "Tasa de costo nominal mensual"
-    },
-    tcnd: {
-      type: DataTypes.DECIMAL(10,5),
-      allowNull: true,
-      comment: "Tasa de costo nominal diario"
+      comment: "Tasa de descuento diara de los intereses moratorios"
     },
     fecha_propuesta: {
       type: DataTypes.DATE,
@@ -197,11 +167,6 @@ export default class FactoringPropuesta extends Model {
       allowNull: true,
       comment: "Monto del igv de la comisión"
     },
-    monto_adelanto: {
-      type: DataTypes.DECIMAL(10,2),
-      allowNull: true,
-      comment: "Monto del adelanto que se le dará al cedente"
-    },
     monto_costo_estimado: {
       type: DataTypes.DECIMAL(10,2),
       allowNull: true,
@@ -227,12 +192,17 @@ export default class FactoringPropuesta extends Model {
       allowNull: true,
       comment: "Monto total del igv"
     },
-    monto_dia_mora: {
+    monto_adelanto: {
+      type: DataTypes.DECIMAL(10,2),
+      allowNull: true,
+      comment: "Monto del adelanto que se le dará al cedente"
+    },
+    monto_dia_mora_estimado: {
       type: DataTypes.DECIMAL(10,2),
       allowNull: true,
       comment: "Monto por día de interés moratorio"
     },
-    monto_dia_interes: {
+    monto_dia_interes_estimado: {
       type: DataTypes.DECIMAL(10,2),
       allowNull: true,
       comment: "Monto por día de interés compensatorio"
@@ -257,15 +227,15 @@ export default class FactoringPropuesta extends Model {
       allowNull: true,
       comment: "monto_financiado \/ monto_neto"
     },
-    porcentaje_comision_estimado: {
-      type: DataTypes.DECIMAL(10,2),
-      allowNull: true,
-      comment: "monto_comision \/ monto_financiado"
-    },
     porcentaje_adelanto_estimado: {
       type: DataTypes.DECIMAL(10,2),
       allowNull: true,
       comment: "monto_adelanto \/ monto_neto"
+    },
+    porcentaje_comision_estimado: {
+      type: DataTypes.DECIMAL(10,2),
+      allowNull: true,
+      comment: "monto_comision \/ monto_neto"
     },
     idusuariocrea: {
       type: DataTypes.INTEGER,
