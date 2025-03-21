@@ -45,8 +45,10 @@ export const simulateFactoringLogicV2 = async (_idriesgooperacion, _idbancoceden
 
     let comisionft_porcentaje = Number((cofigcomision.factor1 * Math.exp(cofigcomision.factor2 / simulacion.monto_neto) * cofigcomision.factor3).toFixed(5));
     let comisionft_monto = Number((comisionft_porcentaje * simulacion.monto_neto).toFixed(2));
-    let comisionft_igv = Number((comisionft_monto * constante_igv.valor).toFixed(2));
+    comisionft_monto = comisionft_monto + Number(_idbancocedente == 1 ? 0 : constante_comison_bcp.valor);
+    let comisionft_igv = Number((comisionft_monto * constante_igv.valor).toFixed(3));
     let comision_ft = {
+      comisionft_porcentaje: comisionft_porcentaje,
       _idfinancierotipo: financiero_tipo_comision._idfinancierotipo,
       _idfinancieroconcepto: financiero_concepto_comisionft._idfinancieroconcepto,
       monto: comisionft_monto,
@@ -62,19 +64,10 @@ export const simulateFactoringLogicV2 = async (_idriesgooperacion, _idbancoceden
       _idfinancierotipo: financiero_tipo_costo._idfinancierotipo,
       _idfinancieroconcepto: financiero_concepto_cavali._idfinancieroconcepto,
       monto: Number(constante_costo_cavali.valor),
-      igv: Number((constante_costo_cavali.valor * constante_igv.valor).toFixed(2)),
+      igv: Number((constante_costo_cavali.valor * constante_igv.valor).toFixed(3)),
     };
     costo_cavali.total = Number((costo_cavali.monto * 1 + costo_cavali.igv * 1).toFixed(2));
     costos.push(costo_cavali);
-
-    let costo_transaccion = {
-      _idfinancierotipo: financiero_tipo_costo._idfinancierotipo,
-      _idfinancieroconcepto: financiero_concepto_transaccion._idfinancieroconcepto,
-      monto: Number(_idbancocedente == 1 ? 0 : constante_comison_bcp.valor),
-      igv: 0,
-    };
-    costo_transaccion.total = Number((costo_transaccion.monto + costo_transaccion.igv).toFixed(2));
-    costos.push(costo_transaccion);
 
     simulacion.costos = costos;
 
@@ -106,7 +99,7 @@ export const simulateFactoringLogicV2 = async (_idriesgooperacion, _idbancoceden
       return acumulador + item.igv;
     }, 0);
 
-    simulacion.monto_total_igv = Number(simulacion.monto_comision_igv + simulacion.monto_costo_estimado_igv + simulacion.monto_gasto_estimado_igv);
+    simulacion.monto_total_igv = Number((simulacion.monto_comision_igv + simulacion.monto_costo_estimado_igv + simulacion.monto_gasto_estimado_igv).toFixed(2));
 
     simulacion.monto_adelanto = Number((simulacion.monto_financiado - simulacion.monto_descuento - simulacion.monto_comision - simulacion.monto_costo_estimado - simulacion.monto_gasto_estimado - simulacion.monto_total_igv).toFixed(2));
 
