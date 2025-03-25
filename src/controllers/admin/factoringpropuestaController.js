@@ -16,7 +16,7 @@ import * as yup from "yup";
 import { Sequelize } from "sequelize";
 import { simulateFactoringLogicV2 } from "../../logics/factoringLogic.js";
 
-export const createFactoringpropuesta = async (req, res) => {
+export const simulateFactoringpropuesta = async (req, res) => {
   logger.debug(line(), "controller::createFactoringpropuesta");
   const session_idusuario = req.session_user.usuario._idusuario;
   const filter_estado = [1, 2];
@@ -73,13 +73,116 @@ export const createFactoringpropuesta = async (req, res) => {
 
     var tdm_fix = factoringValidated.tdm / 100;
     var porcentaje_financiado_estimado_fix = factoringValidated.porcentaje_financiado_estimado / 100;
-    let fecha_inicio = luxon.DateTime.local();
+    let fecha_ahora = luxon.DateTime.local();
     let fecha_fin = luxon.DateTime.fromISO(factoring.fecha_pago_estimado.toISOString());
-    var dias_pago_estimado = fecha_fin.startOf("day").diff(fecha_inicio.startOf("day"), "days").days; // Actualizamos la cantidad de dias para el pago
+    var dias_pago_estimado = fecha_fin.startOf("day").diff(fecha_ahora.startOf("day"), "days").days; // Actualizamos la cantidad de dias para el pago
     var simulacion = {};
     simulacion = await simulateFactoringLogicV2(riesgooperacion._idriesgo, factoring.cuentabancaria_cuenta_bancarium._idbanco, factoring.cantidad_facturas, factoring.monto_neto, dias_pago_estimado, porcentaje_financiado_estimado_fix, tdm_fix);
 
     logger.info(line(), "simulacion: ", simulacion);
+
+    await transaction.commit();
+
+    response(res, 201, { factoring: { ...factoringValidated }, ...simulacion });
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
+};
+
+export const createFactoringpropuesta = async (req, res) => {
+  logger.debug(line(), "controller::createFactoringpropuesta");
+  const session_idusuario = req.session_user.usuario._idusuario;
+  const filter_estado = [1, 2];
+  const factoringSimulateSchema = yup
+    .object()
+    .shape({
+      factoringid: yup.string().trim().required().min(36).max(36),
+      factoringtipoid: yup.string().trim().required().min(36).max(36),
+      riesgooperacionid: yup.string().trim().required().min(36).max(36),
+      factoringpropuestaestadoid: yup.string().trim().required().min(36).max(36),
+      factoringestrategiaid: yup.string().trim().required().min(36).max(36),
+      tdm: yup.number().required().min(0).max(100),
+      porcentaje_financiado_estimado: yup.number().required().min(0).max(100),
+    })
+    .required();
+  var factoringValidated = factoringSimulateSchema.validateSync({ ...req.body }, { abortEarly: false, stripUnknown: true });
+  //logger.debug(line(),"factoringValidated:", factoringValidated);
+
+  const transaction = await sequelizeFT.transaction();
+  try {
+    const session_idusuario = req.session_user.usuario._idusuario;
+    const filter_estados = [1];
+
+    var factoring = await factoringDao.getFactoringByFactoringid(transaction, factoringValidated.factoringid);
+    if (!factoring) {
+      logger.warn(line(), "Factoring no existe: [" + factoringValidated.factoringid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    var factoringtipo = await factoringtipoDao.getFactoringtipoByFactoringtipoid(transaction, factoringValidated.factoringtipoid);
+    if (!factoringtipo) {
+      logger.warn(line(), "Factoring tipo no existe: [" + factoringValidated.factoringtipoid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    var riesgooperacion = await riesgoDao.getRiesgoByRiesgoid(transaction, factoringValidated.riesgooperacionid);
+    if (!riesgooperacion) {
+      logger.warn(line(), "Riesgo operación no existe: [" + factoringValidated.riesgooperacionid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    var factoringpropuestaestado = await factoringpropuestaestadoDao.getFactoringpropuestaestadoByFactoringpropuestaestadoid(transaction, factoringValidated.factoringpropuestaestadoid);
+    if (!factoringpropuestaestado) {
+      logger.warn(line(), "Factoring propuesta estado no existe: [" + factoringValidated.factoringpropuestaestadoid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    var factoringestrategia = await factoringestrategiaDao.getFactoringestrategiaByFactoringestrategiaid(transaction, factoringValidated.factoringestrategiaid);
+    if (!factoringestrategia) {
+      logger.warn(line(), "Factoring estategia no existe: [" + factoringValidated.factoringestrategiaid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    var tdm_fix = factoringValidated.tdm / 100;
+    var porcentaje_financiado_estimado_fix = factoringValidated.porcentaje_financiado_estimado / 100;
+    let fecha_ahora = luxon.DateTime.local();
+    let fecha_fin = luxon.DateTime.fromISO(factoring.fecha_pago_estimado.toISOString());
+    var dias_pago_estimado = fecha_fin.startOf("day").diff(fecha_ahora.startOf("day"), "days").days; // Actualizamos la cantidad de dias para el pago
+    var simulacion = {};
+    simulacion = await simulateFactoringLogicV2(riesgooperacion._idriesgo, factoring.cuentabancaria_cuenta_bancarium._idbanco, factoring.cantidad_facturas, factoring.monto_neto, dias_pago_estimado, porcentaje_financiado_estimado_fix, tdm_fix);
+
+    logger.info(line(), "simulacion: ", simulacion);
+
+    var camposFk = {};
+    camposFk._idfactoring = factoring._idfactoring;
+    camposFk._idfactoringtipo = factoringtipo._idfactoringtipo;
+    camposFk._idfactoringpropuestaestado = factoringpropuestaestado._idfactoringpropuestaestado;
+    camposFk._idriesgooperacion = riesgooperacion._idriesgo;
+    camposFk._idfactoringestrategia = factoringestrategia._idfactoringestrategia;
+
+    var camposAdicionales = {};
+    camposAdicionales.factoringpropuestaid = uuidv4();
+    camposAdicionales.code = uuidv4().split("-")[0];
+    camposAdicionales.fecha_propuesta = Sequelize.fn("now", 3);
+    camposAdicionales.dias_antiguedad_estimado = fecha_ahora.startOf("day").diff(luxon.DateTime.fromISO(factoring.fecha_emision.toISOString()).startOf("day"), "days").days;
+    camposAdicionales.fecha_pago_estimado = factoring.fecha_pago_estimado;
+
+    var camposAuditoria = {};
+    camposAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
+    camposAuditoria.fechacrea = Sequelize.fn("now", 3);
+    camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+    camposAuditoria.fechamod = Sequelize.fn("now", 3);
+    camposAuditoria.estado = 1;
+
+    const factoringpropuestaCreated = await factoringpropuestaDao.insertFactoringpropuesta(transaction, {
+      ...camposFk,
+      ...camposAdicionales,
+      ...factoringValidated,
+      ...camposAuditoria,
+      ...simulacion,
+    });
+    logger.debug(line(), "factoringpropuestaCreated:", factoringpropuestaCreated.dataValues);
 
     await transaction.commit();
 

@@ -13,6 +13,7 @@ router.get("/admin/factoringpropuesta/master", verifyToken, checkRole([2]), catc
 //router.delete("/admin/factoringpropuesta/eliminar/:id", verifyToken, checkRole([2]), catchedAsync(factoringpropuestaController.deleteFactoringpropuesta));
 //router.patch("/admin/factoringpropuesta/activar/:id", verifyToken, checkRole([2]), catchedAsync(factoringpropuestaController.activateFactoringpropuesta));
 
+router.post("/admin/factoringpropuesta/simular/:id", verifyToken, checkRole([2]), catchedAsync(factoringpropuestaController.simulateFactoringpropuesta));
 router.get("/admin/factoringpropuesta/buscar/factoring/:id", verifyToken, checkRole([2]), catchedAsync(factoringpropuestaController.getFactoringpropuestasByFactoringid));
 
 export default router;
