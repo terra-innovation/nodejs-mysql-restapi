@@ -27,7 +27,6 @@ export const simulateFactoringpropuesta = async (req, res) => {
       factoringid: yup.string().trim().required().min(36).max(36),
       factoringtipoid: yup.string().trim().required().min(36).max(36),
       riesgooperacionid: yup.string().trim().required().min(36).max(36),
-      factoringpropuestaestadoid: yup.string().trim().required().min(36).max(36),
       factoringestrategiaid: yup.string().trim().required().min(36).max(36),
       tdm: yup.number().required().min(0).max(100),
       porcentaje_financiado_estimado: yup.number().required().min(0).max(100),
@@ -56,12 +55,6 @@ export const simulateFactoringpropuesta = async (req, res) => {
     var riesgooperacion = await riesgoDao.getRiesgoByRiesgoid(transaction, factoringValidated.riesgooperacionid);
     if (!riesgooperacion) {
       logger.warn(line(), "Riesgo operación no existe: [" + factoringValidated.riesgooperacionid + "]");
-      throw new ClientError("Datos no válidos", 404);
-    }
-
-    var factoringpropuestaestado = await factoringpropuestaestadoDao.getFactoringpropuestaestadoByFactoringpropuestaestadoid(transaction, factoringValidated.factoringpropuestaestadoid);
-    if (!factoringpropuestaestado) {
-      logger.warn(line(), "Factoring propuesta estado no existe: [" + factoringValidated.factoringpropuestaestadoid + "]");
       throw new ClientError("Datos no válidos", 404);
     }
 
