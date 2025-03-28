@@ -64,13 +64,11 @@ export const simulateFactoringpropuesta = async (req, res) => {
       throw new ClientError("Datos no válidos", 404);
     }
 
-    var tdm_fix = factoringValidated.tdm / 100;
-    var porcentaje_financiado_estimado_fix = factoringValidated.porcentaje_financiado_estimado / 100;
     let fecha_ahora = luxon.DateTime.local();
     let fecha_fin = luxon.DateTime.fromISO(factoring.fecha_pago_estimado.toISOString());
     var dias_pago_estimado = fecha_fin.startOf("day").diff(fecha_ahora.startOf("day"), "days").days; // Actualizamos la cantidad de dias para el pago
     var simulacion = {};
-    simulacion = await simulateFactoringLogicV2(riesgooperacion._idriesgo, factoring.cuentabancaria_cuenta_bancarium._idbanco, factoring.cantidad_facturas, factoring.monto_neto, dias_pago_estimado, porcentaje_financiado_estimado_fix, tdm_fix);
+    simulacion = await simulateFactoringLogicV2(riesgooperacion._idriesgo, factoring.cuentabancaria_cuenta_bancarium._idbanco, factoring.cantidad_facturas, factoring.monto_neto, dias_pago_estimado, factoringValidated.porcentaje_financiado_estimado, factoringValidated.tdm);
 
     logger.info(line(), "simulacion: ", simulacion);
 
@@ -137,13 +135,11 @@ export const createFactoringpropuesta = async (req, res) => {
       throw new ClientError("Datos no válidos", 404);
     }
 
-    var tdm_fix = factoringValidated.tdm / 100;
-    var porcentaje_financiado_estimado_fix = factoringValidated.porcentaje_financiado_estimado / 100;
     let fecha_ahora = luxon.DateTime.local();
     let fecha_fin = luxon.DateTime.fromISO(factoring.fecha_pago_estimado.toISOString());
     var dias_pago_estimado = fecha_fin.startOf("day").diff(fecha_ahora.startOf("day"), "days").days; // Actualizamos la cantidad de dias para el pago
     var simulacion = {};
-    simulacion = await simulateFactoringLogicV2(riesgooperacion._idriesgo, factoring.cuentabancaria_cuenta_bancarium._idbanco, factoring.cantidad_facturas, factoring.monto_neto, dias_pago_estimado, porcentaje_financiado_estimado_fix, tdm_fix);
+    simulacion = await simulateFactoringLogicV2(riesgooperacion._idriesgo, factoring.cuentabancaria_cuenta_bancarium._idbanco, factoring.cantidad_facturas, factoring.monto_neto, dias_pago_estimado, factoringValidated.porcentaje_financiado_estimado, factoringValidated.tdm);
 
     logger.info(line(), "simulacion: ", simulacion);
 
