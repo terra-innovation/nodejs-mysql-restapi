@@ -17,6 +17,59 @@ import * as yup from "yup";
 import { Sequelize } from "sequelize";
 import { simulateFactoringLogicV2 } from "../../logics/factoringLogic.js";
 
+export const updateFactoringpropuesta = async (req, res) => {
+  logger.debug(line(), "controller::updateFactoringpropuesta");
+  const { id } = req.params;
+  const factoringpropuestaUpdateSchema = yup
+    .object()
+    .shape({
+      factoringpropuestaid: yup.string().trim().required().min(36).max(36),
+      factoringpropuestaestadoid: yup.string().trim().required().min(36).max(36),
+    })
+    .required();
+  const factoringpropuestaValidated = factoringpropuestaUpdateSchema.validateSync({ factoringpropuestaid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
+  logger.debug(line(), "factoringpropuestaValidated:", factoringpropuestaValidated);
+
+  const transaction = await sequelizeFT.transaction();
+  try {
+    var factoringpropuesta = await factoringpropuestaDao.getFactoringpropuestaByFactoringpropuestaid(transaction, factoringpropuestaValidated.factoringpropuestaid);
+    if (!factoringpropuesta) {
+      logger.warn(line(), "Factoringpropuesta no existe: [" + factoringpropuestaValidated.factoringpropuestaid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    var factoringpropuestaestado = await factoringpropuestaestadoDao.getFactoringpropuestaestadoByFactoringpropuestaestadoid(transaction, factoringpropuestaValidated.factoringpropuestaestadoid);
+    if (!factoringpropuestaestado) {
+      logger.warn(line(), "Factoringpropuestaestado no existe: [" + factoringpropuestaValidated.factoringpropuestaestadoid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    var camposFk = {};
+    camposFk._idfactoringpropuestaestado = factoringpropuestaestado._idfactoringpropuestaestado;
+
+    var camposAdicionales = {};
+    camposAdicionales.factoringpropuestaid = factoringpropuestaValidated.factoringpropuestaid;
+
+    var camposAuditoria = {};
+    camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+    camposAuditoria.fechamod = Sequelize.fn("now", 3);
+
+    const factoringpropuestaUpdated = await factoringpropuestaDao.updateFactoringpropuesta(transaction, {
+      ...camposFk,
+      ...camposAdicionales,
+      ...factoringpropuestaValidated,
+      ...camposAuditoria,
+    });
+    logger.debug(line(), "factoringpropuestaUpdated:", factoringpropuestaUpdated);
+
+    await transaction.commit();
+    response(res, 200, { ...factoringpropuestaValidated });
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
+};
+
 export const createFactoringpropuesta = async (req, res) => {
   logger.debug(line(), "controller::createFactoringpropuesta");
   const session_idusuario = req.session_user.usuario._idusuario;
@@ -359,62 +412,6 @@ export const getFactoringpropuestaMaster = async (req, res) => {
     //jsonUtils.prettyPrint(factoringpropuestasMaster);
     await transaction.commit();
     response(res, 201, factoringpropuestasMasterFiltered);
-  } catch (error) {
-    await transaction.rollback();
-    throw error;
-  }
-};
-
-export const updateFactoringpropuesta = async (req, res) => {
-  logger.debug(line(), "controller::updateFactoringpropuesta");
-  const { id } = req.params;
-  const factoringpropuestaUpdateSchema = yup
-    .object()
-    .shape({
-      factoringpropuestaid: yup.string().trim().required().min(36).max(36),
-      riesgoid: yup.string().trim().required().min(36).max(36),
-      razon_social: yup.string().trim().required().min(2).max(200),
-      nombre_comercial: yup.string().min(2).max(200),
-      domicilio_fiscal: yup.string().required().min(2).max(200),
-    })
-    .required();
-  const factoringpropuestaValidated = factoringpropuestaUpdateSchema.validateSync({ factoringpropuestaid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
-  logger.debug(line(), "factoringpropuestaValidated:", factoringpropuestaValidated);
-
-  const transaction = await sequelizeFT.transaction();
-  try {
-    var riesgo = await riesgoDao.getRiesgoByRiesgoid(transaction, factoringpropuestaValidated.riesgoid);
-    if (!riesgo) {
-      logger.warn(line(), "Riesgo no existe: [" + factoringpropuestaValidated.riesgoid + "]");
-      throw new ClientError("Datos no válidos", 404);
-    }
-
-    var factoringpropuesta = await factoringpropuestaDao.getFactoringpropuestaByFactoringpropuestaid(transaction, factoringpropuestaValidated.factoringpropuestaid);
-    if (!factoringpropuesta) {
-      logger.warn(line(), "Factoringpropuesta no existe: [" + factoringpropuestaValidated.factoringpropuestaid + "]");
-      throw new ClientError("Datos no válidos", 404);
-    }
-
-    var camposFk = {};
-    camposFk._idriesgo = riesgo._idriesgo;
-
-    var camposAdicionales = {};
-    camposAdicionales.factoringpropuestaid = id;
-
-    var camposAuditoria = {};
-    camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
-    camposAuditoria.fechamod = Sequelize.fn("now", 3);
-
-    const factoringpropuestaUpdated = await factoringpropuestaDao.updateFactoringpropuesta(transaction, {
-      ...camposFk,
-      ...camposAdicionales,
-      ...factoringpropuestaValidated,
-      ...camposAuditoria,
-    });
-    logger.debug(line(), "factoringpropuestaUpdated:", factoringpropuestaUpdated);
-
-    await transaction.commit();
-    response(res, 200, { ...factoringpropuestaValidated });
   } catch (error) {
     await transaction.rollback();
     throw error;

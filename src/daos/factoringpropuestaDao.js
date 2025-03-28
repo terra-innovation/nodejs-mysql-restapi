@@ -7,7 +7,21 @@ import logger, { line } from "../utils/logger.js";
 export const getFactoringpropuestasByIdfactoring = async (transaction, _idfactoring, estados) => {
   try {
     const facturas = await modelsFT.FactoringPropuesta.findAll({
-      include: [{ all: true }],
+      include: [
+        {
+          all: true,
+        },
+        {
+          model: modelsFT.FactoringPropuestaFinanciero,
+          required: true,
+          as: "factoring_propuesta_financieros",
+          include: [
+            {
+              all: true,
+            },
+          ],
+        },
+      ],
       where: {
         _idfactoring: _idfactoring,
         estado: {
@@ -117,6 +131,21 @@ export const updateFactoringpropuesta = async (transaction, factoringpropuesta) 
 };
 
 export const deleteFactoringpropuesta = async (transaction, factoringpropuesta) => {
+  try {
+    const result = await modelsFT.FactoringPropuesta.update(factoringpropuesta, {
+      where: {
+        factoringpropuestaid: factoringpropuesta.factoringpropuestaid,
+      },
+      transaction,
+    });
+    return result;
+  } catch (error) {
+    logger.error(line(), formatError(error));
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
+export const activateFactoringpropuesta = async (transaction, factoringpropuesta) => {
   try {
     const result = await modelsFT.FactoringPropuesta.update(factoringpropuesta, {
       where: {
