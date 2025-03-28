@@ -53,6 +53,8 @@ export const simulateFactoringLogicV2 = async (_idriesgooperacion, _idbancoceden
       _idfinancieroconcepto: financiero_concepto_comisionft._idfinancieroconcepto,
       monto: comisionft_monto,
       igv: comisionft_igv,
+      financierotipo: financiero_tipo_comision,
+      financieroconcepto: financiero_concepto_comisionft,
     };
     comision_ft.total = Number((comision_ft.monto + comision_ft.igv).toFixed(2));
     comisiones.push(comision_ft);
@@ -65,6 +67,8 @@ export const simulateFactoringLogicV2 = async (_idriesgooperacion, _idbancoceden
       _idfinancieroconcepto: financiero_concepto_cavali._idfinancieroconcepto,
       monto: Number(constante_costo_cavali.valor),
       igv: Number((constante_costo_cavali.valor * constante_igv.valor).toFixed(3)),
+      financierotipo: financiero_tipo_costo,
+      financieroconcepto: financiero_concepto_cavali,
     };
     costo_cavali.total = Number((costo_cavali.monto * 1 + costo_cavali.igv * 1).toFixed(2));
     costos.push(costo_cavali);

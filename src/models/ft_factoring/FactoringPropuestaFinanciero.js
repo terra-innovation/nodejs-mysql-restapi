@@ -5,6 +5,7 @@ export default class FactoringPropuestaFinanciero extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
     _idfactoringpropuestafinanciero: {
+      autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
@@ -23,7 +24,6 @@ export default class FactoringPropuestaFinanciero extends Model {
     _idfactoringpropuesta: {
       type: DataTypes.BIGINT,
       allowNull: false,
-      defaultValue: 0,
       references: {
         model: 'factoring_propuesta',
         key: '_idfactoringpropuesta'
@@ -47,7 +47,7 @@ export default class FactoringPropuestaFinanciero extends Model {
     },
     descripcion: {
       type: DataTypes.STRING(50),
-      allowNull: false
+      allowNull: true
     },
     monto: {
       type: DataTypes.DECIMAL(10,2),
