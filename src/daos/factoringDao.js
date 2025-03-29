@@ -133,6 +133,28 @@ export const getFactoringsByEstados = async (transaction, estados) => {
             },
           ],
         },
+        {
+          model: modelsFT.CuentaBancaria,
+          as: "cuentabancaria_cuenta_bancarium",
+          include: [
+            {
+              model: modelsFT.Banco,
+              as: "banco_banco",
+            },
+            {
+              model: modelsFT.CuentaBancariaEstado,
+              as: "cuentabancariaestado_cuenta_bancaria_estado",
+            },
+            {
+              model: modelsFT.CuentaTipo,
+              as: "cuentatipo_cuenta_tipo",
+            },
+            {
+              model: modelsFT.Moneda,
+              as: "moneda_moneda",
+            },
+          ],
+        },
       ],
       where: {
         estado: {

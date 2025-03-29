@@ -1,6 +1,7 @@
 import { sequelizeFT } from "../../../../config/bd/sequelize_db_factoring.js";
 import * as factoringDao from "../../../../daos/factoringDao.js";
 import * as factoringestadoDao from "../../../../daos/factoringestadoDao.js";
+import * as factoringpropuestaDao from "../../../../daos/factoringpropuestaDao.js";
 import * as factoringtipoDao from "../../../../daos/factoringtipoDao.js";
 import * as riesgoDao from "../../../../daos/riesgoDao.js";
 import { simulateFactoringLogicV1 } from "../../../../logics/factoringLogic.js";
@@ -16,19 +17,11 @@ import * as yup from "yup";
 export const updateFactoring = async (req, res) => {
   logger.debug(line(), "controller::updateFactoring");
   const { id } = req.params;
-  const factoringUpdateSchema = yup
-    .object()
-    .shape({
-      factoringid: yup.string().trim().required().min(36).max(36),
-      factoringestadoid: yup.string().trim().required().min(36).max(36),
-      riesgooperacionid: yup.string().trim().required().min(36).max(36),
-      riesgocedenteid: yup.string().trim().required().min(36).max(36),
-      riesgoaceptanteid: yup.string().trim().required().min(36).max(36),
-      factoringtipoid: yup.string().trim().required().min(36).max(36),
-      tnm: yup.number().required().min(1).max(100),
-      porcentaje_adelanto: yup.number().required().min(0).max(100),
-    })
-    .required();
+  const factoringUpdateSchema = yup.object().shape({
+    factoringid: yup.string().trim().required().min(36).max(36),
+    factoringestadoid: yup.string().trim().required().min(36).max(36),
+    factoringpropuestaaceptadaid: yup.string().trim().min(36).max(36),
+  });
   const factoringValidated = factoringUpdateSchema.validateSync({ factoringid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
   logger.debug(line(), "factoringValidated:", factoringValidated);
 
@@ -49,35 +42,21 @@ export const updateFactoring = async (req, res) => {
       throw new ClientError("Datos no válidos", 404);
     }
 
-    var factoringtipo = await factoringtipoDao.getFactoringtipoByFactoringtipoid(transaction, factoringValidated.factoringtipoid);
-    if (!factoringtipo) {
-      logger.warn(line(), "Factoring tipo no existe: [" + factoringValidated.factoringtipoid + "]");
-      throw new ClientError("Datos no válidos", 404);
-    }
-
-    var riesgooperacion = await riesgoDao.getRiesgoByRiesgoid(transaction, factoringValidated.riesgooperacionid);
-    if (!riesgooperacion) {
-      logger.warn(line(), "Riesgo operación no existe: [" + factoringValidated.riesgooperacionid + "]");
-      throw new ClientError("Datos no válidos", 404);
-    }
-
-    var riesgocedente = await riesgoDao.getRiesgoByRiesgoid(transaction, factoringValidated.riesgocedenteid);
-    if (!riesgooperacion) {
-      logger.warn(line(), "Riesgo cedente no existe: [" + factoringValidated.riesgocedenteid + "]");
-      throw new ClientError("Datos no válidos", 404);
-    }
-
-    var riesgoaceptante = await riesgoDao.getRiesgoByRiesgoid(transaction, factoringValidated.riesgoaceptanteid);
-    if (!riesgooperacion) {
-      logger.warn(line(), "Riesgo aceptante no existe: [" + factoringValidated.riesgoaceptanteid + "]");
-      throw new ClientError("Datos no válidos", 404);
+    if (factoringValidated.factoringpropuestaaceptadaid) {
+      var factoringpropuesta = await factoringpropuestaDao.getFactoringpropuestaByFactoringpropuestaid(transaction, factoringValidated.factoringpropuestaaceptadaid);
+      if (!factoringpropuesta) {
+        logger.warn(line(), "factoring propuesta no existe: [" + factoringValidated.factoringpropuestaaceptadaid + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
     }
 
     var camposFactoringFk = {};
     camposFactoringFk._idfactoringestado = factoringestado._idfactoringestado;
-    camposFactoringFk._idfactoringtipo = factoringtipo._idfactoringtipo;
-    camposFactoringFk._idriesgocedente = riesgocedente._idriesgo;
-    camposFactoringFk._idriesgoaceptante = riesgoaceptante._idriesgo;
+    if (factoringValidated.factoringpropuestaaceptadaid) {
+      camposFactoringFk._idfactoringpropuestaaceptada = factoringpropuesta._idfactoringpropuesta;
+    } else {
+      camposFactoringFk._idfactoringpropuestaaceptada = null;
+    }
 
     var camposFactoringAdicionales = {};
     camposFactoringAdicionales.factoringid = factoring.factoringid;
