@@ -1,21 +1,21 @@
-import * as factoringpropuestaDao from "../../daos/factoringpropuestaDao.js";
-import * as factoringpropuestafinancieroDao from "../../daos/factoringpropuestafinancieroDao.js";
-import * as factoringpropuestaestadoDao from "../../daos/factoringpropuestaestadoDao.js";
-import * as factoringtipoDao from "../../daos/factoringtipoDao.js";
-import * as factoringestrategiaDao from "../../daos/factoringestrategiaDao.js";
-import * as factoringDao from "../../daos/factoringDao.js";
-import * as riesgoDao from "../../daos/riesgoDao.js";
-import { response } from "../../utils/CustomResponseOk.js";
-import { ClientError } from "../../utils/CustomErrors.js";
-import * as jsonUtils from "../../utils/jsonUtils.js";
-import logger, { line } from "../../utils/logger.js";
-import { sequelizeFT } from "../../config/bd/sequelize_db_factoring.js";
+import * as factoringpropuestaDao from "../../../../daos/factoringpropuestaDao.js";
+import * as factoringpropuestafinancieroDao from "../../../../daos/factoringpropuestafinancieroDao.js";
+import * as factoringpropuestaestadoDao from "../../../../daos/factoringpropuestaestadoDao.js";
+import * as factoringtipoDao from "../../../../daos/factoringtipoDao.js";
+import * as factoringestrategiaDao from "../../../../daos/factoringestrategiaDao.js";
+import * as factoringDao from "../../../../daos/factoringDao.js";
+import * as riesgoDao from "../../../../daos/riesgoDao.js";
+import { response } from "../../../../utils/CustomResponseOk.js";
+import { ClientError } from "../../../../utils/CustomErrors.js";
+import * as jsonUtils from "../../../../utils/jsonUtils.js";
+import logger, { line } from "../../../../utils/logger.js";
+import { sequelizeFT } from "../../../../config/bd/sequelize_db_factoring.js";
 
 import * as luxon from "luxon";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { Sequelize } from "sequelize";
-import { simulateFactoringLogicV2 } from "../../logics/factoringLogic.js";
+import { simulateFactoringLogicV2 } from "../../../../logics/factoringLogic.js";
 
 export const updateFactoringpropuesta = async (req, res) => {
   logger.debug(line(), "controller::updateFactoringpropuesta");

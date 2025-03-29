@@ -31,13 +31,13 @@ import admin_empresacuentabancariaRoutes from "./routes/admin/empresacuentabanca
 import admin_cuentabancariaestadoRoutes from "./routes/admin/cuentabancariaestado.routes.js";
 import admin_empresaRoutes from "./routes/admin/empresa.routes.js";
 import admin_facturaRoutes from "./routes/admin/factura.routes.js";
-import admin_factoringpropuestaRoutes from "./routes/admin/factoringpropuesta.routes.js";
 import admin_archivofacturaRoutes from "./routes/admin/archivofactura.routes.js";
 import admin_personaRoutes from "./routes/admin/persona.routes.js";
 import admin_archivoRoutes from "./routes/admin/archivo.routes.js";
 import admin_personaverificacionRoutes from "./routes/admin/personaverificacion.routes.js";
 import admin_factorigempresaverificacionRoutes from "./routes/admin/factoringempresaverificacion.routes.js";
 import admin_servicio_factoring_factoringRoutes from "./routes/admin/servicio/factoring/factoring.routes.js";
+import admin_servicio_factoring_factoringpropuestaRoutes from "./routes/admin/servicio/factoring/factoringpropuesta.routes.js";
 
 import usuario_personaRoutes from "./routes/usuario/persona.routes.js";
 import usuario_personapepdirectoRoutes from "./routes/usuario/personapepdirecto.routes.js";
@@ -106,13 +106,13 @@ app.use("/api/v1", admin_empresacuentabancariaRoutes);
 app.use("/api/v1", admin_cuentabancariaestadoRoutes);
 app.use("/api/v1", admin_empresaRoutes);
 app.use("/api/v1", admin_facturaRoutes);
-app.use("/api/v1", admin_factoringpropuestaRoutes);
 app.use("/api/v1", admin_archivofacturaRoutes);
 app.use("/api/v1", admin_personaRoutes);
 app.use("/api/v1", admin_archivoRoutes);
 app.use("/api/v1", admin_personaverificacionRoutes);
 app.use("/api/v1", admin_factorigempresaverificacionRoutes);
 app.use("/api/v1", admin_servicio_factoring_factoringRoutes);
+app.use("/api/v1", admin_servicio_factoring_factoringpropuestaRoutes);
 
 app.use("/api/v1", usuario_personaRoutes);
 app.use("/api/v1", usuario_personapepdirectoRoutes);
