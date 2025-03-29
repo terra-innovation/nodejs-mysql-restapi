@@ -123,6 +123,16 @@ export const getFactoringsByEstados = async (transaction, estados) => {
         {
           all: true,
         },
+        {
+          model: modelsFT.FactoringPropuesta,
+          as: "factoring_propuesta",
+          include: [
+            {
+              model: modelsFT.FactoringPropuestaEstado,
+              as: "factoringpropuestaestado_factoring_propuesta_estado",
+            },
+          ],
+        },
       ],
       where: {
         estado: {
