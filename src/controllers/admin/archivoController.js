@@ -53,6 +53,8 @@ export const descargarArchivo = async (req, res) => {
     // Convierte la ruta relativa a una ruta absoluta
     const rutaAbsoluta = path.resolve(proyectoRutaAbsoluta, archivoPath);
 
+    await transaction.commit();
+
     res.sendFile(rutaAbsoluta, (err) => {
       if (err) {
         logger.error("Error al cargar la imagen:", err);

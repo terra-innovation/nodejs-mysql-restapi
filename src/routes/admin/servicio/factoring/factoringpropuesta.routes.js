@@ -16,4 +16,6 @@ router.patch("/admin/servicio/factoring/factoringpropuesta/activar/:id", verifyT
 router.post("/admin/servicio/factoring/factoringpropuesta/simular/:id", verifyToken, checkRole([2]), catchedAsync(factoringpropuestaController.simulateFactoringpropuesta));
 router.get("/admin/servicio/factoring/factoringpropuesta/buscar/factoring/:id", verifyToken, checkRole([2]), catchedAsync(factoringpropuestaController.getFactoringpropuestasByFactoringid));
 
+router.get("/admin/servicio/factoring/factoringpropuesta/descargar/:id", verifyToken, checkRole([2]), catchedAsync(factoringpropuestaController.downloadFactoringpropuestaPDF));
+
 export default router;

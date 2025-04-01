@@ -17,6 +17,69 @@ import * as yup from "yup";
 import { Sequelize } from "sequelize";
 import { simulateFactoringLogicV2 } from "../../../../logics/factoringLogic.js";
 
+import { join } from "path";
+import { unlink } from "fs/promises"; // Para eliminar el archivo después de enviarlo
+import PDFGenerator from "../../../../utils/document/PDFgenerator.js";
+
+export const downloadFactoringpropuestaPDF = async (req, res) => {
+  logger.debug(line(), "controller::downloadFactoringpropuestaPDF");
+  const { id } = req.params;
+  const factoringpropuestaUpdateSchema = yup
+    .object()
+    .shape({
+      factoringpropuestaid: yup.string().trim().required().min(36).max(36),
+    })
+    .required();
+  const factoringpropuestaValidated = factoringpropuestaUpdateSchema.validateSync({ factoringpropuestaid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
+  logger.debug(line(), "factoringpropuestaValidated:", factoringpropuestaValidated);
+
+  const transaction = await sequelizeFT.transaction();
+  try {
+    const filePath = join(process.cwd(), "cotizacion_factoring.pdf");
+    const pdfGenerator = new PDFGenerator(filePath);
+
+    var factoringpropuesta = await factoringpropuestaDao.getFactoringpropuestaByFactoringpropuestaid(transaction, factoringpropuestaValidated.factoringpropuestaid);
+    if (!factoringpropuesta) {
+      logger.warn(line(), "Factoringpropuesta no existe: [" + factoringpropuestaValidated.factoringpropuestaid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+    //logger.debug(line(), "factoringpropuesta:", jsonUtils.sequelizeToJSON(factoringpropuesta));
+
+    var factoring = await factoringDao.getFactoringByIdfactoring(transaction, factoringpropuesta._idfactoring);
+    if (!factoring) {
+      logger.warn(line(), "Factoring no existe: [" + factoringpropuesta._idfactoring + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    //logger.debug(line(), "factoringpropuesta:", jsonUtils.sequelizeToJSON(factoring));
+
+    // Generar el PDF
+    await pdfGenerator.generateFactoringQuote(factoring, factoringpropuesta);
+
+    await transaction.commit();
+
+    res.sendFile(filePath, async (err) => {
+      if (err) {
+        console.error("Error al enviar el archivo:", err);
+        res.status(500).send("Error al descargar la cotización");
+      } else {
+        // Eliminar el archivo después de enviarlo
+        try {
+          //await unlink(filePath);
+          console.log("Archivo eliminado con éxito");
+        } catch (deleteErr) {
+          console.error("Error al eliminar el archivo:", deleteErr);
+        }
+      }
+    });
+
+    //response(res, 200, { ...factoringpropuestaValidated });
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
+};
+
 export const updateFactoringpropuesta = async (req, res) => {
   logger.debug(line(), "controller::updateFactoringpropuesta");
   const { id } = req.params;

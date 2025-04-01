@@ -74,6 +74,21 @@ export const getFactoringpropuestaByIdfactoringpropuesta = async (transaction, i
 export const getFactoringpropuestaByFactoringpropuestaid = async (transaction, factoringpropuestaid) => {
   try {
     const factoringpropuesta = await modelsFT.FactoringPropuesta.findOne({
+      include: [
+        {
+          all: true,
+        },
+        {
+          model: modelsFT.FactoringPropuestaFinanciero,
+          required: true,
+          as: "factoring_propuesta_financieros",
+          include: [
+            {
+              all: true,
+            },
+          ],
+        },
+      ],
       where: {
         factoringpropuestaid: factoringpropuestaid,
       },

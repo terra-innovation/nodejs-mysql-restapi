@@ -173,11 +173,46 @@ export const getFactoringsByEstados = async (transaction, estados) => {
 
 export const getFactoringByIdfactoring = async (transaction, idfactoring) => {
   try {
-    const factoring = await modelsFT.Factoring.findByPk(idfactoring, { transaction });
-    logger.info(line(), factoring);
-
-    //const factorings = await factoring.getFactorings();
-    //logger.info(line(),factorings);
+    const factoring = await modelsFT.Factoring.findByPk(idfactoring, {
+      include: [
+        {
+          all: true,
+        },
+        {
+          model: modelsFT.FactoringPropuesta,
+          as: "factoring_propuesta",
+          include: [
+            {
+              model: modelsFT.FactoringPropuestaEstado,
+              as: "factoringpropuestaestado_factoring_propuesta_estado",
+            },
+          ],
+        },
+        {
+          model: modelsFT.CuentaBancaria,
+          as: "cuentabancaria_cuenta_bancarium",
+          include: [
+            {
+              model: modelsFT.Banco,
+              as: "banco_banco",
+            },
+            {
+              model: modelsFT.CuentaBancariaEstado,
+              as: "cuentabancariaestado_cuenta_bancaria_estado",
+            },
+            {
+              model: modelsFT.CuentaTipo,
+              as: "cuentatipo_cuenta_tipo",
+            },
+            {
+              model: modelsFT.Moneda,
+              as: "moneda_moneda",
+            },
+          ],
+        },
+      ],
+      transaction,
+    });
 
     return factoring;
   } catch (error) {
