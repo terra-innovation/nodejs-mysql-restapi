@@ -57,8 +57,8 @@ export const descargarArchivo = async (req, res) => {
 
     res.sendFile(rutaAbsoluta, (err) => {
       if (err) {
-        logger.error("Error al cargar la imagen:", err);
-        res.status(404).send("Imagen no encontrada");
+        logger.error("Error al descargar el archivo:", err);
+        res.status(500).send("Error");
       }
     });
   } catch (error) {
