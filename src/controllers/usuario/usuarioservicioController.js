@@ -29,6 +29,7 @@ import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
 import logger, { line } from "../../utils/logger.js";
+import { safeRollback } from "../../utils/transactionUtils.js";
 import { sequelizeFT } from "../../config/bd/sequelize_db_factoring.js";
 import * as storageUtils from "../../utils/storageUtils.js";
 import * as validacionesYup from "../../utils/validacionesYup.js";
@@ -446,7 +447,7 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req, res) => {
     await transaction.commit();
     response(res, 200, {});
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -491,7 +492,7 @@ export const getUsuarioservicioMaster = async (req, res) => {
     await transaction.commit();
     response(res, 201, usuarioservicioMasterFiltered);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -513,7 +514,7 @@ export const getUsuarioservicios = async (req, res) => {
     await transaction.commit();
     response(res, 201, usuarioserviciosFiltered);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };

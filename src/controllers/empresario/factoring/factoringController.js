@@ -11,6 +11,7 @@ import * as monedaDao from "../../../daos/monedaDao.js";
 import { ClientError } from "../../../utils/CustomErrors.js";
 import { response } from "../../../utils/CustomResponseOk.js";
 import logger, { line } from "../../../utils/logger.js";
+import { safeRollback } from "../../../utils/transactionUtils.js";
 
 import * as luxon from "luxon";
 import { Sequelize } from "sequelize";
@@ -149,7 +150,7 @@ export const createFactoring = async (req, res) => {
     await transaction.commit();
     response(res, 201, { ...camposAdicionales, ...factoringValidated });
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };

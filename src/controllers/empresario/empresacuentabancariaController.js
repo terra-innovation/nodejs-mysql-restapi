@@ -11,6 +11,7 @@ import { ClientError } from "../../utils/CustomErrors.js";
 import { response } from "../../utils/CustomResponseOk.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
 import logger, { line } from "../../utils/logger.js";
+import { safeRollback } from "../../utils/transactionUtils.js";
 import * as validacionesYup from "../../utils/validacionesYup.js";
 
 import * as fs from "fs";
@@ -136,7 +137,7 @@ export const createEmpresacuentabancaria = async (req, res) => {
     await transaction.commit();
     response(res, 201, { ...empresacuentabancariaFiltered });
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -173,7 +174,7 @@ export const getEmpresacuentabancariaMaster = async (req, res) => {
     await transaction.commit();
     response(res, 201, cuentasbancariasMasterFiltered);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -226,7 +227,7 @@ export const updateEmpresacuentabancariaOnlyAlias = async (req, res) => {
     await transaction.commit();
     response(res, 200, {});
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -248,7 +249,7 @@ export const getEmpresacuentabancarias = async (req, res) => {
     await transaction.commit();
     response(res, 201, empresacuentabancariasFiltered);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };

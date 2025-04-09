@@ -7,6 +7,7 @@ import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
 import logger, { line } from "../../utils/logger.js";
+import { safeRollback } from "../../utils/transactionUtils.js";
 import { sequelizeFT } from "../../config/bd/sequelize_db_factoring.js";
 import EmailSender from "../../utils/email/emailSender.js";
 import TemplateManager from "../../utils/email/TemplateManager.js";
@@ -42,7 +43,7 @@ export const activatePersonaverificacion = async (req, res) => {
     await transaction.commit();
     response(res, 204, personaverificacionDeleted);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -74,7 +75,7 @@ export const deletePersonaverificacion = async (req, res) => {
     await transaction.commit();
     response(res, 204, personaverificacionDeleted);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -99,7 +100,7 @@ export const getPersonaverificacionMaster = async (req, res) => {
     await transaction.commit();
     response(res, 201, personaverificacionMasterFiltered);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -155,7 +156,7 @@ export const updatePersonaverificacion = async (req, res) => {
     await transaction.commit();
     response(res, 200, {});
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -177,7 +178,7 @@ export const getPersonaverificacions = async (req, res) => {
     await transaction.commit();
     response(res, 201, personaverificacionverificacionsJson);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -265,7 +266,7 @@ export const createPersonaverificacion = async (req, res) => {
     await transaction.commit();
     response(res, 201, {});
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };

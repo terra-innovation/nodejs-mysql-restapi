@@ -12,6 +12,7 @@ import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
 import logger, { line } from "../../utils/logger.js";
+import { safeRollback } from "../../utils/transactionUtils.js";
 import { sequelizeFT } from "../../config/bd/sequelize_db_factoring.js";
 
 import { v4 as uuidv4 } from "uuid";
@@ -36,7 +37,7 @@ export const getPersonasPendientesDeVerificacion = async (req, res) => {
     await transaction.commit();
     response(res, 201, personasJson);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -68,7 +69,7 @@ export const activatePersona = async (req, res) => {
     await transaction.commit();
     response(res, 204, personaDeleted);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -100,7 +101,7 @@ export const deletePersona = async (req, res) => {
     await transaction.commit();
     response(res, 204, personaDeleted);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -131,7 +132,7 @@ export const getPersonaMaster = async (req, res) => {
     await transaction.commit();
     response(res, 201, personaMasterFiltered);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -187,7 +188,7 @@ export const updatePersona = async (req, res) => {
     await transaction.commit();
     response(res, 200, {});
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -208,7 +209,7 @@ export const getPersonas = async (req, res) => {
     await transaction.commit();
     response(res, 201, personasJson);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -267,7 +268,7 @@ export const createPersona = async (req, res) => {
     await transaction.commit();
     response(res, 201, { ...camposAdicionales, ...personaValidated });
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };

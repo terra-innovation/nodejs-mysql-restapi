@@ -9,6 +9,7 @@ import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
 import logger, { line } from "../../utils/logger.js";
+import { safeRollback } from "../../utils/transactionUtils.js";
 import { sequelizeFT } from "../../config/bd/sequelize_db_factoring.js";
 
 import { v4 as uuidv4 } from "uuid";
@@ -53,7 +54,7 @@ export const activateEmpresacuentabancaria = async (req, res) => {
     await transaction.commit();
     response(res, 204, {});
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -96,7 +97,7 @@ export const deleteEmpresacuentabancaria = async (req, res) => {
     await transaction.commit();
     response(res, 204, {});
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -129,7 +130,7 @@ export const getEmpresacuentabancariaMaster = async (req, res) => {
     await transaction.commit();
     response(res, 201, cuentasbancariasMasterFiltered);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -189,7 +190,7 @@ export const updateEmpresacuentabancariaOnlyAliasAndCuentaBancariaEstado = async
     await transaction.commit();
     response(res, 200, {});
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -206,7 +207,7 @@ export const getEmpresacuentabancarias = async (req, res) => {
     await transaction.commit();
     response(res, 201, cuentasbancariasJson);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -312,7 +313,7 @@ export const createEmpresacuentabancaria = async (req, res) => {
     await transaction.commit();
     response(res, 201, { ...empresacuentabancariaFiltered });
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };

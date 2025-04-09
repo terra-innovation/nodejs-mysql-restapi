@@ -11,6 +11,7 @@ import { response } from "../utils/CustomResponseOk.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import * as jsonUtils from "../utils/jsonUtils.js";
 import logger, { line } from "../utils/logger.js";
+import { safeRollback } from "../utils/transactionUtils.js";
 import { sequelizeFT } from "../config/bd/sequelize_db_factoring.js";
 
 import * as facturaUtils from "../utils/facturaUtils.js";
@@ -168,7 +169,7 @@ export const uploadInvoice = async (req, res) => {
       await transaction.commit();
       response(res, 200, facturaFiltered);
     } catch (error) {
-      await transaction.rollback();
+      await safeRollback(transaction);
       throw error;
     }
   }

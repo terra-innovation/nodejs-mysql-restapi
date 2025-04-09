@@ -9,6 +9,7 @@ import { response } from "../../../../utils/CustomResponseOk.js";
 import { ClientError } from "../../../../utils/CustomErrors.js";
 import * as jsonUtils from "../../../../utils/jsonUtils.js";
 import logger, { line } from "../../../../utils/logger.js";
+import { safeRollback } from "../../../../utils/transactionUtils.js";
 import { sequelizeFT } from "../../../../config/bd/sequelize_db_factoring.js";
 
 import * as luxon from "luxon";
@@ -73,9 +74,7 @@ export const downloadFactoringpropuestaPDF = async (req, res) => {
     await unlink(filePath);
     await transaction.commit();
   } catch (error) {
-    if (transaction && !transaction.finished) {
-      await transaction.rollback();
-    }
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -128,7 +127,7 @@ export const updateFactoringpropuesta = async (req, res) => {
     await transaction.commit();
     response(res, 200, { ...factoringpropuestaValidated });
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -280,7 +279,7 @@ export const createFactoringpropuesta = async (req, res) => {
 
     response(res, 201, { factoring: { ...factoringValidated }, ...simulacion });
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -345,7 +344,7 @@ export const simulateFactoringpropuesta = async (req, res) => {
 
     response(res, 201, { factoring: { ...factoringValidated }, ...simulacion });
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -382,7 +381,7 @@ export const getFactoringpropuestasByFactoringid = async (req, res) => {
     await transaction.commit();
     response(res, 201, factoringpropuestasJson);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -414,7 +413,7 @@ export const activateFactoringpropuesta = async (req, res) => {
     await transaction.commit();
     response(res, 204, factoringpropuestaDeleted);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -446,7 +445,7 @@ export const deleteFactoringpropuesta = async (req, res) => {
     await transaction.commit();
     response(res, 204, factoringpropuestaDeleted);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -476,7 +475,7 @@ export const getFactoringpropuestaMaster = async (req, res) => {
     await transaction.commit();
     response(res, 201, factoringpropuestasMasterFiltered);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -497,7 +496,7 @@ export const getFactoringpropuestas = async (req, res) => {
     await transaction.commit();
     response(res, 201, factoringpropuestasJson);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };

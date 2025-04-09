@@ -1,5 +1,6 @@
 import { poolFactoring } from "../config/bd/mysql2_db_factoring.js";
 import logger, { line } from "../utils/logger.js";
+import { safeRollback } from "../utils/transactionUtils.js";
 
 export const index = (transaction, res) => res.json({ message: "welcome to my api" });
 

@@ -3,6 +3,7 @@ import * as empresaDao from "../daos/empresaDao.js";
 import { response } from "../utils/CustomResponseOk.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import logger, { line } from "../utils/logger.js";
+import { safeRollback } from "../utils/transactionUtils.js";
 import { sequelizeFT } from "../config/bd/sequelize_db_factoring.js";
 
 import { v4 as uuidv4 } from "uuid";
@@ -17,7 +18,7 @@ export const getColaboradores = async (req, res) => {
     await transaction.commit();
     response(res, 201, colaboradores);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -41,7 +42,7 @@ export const getColaborador = async (req, res) => {
     await transaction.commit();
     response(res, 200, rows[0]);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -89,7 +90,7 @@ export const createColaborador = async (req, res) => {
     await transaction.commit();
     response(res, 201, { ...camposAdicionales, ...colaboradorValidated });
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -132,7 +133,7 @@ export const updateColaborador = async (req, res) => {
     await transaction.commit();
     response(res, 200, colaborador_actualizada[0]);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -168,7 +169,7 @@ export const deleteColaborador = async (req, res) => {
     await transaction.commit();
     response(res, 204, colaborador_actualizada[0]);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };

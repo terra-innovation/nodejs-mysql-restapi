@@ -13,6 +13,7 @@ import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
 import logger, { line } from "../../utils/logger.js";
+import { safeRollback } from "../../utils/transactionUtils.js";
 import { sequelizeFT } from "../../config/bd/sequelize_db_factoring.js";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
@@ -107,7 +108,7 @@ export const createFactoringempresaverificacion = async (req, res) => {
     await transaction.commit();
     response(res, 201, {});
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -281,7 +282,7 @@ export const getFactoringempresasByVerificacion = async (req, res) => {
     await transaction.commit();
     response(res, 201, factoringempresasJson);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -306,7 +307,7 @@ export const getFactoringempresaverificacionMaster = async (req, res) => {
     await transaction.commit();
     response(res, 201, servicioempresaverificacionMasterFiltered);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };

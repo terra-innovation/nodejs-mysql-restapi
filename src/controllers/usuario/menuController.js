@@ -3,6 +3,7 @@ import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
 import logger, { line } from "../../utils/logger.js";
+import { safeRollback } from "../../utils/transactionUtils.js";
 import { sequelizeFT } from "../../config/bd/sequelize_db_factoring.js";
 import * as menuAdmin from "../../menu/menuAdmin.js";
 import * as menuEmpresario from "../../menu/menuEmpresario.js";
@@ -67,7 +68,7 @@ export const getMenu = async (req, res) => {
     await transaction.commit();
     response(res, 201, menuItems);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };

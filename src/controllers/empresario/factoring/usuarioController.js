@@ -3,6 +3,7 @@ import * as usuarioDao from "../../../daos/usuarioDao.js";
 import { response } from "../../../utils/CustomResponseOk.js";
 import * as jsonUtils from "../../../utils/jsonUtils.js";
 import logger, { line } from "../../../utils/logger.js";
+import { safeRollback } from "../../../utils/transactionUtils.js";
 
 export const getUsuario = async (req, res) => {
   logger.debug(line(), "controller::getUsuario");
@@ -19,7 +20,7 @@ export const getUsuario = async (req, res) => {
     await transaction.commit();
     response(res, 201, usuarioFiltered);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };

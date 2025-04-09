@@ -9,6 +9,7 @@ import { ClientError } from "../../../../utils/CustomErrors.js";
 import { response } from "../../../../utils/CustomResponseOk.js";
 import * as jsonUtils from "../../../../utils/jsonUtils.js";
 import logger, { line } from "../../../../utils/logger.js";
+import { safeRollback } from "../../../../utils/transactionUtils.js";
 
 import * as luxon from "luxon";
 import { Sequelize } from "sequelize";
@@ -76,7 +77,7 @@ export const updateFactoring = async (req, res) => {
     await transaction.commit();
     response(res, 200, {});
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -130,7 +131,7 @@ export const simulateFactoring = async (req, res) => {
 
     response(res, 201, { factoring: { ...factoringValidated }, ...simulacion });
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -159,7 +160,7 @@ export const getFactoringMaster = async (req, res) => {
     await transaction.commit();
     response(res, 201, factoringsMasterFiltered);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -173,7 +174,7 @@ export const getFactorings = async (req, res) => {
     await transaction.commit();
     response(res, 201, factorings);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };

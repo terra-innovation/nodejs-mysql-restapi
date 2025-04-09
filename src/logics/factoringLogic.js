@@ -123,7 +123,7 @@ export const simulateFactoringLogicV2 = async (_idriesgooperacion, _idbancoceden
 
     await transaction.commit();
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
   return simulacion;
@@ -187,7 +187,7 @@ export const simulateFactoringLogicV1 = async (_idriesgooperacion, _idbancoceden
 
     await transaction.commit();
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
   return simulacion;

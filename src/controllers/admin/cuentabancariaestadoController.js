@@ -3,6 +3,7 @@ import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
 import logger, { line } from "../../utils/logger.js";
+import { safeRollback } from "../../utils/transactionUtils.js";
 import { sequelizeFT } from "../../config/bd/sequelize_db_factoring.js";
 
 import { v4 as uuidv4 } from "uuid";
@@ -37,7 +38,7 @@ export const activateCuentabancariaestado = async (req, res) => {
     await transaction.commit();
     response(res, 204, cuentabancariaestadoDeleted);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -70,7 +71,7 @@ export const deleteCuentabancariaestado = async (req, res) => {
     await transaction.commit();
     response(res, 204, cuentabancariaestadoDeleted);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -121,7 +122,7 @@ export const updateCuentabancariaestado = async (req, res) => {
     await transaction.commit();
     response(res, 200, cuentabancariaestadoFiltered);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -142,7 +143,7 @@ export const getCuentasbancarias = async (req, res) => {
     await transaction.commit();
     response(res, 201, cuentabancariaestadosJson);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -185,7 +186,7 @@ export const createCuentabancariaestado = async (req, res) => {
     await transaction.commit();
     response(res, 201, { ...camposAdicionales, ...cuentabancariaestadoValidated });
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };

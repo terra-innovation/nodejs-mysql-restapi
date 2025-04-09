@@ -7,6 +7,7 @@ import { response } from "../utils/CustomResponseOk.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import * as jsonUtils from "../utils/jsonUtils.js";
 import logger, { line } from "../utils/logger.js";
+import { safeRollback } from "../utils/transactionUtils.js";
 import { sequelizeFT } from "../config/bd/sequelize_db_factoring.js";
 
 import { v4 as uuidv4 } from "uuid";
@@ -25,7 +26,7 @@ export const getUsuarios = async (req, res) => {
     await transaction.commit();
     response(res, 201, usuariosFiltered);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -45,7 +46,7 @@ export const getUsuarioContactoMio = async (req, res) => {
     await transaction.commit();
     response(res, 201, usuarioFiltered);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -74,7 +75,7 @@ export const getUsuario = async (req, res) => {
     await transaction.commit();
     response(res, 200, usuarioFiltered);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -143,7 +144,7 @@ export const createUsuario = async (req, res) => {
     await transaction.commit();
     response(res, 201, { ...camposAdicionales, ...usuarioValidated });
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -188,7 +189,7 @@ export const updateUsuario = async (req, res) => {
     await transaction.commit();
     response(res, 200, usuarioFiltered);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -220,7 +221,7 @@ export const deleteUsuario = async (req, res) => {
     await transaction.commit();
     response(res, 204, usuarioDeleted);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };

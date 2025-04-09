@@ -7,6 +7,7 @@ import { response } from "../utils/CustomResponseOk.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import * as jsonUtils from "../utils/jsonUtils.js";
 import logger, { line } from "../utils/logger.js";
+import { safeRollback } from "../utils/transactionUtils.js";
 import { sequelizeFT } from "../config/bd/sequelize_db_factoring.js";
 
 import { v4 as uuidv4 } from "uuid";
@@ -26,7 +27,7 @@ export const getCuentasbancarias = async (req, res) => {
     await transaction.commit();
     response(res, 201, cuentasbancariasFiltered);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -64,7 +65,7 @@ export const getCuentasbancariasMiosByEmpresaidActivos = async (req, res) => {
     await transaction.commit();
     response(res, 201, cuentasbancariasFiltered);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -93,7 +94,7 @@ export const getCuentabancaria = async (req, res) => {
     await transaction.commit();
     response(res, 200, cuentabancariaFiltered);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -166,7 +167,7 @@ export const createCuentabancaria = async (req, res) => {
     await transaction.commit();
     response(res, 201, { ...camposAdicionales, ...cuentabancariaValidated });
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -215,7 +216,7 @@ export const updateCuentabancaria = async (req, res) => {
     await transaction.commit();
     response(res, 200, cuentabancariaFiltered);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -247,7 +248,7 @@ export const deleteCuentabancaria = async (req, res) => {
     await transaction.commit();
     response(res, 204, cuentabancariaDeleted);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };

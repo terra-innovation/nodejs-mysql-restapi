@@ -7,6 +7,7 @@ import { response } from "../utils/CustomResponseOk.js";
 import { ClientError } from "../utils/CustomErrors.js";
 import * as jsonUtils from "../utils/jsonUtils.js";
 import logger, { line } from "../utils/logger.js";
+import { safeRollback } from "../utils/transactionUtils.js";
 import { sequelizeFT } from "../config/bd/sequelize_db_factoring.js";
 
 import { v4 as uuidv4 } from "uuid";
@@ -27,7 +28,7 @@ export const getRiesgos = async (req, res) => {
     await transaction.commit();
     response(res, 201, riesgosFiltered);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -65,7 +66,7 @@ export const getRiesgosMiosByEmpresaidActivos = async (req, res) => {
     await transaction.commit();
     response(res, 201, riesgosFiltered);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -94,7 +95,7 @@ export const getRiesgo = async (req, res) => {
     await transaction.commit();
     response(res, 200, riesgoFiltered);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -162,7 +163,7 @@ export const createRiesgo = async (req, res) => {
     await transaction.commit();
     response(res, 201, { ...camposAdicionales, ...riesgoValidated });
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -207,7 +208,7 @@ export const updateRiesgo = async (req, res) => {
     await transaction.commit();
     response(res, 200, riesgoFiltered);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -239,7 +240,7 @@ export const deleteRiesgo = async (req, res) => {
     await transaction.commit();
     response(res, 204, riesgoDeleted);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };

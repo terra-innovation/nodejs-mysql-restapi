@@ -14,6 +14,7 @@ import * as facturaterminopagoDao from "../../daos/facturaterminopagoDao.js";
 import * as archivofacturaDao from "../../daos/archivofacturaDao.js";
 import { response } from "../../utils/CustomResponseOk.js";
 import logger, { line } from "../../utils/logger.js";
+import { safeRollback } from "../../utils/transactionUtils.js";
 import * as storageUtils from "../../utils/storageUtils.js";
 import * as facturaUtils from "../../utils/facturaUtils.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
@@ -169,13 +170,11 @@ export const subirFactura = async (req, res) => {
       await transaction2.commit();
       response(res, 200, facturaFiltered);
     } catch (error) {
-      await transaction2.rollback();
+      await safeRollback(transaction2);
       throw error;
     }
   } catch (error) {
-    if (transaction1 && transaction1.finished !== "commit") {
-      await transaction1.rollback();
-    }
+    await safeRollback(transaction1);
     throw error;
   }
 };

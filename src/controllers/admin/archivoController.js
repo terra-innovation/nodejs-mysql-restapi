@@ -9,6 +9,7 @@ import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
 import logger, { line } from "../../utils/logger.js";
+import { safeRollback } from "../../utils/transactionUtils.js";
 import { sequelizeFT } from "../../config/bd/sequelize_db_factoring.js";
 import * as storageUtils from "../../utils/storageUtils.js";
 import * as fs from "fs";
@@ -62,7 +63,7 @@ export const descargarArchivo = async (req, res) => {
       }
     });
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -94,7 +95,7 @@ export const activateArchivo = async (req, res) => {
     await transaction.commit();
     response(res, 204, archivoDeleted);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -126,7 +127,7 @@ export const deleteArchivo = async (req, res) => {
     await transaction.commit();
     response(res, 204, archivoDeleted);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -157,7 +158,7 @@ export const getArchivoMaster = async (req, res) => {
     await transaction.commit();
     response(res, 201, archivoMasterFiltered);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -213,7 +214,7 @@ export const updateArchivo = async (req, res) => {
     await transaction.commit();
     response(res, 200, {});
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -233,7 +234,7 @@ export const getArchivos = async (req, res) => {
     await transaction.commit();
     response(res, 201, archivosJson);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -292,7 +293,7 @@ export const createArchivo = async (req, res) => {
     await transaction.commit();
     response(res, 201, { ...camposAdicionales, ...archivoValidated });
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };

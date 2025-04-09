@@ -7,6 +7,7 @@ import { ClientError } from "../../utils/CustomErrors.js";
 import { response } from "../../utils/CustomResponseOk.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
 import logger, { line } from "../../utils/logger.js";
+import { safeRollback } from "../../utils/transactionUtils.js";
 
 import { Sequelize } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
@@ -67,7 +68,7 @@ export const updateContacto = async (req, res) => {
     await transaction.commit();
     response(res, 200, {});
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -143,7 +144,7 @@ export const createContacto = async (req, res) => {
     await transaction.commit();
     response(res, 201, { ...contactoFiltered });
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -169,7 +170,7 @@ export const getContactos = async (req, res) => {
     await transaction.commit();
     response(res, 201, contactosFiltered);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -203,7 +204,7 @@ export const getContactoMaster = async (req, res) => {
     await transaction.commit();
     response(res, 201, contactoMasterFiltered);
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };

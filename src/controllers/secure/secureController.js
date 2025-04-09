@@ -7,6 +7,7 @@ import { response } from "../../utils/CustomResponseOk.js";
 import { ClientError } from "../../utils/CustomErrors.js";
 import * as jsonUtils from "../../utils/jsonUtils.js";
 import logger, { line } from "../../utils/logger.js";
+import { safeRollback } from "../../utils/transactionUtils.js";
 import { sequelizeFT } from "../../config/bd/sequelize_db_factoring.js";
 import * as cryptoUtils from "../../utils/cryptoUtils.js";
 import * as config from "../../config.js";
@@ -110,7 +111,7 @@ export const resetPassword = async (req, res) => {
     await transaction.commit();
     response(res, 201, { ...validacionReturned });
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -172,7 +173,7 @@ export const validateRestorePassword = async (req, res) => {
     await transaction.commit();
     response(res, 201, { ...validacionReturned });
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -246,7 +247,7 @@ export const sendTokenPassword = async (req, res) => {
     await transaction.commit();
     response(res, 201, { ...validacionReturned });
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -298,7 +299,7 @@ export const sendVerificactionCode = async (req, res) => {
     await transaction.commit();
     response(res, 201, { ...validacionReturned });
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -343,7 +344,7 @@ export const loginUser = async (req, res) => {
       throw new ClientError("Usuario y/o contraseña no válida", 404);
     }
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -482,7 +483,7 @@ export const registerUsuario = async (req, res) => {
     await transaction.commit();
     response(res, 201, { ...usuarioObfuscated });
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
@@ -551,7 +552,7 @@ export const validateEmail = async (req, res) => {
     await transaction.commit();
     response(res, 201, { ...validacionReturned });
   } catch (error) {
-    await transaction.rollback();
+    await safeRollback(transaction);
     throw error;
   }
 };
