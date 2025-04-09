@@ -69,7 +69,6 @@ export const downloadFactoringpropuestaPDF = async (req, res) => {
     // res.setHeader("Content-Disposition", 'attachment; filename="' + filenameDownload + '"');
 
     setDownloadHeaders(res, filenameDownload);
-
     await sendFileAsync(req, res, filePath);
     await unlink(filePath);
     await transaction.commit();
