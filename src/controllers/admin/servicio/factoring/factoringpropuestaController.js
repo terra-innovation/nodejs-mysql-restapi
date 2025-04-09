@@ -17,13 +17,12 @@ import * as yup from "yup";
 import { Sequelize } from "sequelize";
 import { simulateFactoringLogicV2 } from "../../../../logics/factoringLogic.js";
 
-import { join } from "path";
 import { unlink } from "fs/promises";
 import path from "path"; // Para eliminar el archivo después de enviarlo
 import PDFGenerator from "../../../../utils/document/PDFgenerator.js";
 import * as storageUtils from "../../../../utils/storageUtils.js";
+import { sendFileAsync, setDownloadHeaders } from "../../../../utils/httpUtils.js";
 import * as fs from "fs";
-import { fileURLToPath } from "url";
 
 export const downloadFactoringpropuestaPDF = async (req, res) => {
   logger.debug(line(), "controller::downloadFactoringpropuestaPDF");
@@ -51,12 +50,11 @@ export const downloadFactoringpropuestaPDF = async (req, res) => {
       logger.warn(line(), "Factoring no existe: [" + factoringpropuesta._idfactoring + "]");
       throw new ClientError("Datos no válidos", 404);
     }
-
     //logger.debug(line(), "factoringpropuesta:", jsonUtils.sequelizeToJSON(factoring));
 
     // Generar el PDF
     const formattedDate = luxon.DateTime.now().toFormat("yyyyMMdd_HHmm");
-    const filename = formattedDate + "_cotizacion_factoring_" + factoringpropuesta.code + ".pdf";
+    const filename = formattedDate + "_factoring_propuesta_" + factoring.cedente_empresa.ruc + "_" + factoringpropuesta.code + ".pdf";
     const dirPath = path.join(storageUtils.pathApp(), storageUtils.STORAGE_PATH_PROCESAR, storageUtils.pathDate(new Date()));
     const filePath = path.join(dirPath, filename);
     if (!fs.existsSync(dirPath)) {
@@ -66,19 +64,19 @@ export const downloadFactoringpropuestaPDF = async (req, res) => {
     const pdfGenerator = new PDFGenerator(filePath);
     await pdfGenerator.generateFactoringQuote(factoring, factoringpropuesta);
 
-    res.sendFile(filePath, async (err) => {
-      if (err) {
-        logger.error("Error al descargar el archivo:", err);
-        res.status(500).send("Error");
-      } else {
-        unlink(filePath); //Eliminamos el archivo
-      }
-    });
-    await transaction.commit();
+    let filenameDownload = "Factoring_Propuesta_" + factoring.cedente_empresa.ruc + "_" + factoringpropuesta.code + "_" + formattedDate + ".pdf";
 
-    //response(res, 200, { ...factoringpropuestaValidated });
+    // res.setHeader("Content-Disposition", 'attachment; filename="' + filenameDownload + '"');
+
+    setDownloadHeaders(res, filenameDownload);
+
+    await sendFileAsync(req, res, filePath);
+    await unlink(filePath);
+    await transaction.commit();
   } catch (error) {
-    await transaction.rollback();
+    if (transaction && !transaction.finished) {
+      await transaction.rollback();
+    }
     throw error;
   }
 };

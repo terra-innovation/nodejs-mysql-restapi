@@ -58,6 +58,7 @@ const app = express();
 app.use(
   cors({
     origin: "*",
+    exposedHeaders: ["Content-Disposition"],
   })
 );
 
