@@ -1,6 +1,5 @@
 import path from "path";
 
-//export const STORAGE_PATH_PROCESAR = "#root/storage/procesar";
 export const STORAGE_PATH_PROCESAR = path.join("storage", "procesar");
 export const STORAGE_PATH_FAIL = path.join("storage", "fail");
 export const STORAGE_PATH_INVALID = path.join("storage", "invalid");
