@@ -1,13 +1,13 @@
-import { sequelizeFT } from "../../config/bd/sequelize_db_factoring.js";
+import { sequelizeFT } from "#src/config/bd/sequelize_db_factoring.js";
 
-import * as contactoDao from "../../daos/contactoDao.js";
-import * as empresaDao from "../../daos/empresaDao.js";
-import * as factoringDao from "../../daos/factoringDao.js";
-import { ClientError } from "../../utils/CustomErrors.js";
-import { response } from "../../utils/CustomResponseOk.js";
-import * as jsonUtils from "../../utils/jsonUtils.js";
-import logger, { line } from "../../utils/logger.js";
-import { safeRollback } from "../../utils/transactionUtils.js";
+import * as contactoDao from "#src/daos/contactoDao.js";
+import * as empresaDao from "#src/daos/empresaDao.js";
+import * as factoringDao from "#src/daos/factoringDao.js";
+import { ClientError } from "#src/utils/CustomErrors.js";
+import { response } from "#src/utils/CustomResponseOk.js";
+import * as jsonUtils from "#src/utils/jsonUtils.js";
+import logger, { line } from "#src/utils/logger.js";
+import { safeRollback } from "#src/utils/transactionUtils.js";
 
 import { Sequelize } from "sequelize";
 import { v4 as uuidv4 } from "uuid";

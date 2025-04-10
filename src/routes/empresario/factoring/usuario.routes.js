@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { catchedAsync } from "../../../utils/catchedAsync.js";
-import * as usuarioController from "../../../controllers/empresario/factoring/usuarioController.js";
-import { verifyToken, checkRole } from "../../../middlewares/authMiddleware.js";
+import { catchedAsync } from "#src/utils/catchedAsync.js";
+import * as usuarioController from "#src/controllers/empresario/factoring/usuarioController.js";
+import { verifyToken, checkRole } from "#src/middlewares/authMiddleware.js";
 
 const router = Router();
 

@@ -1,6 +1,6 @@
 import { createPool } from "mysql2/promise";
-import * as config from "../../config.js";
-import logger, { line } from "../../utils/logger.js";
+import * as config from "#src/config.js";
+import logger, { line } from "#src/utils/logger.js";
 
 export const poolFactoring = createPool({
   host: config.DB_FACTORING_HOST,

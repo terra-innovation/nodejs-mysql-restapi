@@ -4,53 +4,53 @@ import cors from "cors";
 import * as util from "util";
 import * as luxon from "luxon";
 
-import logger, { line, loggerMorgan } from "./utils/logger.js";
+import logger, { line, loggerMorgan } from "#src/utils/logger.js";
 
-import employeesRoutes from "./routes/employees.routes.js";
-import indexRoutes from "./routes/index.routes.js";
-import facturaRoutes from "./routes/factura.routes.js";
-import empresasRoutes from "./routes/empresasRoutes.js";
-import colaboradoresRoutes from "./routes/colaboradoresRoutes.js";
-import cuentasbancariasRoutes from "./routes/cuentasbancarias.routes.js";
-import usuariosRoutes from "./routes/usuarios.routes.js";
-import factoringsRoutes from "./routes/factorings.routes.js";
-import factoringestadosRoutes from "./routes/factoringestados.routes.js";
-import factoringtiposRoutes from "./routes/factoringtipos.routes.js";
-import riesgosRoutes from "./routes/riesgos.routes.js";
+import employeesRoutes from "#src/routes/employees.routes.js";
+import indexRoutes from "#src/routes/index.routes.js";
+import facturaRoutes from "#src/routes/factura.routes.js";
+import empresasRoutes from "#src/routes/empresasRoutes.js";
+import colaboradoresRoutes from "#src/routes/colaboradoresRoutes.js";
+import cuentasbancariasRoutes from "#src/routes/cuentasbancarias.routes.js";
+import usuariosRoutes from "#src/routes/usuarios.routes.js";
+import factoringsRoutes from "#src/routes/factorings.routes.js";
+import factoringestadosRoutes from "#src/routes/factoringestados.routes.js";
+import factoringtiposRoutes from "#src/routes/factoringtipos.routes.js";
+import riesgosRoutes from "#src/routes/riesgos.routes.js";
 
-import empresario_empresacuentabancariaRoutes from "./routes/empresario/empresacuentabancaria.routes.js";
-import empresario_contactoRoutes from "./routes/empresario/contacto.routes.js";
-import empresario_factoring_facturaRoutes from "./routes/empresario/factoring/factura.routes.js";
-import empresario_factoring_empresacuentabancariaRoutes from "./routes/empresario/factoring/empresacuentabancaria.routes.js";
-import empresario_factoring_usuarioRoutes from "./routes/empresario/factoring/usuario.routes.js";
-import empresario_factoring_factoringRoutes from "./routes/empresario/factoring/factoring.routes.js";
-import empresario_factoring_contactoRoutes from "./routes/empresario/factoring/contacto.routes.js";
+import empresario_empresacuentabancariaRoutes from "#src/routes/empresario/empresacuentabancaria.routes.js";
+import empresario_contactoRoutes from "#src/routes/empresario/contacto.routes.js";
+import empresario_factoring_facturaRoutes from "#src/routes/empresario/factoring/factura.routes.js";
+import empresario_factoring_empresacuentabancariaRoutes from "#src/routes/empresario/factoring/empresacuentabancaria.routes.js";
+import empresario_factoring_usuarioRoutes from "#src/routes/empresario/factoring/usuario.routes.js";
+import empresario_factoring_factoringRoutes from "#src/routes/empresario/factoring/factoring.routes.js";
+import empresario_factoring_contactoRoutes from "#src/routes/empresario/factoring/contacto.routes.js";
 
-import admin_zlaboratorioRoutes from "./routes/admin/zlaboratorio.routes.js";
-import admin_empresacuentabancariaRoutes from "./routes/admin/empresacuentabancaria.routes.js";
-import admin_cuentabancariaestadoRoutes from "./routes/admin/cuentabancariaestado.routes.js";
-import admin_empresaRoutes from "./routes/admin/empresa.routes.js";
-import admin_facturaRoutes from "./routes/admin/factura.routes.js";
-import admin_archivofacturaRoutes from "./routes/admin/archivofactura.routes.js";
-import admin_personaRoutes from "./routes/admin/persona.routes.js";
-import admin_archivoRoutes from "./routes/admin/archivo.routes.js";
-import admin_personaverificacionRoutes from "./routes/admin/personaverificacion.routes.js";
-import admin_factorigempresaverificacionRoutes from "./routes/admin/factoringempresaverificacion.routes.js";
-import admin_servicio_factoring_factoringRoutes from "./routes/admin/servicio/factoring/factoring.routes.js";
-import admin_servicio_factoring_factoringpropuestaRoutes from "./routes/admin/servicio/factoring/factoringpropuesta.routes.js";
+import admin_zlaboratorioRoutes from "#src/routes/admin/zlaboratorio.routes.js";
+import admin_empresacuentabancariaRoutes from "#src/routes/admin/empresacuentabancaria.routes.js";
+import admin_cuentabancariaestadoRoutes from "#src/routes/admin/cuentabancariaestado.routes.js";
+import admin_empresaRoutes from "#src/routes/admin/empresa.routes.js";
+import admin_facturaRoutes from "#src/routes/admin/factura.routes.js";
+import admin_archivofacturaRoutes from "#src/routes/admin/archivofactura.routes.js";
+import admin_personaRoutes from "#src/routes/admin/persona.routes.js";
+import admin_archivoRoutes from "#src/routes/admin/archivo.routes.js";
+import admin_personaverificacionRoutes from "#src/routes/admin/personaverificacion.routes.js";
+import admin_factorigempresaverificacionRoutes from "#src/routes/admin/factoringempresaverificacion.routes.js";
+import admin_servicio_factoring_factoringRoutes from "#src/routes/admin/servicio/factoring/factoring.routes.js";
+import admin_servicio_factoring_factoringpropuestaRoutes from "#src/routes/admin/servicio/factoring/factoringpropuesta.routes.js";
 
-import usuario_personaRoutes from "./routes/usuario/persona.routes.js";
-import usuario_personapepdirectoRoutes from "./routes/usuario/personapepdirecto.routes.js";
-import usuario_personapepindirectoRoutes from "./routes/usuario/personapepindirecto.routes.js";
-import usuario_usuarioservicioRoutes from "./routes/usuario/usuarioservicio.routes.js";
+import usuario_personaRoutes from "#src/routes/usuario/persona.routes.js";
+import usuario_personapepdirectoRoutes from "#src/routes/usuario/personapepdirecto.routes.js";
+import usuario_personapepindirectoRoutes from "#src/routes/usuario/personapepindirecto.routes.js";
+import usuario_usuarioservicioRoutes from "#src/routes/usuario/usuarioservicio.routes.js";
 
-import secureRoutes from "./routes/secure/secure.routes.js";
-import { customResponseError } from "./utils/CustomResponseError.js";
+import secureRoutes from "#src/routes/secure/secure.routes.js";
+import { customResponseError } from "#src/utils/CustomResponseError.js";
 import { ValidationError } from "yup";
-import { sequelizeFT } from "./config/bd/sequelize_db_factoring.js";
-import initModels from "./models/ft_factoring/init-models.js";
+import { sequelizeFT } from "#src/config/bd/sequelize_db_factoring.js";
+import initModels from "#src/models/ft_factoring/init-models.js";
 
-import usuario_menuRoutes from "./routes/usuario/menu.routes.js";
+import usuario_menuRoutes from "#src/routes/usuario/menu.routes.js";
 
 const app = express();
 

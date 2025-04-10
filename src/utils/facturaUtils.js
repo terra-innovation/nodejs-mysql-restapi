@@ -2,8 +2,8 @@ import * as luxon from "luxon";
 import { v4 as uuidv4 } from "uuid";
 import { parseStringPromise } from "xml2js";
 import * as fs from "fs";
-import * as jsonUtils from "../utils/jsonUtils.js";
-import logger, { line } from "../utils/logger.js";
+import * as jsonUtils from "#src/utils/jsonUtils.js";
+import logger, { line } from "#src/utils/logger.js";
 import { Sequelize } from "sequelize";
 
 export const buildFacturaJson = (result, codigo_archivo, _idusuario) => {

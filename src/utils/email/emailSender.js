@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import * as config from "../../config.js";
+import * as config from "#src/config.js";
 
 class EmailSender {
   constructor() {}

@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { catchedAsync } from "../utils/catchedAsync.js";
-import * as riesgosController from "../controllers/riesgosController.js";
-import { verifyToken, checkRole } from "../middlewares/authMiddleware.js";
+import { catchedAsync } from "#src/utils/catchedAsync.js";
+import * as riesgosController from "#src/controllers/riesgosController.js";
+import { verifyToken, checkRole } from "#src/middlewares/authMiddleware.js";
 
 const router = Router();
 

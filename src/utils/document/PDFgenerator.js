@@ -1,8 +1,11 @@
 import PDFDocument from "pdfkit-table";
 import { createWriteStream } from "fs";
 
-import { formatNumber, formatPercentage } from "../../utils/numberUtils.js";
-import { formatDate1, formatDate2 } from "../../utils/dateUtils.js";
+import { formatNumber, formatPercentage } from "#src/utils/numberUtils.js";
+import { formatDate1, formatDate2 } from "#src/utils/dateUtils.js";
+import path from "path";
+
+import * as storageUtils from "#src/utils/storageUtils.js";
 
 class PDFGenerator {
   constructor(filePath) {
@@ -19,8 +22,7 @@ class PDFGenerator {
       var y = 0;
 
       // Encabezado
-
-      const imagePath = "./src/utils/document/cotizacion/LogoFinanzaTech.png";
+      const imagePath = path.join(storageUtils.pathApp(), "src", "utils", "document", "cotizacion", "LogoFinanzaTech.png");
       doc.image(imagePath, 50, 40, { width: 200 });
 
       const addText = (size, font, text, yOffset) => {

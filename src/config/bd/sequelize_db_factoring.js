@@ -1,7 +1,7 @@
 import { Sequelize } from "sequelize";
-import initModels from "../../models/ft_factoring/init-models.js";
-import * as config from "../../config.js";
-import logger, { line } from "../../utils/logger.js";
+import initModels from "#src/models/ft_factoring/init-models.js";
+import * as config from "#src/config.js";
+import logger, { line } from "#src/utils/logger.js";
 
 export const sequelizeFT = new Sequelize(config.DB_FACTORING_DATABASE, config.DB_FACTORING_USER, config.DB_FACTORING_PASSWORD, {
   host: config.DB_FACTORING_HOST,

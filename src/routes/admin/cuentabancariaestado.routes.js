@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { catchedAsync } from "../../utils/catchedAsync.js";
-import * as cuentabancariaestadoController from "../../controllers/admin/cuentabancariaestadoController.js";
-import { verifyToken, checkRole } from "../../middlewares/authMiddleware.js";
+import { catchedAsync } from "#src/utils/catchedAsync.js";
+import * as cuentabancariaestadoController from "#src/controllers/admin/cuentabancariaestadoController.js";
+import { verifyToken, checkRole } from "#src/middlewares/authMiddleware.js";
 
 const router = Router();
 

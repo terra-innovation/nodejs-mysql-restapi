@@ -1,5 +1,5 @@
 import { createPool } from "mysql2/promise";
-import * as config from "../../config.js";
+import * as config from "#src/config.js";
 
 export const poolBigData = createPool({
   host: config.DB_BIGDATA_HOST,

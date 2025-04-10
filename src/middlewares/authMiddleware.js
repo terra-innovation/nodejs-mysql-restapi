@@ -1,7 +1,7 @@
-import { TOKEN_KEY_JWT } from "../config.js";
+import { TOKEN_KEY_JWT } from "#src/config.js";
 import jwt from "jsonwebtoken";
-import * as jsonUtils from "../utils/jsonUtils.js";
-import logger, { line } from "../utils/logger.js";
+import * as jsonUtils from "#src/utils/jsonUtils.js";
+import logger, { line } from "#src/utils/logger.js";
 
 export const verifyToken = (req, res, next) => {
   const authHeader = req.body.token || req.query.token || req.params.token || req.headers["authorization"];

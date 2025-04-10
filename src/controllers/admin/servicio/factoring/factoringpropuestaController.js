@@ -1,28 +1,28 @@
-import * as factoringpropuestaDao from "../../../../daos/factoringpropuestaDao.js";
-import * as factoringpropuestafinancieroDao from "../../../../daos/factoringpropuestafinancieroDao.js";
-import * as factoringpropuestaestadoDao from "../../../../daos/factoringpropuestaestadoDao.js";
-import * as factoringtipoDao from "../../../../daos/factoringtipoDao.js";
-import * as factoringestrategiaDao from "../../../../daos/factoringestrategiaDao.js";
-import * as factoringDao from "../../../../daos/factoringDao.js";
-import * as riesgoDao from "../../../../daos/riesgoDao.js";
-import { response } from "../../../../utils/CustomResponseOk.js";
-import { ClientError } from "../../../../utils/CustomErrors.js";
-import * as jsonUtils from "../../../../utils/jsonUtils.js";
-import logger, { line } from "../../../../utils/logger.js";
-import { safeRollback } from "../../../../utils/transactionUtils.js";
-import { sequelizeFT } from "../../../../config/bd/sequelize_db_factoring.js";
+import * as factoringpropuestaDao from "#src/daos/factoringpropuestaDao.js";
+import * as factoringpropuestafinancieroDao from "#src/daos/factoringpropuestafinancieroDao.js";
+import * as factoringpropuestaestadoDao from "#src/daos/factoringpropuestaestadoDao.js";
+import * as factoringtipoDao from "#src/daos/factoringtipoDao.js";
+import * as factoringestrategiaDao from "#src/daos/factoringestrategiaDao.js";
+import * as factoringDao from "#src/daos/factoringDao.js";
+import * as riesgoDao from "#src/daos/riesgoDao.js";
+import { response } from "#src/utils/CustomResponseOk.js";
+import { ClientError } from "#src/utils/CustomErrors.js";
+import * as jsonUtils from "#src/utils/jsonUtils.js";
+import logger, { line } from "#src/utils/logger.js";
+import { safeRollback } from "#src/utils/transactionUtils.js";
+import { sequelizeFT } from "#src/config/bd/sequelize_db_factoring.js";
 
 import * as luxon from "luxon";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { Sequelize } from "sequelize";
-import { simulateFactoringLogicV2 } from "../../../../logics/factoringLogic.js";
+import { simulateFactoringLogicV2 } from "#src/logics/factoringLogic.js";
 
 import { unlink } from "fs/promises";
 import path from "path"; // Para eliminar el archivo después de enviarlo
-import PDFGenerator from "../../../../utils/document/PDFgenerator.js";
-import * as storageUtils from "../../../../utils/storageUtils.js";
-import { sendFileAsync, setDownloadHeaders } from "../../../../utils/httpUtils.js";
+import PDFGenerator from "#src/utils/document/PDFgenerator.js";
+import * as storageUtils from "#src/utils/storageUtils.js";
+import { sendFileAsync, setDownloadHeaders } from "#src/utils/httpUtils.js";
 import * as fs from "fs";
 
 export const downloadFactoringpropuestaPDF = async (req, res) => {

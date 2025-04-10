@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { catchedAsync } from "../../utils/catchedAsync.js";
-import * as secureController from "../../controllers/secure/secureController.js";
+import { catchedAsync } from "#src/utils/catchedAsync.js";
+import * as secureController from "#src/controllers/secure/secureController.js";
 
 const router = Router();
 

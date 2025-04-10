@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { catchedAsync } from "../../utils/catchedAsync.js";
-import * as factoringempresaverificacionController from "../../controllers/admin/factoringempresaverificacionController.js";
-import { verifyToken, checkRole } from "../../middlewares/authMiddleware.js";
+import { catchedAsync } from "#src/utils/catchedAsync.js";
+import * as factoringempresaverificacionController from "#src/controllers/admin/factoringempresaverificacionController.js";
+import { verifyToken, checkRole } from "#src/middlewares/authMiddleware.js";
 
 const router = Router();
 

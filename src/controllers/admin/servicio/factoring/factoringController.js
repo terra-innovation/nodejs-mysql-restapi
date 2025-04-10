@@ -1,15 +1,15 @@
-import { sequelizeFT } from "../../../../config/bd/sequelize_db_factoring.js";
-import * as factoringDao from "../../../../daos/factoringDao.js";
-import * as factoringestadoDao from "../../../../daos/factoringestadoDao.js";
-import * as factoringpropuestaDao from "../../../../daos/factoringpropuestaDao.js";
-import * as factoringtipoDao from "../../../../daos/factoringtipoDao.js";
-import * as riesgoDao from "../../../../daos/riesgoDao.js";
-import { simulateFactoringLogicV1 } from "../../../../logics/factoringLogic.js";
-import { ClientError } from "../../../../utils/CustomErrors.js";
-import { response } from "../../../../utils/CustomResponseOk.js";
-import * as jsonUtils from "../../../../utils/jsonUtils.js";
-import logger, { line } from "../../../../utils/logger.js";
-import { safeRollback } from "../../../../utils/transactionUtils.js";
+import { sequelizeFT } from "#src/config/bd/sequelize_db_factoring.js";
+import * as factoringDao from "#src/daos/factoringDao.js";
+import * as factoringestadoDao from "#src/daos/factoringestadoDao.js";
+import * as factoringpropuestaDao from "#src/daos/factoringpropuestaDao.js";
+import * as factoringtipoDao from "#src/daos/factoringtipoDao.js";
+import * as riesgoDao from "#src/daos/riesgoDao.js";
+import { simulateFactoringLogicV1 } from "#src/logics/factoringLogic.js";
+import { ClientError } from "#src/utils/CustomErrors.js";
+import { response } from "#src/utils/CustomResponseOk.js";
+import * as jsonUtils from "#src/utils/jsonUtils.js";
+import logger, { line } from "#src/utils/logger.js";
+import { safeRollback } from "#src/utils/transactionUtils.js";
 
 import * as luxon from "luxon";
 import { Sequelize } from "sequelize";

@@ -1,10 +1,10 @@
-import * as colaboradorDao from "../daos/colaboradorDao.js";
-import * as empresaDao from "../daos/empresaDao.js";
-import { response } from "../utils/CustomResponseOk.js";
-import { ClientError } from "../utils/CustomErrors.js";
-import logger, { line } from "../utils/logger.js";
-import { safeRollback } from "../utils/transactionUtils.js";
-import { sequelizeFT } from "../config/bd/sequelize_db_factoring.js";
+import * as colaboradorDao from "#src/daos/colaboradorDao.js";
+import * as empresaDao from "#src/daos/empresaDao.js";
+import { response } from "#src/utils/CustomResponseOk.js";
+import { ClientError } from "#src/utils/CustomErrors.js";
+import logger, { line } from "#src/utils/logger.js";
+import { safeRollback } from "#src/utils/transactionUtils.js";
+import { sequelizeFT } from "#src/config/bd/sequelize_db_factoring.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";

@@ -1,9 +1,9 @@
-import { sequelizeFT } from "../../../config/bd/sequelize_db_factoring.js";
-import * as usuarioDao from "../../../daos/usuarioDao.js";
-import { response } from "../../../utils/CustomResponseOk.js";
-import * as jsonUtils from "../../../utils/jsonUtils.js";
-import logger, { line } from "../../../utils/logger.js";
-import { safeRollback } from "../../../utils/transactionUtils.js";
+import { sequelizeFT } from "#src/config/bd/sequelize_db_factoring.js";
+import * as usuarioDao from "#src/daos/usuarioDao.js";
+import { response } from "#src/utils/CustomResponseOk.js";
+import * as jsonUtils from "#src/utils/jsonUtils.js";
+import logger, { line } from "#src/utils/logger.js";
+import { safeRollback } from "#src/utils/transactionUtils.js";
 
 export const getUsuario = async (req, res) => {
   logger.debug(line(), "controller::getUsuario");

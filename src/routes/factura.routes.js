@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { catchedAsync } from "../utils/catchedAsync.js";
-import * as facturaController from "../controllers/facturaController.js";
+import { catchedAsync } from "#src/utils/catchedAsync.js";
+import * as facturaController from "#src/controllers/facturaController.js";
 
-import { verifyToken, checkRole } from "../middlewares/authMiddleware.js";
-import * as facturaMiddleware from "../middlewares/facturaMiddleware.js";
+import { verifyToken, checkRole } from "#src/middlewares/authMiddleware.js";
+import * as facturaMiddleware from "#src/middlewares/facturaMiddleware.js";
 
 const router = Router();
 

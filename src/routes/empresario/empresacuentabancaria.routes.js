@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { catchedAsync } from "../../utils/catchedAsync.js";
-import * as empresacuentabancariaController from "../../controllers/empresario/empresacuentabancariaController.js";
-import * as empresacuentabancariaMiddleware from "../../middlewares/empresacuentabancariaMiddleware.js";
-import { verifyToken, checkRole } from "../../middlewares/authMiddleware.js";
+import { catchedAsync } from "#src/utils/catchedAsync.js";
+import * as empresacuentabancariaController from "#src/controllers/empresario/empresacuentabancariaController.js";
+import * as empresacuentabancariaMiddleware from "#src/middlewares/empresacuentabancariaMiddleware.js";
+import { verifyToken, checkRole } from "#src/middlewares/authMiddleware.js";
 
 const router = Router();
 

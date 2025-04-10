@@ -1,9 +1,9 @@
-import * as config from "../../config.js";
+import * as config from "#src/config.js";
 import fs from "fs/promises";
 import path from "path";
 import * as yup from "yup";
 import { htmlToText } from "html-to-text";
-import logger, { line } from "../../utils/logger.js";
+import logger, { line } from "#src/utils/logger.js";
 
 class TemplaceManager {
   constructor() {

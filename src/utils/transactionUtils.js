@@ -1,4 +1,4 @@
-import logger, { line } from "../utils/logger.js";
+import logger, { line } from "#src/utils/logger.js";
 
 /**
  * Realiza un rollback seguro en una transacción si sigue activa.
@@ -8,7 +8,7 @@ import logger, { line } from "../utils/logger.js";
 export const safeRollback = async (transaction) => {
   if (transaction && !transaction.finished) {
     try {
-      await safeRollback(transaction);
+      await transaction.rollback();
       logger.debug(line(), "Transacción rollback exitosa");
     } catch (error) {
       logger.error(line(), "Error al intentar rollback:", error);

@@ -1,8 +1,8 @@
 import { Sequelize } from "sequelize";
-import { modelsFT } from "../config/bd/sequelize_db_factoring.js";
-import { ClientError } from "../utils/CustomErrors.js";
-import { formatError } from "../utils/errorUtils.js";
-import logger, { line } from "../utils/logger.js";
+import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { ClientError } from "#src/utils/CustomErrors.js";
+import { formatError } from "#src/utils/errorUtils.js";
+import logger, { line } from "#src/utils/logger.js";
 
 export const getFactoringconfigcomisionByIdriesgo = async (transaction, _idriesgo, estados) => {
   try {

@@ -3,8 +3,8 @@ import * as luxon from "luxon";
 import multer from "multer";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
-import logger, { line } from "../utils/logger.js";
-import * as storageUtils from "../utils/storageUtils.js";
+import logger, { line } from "#src/utils/logger.js";
+import * as storageUtils from "#src/utils/storageUtils.js";
 
 let storage_usuarioservicio = multer.diskStorage({
   destination: (req, file, cb) => {

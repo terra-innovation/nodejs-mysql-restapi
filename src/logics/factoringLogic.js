@@ -1,13 +1,13 @@
-import { sequelizeFT } from "../config/bd/sequelize_db_factoring.js";
-import * as riesgoDao from "../daos/riesgoDao.js";
-import * as financierotipoDao from "../daos/financierotipoDao.js";
-import * as financieroconceptoDao from "../daos/financieroconceptoDao.js";
-import * as configuracionappDao from "../daos/configuracionappDao.js";
-import * as factoringconfigcomisionDao from "../daos/factoringconfigcomisionDao.js";
-import * as factoringconfiggarantiaDao from "../daos/factoringconfiggarantiaDao.js";
-import * as factoringconfigtasadescuentoDao from "../daos/factoringconfigtasadescuentoDao.js";
+import { sequelizeFT } from "#src/config/bd/sequelize_db_factoring.js";
+import * as riesgoDao from "#src/daos/riesgoDao.js";
+import * as financierotipoDao from "#src/daos/financierotipoDao.js";
+import * as financieroconceptoDao from "#src/daos/financieroconceptoDao.js";
+import * as configuracionappDao from "#src/daos/configuracionappDao.js";
+import * as factoringconfigcomisionDao from "#src/daos/factoringconfigcomisionDao.js";
+import * as factoringconfiggarantiaDao from "#src/daos/factoringconfiggarantiaDao.js";
+import * as factoringconfigtasadescuentoDao from "#src/daos/factoringconfigtasadescuentoDao.js";
 
-import logger, { line } from "../utils/logger.js";
+import logger, { line } from "#src/utils/logger.js";
 
 export const simulateFactoringLogicV2 = async (_idriesgooperacion, _idbancocedente, cantidad_facturas, monto_neto, dias_pago_estimado, porcentaje_financiado, tdm) => {
   logger.debug(line(), "logic::simulateFactoringLogicV2");

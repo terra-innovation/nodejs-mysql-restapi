@@ -1,5 +1,5 @@
 import util from "util";
-import logger, { line } from "./logger.js";
+import logger, { line } from "#src/utils/logger.js";
 
 export function formatError(error) {
   if (error) {

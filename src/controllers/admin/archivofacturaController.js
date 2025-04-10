@@ -1,13 +1,13 @@
-import * as archivofacturaDao from "../../daos/archivofacturaDao.js";
-import * as bancoDao from "../../daos/bancoDao.js";
-import * as factoringDao from "../../daos/factoringDao.js";
-import * as riesgoDao from "../../daos/riesgoDao.js";
-import { response } from "../../utils/CustomResponseOk.js";
-import { ClientError } from "../../utils/CustomErrors.js";
-import * as jsonUtils from "../../utils/jsonUtils.js";
-import logger, { line } from "../../utils/logger.js";
-import { safeRollback } from "../../utils/transactionUtils.js";
-import { sequelizeFT } from "../../config/bd/sequelize_db_factoring.js";
+import * as archivofacturaDao from "#src/daos/archivofacturaDao.js";
+import * as bancoDao from "#src/daos/bancoDao.js";
+import * as factoringDao from "#src/daos/factoringDao.js";
+import * as riesgoDao from "#src/daos/riesgoDao.js";
+import { response } from "#src/utils/CustomResponseOk.js";
+import { ClientError } from "#src/utils/CustomErrors.js";
+import * as jsonUtils from "#src/utils/jsonUtils.js";
+import logger, { line } from "#src/utils/logger.js";
+import { safeRollback } from "#src/utils/transactionUtils.js";
+import { sequelizeFT } from "#src/config/bd/sequelize_db_factoring.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";

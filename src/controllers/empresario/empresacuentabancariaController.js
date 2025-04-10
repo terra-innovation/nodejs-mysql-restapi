@@ -1,25 +1,25 @@
-import { sequelizeFT } from "../../config/bd/sequelize_db_factoring.js";
-import * as archivocuentabancariaDao from "../../daos/archivocuentabancariaDao.js";
-import * as archivoDao from "../../daos/archivoDao.js";
-import * as bancoDao from "../../daos/bancoDao.js";
-import * as cuentabancariaDao from "../../daos/cuentabancariaDao.js";
-import * as cuentatipoDao from "../../daos/cuentatipoDao.js";
-import * as empresacuentabancariaDao from "../../daos/empresacuentabancariaDao.js";
-import * as empresaDao from "../../daos/empresaDao.js";
-import * as monedaDao from "../../daos/monedaDao.js";
-import { ClientError } from "../../utils/CustomErrors.js";
-import { response } from "../../utils/CustomResponseOk.js";
-import * as jsonUtils from "../../utils/jsonUtils.js";
-import logger, { line } from "../../utils/logger.js";
-import { safeRollback } from "../../utils/transactionUtils.js";
-import * as validacionesYup from "../../utils/validacionesYup.js";
+import { sequelizeFT } from "#src/config/bd/sequelize_db_factoring.js";
+import * as archivocuentabancariaDao from "#src/daos/archivocuentabancariaDao.js";
+import * as archivoDao from "#src/daos/archivoDao.js";
+import * as bancoDao from "#src/daos/bancoDao.js";
+import * as cuentabancariaDao from "#src/daos/cuentabancariaDao.js";
+import * as cuentatipoDao from "#src/daos/cuentatipoDao.js";
+import * as empresacuentabancariaDao from "#src/daos/empresacuentabancariaDao.js";
+import * as empresaDao from "#src/daos/empresaDao.js";
+import * as monedaDao from "#src/daos/monedaDao.js";
+import { ClientError } from "#src/utils/CustomErrors.js";
+import { response } from "#src/utils/CustomResponseOk.js";
+import * as jsonUtils from "#src/utils/jsonUtils.js";
+import logger, { line } from "#src/utils/logger.js";
+import { safeRollback } from "#src/utils/transactionUtils.js";
+import * as validacionesYup from "#src/utils/validacionesYup.js";
 
 import * as fs from "fs";
 import path from "path";
 import { Sequelize } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-import * as storageUtils from "../../utils/storageUtils.js";
+import * as storageUtils from "#src/utils/storageUtils.js";
 
 export const createEmpresacuentabancaria = async (req, res) => {
   logger.debug(line(), "controller::createEmpresacuentabancaria");

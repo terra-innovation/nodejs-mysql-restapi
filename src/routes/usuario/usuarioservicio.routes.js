@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { catchedAsync } from "../../utils/catchedAsync.js";
-import * as usuarioservicioController from "../../controllers/usuario/usuarioservicioController.js";
-import { verifyToken, checkRole } from "../../middlewares/authMiddleware.js";
-import * as usuarioservicioMiddleware from "../../middlewares/usuarioservicioMiddleware.js";
+import { catchedAsync } from "#src/utils/catchedAsync.js";
+import * as usuarioservicioController from "#src/controllers/usuario/usuarioservicioController.js";
+import { verifyToken, checkRole } from "#src/middlewares/authMiddleware.js";
+import * as usuarioservicioMiddleware from "#src/middlewares/usuarioservicioMiddleware.js";
 
 const router = Router();
 
