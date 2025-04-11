@@ -405,13 +405,13 @@ export const activateFactoringpropuesta = async (req, res) => {
     camposAuditoria.fechamod = Sequelize.fn("now", 3);
     camposAuditoria.estado = 1;
 
-    const factoringpropuestaDeleted = await factoringpropuestaDao.activateFactoringpropuesta(transaction, { ...factoringpropuestaValidated, ...camposAuditoria });
-    if (factoringpropuestaDeleted[0] === 0) {
+    const factoringpropuestaActivated = await factoringpropuestaDao.activateFactoringpropuesta(transaction, { ...factoringpropuestaValidated, ...camposAuditoria });
+    if (factoringpropuestaActivated[0] === 0) {
       throw new ClientError("Factoringpropuesta no existe", 404);
     }
-    logger.debug(line(), "factoringpropuestaActivated:", factoringpropuestaDeleted);
+    logger.debug(line(), "factoringpropuestaActivated:", factoringpropuestaActivated);
     await transaction.commit();
-    response(res, 204, factoringpropuestaDeleted);
+    response(res, 204, factoringpropuestaActivated);
   } catch (error) {
     await safeRollback(transaction);
     throw error;

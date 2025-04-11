@@ -15,6 +15,70 @@ import * as luxon from "luxon";
 import { Sequelize } from "sequelize";
 import * as yup from "yup";
 
+export const activateFactoring = async (req, res) => {
+  logger.debug(line(), "controller::activateFactoring");
+  const { id } = req.params;
+  const factoringSchema = yup
+    .object()
+    .shape({
+      factoringid: yup.string().trim().required().min(36).max(36),
+    })
+    .required();
+  const factoringValidated = factoringSchema.validateSync({ factoringid: id }, { abortEarly: false, stripUnknown: true });
+  logger.debug(line(), "factoringValidated:", factoringValidated);
+
+  const transaction = await sequelizeFT.transaction();
+  try {
+    var camposAuditoria = {};
+    camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+    camposAuditoria.fechamod = Sequelize.fn("now", 3);
+    camposAuditoria.estado = 1;
+
+    const factoringActivated = await factoringDao.activateFactoring(transaction, { ...factoringValidated, ...camposAuditoria });
+    if (factoringActivated[0] === 0) {
+      throw new ClientError("Factoring no existe", 404);
+    }
+    logger.debug(line(), "factoringActivated:", factoringActivated);
+    await transaction.commit();
+    response(res, 204, factoringActivated);
+  } catch (error) {
+    await safeRollback(transaction);
+    throw error;
+  }
+};
+
+export const deleteFactoring = async (req, res) => {
+  logger.debug(line(), "controller::deleteFactoring");
+  const { id } = req.params;
+  const factoringSchema = yup
+    .object()
+    .shape({
+      factoringid: yup.string().trim().required().min(36).max(36),
+    })
+    .required();
+  const factoringValidated = factoringSchema.validateSync({ factoringid: id }, { abortEarly: false, stripUnknown: true });
+  logger.debug(line(), "factoringValidated:", factoringValidated);
+
+  const transaction = await sequelizeFT.transaction();
+  try {
+    var camposAuditoria = {};
+    camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+    camposAuditoria.fechamod = Sequelize.fn("now", 3);
+    camposAuditoria.estado = 2;
+
+    const factoringDeleted = await factoringDao.deleteFactoring(transaction, { ...factoringValidated, ...camposAuditoria });
+    if (factoringDeleted[0] === 0) {
+      throw new ClientError("Factoringpropuesta no existe", 404);
+    }
+    logger.debug(line(), "factoringDeleted:", factoringDeleted);
+    await transaction.commit();
+    response(res, 204, factoringDeleted);
+  } catch (error) {
+    await safeRollback(transaction);
+    throw error;
+  }
+};
+
 export const updateFactoring = async (req, res) => {
   logger.debug(line(), "controller::updateFactoring");
   const { id } = req.params;

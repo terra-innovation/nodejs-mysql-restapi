@@ -299,3 +299,18 @@ export const deleteFactoring = async (transaction, factoring) => {
     throw new ClientError("Ocurrio un error", 500);
   }
 };
+
+export const activateFactoring = async (transaction, factoring) => {
+  try {
+    const result = await modelsFT.Factoring.update(factoring, {
+      where: {
+        factoringid: factoring.factoringid,
+      },
+      transaction,
+    });
+    return result;
+  } catch (error) {
+    logger.error(line(), formatError(error));
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
