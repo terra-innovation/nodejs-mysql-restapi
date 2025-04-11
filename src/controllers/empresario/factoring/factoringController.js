@@ -18,6 +18,37 @@ import { Sequelize } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
+export const getFactorings = async (req, res) => {
+  logger.debug(line(), "controller::getFactorings");
+  const transaction = await sequelizeFT.transaction();
+  try {
+    const filter_estados = [1, 2];
+    const _idusuario_session = req.session_user.usuario._idusuario;
+    const empresas_cedentes = await empresaDao.getEmpresasByIdusuario(transaction, _idusuario_session, filter_estados);
+    const _idcedentes = empresas_cedentes.map((empresa) => empresa._idempresa);
+    const factorings = await factoringDao.getFactoringsByIdcedentes(transaction, _idcedentes, filter_estados);
+    await transaction.commit();
+    response(res, 201, factorings);
+  } catch (error) {
+    await safeRollback(transaction);
+    throw error;
+  }
+};
+
+export const getFactoringMaster = async (req, res) => {
+  logger.debug(line(), "controller::getFactoringsMaster");
+  const filter_estados = [1];
+
+  const transaction = await sequelizeFT.transaction();
+  try {
+    await transaction.commit();
+    response(res, 201, {});
+  } catch (error) {
+    await safeRollback(transaction);
+    throw error;
+  }
+};
+
 export const createFactoring = async (req, res) => {
   logger.debug(line(), "controller::createFactoring");
   const factoringCreateSchema = yup

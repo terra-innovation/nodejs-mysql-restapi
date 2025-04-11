@@ -12,6 +12,14 @@ const menuFactoringElectronico = {
       icon: "IdcardOutlined",
       breadcrumbs: true,
     },
+    {
+      id: "empresario-factoring-factoring-lista",
+      title: "Operaciones",
+      type: "item",
+      url: "/empresario/factoring/lista",
+      icon: "IdcardOutlined",
+      breadcrumbs: true,
+    },
   ],
 };
 
