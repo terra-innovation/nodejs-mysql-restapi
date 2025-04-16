@@ -5,6 +5,7 @@ import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import logger, { line } from "#src/utils/logger.js";
 import * as storageUtils from "#src/utils/storageUtils.js";
+import { fileTypeFromFile } from "file-type";
 
 // Extensiones o mimetypes peligrosos comúnmente bloqueados
 const EXTENSIONES_NO_PERMITIDAS = [".exe", ".bat", ".cmd", ".sh", ".bash", ".msi", ".apk", ".bin", ".dll", ".scr", ".com", ".pif", ".vbs", ".wsf", ".jar", ".py", ".rb", ".php", ".pl"];
@@ -63,20 +64,27 @@ export const upload_archivo = multer({
     fields: 1, // Número máximo de campos que no son archivos
   },
   fileFilter: async function (req, file, cb) {
+    // Seguridad básica
     const ext = path.extname(file.originalname).toLowerCase();
     const mime = file.mimetype;
 
-    if (EXTENSIONES_NO_PERMITIDAS.includes(ext) || MIMETYPES_NO_PERMITIDOS.includes(mime)) {
-      logger.error(line(), `Archivo no permitido. No se permiten archivos ejecutables, scripts u otros potencialmente peligrosos. Extensión o tipo detectado: [${ext}, ${mime}].`);
-      return cb(new Error(`Archivo no permitido.`));
+    if (EXTENSIONES_NO_PERMITIDAS.includes(ext)) {
+      logger.error(line(), `Extensión de archivo no permitida: [${ext}] en archivo [${file.originalname}]`);
+      return cb(new Error("Archivo no permitido"));
     }
+
+    if (MIMETYPES_NO_PERMITIDOS.includes(mime)) {
+      logger.error(line(), `Tipo de archivo no permitido: [${mime}] en archivo [${file.originalname}]`);
+      return cb(new Error("Archivo no permitido"));
+    }
+
     cb(null, true);
   },
 }).fields([{ name: "archivo", maxCount: 1 }]);
 
 // Middleware de multer para manejar la subida de archivos
-export const upload = (req, res, next) => {
-  upload_archivo(req, res, function (err) {
+export const upload = async (req, res, next) => {
+  upload_archivo(req, res, async function (err) {
     if (err instanceof multer.MulterError) {
       // A Multer error occurred when uploading.
       logger.error(line(), err);
@@ -87,6 +95,41 @@ export const upload = (req, res, next) => {
       return res.status(500).json({ error: true, message: "Ocurrio un error" });
     }
 
-    next(); // Llamar a next() para continuar con la ejecución de la siguiente función middleware
+    // Seguridad avanzada
+    // Revisa el minetype real del archivo
+    const file = req.files?.archivo[0];
+    if (!file) {
+      logger.error(line(), `No se recibió ningún archivo.`);
+      return res.status(400).json({ error: true, message: "Archivo no permitido" });
+    }
+    try {
+      const filePath = file.path;
+      const tipoDetectado = await fileTypeFromFile(filePath);
+
+      const ext = path.extname(file.originalname).toLowerCase();
+      if (EXTENSIONES_NO_PERMITIDAS.includes(ext)) {
+        fs.unlinkSync(filePath);
+        logger.error(line(), `Extensión de archivo no permitida: [${ext}] en archivo [${file.originalname}]`);
+        return res.status(400).json({ error: true, message: "Archivo no permitido" });
+      }
+
+      if (!tipoDetectado) {
+        fs.unlinkSync(filePath);
+        logger.error(line(), `No se pudo determinar el tipo real del archivo en [${file.originalname}]`);
+        return res.status(400).json({ error: true, message: "Archivo no permitido" });
+      }
+
+      if (MIMETYPES_NO_PERMITIDOS.includes(tipoDetectado.mime)) {
+        fs.unlinkSync(filePath);
+        logger.error(line(), `Tipo de archivo no permitido: [${tipoDetectado.mime}] en archivo [${file.originalname}]`);
+        return res.status(400).json({ error: true, message: "Archivo no permitido" });
+      }
+
+      logger.debug(line(), `Archivo aceptado: ${file.originalname}, tipo real: ${tipoDetectado.mime}`);
+      next();
+    } catch (err) {
+      logger.error(line(), err);
+      return res.status(500).json({ error: true, message: "Ocurrio un error" });
+    }
   });
 };
