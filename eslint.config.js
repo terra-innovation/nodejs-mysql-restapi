@@ -21,12 +21,15 @@ export default [
     },
     settings: {
       "import/resolver": {
+        node: {
+          extensions: [".js", ".jsx", ".ts", ".tsx"],
+        },
         alias: {
           map: [
             ["#root", resolve("")],
             ["#src", resolve("src")],
           ],
-          extensions: [".js", ".json"],
+          extensions: [".js", ".jsx", ".ts", ".tsx"],
         },
       },
     },
