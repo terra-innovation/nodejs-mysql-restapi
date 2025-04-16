@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import logger, { line } from "#src/utils/logger.js";
 import * as storageUtils from "#src/utils/storageUtils.js";
 import { fileTypeFromFile } from "file-type";
+import { ArchivoError } from "#src/utils/CustomErrors.js";
 
 // Extensiones o mimetypes peligrosos comúnmente bloqueados
 const EXTENSIONES_NO_PERMITIDAS = [".exe", ".bat", ".cmd", ".sh", ".bash", ".msi", ".apk", ".bin", ".dll", ".scr", ".com", ".pif", ".vbs", ".wsf", ".jar", ".py", ".rb", ".php", ".pl"];
@@ -70,12 +71,12 @@ export const upload_archivo = multer({
 
     if (EXTENSIONES_NO_PERMITIDAS.includes(ext)) {
       logger.error(line(), `Extensión de archivo no permitida: [${ext}] en archivo [${file.originalname}]`);
-      return cb(new Error("Archivo no permitido"));
+      return cb(new ArchivoError("Archivo no permitido", 400));
     }
 
     if (MIMETYPES_NO_PERMITIDOS.includes(mime)) {
       logger.error(line(), `Tipo de archivo no permitido: [${mime}] en archivo [${file.originalname}]`);
-      return cb(new Error("Archivo no permitido"));
+      return cb(new ArchivoError("Archivo no permitido", 400));
     }
 
     cb(null, true);
@@ -83,24 +84,26 @@ export const upload_archivo = multer({
 }).fields([{ name: "archivo", maxCount: 1 }]);
 
 // Middleware de multer para manejar la subida de archivos
-export const upload = async (req, res, next) => {
+export const upload = (req, res, next) => {
   upload_archivo(req, res, async function (err) {
     if (err instanceof multer.MulterError) {
-      // A Multer error occurred when uploading.
       logger.error(line(), err);
-      return res.status(404).send({ error: true, message: "Datos no válidos" });
+      return next(new ArchivoError("Datos no válidos", 400));
+    }
+    if (err instanceof ArchivoError) {
+      logger.debug(line(), err);
+      return next(err);
     } else if (err) {
       logger.error(line(), err);
-      // An unknown error occurred when uploading.
-      return res.status(500).json({ error: true, message: "Ocurrio un error" });
+      return next(new ArchivoError("Ocurrio un error", 500));
     }
 
     // Seguridad avanzada
     // Revisa el minetype real del archivo
     const file = req.files?.archivo[0];
     if (!file) {
-      logger.error(line(), `No se recibió ningún archivo.`);
-      return res.status(400).json({ error: true, message: "Archivo no permitido" });
+      logger.error(line(), `No se proporcionó ningún archivo`);
+      return next(new ArchivoError("Archivo es requerido", 400));
     }
     try {
       const filePath = file.path;
@@ -110,26 +113,26 @@ export const upload = async (req, res, next) => {
       if (EXTENSIONES_NO_PERMITIDAS.includes(ext)) {
         fs.unlinkSync(filePath);
         logger.error(line(), `Extensión de archivo no permitida: [${ext}] en archivo [${file.originalname}]`);
-        return res.status(400).json({ error: true, message: "Archivo no permitido" });
+        return next(new ArchivoError("Archivo no permitido", 400));
       }
 
       if (!tipoDetectado) {
         fs.unlinkSync(filePath);
         logger.error(line(), `No se pudo determinar el tipo real del archivo en [${file.originalname}]`);
-        return res.status(400).json({ error: true, message: "Archivo no permitido" });
+        return next(new ArchivoError("Archivo no permitido", 400));
       }
 
       if (MIMETYPES_NO_PERMITIDOS.includes(tipoDetectado.mime)) {
         fs.unlinkSync(filePath);
         logger.error(line(), `Tipo de archivo no permitido: [${tipoDetectado.mime}] en archivo [${file.originalname}]`);
-        return res.status(400).json({ error: true, message: "Archivo no permitido" });
+        return next(new ArchivoError("Archivo no permitido", 400));
       }
 
       logger.debug(line(), `Archivo aceptado: ${file.originalname}, tipo real: ${tipoDetectado.mime}`);
       next();
     } catch (err) {
       logger.error(line(), err);
-      return res.status(500).json({ error: true, message: "Ocurrio un error" });
+      return next(new ArchivoError("Ocurrio un error", 500));
     }
   });
 };

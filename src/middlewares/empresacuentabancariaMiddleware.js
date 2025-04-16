@@ -5,6 +5,7 @@ import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import logger, { line } from "#src/utils/logger.js";
 import * as storageUtils from "#src/utils/storageUtils.js";
+import { ArchivoError } from "#src/utils/CustomErrors.js";
 
 let storage_usuarioservicio = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -46,7 +47,8 @@ export const upload_persona = multer({
   fileFilter: async function (req, file, cb) {
     const validImageTypes = ["image/png", "image/jpeg", "image/jpg", "application/pdf"];
     if (!validImageTypes.includes(file.mimetype)) {
-      cb(new Error(`Formato de archivo inválido [${file.mimetype}]. Tipos permitidos: ${validImageTypes.join(", ")}`));
+      logger.error(line(), `Formato de archivo inválido [${file.mimetype}] en archivo [${file.originalname}]. Tipos permitidos: ${validImageTypes.join(", ")}`);
+      return cb(new ArchivoError("Archivo no permitido", 400));
     }
     cb(null, true);
   },
@@ -56,13 +58,15 @@ export const upload_persona = multer({
 export const upload = (req, res, next) => {
   upload_persona(req, res, function (err) {
     if (err instanceof multer.MulterError) {
-      // A Multer error occurred when uploading.
       logger.error(line(), err);
-      return res.status(404).send({ error: true, message: "Datos no válidos" });
+      return next(new ArchivoError("Datos no válidos", 400));
+    }
+    if (err instanceof ArchivoError) {
+      logger.debug(line(), err);
+      return next(err);
     } else if (err) {
       logger.error(line(), err);
-      // An unknown error occurred when uploading.
-      return res.status(500).json({ error: true, message: "Ocurrio un error" });
+      return next(new ArchivoError("Ocurrio un error", 500));
     }
 
     next(); // Llamar a next() para continuar con la ejecución de la siguiente función middleware
