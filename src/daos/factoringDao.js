@@ -11,6 +11,48 @@ export const getFactoringsByIdcedentes = async (transaction, _idcedentes, estado
         {
           all: true,
         },
+        {
+          model: modelsFT.FactoringPropuesta,
+          as: "factoringpropuestaaceptada_factoring_propuestum",
+          include: [
+            {
+              model: modelsFT.FactoringTipo,
+              as: "factoringtipo_factoring_tipo",
+            },
+          ],
+        },
+        {
+          model: modelsFT.FactoringPropuesta,
+          as: "factoring_propuesta",
+          include: [
+            {
+              model: modelsFT.FactoringPropuestaEstado,
+              as: "factoringpropuestaestado_factoring_propuesta_estado",
+            },
+          ],
+        },
+        {
+          model: modelsFT.CuentaBancaria,
+          as: "cuentabancaria_cuenta_bancarium",
+          include: [
+            {
+              model: modelsFT.Banco,
+              as: "banco_banco",
+            },
+            {
+              model: modelsFT.CuentaBancariaEstado,
+              as: "cuentabancariaestado_cuenta_bancaria_estado",
+            },
+            {
+              model: modelsFT.CuentaTipo,
+              as: "cuentatipo_cuenta_tipo",
+            },
+            {
+              model: modelsFT.Moneda,
+              as: "moneda_moneda",
+            },
+          ],
+        },
       ],
       where: {
         _idcedente: {
@@ -122,6 +164,16 @@ export const getFactoringsByEstados = async (transaction, estados) => {
       include: [
         {
           all: true,
+        },
+        {
+          model: modelsFT.FactoringPropuesta,
+          as: "factoringpropuestaaceptada_factoring_propuestum",
+          include: [
+            {
+              model: modelsFT.FactoringTipo,
+              as: "factoringtipo_factoring_tipo",
+            },
+          ],
         },
         {
           model: modelsFT.FactoringPropuesta,

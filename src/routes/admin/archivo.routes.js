@@ -2,6 +2,7 @@ import { Router } from "express";
 import { catchedAsync } from "#src/utils/catchedAsync.js";
 import * as archivoController from "#src/controllers/admin/archivoController.js";
 import { verifyToken, checkRole } from "#src/middlewares/authMiddleware.js";
+import * as archivoMiddleware from "#src/middlewares/archivoMiddleware.js";
 
 const router = Router();
 
@@ -14,4 +15,6 @@ router.delete("/admin/archivo/eliminar/:id", verifyToken, checkRole([2]), catche
 router.patch("/admin/archivo/activar/:id", verifyToken, checkRole([2]), catchedAsync(archivoController.activateArchivo));
 
 router.get("/admin/archivo/descargar/:id", verifyToken, checkRole([2]), catchedAsync(archivoController.descargarArchivo));
+
+router.post("/admin/archivo/cargar", verifyToken, checkRole([2]), archivoMiddleware.upload, catchedAsync(archivoController.cargarArchivo));
 export default router;

@@ -1,4 +1,5 @@
 import * as archivoDao from "#src/daos/archivoDao.js";
+import * as archivotipoDao from "#src/daos/archivotipoDao.js";
 import * as documentotipoDao from "#src/daos/documentotipoDao.js";
 import * as paisDao from "#src/daos/paisDao.js";
 import * as provinciaDao from "#src/daos/provinciaDao.js";
@@ -12,13 +13,86 @@ import logger, { line } from "#src/utils/logger.js";
 import { safeRollback } from "#src/utils/transactionUtils.js";
 import { sequelizeFT } from "#src/config/bd/sequelize_db_factoring.js";
 import * as storageUtils from "#src/utils/storageUtils.js";
+import * as validacionesYup from "#src/utils/validacionesYup.js";
 import * as fs from "fs";
 import path from "path";
+import { unlink } from "fs/promises";
 import { fileURLToPath } from "url";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { Sequelize } from "sequelize";
+
+export const cargarArchivo = async (req, res) => {
+  logger.debug(line(), "controller::cargarArchivo");
+  const transaction = await sequelizeFT.transaction();
+  try {
+    const _idusuario = req.session_user?.usuario?._idusuario;
+    const archivoUploadSchema = yup
+      .object()
+      .shape({
+        _idusuario: yup.number().required(),
+        archivo: yup
+          .mixed()
+          .concat(validacionesYup.fileRequeridValidation())
+          .concat(validacionesYup.fileSizeValidation(5 * 1024 * 1024)),
+        archivotipo_code: yup.string().trim().min(8).max(8),
+      })
+      .required();
+    const archivoValidated = archivoUploadSchema.validateSync({ ...req.files, ...req.body, _idusuario }, { abortEarly: false, stripUnknown: true });
+    logger.debug(line(), "archivoValidated:", archivoValidated);
+
+    let _idarchivotipo = 10; // Sin tipo
+    if (archivoValidated.archivotipo_code) {
+      const archivotipo = await archivotipoDao.getArchivotipoByCode(transaction, archivoValidated.archivotipo_code);
+      if (!archivotipo) {
+        logger.warn(line(), "Archivo tipo tipo no existe: [" + archivoValidated.archivotipo_code + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
+      _idarchivotipo = archivotipo._idarchivotipo;
+    }
+
+    const { archivo } = archivoValidated;
+    const { anio_upload, mes_upload, dia_upload, filename, path: archivoOrigen } = archivo[0];
+    const carpetaDestino = path.join(anio_upload, mes_upload, dia_upload);
+    const rutaDestino = path.join(storageUtils.STORAGE_PATH_SUCCESS, anio_upload, mes_upload, dia_upload, filename); // Crear la ruta completa del archivo de destino
+    fs.mkdirSync(path.dirname(rutaDestino), { recursive: true }); // Crear directorio si no existe
+    fs.copyFileSync(archivoOrigen, rutaDestino); // Copia el archivo
+
+    const { codigo_archivo, originalname, size, mimetype, encoding, extension } = archivo[0];
+
+    let archivoNuevo = {
+      archivoid: uuidv4(),
+      _idarchivotipo: _idarchivotipo,
+      _idarchivoestado: 1,
+      codigo: codigo_archivo,
+      nombrereal: originalname,
+      nombrealmacenamiento: filename,
+      ruta: carpetaDestino,
+      tamanio: size,
+      mimetype: mimetype,
+      encoding: encoding,
+      extension: extension,
+      observacion: "",
+      fechavencimiento: null,
+      idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+      fechacrea: Sequelize.fn("now", 3),
+      idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+      fechamod: Sequelize.fn("now", 3),
+      estado: 1,
+    };
+    const archivoCreated = await archivoDao.insertArchivo(transaction, archivoNuevo);
+    logger.debug(line(), "archivoCreated:", archivoCreated.dataValues);
+
+    await unlink(archivoOrigen); // Eliminamos el archivo temporal
+
+    await transaction.commit();
+    response(res, 200, { archivoid: archivoCreated.archivoid });
+  } catch (error) {
+    await safeRollback(transaction);
+    throw error;
+  }
+};
 
 export const descargarArchivo = async (req, res) => {
   logger.debug(line(), "controller::descargarArchivo");
