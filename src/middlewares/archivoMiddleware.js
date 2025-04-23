@@ -27,6 +27,8 @@ const MIMETYPES_NO_PERMITIDOS = [
   "application/x-python-code",
 ];
 
+const EXTENSIONES_SIN_FIRMA_PERMITIDAS = [".csv", ".txt", ".log", ".md", ".json", ".xml", ".yml", ".yaml", ".tsv"];
+
 let storage_usuarioservicio = multer.diskStorage({
   destination: (req, file, cb) => {
     const anio_upload = luxon.DateTime.now().toFormat("yyyy");
@@ -117,9 +119,16 @@ export const upload = (req, res, next) => {
       }
 
       if (!tipoDetectado) {
-        fs.unlinkSync(filePath);
-        logger.error(line(), `No se pudo determinar el tipo real del archivo en [${file.originalname}]`);
-        return next(new ArchivoError("Archivo no permitido", 400));
+        // Si no se pudo detectar el tipo real, validamos la extensión
+        if (!EXTENSIONES_SIN_FIRMA_PERMITIDAS.includes(ext)) {
+          fs.unlinkSync(filePath);
+          logger.error(line(), `No se pudo determinar el tipo real del archivo en [${file.originalname}] y la extensión [${ext}] no está permitida`);
+          return next(new ArchivoError("Archivo no permitido", 400));
+        }
+
+        // Extensión aceptada sin firma
+        logger.debug(line(), `Archivo aceptado sin firma: ${file.originalname}, extensión: ${ext}`);
+        return next();
       }
 
       if (MIMETYPES_NO_PERMITIDOS.includes(tipoDetectado.mime)) {

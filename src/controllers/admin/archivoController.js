@@ -46,7 +46,7 @@ export const cargarArchivo = async (req, res) => {
     if (archivoValidated.archivotipo_code) {
       const archivotipo = await archivotipoDao.getArchivotipoByCode(transaction, archivoValidated.archivotipo_code);
       if (!archivotipo) {
-        logger.warn(line(), "Archivo tipo tipo no existe: [" + archivoValidated.archivotipo_code + "]");
+        logger.warn(line(), "Archivo tipo no existe: [" + archivoValidated.archivotipo_code + "]");
         throw new ClientError("Datos no válidos", 404);
       }
       _idarchivotipo = archivotipo._idarchivotipo;
@@ -188,18 +188,22 @@ export const deleteArchivo = async (req, res) => {
 
   const transaction = await sequelizeFT.transaction();
   try {
+    const archivo = await archivoDao.getArchivoByArchivoid(transaction, archivoValidated.archivoid);
+    if (!archivo) {
+      logger.warn(line(), "Archivo no existe: [" + archivoValidated.archivoid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
     var camposAuditoria = {};
     camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
     camposAuditoria.fechamod = Sequelize.fn("now", 3);
     camposAuditoria.estado = 2;
 
     const archivoDeleted = await archivoDao.deleteArchivo(transaction, { ...archivoValidated, ...camposAuditoria });
-    if (archivoDeleted[0] === 0) {
-      throw new ClientError("Archivo no existe", 404);
-    }
     logger.debug(line(), "archivoDeleted:", archivoDeleted);
+
     await transaction.commit();
-    response(res, 204, archivoDeleted);
+    response(res, 204, {});
   } catch (error) {
     await safeRollback(transaction);
     throw error;

@@ -16,6 +16,10 @@ export default class ArchivoTipo extends Model {
       defaultValue: Sequelize.Sequelize.fn('uuid'),
       unique: "UQ_archivotipoid"
     },
+    code: {
+      type: DataTypes.STRING(20),
+      allowNull: true
+    },
     nombre: {
       type: DataTypes.STRING(50),
       allowNull: false

@@ -1,44 +1,26 @@
 import _sequelize from 'sequelize';
 const { Model, Sequelize } = _sequelize;
 
-export default class FactoringEstado extends Model {
+export default class ArchivoFactoringHistorialEstado extends Model {
   static init(sequelize, DataTypes) {
   return super.init({
-    _idfactoringestado: {
-      autoIncrement: true,
+    _idarchivo: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      references: {
+        model: 'archivo',
+        key: '_idarchivo'
+      }
     },
-    factoringestadoid: {
-      type: DataTypes.STRING(50),
+    _idfactoringhistorialestado: {
+      type: DataTypes.BIGINT,
       allowNull: false,
-      defaultValue: Sequelize.Sequelize.fn('uuid'),
-      unique: "UQ_factoring_estado_factoringestadoid"
-    },
-    estado1: {
-      type: DataTypes.STRING(50),
-      allowNull: false
-    },
-    estado2: {
-      type: DataTypes.STRING(50),
-      allowNull: false
-    },
-    alias_estado1: {
-      type: DataTypes.STRING(50),
-      allowNull: true
-    },
-    alias_estado2: {
-      type: DataTypes.STRING(50),
-      allowNull: true
-    },
-    accion: {
-      type: DataTypes.STRING(50),
-      allowNull: true
-    },
-    orden: {
-      type: DataTypes.SMALLINT,
-      allowNull: true
+      primaryKey: true,
+      references: {
+        model: 'factoring_historial_estado',
+        key: '_idfactoringhistorialestado'
+      }
     },
     idusuariocrea: {
       type: DataTypes.INTEGER,
@@ -67,7 +49,7 @@ export default class FactoringEstado extends Model {
     }
   }, {
     sequelize,
-    tableName: 'factoring_estado',
+    tableName: 'archivo_factoring_historial_estado',
     timestamps: false,
     indexes: [
       {
@@ -75,15 +57,15 @@ export default class FactoringEstado extends Model {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "_idfactoringestado" },
+          { name: "_idarchivo" },
+          { name: "_idfactoringhistorialestado" },
         ]
       },
       {
-        name: "UQ_factoring_estado_factoringestadoid",
-        unique: true,
+        name: "FK_archivo_factoring_historial_estado_idfactoringhistorialestado",
         using: "BTREE",
         fields: [
-          { name: "factoringestadoid" },
+          { name: "_idfactoringhistorialestado" },
         ]
       },
     ]
