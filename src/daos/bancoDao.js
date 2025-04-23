@@ -111,3 +111,18 @@ export const deleteBanco = async (transaction, banco) => {
     throw new ClientError("Ocurrio un error", 500);
   }
 };
+
+export const activateBanco = async (transaction, banco) => {
+  try {
+    const result = await modelsFT.Banco.update(banco, {
+      where: {
+        bancoid: banco.bancoid,
+      },
+      transaction,
+    });
+    return result;
+  } catch (error) {
+    logger.error(line(), formatError(error));
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};

@@ -12,6 +12,7 @@ export const getFactoringestados = async (transaction, estados) => {
           [Sequelize.Op.in]: estados,
         },
       },
+      order: [["orden", "ASC"]],
       transaction,
     });
     //logger.info(line(),factoringestados);
