@@ -5,9 +5,11 @@ import * as bancoDao from "#src/daos/bancoDao.js";
 import * as cuentatipoDao from "#src/daos/cuentatipoDao.js";
 import * as monedaDao from "#src/daos/monedaDao.js";
 import * as personaDao from "#src/daos/personaDao.js";
+import * as inversionistaDao from "#src/daos/inversionistaDao.js";
 import * as cuentabancariaDao from "#src/daos/cuentabancariaDao.js";
 import * as cuentabancariaestadoDao from "#src/daos/cuentabancariaestadoDao.js";
 import * as empresacuentabancariaDao from "#src/daos/empresacuentabancariaDao.js";
+import * as inversionistacuentabancariaDao from "#src/daos/inversionistacuentabancariaDao.js";
 import * as colaboradortipoDao from "#src/daos/colaboradortipoDao.js";
 import * as colaboradorDao from "#src/daos/colaboradorDao.js";
 import * as servicioempresaDao from "#src/daos/servicioempresaDao.js";
@@ -39,6 +41,203 @@ import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { Sequelize } from "sequelize";
+
+export const suscribirUsuarioServicioFactoringInversionista = async (req, res) => {
+  logger.debug(line(), "controller::suscribirUsuarioServicioFactoringInversionista");
+  const _idusuario = req.session_user?.usuario?._idusuario;
+  const { id } = req.params;
+  const filter_estado = [1, 2];
+  const usuarioservicioSuscripcionSchema = yup
+    .object()
+    .shape({
+      _idusuario: yup.number().required(),
+      usuarioservicioid: yup.string().trim().required().min(36).max(36),
+      personaid: yup.string().trim().required().min(36).max(36),
+
+      bancoid: yup.string().trim().required().min(36).max(36),
+      cuentatipoid: yup.string().trim().required().min(36).max(36),
+      monedaid: yup.string().trim().required().min(36).max(36),
+      numero: yup.string().required().max(20),
+      cci: yup.string().required().max(20),
+      alias: yup.string().required().max(50),
+
+      declaracion_conformidad_contrato: yup.boolean().required(),
+      declaracion_datos_reales: yup.boolean().required(),
+    })
+    .required();
+  const usuarioservicioValidated = usuarioservicioSuscripcionSchema.validateSync({ ...req.files, ...req.body, _idusuario, usuarioservicioid: id }, { abortEarly: false, stripUnknown: true });
+  logger.debug(line(), "usuarioservicioValidated:", usuarioservicioValidated);
+
+  const transaction = await sequelizeFT.transaction();
+  try {
+    const usuarioservicio = await usuarioservicioDao.getUsuarioservicioByUsuarioservicioid(transaction, usuarioservicioValidated.usuarioservicioid);
+    if (!usuarioservicio) {
+      logger.warn(line(), "El usuario servicio no existe: [" + usuarioservicioValidated.usuarioservicioid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    const persona = await personaDao.getPersonaByPersonaid(transaction, usuarioservicioValidated.personaid);
+    if (persona && persona.length > 0) {
+      logger.warn(line(), "La persona no existe: [" + usuarioservicioValidated.personaid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    const banco = await bancoDao.findBancoPk(transaction, usuarioservicioValidated.bancoid);
+    if (!banco) {
+      logger.warn(line(), "Banco no existe: [" + usuarioservicioValidated.bancoid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    const cuentatipo = await cuentatipoDao.findCuentatipoPk(transaction, usuarioservicioValidated.cuentatipoid);
+    if (!cuentatipo) {
+      logger.warn(line(), "Cuenta tipo no existe: [" + usuarioservicioValidated.cuentatipoid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    const moneda = await monedaDao.findMonedaPk(transaction, usuarioservicioValidated.monedaid);
+    if (!moneda) {
+      logger.warn(line(), "Moneda no existe: [" + usuarioservicioValidated.monedaid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    const cuentasbancarias_por_numero = await cuentabancariaDao.getCuentasbancariasByIdbancoAndNumero(transaction, banco._idbanco, usuarioservicioValidated.numero, filter_estado);
+    if (cuentasbancarias_por_numero && cuentasbancarias_por_numero.length > 0) {
+      logger.warn(line(), "El número de cuenta [" + usuarioservicioValidated.numero + "] se encuentra registrado. Ingrese un número de cuenta diferente.");
+      throw new ClientError("El número de cuenta [" + usuarioservicioValidated.numero + "] se encuentra registrado. Ingrese un número de cuenta diferente.", 404);
+    }
+
+    if (!usuarioservicioValidated.declaracion_conformidad_contrato) {
+      logger.warn(line(), "No aceptó la declaración de conformidad del contrato: [" + usuarioservicioValidated.declaracion_conformidad_contrato + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    if (!usuarioservicioValidated.declaracion_datos_reales) {
+      logger.warn(line(), "No aceptó la declaración de datos reales: [" + usuarioservicioValidated.declaracion_datos_reales + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    const cuentabancariaestado_pendiente = 1;
+    const cuentabancariaestado = await cuentabancariaestadoDao.getCuentabancariaestadoByIdcuentabancariaestado(transaction, cuentabancariaestado_pendiente);
+    if (!cuentabancariaestado) {
+      logger.warn(line(), "Cuenta bancaria estado no existe: [" + cuentabancariaestado_pendiente + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    const usuarioservicioaestado_en_revision = 3;
+    const usuarioservicioestado = await usuarioservicioestadoDao.getUsuarioservicioestadoByIdusuarioservicioestado(transaction, usuarioservicioaestado_en_revision);
+    if (!usuarioservicioestado) {
+      logger.warn(line(), "Usuario servicio estado no existe: [" + usuarioservicioaestado_en_revision + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    /* Creamos al Inversionista */
+
+    let inversionistaNuevo = {
+      _idpersona: persona._idpersona,
+      cuentabancariaid: uuidv4(),
+      code: uuidv4().split("-")[0],
+      idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+      fechacrea: Sequelize.fn("now", 3),
+      idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+      fechamod: Sequelize.fn("now", 3),
+      estado: 1,
+    };
+
+    const inversionistaCreated = await inversionistaDao.insertInversionista(transaction, inversionistaNuevo);
+
+    logger.debug(line(), "inversionistaCreated:", inversionistaCreated.dataValues);
+
+    /* Creamos la Cuenta Bancaria asociada al Inversionista */
+
+    let camposCuentabancariaNuevo = {};
+    camposCuentabancariaNuevo.numero = usuarioservicioValidated.numero;
+    camposCuentabancariaNuevo.cci = usuarioservicioValidated.cci;
+    camposCuentabancariaNuevo.alias = usuarioservicioValidated.alias;
+
+    let camposCuentabancariaNuevoFk = {};
+    camposCuentabancariaNuevoFk._idbanco = banco._idbanco;
+    camposCuentabancariaNuevoFk._idcuentatipo = cuentatipo._idcuentatipo;
+    camposCuentabancariaNuevoFk._idmoneda = moneda._idmoneda;
+    camposCuentabancariaNuevoFk._idcuentabancariaestado = cuentabancariaestado._idcuentabancariaestado;
+
+    let camposCuentabancariaNuevoAdicionales = {};
+    camposCuentabancariaNuevoAdicionales.cuentabancariaid = uuidv4();
+    camposCuentabancariaNuevoAdicionales.code = uuidv4().split("-")[0];
+
+    let camposCuentabancariaNuevoAuditoria = {};
+    camposCuentabancariaNuevoAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
+    camposCuentabancariaNuevoAuditoria.fechacrea = Sequelize.fn("now", 3);
+    camposCuentabancariaNuevoAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
+    camposCuentabancariaNuevoAuditoria.fechamod = Sequelize.fn("now", 3);
+    camposCuentabancariaNuevoAuditoria.estado = 1;
+
+    const cuentabancariaCreated = await cuentabancariaDao.insertCuentabancaria(transaction, {
+      ...camposCuentabancariaNuevo,
+      ...camposCuentabancariaNuevoFk,
+      ...camposCuentabancariaNuevoAdicionales,
+      ...camposCuentabancariaNuevoAuditoria,
+    });
+
+    logger.debug(line(), "cuentabancariaCreated:", cuentabancariaCreated.dataValues);
+
+    let camposInversionistacuentabancariaNuevoFk = {};
+    camposInversionistacuentabancariaNuevoFk._idinversionista = inversionistaCreated._idinversionista;
+    camposInversionistacuentabancariaNuevoFk._idcuentabancaria = cuentabancariaCreated._idcuentabancaria;
+
+    let camposInversionistacuentabancariaNuevoAdicionales = {};
+    camposInversionistacuentabancariaNuevoAdicionales.empresacuentabancariaid = uuidv4();
+    camposInversionistacuentabancariaNuevoAdicionales.code = uuidv4().split("-")[0];
+
+    let camposInversionistacuentabancariaNuevoAuditoria = {};
+    camposInversionistacuentabancariaNuevoAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
+    camposInversionistacuentabancariaNuevoAuditoria.fechacrea = Sequelize.fn("now", 3);
+    camposInversionistacuentabancariaNuevoAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
+    camposInversionistacuentabancariaNuevoAuditoria.fechamod = Sequelize.fn("now", 3);
+    camposInversionistacuentabancariaNuevoAuditoria.estado = 1;
+
+    const imversionistacuentabancariaCreated = await inversionistacuentabancariaDao.insertInversionistacuentabancaria(transaction, {
+      ...camposInversionistacuentabancariaNuevoFk,
+      ...camposInversionistacuentabancariaNuevoAdicionales,
+      ...camposInversionistacuentabancariaNuevoAuditoria,
+    });
+
+    logger.debug(line(), "imversionistacuentabancariaCreated:", imversionistacuentabancariaCreated.dataValues);
+
+    /* Registramos para la verificación del usuario_servicio en la tabla usuario_servicio_verificacion */
+    const camposUsuarioservicioverificacionCreate = {};
+    camposUsuarioservicioverificacionCreate.usuarioservicioverificacionid = uuidv4();
+    camposUsuarioservicioverificacionCreate._idusuarioservicio = usuarioservicio._idusuarioservicio;
+    camposUsuarioservicioverificacionCreate._idusuarioservicioestado = usuarioservicioestado._idusuarioservicioestado;
+    camposUsuarioservicioverificacionCreate._idusuarioverifica = req.session_user?.usuario?._idusuario;
+    camposUsuarioservicioverificacionCreate.comentariousuario = "";
+    camposUsuarioservicioverificacionCreate.comentariointerno = "";
+    camposUsuarioservicioverificacionCreate.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
+    camposUsuarioservicioverificacionCreate.fechacrea = Sequelize.fn("now", 3);
+    camposUsuarioservicioverificacionCreate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
+    camposUsuarioservicioverificacionCreate.fechamod = Sequelize.fn("now", 3);
+    camposUsuarioservicioverificacionCreate.estado = 1;
+
+    const usuarioservicioverificacionCreated = await usuarioservicioverificacionDao.insertUsuarioservicioverificacion(transaction, camposUsuarioservicioverificacionCreate);
+    logger.debug(line(), "usuarioservicioverificacionCreated:", usuarioservicioverificacionCreated.dataValues);
+
+    /* Actualizamos el estado del usuario_servicio*/
+    const camposUsuarioservicioUpdate = {};
+    camposUsuarioservicioUpdate._idusuarioservicio = usuarioservicio._idusuarioservicio;
+    camposUsuarioservicioUpdate.usuarioservicioid = usuarioservicio.usuarioservicioid;
+    camposUsuarioservicioUpdate._idusuarioservicioestado = usuarioservicioestado._idusuarioservicioestado;
+    camposUsuarioservicioUpdate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
+    camposUsuarioservicioUpdate.fechamod = Sequelize.fn("now", 3);
+
+    const usuarioservicioUpdated = await usuarioservicioDao.updateUsuarioservicio(transaction, camposUsuarioservicioUpdate);
+    logger.debug(line(), "usuarioservicioUpdated:", usuarioservicioUpdated.dataValues);
+
+    await transaction.commit();
+    response(res, 200, {});
+  } catch (error) {
+    await safeRollback(transaction);
+    throw error;
+  }
+};
 
 export const suscribirUsuarioServicioFactoringEmpresa = async (req, res) => {
   logger.debug(line(), "controller::suscribirUsuarioServicioFactoringEmpresa");
@@ -474,6 +673,7 @@ export const getUsuarioservicioMaster = async (req, res) => {
     const bancos = await bancoDao.getBancos(transaction, filter_estados);
     const monedas = await monedaDao.getMonedas(transaction, filter_estados);
     const cuentatipos = await cuentatipoDao.getCuentatipos(transaction, filter_estados);
+    const persona = await personaDao.getPersonaByIdusuario(transaction, session_idusuario);
 
     let usuarioservicioMaster = {};
     usuarioservicioMaster.usuarioservicio = usuarioservicio;
@@ -482,6 +682,7 @@ export const getUsuarioservicioMaster = async (req, res) => {
     usuarioservicioMaster.bancos = bancos;
     usuarioservicioMaster.monedas = monedas;
     usuarioservicioMaster.cuentatipos = cuentatipos;
+    usuarioservicioMaster.persona = persona;
 
     let usuarioservicioMasterJSON = jsonUtils.sequelizeToJSON(usuarioservicioMaster);
     //jsonUtils.prettyPrint(usuarioservicioMasterJSON);

@@ -47,6 +47,8 @@ import _FacturaTerminoPago from "./FacturaTerminoPago.js";
 import _FinancieroConcepto from "./FinancieroConcepto.js";
 import _FinancieroTipo from "./FinancieroTipo.js";
 import _Genero from "./Genero.js";
+import _Inversionista from "./Inversionista.js";
+import _InversionistaCuentaBancaria from "./InversionistaCuentaBancaria.js";
 import _Moneda from "./Moneda.js";
 import _Pais from "./Pais.js";
 import _PepVinculo from "./PepVinculo.js";
@@ -126,6 +128,8 @@ export default function initModels(sequelize) {
   const FinancieroConcepto = _FinancieroConcepto.init(sequelize, DataTypes);
   const FinancieroTipo = _FinancieroTipo.init(sequelize, DataTypes);
   const Genero = _Genero.init(sequelize, DataTypes);
+  const Inversionista = _Inversionista.init(sequelize, DataTypes);
+  const InversionistaCuentaBancaria = _InversionistaCuentaBancaria.init(sequelize, DataTypes);
   const Moneda = _Moneda.init(sequelize, DataTypes);
   const Pais = _Pais.init(sequelize, DataTypes);
   const PepVinculo = _PepVinculo.init(sequelize, DataTypes);
@@ -205,6 +209,8 @@ export default function initModels(sequelize) {
   CuentaBancaria.hasMany(EmpresaCuentaBancaria, { as: "empresa_cuenta_bancaria", foreignKey: "_idcuentabancaria" });
   Factoring.belongsTo(CuentaBancaria, { as: "cuentabancaria_cuenta_bancarium", foreignKey: "_idcuentabancaria" });
   CuentaBancaria.hasMany(Factoring, { as: "factorings", foreignKey: "_idcuentabancaria" });
+  InversionistaCuentaBancaria.belongsTo(CuentaBancaria, { as: "cuentabancaria_cuenta_bancarium", foreignKey: "_idcuentabancaria" });
+  CuentaBancaria.hasMany(InversionistaCuentaBancaria, { as: "inversionista_cuenta_bancaria", foreignKey: "_idcuentabancaria" });
   PersonaCuentaBancaria.belongsTo(CuentaBancaria, { as: "cuentabancaria_cuenta_bancarium", foreignKey: "_idcuentabancaria" });
   CuentaBancaria.hasMany(PersonaCuentaBancaria, { as: "persona_cuenta_bancaria", foreignKey: "_idcuentabancaria" });
   CuentaBancaria.belongsTo(CuentaBancariaEstado, { as: "cuentabancariaestado_cuenta_bancaria_estado", foreignKey: "_idcuentabancariaestado" });
@@ -291,6 +297,8 @@ export default function initModels(sequelize) {
   FinancieroTipo.hasMany(FactoringPropuestaFinanciero, { as: "factoring_propuesta_financieros", foreignKey: "_idfinancierotipo" });
   Persona.belongsTo(Genero, { as: "genero_genero", foreignKey: "_idgenero" });
   Genero.hasMany(Persona, { as: "personas", foreignKey: "_idgenero" });
+  InversionistaCuentaBancaria.belongsTo(Inversionista, { as: "inversionista_inversionistum", foreignKey: "_idinversionista" });
+  Inversionista.hasMany(InversionistaCuentaBancaria, { as: "inversionista_cuenta_bancaria", foreignKey: "_idinversionista" });
   CuentaBancaria.belongsTo(Moneda, { as: "moneda_moneda", foreignKey: "_idmoneda" });
   Moneda.hasMany(CuentaBancaria, { as: "cuenta_bancaria", foreignKey: "_idmoneda" });
   Factoring.belongsTo(Moneda, { as: "moneda_moneda", foreignKey: "_idmoneda" });
@@ -311,6 +319,8 @@ export default function initModels(sequelize) {
   Persona.hasMany(ArchivoPersona, { as: "archivo_personas", foreignKey: "_idpersona" });
   Colaborador.belongsTo(Persona, { as: "persona_persona", foreignKey: "_idpersona" });
   Persona.hasMany(Colaborador, { as: "colaboradors", foreignKey: "_idpersona" });
+  Inversionista.belongsTo(Persona, { as: "persona_persona", foreignKey: "_idpersona" });
+  Persona.hasMany(Inversionista, { as: "inversionista", foreignKey: "_idpersona" });
   PersonaCuentaBancaria.belongsTo(Persona, { as: "persona_persona", foreignKey: "_idpersona" });
   Persona.hasMany(PersonaCuentaBancaria, { as: "persona_cuenta_bancaria", foreignKey: "_idpersona" });
   PersonaDeclaracion.belongsTo(Persona, { as: "persona_persona", foreignKey: "_idpersona" });
@@ -448,6 +458,8 @@ export default function initModels(sequelize) {
     FinancieroConcepto,
     FinancieroTipo,
     Genero,
+    Inversionista,
+    InversionistaCuentaBancaria,
     Moneda,
     Pais,
     PepVinculo,

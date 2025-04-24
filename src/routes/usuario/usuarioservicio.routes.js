@@ -13,5 +13,6 @@ router.get("/usuario/usuarioservicio/listar", verifyToken, checkRole([2]), catch
 router.get("/usuario/usuarioservicio/master/:id", verifyToken, checkRole([2]), catchedAsync(usuarioservicioController.getUsuarioservicioMaster));
 
 router.post("/usuario/usuarioservicio/suscribir/factoring/empresa/:id", verifyToken, checkRole([2]), usuarioservicioMiddleware.upload, catchedAsync(usuarioservicioController.suscribirUsuarioServicioFactoringEmpresa));
+router.post("/usuario/usuarioservicio/suscribir/factoring/inversionista/:id", verifyToken, checkRole([2]), catchedAsync(usuarioservicioController.suscribirUsuarioServicioFactoringInversionista));
 
 export default router;
