@@ -6,10 +6,11 @@ import * as configuracionappDao from "#src/daos/configuracionappDao.js";
 import * as factoringconfigcomisionDao from "#src/daos/factoringconfigcomisionDao.js";
 import * as factoringconfiggarantiaDao from "#src/daos/factoringconfiggarantiaDao.js";
 import * as factoringconfigtasadescuentoDao from "#src/daos/factoringconfigtasadescuentoDao.js";
+import { safeRollback } from "#src/utils/transactionUtils.js";
 
 import logger, { line } from "#src/utils/logger.js";
 
-export const simulateFactoringLogicV2 = async (_idriesgooperacion, _idbancocedente, cantidad_facturas, monto_neto, dias_pago_estimado, porcentaje_financiado, tdm) => {
+export const simulateFactoringLogicV2 = async (_idriesgooperacion, _idbancocedente, cantidad_facturas, monto_neto, dias_pago_estimado, porcentaje_financiado, tdm, dias_antiguedad_estimado) => {
   logger.debug(line(), "logic::simulateFactoringLogicV2");
   var simulacion = {};
   const transaction = await sequelizeFT.transaction();
@@ -29,6 +30,7 @@ export const simulateFactoringLogicV2 = async (_idriesgooperacion, _idbancoceden
     var financiero_concepto_transaccion = await financieroconceptoDao.getCostoTransaccion();
 
     simulacion.dias_pago_estimado = dias_pago_estimado;
+    simulacion.dias_antiguedad_estimado = dias_antiguedad_estimado;
     simulacion.tda = Number((Math.pow(1 + tdm, 12) - 1).toFixed(10));
     simulacion.tdm = Number(tdm.toFixed(5));
     simulacion.tdd = Number((Math.pow(1 + tdm, 1 / 30) - 1).toFixed(10));

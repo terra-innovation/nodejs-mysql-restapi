@@ -97,15 +97,15 @@ export default class Factoring extends Model {
     },
     cantidad_facturas: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     fecha_registro: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: false
     },
     fecha_emision: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: false
     },
     fecha_operacion: {
       type: DataTypes.DATE,

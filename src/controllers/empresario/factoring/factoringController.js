@@ -4,6 +4,7 @@ import * as empresaDao from "#src/daos/empresaDao.js";
 import * as personaDao from "#src/daos/personaDao.js";
 import * as factoringDao from "#src/daos/factoringDao.js";
 import * as factoringfacturaDao from "#src/daos/factoringfacturaDao.js";
+import * as factoringhistorialestadoDao from "#src/daos/factoringhistorialestadoDao.js";
 import * as facturaDao from "#src/daos/facturaDao.js";
 import * as contactoDao from "#src/daos/contactoDao.js";
 import * as colaboradorDao from "#src/daos/colaboradorDao.js";
@@ -22,7 +23,7 @@ export const getFactorings = async (req, res) => {
   logger.debug(line(), "controller::getFactorings");
   const transaction = await sequelizeFT.transaction();
   try {
-    const filter_estados = [1, 2];
+    const filter_estados = [1];
     const _idusuario_session = req.session_user.usuario._idusuario;
     const empresas_cedentes = await empresaDao.getEmpresasByIdusuario(transaction, _idusuario_session, filter_estados);
     const _idcedentes = empresas_cedentes.map((empresa) => empresa._idempresa);
@@ -157,8 +158,12 @@ export const createFactoring = async (req, res) => {
     var camposAdicionales = {};
     camposAdicionales.factoringid = uuidv4();
     camposAdicionales.code = uuidv4().split("-")[0];
-    camposAdicionales.fecha_registro = luxon.DateTime.now().toISO();
+    camposAdicionales.fecha_registro = Sequelize.fn("now", 3);
+    camposAdicionales.fecha_emision = facturas.reduce((min, item) => (!min || new Date(item.fecha_emision) < new Date(min) ? item.fecha_emision : min), null);
     camposAdicionales.cantidad_facturas = factoringValidated.facturas.length;
+    camposAdicionales.monto_factura = facturas.reduce((acc, item) => acc + (typeof item.importe_bruto === "number" ? item.importe_bruto : 0), 0);
+    camposAdicionales.monto_detraccion = facturas.reduce((acc, item) => acc + (typeof item.detraccion_monto === "number" ? item.detraccion_monto : 0), 0);
+    camposAdicionales.monto_neto = facturas.reduce((acc, item) => acc + (typeof item.importe_neto === "number" ? item.importe_neto : 0), 0);
 
     var camposAuditoria = {};
     camposAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
@@ -168,14 +173,30 @@ export const createFactoring = async (req, res) => {
     camposAuditoria.estado = 1;
 
     const factoringCreated = await factoringDao.insertFactoring(transaction, { ...camposFk, ...camposAdicionales, ...factoringValidated, ...camposAuditoria });
-    logger.debug(line(), "factoringCreated:", factoringCreated);
+    logger.debug(line(), "factoringCreated:", factoringCreated.dataValues);
+
+    const factoringhistorialestadoCreate = {
+      factoringhistorialestadoid: uuidv4(),
+      code: uuidv4().split("-")[0],
+      _idfactoring: factoringCreated._idfactoring,
+      _idfactoringestado: camposFk._idfactoringestado,
+      _idusuariomodifica: req.session_user.usuario._idusuario,
+      comentario: "",
+      idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+      fechacrea: Sequelize.fn("now", 3),
+      idusuariomod: req.session_user.usuario._idusuario ?? 1,
+      fechamod: Sequelize.fn("now", 3),
+      estado: 1,
+    };
+    const factoringhistorialestadoCreated = await factoringhistorialestadoDao.insertFactoringhistorialestado(transaction, factoringhistorialestadoCreate);
+    logger.debug(line(), "factoringhistorialestadoCreated:", factoringhistorialestadoCreated.dataValues);
 
     for (const [index, factura] of facturas.entries()) {
       var factoringfacturaFk = {};
       factoringfacturaFk._idfactoring = factoringCreated._idfactoring;
       factoringfacturaFk._idfactura = factura._idfactura;
       const factoringfacturaCreated = await factoringfacturaDao.insertFactoringfactura(transaction, { ...factoringfacturaFk, ...camposAuditoria });
-      logger.debug(line(), "factoringfacturaCreated:", factoringfacturaCreated);
+      logger.debug(line(), "factoringfacturaCreated:", factoringfacturaCreated.dataValues);
     }
 
     await transaction.commit();

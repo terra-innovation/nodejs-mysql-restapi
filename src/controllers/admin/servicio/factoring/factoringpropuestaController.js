@@ -188,9 +188,19 @@ export const createFactoringpropuesta = async (req, res) => {
 
     let fecha_ahora = luxon.DateTime.local();
     let fecha_fin = luxon.DateTime.fromISO(factoring.fecha_pago_estimado.toISOString());
-    var dias_pago_estimado = fecha_fin.startOf("day").diff(fecha_ahora.startOf("day"), "days").days; // Actualizamos la cantidad de dias para el pago
+    let dias_pago_estimado = fecha_fin.startOf("day").diff(fecha_ahora.startOf("day"), "days").days; // Actualizamos la cantidad de dias para el pago
+    let dias_antiguedad_estimado = fecha_ahora.startOf("day").diff(luxon.DateTime.fromISO(factoring.fecha_emision.toISOString()).startOf("day"), "days").days;
     var simulacion = {};
-    simulacion = await simulateFactoringLogicV2(riesgooperacion._idriesgo, factoring.cuentabancaria_cuenta_bancarium._idbanco, factoring.cantidad_facturas, factoring.monto_neto, dias_pago_estimado, factoringValidated.porcentaje_financiado_estimado, factoringValidated.tdm);
+    simulacion = await simulateFactoringLogicV2(
+      riesgooperacion._idriesgo,
+      factoring.cuentabancaria_cuenta_bancarium._idbanco,
+      factoring.cantidad_facturas,
+      factoring.monto_neto,
+      dias_pago_estimado,
+      factoringValidated.porcentaje_financiado_estimado,
+      factoringValidated.tdm,
+      dias_antiguedad_estimado
+    );
 
     logger.info(line(), "simulacion: ", simulacion);
 
@@ -205,7 +215,7 @@ export const createFactoringpropuesta = async (req, res) => {
     camposAdicionales.factoringpropuestaid = uuidv4();
     camposAdicionales.code = uuidv4().split("-")[0];
     camposAdicionales.fecha_propuesta = Sequelize.fn("now", 3);
-    camposAdicionales.dias_antiguedad_estimado = fecha_ahora.startOf("day").diff(luxon.DateTime.fromISO(factoring.fecha_emision.toISOString()).startOf("day"), "days").days;
+    camposAdicionales.dias_antiguedad_estimado = dias_antiguedad_estimado;
     camposAdicionales.fecha_pago_estimado = factoring.fecha_pago_estimado;
 
     var camposAuditoria = {};
@@ -335,8 +345,18 @@ export const simulateFactoringpropuesta = async (req, res) => {
     let fecha_ahora = luxon.DateTime.local();
     let fecha_fin = luxon.DateTime.fromISO(factoring.fecha_pago_estimado.toISOString());
     var dias_pago_estimado = fecha_fin.startOf("day").diff(fecha_ahora.startOf("day"), "days").days; // Actualizamos la cantidad de dias para el pago
+    let dias_antiguedad_estimado = fecha_ahora.startOf("day").diff(luxon.DateTime.fromISO(factoring.fecha_emision.toISOString()).startOf("day"), "days").days;
     var simulacion = {};
-    simulacion = await simulateFactoringLogicV2(riesgooperacion._idriesgo, factoring.cuentabancaria_cuenta_bancarium._idbanco, factoring.cantidad_facturas, factoring.monto_neto, dias_pago_estimado, factoringValidated.porcentaje_financiado_estimado, factoringValidated.tdm);
+    simulacion = await simulateFactoringLogicV2(
+      riesgooperacion._idriesgo,
+      factoring.cuentabancaria_cuenta_bancarium._idbanco,
+      factoring.cantidad_facturas,
+      factoring.monto_neto,
+      dias_pago_estimado,
+      factoringValidated.porcentaje_financiado_estimado,
+      factoringValidated.tdm,
+      dias_antiguedad_estimado
+    );
 
     logger.info(line(), "simulacion: ", simulacion);
 

@@ -193,6 +193,16 @@ export const createFactoringhistorialestado = async (req, res) => {
     });
 
     logger.debug(line(), "factoringhistorialestadoCreated:", factoringhistorialestadoCreated.dataValues);
+    const factoringUpdate = {
+      factoringid: factoringhistorialestadoValidated.factoringid,
+      _idfactoringestado: factoringestado._idfactoringestado,
+      idusuariomod: req.session_user.usuario._idusuario ?? 1,
+      fechamod: Sequelize.fn("now", 3),
+    };
+
+    const factoringUpdated = await factoringDao.updateFactoring(transaction, factoringUpdate);
+
+    logger.debug(line(), "factoringUpdated:", factoringUpdated.dataValues);
 
     for (const archivo of archivos) {
       const archivofactoringhistorialestadoCreate = {
