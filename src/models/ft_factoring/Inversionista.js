@@ -27,7 +27,8 @@ export default class Inversionista extends Model {
       references: {
         model: 'persona',
         key: '_idpersona'
-      }
+      },
+      unique: "FK_inversionista_idpersona"
     },
     idusuariocrea: {
       type: DataTypes.INTEGER,
@@ -84,7 +85,8 @@ export default class Inversionista extends Model {
         ]
       },
       {
-        name: "FK_inversionista_idpersona",
+        name: "UQ_inversionista_idpersona",
+        unique: true,
         using: "BTREE",
         fields: [
           { name: "_idpersona" },

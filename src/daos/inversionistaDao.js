@@ -7,6 +7,12 @@ import logger, { line } from "#src/utils/logger.js";
 export const getInversionistas = async (transaction, estados) => {
   try {
     const inversionistas = await modelsFT.Inversionista.findAll({
+      include: [
+        {
+          model: modelsFT.Persona,
+          as: "persona_persona",
+        },
+      ],
       where: {
         estado: {
           [Sequelize.Op.in]: estados,

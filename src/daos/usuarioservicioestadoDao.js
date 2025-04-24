@@ -26,7 +26,6 @@ export const getUsuarioservicioestados = async (transaction, estados) => {
 export const getUsuarioservicioestadoByIdusuarioservicioestado = async (transaction, idusuarioservicioestado) => {
   try {
     const usuarioservicioestado = await modelsFT.UsuarioServicioEstado.findByPk(idusuarioservicioestado, { transaction });
-    logger.info(line(), usuarioservicioestado);
 
     //const usuarioservicioestados = await usuarioservicioestado.getUsuarioservicioestados();
     //logger.info(line(),usuarioservicioestados);

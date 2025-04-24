@@ -40,6 +40,13 @@ const menuMantenimiento = {
           breadcrumbs: true,
         },
         {
+          id: "admin-mantenimiento-inversionista-cuentas-bancarias",
+          title: "Inversionistas cuentas bancarias",
+          type: "item",
+          url: "/admin/inversionistacuentabancaria/lista",
+          breadcrumbs: true,
+        },
+        {
           id: "admin-mantenimiento-empresas",
           title: "Empresas",
           type: "item",

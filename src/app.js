@@ -28,6 +28,7 @@ import empresario_factoring_contactoRoutes from "#src/routes/empresario/factorin
 
 import admin_zlaboratorioRoutes from "#src/routes/admin/zlaboratorio.routes.js";
 import admin_empresacuentabancariaRoutes from "#src/routes/admin/empresacuentabancaria.routes.js";
+import admin_inversionistacuentabancariaRoutes from "#src/routes/admin/inversionistacuentabancaria.routes.js";
 import admin_cuentabancariaestadoRoutes from "#src/routes/admin/cuentabancariaestado.routes.js";
 import admin_empresaRoutes from "#src/routes/admin/empresa.routes.js";
 import admin_facturaRoutes from "#src/routes/admin/factura.routes.js";
@@ -105,6 +106,7 @@ app.use("/api/v1", empresario_factoring_contactoRoutes);
 
 app.use("/api/v1", admin_zlaboratorioRoutes);
 app.use("/api/v1", admin_empresacuentabancariaRoutes);
+app.use("/api/v1", admin_inversionistacuentabancariaRoutes);
 app.use("/api/v1", admin_cuentabancariaestadoRoutes);
 app.use("/api/v1", admin_empresaRoutes);
 app.use("/api/v1", admin_facturaRoutes);

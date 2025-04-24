@@ -26,7 +26,6 @@ export const getCuentabancariaestados = async (transaction, estados) => {
 export const getCuentabancariaestadoByIdcuentabancariaestado = async (transaction, idcuentabancariaestado) => {
   try {
     const cuentabancariaestado = await modelsFT.CuentaBancariaEstado.findByPk(idcuentabancariaestado, { transaction });
-    logger.info(line(), cuentabancariaestado);
 
     //const cuentabancariaestados = await cuentabancariaestado.getCuentabancariaestados();
     //logger.info(line(),cuentabancariaestados);

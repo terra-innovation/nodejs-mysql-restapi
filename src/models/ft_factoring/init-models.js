@@ -320,7 +320,7 @@ export default function initModels(sequelize) {
   Colaborador.belongsTo(Persona, { as: "persona_persona", foreignKey: "_idpersona" });
   Persona.hasMany(Colaborador, { as: "colaboradors", foreignKey: "_idpersona" });
   Inversionista.belongsTo(Persona, { as: "persona_persona", foreignKey: "_idpersona" });
-  Persona.hasMany(Inversionista, { as: "inversionista", foreignKey: "_idpersona" });
+  Persona.hasOne(Inversionista, { as: "inversionistum", foreignKey: "_idpersona" });
   PersonaCuentaBancaria.belongsTo(Persona, { as: "persona_persona", foreignKey: "_idpersona" });
   Persona.hasMany(PersonaCuentaBancaria, { as: "persona_cuenta_bancaria", foreignKey: "_idpersona" });
   PersonaDeclaracion.belongsTo(Persona, { as: "persona_persona", foreignKey: "_idpersona" });
