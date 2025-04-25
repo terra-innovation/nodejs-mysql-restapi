@@ -6,9 +6,9 @@ const menuFactoringElectronico = {
   children: [
     {
       id: "inversionista-factoring-factoring-lista",
-      title: "Oportunidades (pendiente)",
+      title: "Oportunidades",
       type: "item",
-      url: "/inversionista/factoring/lista",
+      url: "/inversionista/factoring/oportunidades",
       icon: "IdcardOutlined",
       breadcrumbs: true,
     },

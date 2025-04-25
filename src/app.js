@@ -27,6 +27,7 @@ import empresario_factoring_factoringRoutes from "#src/routes/empresario/factori
 import empresario_factoring_contactoRoutes from "#src/routes/empresario/factoring/contacto.routes.js";
 
 import inversionista_inversionistacuentabancariaRoutes from "#src/routes/inversionista/inversionistacuentabancaria.routes.js";
+import inversionista_factoring_factoringRoutes from "#src/routes/inversionista/factoring/factoring.routes.js";
 
 import admin_zlaboratorioRoutes from "#src/routes/admin/zlaboratorio.routes.js";
 import admin_empresacuentabancariaRoutes from "#src/routes/admin/empresacuentabancaria.routes.js";
@@ -107,6 +108,7 @@ app.use("/api/v1", empresario_factoring_factoringRoutes);
 app.use("/api/v1", empresario_factoring_contactoRoutes);
 
 app.use("/api/v1", inversionista_inversionistacuentabancariaRoutes);
+app.use("/api/v1", inversionista_factoring_factoringRoutes);
 
 app.use("/api/v1", admin_zlaboratorioRoutes);
 app.use("/api/v1", admin_empresacuentabancariaRoutes);

@@ -4,6 +4,119 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import logger, { line } from "#src/utils/logger.js";
 
+export const getFactoringsOportunidades = async (transaction, _idfactoringestados, estados) => {
+  try {
+    const factorings = await modelsFT.Factoring.findAll({
+      include: [
+        {
+          model: modelsFT.Empresa,
+          as: "aceptante_empresa",
+        },
+        {
+          model: modelsFT.Moneda,
+          as: "moneda_moneda",
+        },
+        {
+          model: modelsFT.FactoringPropuesta,
+          as: "factoringpropuestaaceptada_factoring_propuestum",
+          include: [
+            {
+              model: modelsFT.FactoringTipo,
+              as: "factoringtipo_factoring_tipo",
+            },
+            {
+              model: modelsFT.Riesgo,
+              as: "riesgooperacion_riesgo",
+            },
+          ],
+        },
+      ],
+      where: {
+        _idfactoringestado: {
+          [Sequelize.Op.in]: _idfactoringestados,
+        },
+        estado: {
+          [Sequelize.Op.in]: estados,
+        },
+      },
+      transaction,
+    });
+    //logger.info(line(),factorings);
+    return factorings;
+  } catch (error) {
+    logger.error(line(), formatError(error));
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
+export const getFactoringsByIdfactoringestado = async (transaction, _idfactoringestados, estados) => {
+  try {
+    const factorings = await modelsFT.Factoring.findAll({
+      include: [
+        {
+          all: true,
+        },
+        {
+          model: modelsFT.FactoringPropuesta,
+          as: "factoringpropuestaaceptada_factoring_propuestum",
+          include: [
+            {
+              model: modelsFT.FactoringTipo,
+              as: "factoringtipo_factoring_tipo",
+            },
+          ],
+        },
+        {
+          model: modelsFT.FactoringPropuesta,
+          as: "factoring_propuesta",
+          include: [
+            {
+              model: modelsFT.FactoringPropuestaEstado,
+              as: "factoringpropuestaestado_factoring_propuesta_estado",
+            },
+          ],
+        },
+        {
+          model: modelsFT.CuentaBancaria,
+          as: "cuentabancaria_cuenta_bancarium",
+          include: [
+            {
+              model: modelsFT.Banco,
+              as: "banco_banco",
+            },
+            {
+              model: modelsFT.CuentaBancariaEstado,
+              as: "cuentabancariaestado_cuenta_bancaria_estado",
+            },
+            {
+              model: modelsFT.CuentaTipo,
+              as: "cuentatipo_cuenta_tipo",
+            },
+            {
+              model: modelsFT.Moneda,
+              as: "moneda_moneda",
+            },
+          ],
+        },
+      ],
+      where: {
+        _idfactoringestado: {
+          [Sequelize.Op.in]: _idfactoringestados,
+        },
+        estado: {
+          [Sequelize.Op.in]: estados,
+        },
+      },
+      transaction,
+    });
+    //logger.info(line(),factorings);
+    return factorings;
+  } catch (error) {
+    logger.error(line(), formatError(error));
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getFactoringsByIdcedentes = async (transaction, _idcedentes, estados) => {
   try {
     const factorings = await modelsFT.Factoring.findAll({
