@@ -39,7 +39,7 @@ export const createInversionistacuentabancaria = async (req, res) => {
       alias: yup.string().required().max(50),
     })
     .required();
-  var inversionistacuentabancariaValidated = inversionistacuentabancariaCreateSchema.validateSync({ ...req.files, ...req.body }, { abortEarly: false, stripUnknown: true });
+  var inversionistacuentabancariaValidated = inversionistacuentabancariaCreateSchema.validateSync({ ...req.body }, { abortEarly: false, stripUnknown: true });
   logger.debug(line(), "inversionistacuentabancariaValidated:", inversionistacuentabancariaValidated);
 
   const transaction = await sequelizeFT.transaction();
