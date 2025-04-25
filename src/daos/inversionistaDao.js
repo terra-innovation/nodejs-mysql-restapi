@@ -4,6 +4,33 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import logger, { line } from "#src/utils/logger.js";
 
+export const getInversionistaByIdusuario = async (transaction, _idusuario, estados) => {
+  try {
+    const inversionista = await modelsFT.Inversionista.findOne({
+      include: [
+        {
+          model: modelsFT.Persona,
+          as: "persona_persona",
+          where: {
+            _idusuario,
+          },
+        },
+      ],
+      where: {
+        estado: {
+          [Sequelize.Op.in]: estados,
+        },
+      },
+      transaction,
+    });
+    //logger.info(line(),inversionista);
+    return inversionista;
+  } catch (error) {
+    logger.error(line(), formatError(error));
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getInversionistas = async (transaction, estados) => {
   try {
     const inversionistas = await modelsFT.Inversionista.findAll({

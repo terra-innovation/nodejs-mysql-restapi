@@ -7,6 +7,7 @@ import { safeRollback } from "#src/utils/transactionUtils.js";
 import { sequelizeFT } from "#src/config/bd/sequelize_db_factoring.js";
 import * as menuAdmin from "#src/menu/menuAdmin.js";
 import * as menuEmpresario from "#src/menu/menuEmpresario.js";
+import * as menuInversionista from "#src/menu/menuInversionista.js";
 import * as menuUsuario from "#src/menu/menuUsuario.js";
 
 export const getMenu = async (req, res) => {
@@ -61,9 +62,9 @@ export const getMenu = async (req, res) => {
       ],
     };
 
-    const menuInversionista = [];
+    const menuInversionistaX = [];
     const menuItems = {
-      items: [menuDasboard, ...menuUsuario.menuUsuario, ...menuEmpresario.menuEmpresario, ...menuAdmin.menuAdmin, ...menuInversionista],
+      items: [menuDasboard, ...menuInversionista.menuInversionista, ...menuUsuario.menuUsuario, ...menuEmpresario.menuEmpresario, ...menuAdmin.menuAdmin, ...menuInversionistaX],
     };
     await transaction.commit();
     response(res, 201, menuItems);
