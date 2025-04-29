@@ -7,9 +7,21 @@ import _ArchivoEmpresa from "./ArchivoEmpresa.js";
 import _ArchivoEstado from "./ArchivoEstado.js";
 import _ArchivoFactoringHistorialEstado from "./ArchivoFactoringHistorialEstado.js";
 import _ArchivoFactura from "./ArchivoFactura.js";
+import _ArchivoInversionistaDeposito from "./ArchivoInversionistaDeposito.js";
+import _ArchivoInversionistaRetiro from "./ArchivoInversionistaRetiro.js";
 import _ArchivoPersona from "./ArchivoPersona.js";
 import _ArchivoTipo from "./ArchivoTipo.js";
 import _Banco from "./Banco.js";
+import _BancoCuenta from "./BancoCuenta.js";
+import _BancoCuentaEstado from "./BancoCuentaEstado.js";
+import _BancoCuentaTipo from "./BancoCuentaTipo.js";
+import _BancoTransaccion from "./BancoTransaccion.js";
+import _BancoTransaccionEstado from "./BancoTransaccionEstado.js";
+import _BancoTransaccionEstadoHistorial from "./BancoTransaccionEstadoHistorial.js";
+import _BancoTransaccionFactoringInversion from "./BancoTransaccionFactoringInversion.js";
+import _BancoTransaccionInversionistaDeposito from "./BancoTransaccionInversionistaDeposito.js";
+import _BancoTransaccionInversionistaRetiro from "./BancoTransaccionInversionistaRetiro.js";
+import _BancoTransaccionTipo from "./BancoTransaccionTipo.js";
 import _Colaborador from "./Colaborador.js";
 import _ColaboradorTipo from "./ColaboradorTipo.js";
 import _ConfiguracionApp from "./ConfiguracionApp.js";
@@ -24,6 +36,8 @@ import _DocumentoTipo from "./DocumentoTipo.js";
 import _Empresa from "./Empresa.js";
 import _EmpresaCuentaBancaria from "./EmpresaCuentaBancaria.js";
 import _EmpresaDeclaracion from "./EmpresaDeclaracion.js";
+import _Factor from "./Factor.js";
+import _FactorCuentaBancaria from "./FactorCuentaBancaria.js";
 import _Factoring from "./Factoring.js";
 import _FactoringConfigComision from "./FactoringConfigComision.js";
 import _FactoringConfigGarantia from "./FactoringConfigGarantia.js";
@@ -34,6 +48,8 @@ import _FactoringEstado from "./FactoringEstado.js";
 import _FactoringEstrategia from "./FactoringEstrategia.js";
 import _FactoringFactura from "./FactoringFactura.js";
 import _FactoringHistorialEstado from "./FactoringHistorialEstado.js";
+import _FactoringInversion from "./FactoringInversion.js";
+import _FactoringPago from "./FactoringPago.js";
 import _FactoringPropuesta from "./FactoringPropuesta.js";
 import _FactoringPropuestaEstado from "./FactoringPropuestaEstado.js";
 import _FactoringPropuestaFinanciero from "./FactoringPropuestaFinanciero.js";
@@ -48,7 +64,10 @@ import _FinancieroConcepto from "./FinancieroConcepto.js";
 import _FinancieroTipo from "./FinancieroTipo.js";
 import _Genero from "./Genero.js";
 import _Inversionista from "./Inversionista.js";
+import _InversionistaBancoCuenta from "./InversionistaBancoCuenta.js";
 import _InversionistaCuentaBancaria from "./InversionistaCuentaBancaria.js";
+import _InversionistaDeposito from "./InversionistaDeposito.js";
+import _InversionistaRetiro from "./InversionistaRetiro.js";
 import _Moneda from "./Moneda.js";
 import _Pais from "./Pais.js";
 import _PepVinculo from "./PepVinculo.js";
@@ -88,9 +107,21 @@ export default function initModels(sequelize) {
   const ArchivoEstado = _ArchivoEstado.init(sequelize, DataTypes);
   const ArchivoFactoringHistorialEstado = _ArchivoFactoringHistorialEstado.init(sequelize, DataTypes);
   const ArchivoFactura = _ArchivoFactura.init(sequelize, DataTypes);
+  const ArchivoInversionistaDeposito = _ArchivoInversionistaDeposito.init(sequelize, DataTypes);
+  const ArchivoInversionistaRetiro = _ArchivoInversionistaRetiro.init(sequelize, DataTypes);
   const ArchivoPersona = _ArchivoPersona.init(sequelize, DataTypes);
   const ArchivoTipo = _ArchivoTipo.init(sequelize, DataTypes);
   const Banco = _Banco.init(sequelize, DataTypes);
+  const BancoCuenta = _BancoCuenta.init(sequelize, DataTypes);
+  const BancoCuentaEstado = _BancoCuentaEstado.init(sequelize, DataTypes);
+  const BancoCuentaTipo = _BancoCuentaTipo.init(sequelize, DataTypes);
+  const BancoTransaccion = _BancoTransaccion.init(sequelize, DataTypes);
+  const BancoTransaccionEstado = _BancoTransaccionEstado.init(sequelize, DataTypes);
+  const BancoTransaccionEstadoHistorial = _BancoTransaccionEstadoHistorial.init(sequelize, DataTypes);
+  const BancoTransaccionFactoringInversion = _BancoTransaccionFactoringInversion.init(sequelize, DataTypes);
+  const BancoTransaccionInversionistaDeposito = _BancoTransaccionInversionistaDeposito.init(sequelize, DataTypes);
+  const BancoTransaccionInversionistaRetiro = _BancoTransaccionInversionistaRetiro.init(sequelize, DataTypes);
+  const BancoTransaccionTipo = _BancoTransaccionTipo.init(sequelize, DataTypes);
   const Colaborador = _Colaborador.init(sequelize, DataTypes);
   const ColaboradorTipo = _ColaboradorTipo.init(sequelize, DataTypes);
   const ConfiguracionApp = _ConfiguracionApp.init(sequelize, DataTypes);
@@ -105,6 +136,8 @@ export default function initModels(sequelize) {
   const Empresa = _Empresa.init(sequelize, DataTypes);
   const EmpresaCuentaBancaria = _EmpresaCuentaBancaria.init(sequelize, DataTypes);
   const EmpresaDeclaracion = _EmpresaDeclaracion.init(sequelize, DataTypes);
+  const Factor = _Factor.init(sequelize, DataTypes);
+  const FactorCuentaBancaria = _FactorCuentaBancaria.init(sequelize, DataTypes);
   const Factoring = _Factoring.init(sequelize, DataTypes);
   const FactoringConfigComision = _FactoringConfigComision.init(sequelize, DataTypes);
   const FactoringConfigGarantia = _FactoringConfigGarantia.init(sequelize, DataTypes);
@@ -115,6 +148,8 @@ export default function initModels(sequelize) {
   const FactoringEstrategia = _FactoringEstrategia.init(sequelize, DataTypes);
   const FactoringFactura = _FactoringFactura.init(sequelize, DataTypes);
   const FactoringHistorialEstado = _FactoringHistorialEstado.init(sequelize, DataTypes);
+  const FactoringInversion = _FactoringInversion.init(sequelize, DataTypes);
+  const FactoringPago = _FactoringPago.init(sequelize, DataTypes);
   const FactoringPropuesta = _FactoringPropuesta.init(sequelize, DataTypes);
   const FactoringPropuestaEstado = _FactoringPropuestaEstado.init(sequelize, DataTypes);
   const FactoringPropuestaFinanciero = _FactoringPropuestaFinanciero.init(sequelize, DataTypes);
@@ -129,7 +164,10 @@ export default function initModels(sequelize) {
   const FinancieroTipo = _FinancieroTipo.init(sequelize, DataTypes);
   const Genero = _Genero.init(sequelize, DataTypes);
   const Inversionista = _Inversionista.init(sequelize, DataTypes);
+  const InversionistaBancoCuenta = _InversionistaBancoCuenta.init(sequelize, DataTypes);
   const InversionistaCuentaBancaria = _InversionistaCuentaBancaria.init(sequelize, DataTypes);
+  const InversionistaDeposito = _InversionistaDeposito.init(sequelize, DataTypes);
+  const InversionistaRetiro = _InversionistaRetiro.init(sequelize, DataTypes);
   const Moneda = _Moneda.init(sequelize, DataTypes);
   const Pais = _Pais.init(sequelize, DataTypes);
   const PepVinculo = _PepVinculo.init(sequelize, DataTypes);
@@ -166,7 +204,12 @@ export default function initModels(sequelize) {
   Archivo.belongsToMany(Empresa, { as: "empresa_empresas", through: ArchivoEmpresa, foreignKey: "_idarchivo", otherKey: "_idempresa" });
   Archivo.belongsToMany(FactoringHistorialEstado, { as: "factoringhistorialestado_factoring_historial_estados", through: ArchivoFactoringHistorialEstado, foreignKey: "_idarchivo", otherKey: "_idfactoringhistorialestado" });
   Archivo.belongsToMany(Factura, { as: "factura_facturas", through: ArchivoFactura, foreignKey: "_idarchivo", otherKey: "_idfactura" });
+  Archivo.belongsToMany(InversionistaDeposito, { as: "inversionistadeposito_inversionista_depositos", through: ArchivoInversionistaDeposito, foreignKey: "_idarchivo", otherKey: "_idinversionistadeposito" });
+  Archivo.belongsToMany(InversionistaRetiro, { as: "inversionistaretiro_inversionista_retiros", through: ArchivoInversionistaRetiro, foreignKey: "_idarchivo", otherKey: "_idinversionistaretiro" });
   Archivo.belongsToMany(Persona, { as: "persona_personas", through: ArchivoPersona, foreignKey: "_idarchivo", otherKey: "_idpersona" });
+  BancoCuenta.belongsToMany(Inversionista, { as: "inversionista_inversionista", through: InversionistaBancoCuenta, foreignKey: "_idbancocuenta", otherKey: "_idinversionista" });
+  BancoTransaccion.belongsToMany(InversionistaDeposito, { as: "inversionistadeposito_inversionista_deposito_banco_transaccion_inversionista_depositos", through: BancoTransaccionInversionistaDeposito, foreignKey: "_idbancotransaccion", otherKey: "_idinversionistadeposito" });
+  BancoTransaccion.belongsToMany(InversionistaRetiro, { as: "inversionistaretiro_inversionista_retiro_banco_transaccion_inversionista_retiros", through: BancoTransaccionInversionistaRetiro, foreignKey: "_idbancotransaccion", otherKey: "_idinversionistaretiro" });
   Colaborador.belongsToMany(Archivo, { as: "archivo_archivos", through: ArchivoColaborador, foreignKey: "_idcolaborador", otherKey: "_idarchivo" });
   CuentaBancaria.belongsToMany(Archivo, { as: "archivo_archivo_archivo_cuenta_bancaria", through: ArchivoCuentaBancaria, foreignKey: "_idcuentabancaria", otherKey: "_idarchivo" });
   Empresa.belongsToMany(Archivo, { as: "archivo_archivo_archivo_empresas", through: ArchivoEmpresa, foreignKey: "_idempresa", otherKey: "_idarchivo" });
@@ -174,6 +217,11 @@ export default function initModels(sequelize) {
   FactoringHistorialEstado.belongsToMany(Archivo, { as: "archivo_archivo_archivo_factoring_historial_estados", through: ArchivoFactoringHistorialEstado, foreignKey: "_idfactoringhistorialestado", otherKey: "_idarchivo" });
   Factura.belongsToMany(Archivo, { as: "archivo_archivo_archivo_facturas", through: ArchivoFactura, foreignKey: "_idfactura", otherKey: "_idarchivo" });
   Factura.belongsToMany(Factoring, { as: "factoring_factorings", through: FactoringFactura, foreignKey: "_idfactura", otherKey: "_idfactoring" });
+  Inversionista.belongsToMany(BancoCuenta, { as: "bancocuenta_banco_cuenta", through: InversionistaBancoCuenta, foreignKey: "_idinversionista", otherKey: "_idbancocuenta" });
+  InversionistaDeposito.belongsToMany(Archivo, { as: "archivo_archivo_archivo_inversionista_depositos", through: ArchivoInversionistaDeposito, foreignKey: "_idinversionistadeposito", otherKey: "_idarchivo" });
+  InversionistaDeposito.belongsToMany(BancoTransaccion, { as: "bancotransaccion_banco_transaccions", through: BancoTransaccionInversionistaDeposito, foreignKey: "_idinversionistadeposito", otherKey: "_idbancotransaccion" });
+  InversionistaRetiro.belongsToMany(Archivo, { as: "archivo_archivo_archivo_inversionista_retiros", through: ArchivoInversionistaRetiro, foreignKey: "_idinversionistaretiro", otherKey: "_idarchivo" });
+  InversionistaRetiro.belongsToMany(BancoTransaccion, { as: "bancotransaccion_banco_transaccion_banco_transaccion_inversionista_retiros", through: BancoTransaccionInversionistaRetiro, foreignKey: "_idinversionistaretiro", otherKey: "_idbancotransaccion" });
   Persona.belongsToMany(Archivo, { as: "archivo_archivo_archivo_personas", through: ArchivoPersona, foreignKey: "_idpersona", otherKey: "_idarchivo" });
   Rol.belongsToMany(Usuario, { as: "usuario_usuarios", through: UsuarioRol, foreignKey: "_idrol", otherKey: "_idusuario" });
   Usuario.belongsToMany(Rol, { as: "rol_rols", through: UsuarioRol, foreignKey: "_idusuario", otherKey: "_idrol" });
@@ -187,6 +235,10 @@ export default function initModels(sequelize) {
   Archivo.hasMany(ArchivoFactoringHistorialEstado, { as: "archivo_factoring_historial_estados", foreignKey: "_idarchivo" });
   ArchivoFactura.belongsTo(Archivo, { as: "archivo_archivo", foreignKey: "_idarchivo" });
   Archivo.hasMany(ArchivoFactura, { as: "archivo_facturas", foreignKey: "_idarchivo" });
+  ArchivoInversionistaDeposito.belongsTo(Archivo, { as: "archivo_archivo", foreignKey: "_idarchivo" });
+  Archivo.hasMany(ArchivoInversionistaDeposito, { as: "archivo_inversionista_depositos", foreignKey: "_idarchivo" });
+  ArchivoInversionistaRetiro.belongsTo(Archivo, { as: "archivo_archivo", foreignKey: "_idarchivo" });
+  Archivo.hasMany(ArchivoInversionistaRetiro, { as: "archivo_inversionista_retiros", foreignKey: "_idarchivo" });
   ArchivoPersona.belongsTo(Archivo, { as: "archivo_archivo", foreignKey: "_idarchivo" });
   Archivo.hasMany(ArchivoPersona, { as: "archivo_personas", foreignKey: "_idarchivo" });
   Archivo.belongsTo(ArchivoEstado, { as: "archivoestado_archivo_estado", foreignKey: "_idarchivoestado" });
@@ -195,6 +247,34 @@ export default function initModels(sequelize) {
   ArchivoTipo.hasMany(Archivo, { as: "archivos", foreignKey: "_idarchivotipo" });
   CuentaBancaria.belongsTo(Banco, { as: "banco_banco", foreignKey: "_idbanco" });
   Banco.hasMany(CuentaBancaria, { as: "cuenta_bancaria", foreignKey: "_idbanco" });
+  BancoTransaccion.belongsTo(BancoCuenta, { as: "bancocuenta_banco_cuentum", foreignKey: "_idbancocuenta" });
+  BancoCuenta.hasMany(BancoTransaccion, { as: "banco_transaccions", foreignKey: "_idbancocuenta" });
+  InversionistaBancoCuenta.belongsTo(BancoCuenta, { as: "bancocuenta_banco_cuentum", foreignKey: "_idbancocuenta" });
+  BancoCuenta.hasMany(InversionistaBancoCuenta, { as: "inversionista_banco_cuenta", foreignKey: "_idbancocuenta" });
+  InversionistaDeposito.belongsTo(BancoCuenta, { as: "bancocuenta_banco_cuentum", foreignKey: "_idbancocuenta" });
+  BancoCuenta.hasMany(InversionistaDeposito, { as: "inversionista_depositos", foreignKey: "_idbancocuenta" });
+  InversionistaRetiro.belongsTo(BancoCuenta, { as: "bancocuenta_banco_cuentum", foreignKey: "_idbancocuenta" });
+  BancoCuenta.hasMany(InversionistaRetiro, { as: "inversionista_retiros", foreignKey: "_idbancocuenta" });
+  BancoCuenta.belongsTo(BancoCuentaEstado, { as: "bancocuentaestado_banco_cuenta_estado", foreignKey: "_idbancocuentaestado" });
+  BancoCuentaEstado.hasMany(BancoCuenta, { as: "banco_cuenta", foreignKey: "_idbancocuentaestado" });
+  BancoCuenta.belongsTo(BancoCuentaTipo, { as: "bancocuentatipo_banco_cuenta_tipo", foreignKey: "_idbancocuentatipo" });
+  BancoCuentaTipo.hasMany(BancoCuenta, { as: "banco_cuenta", foreignKey: "_idbancocuentatipo" });
+  BancoTransaccionEstadoHistorial.belongsTo(BancoTransaccion, { as: "bancotransaccion_banco_transaccion", foreignKey: "_idbancotransaccion" });
+  BancoTransaccion.hasMany(BancoTransaccionEstadoHistorial, { as: "banco_transaccion_estado_historials", foreignKey: "_idbancotransaccion" });
+  BancoTransaccionFactoringInversion.belongsTo(BancoTransaccion, { as: "bancotransaccion_banco_transaccion", foreignKey: "_idbancotransaccion" });
+  BancoTransaccion.hasMany(BancoTransaccionFactoringInversion, { as: "banco_transaccion_factoring_inversions", foreignKey: "_idbancotransaccion" });
+  BancoTransaccionInversionistaDeposito.belongsTo(BancoTransaccion, { as: "bancotransaccion_banco_transaccion", foreignKey: "_idbancotransaccion" });
+  BancoTransaccion.hasMany(BancoTransaccionInversionistaDeposito, { as: "banco_transaccion_inversionista_depositos", foreignKey: "_idbancotransaccion" });
+  BancoTransaccionInversionistaRetiro.belongsTo(BancoTransaccion, { as: "bancotransaccion_banco_transaccion", foreignKey: "_idbancotransaccion" });
+  BancoTransaccion.hasMany(BancoTransaccionInversionistaRetiro, { as: "banco_transaccion_inversionista_retiros", foreignKey: "_idbancotransaccion" });
+  BancoTransaccion.belongsTo(BancoTransaccionEstado, { as: "bancotransaccionestado_banco_transaccion_estado", foreignKey: "_idbancotransaccionestado" });
+  BancoTransaccionEstado.hasMany(BancoTransaccion, { as: "banco_transaccions", foreignKey: "_idbancotransaccionestado" });
+  BancoTransaccionEstadoHistorial.belongsTo(BancoTransaccionEstado, { as: "bancotransaccionestado_banco_transaccion_estado", foreignKey: "_idbancotransaccionestado" });
+  BancoTransaccionEstado.hasMany(BancoTransaccionEstadoHistorial, { as: "banco_transaccion_estado_historials", foreignKey: "_idbancotransaccionestado" });
+  BancoTransaccion.belongsTo(BancoTransaccionEstadoHistorial, { as: "bancotransaccionestadohistorial_banco_transaccion_estado_historial", foreignKey: "_idbancotransaccionestadohistorial" });
+  BancoTransaccionEstadoHistorial.hasMany(BancoTransaccion, { as: "banco_transaccions", foreignKey: "_idbancotransaccionestadohistorial" });
+  BancoTransaccion.belongsTo(BancoTransaccionTipo, { as: "bancotransaciontipo_banco_transaccion_tipo", foreignKey: "_idbancotransaciontipo" });
+  BancoTransaccionTipo.hasMany(BancoTransaccion, { as: "banco_transaccions", foreignKey: "_idbancotransaciontipo" });
   ArchivoColaborador.belongsTo(Colaborador, { as: "colaborador_colaborador", foreignKey: "_idcolaborador" });
   Colaborador.hasMany(ArchivoColaborador, { as: "archivo_colaboradors", foreignKey: "_idcolaborador" });
   Factoring.belongsTo(Colaborador, { as: "contactocedente_colaborador", foreignKey: "_idcontactocedente" });
@@ -207,6 +287,8 @@ export default function initModels(sequelize) {
   CuentaBancaria.hasMany(ArchivoCuentaBancaria, { as: "archivo_cuenta_bancaria", foreignKey: "_idcuentabancaria" });
   EmpresaCuentaBancaria.belongsTo(CuentaBancaria, { as: "cuentabancaria_cuenta_bancarium", foreignKey: "_idcuentabancaria" });
   CuentaBancaria.hasMany(EmpresaCuentaBancaria, { as: "empresa_cuenta_bancaria", foreignKey: "_idcuentabancaria" });
+  FactorCuentaBancaria.belongsTo(CuentaBancaria, { as: "cuentabancaria_cuenta_bancarium", foreignKey: "_idcuentabancaria" });
+  CuentaBancaria.hasMany(FactorCuentaBancaria, { as: "factor_cuenta_bancaria", foreignKey: "_idcuentabancaria" });
   Factoring.belongsTo(CuentaBancaria, { as: "cuentabancaria_cuenta_bancarium", foreignKey: "_idcuentabancaria" });
   CuentaBancaria.hasMany(Factoring, { as: "factorings", foreignKey: "_idcuentabancaria" });
   InversionistaCuentaBancaria.belongsTo(CuentaBancaria, { as: "cuentabancaria_cuenta_bancarium", foreignKey: "_idcuentabancaria" });
@@ -219,12 +301,16 @@ export default function initModels(sequelize) {
   CuentaTipo.hasMany(CuentaBancaria, { as: "cuenta_bancaria", foreignKey: "_idcuentatipo" });
   Empresa.belongsTo(Departamento, { as: "departamentosede_departamento", foreignKey: "_iddepartamentosede" });
   Departamento.hasMany(Empresa, { as: "empresas", foreignKey: "_iddepartamentosede" });
+  Factor.belongsTo(Departamento, { as: "departamentosede_departamento", foreignKey: "_iddepartamentosede" });
+  Departamento.hasMany(Factor, { as: "factors", foreignKey: "_iddepartamentosede" });
   Persona.belongsTo(Departamento, { as: "departamentoresidencia_departamento", foreignKey: "_iddepartamentoresidencia" });
   Departamento.hasMany(Persona, { as: "personas", foreignKey: "_iddepartamentoresidencia" });
   Provincia.belongsTo(Departamento, { as: "departamento_departamento", foreignKey: "_iddepartamento" });
   Departamento.hasMany(Provincia, { as: "provincia", foreignKey: "_iddepartamento" });
   Empresa.belongsTo(Distrito, { as: "distritosede_distrito", foreignKey: "_iddistritosede" });
   Distrito.hasMany(Empresa, { as: "empresas", foreignKey: "_iddistritosede" });
+  Factor.belongsTo(Distrito, { as: "distritosede_distrito", foreignKey: "_iddistritosede" });
+  Distrito.hasMany(Factor, { as: "factors", foreignKey: "_iddistritosede" });
   Persona.belongsTo(Distrito, { as: "distritoresidencia_distrito", foreignKey: "_iddistritoresidencia" });
   Distrito.hasMany(Persona, { as: "personas", foreignKey: "_iddistritoresidencia" });
   Colaborador.belongsTo(DocumentoTipo, { as: "documentotipo_documento_tipo", foreignKey: "_iddocumentotipo" });
@@ -249,12 +335,24 @@ export default function initModels(sequelize) {
   Empresa.hasMany(ServicioEmpresa, { as: "servicio_empresas", foreignKey: "_idempresa" });
   UsuarioServicioEmpresa.belongsTo(Empresa, { as: "empresa_empresa", foreignKey: "_idempresa" });
   Empresa.hasMany(UsuarioServicioEmpresa, { as: "usuario_servicio_empresas", foreignKey: "_idempresa" });
+  FactoringPago.belongsTo(EmpresaCuentaBancaria, { as: "empresacuentabancaria_empresa_cuenta_bancarium", foreignKey: "_idempresacuentabancaria" });
+  EmpresaCuentaBancaria.hasMany(FactoringPago, { as: "factoring_pagos", foreignKey: "_idempresacuentabancaria" });
+  FactorCuentaBancaria.belongsTo(Factor, { as: "factor_factor", foreignKey: "_idfactor" });
+  Factor.hasMany(FactorCuentaBancaria, { as: "factor_cuenta_bancaria", foreignKey: "_idfactor" });
+  FactoringPago.belongsTo(FactorCuentaBancaria, { as: "factorcuentabancaria_factor_cuenta_bancarium", foreignKey: "_idfactorcuentabancaria" });
+  FactorCuentaBancaria.hasMany(FactoringPago, { as: "factoring_pagos", foreignKey: "_idfactorcuentabancaria" });
+  InversionistaDeposito.belongsTo(FactorCuentaBancaria, { as: "factorcuentabancaria_factor_cuenta_bancarium", foreignKey: "_idfactorcuentabancaria" });
+  FactorCuentaBancaria.hasMany(InversionistaDeposito, { as: "inversionista_depositos", foreignKey: "_idfactorcuentabancaria" });
+  InversionistaRetiro.belongsTo(FactorCuentaBancaria, { as: "factorcuentabancaria_factor_cuenta_bancarium", foreignKey: "_idfactorcuentabancaria" });
+  FactorCuentaBancaria.hasMany(InversionistaRetiro, { as: "inversionista_retiros", foreignKey: "_idfactorcuentabancaria" });
   FactoringEjecutado.belongsTo(Factoring, { as: "factoring_factoring", foreignKey: "_idfactoring" });
   Factoring.hasMany(FactoringEjecutado, { as: "factoring_ejecutados", foreignKey: "_idfactoring" });
   FactoringFactura.belongsTo(Factoring, { as: "factoring_factoring", foreignKey: "_idfactoring" });
   Factoring.hasMany(FactoringFactura, { as: "factoring_facturas", foreignKey: "_idfactoring" });
   FactoringHistorialEstado.belongsTo(Factoring, { as: "factoring_factoring", foreignKey: "_idfactoring" });
   Factoring.hasMany(FactoringHistorialEstado, { as: "factoring_historial_estados", foreignKey: "_idfactoring" });
+  FactoringPago.belongsTo(Factoring, { as: "factoring_factoring", foreignKey: "_idfactoring" });
+  Factoring.hasMany(FactoringPago, { as: "factoring_pagos", foreignKey: "_idfactoring" });
   FactoringPropuesta.belongsTo(Factoring, { as: "factoring_factoring", foreignKey: "_idfactoring" });
   Factoring.hasMany(FactoringPropuesta, { as: "factoring_propuesta", foreignKey: "_idfactoring" });
   Factoring.belongsTo(FactoringEjecutado, { as: "factoringejecutado_factoring_ejecutado", foreignKey: "_idfactoringejecutado" });
@@ -269,6 +367,8 @@ export default function initModels(sequelize) {
   FactoringEstrategia.hasMany(FactoringPropuesta, { as: "factoring_propuesta", foreignKey: "_idfactoringestrategia" });
   ArchivoFactoringHistorialEstado.belongsTo(FactoringHistorialEstado, { as: "factoringhistorialestado_factoring_historial_estado", foreignKey: "_idfactoringhistorialestado" });
   FactoringHistorialEstado.hasMany(ArchivoFactoringHistorialEstado, { as: "archivo_factoring_historial_estados", foreignKey: "_idfactoringhistorialestado" });
+  BancoTransaccionFactoringInversion.belongsTo(FactoringInversion, { as: "factoringinversion_factoring_inversion", foreignKey: "_idfactoringinversion" });
+  FactoringInversion.hasMany(BancoTransaccionFactoringInversion, { as: "banco_transaccion_factoring_inversions", foreignKey: "_idfactoringinversion" });
   Factoring.belongsTo(FactoringPropuesta, { as: "factoringpropuestaaceptada_factoring_propuestum", foreignKey: "_idfactoringpropuestaaceptada" });
   FactoringPropuesta.hasMany(Factoring, { as: "factorings", foreignKey: "_idfactoringpropuestaaceptada" });
   FactoringPropuestaFinanciero.belongsTo(FactoringPropuesta, { as: "factoringpropuesta_factoring_propuestum", foreignKey: "_idfactoringpropuesta" });
@@ -297,8 +397,24 @@ export default function initModels(sequelize) {
   FinancieroTipo.hasMany(FactoringPropuestaFinanciero, { as: "factoring_propuesta_financieros", foreignKey: "_idfinancierotipo" });
   Persona.belongsTo(Genero, { as: "genero_genero", foreignKey: "_idgenero" });
   Genero.hasMany(Persona, { as: "personas", foreignKey: "_idgenero" });
+  InversionistaBancoCuenta.belongsTo(Inversionista, { as: "inversionista_inversionistum", foreignKey: "_idinversionista" });
+  Inversionista.hasMany(InversionistaBancoCuenta, { as: "inversionista_banco_cuenta", foreignKey: "_idinversionista" });
   InversionistaCuentaBancaria.belongsTo(Inversionista, { as: "inversionista_inversionistum", foreignKey: "_idinversionista" });
   Inversionista.hasMany(InversionistaCuentaBancaria, { as: "inversionista_cuenta_bancaria", foreignKey: "_idinversionista" });
+  InversionistaDeposito.belongsTo(InversionistaCuentaBancaria, { as: "inversionistacuentabancaria_inversionista_cuenta_bancarium", foreignKey: "_idinversionistacuentabancaria" });
+  InversionistaCuentaBancaria.hasMany(InversionistaDeposito, { as: "inversionista_depositos", foreignKey: "_idinversionistacuentabancaria" });
+  InversionistaRetiro.belongsTo(InversionistaCuentaBancaria, { as: "inversionistacuentabancaria_inversionista_cuenta_bancarium", foreignKey: "_idinversionistacuentabancaria" });
+  InversionistaCuentaBancaria.hasMany(InversionistaRetiro, { as: "inversionista_retiros", foreignKey: "_idinversionistacuentabancaria" });
+  ArchivoInversionistaDeposito.belongsTo(InversionistaDeposito, { as: "inversionistadeposito_inversionista_deposito", foreignKey: "_idinversionistadeposito" });
+  InversionistaDeposito.hasMany(ArchivoInversionistaDeposito, { as: "archivo_inversionista_depositos", foreignKey: "_idinversionistadeposito" });
+  BancoTransaccionInversionistaDeposito.belongsTo(InversionistaDeposito, { as: "inversionistadeposito_inversionista_deposito", foreignKey: "_idinversionistadeposito" });
+  InversionistaDeposito.hasMany(BancoTransaccionInversionistaDeposito, { as: "banco_transaccion_inversionista_depositos", foreignKey: "_idinversionistadeposito" });
+  ArchivoInversionistaRetiro.belongsTo(InversionistaRetiro, { as: "inversionistaretiro_inversionista_retiro", foreignKey: "_idinversionistaretiro" });
+  InversionistaRetiro.hasMany(ArchivoInversionistaRetiro, { as: "archivo_inversionista_retiros", foreignKey: "_idinversionistaretiro" });
+  BancoTransaccionInversionistaRetiro.belongsTo(InversionistaRetiro, { as: "inversionistaretiro_inversionista_retiro", foreignKey: "_idinversionistaretiro" });
+  InversionistaRetiro.hasMany(BancoTransaccionInversionistaRetiro, { as: "banco_transaccion_inversionista_retiros", foreignKey: "_idinversionistaretiro" });
+  BancoCuenta.belongsTo(Moneda, { as: "moneda_moneda", foreignKey: "_idmoneda" });
+  Moneda.hasMany(BancoCuenta, { as: "banco_cuenta", foreignKey: "_idmoneda" });
   CuentaBancaria.belongsTo(Moneda, { as: "moneda_moneda", foreignKey: "_idmoneda" });
   Moneda.hasMany(CuentaBancaria, { as: "cuenta_bancaria", foreignKey: "_idmoneda" });
   Factoring.belongsTo(Moneda, { as: "moneda_moneda", foreignKey: "_idmoneda" });
@@ -307,6 +423,8 @@ export default function initModels(sequelize) {
   Pais.hasMany(Departamento, { as: "departamentos", foreignKey: "_idpais" });
   Empresa.belongsTo(Pais, { as: "paissede_pai", foreignKey: "_idpaissede" });
   Pais.hasMany(Empresa, { as: "empresas", foreignKey: "_idpaissede" });
+  Factor.belongsTo(Pais, { as: "paissede_pai", foreignKey: "_idpaissede" });
+  Pais.hasMany(Factor, { as: "factors", foreignKey: "_idpaissede" });
   Persona.belongsTo(Pais, { as: "paisnacionalidad_pai", foreignKey: "_idpaisnacionalidad" });
   Pais.hasMany(Persona, { as: "personas", foreignKey: "_idpaisnacionalidad" });
   Persona.belongsTo(Pais, { as: "paisnacimiento_pai", foreignKey: "_idpaisnacimiento" });
@@ -339,12 +457,16 @@ export default function initModels(sequelize) {
   Provincia.hasMany(Distrito, { as: "distritos", foreignKey: "_idprovincia" });
   Empresa.belongsTo(Provincia, { as: "provinciasede_provincium", foreignKey: "_idprovinciasede" });
   Provincia.hasMany(Empresa, { as: "empresas", foreignKey: "_idprovinciasede" });
+  Factor.belongsTo(Provincia, { as: "provinciasede_provincium", foreignKey: "_idprovinciasede" });
+  Provincia.hasMany(Factor, { as: "factors", foreignKey: "_idprovinciasede" });
   Persona.belongsTo(Provincia, { as: "provinciaresidencia_provincium", foreignKey: "_idprovinciaresidencia" });
   Provincia.hasMany(Persona, { as: "personas", foreignKey: "_idprovinciaresidencia" });
   Distrito.belongsTo(RegionNatural, { as: "regionnatural_region_natural", foreignKey: "_idregionnatural" });
   RegionNatural.hasMany(Distrito, { as: "distritos", foreignKey: "_idregionnatural" });
   Empresa.belongsTo(Riesgo, { as: "riesgo_riesgo", foreignKey: "_idriesgo" });
   Riesgo.hasMany(Empresa, { as: "empresas", foreignKey: "_idriesgo" });
+  Factor.belongsTo(Riesgo, { as: "riesgo_riesgo", foreignKey: "_idriesgo" });
+  Riesgo.hasMany(Factor, { as: "factors", foreignKey: "_idriesgo" });
   FactoringConfigComision.belongsTo(Riesgo, { as: "riesgo_riesgo", foreignKey: "_idriesgo" });
   Riesgo.hasMany(FactoringConfigComision, { as: "factoring_config_comisions", foreignKey: "_idriesgo" });
   FactoringConfigGarantia.belongsTo(Riesgo, { as: "riesgo_riesgo", foreignKey: "_idriesgo" });
@@ -371,6 +493,8 @@ export default function initModels(sequelize) {
   ServicioEmpresaEstado.hasMany(ServicioEmpresa, { as: "servicio_empresas", foreignKey: "_idservicioempresaestado" });
   ServicioEmpresaVerificacion.belongsTo(ServicioEmpresaEstado, { as: "servicioempresaestado_servicio_empresa_estado", foreignKey: "_idservicioempresaestado" });
   ServicioEmpresaEstado.hasMany(ServicioEmpresaVerificacion, { as: "servicio_empresa_verificacions", foreignKey: "_idservicioempresaestado" });
+  BancoTransaccionEstadoHistorial.belongsTo(Usuario, { as: "usuariomodifica_usuario", foreignKey: "_idusuariomodifica" });
+  Usuario.hasMany(BancoTransaccionEstadoHistorial, { as: "banco_transaccion_estado_historials", foreignKey: "_idusuariomodifica" });
   Credencial.belongsTo(Usuario, { as: "usuario_usuario", foreignKey: "_idusuario" });
   Usuario.hasOne(Credencial, { as: "credencial", foreignKey: "_idusuario" });
   FactoringHistorialEstado.belongsTo(Usuario, { as: "usuariomodifica_usuario", foreignKey: "_idusuariomodifica" });
@@ -418,9 +542,21 @@ export default function initModels(sequelize) {
     ArchivoEstado,
     ArchivoFactoringHistorialEstado,
     ArchivoFactura,
+    ArchivoInversionistaDeposito,
+    ArchivoInversionistaRetiro,
     ArchivoPersona,
     ArchivoTipo,
     Banco,
+    BancoCuenta,
+    BancoCuentaEstado,
+    BancoCuentaTipo,
+    BancoTransaccion,
+    BancoTransaccionEstado,
+    BancoTransaccionEstadoHistorial,
+    BancoTransaccionFactoringInversion,
+    BancoTransaccionInversionistaDeposito,
+    BancoTransaccionInversionistaRetiro,
+    BancoTransaccionTipo,
     Colaborador,
     ColaboradorTipo,
     ConfiguracionApp,
@@ -435,6 +571,8 @@ export default function initModels(sequelize) {
     Empresa,
     EmpresaCuentaBancaria,
     EmpresaDeclaracion,
+    Factor,
+    FactorCuentaBancaria,
     Factoring,
     FactoringConfigComision,
     FactoringConfigGarantia,
@@ -445,6 +583,8 @@ export default function initModels(sequelize) {
     FactoringEstrategia,
     FactoringFactura,
     FactoringHistorialEstado,
+    FactoringInversion,
+    FactoringPago,
     FactoringPropuesta,
     FactoringPropuestaEstado,
     FactoringPropuestaFinanciero,
@@ -459,7 +599,10 @@ export default function initModels(sequelize) {
     FinancieroTipo,
     Genero,
     Inversionista,
+    InversionistaBancoCuenta,
     InversionistaCuentaBancaria,
+    InversionistaDeposito,
+    InversionistaRetiro,
     Moneda,
     Pais,
     PepVinculo,
