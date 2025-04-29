@@ -90,7 +90,11 @@ export const upload = (req, res, next) => {
   upload_archivo(req, res, async function (err) {
     if (err instanceof multer.MulterError) {
       logger.error(line(), err);
-      return next(new ArchivoError("Datos no válidos", 400));
+      if (err.code === "LIMIT_FILE_SIZE") {
+        return next(new ArchivoError("Archivo demasiado grande", 400));
+      } else {
+        return next(new ArchivoError("Datos no válidos", 400));
+      }
     }
     if (err instanceof ArchivoError) {
       logger.debug(line(), err);
