@@ -9,12 +9,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const resolve = (dir) => path.resolve(__dirname, dir);
 
 export default [
+  pluginJs.configs.recommended,
   {
+    files: ["src/**/*.js"],
     languageOptions: {
       sourceType: "module",
       globals: globals.node,
     },
-    files: ["src/**/*.js"],
     ignores: ["**/*.config.js", "!**/eslint.config.js"],
     plugins: {
       import: pluginimport,
@@ -37,11 +38,6 @@ export default [
       semi: "error",
       "import/no-unresolved": "error",
       "import/no-duplicates": "warn",
-    },
-  },
-  pluginJs.configs.recommended,
-  {
-    rules: {
       "no-unused-vars": "warn",
       "no-undef": "error",
     },

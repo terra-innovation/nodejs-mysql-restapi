@@ -1,8 +1,8 @@
-import { Router } from "express";
 import * as facturaController from "#src/controllers/empresario/facturaController.js";
 import { checkRole, verifyToken } from "#src/middlewares/authMiddleware.js";
 import * as facturaMiddleware from "#src/middlewares/facturaMiddleware.js";
 import { catchedAsync } from "#src/utils/catchedAsync.js";
+import { Router } from "express";
 
 const router = Router();
 

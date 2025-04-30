@@ -1,17 +1,16 @@
+import { sequelizeFT } from "#src/config/bd/sequelize_db_factoring.js";
 import * as archivofacturaDao from "#src/daos/archivofacturaDao.js";
-import * as bancoDao from "#src/daos/bancoDao.js";
 import * as factoringDao from "#src/daos/factoringDao.js";
 import * as riesgoDao from "#src/daos/riesgoDao.js";
-import { response } from "#src/utils/CustomResponseOk.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
+import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import logger, { line } from "#src/utils/logger.js";
 import { safeRollback } from "#src/utils/transactionUtils.js";
-import { sequelizeFT } from "#src/config/bd/sequelize_db_factoring.js";
 
+import { Sequelize } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-import { Sequelize } from "sequelize";
 
 export const getArchivofacturasByFactoringid = async (req, res) => {
   logger.debug(line(), "controller::getArchivofacturasByFactoringid");
@@ -101,7 +100,7 @@ export const deleteArchivofactura = async (req, res) => {
     camposAuditoria.fechamod = Sequelize.fn("now", 3);
     camposAuditoria.estado = 2;
 
-    const archivofacturaDeleted = await archivofacturaDao.deleteArchivofactura(transaction, { ...archivofacturaValidated, ...camposAuditoria });
+    const archivofacturaDeleted = await archivofacturaDao.deleteArchivoFactura(transaction, { ...archivofacturaValidated, ...camposAuditoria });
     if (archivofacturaDeleted[0] === 0) {
       throw new ClientError("Archivofactura no existe", 404);
     }

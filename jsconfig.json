@@ -7,6 +7,10 @@
     },
     "module": "esnext",
     "moduleResolution": "node"
+    //"checkJs": true
+    //"allowJs": true,
+    //"noEmit": true,
+    //"strict": false
   },
   "include": ["src/**/*", "./*"]
 }

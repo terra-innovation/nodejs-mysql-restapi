@@ -1,8 +1,8 @@
-import { Sequelize } from "sequelize";
 import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import logger, { line } from "#src/utils/logger.js";
+import { Sequelize } from "sequelize";
 
 export const getUsuarioservicioverificacions = async (transaction, estados) => {
   try {
