@@ -19,5 +19,5 @@
     "sourceMap": true
   },
   "include": ["src/**/*", "./*.js"],
-  "exclude": ["node_modules", "dist", "storage", "db", "http", "tests"]
+  "exclude": ["node_modules", "dist", "storage", "db", "http", "tests", "logs", "tests"]
 }
