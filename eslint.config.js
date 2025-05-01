@@ -1,6 +1,8 @@
 import globals from "globals";
 import pluginJs from "@eslint/js";
 import pluginimport from "eslint-plugin-import";
+import tsParser from "@typescript-eslint/parser";
+import tsPlugin from "@typescript-eslint/eslint-plugin";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -10,15 +12,22 @@ const resolve = (dir) => path.resolve(__dirname, dir);
 
 export default [
   pluginJs.configs.recommended,
+  tsPlugin.configs.recommended,
   {
-    files: ["src/**/*.js"],
+    files: ["src/**/*.{js,ts}"],
     languageOptions: {
       sourceType: "module",
       globals: globals.node,
+      parser: tsParser,
+      parserOptions: {
+        project: "./tsconfig.json",
+        tsconfigRootDir: __dirname,
+      },
     },
-    ignores: ["**/*.config.js", "!**/eslint.config.js"],
+    ignores: ["**/*.config.js", "!**/eslint.config.js", "dist/**/*"],
     plugins: {
       import: pluginimport,
+      "@typescript-eslint": tsPlugin,
     },
     settings: {
       "import/resolver": {
@@ -40,6 +49,7 @@ export default [
       "import/no-duplicates": "warn",
       "no-unused-vars": "warn",
       "no-undef": "error",
+      "@typescript-eslint/no-unused-vars": "warn",
     },
   },
 ];

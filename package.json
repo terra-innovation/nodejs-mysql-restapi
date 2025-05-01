@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "dev": "nodemon src/index.js --exec \"node --loader ts-node/esm\"",
+    "dev": "nodemon src/index.js --exec \"node --import ./register-ts-node.js\"",
     "start": "node dist/src/index.js",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "pretest": "cross-env NODE_ENV=test jest --clearCache"
@@ -49,6 +49,10 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.7.0",
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.15.3",
+    "@typescript-eslint/eslint-plugin": "^8.31.1",
+    "@typescript-eslint/parser": "^8.31.1",
     "cross-env": "^7.0.3",
     "eslint": "^8.57.0",
     "eslint-import-resolver-alias": "^1.1.2",
@@ -60,6 +64,7 @@
     "nodemon": "^2.0.20",
     "supertest": "^6.2.4",
     "ts-jest": "^29.3.2",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   }
 }

@@ -3,5 +3,5 @@
   "ext": "js,ts,json",
   "ignore": ["node_modules", "dist", "storage", "db", "http", "tests", "logs", "tests"],
   "delay": "200ms",
-  "verbose": false
+  "verbose": true
 }
