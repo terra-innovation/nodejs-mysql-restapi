@@ -3,11 +3,12 @@
   "version": "1.0.1",
   "private": true,
   "description": "A powerfull REST API with Node.js, Express and MySQL",
-  "main": "src/index.js",
+  "main": "dist/src/index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon src/index.js",
-    "start": "node src/index.js",
+    "build": "tsc",
+    "dev": "nodemon src/index.js --exec \"node --loader ts-node/esm\"",
+    "start": "node dist/src/index.js",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "pretest": "cross-env NODE_ENV=test jest --clearCache"
   },
@@ -57,6 +58,7 @@
     "jest": "^29.0.3",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.20",
-    "supertest": "^6.2.4"
+    "supertest": "^6.2.4",
+    "ts-node": "^10.9.2"
   }
 }
