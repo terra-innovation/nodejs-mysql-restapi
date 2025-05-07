@@ -10,14 +10,21 @@
     },
     "outDir": "./dist",
     "rootDir": ".",
-    "allowJs": true,
     "checkJs": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "strict": false,
     "resolveJsonModule": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "inlineSourceMap": false,
+    "inlineSources": true,
+    "noEmit": true,
+    "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*", "./*.js"],
+  "ts-node": {
+    "esm": true,
+    "experimentalResolver": true
+  },
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "storage", "db", "http", "tests", "logs", "tests"]
 }

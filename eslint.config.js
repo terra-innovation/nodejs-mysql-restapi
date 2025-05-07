@@ -48,7 +48,6 @@ export default [
       "import/no-unresolved": "error",
       "import/no-duplicates": "warn",
       "no-unused-vars": "warn",
-      "no-undef": "error",
       "@typescript-eslint/no-unused-vars": "warn",
     },
   },
