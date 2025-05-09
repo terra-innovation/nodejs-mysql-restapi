@@ -6,7 +6,7 @@ import * as usuarioservicioDao from "#src/daos/usuarioservicioDao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-import logger, { line, log } from "#src/utils/logger.js";
+import { log, line } from "#src/utils/logger.pino.js";
 import { safeRollback } from "#src/utils/transactionUtils.js";
 import { sequelizeFT } from "#src/config/bd/sequelize_db_factoring.js";
 import EmailSender from "#src/utils/email/emailSender.js";

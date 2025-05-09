@@ -2,7 +2,7 @@ import { Sequelize, Op } from "sequelize";
 import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
 import { poolFactoring } from "#src/config/bd/mysql2_db_factoring";
 import { formatError } from "#src/utils/errorUtils.js";
-import logger, { line, log } from "#src/utils/logger.js";
+import { log, line } from "#src/utils/logger.pino.js";
 
 export const insertarFactura = async (factura) => {
   const [rows] = await poolFactoring.query(

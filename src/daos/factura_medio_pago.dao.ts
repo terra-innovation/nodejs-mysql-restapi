@@ -1,6 +1,6 @@
 import { poolFactoring } from "#src/config/bd/mysql2_db_factoring";
 import { formatError } from "#src/utils/errorUtils.js";
-import logger, { line, log } from "#src/utils/logger.js";
+import { log, line } from "#src/utils/logger.pino.js";
 
 export const insertarFacturaMedioPago = async (factura_medio_pago) => {
   const [rows] = await poolFactoring.query(

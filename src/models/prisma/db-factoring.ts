@@ -11,7 +11,7 @@ const prismaFT: PrismaClient =
     ? new PrismaClient()
     : global.prismaFT ??
       (global.prismaFT = new PrismaClient({
-        log: ["query", "info", "warn", "error"],
+        //log: ["query", "info", "warn", "error"],
       }));
 
 const transactionTimeout = parseInt(process.env.PRISMA_DATABASE_FACTORING_TRANSACTION_TIMEOUT || "8000");

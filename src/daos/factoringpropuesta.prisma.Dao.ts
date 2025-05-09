@@ -1,7 +1,7 @@
 import { PrismaClient } from "#root/generated/prisma/client";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
-import logger, { line, log } from "#src/utils/logger.js";
+import { log, line } from "#src/utils/logger.pino.js";
 
 const prisma = new PrismaClient();
 

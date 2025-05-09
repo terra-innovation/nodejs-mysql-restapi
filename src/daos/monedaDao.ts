@@ -2,7 +2,7 @@ import { Sequelize, Op } from "sequelize";
 import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
-import logger, { line, log } from "#src/utils/logger.js";
+import { log, line } from "#src/utils/logger.pino.js";
 
 export const getMonedas = async (transaction, estados) => {
   try {

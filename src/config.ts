@@ -1,35 +1,50 @@
+// src/env.ts
+import { createEnv } from "@t3-oss/env-core";
+import { z } from "zod";
 import { config } from "dotenv";
-config();
+import { join } from "path";
 
-export const PORT = process.env.PORT || 7777;
+if (process.env.NODE_ENV !== "production") {
+  config({ path: join(process.cwd(), `.env.${process.env.NODE_ENV || "development"}`) });
+}
 
-export const WEB_SITE = process.env.WEB_SITE || "";
+const envSchema = z.object({
+  NODE_ENV: z.enum(["development", "production", "test"]),
+  PORT: z.coerce.number().default(3000),
+  WEB_SITE: z.string().url(),
 
-export const TOKEN_KEY_JWT = process.env.TOKEN_KEY_JWT || "";
-export const TOKEN_KEY_OTP = process.env.TOKEN_KEY_OTP || "";
+  // Base de datos Factoring
+  DB_FACTORING_HOST: z.string(),
+  DB_FACTORING_USER: z.string(),
+  DB_FACTORING_PASSWORD: z.string(),
+  DB_FACTORING_DATABASE: z.string(),
+  DB_FACTORING_PORT: z.coerce.number(),
 
-// BD Factoring
-export const DB_FACTORING_HOST = process.env.DB_FACTORING_HOST || "";
-export const DB_FACTORING_USER = process.env.DB_FACTORING_USER || "";
-export const DB_FACTORING_PASSWORD = process.env.DB_FACTORING_PASSWORD || "";
-export const DB_FACTORING_DATABASE = process.env.DB_FACTORING_DATABASE || "";
-export const DB_FACTORING_PORT = process.env.DB_FACTORING_PORT || 1111;
+  // Base de datos Big Data
+  DB_BIGDATA_HOST: z.string(),
+  DB_BIGDATA_USER: z.string(),
+  DB_BIGDATA_PASSWORD: z.string(),
+  DB_BIGDATA_DATABASE: z.string(),
+  DB_BIGDATA_PORT: z.coerce.number(),
 
-// BD Factoring Big Data
-export const DB_BIGDATA_HOST = process.env.DB_BIGDATA_HOST || "";
-export const DB_BIGDATA_USER = process.env.DB_BIGDATA_USER || "";
-export const DB_BIGDATA_PASSWORD = process.env.DB_BIGDATA_PASSWORD || "";
-export const DB_BIGDATA_DATABASE = process.env.DB_BIGDATA_DATABASE || "";
-export const DB_BIGDATA_PORT = process.env.DB_BIGDATA_PORT || 1111;
+  // Tokens
+  TOKEN_KEY_JWT: z.string(),
+  TOKEN_KEY_OTP: z.string(),
 
-// SMTP Zoho Mail
-export const SMTP_ZOHO_HOST = process.env.SMTP_ZOHO_HOST || "";
-export const SMTP_ZOHO_PORT = process.env.SMTP_ZOHO_PORT || 111;
-export const SMTP_ZOHO_SECURE = process.env.SMTP_ZOHO_SECURE || true;
+  // SMTP
+  SMTP_ZOHO_HOST: z.string(),
+  SMTP_ZOHO_PORT: z.coerce.number(),
+  SMTP_ZOHO_SECURE: z.coerce.boolean(),
 
-// Accounts Mail
-export const MAIL_CONTACTO_FINANZATECH_NAME = process.env.MAIL_CONTACTO_FINANZATECH_NAME || "";
-export const MAIL_CONTACTO_FINANZATECH_USER = process.env.MAIL_CONTACTO_FINANZATECH_USER || "";
-export const MAIL_CONTACTO_FINANZATECH_PASS = process.env.MAIL_CONTACTO_FINANZATECH_PASS || "";
+  // Mails
+  MAIL_CONTACTO_FINANZATECH_NAME: z.string(),
+  MAIL_CONTACTO_FINANZATECH_USER: z.string().email(),
+  MAIL_CONTACTO_FINANZATECH_PASS: z.string(),
+  MAIL_BACKUP: z.string().email(),
 
-export const MAIL_BACKUP = process.env.MAIL_BACKUP || "";
+  // Prisma
+  PRISMA_DATABASE_FACTORING_URL: z.string().url(),
+  PRISMA_DATABASE_FACTORING_TRANSACTION_TIMEOUT: z.coerce.number(),
+});
+
+export const env = envSchema.parse(process.env);

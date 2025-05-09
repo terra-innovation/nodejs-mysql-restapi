@@ -1,7 +1,7 @@
-import { TOKEN_KEY_JWT } from "#src/config.js";
+import { env } from "#src/config.js";
 import jwt from "jsonwebtoken";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-import logger, { line, log } from "#src/utils/logger.js";
+import { log, line } from "#src/utils/logger.pino.js";
 
 export const verifyToken = (req, res, next) => {
   const authHeader = req.body.token || req.query.token || req.params.token || req.headers["authorization"];
@@ -19,7 +19,7 @@ export const verifyToken = (req, res, next) => {
   const token = tokenParts[1];
   // Verificamos y decodificamos el token
   try {
-    const decoded = jwt.verify(token, TOKEN_KEY_JWT);
+    const decoded = jwt.verify(token, env.TOKEN_KEY_JWT);
     //jsonUtils.prettyPrint(decoded);
     // Si el token es válido, almacenamos la información decodificada en el objeto de solicitud para uso posterior
     req.session_user = decoded;

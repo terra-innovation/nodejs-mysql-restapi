@@ -13,7 +13,7 @@ import * as facturanotaDao from "#src/daos/facturanotaDao.js";
 import * as facturaterminopagoDao from "#src/daos/facturaterminopagoDao.js";
 import * as archivofacturaDao from "#src/daos/archivofacturaDao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
-import logger, { line, log } from "#src/utils/logger.js";
+import { log, line } from "#src/utils/logger.pino.js";
 import { safeRollback } from "#src/utils/transactionUtils.js";
 import * as storageUtils from "#src/utils/storageUtils.js";
 import * as facturaUtils from "#src/utils/facturaUtils.js";

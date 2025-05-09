@@ -2,7 +2,7 @@ import { sequelizeFT } from "#src/config/bd/sequelize_db_factoring.js";
 import * as usuarioDao from "#src/daos/usuarioDao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-import logger, { line, log } from "#src/utils/logger.js";
+import { log, line } from "#src/utils/logger.pino.js";
 import { safeRollback } from "#src/utils/transactionUtils.js";
 
 export const getUsuario = async (req, res) => {

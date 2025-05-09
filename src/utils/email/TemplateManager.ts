@@ -3,7 +3,7 @@ import fs from "fs/promises";
 import path from "path";
 import * as yup from "yup";
 import { htmlToText } from "html-to-text";
-import logger, { line, log } from "#src/utils/logger.js";
+import { log, line } from "#src/utils/logger.pino.js";
 
 class TemplaceManager {
   private templateDir: string;

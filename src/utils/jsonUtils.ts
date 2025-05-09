@@ -1,5 +1,5 @@
 import util from "util";
-import logger, { line, log } from "#src/utils/logger.js";
+import { log, line } from "#src/utils/logger.pino.js";
 
 // Función para filtrar campos en un JSON
 export function filterFields(json, fields) {

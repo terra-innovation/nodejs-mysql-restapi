@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { parseStringPromise } from "xml2js";
 import * as fs from "fs";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-import logger, { line, log } from "#src/utils/logger.js";
+import { log, line } from "#src/utils/logger.pino.js";
 import { Sequelize, Op } from "sequelize";
 import { FacturaXML } from "../types/FacturaXML.types";
 

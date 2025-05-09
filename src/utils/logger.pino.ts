@@ -38,10 +38,12 @@ if (!fs.existsSync(logDir)) {
 }
 
 const levelConfigs: Record<string, { size: string; limit: number }> = {
+  trace: { size: "2m", limit: 20 },
   debug: { size: "5m", limit: 50 },
   info: { size: "10m", limit: 100 },
   warn: { size: "15m", limit: 200 },
   error: { size: "20m", limit: 300 },
+  fatal: { size: "20m", limit: 300 },
 };
 
 const levelTransports = Object.entries(levelConfigs).map(([level, config]) => ({
@@ -110,8 +112,8 @@ function serializeError(err: Error): LogData {
 }
 
 // Nueva firma: (location, message, data)
-function logMethod(level: "info" | "warn" | "error" | "debug") {
-  return (location: string, msgOrError: string | Error, maybeData?: LogData | Error) => {
+function logMethod(level: "trace" | "info" | "warn" | "error" | "debug" | "fatal") {
+  return (location: string, msgOrError: string | Error, maybeData?: unknown) => {
     let message = "Log message";
     let logData: LogData = {};
 
@@ -127,7 +129,7 @@ function logMethod(level: "info" | "warn" | "error" | "debug") {
 
       if (maybeData instanceof Error) {
         logData = { error: serializeError(maybeData) };
-      } else if (typeof maybeData === "object" && maybeData !== null) {
+      } else {
         logData = { data: maybeData };
       }
     }
@@ -137,8 +139,10 @@ function logMethod(level: "info" | "warn" | "error" | "debug") {
 }
 
 export const log = {
+  trace: logMethod("trace"),
   info: logMethod("info"),
   warn: logMethod("warn"),
   error: logMethod("error"),
   debug: logMethod("debug"),
+  fatal: logMethod("fatal"),
 };

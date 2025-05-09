@@ -2,7 +2,7 @@ import * as luxon from "luxon";
 import multer from "multer";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
-import logger, { line, log } from "#src/utils/logger.js";
+import { log, line } from "#src/utils/logger.pino.js";
 import * as storageUtils from "#src/utils/storageUtils.js";
 import * as fs from "fs";
 import { ArchivoError } from "#src/utils/CustomErrors.js";

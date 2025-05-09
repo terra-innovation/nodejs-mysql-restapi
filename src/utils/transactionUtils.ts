@@ -1,4 +1,4 @@
-import logger, { line, log } from "#src/utils/logger.js";
+import { log, line } from "#src/utils/logger.pino.js";
 
 /**
  * Realiza un rollback seguro en una transacción si sigue activa.

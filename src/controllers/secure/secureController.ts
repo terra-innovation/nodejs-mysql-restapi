@@ -10,7 +10,7 @@ import { line, log } from "#src/utils/logger.js";
 import { safeRollback } from "#src/utils/transactionUtils.js";
 import { sequelizeFT } from "#src/config/bd/sequelize_db_factoring.js";
 import * as cryptoUtils from "#src/utils/cryptoUtils.js";
-import * as config from "#src/config.js";
+import { env } from "#src/config.js";
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -54,7 +54,7 @@ export const resetPassword = async (req, res) => {
     //jsonUtils.prettyPrint(validacion);
 
     //Desencriptamos token para hallar el otp
-    let otp_desencriptado = cryptoUtils.decryptText(validacionValidated.token, config.TOKEN_KEY_OTP);
+    let otp_desencriptado = cryptoUtils.decryptText(validacionValidated.token, env.TOKEN_KEY_OTP);
     log.info(line(), "OTP Desencriptado", otp_desencriptado);
 
     if (otp_desencriptado === validacion.otp) {
@@ -146,7 +146,7 @@ export const validateRestorePassword = async (req, res) => {
     //jsonUtils.prettyPrint(validacion);
 
     //Desencriptamos token para hallar el otp
-    let otp_desencriptado = cryptoUtils.decryptText(validacionValidated.token, config.TOKEN_KEY_OTP);
+    let otp_desencriptado = cryptoUtils.decryptText(validacionValidated.token, env.TOKEN_KEY_OTP);
     log.info(line(), "OTP Desencriptado", otp_desencriptado);
 
     if (otp_desencriptado === validacion.otp) {
@@ -240,8 +240,8 @@ export const sendTokenPassword = async (req, res) => {
       const validacionNext = await validacionDao.getValidacionByIdusuarioAndIdvalidaciontipo(transaction, usuario._idusuario, _idvalidaciontipo, filter_estado);
       if (validacionNext) {
         //Enviar enlace para recuperar contraseña
-        let otp_encriptado = cryptoUtils.encryptText(resetpasswordvalidationcode.toString(), config.TOKEN_KEY_OTP);
-        let url = config.WEB_SITE + "token-verification-password?hash=" + usuario.hash + "&codigo=" + validacionNext.codigo + "&token=" + otp_encriptado;
+        let otp_encriptado = cryptoUtils.encryptText(resetpasswordvalidationcode.toString(), env.TOKEN_KEY_OTP);
+        let url = env.WEB_SITE + "token-verification-password?hash=" + usuario.hash + "&codigo=" + validacionNext.codigo + "&token=" + otp_encriptado;
         log.info(line(), "url", url);
       }
     }
@@ -336,7 +336,7 @@ export const loginUser = async (req, res) => {
       const usuario = usuario_autenticado[0];
       //jsonUtils.prettyPrint(usuario);
       // Create token
-      const token = jwt.sign({ usuario: usuario }, config.TOKEN_KEY_JWT, {
+      const token = jwt.sign({ usuario: usuario }, env.TOKEN_KEY_JWT, {
         expiresIn: "200000h",
       });
 
