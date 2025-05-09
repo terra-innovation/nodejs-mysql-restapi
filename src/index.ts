@@ -2,7 +2,7 @@ import app from "#src/app.js";
 import { env } from "#src/config.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-log.info(line(), `Variables de entorno`, env);
+log.debug(line(), `Variables de entorno`, env);
 
 try {
   app.listen(env.PORT);

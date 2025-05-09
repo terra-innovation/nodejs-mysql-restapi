@@ -2,8 +2,12 @@
 import pino from "pino";
 import { join } from "path";
 import fs from "fs";
+import { env } from "#src/config.js";
+import type { Level } from "pino";
 
 type LogData = Record<string, unknown>;
+
+const validLevels: Level[] = ["trace", "debug", "info", "warn", "error", "fatal"];
 
 export function line(): string {
   const stack = new Error().stack?.split("\n") || [];
@@ -46,30 +50,43 @@ const levelConfigs: Record<string, { size: string; limit: number }> = {
   fatal: { size: "20m", limit: 300 },
 };
 
-const levelTransports = Object.entries(levelConfigs).map(([level, config]) => ({
-  level,
-  stream: pino.transport({
-    target: "pino-roll",
-    options: {
-      file: join(logDir, level),
-      frequency: "hourly",
-      mkdir: true,
-      size: config.size,
-      limit: { count: config.limit },
-      dateFormat: "yyyyMMdd_HH",
-      extension: ".log",
-    },
-  }),
-}));
+const levelTransports: pino.StreamEntry[] = [];
+const fileLogLevel = env.LOG_LEVEL_FILE || "info";
 
-if (process.env.NODE_ENV !== "production") {
+if (fileLogLevel !== "silent") {
+  for (const level of validLevels) {
+    const config = levelConfigs[level];
+    if (!config) continue;
+
+    if (pino.levels.values[level] >= pino.levels.values[fileLogLevel as Level]) {
+      levelTransports.push({
+        level,
+        stream: pino.transport({
+          target: "pino-roll",
+          options: {
+            file: join(logDir, level),
+            frequency: "hourly",
+            mkdir: true,
+            size: config.size,
+            limit: { count: config.limit },
+            dateFormat: "yyyyMMdd_HH",
+            extension: ".log",
+          },
+        }),
+      });
+    }
+  }
+}
+
+const consoleLogLevel = env.LOG_LEVEL_CONSOLE || "debug";
+if (consoleLogLevel !== "silent") {
   levelTransports.push({
-    level: "debug",
+    level: consoleLogLevel as Level,
     stream: pino.transport({
       target: "pino-pretty",
       options: {
         colorize: true,
-        translateTime: "yyyy-MM-dd HH:MM:ss.l o",
+        //translateTime: "yyyy-MM-dd HH:MM:ss.l o",
         ignore: "pid,hostname",
       },
     }),
@@ -79,7 +96,9 @@ if (process.env.NODE_ENV !== "production") {
 const loggerInstance = pino(
   {
     base: null,
-    level: "debug",
+    safe: true,
+    timestamp: () => `,"time":"${new Date().toISOString()}"`,
+    level: pino.levels.values[env.LOG_LEVEL_FILE || "info"] < pino.levels.values[env.LOG_LEVEL_CONSOLE || "info"] ? env.LOG_LEVEL_FILE : env.LOG_LEVEL_CONSOLE,
   },
   pino.multistream(levelTransports)
 );
@@ -88,7 +107,7 @@ function enrichLogData(location: string, extra: LogData = {}): LogData {
   const base: LogData = {
     location,
     userId: getUserId(),
-    env: process.env.NODE_ENV,
+    env: env.NODE_ENV,
   };
 
   // ✅ Agregamos 'data' al final manualmente
@@ -112,7 +131,7 @@ function serializeError(err: Error): LogData {
 }
 
 // Nueva firma: (location, message, data)
-function logMethod(level: "trace" | "info" | "warn" | "error" | "debug" | "fatal") {
+function logMethod(level: "trace" | "debug" | "info" | "warn" | "error" | "fatal") {
   return (location: string, msgOrError: string | Error, maybeData?: unknown) => {
     let message = "Log message";
     let logData: LogData = {};

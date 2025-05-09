@@ -45,6 +45,10 @@ const envSchema = z.object({
   // Prisma
   PRISMA_DATABASE_FACTORING_URL: z.string().url(),
   PRISMA_DATABASE_FACTORING_TRANSACTION_TIMEOUT: z.coerce.number(),
+
+  //Prino Logger
+  LOG_LEVEL_CONSOLE: z.enum(["trace", "debug", "info", "warn", "error", "fatal", "silent"]),
+  LOG_LEVEL_FILE: z.enum(["trace", "debug", "info", "warn", "error", "fatal", "silent"]),
 });
 
 export let env: z.infer<typeof envSchema>;
