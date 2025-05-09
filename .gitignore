@@ -9,5 +9,6 @@ storage/procesar/*
 storage/success/*
 logs/*
 dist/*
+generated/*
 .env.development
 .env.production

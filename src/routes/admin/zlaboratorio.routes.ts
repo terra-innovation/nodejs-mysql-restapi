@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { catchedAsync } from "#src/utils/catchedAsync.js";
-import * as zlaboratorioController from "#src/controllers/admin/zlaboratorioController.js";
+//import * as zlaboratorioController from "#src/controllers/admin/zlaboratorioController.js";
+
+import * as zlaboratorioController from "#src/controllers/admin/zlaboratorio.prisma.Controller.js";
 import { verifyToken, checkRole } from "#src/middlewares/authMiddleware.js";
 
 const router = Router();

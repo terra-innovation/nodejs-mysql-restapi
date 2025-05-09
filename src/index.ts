@@ -1,7 +1,12 @@
 import app from "#src/app.js";
 import { PORT } from "#src/config.js";
-import logger, { line, log } from "#src/utils/logger.js";
+import { log, line } from "#src/utils/logger.pino.js";
 
+try {
+  throw new Error("Esto es un error simulado");
+} catch (err) {
+  log.error(line(), err);
+}
 try {
   app.listen(PORT);
   log.info(line(), `Server on port http://localhost:${PORT}`);

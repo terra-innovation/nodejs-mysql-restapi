@@ -5,7 +5,7 @@ import fs from "fs";
 
 type LogData = Record<string, unknown>;
 
-export function linex(): string {
+export function line(): string {
   const stack = new Error().stack?.split("\n") || [];
   const callerLine = stack.find((line, index) => index > 1 && line.includes("at")) || "";
   const match = callerLine.trim().match(/^at (.+?) \((.+):(\d+):(\d+)\)$/) || callerLine.trim().match(/^at (.+):(\d+):(\d+)$/);
@@ -115,13 +115,13 @@ function logMethod(level: "info" | "warn" | "error" | "debug") {
     let message = "Log message";
     let logData: LogData = {};
 
-    // Caso: logger.error(linex(), err)
+    // Caso: logger.error(line(), err)
     if (msgOrError instanceof Error) {
       message = msgOrError.message;
       logData = { error: serializeError(msgOrError) };
     }
 
-    // Caso: logger.error(linex(), "mensaje", err | data)
+    // Caso: logger.error(line(), "mensaje", err | data)
     else if (typeof msgOrError === "string") {
       message = msgOrError;
 
@@ -136,11 +136,9 @@ function logMethod(level: "info" | "warn" | "error" | "debug") {
   };
 }
 
-const logger = {
+export const log = {
   info: logMethod("info"),
   warn: logMethod("warn"),
   error: logMethod("error"),
   debug: logMethod("debug"),
 };
-
-export default logger;

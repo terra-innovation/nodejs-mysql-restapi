@@ -44,6 +44,7 @@ import usuario_menuRoutes from "#src/routes/usuario/menu.routes.js";
 import { customResponseError } from "#src/utils/CustomResponseError.js";
 
 import { sequelizeFT } from "#src/config/bd/sequelize_db_factoring.js";
+
 //import { initModels } from "#src/models/ft_factoring/init-models.js";
 
 const app = express();

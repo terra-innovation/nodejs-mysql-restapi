@@ -1,0 +1,9 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../src/models/prisma/ft_factoring/"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("PRISMA_DATABASE_FACTORING_URL")
+}
