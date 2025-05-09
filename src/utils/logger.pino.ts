@@ -1,10 +1,11 @@
+// src/utils/logger.pino.ts
 import pino from "pino";
 import { join } from "path";
 import fs from "fs";
 
 type LogData = Record<string, unknown>;
 
-function line(): string {
+export function linex(): string {
   const stack = new Error().stack?.split("\n") || [];
   const callerLine = stack.find((line, index) => index > 1 && line.includes("at")) || "";
   const match = callerLine.trim().match(/^at (.+?) \((.+):(\d+):(\d+)\)$/) || callerLine.trim().match(/^at (.+):(\d+):(\d+)$/);
@@ -12,10 +13,10 @@ function line(): string {
   if (match) {
     if (match.length === 5) {
       const [, fn, file, line, col] = match;
-      return `${fn} (${file}:${line}:${col})`;
+      return `${fn} (${file}:${line})`;
     } else if (match.length === 4) {
       const [, file, line, col] = match;
-      return `(anonymous) (${file}:${line}:${col})`;
+      return `(anonymous) (${file}:${line})`;
     }
   }
 
@@ -36,7 +37,6 @@ if (!fs.existsSync(logDir)) {
   fs.mkdirSync(logDir, { recursive: true });
 }
 
-// Configuración personalizada por nivel
 const levelConfigs: Record<string, { size: string; limit: number }> = {
   debug: { size: "5m", limit: 50 },
   info: { size: "10m", limit: 100 },
@@ -44,7 +44,6 @@ const levelConfigs: Record<string, { size: string; limit: number }> = {
   error: { size: "20m", limit: 300 },
 };
 
-// Crear transportes por nivel con su configuración
 const levelTransports = Object.entries(levelConfigs).map(([level, config]) => ({
   level,
   stream: pino.transport({
@@ -61,7 +60,6 @@ const levelTransports = Object.entries(levelConfigs).map(([level, config]) => ({
   }),
 }));
 
-// Agregar salida legible en consola en desarrollo
 if (process.env.NODE_ENV !== "production") {
   levelTransports.push({
     level: "debug",
@@ -76,7 +74,6 @@ if (process.env.NODE_ENV !== "production") {
   });
 }
 
-// Crear instancia del logger
 const loggerInstance = pino(
   {
     base: null,
@@ -85,22 +82,57 @@ const loggerInstance = pino(
   pino.multistream(levelTransports)
 );
 
-// Enriquecer datos
-function enrichLogData(data: LogData = {}, msg?: string): LogData {
-  return {
-    ...data,
-    location: line(),
+function enrichLogData(location: string, extra: LogData = {}): LogData {
+  const base: LogData = {
+    location,
     userId: getUserId(),
     env: process.env.NODE_ENV,
   };
+
+  // ✅ Agregamos 'data' al final manualmente
+  if (extra.data !== undefined) {
+    return { ...base, data: extra.data };
+  }
+
+  if (extra.error !== undefined) {
+    return { ...base, error: extra.error };
+  }
+
+  return { ...base };
 }
 
-// Métodos por nivel
+function serializeError(err: Error): LogData {
+  return {
+    name: err.name,
+    message: err.message,
+    stack: err.stack,
+  };
+}
+
+// Nueva firma: (location, message, data)
 function logMethod(level: "info" | "warn" | "error" | "debug") {
-  return (msgOrData: string | LogData, maybeData?: LogData) => {
-    const msg = typeof msgOrData === "string" ? msgOrData : "Log message";
-    const data = typeof msgOrData === "string" ? maybeData : msgOrData;
-    loggerInstance[level](enrichLogData(data, msg), msg);
+  return (location: string, msgOrError: string | Error, maybeData?: LogData | Error) => {
+    let message = "Log message";
+    let logData: LogData = {};
+
+    // Caso: logger.error(linex(), err)
+    if (msgOrError instanceof Error) {
+      message = msgOrError.message;
+      logData = { error: serializeError(msgOrError) };
+    }
+
+    // Caso: logger.error(linex(), "mensaje", err | data)
+    else if (typeof msgOrError === "string") {
+      message = msgOrError;
+
+      if (maybeData instanceof Error) {
+        logData = { error: serializeError(maybeData) };
+      } else if (typeof maybeData === "object" && maybeData !== null) {
+        logData = { data: maybeData };
+      }
+    }
+
+    loggerInstance[level](enrichLogData(location, logData), message);
   };
 }
 
