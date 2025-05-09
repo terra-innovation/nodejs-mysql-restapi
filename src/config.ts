@@ -47,4 +47,16 @@ const envSchema = z.object({
   PRISMA_DATABASE_FACTORING_TRANSACTION_TIMEOUT: z.coerce.number(),
 });
 
-export const env = envSchema.parse(process.env);
+export let env: z.infer<typeof envSchema>;
+try {
+  env = envSchema.parse(process.env);
+} catch (error) {
+  if (error instanceof z.ZodError) {
+    console.error("Environment variable validation failed:");
+    error.errors.forEach((err) => {
+      console.error(`- ${err.path.join(".")}: ${err.message}`);
+    });
+    process.exit(1); // Exit the process with an error code
+  }
+  throw error; // Re-throw if it's not a ZodError
+}

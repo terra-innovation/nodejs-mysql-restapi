@@ -27,6 +27,7 @@ export const validateTransaction = async (req, res) => {
     const resultado = await prismaFT.$transaction(
       async (tx) => {
         const camposUsuario = {
+          //idusuario: 67,// Simulamos un error de código duplicado
           nombre: usuariopedidoValidated.nombre,
           idusuariocrea: req.session_user.usuario._idusuario ?? 1,
           fechacrea: new Date(),
@@ -42,8 +43,8 @@ export const validateTransaction = async (req, res) => {
           zlaboratorio_usuario: {
             connect: { idusuario: usuarioCreated.idusuario },
           },
-          //code: uuidv4().split("-")[0],
-          code: "c019c569", // Simulamos un error de código duplicado
+          code: uuidv4().split("-")[0],
+          //code: "c019c569", // Simulamos un error de código duplicado
           nombre: usuariopedidoValidated.pedido,
           idusuariocrea: req.session_user.usuario._idusuario ?? 1,
           fechacrea: new Date(),
