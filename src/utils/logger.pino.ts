@@ -93,7 +93,7 @@ if (consoleLogLevel !== "silent") {
   });
 }
 
-const loggerInstance = pino(
+export const loggerInstance = pino(
   {
     base: null,
     safe: true,

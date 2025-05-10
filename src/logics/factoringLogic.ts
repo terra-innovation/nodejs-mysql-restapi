@@ -8,7 +8,7 @@ import { ConfiguracionAppCreationAttributes } from "#src/models/ft_factoring/Con
 import { Simulacion } from "#src/types/Simulacion.types.js";
 import { safeRollback } from "#src/utils/transactionUtils.js";
 
-import { line, log } from "#src/utils/logger.js";
+import { line, log } from "#root/src/utils/logger.pino.js";
 
 export const simulateFactoringLogicV2 = async (
   _idriesgooperacion: number,

@@ -1,5 +1,5 @@
 import express from "express";
-import logger, { line, loggerMorgan, log } from "#src/utils/logger.js";
+import { line, log } from "#root/src/utils/logger.pino.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;

@@ -1,39 +1,43 @@
-import express from "express";
-import morgan from "morgan";
 import cors from "cors";
-import * as util from "util";
+import express from "express";
 import * as luxon from "luxon";
+import morgan from "morgan";
+import pinoHttp from "pino-http";
+import * as util from "util";
 import { ValidationError } from "yup";
+import { loggerInstance, log, line } from "#src/utils/logger.pino.js";
 
-import logger, { line, loggerMorgan, log } from "#src/utils/logger.js";
+import { loggerMorgan } from "#root/src/utils/logger.winston.js";
+
+import { httpLogger } from "#src/middlewares/loggerhttpMiddleware.js";
 
 import indexRoutes from "#src/routes/index.routes.js";
 
-import empresario_empresacuentabancariaRoutes from "#src/routes/empresario/empresacuentabancaria.routes.js";
 import empresario_contactoRoutes from "#src/routes/empresario/contacto.routes.js";
-import empresario_factoring_facturaRoutes from "#src/routes/empresario/factoring/factura.routes.js";
-import empresario_factoring_empresacuentabancariaRoutes from "#src/routes/empresario/factoring/empresacuentabancaria.routes.js";
-import empresario_factoring_usuarioRoutes from "#src/routes/empresario/factoring/usuario.routes.js";
-import empresario_factoring_factoringRoutes from "#src/routes/empresario/factoring/factoring.routes.js";
+import empresario_empresacuentabancariaRoutes from "#src/routes/empresario/empresacuentabancaria.routes.js";
 import empresario_factoring_contactoRoutes from "#src/routes/empresario/factoring/contacto.routes.js";
+import empresario_factoring_empresacuentabancariaRoutes from "#src/routes/empresario/factoring/empresacuentabancaria.routes.js";
+import empresario_factoring_factoringRoutes from "#src/routes/empresario/factoring/factoring.routes.js";
+import empresario_factoring_facturaRoutes from "#src/routes/empresario/factoring/factura.routes.js";
+import empresario_factoring_usuarioRoutes from "#src/routes/empresario/factoring/usuario.routes.js";
 
-import inversionista_inversionistacuentabancariaRoutes from "#src/routes/inversionista/inversionistacuentabancaria.routes.js";
 import inversionista_factoring_factoringRoutes from "#src/routes/inversionista/factoring/factoring.routes.js";
+import inversionista_inversionistacuentabancariaRoutes from "#src/routes/inversionista/inversionistacuentabancaria.routes.js";
 
-import admin_zlaboratorioRoutes from "#src/routes/admin/zlaboratorio.routes.js";
-import admin_empresacuentabancariaRoutes from "#src/routes/admin/empresacuentabancaria.routes.js";
-import admin_inversionistacuentabancariaRoutes from "#src/routes/admin/inversionistacuentabancaria.routes.js";
+import admin_archivoRoutes from "#src/routes/admin/archivo.routes.js";
+import admin_archivofacturaRoutes from "#src/routes/admin/archivofactura.routes.js";
 import admin_cuentabancariaestadoRoutes from "#src/routes/admin/cuentabancariaestado.routes.js";
 import admin_empresaRoutes from "#src/routes/admin/empresa.routes.js";
-import admin_facturaRoutes from "#src/routes/admin/factura.routes.js";
-import admin_archivofacturaRoutes from "#src/routes/admin/archivofactura.routes.js";
-import admin_personaRoutes from "#src/routes/admin/persona.routes.js";
-import admin_archivoRoutes from "#src/routes/admin/archivo.routes.js";
-import admin_personaverificacionRoutes from "#src/routes/admin/personaverificacion.routes.js";
+import admin_empresacuentabancariaRoutes from "#src/routes/admin/empresacuentabancaria.routes.js";
 import admin_factorigempresaverificacionRoutes from "#src/routes/admin/factoringempresaverificacion.routes.js";
+import admin_facturaRoutes from "#src/routes/admin/factura.routes.js";
+import admin_inversionistacuentabancariaRoutes from "#src/routes/admin/inversionistacuentabancaria.routes.js";
+import admin_personaRoutes from "#src/routes/admin/persona.routes.js";
+import admin_personaverificacionRoutes from "#src/routes/admin/personaverificacion.routes.js";
 import admin_servicio_factoring_factoringRoutes from "#src/routes/admin/servicio/factoring/factoring.routes.js";
-import admin_servicio_factoring_factoringpropuestaRoutes from "#src/routes/admin/servicio/factoring/factoringpropuesta.routes.js";
 import admin_servicio_factoring_factoringhistorialestadoRoutes from "#src/routes/admin/servicio/factoring/factoringhistorialestado.routes.js";
+import admin_servicio_factoring_factoringpropuestaRoutes from "#src/routes/admin/servicio/factoring/factoringpropuesta.routes.js";
+import admin_zlaboratorioRoutes from "#src/routes/admin/zlaboratorio.routes.js";
 
 import usuario_personaRoutes from "#src/routes/usuario/persona.routes.js";
 import usuario_usuarioservicioRoutes from "#src/routes/usuario/usuarioservicio.routes.js";
@@ -72,6 +76,9 @@ app.use(
     },
   })
 );
+
+//Middleware PINO
+app.use(httpLogger);
 
 app.use(express.json()); // Convierte los request a json
 
