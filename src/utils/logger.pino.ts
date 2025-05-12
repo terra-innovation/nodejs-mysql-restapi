@@ -4,6 +4,7 @@ import { join } from "path";
 import fs from "fs";
 import { env } from "#src/config.js";
 import type { Level } from "pino";
+import { getContext } from "#src/utils/context/loggerContext.js";
 
 type LogData = Record<string, unknown>;
 
@@ -25,14 +26,6 @@ export function line(): string {
   }
 
   return "unknown";
-}
-
-function getUserId(): number | string | null {
-  try {
-    return globalThis.session_user?.usuario?._idusuario ?? null;
-  } catch {
-    return null;
-  }
 }
 
 // Crear directorio de logs si no existe
@@ -97,8 +90,18 @@ export const loggerInstance = pino(
   {
     base: null,
     safe: true,
-    timestamp: () => `,"time":"${new Date().toISOString()}"`,
     level: pino.levels.values[env.LOG_LEVEL_FILE || "info"] < pino.levels.values[env.LOG_LEVEL_CONSOLE || "info"] ? env.LOG_LEVEL_FILE : env.LOG_LEVEL_CONSOLE,
+    timestamp: () => `,"time":"${new Date().toISOString()}"`,
+    formatters: {
+      log: (object) => {
+        const store = getContext();
+        return {
+          ...object,
+          ...(store && typeof store === "object" && !Array.isArray(store) ? store : {}),
+          env: env.NODE_ENV,
+        };
+      },
+    },
   },
   pino.multistream(levelTransports)
 );
@@ -106,8 +109,6 @@ export const loggerInstance = pino(
 function enrichLogData(location: string, extra: LogData = {}): LogData {
   const base: LogData = {
     location,
-    userId: getUserId(),
-    env: env.NODE_ENV,
   };
 
   // ✅ Agregamos 'data' al final manualmente

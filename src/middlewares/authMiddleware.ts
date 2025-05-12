@@ -2,6 +2,7 @@ import { env } from "#src/config.js";
 import jwt from "jsonwebtoken";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { updateContext } from "#src/utils/context/loggerContext.js";
 
 export const verifyToken = (req, res, next) => {
   const authHeader = req.body.token || req.query.token || req.params.token || req.headers["authorization"];
@@ -23,6 +24,7 @@ export const verifyToken = (req, res, next) => {
     //jsonUtils.prettyPrint(decoded);
     // Si el token es válido, almacenamos la información decodificada en el objeto de solicitud para uso posterior
     req.session_user = decoded;
+    updateContext({ userId: decoded.usuario._idusuario });
   } catch (err) {
     return res.status(401).json({ error: true, message: "Token inválido" });
   }

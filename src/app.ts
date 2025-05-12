@@ -9,7 +9,7 @@ import { loggerInstance, log, line } from "#src/utils/logger.pino.js";
 
 import { loggerMorgan } from "#root/src/utils/logger.winston.js";
 
-import { httpLogger } from "#src/middlewares/loggerhttpMiddleware.js";
+import { loggerMiddleware } from "#root/src/middlewares/loggerMiddleware.js";
 
 import indexRoutes from "#src/routes/index.routes.js";
 
@@ -77,10 +77,8 @@ app.use(
   })
 );
 
-//Middleware PINO
-app.use(httpLogger);
-
 app.use(express.json()); // Convierte los request a json
+app.use(loggerMiddleware); //Middleware Logger PINO
 
 // Routes
 app.use("/", indexRoutes);
