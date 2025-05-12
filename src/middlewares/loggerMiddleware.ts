@@ -1,4 +1,3 @@
-// src/middlewares/httpLogger.ts
 import pinoHttp from "pino-http";
 import { v4 as uuidv4 } from "uuid";
 import { AsyncLocalStorage } from "node:async_hooks";

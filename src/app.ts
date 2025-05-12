@@ -10,6 +10,7 @@ import { loggerInstance, log, line } from "#src/utils/logger.pino.js";
 import { loggerMorgan } from "#root/src/utils/logger.winston.js";
 
 import { loggerMiddleware } from "#root/src/middlewares/loggerMiddleware.js";
+import { corsMiddleware } from "#root/src/middlewares/corsMiddleware";
 
 import indexRoutes from "#src/routes/index.routes.js";
 
@@ -53,15 +54,8 @@ import { sequelizeFT } from "#src/config/bd/sequelize_db_factoring.js";
 
 const app = express();
 
-// Configuración de CORS
-app.use(
-  cors({
-    origin: "*",
-    exposedHeaders: ["Content-Disposition"],
-  })
-);
-
 app.use(express.json()); // Convierte los request a json
+app.use(corsMiddleware); //Middleware Cors
 app.use(loggerMiddleware); //Middleware Logger PINO
 
 // Routes
