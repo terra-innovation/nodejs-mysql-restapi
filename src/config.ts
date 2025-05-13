@@ -14,6 +14,7 @@ const envSchema = z.object({
   WEB_SITE: z.string().url(),
 
   // Base de datos Factoring
+  DB_FACTORING_NICKNAME: z.string(),
   DB_FACTORING_HOST: z.string(),
   DB_FACTORING_USER: z.string(),
   DB_FACTORING_PASSWORD: z.string(),
@@ -21,6 +22,7 @@ const envSchema = z.object({
   DB_FACTORING_PORT: z.coerce.number(),
 
   // Base de datos Big Data
+  DB_BIGDATA_NICKNAME: z.string(),
   DB_BIGDATA_HOST: z.string(),
   DB_BIGDATA_USER: z.string(),
   DB_BIGDATA_PASSWORD: z.string(),
