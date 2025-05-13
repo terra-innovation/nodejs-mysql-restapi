@@ -1,4 +1,4 @@
-import prismaFT, { transactionTimeout } from "#root/src/models/prisma/db-factoring.js";
+import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as zlaboratoriousuarioDao from "#src/daos/zlaboratoriousuario.prisma.Dao.js";
 import * as zlaboratoriopedidoDao from "#src/daos/zlaboratoriopedido.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
@@ -24,7 +24,7 @@ export const validateTransaction = async (req, res) => {
   log.debug(line(), "empresaValidated:", usuariopedidoValidated);
 
   try {
-    const resultado = await prismaFT.$transaction(
+    const resultado = await prismaFT.client.$transaction(
       async (tx) => {
         const camposUsuario = {
           //idusuario: 67,// Simulamos un error de código duplicado
@@ -70,7 +70,7 @@ export const validateTransaction = async (req, res) => {
 
         return usuarioCreated;
       },
-      { timeout: transactionTimeout }
+      { timeout: prismaFT.transactionTimeout }
     );
     response(res, 201, { ...resultado });
   } catch (error) {
