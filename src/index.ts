@@ -1,3 +1,4 @@
+import "#src/utils/globalErrorHandlers.js";
 import app from "#src/app.js";
 import { env } from "#src/config.js";
 import { log, line } from "#src/utils/logger.pino.js";
