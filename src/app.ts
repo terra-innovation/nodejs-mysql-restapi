@@ -9,8 +9,9 @@ import { loggerInstance, log, line } from "#src/utils/logger.pino.js";
 
 import { loggerMorgan } from "#root/src/utils/logger.winston.js";
 
-import { loggerMiddleware } from "#root/src/middlewares/loggerMiddleware.js";
-import { corsMiddleware } from "#root/src/middlewares/corsMiddleware";
+import { loggerMiddleware } from "#src/middlewares/loggerMiddleware.js";
+import { corsMiddleware } from "#src/middlewares/corsMiddleware";
+import { errorHandlerMiddleware } from "#src/middlewares/errorHandlerMiddleware";
 
 import indexRoutes from "#src/routes/index.routes.js";
 
@@ -49,14 +50,15 @@ import usuario_menuRoutes from "#src/routes/usuario/menu.routes.js";
 import { customResponseError } from "#src/utils/CustomResponseError.js";
 
 import { sequelizeFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { notFoundHandlerMiddleware } from "./middlewares/notFoundHandlerMiddleware";
 
 //import { initModels } from "#src/models/ft_factoring/init-models.js";
 
 const app = express();
 
 app.use(express.json()); // Convierte los request a json
-app.use(corsMiddleware); //Middleware Cors
-app.use(loggerMiddleware); //Middleware Logger PINO
+app.use(corsMiddleware); // Middleware Cors
+app.use(loggerMiddleware); // Middleware Logger PINO
 
 // Routes
 app.use("/", indexRoutes);
@@ -94,37 +96,12 @@ app.use("/api/v1", usuario_usuarioservicioRoutes);
 
 app.use("/api/v1", secureRoutes);
 
-// Para cuando no existe la ruta
-app.use((req, res, next) => {
-  res.status(404).json({ error: true, message: "Not found" });
-});
+app.use(notFoundHandlerMiddleware); // Para cuando no existe la ruta
 
 // Para conexión de BBDD sequelizer
 app.locals.sequelize = sequelizeFT;
 //app.locals.models = initModels(sequelizeFT);
 
-// Middleware de manejo de errores global
-app.use((err, req, res, next) => {
-  var { statusCode, message } = err;
-  if (err instanceof ValidationError) {
-    statusCode = 400;
-    message = "Datos no válidos";
-    const mensajeError = err.inner.map((dato) => {
-      return {
-        message: dato.message,
-        originalValue: dato.value,
-        path: dato.path,
-      };
-    });
-    log.error(line(), "ValidationError:", util.inspect(mensajeError, { colors: true, depth: null }));
-  } else if (statusCode == undefined) {
-    //log.error(line(), util.inspect(err, { colors: true, depth: null }));
-    statusCode = 500;
-    message = "Ocurrio un error";
-  }
-  log.error(line(), util.inspect(err, { colors: true, depth: null }));
-
-  customResponseError(res, statusCode, message);
-});
+app.use(errorHandlerMiddleware); // Middleware de manejo de errores global de Express
 
 export default app;
