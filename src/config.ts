@@ -51,6 +51,11 @@ const envSchema = z.object({
   //Prino Logger
   LOG_LEVEL_CONSOLE: z.enum(["trace", "debug", "info", "warn", "error", "fatal", "silent"]),
   LOG_LEVEL_FILE: z.enum(["trace", "debug", "info", "warn", "error", "fatal", "silent"]),
+  PRISMA_DATABASE_FACTORING_LOG_QUERY: z.coerce.boolean(),
+  PRISMA_DATABASE_FACTORING_LOG_INFO: z.coerce.boolean(),
+  PRISMA_DATABASE_FACTORING_LOG_WARN: z.coerce.boolean(),
+  PRISMA_DATABASE_FACTORING_LOG_ERROR: z.coerce.boolean(),
+  PRISMA_DATABASE_FACTORING_SLOW_QUERY_THRESHOLD: z.coerce.number(),
 });
 
 export let env: z.infer<typeof envSchema>;

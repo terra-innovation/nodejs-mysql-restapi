@@ -3,6 +3,7 @@ import app from "#src/app.js";
 import { env } from "#src/config.js";
 import { log, line } from "#src/utils/logger.pino.js";
 import { prismaFT } from "#src/models/prisma/db-factoring.js";
+import { shutdownHandler } from "#src/utils/shutdownHandler.js";
 
 async function startServer(): Promise<void> {
   try {
@@ -11,8 +12,12 @@ async function startServer(): Promise<void> {
       retries: 5,
       baseDelayMs: 500,
     });
-    app.listen(env.PORT);
-    log.info(line(), `Server running at ${env.WEB_SITE}:${env.PORT}`);
+
+    app.listen(env.PORT, () => {
+      log.info(line(), `Server running at ${env.WEB_SITE}:${env.PORT}`);
+    });
+
+    shutdownHandler.registerShutdownHooks();
   } catch (err) {
     log.error("🔥 Error starting server: ", err);
     process.exit(1);

@@ -1,6 +1,6 @@
 import { log, line } from "#src/utils/logger.pino.js";
 
-// Captura global de errores no controlados en caso de que Winston no esté configurado
+// Captura global de errores no controlados
 process.on("uncaughtException", (err: unknown) => {
   // Si el error es una instancia de Error, capturamos el stack
   if (err instanceof Error) {
