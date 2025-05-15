@@ -36,7 +36,7 @@ const envSchema = z.object({
   // SMTP
   SMTP_ZOHO_HOST: z.string(),
   SMTP_ZOHO_PORT: z.coerce.number(),
-  SMTP_ZOHO_SECURE: z.coerce.boolean(),
+  SMTP_ZOHO_SECURE: z.enum(["true", "false"]).transform((v) => v === "true"),
 
   // Mails
   MAIL_CONTACTO_FINANZATECH_NAME: z.string(),
@@ -51,10 +51,11 @@ const envSchema = z.object({
   //Prino Logger
   LOG_LEVEL_CONSOLE: z.enum(["trace", "debug", "info", "warn", "error", "fatal", "silent"]),
   LOG_LEVEL_FILE: z.enum(["trace", "debug", "info", "warn", "error", "fatal", "silent"]),
-  PRISMA_DATABASE_FACTORING_LOG_QUERY: z.coerce.boolean(),
-  PRISMA_DATABASE_FACTORING_LOG_INFO: z.coerce.boolean(),
-  PRISMA_DATABASE_FACTORING_LOG_WARN: z.coerce.boolean(),
-  PRISMA_DATABASE_FACTORING_LOG_ERROR: z.coerce.boolean(),
+  PRISMA_DATABASE_FACTORING_LOG_QUERY: z.enum(["true", "false"]).transform((v) => v === "true"),
+  PRISMA_DATABASE_FACTORING_LOG_INFO: z.enum(["true", "false"]).transform((v) => v === "true"),
+  PRISMA_DATABASE_FACTORING_LOG_WARN: z.enum(["true", "false"]).transform((v) => v === "true"),
+  PRISMA_DATABASE_FACTORING_LOG_ERROR: z.enum(["true", "false"]).transform((v) => v === "true"),
+  PRISMA_DATABASE_FACTORING_LOG_SLOW_QUERIES: z.enum(["true", "false"]).transform((v) => v === "true"),
   PRISMA_DATABASE_FACTORING_SLOW_QUERY_THRESHOLD: z.coerce.number(),
 });
 

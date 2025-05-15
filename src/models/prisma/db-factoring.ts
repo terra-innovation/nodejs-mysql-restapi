@@ -1,111 +1,126 @@
 import { PrismaClient, Prisma } from "#src/models/prisma/ft_factoring/client.js";
 import { env, isProduction } from "#src/config.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { getContext } from "#src/utils/context/loggerContext.js";
 
-// ✅ Configuración de Prisma basado en las variables de entorno
-const prismaLogLevels: Prisma.LogLevel[] = [];
-
-if (env.PRISMA_DATABASE_FACTORING_LOG_QUERY) prismaLogLevels.push("query");
-if (env.PRISMA_DATABASE_FACTORING_LOG_INFO) prismaLogLevels.push("info");
-if (env.PRISMA_DATABASE_FACTORING_LOG_WARN) prismaLogLevels.push("warn");
-if (env.PRISMA_DATABASE_FACTORING_LOG_ERROR) prismaLogLevels.push("error");
-
-// ✅ Extiende el tipo global para incluir prismaFT en modo desarrollo
-declare global {
-  var clientFT: PrismaClient;
-}
-
-// ✅ Singleton para evitar múltiples instancias
-const clientFT: PrismaClient = isProduction
-  ? new PrismaClient({
-      log: prismaLogLevels.map((level): Prisma.LogDefinition => ({ level, emit: "event" })),
-    })
-  : global.clientFT ??
-    (global.clientFT = new PrismaClient({
-      log: prismaLogLevels.map((level): Prisma.LogDefinition => ({ level, emit: "event" })),
-    }));
-
-// ✅ Umbral para las consultas lentas
-const SLOW_QUERY_THRESHOLD = env.PRISMA_DATABASE_FACTORING_SLOW_QUERY_THRESHOLD || 200;
-
-const transactionTimeout = env.PRISMA_DATABASE_FACTORING_TRANSACTION_TIMEOUT || 8000;
-
-// ✅ Configurar eventos de Prisma para registrar queries y errores
-if (prismaLogLevels.includes("query")) {
-  clientFT.$on("query" as never, (e: Prisma.QueryEvent) => {
-    const duration = Number(e.duration);
-    const logLevel = duration > SLOW_QUERY_THRESHOLD ? "warn" : "debug";
-    const msgQuery = duration > SLOW_QUERY_THRESHOLD ? "Slow Query" : "Query";
-
-    log[logLevel](line(), `[Prisma] ${msgQuery}`, {
-      query: e.query,
-      params: e.params,
-      duration,
-    });
-  });
-}
-
-if (prismaLogLevels.includes("warn")) {
-  clientFT.$on("warn" as never, (e: Prisma.LogEvent) => log.warn(line(), `[Prisma] ${e.message}`));
-}
-
-if (prismaLogLevels.includes("info")) {
-  clientFT.$on("info" as never, (e: Prisma.LogEvent) => log.info(line(), `[Prisma] ${e.message}`));
-}
-if (prismaLogLevels.includes("error")) {
-  clientFT.$on("error" as never, (e: Prisma.LogEvent) => log.error(line(), `[Prisma] ${e.message}`));
-}
-
-/**
- * Valida la conexión a la base de datos.
- * Lanza si no se puede conectar.
- */
-async function validateDatabaseConnection({
-  retries = 5,
-  baseDelayMs = 500,
-}: {
+type InitOptions = {
   retries?: number;
   baseDelayMs?: number;
-} = {}) {
-  let attempt = 0;
+};
 
-  while (attempt < retries) {
-    try {
-      log.info(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] Connecting to the database...`);
-      await clientFT.$connect();
-      log.info(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] Database successful connection.`);
-      return;
-    } catch (error) {
-      attempt++;
-      log.warn(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] Database connection failure:`, error);
-      if (attempt >= retries) {
-        log.error(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] Error connecting to the database:`, error);
-        throw error;
-      }
-      const delay = baseDelayMs * 2 ** (attempt - 1); // Exponential backoff
-      log.info(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] Retrying in ${delay}ms...`);
-      await new Promise((resolve) => setTimeout(resolve, delay));
+export class PrismaFTManager {
+  private static instance: PrismaClient;
+  private static transactionTimeout = env.PRISMA_DATABASE_FACTORING_TRANSACTION_TIMEOUT || 8000;
+  private static slowQueryThreshold = env.PRISMA_DATABASE_FACTORING_SLOW_QUERY_THRESHOLD || 200;
+  private static logLevels = this.getLogLevels();
+
+  private constructor() {} // Prevent instantiation
+
+  public static get client(): PrismaClient {
+    if (!this.instance) {
+      this.instance = this.createClient();
+      this.setupEventListeners();
+    }
+    return this.instance;
+  }
+
+  private static createClient(): PrismaClient {
+    const logDefs = this.logLevels.map(
+      (level): Prisma.LogDefinition => ({
+        level,
+        emit: "event",
+      })
+    );
+
+    const client = isProduction ? new PrismaClient({ log: logDefs }) : global.clientFT ?? (global.clientFT = new PrismaClient({ log: logDefs }));
+
+    return client;
+  }
+
+  private static getLogLevels(): Prisma.LogLevel[] {
+    const levels: Prisma.LogLevel[] = [];
+    if (env.PRISMA_DATABASE_FACTORING_LOG_QUERY || env.PRISMA_DATABASE_FACTORING_LOG_SLOW_QUERIES) levels.push("query");
+    if (env.PRISMA_DATABASE_FACTORING_LOG_INFO) levels.push("info");
+    if (env.PRISMA_DATABASE_FACTORING_LOG_WARN) levels.push("warn");
+    if (env.PRISMA_DATABASE_FACTORING_LOG_ERROR) levels.push("error");
+    return levels;
+  }
+
+  private static setupEventListeners() {
+    const client = this.instance;
+
+    if (this.logLevels.includes("query")) {
+      client.$on("query" as never, (e: Prisma.QueryEvent) => {
+        const store = getContext();
+        const duration = Number(e.duration);
+        const isSlow = duration > this.slowQueryThreshold;
+        const logLevel = isSlow ? "warn" : "debug";
+        const msgQuery = isSlow ? "Slow Query" : "Query";
+
+        const printLogQuery = env.PRISMA_DATABASE_FACTORING_LOG_QUERY ? true : env.PRISMA_DATABASE_FACTORING_LOG_SLOW_QUERIES && isSlow ? true : false;
+
+        if (printLogQuery) {
+          log.debug(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] ${msgQuery}`, {
+            query: e.query,
+            params: e.params,
+            duration,
+            ...(store && typeof store === "object" && !Array.isArray(store) ? store : {}),
+          });
+        }
+      });
+    }
+    if (this.logLevels.includes("warn")) {
+      client.$on("warn" as never, (e: Prisma.LogEvent) => log.warn(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] ${e.message}`));
+    }
+    if (this.logLevels.includes("info")) {
+      client.$on("info" as never, (e: Prisma.LogEvent) => log.info(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] ${e.message}`));
+    }
+    if (this.logLevels.includes("error")) {
+      client.$on("error" as never, (e: Prisma.LogEvent) => log.error(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] ${e.message}`));
     }
   }
-}
 
-/**
- * Cierra conexión de Prisma
- */
-async function disconnectDatabase() {
-  try {
-    log.info(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] Disconnecting from database...`);
-    await clientFT.$disconnect();
-    log.info(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] Database disconnected.`);
-  } catch (error) {
-    log.error(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] Error during disconnection:`);
+  public static async validateConnection({ retries = 5, baseDelayMs = 500 }: InitOptions = {}) {
+    let attempt = 0;
+    while (attempt < retries) {
+      try {
+        log.info(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] Connecting to the database...`);
+        await this.client.$connect();
+        log.info(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] Database successful connection.`);
+        return;
+      } catch (error) {
+        attempt++;
+        log.warn(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] Connection failed:`, error);
+        if (attempt >= retries) {
+          log.error(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] Max retries reached.`, error);
+          throw error;
+        }
+        const delay = baseDelayMs * 2 ** (attempt - 1);
+        log.info(line(), `[Prisma] Retrying in ${delay}ms...`);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
+    }
+  }
+
+  public static async disconnect() {
+    try {
+      log.info(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] Disconnecting...`);
+      await this.client.$disconnect();
+      log.info(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] Disconnected.`);
+    } catch (error) {
+      log.error(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] Error during disconnection:`, error);
+    }
+  }
+
+  public static get timeout(): number {
+    return this.transactionTimeout;
   }
 }
 
-// 👇 Exportamos como objeto "prisma"
+// Export para uso externo
 export const prismaFT = {
-  client: clientFT,
-  transactionTimeout,
-  validateDatabaseConnection,
-  disconnectDatabase,
+  client: PrismaFTManager.client,
+  transactionTimeout: PrismaFTManager.timeout,
+  validateDatabaseConnection: PrismaFTManager.validateConnection,
+  disconnectDatabase: PrismaFTManager.disconnect,
 };

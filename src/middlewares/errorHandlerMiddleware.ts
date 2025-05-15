@@ -25,6 +25,6 @@ export function errorHandlerMiddleware(err: any, req: Request, res: Response, ne
     message = "Ocurrió un error";
   }
 
-  log.error(line(), "Error capturado:", util.inspect(err, { colors: true, depth: null }));
+  log.error(line(), "Uncaught Error:", util.inspect(err, { colors: true, depth: null }));
   customResponseError(res, statusCode, message);
 }

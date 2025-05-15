@@ -39,10 +39,10 @@ export const httpLogger = pinoHttp({
     },
   },
   customSuccessMessage(req, res) {
-    return `${req.method} ${req.url} ➜ ${res.statusCode}`;
+    return `${req.method} ${req.url} - ${res.statusCode}`;
   },
   customErrorMessage(req, res, err) {
-    return `Request errored: ${req.method} ${req.url} ➜ ${res.statusCode} - ${err.message}`;
+    return `Request errored: ${req.method} ${req.url} - ${res.statusCode} - ${err.message}`;
   },
   autoLogging: {
     ignore(req) {
