@@ -64,9 +64,9 @@ export const validateTransaction = async (req, res) => {
 
         const findZlaboratorioUsuarioPk = await zlaboratoriousuarioDao.findZlaboratorioUsuarioPk(tx, 105);
 
-        //const updateZlaboratorioUsuario = await zlaboratoriousuarioDao.updateZlaboratorioUsuario(tx, pedidoCreated);
+        const updateZlaboratorioUsuario = await zlaboratoriousuarioDao.updateZlaboratorioUsuario(tx, usuarioCreated);
 
-        //const deleteZlaboratorioUsuario = await zlaboratoriousuarioDao.deleteZlaboratorioUsuario(tx, pedidoCreated);
+        const deleteZlaboratorioUsuario = await zlaboratoriopedidoDao.deleteZlaboratorioPedido(tx, pedidoCreated);
 
         return usuarioCreated;
       },
