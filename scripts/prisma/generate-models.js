@@ -18,6 +18,8 @@ const runCommand = async (cmd, label) => {
 
 const runAll = async () => {
   await runCommand("npx prisma db pull --schema=prisma/ft_factoring/schema.prisma", "Sicronizar Base de Datos con PRISMA");
+  await runCommand("node scripts/prisma/pluralizar-schema.js", "Pluraliza schema");
+  await runCommand("node scripts/prisma/renombrar-atributos-especiales.js", "Renombra atributos especiales");
   await runCommand("npx prisma generate --schema=prisma/ft_factoring/schema.prisma", "Generar modelos con Prisma");
   console.log("\n🚀 Todos los scripts se ejecutaron correctamente.");
 };
