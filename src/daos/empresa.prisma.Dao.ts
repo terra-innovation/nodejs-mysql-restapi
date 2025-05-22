@@ -29,13 +29,13 @@ export const getEmpresasByIdusuario = async (tx: TxClient, idusuario: bigint, es
   try {
     const empresas = await tx.empresa.findMany({
       include: {
-        usuario_servicio_empresa: true,
+        usuario_servicio_empresas: true,
       },
       where: {
         estado: {
           in: estados,
         },
-        usuario_servicio_empresa: {
+        usuario_servicio_empresas: {
           some: {
             idusuario: idusuario,
             estado: {
@@ -57,14 +57,14 @@ export const getEmpresaByIdusuarioAndRuc = async (tx: TxClient, idusuario: bigin
   try {
     const empresas = await tx.empresa.findFirst({
       include: {
-        usuario_servicio_empresa: true,
+        usuario_servicio_empresas: true,
       },
       where: {
         ruc: ruc,
         estado: {
           in: estados,
         },
-        usuario_servicio_empresa: {
+        usuario_servicio_empresas: {
           some: {
             idusuario: idusuario,
             estado: {
@@ -86,12 +86,12 @@ export const getEmpresaByIdusuarioAndEmpresaid = async (tx: TxClient, idusuario:
   try {
     const empresas = await tx.empresa.findFirst({
       include: {
-        usuario_servicio_empresa: true,
+        usuario_servicio_empresas: true,
       },
       where: {
         empresaid: empresaid,
         estado: estado,
-        usuario_servicio_empresa: {
+        usuario_servicio_empresas: {
           some: {
             idusuario: idusuario,
             estado: estado,
@@ -111,17 +111,17 @@ export const getEmpresas = async (tx: TxClient, estados: number[]): Promise<empr
   try {
     const empresas = await tx.empresa.findMany({
       include: {
-        archivo_empresa: true,
-        colaborador: true,
-        contacto: true,
+        archivo_empresas: true,
+        colaboradores: true,
+        contactos: true,
         departamento: true,
         distrito: true,
-        empresa_cuenta_bancaria: true,
+        empresa_cuenta_bancarias: true,
         pais: true,
         provincia: true,
         riesgo: true,
-        servicio_empresa: true,
-        usuario_servicio_empresa: true,
+        servicio_empresas: true,
+        usuario_servicio_empresas: true,
       },
       where: {
         estado: {
@@ -141,7 +141,7 @@ export const getEmpresaByIdempresa = async (tx: TxClient, idempresa: number): Pr
   try {
     const empresa = await tx.empresa.findUnique({
       include: {
-        colaborador: true,
+        colaboradores: true,
       },
       where: {
         idempresa: idempresa,
@@ -161,7 +161,7 @@ export const getEmpresaByEmpresaid = async (tx: TxClient, empresaid: string): Pr
   try {
     const empresa = await tx.empresa.findFirst({
       include: {
-        colaborador: true,
+        colaboradores: true,
       },
       where: {
         empresaid: empresaid,

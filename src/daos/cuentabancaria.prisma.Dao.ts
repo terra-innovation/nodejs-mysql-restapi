@@ -9,7 +9,7 @@ export const getCuentasbancariasByIdempresaAndAlias = async (tx: TxClient, idemp
   try {
     const cuentasbancarias = await tx.cuenta_bancaria.findMany({
       include: {
-        empresa_cuenta_bancaria: {
+        empresa_cuenta_bancarias: {
           where: { idempresa },
         },
         banco: true,
@@ -23,7 +23,7 @@ export const getCuentasbancariasByIdempresaAndAlias = async (tx: TxClient, idemp
           { alias: alias },
           { estado: { in: estado } },
           {
-            empresa_cuenta_bancaria: { some: { idempresa: idempresa } },
+            empresa_cuenta_bancarias: { some: { idempresa: idempresa } },
           },
         ],
       },
@@ -65,11 +65,11 @@ export const getCuentasbancariasByIdusuarioAndAlias = async (tx: TxClient, idusu
   try {
     const cuentasbancarias = await tx.cuenta_bancaria.findMany({
       include: {
-        empresa_cuenta_bancaria: {
+        empresa_cuenta_bancarias: {
           include: {
             empresa: {
               include: {
-                usuario_servicio_empresa: true,
+                usuario_servicio_empresas: true,
               },
             },
           },
@@ -84,10 +84,10 @@ export const getCuentasbancariasByIdusuarioAndAlias = async (tx: TxClient, idusu
         estado: {
           in: estado,
         },
-        empresa_cuenta_bancaria: {
+        empresa_cuenta_bancarias: {
           some: {
             empresa: {
-              usuario_servicio_empresa: {
+              usuario_servicio_empresas: {
                 some: {
                   idusuario: idusuario,
                 },
@@ -109,11 +109,11 @@ export const getCuentasbancariasByIdusuario = async (tx: TxClient, idusuario: bi
   try {
     const cuentasbancarias = await tx.cuenta_bancaria.findMany({
       include: {
-        empresa_cuenta_bancaria: {
+        empresa_cuenta_bancarias: {
           include: {
             empresa: {
               include: {
-                usuario_servicio_empresa: true,
+                usuario_servicio_empresas: true,
               },
             },
           },
@@ -127,10 +127,10 @@ export const getCuentasbancariasByIdusuario = async (tx: TxClient, idusuario: bi
         estado: {
           in: estado,
         },
-        empresa_cuenta_bancaria: {
+        empresa_cuenta_bancarias: {
           some: {
             empresa: {
-              usuario_servicio_empresa: {
+              usuario_servicio_empresas: {
                 some: {
                   idusuario: idusuario,
                 },
@@ -167,7 +167,7 @@ export const getCuentasbancariasByEmpresaidAndMoneda = async (tx: TxClient, empr
         cuenta_tipo: true,
         moneda: true,
         cuenta_bancaria_estado: true,
-        empresa_cuenta_bancaria: {
+        empresa_cuenta_bancarias: {
           include: {
             empresa: true,
           },
@@ -180,7 +180,7 @@ export const getCuentasbancariasByEmpresaidAndMoneda = async (tx: TxClient, empr
         estado: {
           in: estado,
         },
-        empresa_cuenta_bancaria: {
+        empresa_cuenta_bancarias: {
           some: {
             empresa: {
               empresaid: empresaid,
@@ -208,11 +208,11 @@ export const getCuentabancariaByIdcuentabancariaIdempresaIdusuario = async (tx: 
         moneda: true,
         cuenta_tipo: true,
         cuenta_bancaria_estado: true,
-        empresa_cuenta_bancaria: {
+        empresa_cuenta_bancarias: {
           include: {
             empresa: {
               include: {
-                usuario_servicio_empresa: true,
+                usuario_servicio_empresas: true,
               },
             },
           },
@@ -221,7 +221,7 @@ export const getCuentabancariaByIdcuentabancariaIdempresaIdusuario = async (tx: 
       where: {
         idcuentabancaria: idcuentabancaria,
         AND: {
-          empresa_cuenta_bancaria: {
+          empresa_cuenta_bancarias: {
             some: {
               idempresa,
               idusuariocrea: idusuario,
@@ -242,7 +242,7 @@ export const getCuentabancariaByCuentabancariaid = async (tx: TxClient, cuentaba
   try {
     const cuentabancaria = await tx.cuenta_bancaria.findFirst({
       include: {
-        empresa_cuenta_bancaria: {
+        empresa_cuenta_bancarias: {
           include: {
             empresa: true,
           },
@@ -287,7 +287,7 @@ export const getCuentasbancarias = async (tx: TxClient, estado) => {
         moneda: true,
         cuenta_tipo: true,
         cuenta_bancaria_estado: true,
-        empresa_cuenta_bancaria: {
+        empresa_cuenta_bancarias: {
           include: {
             empresa: true,
           },

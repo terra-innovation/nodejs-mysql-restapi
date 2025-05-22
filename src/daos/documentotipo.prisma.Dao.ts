@@ -25,7 +25,7 @@ export const getDocumentotipoByIddocumentotipo = async (tx: TxClient, iddocument
   try {
     const documentotipo = await tx.documento_tipo.findUnique({
       include: {
-        colaborador: true,
+        colaboradores: true,
       },
       where: {
         iddocumentotipo: iddocumentotipo,
@@ -45,7 +45,7 @@ export const getDocumentotipoByDocumentotipoid = async (tx: TxClient, documentot
   try {
     const documentotipo = await tx.documento_tipo.findFirst({
       include: {
-        colaborador: true,
+        colaboradores: true,
       },
       where: {
         documentotipoid: documentotipoid,

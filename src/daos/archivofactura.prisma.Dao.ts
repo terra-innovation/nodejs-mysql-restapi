@@ -12,7 +12,7 @@ export const getArchivofacturasByIdfactoring = async (tx: TxClient, idfactoring:
         archivo: true,
         factura: {
           include: {
-            factoring_factura: {
+            factoring_facturas: {
               include: {
                 factoring: true,
               },
@@ -23,7 +23,7 @@ export const getArchivofacturasByIdfactoring = async (tx: TxClient, idfactoring:
       where: {
         estado: { in: estados },
         factura: {
-          factoring_factura: {
+          factoring_facturas: {
             some: {
               factoring: {
                 idfactoring: idfactoring,
