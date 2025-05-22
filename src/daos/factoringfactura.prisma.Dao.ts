@@ -1,12 +1,13 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, factoring_factura } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getFactoringsfacturasEmpresasActivas = async (transaction) => {
+export const getFactoringsfacturasEmpresasActivas = async (tx: TxClient) => {
   try {
-    const factoringsfacturasempresas = await modelsFT.FactoringFactura.findAll({
+    const factoringsfacturasempresas = await tx.factoring_factura.findMany({
       include: [
         {
           all: true,
@@ -15,7 +16,6 @@ export const getFactoringsfacturasEmpresasActivas = async (transaction) => {
       where: {
         estado: 1,
       },
-      transaction,
     });
 
     return factoringsfacturasempresas;
@@ -25,9 +25,9 @@ export const getFactoringsfacturasEmpresasActivas = async (transaction) => {
   }
 };
 
-export const getFactoringfacturaByIdfactoringfactura = async (transaction, idfactoringfactura) => {
+export const getFactoringfacturaByIdfactoringfactura = async (tx: TxClient, idfactoringfactura: number): Promise<factoring_factura> => {
   try {
-    const factoringfactura = await modelsFT.FactoringFactura.findByPk(idfactoringfactura, { transaction });
+    const factoringfactura = await tx.factoring_factura.findUnique({ where: { idfactoringfactura: idfactoringfactura } });
 
     //const factoringsfacturasempresas = await factoringfactura.getFactoringsfacturasEmpresas();
 
@@ -38,14 +38,13 @@ export const getFactoringfacturaByIdfactoringfactura = async (transaction, idfac
   }
 };
 
-export const getFactoringfacturaByFactoringfacturaid = async (transaction, factoringfactura) => {
+export const getFactoringfacturaByFactoringfacturaid = async (tx: TxClient, factoringfactura) => {
   try {
-    const result = await modelsFT.FactoringFactura.findOne({
+    const result = await tx.factoring_factura.findFirst({
       where: {
-        _idfactoring: factoringfactura._idfactoring,
-        _idfactura: factoringfactura._idfactura,
+        idfactoring: factoringfactura.idfactoring,
+        idfactura: factoringfactura.idfactura,
       },
-      transaction,
     });
 
     return result;
@@ -55,15 +54,14 @@ export const getFactoringfacturaByFactoringfacturaid = async (transaction, facto
   }
 };
 
-export const findFactoringfacturaPk = async (transaction, factoringfactura) => {
+export const findFactoringfacturaPk = async (tx: TxClient, factoringfactura) => {
   try {
-    const result = await modelsFT.FactoringFactura.findOne({
-      attributes: ["_idfactoringfactura"],
+    const result = await tx.factoring_factura.findFirst({
+      select: { idfactoringfactura: true },
       where: {
-        _idfactoring: factoringfactura._idfactoring,
-        _idfactura: factoringfactura._idfactura,
+        idfactoring: factoringfactura.idfactoring,
+        idfactura: factoringfactura.idfactura,
       },
-      transaction,
     });
 
     return result;
@@ -73,25 +71,25 @@ export const findFactoringfacturaPk = async (transaction, factoringfactura) => {
   }
 };
 
-export const insertFactoringfactura = async (transaction, factoringfactura) => {
+export const insertFactoringfactura = async (tx: TxClient, factoringfactura: Prisma.factoring_facturaCreateInput): Promise<factoring_factura> => {
   try {
-    const factoringfactura_nuevo = await modelsFT.FactoringFactura.create(factoringfactura, { transaction });
+    const nuevo = await tx.factoring_factura.create({ data: factoringfactura });
 
-    return factoringfactura_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateFactoringfactura = async (transaction, factoringfactura) => {
+export const updateFactoringfactura = async (tx: TxClient, factoringfactura: Partial<factoring_factura>): Promise<factoring_factura> => {
   try {
-    const result = await modelsFT.FactoringFactura.update(factoringfactura, {
+    const result = await tx.factoring_factura.update({
+      data: factoringfactura,
       where: {
-        _idfactoring: factoringfactura._idfactoring,
-        _idfactura: factoringfactura._idfactura,
+        idfactoring: factoringfactura.idfactoring,
+        idfactura: factoringfactura.idfactura,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -100,14 +98,14 @@ export const updateFactoringfactura = async (transaction, factoringfactura) => {
   }
 };
 
-export const deleteFactoringfactura = async (transaction, factoringfactura) => {
+export const deleteFactoringfactura = async (tx: TxClient, factoringfactura: Partial<factoring_factura>): Promise<factoring_factura> => {
   try {
-    const result = await modelsFT.FactoringFactura.update(factoringfactura, {
+    const result = await tx.factoring_factura.update({
+      data: factoringfactura,
       where: {
-        _idfactoring: factoringfactura._idfactoring,
-        _idfactura: factoringfactura._idfactura,
+        idfactoring: factoringfactura.idfactoring,
+        idfactura: factoringfactura.idfactura,
       },
-      transaction,
     });
     return result;
   } catch (error) {

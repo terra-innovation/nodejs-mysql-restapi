@@ -1,12 +1,13 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, factoring } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getFactoringsOportunidades = async (transaction, _idfactoringestados, estados) => {
+export const getFactoringsOportunidades = async (tx: TxClient, idfactoringestados, estados: number[]) => {
   try {
-    const factorings = await modelsFT.Factoring.findAll({
+    const factorings = await tx.factoring.findMany({
       include: [
         {
           model: modelsFT.Empresa,
@@ -32,14 +33,13 @@ export const getFactoringsOportunidades = async (transaction, _idfactoringestado
         },
       ],
       where: {
-        _idfactoringestado: {
-          [Op.in]: _idfactoringestados,
+        idfactoringestado: {
+          in: idfactoringestados,
         },
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return factorings;
@@ -49,9 +49,9 @@ export const getFactoringsOportunidades = async (transaction, _idfactoringestado
   }
 };
 
-export const getFactoringsByIdfactoringestado = async (transaction, _idfactoringestados, estados) => {
+export const getFactoringsByIdfactoringestado = async (tx: TxClient, idfactoringestados, estados: number[]) => {
   try {
-    const factorings = await modelsFT.Factoring.findAll({
+    const factorings = await tx.factoring.findMany({
       include: [
         {
           all: true,
@@ -100,14 +100,13 @@ export const getFactoringsByIdfactoringestado = async (transaction, _idfactoring
         },
       ],
       where: {
-        _idfactoringestado: {
-          [Op.in]: _idfactoringestados,
+        idfactoringestado: {
+          in: idfactoringestados,
         },
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return factorings;
@@ -117,9 +116,9 @@ export const getFactoringsByIdfactoringestado = async (transaction, _idfactoring
   }
 };
 
-export const getFactoringsByIdcedentes = async (transaction, _idcedentes, estados) => {
+export const getFactoringsByIdcedentes = async (tx: TxClient, idcedentes, estados: number[]) => {
   try {
-    const factorings = await modelsFT.Factoring.findAll({
+    const factorings = await tx.factoring.findMany({
       include: [
         {
           all: true,
@@ -168,14 +167,13 @@ export const getFactoringsByIdcedentes = async (transaction, _idcedentes, estado
         },
       ],
       where: {
-        _idcedente: {
-          [Op.in]: _idcedentes,
+        idcedente: {
+          in: idcedentes,
         },
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return factorings;
@@ -185,9 +183,9 @@ export const getFactoringsByIdcedentes = async (transaction, _idcedentes, estado
   }
 };
 
-export const getFactoringByRucCedenteAndCodigoFactura = async (transaction, ruc_cedente, factura_serie, factura_numero, estados) => {
+export const getFactoringByRucCedenteAndCodigoFactura = async (tx: TxClient, ruc_cedente, factura_serie, factura_numero, estados: number[]) => {
   try {
-    const factoring = await modelsFT.Factoring.findOne({
+    const factoring = await tx.factoring.findFirst({
       include: [
         {
           model: modelsFT.Empresa,
@@ -210,10 +208,9 @@ export const getFactoringByRucCedenteAndCodigoFactura = async (transaction, ruc_
       ],
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
     return factoring;
   } catch (error) {
@@ -222,22 +219,21 @@ export const getFactoringByRucCedenteAndCodigoFactura = async (transaction, ruc_
   }
 };
 
-export const getFactoringByFactoringidAndIdcontactocedente = async (transaction, factoringid, idcontactocedete, estados) => {
+export const getFactoringByFactoringidAndIdcontactocedente = async (tx: TxClient, factoringid, idcontactocedete, estados: number[]) => {
   try {
-    const factoring = await modelsFT.Factoring.findOne({
+    const factoring = await tx.factoring.findFirst({
       include: [
         {
           all: true,
         },
       ],
       where: {
-        _idcontactocedente: idcontactocedete,
+        idcontactocedente: idcontactocedete,
         factoringid: factoringid,
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
     //log.debug(line(),"factoring: ", factoring);
     return factoring;
@@ -247,9 +243,9 @@ export const getFactoringByFactoringidAndIdcontactocedente = async (transaction,
   }
 };
 
-export const getFactoringsCotizacionesByIdcontactocedente = async (transaction, idcontactocedete, estados) => {
+export const getFactoringsCotizacionesByIdcontactocedente = async (tx: TxClient, idcontactocedete, estados: number[]) => {
   try {
-    const factorings = await modelsFT.Factoring.findAll({
+    const factorings = await tx.factoring.findMany({
       include: [
         {
           all: true,
@@ -257,11 +253,10 @@ export const getFactoringsCotizacionesByIdcontactocedente = async (transaction, 
       ],
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
-        _idcontactocedente: idcontactocedete,
+        idcontactocedente: idcontactocedete,
       },
-      transaction,
     });
 
     return factorings;
@@ -271,9 +266,9 @@ export const getFactoringsCotizacionesByIdcontactocedente = async (transaction, 
   }
 };
 
-export const getFactoringsByEstados = async (transaction, estados) => {
+export const getFactoringsByEstados = async (tx: TxClient, estados: number[]): Promise<factoring[]> => {
   try {
-    const factorings = await modelsFT.Factoring.findAll({
+    const factorings = await tx.factoring.findMany({
       include: [
         {
           all: true,
@@ -323,10 +318,9 @@ export const getFactoringsByEstados = async (transaction, estados) => {
       ],
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return factorings;
@@ -336,9 +330,9 @@ export const getFactoringsByEstados = async (transaction, estados) => {
   }
 };
 
-export const getFactoringByIdfactoring = async (transaction, idfactoring) => {
+export const getFactoringByIdfactoring = async (tx: TxClient, idfactoring: number): Promise<factoring> => {
   try {
-    const factoring = await modelsFT.Factoring.findByPk(idfactoring, {
+    const factoring = await tx.factoring.findByPk(idfactoring, {
       include: [
         {
           all: true,
@@ -376,7 +370,6 @@ export const getFactoringByIdfactoring = async (transaction, idfactoring) => {
           ],
         },
       ],
-      transaction,
     });
 
     return factoring;
@@ -386,9 +379,9 @@ export const getFactoringByIdfactoring = async (transaction, idfactoring) => {
   }
 };
 
-export const getFactoringByFactoringid = async (transaction, factoringid) => {
+export const getFactoringByFactoringid = async (tx: TxClient, factoringid: string): Promise<factoring> => {
   try {
-    const factoring = await modelsFT.Factoring.findOne({
+    const factoring = await tx.factoring.findFirst({
       include: [
         {
           all: true,
@@ -397,7 +390,6 @@ export const getFactoringByFactoringid = async (transaction, factoringid) => {
       where: {
         factoringid: factoringid,
       },
-      transaction,
     });
     //log.debug(line(),"factoring: ", factoring);
     return factoring;
@@ -407,14 +399,13 @@ export const getFactoringByFactoringid = async (transaction, factoringid) => {
   }
 };
 
-export const findFactoringPk = async (transaction, factoringid) => {
+export const findFactoringPk = async (tx: TxClient, factoringid: string): Promise<{ idfactoring: number }> => {
   try {
-    const factoring = await modelsFT.Factoring.findOne({
-      attributes: ["_idfactoring"],
+    const factoring = await tx.factoring.findFirst({
+      select: { idfactoring: true },
       where: {
         factoringid: factoringid,
       },
-      transaction,
     });
 
     return factoring;
@@ -424,24 +415,24 @@ export const findFactoringPk = async (transaction, factoringid) => {
   }
 };
 
-export const insertFactoring = async (transaction, factoring) => {
+export const insertFactoring = async (tx: TxClient, factoring: Prisma.factoringCreateInput): Promise<factoring> => {
   try {
-    const factoring_nuevo = await modelsFT.Factoring.create(factoring, { transaction });
+    const nuevo = await tx.factoring.create({ data: factoring });
 
-    return factoring_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateFactoring = async (transaction, factoring) => {
+export const updateFactoring = async (tx: TxClient, factoring: Partial<factoring>): Promise<factoring> => {
   try {
-    const result = await modelsFT.Factoring.update(factoring, {
+    const result = await tx.factoring.update({
+      data: factoring,
       where: {
         factoringid: factoring.factoringid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -450,13 +441,13 @@ export const updateFactoring = async (transaction, factoring) => {
   }
 };
 
-export const deleteFactoring = async (transaction, factoring) => {
+export const deleteFactoring = async (tx: TxClient, factoring: Partial<factoring>): Promise<factoring> => {
   try {
-    const result = await modelsFT.Factoring.update(factoring, {
+    const result = await tx.factoring.update({
+      data: factoring,
       where: {
         factoringid: factoring.factoringid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -465,13 +456,13 @@ export const deleteFactoring = async (transaction, factoring) => {
   }
 };
 
-export const activateFactoring = async (transaction, factoring) => {
+export const activateFactoring = async (tx: TxClient, factoring: Partial<factoring>): Promise<factoring> => {
   try {
-    const result = await modelsFT.Factoring.update(factoring, {
+    const result = await tx.factoring.update({
+      data: factoring,
       where: {
         factoringid: factoring.factoringid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

@@ -2,8 +2,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 import type { Prisma, zlaboratorio_usuario } from "#src/models/prisma/ft_factoring/client";
-
-type TxClient = Prisma.TransactionClient;
+import { TxClient } from "#src/types/Prisma.types.js";
 
 export const getZlaboratorioUsuarios = async (tx: TxClient, estados: number[]): Promise<zlaboratorio_usuario[]> => {
   try {
@@ -75,7 +74,7 @@ export const insertZlaboratorioUsuario = async (tx: TxClient, zlaboratoriousuari
   }
 };
 
-export const updateZlaboratorioUsuario = async (tx: TxClient, zlaboratoriousuario: zlaboratorio_usuario): Promise<zlaboratorio_usuario> => {
+export const updateZlaboratorioUsuario = async (tx: TxClient, zlaboratoriousuario: Partial<zlaboratorio_usuario>): Promise<zlaboratorio_usuario> => {
   try {
     const result = await tx.zlaboratorio_usuario.update({
       where: {
@@ -90,7 +89,7 @@ export const updateZlaboratorioUsuario = async (tx: TxClient, zlaboratoriousuari
   }
 };
 
-export const deleteZlaboratorioUsuario = async (tx: TxClient, zlaboratoriousuario: zlaboratorio_usuario): Promise<zlaboratorio_usuario> => {
+export const deleteZlaboratorioUsuario = async (tx: TxClient, zlaboratoriousuario: Partial<zlaboratorio_usuario>): Promise<zlaboratorio_usuario> => {
   try {
     const result = await tx.zlaboratorio_usuario.delete({
       where: {

@@ -1,18 +1,17 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, documento_tipo } from "#src/models/prisma/ft_factoring/client";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getDocumentotipos = async (transaction, estados) => {
+export const getDocumentotipos = async (tx: TxClient, estados: number[]): Promise<documento_tipo[]> => {
   try {
-    const documentotipos = await modelsFT.DocumentoTipo.findAll({
+    const documentotipos = await tx.documento_tipo.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return documentotipos;
@@ -22,16 +21,15 @@ export const getDocumentotipos = async (transaction, estados) => {
   }
 };
 
-export const getDocumentotipoByIddocumentotipo = async (transaction, iddocumentotipo) => {
+export const getDocumentotipoByIddocumentotipo = async (tx: TxClient, iddocumentotipo: number): Promise<documento_tipo> => {
   try {
-    const documentotipo = await modelsFT.DocumentoTipo.findByPk(iddocumentotipo, {
-      include: [
-        {
-          model: modelsFT.Colaborador,
-          as: "colaboradors",
-        },
-      ],
-      transaction,
+    const documentotipo = await tx.documento_tipo.findUnique({
+      include: {
+        colaborador: true,
+      },
+      where: {
+        iddocumentotipo: iddocumentotipo,
+      },
     });
 
     //const colaboradores = await documentotipo.getColaboradors();
@@ -43,19 +41,15 @@ export const getDocumentotipoByIddocumentotipo = async (transaction, iddocumento
   }
 };
 
-export const getDocumentotipoByDocumentotipoid = async (transaction, documentotipoid) => {
+export const getDocumentotipoByDocumentotipoid = async (tx: TxClient, documentotipoid: string): Promise<documento_tipo> => {
   try {
-    const documentotipo = await modelsFT.DocumentoTipo.findAll({
-      include: [
-        {
-          model: modelsFT.Colaborador,
-          as: "colaboradors",
-        },
-      ],
+    const documentotipo = await tx.documento_tipo.findFirst({
+      include: {
+        colaborador: true,
+      },
       where: {
         documentotipoid: documentotipoid,
       },
-      transaction,
     });
 
     return documentotipo;
@@ -65,14 +59,13 @@ export const getDocumentotipoByDocumentotipoid = async (transaction, documentoti
   }
 };
 
-export const findDocumentotipoPk = async (transaction, documentotipoid) => {
+export const findDocumentotipoPk = async (tx: TxClient, documentotipoid: string): Promise<{ iddocumentotipo: number }> => {
   try {
-    const documentotipo = await modelsFT.DocumentoTipo.findOne({
-      attributes: ["_iddocumentotipo"],
+    const documentotipo = await tx.documento_tipo.findFirst({
+      select: { iddocumentotipo: true },
       where: {
         documentotipoid: documentotipoid,
       },
-      transaction,
     });
 
     return documentotipo;
@@ -82,24 +75,24 @@ export const findDocumentotipoPk = async (transaction, documentotipoid) => {
   }
 };
 
-export const insertDocumentotipo = async (transaction, documentotipo) => {
+export const insertDocumentotipo = async (tx: TxClient, documentotipo: Prisma.documento_tipoCreateInput): Promise<documento_tipo> => {
   try {
-    const documentotipo_nuevo = await modelsFT.DocumentoTipo.create(documentotipo, { transaction });
+    const nuevo = await tx.documento_tipo.create({ data: documentotipo });
 
-    return documentotipo_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateDocumentotipo = async (transaction, documentotipo) => {
+export const updateDocumentotipo = async (tx: TxClient, documentotipo: Partial<documento_tipo>): Promise<documento_tipo> => {
   try {
-    const result = await modelsFT.DocumentoTipo.update(documentotipo, {
+    const result = await tx.documento_tipo.update({
+      data: documentotipo,
       where: {
         documentotipoid: documentotipo.documentotipoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -108,13 +101,13 @@ export const updateDocumentotipo = async (transaction, documentotipo) => {
   }
 };
 
-export const deleteDocumentotipo = async (transaction, documentotipo) => {
+export const deleteDocumentotipo = async (tx: TxClient, documentotipo: Partial<documento_tipo>): Promise<documento_tipo> => {
   try {
-    const result = await modelsFT.DocumentoTipo.update(documentotipo, {
+    const result = await tx.documento_tipo.update({
+      data: documentotipo,
       where: {
         documentotipoid: documentotipo.documentotipoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -123,13 +116,13 @@ export const deleteDocumentotipo = async (transaction, documentotipo) => {
   }
 };
 
-export const activateDocumentotipo = async (transaction, documentotipo) => {
+export const activateDocumentotipo = async (tx: TxClient, documentotipo: Partial<documento_tipo>): Promise<documento_tipo> => {
   try {
-    const result = await modelsFT.DocumentoTipo.update(documentotipo, {
+    const result = await tx.documento_tipo.update({
+      data: documentotipo,
       where: {
         documentotipoid: documentotipo.documentotipoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

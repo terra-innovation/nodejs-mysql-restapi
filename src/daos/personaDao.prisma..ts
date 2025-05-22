@@ -1,12 +1,10 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getPersonasByVerificacion = async (transaction, estado, idarchivotipo) => {
+export const getPersonasByVerificacion = async (tx: TxClient, estado, idarchivotipo) => {
   try {
-    const personas = await modelsFT.Persona.findAll({
+    const personas = await tx.Persona.findMany({
       include: [
         {
           model: modelsFT.Usuario,
@@ -91,18 +89,17 @@ export const getPersonasByVerificacion = async (transaction, estado, idarchivoti
             },
           ],
           where: {
-            _idarchivotipo: {
-              [Op.in]: idarchivotipo,
+            idarchivotipo: {
+              in: idarchivotipo,
             },
           },
         },
       ],
       where: {
         estado: {
-          [Op.in]: estado,
+          in: estado,
         },
       },
-      transaction,
     });
 
     return personas;
@@ -112,9 +109,9 @@ export const getPersonasByVerificacion = async (transaction, estado, idarchivoti
   }
 };
 
-export const getPersonaByIdusuario = async (transaction, idusuario) => {
+export const getPersonaByIdusuario = async (tx: TxClient, idusuario) => {
   try {
-    const persona = await modelsFT.Persona.findOne({
+    const persona = await tx.Persona.findFirst({
       include: [
         {
           model: modelsFT.Usuario,
@@ -167,9 +164,8 @@ export const getPersonaByIdusuario = async (transaction, idusuario) => {
         },
       ],
       where: {
-        _idusuario: idusuario,
+        idusuario: idusuario,
       },
-      transaction,
     });
     return persona;
   } catch (error) {
@@ -178,9 +174,9 @@ export const getPersonaByIdusuario = async (transaction, idusuario) => {
   }
 };
 
-export const getPersonaByIdpersona = async (transaction, idpersona) => {
+export const getPersonaByIdpersona = async (tx: TxClient, idpersona) => {
   try {
-    const persona = await modelsFT.Persona.findByPk(idpersona, {
+    const persona = await tx.Persona.findByPk(idpersona, {
       include: [
         {
           model: modelsFT.Usuario,
@@ -232,7 +228,6 @@ export const getPersonaByIdpersona = async (transaction, idpersona) => {
           as: "genero_genero",
         },
       ],
-      transaction,
     });
 
     return persona;
@@ -242,9 +237,9 @@ export const getPersonaByIdpersona = async (transaction, idpersona) => {
   }
 };
 
-export const getPersonaByPersonaid = async (transaction, personaid) => {
+export const getPersonaByPersonaid = async (tx: TxClient, personaid: string) => {
   try {
-    const persona = await modelsFT.Persona.findOne({
+    const persona = await tx.Persona.findFirst({
       include: [
         {
           model: modelsFT.Usuario,
@@ -299,7 +294,6 @@ export const getPersonaByPersonaid = async (transaction, personaid) => {
       where: {
         personaid: personaid,
       },
-      transaction,
     });
     //log.debug(line(), persona);
     return persona;
@@ -309,14 +303,13 @@ export const getPersonaByPersonaid = async (transaction, personaid) => {
   }
 };
 
-export const findPersonaPk = async (transaction, personaid) => {
+export const findPersonaPk = async (tx: TxClient, personaid: string) => {
   try {
-    const persona = await modelsFT.Persona.findOne({
-      attributes: ["_idpersona"],
+    const persona = await tx.Persona.findFirst({
+      attributes: ["idpersona"],
       where: {
         personaid: personaid,
       },
-      transaction,
     });
 
     return persona;
@@ -326,9 +319,9 @@ export const findPersonaPk = async (transaction, personaid) => {
   }
 };
 
-export const getPersonas = async (transaction, estado) => {
+export const getPersonas = async (tx: TxClient, estado) => {
   try {
-    const personas = await modelsFT.Persona.findAll({
+    const personas = await tx.Persona.findMany({
       include: [
         {
           model: modelsFT.Usuario,
@@ -387,10 +380,9 @@ export const getPersonas = async (transaction, estado) => {
       ],
       where: {
         estado: {
-          [Op.in]: estado,
+          in: estado,
         },
       },
-      transaction,
     });
 
     return personas;
@@ -400,9 +392,9 @@ export const getPersonas = async (transaction, estado) => {
   }
 };
 
-export const insertPersona = async (transaction, persona) => {
+export const insertPersona = async (tx: TxClient, persona) => {
   try {
-    const persona_nuevo = await modelsFT.Persona.create(persona, { transaction });
+    const persona_nuevo = await tx.Persona.create(persona);
 
     return persona_nuevo;
   } catch (error) {
@@ -411,13 +403,12 @@ export const insertPersona = async (transaction, persona) => {
   }
 };
 
-export const updatePersona = async (transaction, persona) => {
+export const updatePersona = async (tx: TxClient, persona) => {
   try {
-    const result = await modelsFT.Persona.update(persona, {
+    const result = await tx.Persona.update(persona, {
       where: {
         personaid: persona.personaid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -426,13 +417,12 @@ export const updatePersona = async (transaction, persona) => {
   }
 };
 
-export const deletePersona = async (transaction, persona) => {
+export const deletePersona = async (tx: TxClient, persona) => {
   try {
-    const result = await modelsFT.Persona.update(persona, {
+    const result = await tx.Persona.update(persona, {
       where: {
         personaid: persona.personaid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -441,13 +431,12 @@ export const deletePersona = async (transaction, persona) => {
   }
 };
 
-export const activatePersona = async (transaction, persona) => {
+export const activatePersona = async (tx: TxClient, persona) => {
   try {
-    const result = await modelsFT.Persona.update(persona, {
+    const result = await tx.Persona.update(persona, {
       where: {
         personaid: persona.personaid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

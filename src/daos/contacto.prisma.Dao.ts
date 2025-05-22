@@ -1,63 +1,26 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, contacto } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getContactosByIdempresaAndEmail = async (transaction, _idempresa, email, estados) => {
+export const getContactosByIdempresaAndEmail = async (tx: TxClient, idempresa, email, estados: number[]) => {
   try {
-    const contactos = await modelsFT.Contacto.findAll({
-      include: [
-        {
-          model: modelsFT.Empresa,
-          as: "empresa_empresa",
-          where: {
-            estado: {
-              [Op.in]: estados,
-            },
-          },
-        },
-      ],
+    const contactos = await tx.contacto.findMany({
+      include: { empresa: true },
       where: {
-        _idempresa: _idempresa,
+        idempresa: idempresa,
         email: email,
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
-      },
-      transaction,
-    });
-
-    return contactos;
-  } catch (error) {
-    log.error(line(), "", formatError(error));
-    throw new ClientError("Ocurrio un error", 500);
-  }
-};
-
-export const getContactosByIdempresas = async (transaction, _idempresas, estados) => {
-  try {
-    const contactos = await modelsFT.Contacto.findAll({
-      include: [
-        {
-          model: modelsFT.Empresa,
-          as: "empresa_empresa",
-          where: {
-            estado: {
-              [Op.in]: estados,
-            },
+        empresa: {
+          estado: {
+            in: estados,
           },
         },
-      ],
-      where: {
-        _idempresa: {
-          [Op.in]: _idempresas,
-        },
-        estado: {
-          [Op.in]: estados,
-        },
       },
-      transaction,
     });
 
     return contactos;
@@ -67,15 +30,25 @@ export const getContactosByIdempresas = async (transaction, _idempresas, estados
   }
 };
 
-export const getContactos = async (transaction, estados) => {
+export const getContactosByIdempresas = async (tx: TxClient, idempresas: number[], estados: number[]) => {
   try {
-    const contactos = await modelsFT.Contacto.findAll({
+    const contactos = await tx.contacto.findMany({
+      include: {
+        empresa: true,
+      },
       where: {
+        idempresa: {
+          in: idempresas,
+        },
         estado: {
-          [Op.in]: estados,
+          in: estados,
+        },
+        empresa: {
+          estado: {
+            in: estados,
+          },
         },
       },
-      transaction,
     });
 
     return contactos;
@@ -85,11 +58,26 @@ export const getContactos = async (transaction, estados) => {
   }
 };
 
-export const getContactoByIdcontacto = async (transaction, idcontacto) => {
+export const getContactos = async (tx: TxClient, estados: number[]): Promise<contacto[]> => {
   try {
-    const contacto = await modelsFT.Contacto.findByPk(idcontacto, { transaction });
+    const contactos = await tx.contacto.findMany({
+      where: {
+        estado: {
+          in: estados,
+        },
+      },
+    });
 
-    //const contactos = await contacto.getContactos();
+    return contactos;
+  } catch (error) {
+    log.error(line(), "", formatError(error));
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
+export const getContactoByIdcontacto = async (tx: TxClient, idcontacto: number): Promise<contacto> => {
+  try {
+    const contacto = await tx.contacto.findUnique({ where: { idcontacto: idcontacto } });
 
     return contacto;
   } catch (error) {
@@ -98,13 +86,12 @@ export const getContactoByIdcontacto = async (transaction, idcontacto) => {
   }
 };
 
-export const getContactoByContactoid = async (transaction, contactoid) => {
+export const getContactoByContactoid = async (tx: TxClient, contactoid: string): Promise<contacto> => {
   try {
-    const contacto = await modelsFT.Contacto.findOne({
+    const contacto = await tx.contacto.findFirst({
       where: {
         contactoid: contactoid,
       },
-      transaction,
     });
 
     return contacto;
@@ -114,14 +101,13 @@ export const getContactoByContactoid = async (transaction, contactoid) => {
   }
 };
 
-export const findContactoPk = async (transaction, contactoid) => {
+export const findContactoPk = async (tx: TxClient, contactoid: string): Promise<{ idcontacto: number }> => {
   try {
-    const contacto = await modelsFT.Contacto.findOne({
-      attributes: ["_idcontacto"],
+    const contacto = await tx.contacto.findFirst({
+      select: { idcontacto: true },
       where: {
         contactoid: contactoid,
       },
-      transaction,
     });
 
     return contacto;
@@ -131,24 +117,24 @@ export const findContactoPk = async (transaction, contactoid) => {
   }
 };
 
-export const insertContacto = async (transaction, contacto) => {
+export const insertContacto = async (tx: TxClient, contacto: Prisma.contactoCreateInput): Promise<contacto> => {
   try {
-    const contacto_nuevo = await modelsFT.Contacto.create(contacto, { transaction });
+    const nuevo = await tx.contacto.create({ data: contacto });
 
-    return contacto_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateContacto = async (transaction, contacto) => {
+export const updateContacto = async (tx: TxClient, contacto: Partial<contacto>): Promise<contacto> => {
   try {
-    const result = await modelsFT.Contacto.update(contacto, {
+    const result = await tx.contacto.update({
+      data: contacto,
       where: {
         contactoid: contacto.contactoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -157,13 +143,13 @@ export const updateContacto = async (transaction, contacto) => {
   }
 };
 
-export const deleteContacto = async (transaction, contacto) => {
+export const deleteContacto = async (tx: TxClient, contacto: Partial<contacto>): Promise<contacto> => {
   try {
-    const result = await modelsFT.Contacto.update(contacto, {
+    const result = await tx.contacto.update({
+      data: contacto,
       where: {
         contactoid: contacto.contactoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

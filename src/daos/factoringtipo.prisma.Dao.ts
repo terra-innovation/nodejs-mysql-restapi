@@ -1,31 +1,30 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, factoring_tipo } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getFactoringtipos = async (transaction, estados) => {
+export const getFactoringtipos = async (tx: TxClient, estados: number[]): Promise<factoring_tipo[]> => {
   try {
-    const factoringtipos = await modelsFT.FactoringTipo.findAll({
+    const factoringtipos = await tx.factoring_tipo.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return factoringtipos;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getFactoringtipoByIdfactoringtipo = async (transaction, idfactoringtipo) => {
+export const getFactoringtipoByIdfactoringtipo = async (tx: TxClient, idfactoringtipo: number): Promise<factoring_tipo> => {
   try {
-    const factoringtipo = await modelsFT.FactoringTipo.findByPk(idfactoringtipo, { transaction });
+    const factoringtipo = await tx.factoring_tipo.findUnique({ where: { idfactoringtipo: idfactoringtipo } });
 
     //const factoringtipos = await factoringtipo.getFactoringtipos();
 
@@ -36,13 +35,12 @@ export const getFactoringtipoByIdfactoringtipo = async (transaction, idfactoring
   }
 };
 
-export const getFactoringtipoByFactoringtipoid = async (transaction, factoringtipoid) => {
+export const getFactoringtipoByFactoringtipoid = async (tx: TxClient, factoringtipoid: string): Promise<factoring_tipo> => {
   try {
-    const factoringtipo = await modelsFT.FactoringTipo.findOne({
+    const factoringtipo = await tx.factoring_tipo.findFirst({
       where: {
         factoringtipoid: factoringtipoid,
       },
-      transaction,
     });
 
     return factoringtipo;
@@ -52,14 +50,13 @@ export const getFactoringtipoByFactoringtipoid = async (transaction, factoringti
   }
 };
 
-export const findFactoringtipoPk = async (transaction, factoringtipoid) => {
+export const findFactoringtipoPk = async (tx: TxClient, factoringtipoid: string): Promise<{ idfactoringtipo: number }> => {
   try {
-    const factoringtipo = await modelsFT.FactoringTipo.findOne({
-      attributes: ["_idfactoringtipo"],
+    const factoringtipo = await tx.factoring_tipo.findFirst({
+      select: { idfactoringtipo: true },
       where: {
         factoringtipoid: factoringtipoid,
       },
-      transaction,
     });
 
     return factoringtipo;
@@ -69,24 +66,24 @@ export const findFactoringtipoPk = async (transaction, factoringtipoid) => {
   }
 };
 
-export const insertFactoringtipo = async (transaction, factoringtipo) => {
+export const insertFactoringtipo = async (tx: TxClient, factoringtipo: Prisma.factoring_tipoCreateInput): Promise<factoring_tipo> => {
   try {
-    const factoringtipo_nuevo = await modelsFT.FactoringTipo.create(factoringtipo, { transaction });
+    const nuevo = await tx.factoring_tipo.create({ data: factoringtipo });
 
-    return factoringtipo_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateFactoringtipo = async (transaction, factoringtipo) => {
+export const updateFactoringtipo = async (tx: TxClient, factoringtipo: Partial<factoring_tipo>): Promise<factoring_tipo> => {
   try {
-    const result = await modelsFT.FactoringTipo.update(factoringtipo, {
+    const result = await tx.factoring_tipo.update({
+      data: factoringtipo,
       where: {
         factoringtipoid: factoringtipo.factoringtipoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -95,13 +92,13 @@ export const updateFactoringtipo = async (transaction, factoringtipo) => {
   }
 };
 
-export const deleteFactoringtipo = async (transaction, factoringtipo) => {
+export const deleteFactoringtipo = async (tx: TxClient, factoringtipo: Partial<factoring_tipo>): Promise<factoring_tipo> => {
   try {
-    const result = await modelsFT.FactoringTipo.update(factoringtipo, {
+    const result = await tx.factoring_tipo.update({
+      data: factoringtipo,
       where: {
         factoringtipoid: factoringtipo.factoringtipoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

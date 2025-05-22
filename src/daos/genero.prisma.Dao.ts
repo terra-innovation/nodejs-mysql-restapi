@@ -1,31 +1,30 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, genero } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getGeneros = async (transaction, estados) => {
+export const getGeneros = async (tx: TxClient, estados: number[]): Promise<genero[]> => {
   try {
-    const generos = await modelsFT.Genero.findAll({
+    const generos = await tx.genero.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return generos;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getGeneroByIdgenero = async (transaction, idgenero) => {
+export const getGeneroByIdgenero = async (tx: TxClient, idgenero: number): Promise<genero> => {
   try {
-    const genero = await modelsFT.Genero.findByPk(idgenero, { transaction });
+    const genero = await tx.genero.findUnique({ where: { idgenero: idgenero } });
 
     //const generos = await genero.getGeneros();
 
@@ -36,13 +35,12 @@ export const getGeneroByIdgenero = async (transaction, idgenero) => {
   }
 };
 
-export const getGeneroByGeneroid = async (transaction, generoid) => {
+export const getGeneroByGeneroid = async (tx: TxClient, generoid: string): Promise<genero> => {
   try {
-    const genero = await modelsFT.Genero.findOne({
+    const genero = await tx.genero.findFirst({
       where: {
         generoid: generoid,
       },
-      transaction,
     });
 
     return genero;
@@ -52,14 +50,13 @@ export const getGeneroByGeneroid = async (transaction, generoid) => {
   }
 };
 
-export const findGeneroPk = async (transaction, generoid) => {
+export const findGeneroPk = async (tx: TxClient, generoid: string): Promise<{ idgenero: number }> => {
   try {
-    const genero = await modelsFT.Genero.findOne({
-      attributes: ["_idgenero"],
+    const genero = await tx.genero.findFirst({
+      select: { idgenero: true },
       where: {
         generoid: generoid,
       },
-      transaction,
     });
 
     return genero;
@@ -69,24 +66,24 @@ export const findGeneroPk = async (transaction, generoid) => {
   }
 };
 
-export const insertGenero = async (transaction, genero) => {
+export const insertGenero = async (tx: TxClient, genero: Prisma.generoCreateInput): Promise<genero> => {
   try {
-    const genero_nuevo = await modelsFT.Genero.create(genero, { transaction });
+    const nuevo = await tx.genero.create({ data: genero });
 
-    return genero_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateGenero = async (transaction, genero) => {
+export const updateGenero = async (tx: TxClient, genero: Partial<genero>): Promise<genero> => {
   try {
-    const result = await modelsFT.Genero.update(genero, {
+    const result = await tx.genero.update({
+      data: genero,
       where: {
         generoid: genero.generoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -95,13 +92,13 @@ export const updateGenero = async (transaction, genero) => {
   }
 };
 
-export const deleteGenero = async (transaction, genero) => {
+export const deleteGenero = async (tx: TxClient, genero: Partial<genero>): Promise<genero> => {
   try {
-    const result = await modelsFT.Genero.update(genero, {
+    const result = await tx.genero.update({
+      data: genero,
       where: {
         generoid: genero.generoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

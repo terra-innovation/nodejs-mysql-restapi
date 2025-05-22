@@ -1,31 +1,30 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, factoring_config_tasa_descuento } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getFactoringconfigtasadescuentos = async (transaction, estados) => {
+export const getFactoringconfigtasadescuentos = async (tx: TxClient, estados: number[]): Promise<factoring_config_tasa_descuento[]> => {
   try {
-    const factoringconfigtasadescuentos = await modelsFT.FactoringConfigTasaDescuento.findAll({
+    const factoringconfigtasadescuentos = await tx.factoring_config_tasa_descuento.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return factoringconfigtasadescuentos;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getFactoringconfigtasadescuentoByIdfactoringconfigtasadescuento = async (transaction, idfactoringconfigtasadescuento) => {
+export const getFactoringconfigtasadescuentoByIdfactoringconfigtasadescuento = async (tx: TxClient, idfactoringconfigtasadescuento: number): Promise<factoring_config_tasa_descuento> => {
   try {
-    const factoringconfigtasadescuento = await modelsFT.FactoringConfigTasaDescuento.findByPk(idfactoringconfigtasadescuento, { transaction });
+    const factoringconfigtasadescuento = await tx.factoring_config_tasa_descuento.findUnique({ where: { idfactoringconfigtasadescuento: idfactoringconfigtasadescuento } });
 
     //const factoringconfigtasadescuentos = await factoringconfigtasadescuento.getFactoringconfigtasadescuentos();
 
@@ -36,13 +35,12 @@ export const getFactoringconfigtasadescuentoByIdfactoringconfigtasadescuento = a
   }
 };
 
-export const getFactoringconfigtasadescuentoByFactoringconfigtasadescuentoid = async (transaction, factoringconfigtasadescuentoid) => {
+export const getFactoringconfigtasadescuentoByFactoringconfigtasadescuentoid = async (tx: TxClient, factoringconfigtasadescuentoid: string): Promise<factoring_config_tasa_descuento> => {
   try {
-    const factoringconfigtasadescuento = await modelsFT.FactoringConfigTasaDescuento.findOne({
+    const factoringconfigtasadescuento = await tx.factoring_config_tasa_descuento.findFirst({
       where: {
         factoringconfigtasadescuentoid: factoringconfigtasadescuentoid,
       },
-      transaction,
     });
 
     return factoringconfigtasadescuento;
@@ -52,14 +50,13 @@ export const getFactoringconfigtasadescuentoByFactoringconfigtasadescuentoid = a
   }
 };
 
-export const findFactoringconfigtasadescuentoPk = async (transaction, factoringconfigtasadescuentoid) => {
+export const findFactoringconfigtasadescuentoPk = async (tx: TxClient, factoringconfigtasadescuentoid: string): Promise<{ idfactoringconfigtasadescuento: number }> => {
   try {
-    const factoringconfigtasadescuento = await modelsFT.FactoringConfigTasaDescuento.findOne({
-      attributes: ["_idfactoringconfigtasadescuento"],
+    const factoringconfigtasadescuento = await tx.factoring_config_tasa_descuento.findFirst({
+      select: { idfactoringconfigtasadescuento: true },
       where: {
         factoringconfigtasadescuentoid: factoringconfigtasadescuentoid,
       },
-      transaction,
     });
 
     return factoringconfigtasadescuento;
@@ -69,24 +66,24 @@ export const findFactoringconfigtasadescuentoPk = async (transaction, factoringc
   }
 };
 
-export const insertFactoringconfigtasadescuento = async (transaction, factoringconfigtasadescuento) => {
+export const insertFactoringconfigtasadescuento = async (tx: TxClient, factoringconfigtasadescuento: Prisma.factoring_config_tasa_descuentoCreateInput): Promise<factoring_config_tasa_descuento> => {
   try {
-    const factoringconfigtasadescuento_nuevo = await modelsFT.FactoringConfigTasaDescuento.create(factoringconfigtasadescuento, { transaction });
+    const nuevo = await tx.factoring_config_tasa_descuento.create({ data: factoringconfigtasadescuento });
 
-    return factoringconfigtasadescuento_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateFactoringconfigtasadescuento = async (transaction, factoringconfigtasadescuento) => {
+export const updateFactoringconfigtasadescuento = async (tx: TxClient, factoringconfigtasadescuento: Partial<factoring_config_tasa_descuento>): Promise<factoring_config_tasa_descuento> => {
   try {
-    const result = await modelsFT.FactoringConfigTasaDescuento.update(factoringconfigtasadescuento, {
+    const result = await tx.factoring_config_tasa_descuento.update({
+      data: factoringconfigtasadescuento,
       where: {
         factoringconfigtasadescuentoid: factoringconfigtasadescuento.factoringconfigtasadescuentoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -95,13 +92,13 @@ export const updateFactoringconfigtasadescuento = async (transaction, factoringc
   }
 };
 
-export const deleteFactoringconfigtasadescuento = async (transaction, factoringconfigtasadescuento) => {
+export const deleteFactoringconfigtasadescuento = async (tx: TxClient, factoringconfigtasadescuento: Partial<factoring_config_tasa_descuento>): Promise<factoring_config_tasa_descuento> => {
   try {
-    const result = await modelsFT.FactoringConfigTasaDescuento.update(factoringconfigtasadescuento, {
+    const result = await tx.factoring_config_tasa_descuento.update({
+      data: factoringconfigtasadescuento,
       where: {
         factoringconfigtasadescuentoid: factoringconfigtasadescuento.factoringconfigtasadescuentoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

@@ -1,31 +1,30 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, factoring_propuesta_estado } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getFactoringpropuestaestados = async (transaction, estados) => {
+export const getFactoringpropuestaestados = async (tx: TxClient, estados: number[]): Promise<factoring_propuesta_estado[]> => {
   try {
-    const factoringpropuestaestados = await modelsFT.FactoringPropuestaEstado.findAll({
+    const factoringpropuestaestados = await tx.factoring_propuesta_estado.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return factoringpropuestaestados;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getFactoringpropuestaestadoByIdfactoringpropuestaestado = async (transaction, idfactoringpropuestaestado) => {
+export const getFactoringpropuestaestadoByIdfactoringpropuestaestado = async (tx: TxClient, idfactoringpropuestaestado: number): Promise<factoring_propuesta_estado> => {
   try {
-    const factoringpropuestaestado = await modelsFT.FactoringPropuestaEstado.findByPk(idfactoringpropuestaestado, { transaction });
+    const factoringpropuestaestado = await tx.factoring_propuesta_estado.findUnique({ where: { idfactoringpropuestaestado: idfactoringpropuestaestado } });
 
     //const factoringpropuestaestados = await factoringpropuestaestado.getFactoringpropuestaestados();
 
@@ -36,13 +35,12 @@ export const getFactoringpropuestaestadoByIdfactoringpropuestaestado = async (tr
   }
 };
 
-export const getFactoringpropuestaestadoByFactoringpropuestaestadoid = async (transaction, factoringpropuestaestadoid) => {
+export const getFactoringpropuestaestadoByFactoringpropuestaestadoid = async (tx: TxClient, factoringpropuestaestadoid: string): Promise<factoring_propuesta_estado> => {
   try {
-    const factoringpropuestaestado = await modelsFT.FactoringPropuestaEstado.findOne({
+    const factoringpropuestaestado = await tx.factoring_propuesta_estado.findFirst({
       where: {
         factoringpropuestaestadoid: factoringpropuestaestadoid,
       },
-      transaction,
     });
 
     return factoringpropuestaestado;
@@ -52,14 +50,13 @@ export const getFactoringpropuestaestadoByFactoringpropuestaestadoid = async (tr
   }
 };
 
-export const findFactoringpropuestaestadoPk = async (transaction, factoringpropuestaestadoid) => {
+export const findFactoringpropuestaestadoPk = async (tx: TxClient, factoringpropuestaestadoid: string): Promise<{ idfactoringpropuestaestado: number }> => {
   try {
-    const factoringpropuestaestado = await modelsFT.FactoringPropuestaEstado.findOne({
-      attributes: ["_idfactoringpropuestaestado"],
+    const factoringpropuestaestado = await tx.factoring_propuesta_estado.findFirst({
+      select: { idfactoringpropuestaestado: true },
       where: {
         factoringpropuestaestadoid: factoringpropuestaestadoid,
       },
-      transaction,
     });
 
     return factoringpropuestaestado;
@@ -69,24 +66,24 @@ export const findFactoringpropuestaestadoPk = async (transaction, factoringpropu
   }
 };
 
-export const insertFactoringpropuestaestado = async (transaction, factoringpropuestaestado) => {
+export const insertFactoringpropuestaestado = async (tx: TxClient, factoringpropuestaestado: Prisma.factoring_propuesta_estadoCreateInput): Promise<factoring_propuesta_estado> => {
   try {
-    const factoringpropuestaestado_nuevo = await modelsFT.FactoringPropuestaEstado.create(factoringpropuestaestado, { transaction });
+    const nuevo = await tx.factoring_propuesta_estado.create({ data: factoringpropuestaestado });
 
-    return factoringpropuestaestado_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateFactoringpropuestaestado = async (transaction, factoringpropuestaestado) => {
+export const updateFactoringpropuestaestado = async (tx: TxClient, factoringpropuestaestado: Partial<factoring_propuesta_estado>): Promise<factoring_propuesta_estado> => {
   try {
-    const result = await modelsFT.FactoringPropuestaEstado.update(factoringpropuestaestado, {
+    const result = await tx.factoring_propuesta_estado.update({
+      data: factoringpropuestaestado,
       where: {
         factoringpropuestaestadoid: factoringpropuestaestado.factoringpropuestaestadoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -95,13 +92,13 @@ export const updateFactoringpropuestaestado = async (transaction, factoringpropu
   }
 };
 
-export const deleteFactoringpropuestaestado = async (transaction, factoringpropuestaestado) => {
+export const deleteFactoringpropuestaestado = async (tx: TxClient, factoringpropuestaestado: Partial<factoring_propuesta_estado>): Promise<factoring_propuesta_estado> => {
   try {
-    const result = await modelsFT.FactoringPropuestaEstado.update(factoringpropuestaestado, {
+    const result = await tx.factoring_propuesta_estado.update({
+      data: factoringpropuestaestado,
       where: {
         factoringpropuestaestadoid: factoringpropuestaestado.factoringpropuestaestadoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

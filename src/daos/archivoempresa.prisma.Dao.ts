@@ -1,33 +1,37 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, archivo_empresa } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getArchivoempresas = async (transaction, estados) => {
+export const getArchivoempresas = async (tx: TxClient, estados: number[]): Promise<archivo_empresa[]> => {
   try {
-    const archivoempresas = await modelsFT.ArchivoEmpresa.findAll({
+    const archivoempresas = await tx.archivo_empresa.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return archivoempresas;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getArchivoEmpresaByIdarchivoempresa = async (transaction, idarchivoempresa) => {
+export const getArchivoEmpresaByIdarchivoempresa = async (tx: TxClient, idarchivo: number, idempresa: number): Promise<archivo_empresa> => {
   try {
-    const archivoempresa = await modelsFT.ArchivoEmpresa.findByPk(idarchivoempresa, { transaction });
-
-    //const archivoempresas = await archivoempresa.getArchivoempresas();
+    const archivoempresa = await tx.archivo_empresa.findUnique({
+      where: {
+        idarchivo_idempresa: {
+          idarchivo: idarchivo,
+          idempresa: idempresa,
+        },
+      },
+    });
 
     return archivoempresa;
   } catch (error) {
@@ -36,60 +40,27 @@ export const getArchivoEmpresaByIdarchivoempresa = async (transaction, idarchivo
   }
 };
 
-export const getArchivoEmpresaByArchivoEmpresaid = async (transaction, archivoempresa) => {
+export const insertArchivoEmpresa = async (tx: TxClient, archivoempresa: Prisma.archivo_empresaCreateInput): Promise<archivo_empresa> => {
   try {
-    const result = await modelsFT.ArchivoEmpresa.findOne({
-      where: {
-        _idarchivo: archivoempresa._idarchivo,
-        _idempresa: archivoempresa._idempresa,
-      },
-      transaction,
-    });
+    const nuevo = await tx.archivo_empresa.create({ data: archivoempresa });
 
-    return result;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const findArchivoEmpresaPk = async (transaction, archivoempresa) => {
+export const updateArchivoEmpresa = async (tx: TxClient, archivoempresa: Partial<archivo_empresa>): Promise<archivo_empresa> => {
   try {
-    const result = await modelsFT.ArchivoEmpresa.findOne({
-      attributes: ["_idarchivoempresa"],
+    const result = await tx.archivo_empresa.update({
+      data: archivoempresa,
       where: {
-        _idarchivo: archivoempresa._idarchivo,
-        _idempresa: archivoempresa._idempresa,
+        idarchivo_idempresa: {
+          idarchivo: archivoempresa.idarchivo,
+          idempresa: archivoempresa.idempresa,
+        },
       },
-      transaction,
-    });
-
-    return result;
-  } catch (error) {
-    log.error(line(), "", formatError(error));
-    throw new ClientError("Ocurrio un error", 500);
-  }
-};
-
-export const insertArchivoEmpresa = async (transaction, archivoempresa) => {
-  try {
-    const archivoempresa_nuevo = await modelsFT.ArchivoEmpresa.create(archivoempresa, { transaction });
-
-    return archivoempresa_nuevo;
-  } catch (error) {
-    log.error(line(), "", formatError(error));
-    throw new ClientError("Ocurrio un error", 500);
-  }
-};
-
-export const updateArchivoEmpresa = async (transaction, archivoempresa) => {
-  try {
-    const result = await modelsFT.ArchivoEmpresa.update(archivoempresa, {
-      where: {
-        _idarchivo: archivoempresa._idarchivo,
-        _idempresa: archivoempresa._idempresa,
-      },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -98,14 +69,16 @@ export const updateArchivoEmpresa = async (transaction, archivoempresa) => {
   }
 };
 
-export const deleteArchivoEmpresa = async (transaction, archivoempresa) => {
+export const deleteArchivoEmpresa = async (tx: TxClient, archivoempresa: Partial<archivo_empresa>): Promise<archivo_empresa> => {
   try {
-    const result = await modelsFT.ArchivoEmpresa.update(archivoempresa, {
+    const result = await tx.archivo_empresa.update({
+      data: archivoempresa,
       where: {
-        _idarchivo: archivoempresa._idarchivo,
-        _idempresa: archivoempresa._idempresa,
+        idarchivo_idempresa: {
+          idarchivo: archivoempresa.idarchivo,
+          idempresa: archivoempresa.idempresa,
+        },
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -114,14 +87,16 @@ export const deleteArchivoEmpresa = async (transaction, archivoempresa) => {
   }
 };
 
-export const activateArchivoEmpresa = async (transaction, archivoempresa) => {
+export const activateArchivoEmpresa = async (tx: TxClient, archivoempresa: Partial<archivo_empresa>): Promise<archivo_empresa> => {
   try {
-    const result = await modelsFT.ArchivoEmpresa.update(archivoempresa, {
+    const result = await tx.archivo_empresa.update({
+      data: archivoempresa,
       where: {
-        _idarchivo: archivoempresa._idarchivo,
-        _idempresa: archivoempresa._idempresa,
+        idarchivo_idempresa: {
+          idarchivo: archivoempresa.idarchivo,
+          idempresa: archivoempresa.idempresa,
+        },
       },
-      transaction,
     });
     return result;
   } catch (error) {

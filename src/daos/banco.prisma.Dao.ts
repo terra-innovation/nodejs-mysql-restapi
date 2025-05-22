@@ -1,31 +1,30 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, banco } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getBancos = async (transaction, estados) => {
+export const getBancos = async (tx: TxClient, estados: number[]): Promise<banco[]> => {
   try {
-    const bancos = await modelsFT.Banco.findAll({
+    const bancos = await tx.banco.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return bancos;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getBancoByIdbanco = async (transaction, idbanco) => {
+export const getBancoByIdbanco = async (tx: TxClient, idbanco: number): Promise<banco> => {
   try {
-    const banco = await modelsFT.Banco.findByPk(idbanco, { transaction });
+    const banco = await tx.banco.findUnique({ where: { idbanco: idbanco } });
     return banco;
   } catch (error) {
     log.error(line(), "", formatError(error));
@@ -33,13 +32,12 @@ export const getBancoByIdbanco = async (transaction, idbanco) => {
   }
 };
 
-export const getBancoByBancoid = async (transaction, bancoid) => {
+export const getBancoByBancoid = async (tx: TxClient, bancoid: string): Promise<banco> => {
   try {
-    const banco = await modelsFT.Banco.findOne({
+    const banco = await tx.banco.findFirst({
       where: {
         bancoid: bancoid,
       },
-      transaction,
     });
 
     return banco;
@@ -49,14 +47,13 @@ export const getBancoByBancoid = async (transaction, bancoid) => {
   }
 };
 
-export const findBancoPk = async (transaction, bancoid) => {
+export const findBancoPk = async (tx: TxClient, bancoid: string): Promise<{ idbanco: number }> => {
   try {
-    const banco = await modelsFT.Banco.findOne({
-      attributes: ["_idbanco"],
+    const banco = await tx.banco.findFirst({
+      select: { idbanco: true },
       where: {
         bancoid: bancoid,
       },
-      transaction,
     });
 
     return banco;
@@ -66,24 +63,24 @@ export const findBancoPk = async (transaction, bancoid) => {
   }
 };
 
-export const insertBanco = async (transaction, banco) => {
+export const insertBanco = async (tx: TxClient, banco: Prisma.bancoCreateInput): Promise<banco> => {
   try {
-    const banco_nuevo = await modelsFT.Banco.create(banco, { transaction });
+    const nuevo = await tx.banco.create({ data: banco });
 
-    return banco_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateBanco = async (transaction, banco) => {
+export const updateBanco = async (tx: TxClient, banco: Partial<banco>): Promise<banco> => {
   try {
-    const result = await modelsFT.Banco.update(banco, {
+    const result = await tx.banco.update({
+      data: banco,
       where: {
         bancoid: banco.bancoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -92,13 +89,13 @@ export const updateBanco = async (transaction, banco) => {
   }
 };
 
-export const deleteBanco = async (transaction, banco) => {
+export const deleteBanco = async (tx: TxClient, banco: Partial<banco>): Promise<banco> => {
   try {
-    const result = await modelsFT.Banco.update(banco, {
+    const result = await tx.banco.update({
+      data: banco,
       where: {
         bancoid: banco.bancoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -107,13 +104,13 @@ export const deleteBanco = async (transaction, banco) => {
   }
 };
 
-export const activateBanco = async (transaction, banco) => {
+export const activateBanco = async (tx: TxClient, banco: Partial<banco>): Promise<banco> => {
   try {
-    const result = await modelsFT.Banco.update(banco, {
+    const result = await tx.banco.update({
+      data: banco,
       where: {
         bancoid: banco.bancoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

@@ -1,31 +1,30 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, usuario_servicio_empresa_rol } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getUsuarioservicioempresarols = async (transaction, estados) => {
+export const getUsuarioservicioempresarols = async (tx: TxClient, estados: number[]): Promise<usuario_servicio_empresa_rol[]> => {
   try {
-    const usuarioservicioempresarols = await modelsFT.UsuarioServicioEmpresaRol.findAll({
+    const usuarioservicioempresarols = await tx.usuario_servicio_empresa_rol.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return usuarioservicioempresarols;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getUsuarioservicioempresarolByIdusuarioservicioempresarol = async (transaction, idusuarioservicioempresarol) => {
+export const getUsuarioservicioempresarolByIdusuarioservicioempresarol = async (tx: TxClient, idusuarioservicioempresarol: number): Promise<usuario_servicio_empresa_rol> => {
   try {
-    const usuarioservicioempresarol = await modelsFT.UsuarioServicioEmpresaRol.findByPk(idusuarioservicioempresarol, { transaction });
+    const usuarioservicioempresarol = await tx.usuario_servicio_empresa_rol.findUnique({ where: { idusuarioservicioempresarol: idusuarioservicioempresarol } });
 
     //const usuarioservicioempresarols = await usuarioservicioempresarol.getUsuarioservicioempresarols();
 
@@ -36,13 +35,12 @@ export const getUsuarioservicioempresarolByIdusuarioservicioempresarol = async (
   }
 };
 
-export const getUsuarioservicioempresarolByUsuarioservicioempresarolid = async (transaction, usuarioservicioempresarolid) => {
+export const getUsuarioservicioempresarolByUsuarioservicioempresarolid = async (tx: TxClient, usuarioservicioempresarolid: string): Promise<usuario_servicio_empresa_rol> => {
   try {
-    const usuarioservicioempresarol = await modelsFT.UsuarioServicioEmpresaRol.findOne({
+    const usuarioservicioempresarol = await tx.usuario_servicio_empresa_rol.findFirst({
       where: {
         usuarioservicioempresarolid: usuarioservicioempresarolid,
       },
-      transaction,
     });
 
     return usuarioservicioempresarol;
@@ -52,14 +50,13 @@ export const getUsuarioservicioempresarolByUsuarioservicioempresarolid = async (
   }
 };
 
-export const findUsuarioservicioempresarolPk = async (transaction, usuarioservicioempresarolid) => {
+export const findUsuarioservicioempresarolPk = async (tx: TxClient, usuarioservicioempresarolid: string): Promise<{ idusuarioservicioempresarol: number }> => {
   try {
-    const usuarioservicioempresarol = await modelsFT.UsuarioServicioEmpresaRol.findOne({
-      attributes: ["_idusuarioservicioempresarol"],
+    const usuarioservicioempresarol = await tx.usuario_servicio_empresa_rol.findFirst({
+      select: { idusuarioservicioempresarol: true },
       where: {
         usuarioservicioempresarolid: usuarioservicioempresarolid,
       },
-      transaction,
     });
 
     return usuarioservicioempresarol;
@@ -69,24 +66,24 @@ export const findUsuarioservicioempresarolPk = async (transaction, usuarioservic
   }
 };
 
-export const insertUsuarioservicioempresarol = async (transaction, usuarioservicioempresarol) => {
+export const insertUsuarioservicioempresarol = async (tx: TxClient, usuarioservicioempresarol: Prisma.usuario_servicio_empresa_rolCreateInput): Promise<usuario_servicio_empresa_rol> => {
   try {
-    const usuarioservicioempresarol_nuevo = await modelsFT.UsuarioServicioEmpresaRol.create(usuarioservicioempresarol, { transaction });
+    const nuevo = await tx.usuario_servicio_empresa_rol.create({ data: usuarioservicioempresarol });
 
-    return usuarioservicioempresarol_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateUsuarioservicioempresarol = async (transaction, usuarioservicioempresarol) => {
+export const updateUsuarioservicioempresarol = async (tx: TxClient, usuarioservicioempresarol: Partial<usuario_servicio_empresa_rol>): Promise<usuario_servicio_empresa_rol> => {
   try {
-    const result = await modelsFT.UsuarioServicioEmpresaRol.update(usuarioservicioempresarol, {
+    const result = await tx.usuario_servicio_empresa_rol.update({
+      data: usuarioservicioempresarol,
       where: {
         usuarioservicioempresarolid: usuarioservicioempresarol.usuarioservicioempresarolid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -95,13 +92,13 @@ export const updateUsuarioservicioempresarol = async (transaction, usuarioservic
   }
 };
 
-export const deleteUsuarioservicioempresarol = async (transaction, usuarioservicioempresarol) => {
+export const deleteUsuarioservicioempresarol = async (tx: TxClient, usuarioservicioempresarol: Partial<usuario_servicio_empresa_rol>): Promise<usuario_servicio_empresa_rol> => {
   try {
-    const result = await modelsFT.UsuarioServicioEmpresaRol.update(usuarioservicioempresarol, {
+    const result = await tx.usuario_servicio_empresa_rol.update({
+      data: usuarioservicioempresarol,
       where: {
         usuarioservicioempresarolid: usuarioservicioempresarol.usuarioservicioempresarolid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

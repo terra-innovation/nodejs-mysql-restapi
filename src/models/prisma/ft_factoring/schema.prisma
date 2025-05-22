@@ -389,7 +389,7 @@ model banco_transaccion_tipo {
 
 model colaborador {
   idcolaborador       Int                   @id @default(autoincrement()) @map("_idcolaborador")
-  colaboradorid       String                @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  colaboradorid       String                @unique(map: "UQ_colaborador_colaboradorid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   idempresa           Int?                  @map("_idempresa")
   idpersona           BigInt?               @map("_idpersona")
   idcolaboradortipo   Int?                  @map("_idcolaboradortipo")
@@ -2056,6 +2056,7 @@ model validacion_tipo {
 model zlaboratorio_pedido {
   idpedido             Int                  @id @default(autoincrement()) @map("_idpedido")
   idusuario            Int                  @map("_idusuario")
+  code                 String               @unique(map: "UQ_zlaboratorio_pedido_code") @default("") @db.VarChar(20)
   nombre               String               @db.VarChar(100)
   idusuariocrea        Int                  @default(1)
   fechacrea            DateTime             @default(now())
@@ -2064,7 +2065,7 @@ model zlaboratorio_pedido {
   estado               Int                  @default(1) @db.TinyInt
   zlaboratorio_usuario zlaboratorio_usuario @relation(fields: [idusuario], references: [idusuario], onUpdate: Restrict, map: "FK_zlaboratorio_pedido__idusuario")
 
-  @@index([idusuario], map: "FK_zlaboratorio_pedido__idusuario")
+  @@index([idusuario], map: "FK_zlaboratorio_pedido_idusuario")
 }
 
 model zlaboratorio_usuario {

@@ -1,60 +1,43 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, configuracion_app } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getIGV = async (transaction) => {
-  return await getConfiguracionappByIdconfiguracionapp(transaction, 1);
+export const getIGV = async (tx: TxClient) => {
+  return await getConfiguracionappByIdconfiguracionapp(tx, 1);
 };
 
-export const getCostoCAVALI = async (transaction) => {
-  return await getConfiguracionappByIdconfiguracionapp(transaction, 2);
+export const getCostoCAVALI = async (tx: TxClient) => {
+  return await getConfiguracionappByIdconfiguracionapp(tx, 2);
 };
 
-export const getComisionBCP = async (transaction) => {
-  return await getConfiguracionappByIdconfiguracionapp(transaction, 3);
+export const getComisionBCP = async (tx: TxClient) => {
+  return await getConfiguracionappByIdconfiguracionapp(tx, 3);
 };
 
-export const getConfiguracionapps = async (transaction, estados) => {
+export const getConfiguracionapps = async (tx: TxClient, estados: number[]): Promise<configuracion_app[]> => {
   try {
-    const configuracionapps = await modelsFT.ConfiguracionApp.findAll({
+    const configuracionapps = await tx.configuracion_app.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return configuracionapps;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getConfiguracionappByIdconfiguracionapp = async (transaction, idconfiguracionapp) => {
+export const getConfiguracionappByIdconfiguracionapp = async (tx: TxClient, idconfiguracionapp: number): Promise<configuracion_app> => {
   try {
-    const configuracionapp = await modelsFT.ConfiguracionApp.findByPk(idconfiguracionapp, { transaction });
-
-    //const configuracionapps = await configuracionapp.getConfiguracionapps();
-
-    return configuracionapp;
-  } catch (error) {
-    log.error(line(), "", formatError(error));
-    throw new ClientError("Ocurrio un error", 500);
-  }
-};
-
-export const getConfiguracionappByConfiguracionappid = async (transaction, configuracionappid) => {
-  try {
-    const configuracionapp = await modelsFT.ConfiguracionApp.findOne({
-      where: {
-        configuracionappid: configuracionappid,
-      },
-      transaction,
+    const configuracionapp = await tx.configuracion_app.findUnique({
+      where: { idconfiguracionapp: idconfiguracionapp },
     });
 
     return configuracionapp;
@@ -64,14 +47,12 @@ export const getConfiguracionappByConfiguracionappid = async (transaction, confi
   }
 };
 
-export const findConfiguracionappPk = async (transaction, configuracionappid) => {
+export const getConfiguracionappByConfiguracionappid = async (tx: TxClient, configuracionappid: string): Promise<configuracion_app> => {
   try {
-    const configuracionapp = await modelsFT.ConfiguracionApp.findOne({
-      attributes: ["_idconfiguracionapp"],
+    const configuracionapp = await tx.configuracion_app.findFirst({
       where: {
         configuracionappid: configuracionappid,
       },
-      transaction,
     });
 
     return configuracionapp;
@@ -81,24 +62,40 @@ export const findConfiguracionappPk = async (transaction, configuracionappid) =>
   }
 };
 
-export const insertConfiguracionapp = async (transaction, configuracionapp) => {
+export const findConfiguracionappPk = async (tx: TxClient, configuracionappid: string): Promise<{ idconfiguracionapp: number }> => {
   try {
-    const configuracionapp_nuevo = await modelsFT.ConfiguracionApp.create(configuracionapp, { transaction });
+    const configuracionapp = await tx.configuracion_app.findFirst({
+      select: { idconfiguracionapp: true },
+      where: {
+        configuracionappid: configuracionappid,
+      },
+    });
 
-    return configuracionapp_nuevo;
+    return configuracionapp;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateConfiguracionapp = async (transaction, configuracionapp) => {
+export const insertConfiguracionapp = async (tx: TxClient, configuracionapp: Prisma.configuracion_appCreateInput): Promise<configuracion_app> => {
   try {
-    const result = await modelsFT.ConfiguracionApp.update(configuracionapp, {
+    const nuevo = await tx.configuracion_app.create({ data: configuracionapp });
+
+    return nuevo;
+  } catch (error) {
+    log.error(line(), "", formatError(error));
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
+export const updateConfiguracionapp = async (tx: TxClient, configuracionapp: Partial<configuracion_app>): Promise<configuracion_app> => {
+  try {
+    const result = await tx.configuracion_app.update({
+      data: configuracionapp,
       where: {
         configuracionappid: configuracionapp.configuracionappid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -107,13 +104,13 @@ export const updateConfiguracionapp = async (transaction, configuracionapp) => {
   }
 };
 
-export const deleteConfiguracionapp = async (transaction, configuracionapp) => {
+export const deleteConfiguracionapp = async (tx: TxClient, configuracionapp: Partial<configuracion_app>): Promise<configuracion_app> => {
   try {
-    const result = await modelsFT.ConfiguracionApp.update(configuracionapp, {
+    const result = await tx.configuracion_app.update({
+      data: configuracionapp,
       where: {
         configuracionappid: configuracionapp.configuracionappid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

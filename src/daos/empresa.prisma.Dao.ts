@@ -1,22 +1,21 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, empresa } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getEmpresasByIdempresas = async (transaction, _idempresas, estados) => {
+export const getEmpresasByIdempresas = async (tx: TxClient, idempresas: number[], estados: number[]) => {
   try {
-    const empresas = await modelsFT.Empresa.findAll({
-      include: [],
+    const empresas = await tx.empresa.findMany({
       where: {
-        _idempresa: {
-          [Op.in]: _idempresas,
+        idempresa: {
+          in: idempresas,
         },
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return empresas;
@@ -26,27 +25,25 @@ export const getEmpresasByIdempresas = async (transaction, _idempresas, estados)
   }
 };
 
-export const getEmpresasByIdusuario = async (transaction, _idusuario, estados) => {
+export const getEmpresasByIdusuario = async (tx: TxClient, idusuario: bigint, estados: number[]) => {
   try {
-    const empresas = await modelsFT.Empresa.findAll({
-      include: [
-        {
-          model: modelsFT.UsuarioServicioEmpresa,
-          as: "usuario_servicio_empresas",
-          where: {
-            _idusuario: _idusuario,
+    const empresas = await tx.empresa.findMany({
+      include: {
+        usuario_servicio_empresa: true,
+      },
+      where: {
+        estado: {
+          in: estados,
+        },
+        usuario_servicio_empresa: {
+          some: {
+            idusuario: idusuario,
             estado: {
-              [Op.in]: estados,
+              in: estados,
             },
           },
         },
-      ],
-      where: {
-        estado: {
-          [Op.in]: estados,
-        },
       },
-      transaction,
     });
 
     return empresas;
@@ -56,28 +53,26 @@ export const getEmpresasByIdusuario = async (transaction, _idusuario, estados) =
   }
 };
 
-export const getEmpresaByIdusuarioAndRuc = async (transaction, _idusuario, ruc, estados) => {
+export const getEmpresaByIdusuarioAndRuc = async (tx: TxClient, idusuario: bigint, ruc: string, estados: number[]) => {
   try {
-    const empresas = await modelsFT.Empresa.findOne({
-      include: [
-        {
-          model: modelsFT.UsuarioServicioEmpresa,
-          as: "usuario_servicio_empresas",
-          where: {
-            _idusuario: _idusuario,
-            estado: {
-              [Op.in]: estados,
-            },
-          },
-        },
-      ],
+    const empresas = await tx.empresa.findFirst({
+      include: {
+        usuario_servicio_empresa: true,
+      },
       where: {
         ruc: ruc,
         estado: {
-          [Op.in]: estados,
+          in: estados,
+        },
+        usuario_servicio_empresa: {
+          some: {
+            idusuario: idusuario,
+            estado: {
+              in: estados,
+            },
+          },
         },
       },
-      transaction,
     });
 
     return empresas;
@@ -87,24 +82,22 @@ export const getEmpresaByIdusuarioAndRuc = async (transaction, _idusuario, ruc, 
   }
 };
 
-export const getEmpresaByIdusuarioAndEmpresaid = async (transaction, _idusuario, empresaid, estado) => {
+export const getEmpresaByIdusuarioAndEmpresaid = async (tx: TxClient, idusuario: bigint, empresaid: string, estado: number) => {
   try {
-    const empresas = await modelsFT.Empresa.findOne({
-      include: [
-        {
-          model: modelsFT.UsuarioServicioEmpresa,
-          as: "usuario_servicio_empresas",
-          where: {
-            _idusuario: _idusuario,
-            estado: estado,
-          },
-        },
-      ],
+    const empresas = await tx.empresa.findFirst({
+      include: {
+        usuario_servicio_empresa: true,
+      },
       where: {
         empresaid: empresaid,
         estado: estado,
+        usuario_servicio_empresa: {
+          some: {
+            idusuario: idusuario,
+            estado: estado,
+          },
+        },
       },
-      transaction,
     });
 
     return empresas;
@@ -114,20 +107,27 @@ export const getEmpresaByIdusuarioAndEmpresaid = async (transaction, _idusuario,
   }
 };
 
-export const getEmpresas = async (transaction, estados) => {
+export const getEmpresas = async (tx: TxClient, estados: number[]): Promise<empresa[]> => {
   try {
-    const empresas = await modelsFT.Empresa.findAll({
-      include: [
-        {
-          all: true,
-        },
-      ],
+    const empresas = await tx.empresa.findMany({
+      include: {
+        archivo_empresa: true,
+        colaborador: true,
+        contacto: true,
+        departamento: true,
+        distrito: true,
+        empresa_cuenta_bancaria: true,
+        pais: true,
+        provincia: true,
+        riesgo: true,
+        servicio_empresa: true,
+        usuario_servicio_empresa: true,
+      },
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return empresas;
@@ -137,16 +137,15 @@ export const getEmpresas = async (transaction, estados) => {
   }
 };
 
-export const getEmpresaByIdempresa = async (transaction, idempresa) => {
+export const getEmpresaByIdempresa = async (tx: TxClient, idempresa: number): Promise<empresa> => {
   try {
-    const empresa = await modelsFT.Empresa.findByPk(idempresa, {
-      include: [
-        {
-          model: modelsFT.Colaborador,
-          as: "colaboradors",
-        },
-      ],
-      transaction,
+    const empresa = await tx.empresa.findUnique({
+      include: {
+        colaborador: true,
+      },
+      where: {
+        idempresa: idempresa,
+      },
     });
 
     //const colaboradores = await empresa.getColaboradors();
@@ -158,19 +157,15 @@ export const getEmpresaByIdempresa = async (transaction, idempresa) => {
   }
 };
 
-export const getEmpresaByEmpresaid = async (transaction, empresaid) => {
+export const getEmpresaByEmpresaid = async (tx: TxClient, empresaid: string): Promise<empresa> => {
   try {
-    const empresa = await modelsFT.Empresa.findOne({
-      include: [
-        {
-          model: modelsFT.Colaborador,
-          as: "colaboradors",
-        },
-      ],
+    const empresa = await tx.empresa.findFirst({
+      include: {
+        colaborador: true,
+      },
       where: {
         empresaid: empresaid,
       },
-      transaction,
     });
 
     return empresa;
@@ -180,13 +175,12 @@ export const getEmpresaByEmpresaid = async (transaction, empresaid) => {
   }
 };
 
-export const getEmpresaByRuc = async (transaction, ruc) => {
+export const getEmpresaByRuc = async (tx: TxClient, ruc) => {
   try {
-    const empresa = await modelsFT.Empresa.findOne({
+    const empresa = await tx.empresa.findFirst({
       where: {
         ruc: ruc,
       },
-      transaction,
     });
 
     return empresa;
@@ -196,14 +190,13 @@ export const getEmpresaByRuc = async (transaction, ruc) => {
   }
 };
 
-export const findEmpresaPk = async (transaction, empresaid) => {
+export const findEmpresaPk = async (tx: TxClient, empresaid: string): Promise<{ idempresa: number }> => {
   try {
-    const empresa = await modelsFT.Empresa.findOne({
-      attributes: ["_idempresa"],
+    const empresa = await tx.empresa.findFirst({
+      select: { idempresa: true },
       where: {
         empresaid: empresaid,
       },
-      transaction,
     });
 
     return empresa;
@@ -213,24 +206,24 @@ export const findEmpresaPk = async (transaction, empresaid) => {
   }
 };
 
-export const insertEmpresa = async (transaction, empresa) => {
+export const insertEmpresa = async (tx: TxClient, empresa: Prisma.empresaCreateInput): Promise<empresa> => {
   try {
-    const empresa_nuevo = await modelsFT.Empresa.create(empresa, { transaction });
+    const nuevo = await tx.empresa.create({ data: empresa });
 
-    return empresa_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateEmpresa = async (transaction, empresa) => {
+export const updateEmpresa = async (tx: TxClient, empresa: Partial<empresa>): Promise<empresa> => {
   try {
-    const result = await modelsFT.Empresa.update(empresa, {
+    const result = await tx.empresa.update({
+      data: empresa,
       where: {
         empresaid: empresa.empresaid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -239,13 +232,13 @@ export const updateEmpresa = async (transaction, empresa) => {
   }
 };
 
-export const deleteEmpresa = async (transaction, empresa) => {
+export const deleteEmpresa = async (tx: TxClient, empresa: Partial<empresa>): Promise<empresa> => {
   try {
-    const result = await modelsFT.Empresa.update(empresa, {
+    const result = await tx.empresa.update({
+      data: empresa,
       where: {
         empresaid: empresa.empresaid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -254,13 +247,13 @@ export const deleteEmpresa = async (transaction, empresa) => {
   }
 };
 
-export const activateEmpresa = async (transaction, empresa) => {
+export const activateEmpresa = async (tx: TxClient, empresa: Partial<empresa>): Promise<empresa> => {
   try {
-    const result = await modelsFT.Empresa.update(empresa, {
+    const result = await tx.empresa.update({
+      data: empresa,
       where: {
         empresaid: empresa.empresaid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

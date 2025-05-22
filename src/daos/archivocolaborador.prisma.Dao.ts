@@ -1,33 +1,30 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, archivo_colaborador } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getArchivocolaboradors = async (transaction, estados) => {
+export const getArchivocolaboradors = async (tx: TxClient, estados: number[]): Promise<archivo_colaborador[]> => {
   try {
-    const archivocolaboradors = await modelsFT.ArchivoColaborador.findAll({
+    const archivocolaboradors = await tx.archivo_colaborador.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return archivocolaboradors;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getArchivoColaboradorByIdarchivocolaborador = async (transaction, idarchivocolaborador) => {
+export const getArchivoColaboradorByIdarchivoIdcolaborador = async (tx: TxClient, idarchivo: number, idcolaborador: number): Promise<archivo_colaborador> => {
   try {
-    const archivocolaborador = await modelsFT.ArchivoColaborador.findByPk(idarchivocolaborador, { transaction });
-
-    //const archivocolaboradors = await archivocolaborador.getArchivocolaboradors();
+    const archivocolaborador = await tx.archivo_colaborador.findFirst({ where: { idarchivo: idarchivo, idcolaborador: idcolaborador } });
 
     return archivocolaborador;
   } catch (error) {
@@ -36,60 +33,27 @@ export const getArchivoColaboradorByIdarchivocolaborador = async (transaction, i
   }
 };
 
-export const getArchivoColaboradorByArchivoColaboradorid = async (transaction, archivocolaborador) => {
+export const insertArchivoColaborador = async (tx: TxClient, archivocolaborador: Prisma.archivo_colaboradorCreateInput): Promise<archivo_colaborador> => {
   try {
-    const result = await modelsFT.ArchivoColaborador.findOne({
-      where: {
-        _idarchivo: archivocolaborador._idarchivo,
-        _idcolaborador: archivocolaborador._idcolaborador,
-      },
-      transaction,
-    });
+    const nuevo = await tx.archivo_colaborador.create({ data: archivocolaborador });
 
-    return result;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const findArchivoColaboradorPk = async (transaction, archivocolaborador) => {
+export const updateArchivoColaborador = async (tx: TxClient, archivocolaborador: Partial<archivo_colaborador>): Promise<archivo_colaborador> => {
   try {
-    const result = await modelsFT.ArchivoColaborador.findOne({
-      attributes: ["_idarchivocolaborador"],
+    const result = await tx.archivo_colaborador.update({
+      data: archivocolaborador,
       where: {
-        _idarchivo: archivocolaborador._idarchivo,
-        _idcolaborador: archivocolaborador._idcolaborador,
+        idarchivo_idcolaborador: {
+          idarchivo: archivocolaborador.idarchivo,
+          idcolaborador: archivocolaborador.idcolaborador,
+        },
       },
-      transaction,
-    });
-
-    return result;
-  } catch (error) {
-    log.error(line(), "", formatError(error));
-    throw new ClientError("Ocurrio un error", 500);
-  }
-};
-
-export const insertArchivoColaborador = async (transaction, archivocolaborador) => {
-  try {
-    const archivocolaborador_nuevo = await modelsFT.ArchivoColaborador.create(archivocolaborador, { transaction });
-
-    return archivocolaborador_nuevo;
-  } catch (error) {
-    log.error(line(), "", formatError(error));
-    throw new ClientError("Ocurrio un error", 500);
-  }
-};
-
-export const updateArchivoColaborador = async (transaction, archivocolaborador) => {
-  try {
-    const result = await modelsFT.ArchivoColaborador.update(archivocolaborador, {
-      where: {
-        _idarchivo: archivocolaborador._idarchivo,
-        _idcolaborador: archivocolaborador._idcolaborador,
-      },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -98,14 +62,16 @@ export const updateArchivoColaborador = async (transaction, archivocolaborador) 
   }
 };
 
-export const deleteArchivoColaborador = async (transaction, archivocolaborador) => {
+export const deleteArchivoColaborador = async (tx: TxClient, archivocolaborador: Partial<archivo_colaborador>): Promise<archivo_colaborador> => {
   try {
-    const result = await modelsFT.ArchivoColaborador.update(archivocolaborador, {
+    const result = await tx.archivo_colaborador.update({
+      data: archivocolaborador,
       where: {
-        _idarchivo: archivocolaborador._idarchivo,
-        _idcolaborador: archivocolaborador._idcolaborador,
+        idarchivo_idcolaborador: {
+          idarchivo: archivocolaborador.idarchivo,
+          idcolaborador: archivocolaborador.idcolaborador,
+        },
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -114,14 +80,16 @@ export const deleteArchivoColaborador = async (transaction, archivocolaborador) 
   }
 };
 
-export const activateArchivoColaborador = async (transaction, archivocolaborador) => {
+export const activateArchivoColaborador = async (tx: TxClient, archivocolaborador: Partial<archivo_colaborador>): Promise<archivo_colaborador> => {
   try {
-    const result = await modelsFT.ArchivoColaborador.update(archivocolaborador, {
+    const result = await tx.archivo_colaborador.update({
+      data: archivocolaborador,
       where: {
-        _idarchivo: archivocolaborador._idarchivo,
-        _idcolaborador: archivocolaborador._idcolaborador,
+        idarchivo_idcolaborador: {
+          idarchivo: archivocolaborador.idarchivo,
+          idcolaborador: archivocolaborador.idcolaborador,
+        },
       },
-      transaction,
     });
     return result;
   } catch (error) {

@@ -1,33 +1,37 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, archivo_factoring_historial_estado } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getArchivofactoringhistorialestados = async (transaction, estados) => {
+export const getArchivofactoringhistorialestados = async (tx: TxClient, estados: number[]): Promise<archivo_factoring_historial_estado[]> => {
   try {
-    const archivofactoringhistorialestados = await modelsFT.ArchivoFactoringHistorialEstado.findAll({
+    const archivofactoringhistorialestados = await tx.archivo_factoring_historial_estado.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return archivofactoringhistorialestados;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getArchivofactoringhistorialestadoByIdarchivofactoringhistorialestado = async (transaction, idarchivofactoringhistorialestado) => {
+export const getArchivofactoringhistorialestadoByIdarchivofactoringhistorialestado = async (tx: TxClient, idarchivo: number, idfactoringhistorialestado: number): Promise<archivo_factoring_historial_estado> => {
   try {
-    const archivofactoringhistorialestado = await modelsFT.ArchivoFactoringHistorialEstado.findByPk(idarchivofactoringhistorialestado, { transaction });
-
-    //const archivofactoringhistorialestados = await archivofactoringhistorialestado.getArchivofactoringhistorialestados();
+    const archivofactoringhistorialestado = await tx.archivo_factoring_historial_estado.findUnique({
+      where: {
+        idarchivo_idfactoringhistorialestado: {
+          idarchivo: idarchivo,
+          idfactoringhistorialestado: idfactoringhistorialestado,
+        },
+      },
+    });
 
     return archivofactoringhistorialestado;
   } catch (error) {
@@ -36,60 +40,27 @@ export const getArchivofactoringhistorialestadoByIdarchivofactoringhistorialesta
   }
 };
 
-export const getArchivofactoringhistorialestadoByArchivofactoringhistorialestadoid = async (transaction, archivofactoringhistorialestado) => {
+export const insertArchivofactoringhistorialestado = async (tx: TxClient, archivofactoringhistorialestado: Prisma.archivo_factoring_historial_estadoCreateInput): Promise<archivo_factoring_historial_estado> => {
   try {
-    const result = await modelsFT.ArchivoFactoringHistorialEstado.findOne({
-      where: {
-        _idarchivo: archivofactoringhistorialestado._idarchivo,
-        _idfactoringhistorialestado: archivofactoringhistorialestado._idfactoringhistorialestado,
-      },
-      transaction,
-    });
+    const nuevo = await tx.archivo_factoring_historial_estado.create({ data: archivofactoringhistorialestado });
 
-    return result;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const findArchivofactoringhistorialestadoPk = async (transaction, archivofactoringhistorialestado) => {
+export const updateArchivofactoringhistorialestado = async (tx: TxClient, archivofactoringhistorialestado: Partial<archivo_factoring_historial_estado>): Promise<archivo_factoring_historial_estado> => {
   try {
-    const result = await modelsFT.ArchivoFactoringHistorialEstado.findOne({
-      attributes: ["_idarchivofactoringhistorialestado"],
+    const result = await tx.archivo_factoring_historial_estado.update({
+      data: archivofactoringhistorialestado,
       where: {
-        _idarchivo: archivofactoringhistorialestado._idarchivo,
-        _idfactoringhistorialestado: archivofactoringhistorialestado._idfactoringhistorialestado,
+        idarchivo_idfactoringhistorialestado: {
+          idarchivo: archivofactoringhistorialestado.idarchivo,
+          idfactoringhistorialestado: archivofactoringhistorialestado.idfactoringhistorialestado,
+        },
       },
-      transaction,
-    });
-
-    return result;
-  } catch (error) {
-    log.error(line(), "", formatError(error));
-    throw new ClientError("Ocurrio un error", 500);
-  }
-};
-
-export const insertArchivofactoringhistorialestado = async (transaction, archivofactoringhistorialestado) => {
-  try {
-    const archivofactoringhistorialestado_nuevo = await modelsFT.ArchivoFactoringHistorialEstado.create(archivofactoringhistorialestado, { transaction });
-
-    return archivofactoringhistorialestado_nuevo;
-  } catch (error) {
-    log.error(line(), "", formatError(error));
-    throw new ClientError("Ocurrio un error", 500);
-  }
-};
-
-export const updateArchivofactoringhistorialestado = async (transaction, archivofactoringhistorialestado) => {
-  try {
-    const result = await modelsFT.ArchivoFactoringHistorialEstado.update(archivofactoringhistorialestado, {
-      where: {
-        _idarchivo: archivofactoringhistorialestado._idarchivo,
-        _idfactoringhistorialestado: archivofactoringhistorialestado._idfactoringhistorialestado,
-      },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -98,14 +69,16 @@ export const updateArchivofactoringhistorialestado = async (transaction, archivo
   }
 };
 
-export const deleteArchivofactoringhistorialestado = async (transaction, archivofactoringhistorialestado) => {
+export const deleteArchivofactoringhistorialestado = async (tx: TxClient, archivofactoringhistorialestado: Partial<archivo_factoring_historial_estado>): Promise<archivo_factoring_historial_estado> => {
   try {
-    const result = await modelsFT.ArchivoFactoringHistorialEstado.update(archivofactoringhistorialestado, {
+    const result = await tx.archivo_factoring_historial_estado.update({
+      data: archivofactoringhistorialestado,
       where: {
-        _idarchivo: archivofactoringhistorialestado._idarchivo,
-        _idfactoringhistorialestado: archivofactoringhistorialestado._idfactoringhistorialestado,
+        idarchivo_idfactoringhistorialestado: {
+          idarchivo: archivofactoringhistorialestado.idarchivo,
+          idfactoringhistorialestado: archivofactoringhistorialestado.idfactoringhistorialestado,
+        },
       },
-      transaction,
     });
     return result;
   } catch (error) {

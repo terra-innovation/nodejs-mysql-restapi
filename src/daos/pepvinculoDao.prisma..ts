@@ -1,31 +1,27 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getPepvinculos = async (transaction, estados) => {
+export const getPepvinculos = async (tx: TxClient, estados: number[]) => {
   try {
-    const pepvinculos = await modelsFT.PepVinculo.findAll({
+    const pepvinculos = await tx.PepVinculo.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return pepvinculos;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getPepvinculoByIdpepvinculo = async (transaction, idpepvinculo) => {
+export const getPepvinculoByIdpepvinculo = async (tx: TxClient, idpepvinculo) => {
   try {
-    const pepvinculo = await modelsFT.PepVinculo.findByPk(idpepvinculo, { transaction });
+    const pepvinculo = await tx.PepVinculo.findByPk(idpepvinculo);
 
     //const pepvinculos = await pepvinculo.getPepvinculos();
 
@@ -36,13 +32,12 @@ export const getPepvinculoByIdpepvinculo = async (transaction, idpepvinculo) => 
   }
 };
 
-export const getPepvinculoByPepvinculoid = async (transaction, pepvinculoid) => {
+export const getPepvinculoByPepvinculoid = async (tx: TxClient, pepvinculoid: string) => {
   try {
-    const pepvinculo = await modelsFT.PepVinculo.findOne({
+    const pepvinculo = await tx.PepVinculo.findFirst({
       where: {
         pepvinculoid: pepvinculoid,
       },
-      transaction,
     });
 
     return pepvinculo;
@@ -52,14 +47,13 @@ export const getPepvinculoByPepvinculoid = async (transaction, pepvinculoid) => 
   }
 };
 
-export const findPepvinculoPk = async (transaction, pepvinculoid) => {
+export const findPepvinculoPk = async (tx: TxClient, pepvinculoid: string) => {
   try {
-    const pepvinculo = await modelsFT.PepVinculo.findOne({
-      attributes: ["_idpepvinculo"],
+    const pepvinculo = await tx.PepVinculo.findFirst({
+      attributes: ["idpepvinculo"],
       where: {
         pepvinculoid: pepvinculoid,
       },
-      transaction,
     });
 
     return pepvinculo;
@@ -69,9 +63,9 @@ export const findPepvinculoPk = async (transaction, pepvinculoid) => {
   }
 };
 
-export const insertPepvinculo = async (transaction, pepvinculo) => {
+export const insertPepvinculo = async (tx: TxClient, pepvinculo) => {
   try {
-    const pepvinculo_nuevo = await modelsFT.PepVinculo.create(pepvinculo, { transaction });
+    const pepvinculo_nuevo = await tx.PepVinculo.create(pepvinculo);
 
     return pepvinculo_nuevo;
   } catch (error) {
@@ -80,13 +74,12 @@ export const insertPepvinculo = async (transaction, pepvinculo) => {
   }
 };
 
-export const updatePepvinculo = async (transaction, pepvinculo) => {
+export const updatePepvinculo = async (tx: TxClient, pepvinculo) => {
   try {
-    const result = await modelsFT.PepVinculo.update(pepvinculo, {
+    const result = await tx.PepVinculo.update(pepvinculo, {
       where: {
         pepvinculoid: pepvinculo.pepvinculoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -95,13 +88,12 @@ export const updatePepvinculo = async (transaction, pepvinculo) => {
   }
 };
 
-export const deletePepvinculo = async (transaction, pepvinculo) => {
+export const deletePepvinculo = async (tx: TxClient, pepvinculo) => {
   try {
-    const result = await modelsFT.PepVinculo.update(pepvinculo, {
+    const result = await tx.PepVinculo.update(pepvinculo, {
       where: {
         pepvinculoid: pepvinculo.pepvinculoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

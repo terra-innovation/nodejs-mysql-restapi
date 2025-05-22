@@ -1,31 +1,30 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, factoring_estrategia } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getFactoringestrategias = async (transaction, estados) => {
+export const getFactoringestrategias = async (tx: TxClient, estados: number[]): Promise<factoring_estrategia[]> => {
   try {
-    const factoringestrategias = await modelsFT.FactoringEstrategia.findAll({
+    const factoringestrategias = await tx.factoring_estrategia.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return factoringestrategias;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getFactoringestrategiaByIdfactoringestrategia = async (transaction, idfactoringestrategia) => {
+export const getFactoringestrategiaByIdfactoringestrategia = async (tx: TxClient, idfactoringestrategia: number): Promise<factoring_estrategia> => {
   try {
-    const factoringestrategia = await modelsFT.FactoringEstrategia.findByPk(idfactoringestrategia, { transaction });
+    const factoringestrategia = await tx.factoring_estrategia.findUnique({ where: { idfactoringestrategia: idfactoringestrategia } });
 
     //const factoringestrategias = await factoringestrategia.getFactoringestrategias();
 
@@ -36,13 +35,12 @@ export const getFactoringestrategiaByIdfactoringestrategia = async (transaction,
   }
 };
 
-export const getFactoringestrategiaByFactoringestrategiaid = async (transaction, factoringestrategiaid) => {
+export const getFactoringestrategiaByFactoringestrategiaid = async (tx: TxClient, factoringestrategiaid: string): Promise<factoring_estrategia> => {
   try {
-    const factoringestrategia = await modelsFT.FactoringEstrategia.findOne({
+    const factoringestrategia = await tx.factoring_estrategia.findFirst({
       where: {
         factoringestrategiaid: factoringestrategiaid,
       },
-      transaction,
     });
 
     return factoringestrategia;
@@ -52,14 +50,13 @@ export const getFactoringestrategiaByFactoringestrategiaid = async (transaction,
   }
 };
 
-export const findFactoringestrategiaPk = async (transaction, factoringestrategiaid) => {
+export const findFactoringestrategiaPk = async (tx: TxClient, factoringestrategiaid: string): Promise<{ idfactoringestrategia: number }> => {
   try {
-    const factoringestrategia = await modelsFT.FactoringEstrategia.findOne({
-      attributes: ["_idfactoringestrategia"],
+    const factoringestrategia = await tx.factoring_estrategia.findFirst({
+      select: { idfactoringestrategia: true },
       where: {
         factoringestrategiaid: factoringestrategiaid,
       },
-      transaction,
     });
 
     return factoringestrategia;
@@ -69,24 +66,24 @@ export const findFactoringestrategiaPk = async (transaction, factoringestrategia
   }
 };
 
-export const insertFactoringestrategia = async (transaction, factoringestrategia) => {
+export const insertFactoringestrategia = async (tx: TxClient, factoringestrategia: Prisma.factoring_estrategiaCreateInput): Promise<factoring_estrategia> => {
   try {
-    const factoringestrategia_nuevo = await modelsFT.FactoringEstrategia.create(factoringestrategia, { transaction });
+    const nuevo = await tx.factoring_estrategia.create({ data: factoringestrategia });
 
-    return factoringestrategia_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateFactoringestrategia = async (transaction, factoringestrategia) => {
+export const updateFactoringestrategia = async (tx: TxClient, factoringestrategia: Partial<factoring_estrategia>): Promise<factoring_estrategia> => {
   try {
-    const result = await modelsFT.FactoringEstrategia.update(factoringestrategia, {
+    const result = await tx.factoring_estrategia.update({
+      data: factoringestrategia,
       where: {
         factoringestrategiaid: factoringestrategia.factoringestrategiaid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -95,13 +92,13 @@ export const updateFactoringestrategia = async (transaction, factoringestrategia
   }
 };
 
-export const deleteFactoringestrategia = async (transaction, factoringestrategia) => {
+export const deleteFactoringestrategia = async (tx: TxClient, factoringestrategia: Partial<factoring_estrategia>): Promise<factoring_estrategia> => {
   try {
-    const result = await modelsFT.FactoringEstrategia.update(factoringestrategia, {
+    const result = await tx.factoring_estrategia.update({
+      data: factoringestrategia,
       where: {
         factoringestrategiaid: factoringestrategia.factoringestrategiaid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

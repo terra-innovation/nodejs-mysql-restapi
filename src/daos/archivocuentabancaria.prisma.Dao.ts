@@ -1,33 +1,37 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, archivo_cuenta_bancaria } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getArchivocuentabancarias = async (transaction, estados) => {
+export const getArchivocuentabancarias = async (tx: TxClient, estados: number[]): Promise<archivo_cuenta_bancaria[]> => {
   try {
-    const archivocuentabancarias = await modelsFT.ArchivoCuentaBancaria.findAll({
+    const archivocuentabancarias = await tx.archivo_cuenta_bancaria.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return archivocuentabancarias;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getArchivoCuentaBancariaByIdarchivocuentabancaria = async (transaction, idarchivocuentabancaria) => {
+export const getArchivoCuentaBancariaByIdarchivoIdcuentabancaria = async (tx: TxClient, idarchivo: number, idcuentabancaria: number): Promise<archivo_cuenta_bancaria> => {
   try {
-    const archivocuentabancaria = await modelsFT.ArchivoCuentaBancaria.findByPk(idarchivocuentabancaria, { transaction });
-
-    //const archivocuentabancarias = await archivocuentabancaria.getArchivocuentabancarias();
+    const archivocuentabancaria = await tx.archivo_cuenta_bancaria.findUnique({
+      where: {
+        idarchivo_idcuentabancaria: {
+          idarchivo: idarchivo,
+          idcuentabancaria: idcuentabancaria,
+        },
+      },
+    });
 
     return archivocuentabancaria;
   } catch (error) {
@@ -36,60 +40,27 @@ export const getArchivoCuentaBancariaByIdarchivocuentabancaria = async (transact
   }
 };
 
-export const getArchivoCuentaBancariaByArchivoCuentaBancariaid = async (transaction, archivocuentabancaria) => {
+export const insertArchivoCuentaBancaria = async (tx: TxClient, archivocuentabancaria: Prisma.archivo_cuenta_bancariaCreateInput): Promise<archivo_cuenta_bancaria> => {
   try {
-    const result = await modelsFT.ArchivoCuentaBancaria.findOne({
-      where: {
-        _idarchivo: archivocuentabancaria._idarchivo,
-        _idcuentabancaria: archivocuentabancaria._idcuentabancaria,
-      },
-      transaction,
-    });
+    const nuevo = await tx.archivo_cuenta_bancaria.create({ data: archivocuentabancaria });
 
-    return result;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const findArchivoCuentaBancariaPk = async (transaction, archivocuentabancaria) => {
+export const updateArchivoCuentaBancaria = async (tx: TxClient, archivocuentabancaria: Partial<archivo_cuenta_bancaria>): Promise<archivo_cuenta_bancaria> => {
   try {
-    const result = await modelsFT.ArchivoCuentaBancaria.findOne({
-      attributes: ["_idarchivocuentabancaria"],
+    const result = await tx.archivo_cuenta_bancaria.update({
+      data: archivocuentabancaria,
       where: {
-        _idarchivo: archivocuentabancaria._idarchivo,
-        _idcuentabancaria: archivocuentabancaria._idcuentabancaria,
+        idarchivo_idcuentabancaria: {
+          idarchivo: archivocuentabancaria.idarchivo,
+          idcuentabancaria: archivocuentabancaria.idcuentabancaria,
+        },
       },
-      transaction,
-    });
-
-    return result;
-  } catch (error) {
-    log.error(line(), "", formatError(error));
-    throw new ClientError("Ocurrio un error", 500);
-  }
-};
-
-export const insertArchivoCuentaBancaria = async (transaction, archivocuentabancaria) => {
-  try {
-    const archivocuentabancaria_nuevo = await modelsFT.ArchivoCuentaBancaria.create(archivocuentabancaria, { transaction });
-
-    return archivocuentabancaria_nuevo;
-  } catch (error) {
-    log.error(line(), "", formatError(error));
-    throw new ClientError("Ocurrio un error", 500);
-  }
-};
-
-export const updateArchivoCuentaBancaria = async (transaction, archivocuentabancaria) => {
-  try {
-    const result = await modelsFT.ArchivoCuentaBancaria.update(archivocuentabancaria, {
-      where: {
-        _idarchivo: archivocuentabancaria._idarchivo,
-        _idcuentabancaria: archivocuentabancaria._idcuentabancaria,
-      },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -98,14 +69,16 @@ export const updateArchivoCuentaBancaria = async (transaction, archivocuentabanc
   }
 };
 
-export const deleteArchivoCuentaBancaria = async (transaction, archivocuentabancaria) => {
+export const deleteArchivoCuentaBancaria = async (tx: TxClient, archivocuentabancaria: Partial<archivo_cuenta_bancaria>): Promise<archivo_cuenta_bancaria> => {
   try {
-    const result = await modelsFT.ArchivoCuentaBancaria.update(archivocuentabancaria, {
+    const result = await tx.archivo_cuenta_bancaria.update({
+      data: archivocuentabancaria,
       where: {
-        _idarchivo: archivocuentabancaria._idarchivo,
-        _idcuentabancaria: archivocuentabancaria._idcuentabancaria,
+        idarchivo_idcuentabancaria: {
+          idarchivo: archivocuentabancaria.idarchivo,
+          idcuentabancaria: archivocuentabancaria.idcuentabancaria,
+        },
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -114,14 +87,16 @@ export const deleteArchivoCuentaBancaria = async (transaction, archivocuentabanc
   }
 };
 
-export const activateArchivoCuentaBancaria = async (transaction, archivocuentabancaria) => {
+export const activateArchivoCuentaBancaria = async (tx: TxClient, archivocuentabancaria: Partial<archivo_cuenta_bancaria>): Promise<archivo_cuenta_bancaria> => {
   try {
-    const result = await modelsFT.ArchivoCuentaBancaria.update(archivocuentabancaria, {
+    const result = await tx.archivo_cuenta_bancaria.update({
+      data: archivocuentabancaria,
       where: {
-        _idarchivo: archivocuentabancaria._idarchivo,
-        _idcuentabancaria: archivocuentabancaria._idcuentabancaria,
+        idarchivo_idcuentabancaria: {
+          idarchivo: archivocuentabancaria.idarchivo,
+          idcuentabancaria: archivocuentabancaria.idcuentabancaria,
+        },
       },
-      transaction,
     });
     return result;
   } catch (error) {

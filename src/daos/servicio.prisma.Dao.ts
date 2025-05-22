@@ -1,31 +1,30 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, servicio } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getServicios = async (transaction, estados) => {
+export const getServicios = async (tx: TxClient, estados: number[]): Promise<servicio[]> => {
   try {
-    const servicios = await modelsFT.Servicio.findAll({
+    const servicios = await tx.servicio.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return servicios;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getServicioByIdservicio = async (transaction, idservicio) => {
+export const getServicioByIdservicio = async (tx: TxClient, idservicio: number): Promise<servicio> => {
   try {
-    const servicio = await modelsFT.Servicio.findByPk(idservicio, { transaction });
+    const servicio = await tx.servicio.findUnique({ where: { idservicio: idservicio } });
 
     //const servicios = await servicio.getServicios();
 
@@ -36,13 +35,12 @@ export const getServicioByIdservicio = async (transaction, idservicio) => {
   }
 };
 
-export const getServicioByServicioid = async (transaction, servicioid) => {
+export const getServicioByServicioid = async (tx: TxClient, servicioid: string): Promise<servicio> => {
   try {
-    const servicio = await modelsFT.Servicio.findOne({
+    const servicio = await tx.servicio.findFirst({
       where: {
         servicioid: servicioid,
       },
-      transaction,
     });
 
     return servicio;
@@ -52,14 +50,13 @@ export const getServicioByServicioid = async (transaction, servicioid) => {
   }
 };
 
-export const findServicioPk = async (transaction, servicioid) => {
+export const findServicioPk = async (tx: TxClient, servicioid: string): Promise<{ idservicio: number }> => {
   try {
-    const servicio = await modelsFT.Servicio.findOne({
-      attributes: ["_idservicio"],
+    const servicio = await tx.servicio.findFirst({
+      select: { idservicio: true },
       where: {
         servicioid: servicioid,
       },
-      transaction,
     });
 
     return servicio;
@@ -69,24 +66,24 @@ export const findServicioPk = async (transaction, servicioid) => {
   }
 };
 
-export const insertServicio = async (transaction, servicio) => {
+export const insertServicio = async (tx: TxClient, servicio: Prisma.servicioCreateInput): Promise<servicio> => {
   try {
-    const servicio_nuevo = await modelsFT.Servicio.create(servicio, { transaction });
+    const nuevo = await tx.servicio.create({ data: servicio });
 
-    return servicio_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateServicio = async (transaction, servicio) => {
+export const updateServicio = async (tx: TxClient, servicio: Partial<servicio>): Promise<servicio> => {
   try {
-    const result = await modelsFT.Servicio.update(servicio, {
+    const result = await tx.servicio.update({
+      data: servicio,
       where: {
         servicioid: servicio.servicioid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -95,13 +92,13 @@ export const updateServicio = async (transaction, servicio) => {
   }
 };
 
-export const deleteServicio = async (transaction, servicio) => {
+export const deleteServicio = async (tx: TxClient, servicio: Partial<servicio>): Promise<servicio> => {
   try {
-    const result = await modelsFT.Servicio.update(servicio, {
+    const result = await tx.servicio.update({
+      data: servicio,
       where: {
         servicioid: servicio.servicioid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

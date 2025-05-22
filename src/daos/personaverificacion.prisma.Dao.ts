@@ -1,31 +1,30 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, persona_verificacion } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getPersonaverificacions = async (transaction, estados) => {
+export const getPersonaverificacions = async (tx: TxClient, estados: number[]): Promise<persona_verificacion[]> => {
   try {
-    const personaverificacions = await modelsFT.PersonaVerificacion.findAll({
+    const personaverificacions = await tx.persona_verificacion.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return personaverificacions;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getPersonaverificacionByIdpersonaverificacion = async (transaction, idpersonaverificacion) => {
+export const getPersonaverificacionByIdpersonaverificacion = async (tx: TxClient, idpersonaverificacion: number): Promise<persona_verificacion> => {
   try {
-    const personaverificacion = await modelsFT.PersonaVerificacion.findByPk(idpersonaverificacion, { transaction });
+    const personaverificacion = await tx.persona_verificacion.findUnique({ where: { idpersonaverificacion: idpersonaverificacion } });
 
     //const personaverificacions = await personaverificacion.getPersonaverificacions();
 
@@ -36,13 +35,12 @@ export const getPersonaverificacionByIdpersonaverificacion = async (transaction,
   }
 };
 
-export const getPersonaverificacionByPersonaverificacionid = async (transaction, personaverificacionid) => {
+export const getPersonaverificacionByPersonaverificacionid = async (tx: TxClient, personaverificacionid: string): Promise<persona_verificacion> => {
   try {
-    const personaverificacion = await modelsFT.PersonaVerificacion.findOne({
+    const personaverificacion = await tx.persona_verificacion.findFirst({
       where: {
         personaverificacionid: personaverificacionid,
       },
-      transaction,
     });
 
     return personaverificacion;
@@ -52,14 +50,13 @@ export const getPersonaverificacionByPersonaverificacionid = async (transaction,
   }
 };
 
-export const findPersonaverificacionPk = async (transaction, personaverificacionid) => {
+export const findPersonaverificacionPk = async (tx: TxClient, personaverificacionid: string): Promise<{ idpersonaverificacion: number }> => {
   try {
-    const personaverificacion = await modelsFT.PersonaVerificacion.findOne({
-      attributes: ["_idpersonaverificacion"],
+    const personaverificacion = await tx.persona_verificacion.findFirst({
+      select: { idpersonaverificacion: true },
       where: {
         personaverificacionid: personaverificacionid,
       },
-      transaction,
     });
 
     return personaverificacion;
@@ -69,24 +66,24 @@ export const findPersonaverificacionPk = async (transaction, personaverificacion
   }
 };
 
-export const insertPersonaverificacion = async (transaction, personaverificacion) => {
+export const insertPersonaverificacion = async (tx: TxClient, personaverificacion: Prisma.persona_verificacionCreateInput): Promise<persona_verificacion> => {
   try {
-    const personaverificacion_nuevo = await modelsFT.PersonaVerificacion.create(personaverificacion, { transaction });
+    const nuevo = await tx.persona_verificacion.create({ data: personaverificacion });
 
-    return personaverificacion_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updatePersonaverificacion = async (transaction, personaverificacion) => {
+export const updatePersonaverificacion = async (tx: TxClient, personaverificacion: Partial<persona_verificacion>): Promise<persona_verificacion> => {
   try {
-    const result = await modelsFT.PersonaVerificacion.update(personaverificacion, {
+    const result = await tx.persona_verificacion.update({
+      data: personaverificacion,
       where: {
         personaverificacionid: personaverificacion.personaverificacionid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -95,13 +92,13 @@ export const updatePersonaverificacion = async (transaction, personaverificacion
   }
 };
 
-export const deletePersonaverificacion = async (transaction, personaverificacion) => {
+export const deletePersonaverificacion = async (tx: TxClient, personaverificacion: Partial<persona_verificacion>): Promise<persona_verificacion> => {
   try {
-    const result = await modelsFT.PersonaVerificacion.update(personaverificacion, {
+    const result = await tx.persona_verificacion.update({
+      data: personaverificacion,
       where: {
         personaverificacionid: personaverificacion.personaverificacionid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -110,13 +107,13 @@ export const deletePersonaverificacion = async (transaction, personaverificacion
   }
 };
 
-export const activatePersonaverificacion = async (transaction, personaverificacion) => {
+export const activatePersonaverificacion = async (tx: TxClient, personaverificacion: Partial<persona_verificacion>): Promise<persona_verificacion> => {
   try {
-    const result = await modelsFT.PersonaVerificacion.update(personaverificacion, {
+    const result = await tx.persona_verificacion.update({
+      data: personaverificacion,
       where: {
         personaverificacionid: personaverificacion.personaverificacionid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

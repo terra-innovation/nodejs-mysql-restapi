@@ -1,31 +1,30 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, cuenta_bancaria_estado } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getCuentabancariaestados = async (transaction, estados) => {
+export const getCuentabancariaestados = async (tx: TxClient, estados: number[]): Promise<cuenta_bancaria_estado[]> => {
   try {
-    const cuentabancariaestados = await modelsFT.CuentaBancariaEstado.findAll({
+    const cuentabancariaestados = await tx.cuenta_bancaria_estado.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return cuentabancariaestados;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getCuentabancariaestadoByIdcuentabancariaestado = async (transaction, idcuentabancariaestado) => {
+export const getCuentabancariaestadoByIdcuentabancariaestado = async (tx: TxClient, idcuentabancariaestado: number): Promise<cuenta_bancaria_estado> => {
   try {
-    const cuentabancariaestado = await modelsFT.CuentaBancariaEstado.findByPk(idcuentabancariaestado, { transaction });
+    const cuentabancariaestado = await tx.cuenta_bancaria_estado.findUnique({ where: { idcuentabancariaestado: idcuentabancariaestado } });
 
     //const cuentabancariaestados = await cuentabancariaestado.getCuentabancariaestados();
 
@@ -36,13 +35,12 @@ export const getCuentabancariaestadoByIdcuentabancariaestado = async (transactio
   }
 };
 
-export const getCuentabancariaestadoByCuentabancariaestadoid = async (transaction, cuentabancariaestadoid) => {
+export const getCuentabancariaestadoByCuentabancariaestadoid = async (tx: TxClient, cuentabancariaestadoid: string): Promise<cuenta_bancaria_estado> => {
   try {
-    const cuentabancariaestado = await modelsFT.CuentaBancariaEstado.findOne({
+    const cuentabancariaestado = await tx.cuenta_bancaria_estado.findFirst({
       where: {
         cuentabancariaestadoid: cuentabancariaestadoid,
       },
-      transaction,
     });
 
     return cuentabancariaestado;
@@ -52,14 +50,13 @@ export const getCuentabancariaestadoByCuentabancariaestadoid = async (transactio
   }
 };
 
-export const findCuentabancariaestadoPk = async (transaction, cuentabancariaestadoid) => {
+export const findCuentabancariaestadoPk = async (tx: TxClient, cuentabancariaestadoid: string): Promise<{ idcuentabancariaestado: number }> => {
   try {
-    const cuentabancariaestado = await modelsFT.CuentaBancariaEstado.findOne({
-      attributes: ["_idcuentabancariaestado"],
+    const cuentabancariaestado = await tx.cuenta_bancaria_estado.findFirst({
+      select: { idcuentabancariaestado: true },
       where: {
         cuentabancariaestadoid: cuentabancariaestadoid,
       },
-      transaction,
     });
 
     return cuentabancariaestado;
@@ -69,24 +66,24 @@ export const findCuentabancariaestadoPk = async (transaction, cuentabancariaesta
   }
 };
 
-export const insertCuentabancariaestado = async (transaction, cuentabancariaestado) => {
+export const insertCuentabancariaestado = async (tx: TxClient, cuentabancariaestado: Prisma.cuenta_bancaria_estadoCreateInput): Promise<cuenta_bancaria_estado> => {
   try {
-    const cuentabancariaestado_nuevo = await modelsFT.CuentaBancariaEstado.create(cuentabancariaestado, { transaction });
+    const nuevo = await tx.cuenta_bancaria_estado.create({ data: cuentabancariaestado });
 
-    return cuentabancariaestado_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateCuentabancariaestado = async (transaction, cuentabancariaestado) => {
+export const updateCuentabancariaestado = async (tx: TxClient, cuentabancariaestado: Partial<cuenta_bancaria_estado>): Promise<cuenta_bancaria_estado> => {
   try {
-    const result = await modelsFT.CuentaBancariaEstado.update(cuentabancariaestado, {
+    const result = await tx.cuenta_bancaria_estado.update({
+      data: cuentabancariaestado,
       where: {
         cuentabancariaestadoid: cuentabancariaestado.cuentabancariaestadoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -95,13 +92,13 @@ export const updateCuentabancariaestado = async (transaction, cuentabancariaesta
   }
 };
 
-export const deleteCuentabancariaestado = async (transaction, cuentabancariaestado) => {
+export const deleteCuentabancariaestado = async (tx: TxClient, cuentabancariaestado: Partial<cuenta_bancaria_estado>): Promise<cuenta_bancaria_estado> => {
   try {
-    const result = await modelsFT.CuentaBancariaEstado.update(cuentabancariaestado, {
+    const result = await tx.cuenta_bancaria_estado.update({
+      data: cuentabancariaestado,
       where: {
         cuentabancariaestadoid: cuentabancariaestado.cuentabancariaestadoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -110,13 +107,13 @@ export const deleteCuentabancariaestado = async (transaction, cuentabancariaesta
   }
 };
 
-export const activateCuentabancariaestado = async (transaction, cuentabancariaestado) => {
+export const activateCuentabancariaestado = async (tx: TxClient, cuentabancariaestado: Partial<cuenta_bancaria_estado>): Promise<cuenta_bancaria_estado> => {
   try {
-    const result = await modelsFT.CuentaBancariaEstado.update(cuentabancariaestado, {
+    const result = await tx.cuenta_bancaria_estado.update({
+      data: cuentabancariaestado,
       where: {
         cuentabancariaestadoid: cuentabancariaestado.cuentabancariaestadoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

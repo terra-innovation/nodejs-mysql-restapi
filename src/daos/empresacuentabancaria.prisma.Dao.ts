@@ -1,12 +1,13 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, empresa_cuenta_bancaria } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getEmpresacuentabancariasForFactoring = async (transaction, _idempresa, _idmoneda, _idcuentabancariaestado, estados) => {
+export const getEmpresacuentabancariasForFactoring = async (tx: TxClient, idempresa, idmoneda, idcuentabancariaestado, estados: number[]) => {
   try {
-    const empresacuentabancaria = await modelsFT.EmpresaCuentaBancaria.findAll({
+    const empresacuentabancaria = await tx.empresa_cuenta_bancaria.findMany({
       include: [
         {
           model: modelsFT.CuentaBancaria,
@@ -23,7 +24,7 @@ export const getEmpresacuentabancariasForFactoring = async (transaction, _idempr
               required: true,
               as: "moneda_moneda",
               where: {
-                _idmoneda: _idmoneda,
+                idmoneda: idmoneda,
               },
             },
             {
@@ -36,26 +37,25 @@ export const getEmpresacuentabancariasForFactoring = async (transaction, _idempr
               required: true,
               as: "cuentabancariaestado_cuenta_bancaria_estado",
               where: {
-                _idcuentabancariaestado: {
-                  [Op.in]: _idcuentabancariaestado,
+                idcuentabancariaestado: {
+                  in: idcuentabancariaestado,
                 },
               },
             },
           ],
           where: {
             estado: {
-              [Op.in]: estados,
+              in: estados,
             },
           },
         },
       ],
       where: {
-        _idempresa: _idempresa,
+        idempresa: idempresa,
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return empresacuentabancaria;
@@ -65,16 +65,16 @@ export const getEmpresacuentabancariasForFactoring = async (transaction, _idempr
   }
 };
 
-export const getEmpresacuentabancariasByIdempresaAndAlias = async (transaction, _idempresa, alias, estados) => {
+export const getEmpresacuentabancariasByIdempresaAndAlias = async (tx: TxClient, idempresa, alias, estados: number[]) => {
   try {
-    const empresacuentabancaria = await modelsFT.EmpresaCuentaBancaria.findAll({
+    const empresacuentabancaria = await tx.empresa_cuenta_bancaria.findMany({
       include: [
         {
           model: modelsFT.Empresa,
           required: true,
           as: "empresa_empresa",
           where: {
-            _idempresa: _idempresa,
+            idempresa: idempresa,
           },
         },
         {
@@ -106,17 +106,16 @@ export const getEmpresacuentabancariasByIdempresaAndAlias = async (transaction, 
           where: {
             alias: alias,
             estado: {
-              [Op.in]: estados,
+              in: estados,
             },
           },
         },
       ],
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return empresacuentabancaria;
@@ -126,9 +125,9 @@ export const getEmpresacuentabancariasByIdempresaAndAlias = async (transaction, 
   }
 };
 
-export const getEmpresacuentabancariasByIdusuario = async (transaction, _idusuario, estados) => {
+export const getEmpresacuentabancariasByIdusuario = async (tx: TxClient, idusuario, estados: number[]) => {
   try {
-    const empresacuentabancaria = await modelsFT.EmpresaCuentaBancaria.findAll({
+    const empresacuentabancaria = await tx.empresa_cuenta_bancaria.findMany({
       include: [
         {
           model: modelsFT.Empresa,
@@ -140,7 +139,7 @@ export const getEmpresacuentabancariasByIdusuario = async (transaction, _idusuar
               required: true,
               as: "usuario_servicio_empresas",
               where: {
-                _idusuario: _idusuario,
+                idusuario: idusuario,
               },
             },
           ],
@@ -175,10 +174,9 @@ export const getEmpresacuentabancariasByIdusuario = async (transaction, _idusuar
       ],
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return empresacuentabancaria;
@@ -188,9 +186,9 @@ export const getEmpresacuentabancariasByIdusuario = async (transaction, _idusuar
   }
 };
 
-export const getEmpresacuentabancarias = async (transaction, estados) => {
+export const getEmpresacuentabancarias = async (tx: TxClient, estados: number[]): Promise<empresa_cuenta_bancaria[]> => {
   try {
-    const empresacuentabancarias = await modelsFT.EmpresaCuentaBancaria.findAll({
+    const empresacuentabancarias = await tx.empresa_cuenta_bancaria.findMany({
       include: [
         {
           model: modelsFT.Empresa,
@@ -246,23 +244,21 @@ export const getEmpresacuentabancarias = async (transaction, estados) => {
       ],
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return empresacuentabancarias;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getEmpresacuentabancariaByIdempresaAndIdusuario = async (transaction, _idempresa, _idusuario, estados) => {
+export const getEmpresacuentabancariaByIdempresaAndIdusuario = async (tx: TxClient, idempresa, idusuario, estados: number[]) => {
   try {
-    const empresacuentabancaria = await modelsFT.EmpresaCuentaBancaria.findOne({
+    const empresacuentabancaria = await tx.empresa_cuenta_bancaria.findFirst({
       include: [
         {
           model: modelsFT.Empresa,
@@ -274,8 +270,8 @@ export const getEmpresacuentabancariaByIdempresaAndIdusuario = async (transactio
               required: true,
               as: "usuario_servicio_empresas",
               where: {
-                _idempresa: _idempresa,
-                _idusuario: _idusuario,
+                idempresa: idempresa,
+                idusuario: idusuario,
               },
             },
           ],
@@ -310,10 +306,9 @@ export const getEmpresacuentabancariaByIdempresaAndIdusuario = async (transactio
       ],
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return empresacuentabancaria;
@@ -323,9 +318,9 @@ export const getEmpresacuentabancariaByIdempresaAndIdusuario = async (transactio
   }
 };
 
-export const getEmpresacuentabancariaByIdempresacuentabancaria = async (transaction, idempresacuentabancaria) => {
+export const getEmpresacuentabancariaByIdempresacuentabancaria = async (tx: TxClient, idempresacuentabancaria: number): Promise<empresa_cuenta_bancaria> => {
   try {
-    const empresacuentabancaria = await modelsFT.EmpresaCuentaBancaria.findByPk(idempresacuentabancaria, { transaction });
+    const empresacuentabancaria = await tx.empresa_cuenta_bancaria.findUnique({ where: { idempresacuentabancaria: idempresacuentabancaria } });
 
     //const empresacuentabancarias = await empresacuentabancaria.getEmpresacuentabancarias();
 
@@ -336,13 +331,12 @@ export const getEmpresacuentabancariaByIdempresacuentabancaria = async (transact
   }
 };
 
-export const getEmpresacuentabancariaByEmpresacuentabancariaid = async (transaction, empresacuentabancariaid) => {
+export const getEmpresacuentabancariaByEmpresacuentabancariaid = async (tx: TxClient, empresacuentabancariaid: string): Promise<empresa_cuenta_bancaria> => {
   try {
-    const empresacuentabancaria = await modelsFT.EmpresaCuentaBancaria.findOne({
+    const empresacuentabancaria = await tx.empresa_cuenta_bancaria.findFirst({
       where: {
         empresacuentabancariaid: empresacuentabancariaid,
       },
-      transaction,
     });
 
     return empresacuentabancaria;
@@ -352,14 +346,13 @@ export const getEmpresacuentabancariaByEmpresacuentabancariaid = async (transact
   }
 };
 
-export const findEmpresacuentabancariaPk = async (transaction, empresacuentabancariaid) => {
+export const findEmpresacuentabancariaPk = async (tx: TxClient, empresacuentabancariaid: string): Promise<{ idempresacuentabancaria: number }> => {
   try {
-    const empresacuentabancaria = await modelsFT.EmpresaCuentaBancaria.findOne({
-      attributes: ["_idempresacuentabancaria"],
+    const empresacuentabancaria = await tx.empresa_cuenta_bancaria.findFirst({
+      select: { idempresacuentabancaria: true },
       where: {
         empresacuentabancariaid: empresacuentabancariaid,
       },
-      transaction,
     });
 
     return empresacuentabancaria;
@@ -369,24 +362,24 @@ export const findEmpresacuentabancariaPk = async (transaction, empresacuentabanc
   }
 };
 
-export const insertEmpresacuentabancaria = async (transaction, empresacuentabancaria) => {
+export const insertEmpresacuentabancaria = async (tx: TxClient, empresacuentabancaria: Prisma.empresa_cuenta_bancariaCreateInput): Promise<empresa_cuenta_bancaria> => {
   try {
-    const empresacuentabancaria_nuevo = await modelsFT.EmpresaCuentaBancaria.create(empresacuentabancaria, { transaction });
+    const nuevo = await tx.empresa_cuenta_bancaria.create({ data: empresacuentabancaria });
 
-    return empresacuentabancaria_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateEmpresacuentabancaria = async (transaction, empresacuentabancaria) => {
+export const updateEmpresacuentabancaria = async (tx: TxClient, empresacuentabancaria: Partial<empresa_cuenta_bancaria>): Promise<empresa_cuenta_bancaria> => {
   try {
-    const result = await modelsFT.EmpresaCuentaBancaria.update(empresacuentabancaria, {
+    const result = await tx.empresa_cuenta_bancaria.update({
+      data: empresacuentabancaria,
       where: {
         empresacuentabancariaid: empresacuentabancaria.empresacuentabancariaid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -395,13 +388,13 @@ export const updateEmpresacuentabancaria = async (transaction, empresacuentabanc
   }
 };
 
-export const deleteEmpresacuentabancaria = async (transaction, empresacuentabancaria) => {
+export const deleteEmpresacuentabancaria = async (tx: TxClient, empresacuentabancaria: Partial<empresa_cuenta_bancaria>): Promise<empresa_cuenta_bancaria> => {
   try {
-    const result = await modelsFT.EmpresaCuentaBancaria.update(empresacuentabancaria, {
+    const result = await tx.empresa_cuenta_bancaria.update({
+      data: empresacuentabancaria,
       where: {
         empresacuentabancariaid: empresacuentabancaria.empresacuentabancariaid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

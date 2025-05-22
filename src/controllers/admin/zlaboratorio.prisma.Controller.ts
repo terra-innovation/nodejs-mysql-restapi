@@ -68,6 +68,13 @@ export const validateTransaction = async (req, res) => {
 
         const deleteZlaboratorioUsuario = await zlaboratoriopedidoDao.deleteZlaboratorioPedido(tx, pedidoCreated);
 
+        const pedidoUpdate = { idpedido: 3, nombre: "una computadora actualizada", fechamod: new Date() };
+
+        const updateZlaboratorioPedido = await zlaboratoriopedidoDao.updateZlaboratorioPedido(tx, pedidoUpdate);
+
+        const pedidoEncontrado = await zlaboratoriopedidoDao.findZlaboratorioPedidoPk(tx, "c019c569pppp");
+        log.debug(line(), "pedidoEncontrado", pedidoEncontrado);
+
         return usuarioCreated;
       },
       { timeout: prismaFT.transactionTimeout }

@@ -1,31 +1,30 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, factura_termino_pago } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getFacturaterminopagos = async (transaction, estados) => {
+export const getFacturaterminopagos = async (tx: TxClient, estados: number[]): Promise<factura_termino_pago[]> => {
   try {
-    const facturaterminopagos = await modelsFT.FacturaTerminoPago.findAll({
+    const facturaterminopagos = await tx.factura_termino_pago.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return facturaterminopagos;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getFacturaterminopagoByIdfacturaterminopago = async (transaction, idfacturaterminopago) => {
+export const getFacturaterminopagoByIdfacturaterminopago = async (tx: TxClient, idfacturaterminopago: number): Promise<factura_termino_pago> => {
   try {
-    const facturaterminopago = await modelsFT.FacturaTerminoPago.findByPk(idfacturaterminopago, { transaction });
+    const facturaterminopago = await tx.factura_termino_pago.findUnique({ where: { idfacturaterminopago: idfacturaterminopago } });
 
     //const facturaterminopagos = await facturaterminopago.getFacturaterminopagos();
 
@@ -36,13 +35,12 @@ export const getFacturaterminopagoByIdfacturaterminopago = async (transaction, i
   }
 };
 
-export const getFacturaterminopagoByFacturaterminopagoid = async (transaction, facturaterminopagoid) => {
+export const getFacturaterminopagoByFacturaterminopagoid = async (tx: TxClient, facturaterminopagoid: string): Promise<factura_termino_pago> => {
   try {
-    const facturaterminopago = await modelsFT.FacturaTerminoPago.findOne({
+    const facturaterminopago = await tx.factura_termino_pago.findFirst({
       where: {
         facturaterminopagoid: facturaterminopagoid,
       },
-      transaction,
     });
 
     return facturaterminopago;
@@ -52,14 +50,13 @@ export const getFacturaterminopagoByFacturaterminopagoid = async (transaction, f
   }
 };
 
-export const findFacturaterminopagoPk = async (transaction, facturaterminopagoid) => {
+export const findFacturaterminopagoPk = async (tx: TxClient, facturaterminopagoid: string): Promise<{ idfacturaterminopago: number }> => {
   try {
-    const facturaterminopago = await modelsFT.FacturaTerminoPago.findOne({
-      attributes: ["_idfacturaterminopago"],
+    const facturaterminopago = await tx.factura_termino_pago.findFirst({
+      select: { idfacturaterminopago: true },
       where: {
         facturaterminopagoid: facturaterminopagoid,
       },
-      transaction,
     });
 
     return facturaterminopago;
@@ -69,24 +66,24 @@ export const findFacturaterminopagoPk = async (transaction, facturaterminopagoid
   }
 };
 
-export const insertFacturaterminopago = async (transaction, facturaterminopago) => {
+export const insertFacturaterminopago = async (tx: TxClient, facturaterminopago: Prisma.factura_termino_pagoCreateInput): Promise<factura_termino_pago> => {
   try {
-    const facturaterminopago_nuevo = await modelsFT.FacturaTerminoPago.create(facturaterminopago, { transaction });
+    const nuevo = await tx.factura_termino_pago.create({ data: facturaterminopago });
 
-    return facturaterminopago_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateFacturaterminopago = async (transaction, facturaterminopago) => {
+export const updateFacturaterminopago = async (tx: TxClient, facturaterminopago: Partial<factura_termino_pago>): Promise<factura_termino_pago> => {
   try {
-    const result = await modelsFT.FacturaTerminoPago.update(facturaterminopago, {
+    const result = await tx.factura_termino_pago.update({
+      data: facturaterminopago,
       where: {
         facturaterminopagoid: facturaterminopago.facturaterminopagoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -95,13 +92,13 @@ export const updateFacturaterminopago = async (transaction, facturaterminopago) 
   }
 };
 
-export const deleteFacturaterminopago = async (transaction, facturaterminopago) => {
+export const deleteFacturaterminopago = async (tx: TxClient, facturaterminopago: Partial<factura_termino_pago>): Promise<factura_termino_pago> => {
   try {
-    const result = await modelsFT.FacturaTerminoPago.update(facturaterminopago, {
+    const result = await tx.factura_termino_pago.update({
+      data: facturaterminopago,
       where: {
         facturaterminopagoid: facturaterminopago.facturaterminopagoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

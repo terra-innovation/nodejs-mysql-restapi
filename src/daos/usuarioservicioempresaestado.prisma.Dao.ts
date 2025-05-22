@@ -1,31 +1,30 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, usuario_servicio_empresa_estado } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getUsuarioservicioempresaestados = async (transaction, estados) => {
+export const getUsuarioservicioempresaestados = async (tx: TxClient, estados: number[]): Promise<usuario_servicio_empresa_estado[]> => {
   try {
-    const usuarioservicioempresaestados = await modelsFT.UsuarioServicioEmpresaEstado.findAll({
+    const usuarioservicioempresaestados = await tx.usuario_servicio_empresa_estado.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return usuarioservicioempresaestados;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getUsuarioservicioempresaestadoByIdusuarioservicioempresaestado = async (transaction, idusuarioservicioempresaestado) => {
+export const getUsuarioservicioempresaestadoByIdusuarioservicioempresaestado = async (tx: TxClient, idusuarioservicioempresaestado: number): Promise<usuario_servicio_empresa_estado> => {
   try {
-    const usuarioservicioempresaestado = await modelsFT.UsuarioServicioEmpresaEstado.findByPk(idusuarioservicioempresaestado, { transaction });
+    const usuarioservicioempresaestado = await tx.usuario_servicio_empresa_estado.findUnique({ where: { idusuarioservicioempresaestado: idusuarioservicioempresaestado } });
 
     //const usuarioservicioempresaestados = await usuarioservicioempresaestado.getUsuarioservicioempresaestados();
 
@@ -36,13 +35,12 @@ export const getUsuarioservicioempresaestadoByIdusuarioservicioempresaestado = a
   }
 };
 
-export const getUsuarioservicioempresaestadoByUsuarioservicioempresaestadoid = async (transaction, usuarioservicioempresaestadoid) => {
+export const getUsuarioservicioempresaestadoByUsuarioservicioempresaestadoid = async (tx: TxClient, usuarioservicioempresaestadoid: string): Promise<usuario_servicio_empresa_estado> => {
   try {
-    const usuarioservicioempresaestado = await modelsFT.UsuarioServicioEmpresaEstado.findOne({
+    const usuarioservicioempresaestado = await tx.usuario_servicio_empresa_estado.findFirst({
       where: {
         usuarioservicioempresaestadoid: usuarioservicioempresaestadoid,
       },
-      transaction,
     });
 
     return usuarioservicioempresaestado;
@@ -52,14 +50,13 @@ export const getUsuarioservicioempresaestadoByUsuarioservicioempresaestadoid = a
   }
 };
 
-export const findUsuarioservicioempresaestadoPk = async (transaction, usuarioservicioempresaestadoid) => {
+export const findUsuarioservicioempresaestadoPk = async (tx: TxClient, usuarioservicioempresaestadoid: string): Promise<{ idusuarioservicioempresaestado: number }> => {
   try {
-    const usuarioservicioempresaestado = await modelsFT.UsuarioServicioEmpresaEstado.findOne({
-      attributes: ["_idusuarioservicioempresaestado"],
+    const usuarioservicioempresaestado = await tx.usuario_servicio_empresa_estado.findFirst({
+      select: { idusuarioservicioempresaestado: true },
       where: {
         usuarioservicioempresaestadoid: usuarioservicioempresaestadoid,
       },
-      transaction,
     });
 
     return usuarioservicioempresaestado;
@@ -69,24 +66,24 @@ export const findUsuarioservicioempresaestadoPk = async (transaction, usuarioser
   }
 };
 
-export const insertUsuarioservicioempresaestado = async (transaction, usuarioservicioempresaestado) => {
+export const insertUsuarioservicioempresaestado = async (tx: TxClient, usuarioservicioempresaestado: Prisma.usuario_servicio_empresa_estadoCreateInput): Promise<usuario_servicio_empresa_estado> => {
   try {
-    const usuarioservicioempresaestado_nuevo = await modelsFT.UsuarioServicioEmpresaEstado.create(usuarioservicioempresaestado, { transaction });
+    const nuevo = await tx.usuario_servicio_empresa_estado.create({ data: usuarioservicioempresaestado });
 
-    return usuarioservicioempresaestado_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateUsuarioservicioempresaestado = async (transaction, usuarioservicioempresaestado) => {
+export const updateUsuarioservicioempresaestado = async (tx: TxClient, usuarioservicioempresaestado: Partial<usuario_servicio_empresa_estado>): Promise<usuario_servicio_empresa_estado> => {
   try {
-    const result = await modelsFT.UsuarioServicioEmpresaEstado.update(usuarioservicioempresaestado, {
+    const result = await tx.usuario_servicio_empresa_estado.update({
+      data: usuarioservicioempresaestado,
       where: {
         usuarioservicioempresaestadoid: usuarioservicioempresaestado.usuarioservicioempresaestadoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -95,13 +92,13 @@ export const updateUsuarioservicioempresaestado = async (transaction, usuarioser
   }
 };
 
-export const deleteUsuarioservicioempresaestado = async (transaction, usuarioservicioempresaestado) => {
+export const deleteUsuarioservicioempresaestado = async (tx: TxClient, usuarioservicioempresaestado: Partial<usuario_servicio_empresa_estado>): Promise<usuario_servicio_empresa_estado> => {
   try {
-    const result = await modelsFT.UsuarioServicioEmpresaEstado.update(usuarioservicioempresaestado, {
+    const result = await tx.usuario_servicio_empresa_estado.update({
+      data: usuarioservicioempresaestado,
       where: {
         usuarioservicioempresaestadoid: usuarioservicioempresaestado.usuarioservicioempresaestadoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

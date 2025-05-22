@@ -1,33 +1,30 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, archivo_tipo } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getArchivotipos = async (transaction, estados) => {
+export const getArchivotipos = async (tx: TxClient, estados: number[]): Promise<archivo_tipo[]> => {
   try {
-    const archivotipos = await modelsFT.ArchivoTipo.findAll({
+    const archivotipos = await tx.archivo_tipo.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return archivotipos;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getArchivotipoByIdarchivotipo = async (transaction, idarchivotipo) => {
+export const getArchivotipoByIdarchivotipo = async (tx: TxClient, idarchivotipo: number): Promise<archivo_tipo> => {
   try {
-    const archivotipo = await modelsFT.ArchivoTipo.findByPk(idarchivotipo, { transaction });
-
-    //const archivotipos = await archivotipo.getArchivotipos();
+    const archivotipo = await tx.archivo_tipo.findUnique({ where: { idarchivotipo: idarchivotipo } });
 
     return archivotipo;
   } catch (error) {
@@ -36,13 +33,12 @@ export const getArchivotipoByIdarchivotipo = async (transaction, idarchivotipo) 
   }
 };
 
-export const getArchivotipoByCode = async (transaction, code) => {
+export const getArchivotipoByCode = async (tx: TxClient, code) => {
   try {
-    const archivotipo = await modelsFT.ArchivoTipo.findOne({
+    const archivotipo = await tx.archivo_tipo.findFirst({
       where: {
         code: code,
       },
-      transaction,
     });
 
     return archivotipo;
@@ -52,13 +48,12 @@ export const getArchivotipoByCode = async (transaction, code) => {
   }
 };
 
-export const getArchivotipoByArchivotipoid = async (transaction, archivotipoid) => {
+export const getArchivotipoByArchivotipoid = async (tx: TxClient, archivotipoid: string): Promise<archivo_tipo> => {
   try {
-    const archivotipo = await modelsFT.ArchivoTipo.findOne({
+    const archivotipo = await tx.archivo_tipo.findFirst({
       where: {
         archivotipoid: archivotipoid,
       },
-      transaction,
     });
 
     return archivotipo;
@@ -68,14 +63,13 @@ export const getArchivotipoByArchivotipoid = async (transaction, archivotipoid) 
   }
 };
 
-export const findArchivotipoPk = async (transaction, archivotipoid) => {
+export const findArchivotipoPk = async (tx: TxClient, archivotipoid: string): Promise<{ idarchivotipo: number }> => {
   try {
-    const archivotipo = await modelsFT.ArchivoTipo.findOne({
-      attributes: ["_idarchivotipo"],
+    const archivotipo = await tx.archivo_tipo.findFirst({
+      select: { idarchivotipo: true },
       where: {
         archivotipoid: archivotipoid,
       },
-      transaction,
     });
 
     return archivotipo;
@@ -85,24 +79,24 @@ export const findArchivotipoPk = async (transaction, archivotipoid) => {
   }
 };
 
-export const insertArchivotipo = async (transaction, archivotipo) => {
+export const insertArchivotipo = async (tx: TxClient, archivotipo: Prisma.archivo_tipoCreateInput): Promise<archivo_tipo> => {
   try {
-    const archivotipo_nuevo = await modelsFT.ArchivoTipo.create(archivotipo, { transaction });
+    const nuevo = await tx.archivo_tipo.create({ data: archivotipo });
 
-    return archivotipo_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateArchivotipo = async (transaction, archivotipo) => {
+export const updateArchivotipo = async (tx: TxClient, archivotipo: Partial<archivo_tipo>): Promise<archivo_tipo> => {
   try {
-    const result = await modelsFT.ArchivoTipo.update(archivotipo, {
+    const result = await tx.archivo_tipo.update({
+      data: archivotipo,
       where: {
         archivotipoid: archivotipo.archivotipoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -111,13 +105,13 @@ export const updateArchivotipo = async (transaction, archivotipo) => {
   }
 };
 
-export const deleteArchivotipo = async (transaction, archivotipo) => {
+export const deleteArchivotipo = async (tx: TxClient, archivotipo: Partial<archivo_tipo>): Promise<archivo_tipo> => {
   try {
-    const result = await modelsFT.ArchivoTipo.update(archivotipo, {
+    const result = await tx.archivo_tipo.update({
+      data: archivotipo,
       where: {
         archivotipoid: archivotipo.archivotipoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

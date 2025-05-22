@@ -2,8 +2,7 @@ import type { Prisma, zlaboratorio_pedido } from "#src/models/prisma/ft_factorin
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
-
-type TxClient = Prisma.TransactionClient;
+import { TxClient } from "#src/types/Prisma.types.js";
 
 export const getZlaboratorioPedidos = async (tx: TxClient, estados: number[]): Promise<zlaboratorio_pedido[]> => {
   try {
@@ -37,6 +36,22 @@ export const getZlaboratorioPedidoByIdzlaboratoriopedido = async (tx: TxClient, 
   }
 };
 
+export const findZlaboratorioPedidoPk = async (tx: TxClient, code: string): Promise<{ idpedido: number }> => {
+  try {
+    const archivo = await tx.zlaboratorio_pedido.findFirst({
+      select: { idpedido: true },
+      where: {
+        code: code,
+      },
+    });
+
+    return archivo;
+  } catch (error) {
+    log.error(line(), "", formatError(error));
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getZlaboratorioPedidoByZlaboratorioPedidoid = async (tx: TxClient, idpedido: number): Promise<zlaboratorio_pedido> => {
   try {
     const zlaboratoriopedido = await tx.zlaboratorio_pedido.findFirst({
@@ -54,18 +69,18 @@ export const getZlaboratorioPedidoByZlaboratorioPedidoid = async (tx: TxClient, 
 
 export const insertZlaboratorioPedido = async (tx: TxClient, zlaboratoriopedido: Prisma.zlaboratorio_pedidoCreateInput): Promise<zlaboratorio_pedido> => {
   try {
-    const zlaboratoriopedido_nuevo = await tx.zlaboratorio_pedido.create({
+    const nuevo = await tx.zlaboratorio_pedido.create({
       data: zlaboratoriopedido,
     });
 
-    return zlaboratoriopedido_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), error);
     throw new ClientError("Ocurrió un error", 500);
   }
 };
 
-export const updateZlaboratorioPedido = async (tx: TxClient, zlaboratoriopedido: zlaboratorio_pedido): Promise<zlaboratorio_pedido> => {
+export const updateZlaboratorioPedido = async (tx: TxClient, zlaboratoriopedido: Partial<zlaboratorio_pedido>): Promise<zlaboratorio_pedido> => {
   try {
     const result = await tx.zlaboratorio_pedido.update({
       where: {
@@ -81,7 +96,7 @@ export const updateZlaboratorioPedido = async (tx: TxClient, zlaboratoriopedido:
   }
 };
 
-export const deleteZlaboratorioPedido = async (tx: TxClient, zlaboratoriopedido: zlaboratorio_pedido): Promise<zlaboratorio_pedido> => {
+export const deleteZlaboratorioPedido = async (tx: TxClient, zlaboratoriopedido: Partial<zlaboratorio_pedido>): Promise<zlaboratorio_pedido> => {
   try {
     const result = await tx.zlaboratorio_pedido.delete({
       where: {

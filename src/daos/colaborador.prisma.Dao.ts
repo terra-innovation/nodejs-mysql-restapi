@@ -1,19 +1,18 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, colaborador } from "#src/models/prisma/ft_factoring/client";
+
 import { Empresa } from "#src/models/ft_factoring/Empresa.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getColaboradorByIdEmpresaAndIdpersona = async (transaction, _idempresa, _idpersona) => {
+export const getColaboradorByIdEmpresaAndIdpersona = async (tx: TxClient, idempresa: number, idpersona: bigint) => {
   try {
-    const colaborador = await modelsFT.Colaborador.findOne({
-      include: [],
+    const colaborador = await tx.colaborador.findFirst({
       where: {
-        _idempresa: _idempresa,
-        _idpersona: _idpersona,
+        idempresa: idempresa,
+        idpersona: idpersona,
       },
-      transaction,
     });
     return colaborador;
   } catch (error) {
@@ -22,38 +21,56 @@ export const getColaboradorByIdEmpresaAndIdpersona = async (transaction, _idempr
   }
 };
 
-export const getColaboradoresActivas = async (transaction) => {
+export const getColaboradoresActivas = async (tx: TxClient) => {
   try {
-    const colaboradores = await modelsFT.Colaborador.findAll({
-      include: [
-        {
-          model: Empresa,
-          as: "empresa",
-          attributes: {
-            exclude: ["idempresa", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
+    const colaboradores = await tx.colaborador.findMany({
+      select: {
+        colaboradorid: true,
+        idpersona: true,
+        idcolaboradortipo: true,
+        iddocumentotipo: true,
+        documentonumero: true,
+        nombrecolaborador: true,
+        apellidocolaborador: true,
+        cargo: true,
+        email: true,
+        telefono: true,
+        poderpartidanumero: true,
+        poderpartidaciudad: true,
+        empresa: {
+          select: {
+            empresaid: true,
+            code: true,
+            idpaissede: true,
+            iddepartamentosede: true,
+            idprovinciasede: true,
+            iddistritosede: true,
+            idriesgo: true,
+            ruc: true,
+            razon_social: true,
+            nombre_comercial: true,
+            fecha_inscripcion: true,
+            domicilio_fiscal: true,
+            direccion_sede: true,
+            direccion_sede_referencia: true,
           },
         },
-      ],
-      attributes: {
-        exclude: ["idcolaborador", "idempresa", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
       },
       where: {
         estado: 1,
       },
-      transaction,
     });
 
     return colaboradores;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getColaboradorByIdcolaborador = async (transaction, idcolaborador) => {
+export const getColaboradorByIdcolaborador = async (tx: TxClient, idcolaborador: number): Promise<colaborador> => {
   try {
-    const colaborador = await modelsFT.Colaborador.findByPk(idcolaborador, { transaction });
+    const colaborador = await tx.colaborador.findUnique({ where: { idcolaborador: idcolaborador } });
 
     //const colaboradores = await colaborador.getColaboradors();
 
@@ -64,25 +81,13 @@ export const getColaboradorByIdcolaborador = async (transaction, idcolaborador) 
   }
 };
 
-export const getColaboradorByColaboradorid = async (transaction, colaboradorid) => {
+export const getColaboradorByColaboradorid = async (tx: TxClient, colaboradorid: string): Promise<colaborador> => {
   try {
-    const colaborador = await modelsFT.Colaborador.findOne({
-      include: [
-        {
-          model: Empresa,
-          as: "empresa",
-          attributes: {
-            exclude: ["idempresa", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
-          },
-        },
-      ],
-      attributes: {
-        exclude: ["idcolaborador", "idempresa", "idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado"],
-      },
+    const colaborador = await tx.colaborador.findFirst({
+      include: { empresa: true },
       where: {
         colaboradorid: colaboradorid,
       },
-      transaction,
     });
 
     return colaborador;
@@ -92,14 +97,13 @@ export const getColaboradorByColaboradorid = async (transaction, colaboradorid) 
   }
 };
 
-export const findColaboradorPk = async (transaction, colaboradorid) => {
+export const findColaboradorPk = async (tx: TxClient, colaboradorid: string): Promise<{ idcolaborador: number }> => {
   try {
-    const colaborador = await modelsFT.Colaborador.findAll({
-      attributes: ["idcolaborador"],
+    const colaborador = await tx.colaborador.findFirst({
+      select: { idcolaborador: true },
       where: {
         colaboradorid: colaboradorid,
       },
-      transaction,
     });
 
     return colaborador;
@@ -109,24 +113,24 @@ export const findColaboradorPk = async (transaction, colaboradorid) => {
   }
 };
 
-export const insertColaborador = async (transaction, colaborador) => {
+export const insertColaborador = async (tx: TxClient, colaborador: Prisma.colaboradorCreateInput): Promise<colaborador> => {
   try {
-    const colaborador_nuevo = await modelsFT.Colaborador.create(colaborador, { transaction });
+    const nuevo = await tx.colaborador.create({ data: colaborador });
 
-    return colaborador_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateColaborador = async (transaction, colaborador) => {
+export const updateColaborador = async (tx: TxClient, colaborador: Partial<colaborador>): Promise<colaborador> => {
   try {
-    const result = await modelsFT.Colaborador.update(colaborador, {
+    const result = await tx.colaborador.update({
+      data: colaborador,
       where: {
         colaboradorid: colaborador.colaboradorid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -135,13 +139,13 @@ export const updateColaborador = async (transaction, colaborador) => {
   }
 };
 
-export const deleteColaborador = async (transaction, colaborador) => {
+export const deleteColaborador = async (tx: TxClient, colaborador: Partial<colaborador>): Promise<colaborador> => {
   try {
-    const result = await modelsFT.Colaborador.update(colaborador, {
+    const result = await tx.colaborador.update({
+      data: colaborador,
       where: {
         colaboradorid: colaborador.colaboradorid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

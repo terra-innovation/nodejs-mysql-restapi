@@ -1,19 +1,19 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, factoring_config_comision } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getFactoringconfigcomisionByIdriesgo = async (transaction, _idriesgo, estados) => {
+export const getFactoringconfigcomisionByIdriesgo = async (tx: TxClient, idriesgo, estados: number[]) => {
   try {
-    const factoringconfigcomision = await modelsFT.FactoringConfigComision.findOne({
+    const factoringconfigcomision = await tx.factoring_config_comision.findFirst({
       where: {
-        _idriesgo: _idriesgo,
+        idriesgo: idriesgo,
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return factoringconfigcomision;
@@ -23,28 +23,26 @@ export const getFactoringconfigcomisionByIdriesgo = async (transaction, _idriesg
   }
 };
 
-export const getFactoringconfigcomisions = async (transaction, estados) => {
+export const getFactoringconfigcomisions = async (tx: TxClient, estados: number[]): Promise<factoring_config_comision[]> => {
   try {
-    const factoringconfigcomisions = await modelsFT.FactoringConfigComision.findAll({
+    const factoringconfigcomisions = await tx.factoring_config_comision.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return factoringconfigcomisions;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getFactoringconfigcomisionByIdfactoringconfigcomision = async (transaction, idfactoringconfigcomision) => {
+export const getFactoringconfigcomisionByIdfactoringconfigcomision = async (tx: TxClient, idfactoringconfigcomision: number): Promise<factoring_config_comision> => {
   try {
-    const factoringconfigcomision = await modelsFT.FactoringConfigComision.findByPk(idfactoringconfigcomision, { transaction });
+    const factoringconfigcomision = await tx.factoring_config_comision.findUnique({ where: { idfactoringconfigcomision: idfactoringconfigcomision } });
 
     //const factoringconfigcomisions = await factoringconfigcomision.getFactoringconfigcomisions();
 
@@ -55,13 +53,12 @@ export const getFactoringconfigcomisionByIdfactoringconfigcomision = async (tran
   }
 };
 
-export const getFactoringconfigcomisionByFactoringconfigcomisionid = async (transaction, factoringconfigcomisionid) => {
+export const getFactoringconfigcomisionByFactoringconfigcomisionid = async (tx: TxClient, factoringconfigcomisionid: string): Promise<factoring_config_comision> => {
   try {
-    const factoringconfigcomision = await modelsFT.FactoringConfigComision.findOne({
+    const factoringconfigcomision = await tx.factoring_config_comision.findFirst({
       where: {
         factoringconfigcomisionid: factoringconfigcomisionid,
       },
-      transaction,
     });
 
     return factoringconfigcomision;
@@ -71,14 +68,13 @@ export const getFactoringconfigcomisionByFactoringconfigcomisionid = async (tran
   }
 };
 
-export const findFactoringconfigcomisionPk = async (transaction, factoringconfigcomisionid) => {
+export const findFactoringconfigcomisionPk = async (tx: TxClient, factoringconfigcomisionid: string): Promise<{ idfactoringconfigcomision: number }> => {
   try {
-    const factoringconfigcomision = await modelsFT.FactoringConfigComision.findOne({
-      attributes: ["_idfactoringconfigcomision"],
+    const factoringconfigcomision = await tx.factoring_config_comision.findFirst({
+      select: { idfactoringconfigcomision: true },
       where: {
         factoringconfigcomisionid: factoringconfigcomisionid,
       },
-      transaction,
     });
 
     return factoringconfigcomision;
@@ -88,24 +84,24 @@ export const findFactoringconfigcomisionPk = async (transaction, factoringconfig
   }
 };
 
-export const insertFactoringconfigcomision = async (transaction, factoringconfigcomision) => {
+export const insertFactoringconfigcomision = async (tx: TxClient, factoringconfigcomision: Prisma.factoring_config_comisionCreateInput): Promise<factoring_config_comision> => {
   try {
-    const factoringconfigcomision_nuevo = await modelsFT.FactoringConfigComision.create(factoringconfigcomision, { transaction });
+    const nuevo = await tx.factoring_config_comision.create({ data: factoringconfigcomision });
 
-    return factoringconfigcomision_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateFactoringconfigcomision = async (transaction, factoringconfigcomision) => {
+export const updateFactoringconfigcomision = async (tx: TxClient, factoringconfigcomision: Partial<factoring_config_comision>): Promise<factoring_config_comision> => {
   try {
-    const result = await modelsFT.FactoringConfigComision.update(factoringconfigcomision, {
+    const result = await tx.factoring_config_comision.update({
+      data: factoringconfigcomision,
       where: {
         factoringconfigcomisionid: factoringconfigcomision.factoringconfigcomisionid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -114,13 +110,13 @@ export const updateFactoringconfigcomision = async (transaction, factoringconfig
   }
 };
 
-export const deleteFactoringconfigcomision = async (transaction, factoringconfigcomision) => {
+export const deleteFactoringconfigcomision = async (tx: TxClient, factoringconfigcomision: Partial<factoring_config_comision>): Promise<factoring_config_comision> => {
   try {
-    const result = await modelsFT.FactoringConfigComision.update(factoringconfigcomision, {
+    const result = await tx.factoring_config_comision.update({
+      data: factoringconfigcomision,
       where: {
         factoringconfigcomisionid: factoringconfigcomision.factoringconfigcomisionid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

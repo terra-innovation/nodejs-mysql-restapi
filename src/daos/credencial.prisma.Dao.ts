@@ -1,35 +1,33 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, credencial } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getCredencials = async (transaction, estados) => {
+export const getCredencials = async (tx: TxClient, estados: number[]): Promise<credencial[]> => {
   try {
-    const credencials = await modelsFT.Credencial.findAll({
+    const credencials = await tx.credencial.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return credencials;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getCredencialByIdusuario = async (transaction, _idusuario) => {
+export const getCredencialByIdusuario = async (tx: TxClient, idusuario: bigint): Promise<credencial> => {
   try {
-    const credencial = await modelsFT.Credencial.findOne({
+    const credencial = await tx.credencial.findFirst({
       where: {
-        _idusuario: _idusuario,
+        idusuario: idusuario,
       },
-      transaction,
     });
 
     return credencial;
@@ -39,9 +37,9 @@ export const getCredencialByIdusuario = async (transaction, _idusuario) => {
   }
 };
 
-export const getCredencialByIdcredencial = async (transaction, idcredencial) => {
+export const getCredencialByIdcredencial = async (tx: TxClient, idcredencial: number): Promise<credencial> => {
   try {
-    const credencial = await modelsFT.Credencial.findByPk(idcredencial, { transaction });
+    const credencial = await tx.credencial.findUnique({ where: { idcredencial: idcredencial } });
 
     //const credencials = await credencial.getCredencials();
 
@@ -52,13 +50,12 @@ export const getCredencialByIdcredencial = async (transaction, idcredencial) => 
   }
 };
 
-export const getCredencialByCredencialid = async (transaction, credencialid) => {
+export const getCredencialByCredencialid = async (tx: TxClient, credencialid: string): Promise<credencial> => {
   try {
-    const credencial = await modelsFT.Credencial.findOne({
+    const credencial = await tx.credencial.findFirst({
       where: {
         credencialid: credencialid,
       },
-      transaction,
     });
 
     return credencial;
@@ -68,16 +65,14 @@ export const getCredencialByCredencialid = async (transaction, credencialid) => 
   }
 };
 
-export const findCredencialPk = async (transaction, credencialid) => {
+export const findCredencialPk = async (tx: TxClient, credencialid: string): Promise<{ idcredencial: bigint }> => {
   try {
-    const credencial = await modelsFT.Credencial.findOne({
-      attributes: ["_idcredencial"],
+    const credencial = await tx.credencial.findFirst({
+      select: { idcredencial: true },
       where: {
         credencialid: credencialid,
       },
-      transaction,
     });
-
     return credencial;
   } catch (error) {
     log.error(line(), "", formatError(error));
@@ -85,24 +80,24 @@ export const findCredencialPk = async (transaction, credencialid) => {
   }
 };
 
-export const insertCredencial = async (transaction, credencial) => {
+export const insertCredencial = async (tx: TxClient, credencial: Prisma.credencialCreateInput): Promise<credencial> => {
   try {
-    const credencial_nuevo = await modelsFT.Credencial.create(credencial, { transaction });
+    const nuevo = await tx.credencial.create({ data: credencial });
 
-    return credencial_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateCredencial = async (transaction, credencial) => {
+export const updateCredencial = async (tx: TxClient, credencial: Partial<credencial>): Promise<credencial> => {
   try {
-    const result = await modelsFT.Credencial.update(credencial, {
+    const result = await tx.credencial.update({
+      data: credencial,
       where: {
         credencialid: credencial.credencialid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -111,13 +106,13 @@ export const updateCredencial = async (transaction, credencial) => {
   }
 };
 
-export const deleteCredencial = async (transaction, credencial) => {
+export const deleteCredencial = async (tx: TxClient, credencial: Partial<credencial>): Promise<credencial> => {
   try {
-    const result = await modelsFT.Credencial.update(credencial, {
+    const result = await tx.credencial.update({
+      data: credencial,
       where: {
         credencialid: credencial.credencialid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

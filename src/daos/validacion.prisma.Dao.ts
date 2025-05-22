@@ -1,20 +1,20 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, validacion } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getValidacionByIdusuarioAndValor = async (transaction, _idusuario, valor, estados) => {
+export const getValidacionByIdusuarioAndValor = async (tx: TxClient, idusuario, valor, estados: number[]) => {
   try {
-    const validacions = await modelsFT.Validacion.findOne({
+    const validacions = await tx.validacion.findFirst({
       where: {
-        _idusuario: _idusuario,
+        idusuario: idusuario,
         valor: valor,
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return validacions;
@@ -24,17 +24,16 @@ export const getValidacionByIdusuarioAndValor = async (transaction, _idusuario, 
   }
 };
 
-export const getValidacionByIdusuarioAndIdvalidaciontipo = async (transaction, _idusuario, _idvalidaciontipo, estados) => {
+export const getValidacionByIdusuarioAndIdvalidaciontipo = async (tx: TxClient, idusuario, idvalidaciontipo, estados: number[]) => {
   try {
-    const validacions = await modelsFT.Validacion.findOne({
+    const validacions = await tx.validacion.findFirst({
       where: {
-        _idusuario: _idusuario,
-        _idvalidaciontipo: _idvalidaciontipo,
+        idusuario: idusuario,
+        idvalidaciontipo: idvalidaciontipo,
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return validacions;
@@ -44,17 +43,16 @@ export const getValidacionByIdusuarioAndIdvalidaciontipo = async (transaction, _
   }
 };
 
-export const getValidacionByIdusuarioAndCodigo = async (transaction, _idusuario, codigo, estados) => {
+export const getValidacionByIdusuarioAndCodigo = async (tx: TxClient, idusuario, codigo, estados: number[]) => {
   try {
-    const validacions = await modelsFT.Validacion.findOne({
+    const validacions = await tx.validacion.findFirst({
       where: {
-        _idusuario: _idusuario,
+        idusuario: idusuario,
         codigo: codigo,
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return validacions;
@@ -64,15 +62,14 @@ export const getValidacionByIdusuarioAndCodigo = async (transaction, _idusuario,
   }
 };
 
-export const getValidacions = async (transaction, estados) => {
+export const getValidacions = async (tx: TxClient, estados: number[]): Promise<validacion[]> => {
   try {
-    const validacions = await modelsFT.Validacion.findAll({
+    const validacions = await tx.validacion.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return validacions;
@@ -82,16 +79,15 @@ export const getValidacions = async (transaction, estados) => {
   }
 };
 
-export const getValidacionByIdvalidacion = async (transaction, idvalidacion) => {
+export const getValidacionByIdvalidacion = async (tx: TxClient, idvalidacion: number): Promise<validacion> => {
   try {
-    const validacion = await modelsFT.Validacion.findByPk(idvalidacion, {
+    const validacion = await tx.validacion.findByPk(idvalidacion, {
       include: [
         {
           model: modelsFT.Colaborador,
           as: "colaboradors",
         },
       ],
-      transaction,
     });
 
     //const colaboradores = await validacion.getColaboradors();
@@ -103,9 +99,9 @@ export const getValidacionByIdvalidacion = async (transaction, idvalidacion) => 
   }
 };
 
-export const getValidacionByValidacionid = async (transaction, validacionid) => {
+export const getValidacionByValidacionid = async (tx: TxClient, validacionid: string): Promise<validacion> => {
   try {
-    const validacion = await modelsFT.Validacion.findAll({
+    const validacion = await tx.validacion.findMany({
       include: [
         {
           model: modelsFT.Colaborador,
@@ -115,7 +111,6 @@ export const getValidacionByValidacionid = async (transaction, validacionid) => 
       where: {
         validacionid: validacionid,
       },
-      transaction,
     });
 
     return validacion;
@@ -125,14 +120,13 @@ export const getValidacionByValidacionid = async (transaction, validacionid) => 
   }
 };
 
-export const findValidacionPk = async (transaction, validacionid) => {
+export const findValidacionPk = async (tx: TxClient, validacionid: string): Promise<{ idvalidacion: number }> => {
   try {
-    const validacion = await modelsFT.Validacion.findOne({
-      attributes: ["_idvalidacion"],
+    const validacion = await tx.validacion.findFirst({
+      select: { idvalidacion: true },
       where: {
         validacionid: validacionid,
       },
-      transaction,
     });
 
     return validacion;
@@ -142,24 +136,24 @@ export const findValidacionPk = async (transaction, validacionid) => {
   }
 };
 
-export const insertValidacion = async (transaction, validacion) => {
+export const insertValidacion = async (tx: TxClient, validacion: Prisma.validacionCreateInput): Promise<validacion> => {
   try {
-    const validacion_nuevo = await modelsFT.Validacion.create(validacion, { transaction });
+    const nuevo = await tx.validacion.create({ data: validacion });
 
-    return validacion_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateValidacion = async (transaction, validacion) => {
+export const updateValidacion = async (tx: TxClient, validacion: Partial<validacion>): Promise<validacion> => {
   try {
-    const result = await modelsFT.Validacion.update(validacion, {
+    const result = await tx.validacion.update({
+      data: validacion,
       where: {
         validacionid: validacion.validacionid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -168,13 +162,13 @@ export const updateValidacion = async (transaction, validacion) => {
   }
 };
 
-export const deleteValidacion = async (transaction, validacion) => {
+export const deleteValidacion = async (tx: TxClient, validacion: Partial<validacion>): Promise<validacion> => {
   try {
-    const result = await modelsFT.Validacion.update(validacion, {
+    const result = await tx.validacion.update({
+      data: validacion,
       where: {
         validacionid: validacion.validacionid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -183,13 +177,13 @@ export const deleteValidacion = async (transaction, validacion) => {
   }
 };
 
-export const activateValidacion = async (transaction, validacion) => {
+export const activateValidacion = async (tx: TxClient, validacion: Partial<validacion>): Promise<validacion> => {
   try {
-    const result = await modelsFT.Validacion.update(validacion, {
+    const result = await tx.validacion.update({
+      data: validacion,
       where: {
         validacionid: validacion.validacionid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

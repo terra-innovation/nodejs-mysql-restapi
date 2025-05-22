@@ -1,19 +1,20 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, inversionista_cuenta_bancaria } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getInversionistacuentabancariaByIdinversionistaAndIdusuario = async (transaction, _idinversionista, _idusuario, estados) => {
+export const getInversionistacuentabancariaByIdinversionistaAndIdusuario = async (tx: TxClient, idinversionista, idusuario, estados: number[]) => {
   try {
-    const empresacuentabancaria = await modelsFT.InversionistaCuentaBancaria.findOne({
+    const empresacuentabancaria = await tx.inversionista_cuenta_bancaria.findFirst({
       include: [
         {
           model: modelsFT.Inversionista,
           required: true,
           as: "inversionista_inversionistum",
           where: {
-            _idinversionista: _idinversionista,
+            idinversionista: idinversionista,
           },
           include: [
             {
@@ -21,7 +22,7 @@ export const getInversionistacuentabancariaByIdinversionistaAndIdusuario = async
               required: true,
               as: "persona_persona",
               where: {
-                _idusuario: _idusuario,
+                idusuario: idusuario,
               },
             },
           ],
@@ -56,10 +57,9 @@ export const getInversionistacuentabancariaByIdinversionistaAndIdusuario = async
       ],
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return empresacuentabancaria;
@@ -69,9 +69,9 @@ export const getInversionistacuentabancariaByIdinversionistaAndIdusuario = async
   }
 };
 
-export const getInversionistacuentabancariasByIdusuario = async (transaction, _idusuario, estados) => {
+export const getInversionistacuentabancariasByIdusuario = async (tx: TxClient, idusuario, estados: number[]) => {
   try {
-    const empresacuentabancaria = await modelsFT.InversionistaCuentaBancaria.findAll({
+    const empresacuentabancaria = await tx.inversionista_cuenta_bancaria.findMany({
       include: [
         {
           model: modelsFT.Inversionista,
@@ -83,7 +83,7 @@ export const getInversionistacuentabancariasByIdusuario = async (transaction, _i
               required: true,
               as: "persona_persona",
               where: {
-                _idusuario: _idusuario,
+                idusuario: idusuario,
               },
             },
           ],
@@ -118,10 +118,9 @@ export const getInversionistacuentabancariasByIdusuario = async (transaction, _i
       ],
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return empresacuentabancaria;
@@ -131,16 +130,16 @@ export const getInversionistacuentabancariasByIdusuario = async (transaction, _i
   }
 };
 
-export const getInversionistacuentabancariasByIdinversionistaAndAlias = async (transaction, _idinversionista, alias, estados) => {
+export const getInversionistacuentabancariasByIdinversionistaAndAlias = async (tx: TxClient, idinversionista, alias, estados: number[]) => {
   try {
-    const empresacuentabancaria = await modelsFT.InversionistaCuentaBancaria.findAll({
+    const empresacuentabancaria = await tx.inversionista_cuenta_bancaria.findMany({
       include: [
         {
           model: modelsFT.Inversionista,
           required: true,
           as: "inversionista_inversionistum",
           where: {
-            _idinversionista: _idinversionista,
+            idinversionista: idinversionista,
           },
         },
         {
@@ -172,17 +171,16 @@ export const getInversionistacuentabancariasByIdinversionistaAndAlias = async (t
           where: {
             alias: alias,
             estado: {
-              [Op.in]: estados,
+              in: estados,
             },
           },
         },
       ],
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
     return empresacuentabancaria;
   } catch (error) {
@@ -191,9 +189,9 @@ export const getInversionistacuentabancariasByIdinversionistaAndAlias = async (t
   }
 };
 
-export const getInversionistacuentabancarias = async (transaction, estados) => {
+export const getInversionistacuentabancarias = async (tx: TxClient, estados: number[]): Promise<inversionista_cuenta_bancaria[]> => {
   try {
-    const inversionistacuentabancarias = await modelsFT.InversionistaCuentaBancaria.findAll({
+    const inversionistacuentabancarias = await tx.inversionista_cuenta_bancaria.findMany({
       include: [
         {
           model: modelsFT.Inversionista,
@@ -249,23 +247,21 @@ export const getInversionistacuentabancarias = async (transaction, estados) => {
       ],
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return inversionistacuentabancarias;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getInversionistacuentabancariaByIdinversionistacuentabancaria = async (transaction, idinversionistacuentabancaria) => {
+export const getInversionistacuentabancariaByIdinversionistacuentabancaria = async (tx: TxClient, idinversionistacuentabancaria: number): Promise<inversionista_cuenta_bancaria> => {
   try {
-    const inversionistacuentabancaria = await modelsFT.InversionistaCuentaBancaria.findByPk(idinversionistacuentabancaria, { transaction });
+    const inversionistacuentabancaria = await tx.inversionista_cuenta_bancaria.findUnique({ where: { idinversionistacuentabancaria: idinversionistacuentabancaria } });
 
     return inversionistacuentabancaria;
   } catch (error) {
@@ -274,13 +270,12 @@ export const getInversionistacuentabancariaByIdinversionistacuentabancaria = asy
   }
 };
 
-export const getInversionistacuentabancariaByInversionistacuentabancariaid = async (transaction, inversionistacuentabancariaid) => {
+export const getInversionistacuentabancariaByInversionistacuentabancariaid = async (tx: TxClient, inversionistacuentabancariaid: string): Promise<inversionista_cuenta_bancaria> => {
   try {
-    const inversionistacuentabancaria = await modelsFT.InversionistaCuentaBancaria.findOne({
+    const inversionistacuentabancaria = await tx.inversionista_cuenta_bancaria.findFirst({
       where: {
         inversionistacuentabancariaid: inversionistacuentabancariaid,
       },
-      transaction,
     });
 
     return inversionistacuentabancaria;
@@ -290,14 +285,13 @@ export const getInversionistacuentabancariaByInversionistacuentabancariaid = asy
   }
 };
 
-export const findInversionistacuentabancariaPk = async (transaction, inversionistacuentabancariaid) => {
+export const findInversionistacuentabancariaPk = async (tx: TxClient, inversionistacuentabancariaid: string): Promise<{ idinversionistacuentabancaria: number }> => {
   try {
-    const inversionistacuentabancaria = await modelsFT.InversionistaCuentaBancaria.findOne({
-      attributes: ["_idinversionistacuentabancaria"],
+    const inversionistacuentabancaria = await tx.inversionista_cuenta_bancaria.findFirst({
+      select: { idinversionistacuentabancaria: true },
       where: {
         inversionistacuentabancariaid: inversionistacuentabancariaid,
       },
-      transaction,
     });
 
     return inversionistacuentabancaria;
@@ -307,24 +301,24 @@ export const findInversionistacuentabancariaPk = async (transaction, inversionis
   }
 };
 
-export const insertInversionistacuentabancaria = async (transaction, inversionistacuentabancaria) => {
+export const insertInversionistacuentabancaria = async (tx: TxClient, inversionistacuentabancaria: Prisma.inversionista_cuenta_bancariaCreateInput): Promise<inversionista_cuenta_bancaria> => {
   try {
-    const inversionistacuentabancaria_nuevo = await modelsFT.InversionistaCuentaBancaria.create(inversionistacuentabancaria, { transaction });
+    const nuevo = await tx.inversionista_cuenta_bancaria.create({ data: inversionistacuentabancaria });
 
-    return inversionistacuentabancaria_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateInversionistacuentabancaria = async (transaction, inversionistacuentabancaria) => {
+export const updateInversionistacuentabancaria = async (tx: TxClient, inversionistacuentabancaria: Partial<inversionista_cuenta_bancaria>): Promise<inversionista_cuenta_bancaria> => {
   try {
-    const result = await modelsFT.InversionistaCuentaBancaria.update(inversionistacuentabancaria, {
+    const result = await tx.inversionista_cuenta_bancaria.update({
+      data: inversionistacuentabancaria,
       where: {
         inversionistacuentabancariaid: inversionistacuentabancaria.inversionistacuentabancariaid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -333,13 +327,13 @@ export const updateInversionistacuentabancaria = async (transaction, inversionis
   }
 };
 
-export const deleteInversionistacuentabancaria = async (transaction, inversionistacuentabancaria) => {
+export const deleteInversionistacuentabancaria = async (tx: TxClient, inversionistacuentabancaria: Partial<inversionista_cuenta_bancaria>): Promise<inversionista_cuenta_bancaria> => {
   try {
-    const result = await modelsFT.InversionistaCuentaBancaria.update(inversionistacuentabancaria, {
+    const result = await tx.inversionista_cuenta_bancaria.update({
+      data: inversionistacuentabancaria,
       where: {
         inversionistacuentabancariaid: inversionistacuentabancaria.inversionistacuentabancariaid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -348,13 +342,13 @@ export const deleteInversionistacuentabancaria = async (transaction, inversionis
   }
 };
 
-export const activateInversionistacuentabancaria = async (transaction, inversionistacuentabancaria) => {
+export const activateInversionistacuentabancaria = async (tx: TxClient, inversionistacuentabancaria: Partial<inversionista_cuenta_bancaria>): Promise<inversionista_cuenta_bancaria> => {
   try {
-    const result = await modelsFT.InversionistaCuentaBancaria.update(inversionistacuentabancaria, {
+    const result = await tx.inversionista_cuenta_bancaria.update({
+      data: inversionistacuentabancaria,
       where: {
         inversionistacuentabancariaid: inversionistacuentabancaria.inversionistacuentabancariaid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

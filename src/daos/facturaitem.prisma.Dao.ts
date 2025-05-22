@@ -1,31 +1,30 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, factura_item } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getFacturaitems = async (transaction, estados) => {
+export const getFacturaitems = async (tx: TxClient, estados: number[]): Promise<factura_item[]> => {
   try {
-    const facturaitems = await modelsFT.FacturaItem.findAll({
+    const facturaitems = await tx.factura_item.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return facturaitems;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getFacturaitemByIdfacturaitem = async (transaction, idfacturaitem) => {
+export const getFacturaitemByIdfacturaitem = async (tx: TxClient, idfacturaitem: number): Promise<factura_item> => {
   try {
-    const facturaitem = await modelsFT.FacturaItem.findByPk(idfacturaitem, { transaction });
+    const facturaitem = await tx.factura_item.findUnique({ where: { idfacturaitem: idfacturaitem } });
 
     //const facturaitems = await facturaitem.getFacturaitems();
 
@@ -36,13 +35,12 @@ export const getFacturaitemByIdfacturaitem = async (transaction, idfacturaitem) 
   }
 };
 
-export const getFacturaitemByFacturaitemid = async (transaction, facturaitemid) => {
+export const getFacturaitemByFacturaitemid = async (tx: TxClient, facturaitemid: string): Promise<factura_item> => {
   try {
-    const facturaitem = await modelsFT.FacturaItem.findOne({
+    const facturaitem = await tx.factura_item.findFirst({
       where: {
         facturaitemid: facturaitemid,
       },
-      transaction,
     });
 
     return facturaitem;
@@ -52,14 +50,13 @@ export const getFacturaitemByFacturaitemid = async (transaction, facturaitemid) 
   }
 };
 
-export const findFacturaitemPk = async (transaction, facturaitemid) => {
+export const findFacturaitemPk = async (tx: TxClient, facturaitemid: string): Promise<{ idfacturaitem: number }> => {
   try {
-    const facturaitem = await modelsFT.FacturaItem.findOne({
-      attributes: ["_idfacturaitem"],
+    const facturaitem = await tx.factura_item.findFirst({
+      select: { idfacturaitem: true },
       where: {
         facturaitemid: facturaitemid,
       },
-      transaction,
     });
 
     return facturaitem;
@@ -69,24 +66,24 @@ export const findFacturaitemPk = async (transaction, facturaitemid) => {
   }
 };
 
-export const insertFacturaitem = async (transaction, facturaitem) => {
+export const insertFacturaitem = async (tx: TxClient, facturaitem: Prisma.factura_itemCreateInput): Promise<factura_item> => {
   try {
-    const facturaitem_nuevo = await modelsFT.FacturaItem.create(facturaitem, { transaction });
+    const nuevo = await tx.factura_item.create({ data: facturaitem });
 
-    return facturaitem_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateFacturaitem = async (transaction, facturaitem) => {
+export const updateFacturaitem = async (tx: TxClient, facturaitem: Partial<factura_item>): Promise<factura_item> => {
   try {
-    const result = await modelsFT.FacturaItem.update(facturaitem, {
+    const result = await tx.factura_item.update({
+      data: facturaitem,
       where: {
         facturaitemid: facturaitem.facturaitemid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -95,13 +92,13 @@ export const updateFacturaitem = async (transaction, facturaitem) => {
   }
 };
 
-export const deleteFacturaitem = async (transaction, facturaitem) => {
+export const deleteFacturaitem = async (tx: TxClient, facturaitem: Partial<factura_item>): Promise<factura_item> => {
   try {
-    const result = await modelsFT.FacturaItem.update(facturaitem, {
+    const result = await tx.factura_item.update({
+      data: facturaitem,
       where: {
         facturaitemid: facturaitem.facturaitemid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

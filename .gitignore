@@ -12,3 +12,5 @@ dist/*
 generated/*
 .env.development
 .env.production
+src/daos - copia/*
+

@@ -1,31 +1,30 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, persona_declaracion } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getPersonadeclaracions = async (transaction, estados) => {
+export const getPersonadeclaracions = async (tx: TxClient, estados: number[]): Promise<persona_declaracion[]> => {
   try {
-    const personadeclaracions = await modelsFT.PersonaDeclaracion.findAll({
+    const personadeclaracions = await tx.persona_declaracion.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return personadeclaracions;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getPersonadeclaracionByIdpersonadeclaracion = async (transaction, idpersonadeclaracion) => {
+export const getPersonadeclaracionByIdpersonadeclaracion = async (tx: TxClient, idpersonadeclaracion: number): Promise<persona_declaracion> => {
   try {
-    const personadeclaracion = await modelsFT.PersonaDeclaracion.findByPk(idpersonadeclaracion, { transaction });
+    const personadeclaracion = await tx.persona_declaracion.findUnique({ where: { idpersonadeclaracion: idpersonadeclaracion } });
 
     //const personadeclaracions = await personadeclaracion.getPersonadeclaracions();
 
@@ -36,13 +35,12 @@ export const getPersonadeclaracionByIdpersonadeclaracion = async (transaction, i
   }
 };
 
-export const getPersonadeclaracionByPersonadeclaracionid = async (transaction, personadeclaracionid) => {
+export const getPersonadeclaracionByPersonadeclaracionid = async (tx: TxClient, personadeclaracionid: string): Promise<persona_declaracion> => {
   try {
-    const personadeclaracion = await modelsFT.PersonaDeclaracion.findOne({
+    const personadeclaracion = await tx.persona_declaracion.findFirst({
       where: {
         personadeclaracionid: personadeclaracionid,
       },
-      transaction,
     });
 
     return personadeclaracion;
@@ -52,14 +50,13 @@ export const getPersonadeclaracionByPersonadeclaracionid = async (transaction, p
   }
 };
 
-export const findPersonadeclaracionPk = async (transaction, personadeclaracionid) => {
+export const findPersonadeclaracionPk = async (tx: TxClient, personadeclaracionid: string): Promise<{ idpersonadeclaracion: number }> => {
   try {
-    const personadeclaracion = await modelsFT.PersonaDeclaracion.findOne({
-      attributes: ["_idpersonadeclaracion"],
+    const personadeclaracion = await tx.persona_declaracion.findFirst({
+      select: { idpersonadeclaracion: true },
       where: {
         personadeclaracionid: personadeclaracionid,
       },
-      transaction,
     });
 
     return personadeclaracion;
@@ -69,24 +66,24 @@ export const findPersonadeclaracionPk = async (transaction, personadeclaracionid
   }
 };
 
-export const insertPersonadeclaracion = async (transaction, personadeclaracion) => {
+export const insertPersonadeclaracion = async (tx: TxClient, personadeclaracion: Prisma.persona_declaracionCreateInput): Promise<persona_declaracion> => {
   try {
-    const personadeclaracion_nuevo = await modelsFT.PersonaDeclaracion.create(personadeclaracion, { transaction });
+    const nuevo = await tx.persona_declaracion.create({ data: personadeclaracion });
 
-    return personadeclaracion_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updatePersonadeclaracion = async (transaction, personadeclaracion) => {
+export const updatePersonadeclaracion = async (tx: TxClient, personadeclaracion: Partial<persona_declaracion>): Promise<persona_declaracion> => {
   try {
-    const result = await modelsFT.PersonaDeclaracion.update(personadeclaracion, {
+    const result = await tx.persona_declaracion.update({
+      data: personadeclaracion,
       where: {
         personadeclaracionid: personadeclaracion.personadeclaracionid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -95,13 +92,13 @@ export const updatePersonadeclaracion = async (transaction, personadeclaracion) 
   }
 };
 
-export const deletePersonadeclaracion = async (transaction, personadeclaracion) => {
+export const deletePersonadeclaracion = async (tx: TxClient, personadeclaracion: Partial<persona_declaracion>): Promise<persona_declaracion> => {
   try {
-    const result = await modelsFT.PersonaDeclaracion.update(personadeclaracion, {
+    const result = await tx.persona_declaracion.update({
+      data: personadeclaracion,
       where: {
         personadeclaracionid: personadeclaracion.personadeclaracionid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

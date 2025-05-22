@@ -1,31 +1,37 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, archivo_persona } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getArchivopersonas = async (transaction, estados) => {
+export const getArchivopersonas = async (tx: TxClient, estados: number[]): Promise<archivo_persona[]> => {
   try {
-    const archivopersonas = await modelsFT.ArchivoPersona.findAll({
+    const archivopersonas = await tx.archivo_persona.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return archivopersonas;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getArchivoPersonaByIdarchivopersona = async (transaction, idarchivopersona) => {
+export const getArchivoPersonaByIdarchivopersona = async (tx: TxClient, idarchivo: number, idpersona: number): Promise<archivo_persona> => {
   try {
-    const archivopersona = await modelsFT.ArchivoPersona.findByPk(idarchivopersona, { transaction });
+    const archivopersona = await tx.archivo_persona.findUnique({
+      where: {
+        idarchivo_idpersona: {
+          idarchivo: idarchivo,
+          idpersona: idpersona,
+        },
+      },
+    });
 
     return archivopersona;
   } catch (error) {
@@ -34,60 +40,27 @@ export const getArchivoPersonaByIdarchivopersona = async (transaction, idarchivo
   }
 };
 
-export const getArchivoPersonaByArchivoPersonaid = async (transaction, archivopersona) => {
+export const insertArchivoPersona = async (tx: TxClient, archivopersona: Prisma.archivo_personaCreateInput): Promise<archivo_persona> => {
   try {
-    const result = await modelsFT.ArchivoPersona.findOne({
-      where: {
-        _idarchivo: archivopersona._idarchivo,
-        _idpersona: archivopersona._idpersona,
-      },
-      transaction,
-    });
+    const nuevo = await tx.archivo_persona.create({ data: archivopersona });
 
-    return result;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const findArchivoPersonaPk = async (transaction, archivopersona) => {
+export const updateArchivoPersona = async (tx: TxClient, archivopersona: Partial<archivo_persona>): Promise<archivo_persona> => {
   try {
-    const result = await modelsFT.ArchivoPersona.findOne({
-      attributes: ["_idarchivopersona"],
+    const result = await tx.archivo_persona.update({
+      data: archivopersona,
       where: {
-        _idarchivo: archivopersona._idarchivo,
-        _idpersona: archivopersona._idpersona,
+        idarchivo_idpersona: {
+          idarchivo: archivopersona.idarchivo,
+          idpersona: archivopersona.idpersona,
+        },
       },
-      transaction,
-    });
-
-    return result;
-  } catch (error) {
-    log.error(line(), "", formatError(error));
-    throw new ClientError("Ocurrio un error", 500);
-  }
-};
-
-export const insertArchivoPersona = async (transaction, archivopersona) => {
-  try {
-    const archivopersona_nuevo = await modelsFT.ArchivoPersona.create(archivopersona, { transaction });
-
-    return archivopersona_nuevo;
-  } catch (error) {
-    log.error(line(), "", formatError(error));
-    throw new ClientError("Ocurrio un error", 500);
-  }
-};
-
-export const updateArchivoPersona = async (transaction, archivopersona) => {
-  try {
-    const result = await modelsFT.ArchivoPersona.update(archivopersona, {
-      where: {
-        _idarchivo: archivopersona._idarchivo,
-        _idpersona: archivopersona._idpersona,
-      },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -96,14 +69,16 @@ export const updateArchivoPersona = async (transaction, archivopersona) => {
   }
 };
 
-export const deleteArchivoPersona = async (transaction, archivopersona) => {
+export const deleteArchivoPersona = async (tx: TxClient, archivopersona: Partial<archivo_persona>): Promise<archivo_persona> => {
   try {
-    const result = await modelsFT.ArchivoPersona.update(archivopersona, {
+    const result = await tx.archivo_persona.update({
+      data: archivopersona,
       where: {
-        _idarchivo: archivopersona._idarchivo,
-        _idpersona: archivopersona._idpersona,
+        idarchivo_idpersona: {
+          idarchivo: archivopersona.idarchivo,
+          idpersona: archivopersona.idpersona,
+        },
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -112,14 +87,16 @@ export const deleteArchivoPersona = async (transaction, archivopersona) => {
   }
 };
 
-export const activateArchivoPersona = async (transaction, archivopersona) => {
+export const activateArchivoPersona = async (tx: TxClient, archivopersona: Partial<archivo_persona>): Promise<archivo_persona> => {
   try {
-    const result = await modelsFT.ArchivoPersona.update(archivopersona, {
+    const result = await tx.archivo_persona.update({
+      data: archivopersona,
       where: {
-        _idarchivo: archivopersona._idarchivo,
-        _idpersona: archivopersona._idpersona,
+        idarchivo_idpersona: {
+          idarchivo: archivopersona.idarchivo,
+          idpersona: archivopersona.idpersona,
+        },
       },
-      transaction,
     });
     return result;
   } catch (error) {

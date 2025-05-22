@@ -1,31 +1,30 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, usuario_servicio_estado } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getUsuarioservicioestados = async (transaction, estados) => {
+export const getUsuarioservicioestados = async (tx: TxClient, estados: number[]): Promise<usuario_servicio_estado[]> => {
   try {
-    const usuarioservicioestados = await modelsFT.UsuarioServicioEstado.findAll({
+    const usuarioservicioestados = await tx.usuario_servicio_estado.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return usuarioservicioestados;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getUsuarioservicioestadoByIdusuarioservicioestado = async (transaction, idusuarioservicioestado) => {
+export const getUsuarioservicioestadoByIdusuarioservicioestado = async (tx: TxClient, idusuarioservicioestado: number): Promise<usuario_servicio_estado> => {
   try {
-    const usuarioservicioestado = await modelsFT.UsuarioServicioEstado.findByPk(idusuarioservicioestado, { transaction });
+    const usuarioservicioestado = await tx.usuario_servicio_estado.findUnique({ where: { idusuarioservicioestado: idusuarioservicioestado } });
 
     //const usuarioservicioestados = await usuarioservicioestado.getUsuarioservicioestados();
 
@@ -36,13 +35,12 @@ export const getUsuarioservicioestadoByIdusuarioservicioestado = async (transact
   }
 };
 
-export const getUsuarioservicioestadoByUsuarioservicioestadoid = async (transaction, usuarioservicioestadoid) => {
+export const getUsuarioservicioestadoByUsuarioservicioestadoid = async (tx: TxClient, usuarioservicioestadoid: string): Promise<usuario_servicio_estado> => {
   try {
-    const usuarioservicioestado = await modelsFT.UsuarioServicioEstado.findOne({
+    const usuarioservicioestado = await tx.usuario_servicio_estado.findFirst({
       where: {
         usuarioservicioestadoid: usuarioservicioestadoid,
       },
-      transaction,
     });
 
     return usuarioservicioestado;
@@ -52,14 +50,13 @@ export const getUsuarioservicioestadoByUsuarioservicioestadoid = async (transact
   }
 };
 
-export const findUsuarioservicioestadoPk = async (transaction, usuarioservicioestadoid) => {
+export const findUsuarioservicioestadoPk = async (tx: TxClient, usuarioservicioestadoid: string): Promise<{ idusuarioservicioestado: number }> => {
   try {
-    const usuarioservicioestado = await modelsFT.UsuarioServicioEstado.findOne({
-      attributes: ["_idusuarioservicioestado"],
+    const usuarioservicioestado = await tx.usuario_servicio_estado.findFirst({
+      select: { idusuarioservicioestado: true },
       where: {
         usuarioservicioestadoid: usuarioservicioestadoid,
       },
-      transaction,
     });
 
     return usuarioservicioestado;
@@ -69,24 +66,24 @@ export const findUsuarioservicioestadoPk = async (transaction, usuarioservicioes
   }
 };
 
-export const insertUsuarioservicioestado = async (transaction, usuarioservicioestado) => {
+export const insertUsuarioservicioestado = async (tx: TxClient, usuarioservicioestado: Prisma.usuario_servicio_estadoCreateInput): Promise<usuario_servicio_estado> => {
   try {
-    const usuarioservicioestado_nuevo = await modelsFT.UsuarioServicioEstado.create(usuarioservicioestado, { transaction });
+    const nuevo = await tx.usuario_servicio_estado.create({ data: usuarioservicioestado });
 
-    return usuarioservicioestado_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateUsuarioservicioestado = async (transaction, usuarioservicioestado) => {
+export const updateUsuarioservicioestado = async (tx: TxClient, usuarioservicioestado: Partial<usuario_servicio_estado>): Promise<usuario_servicio_estado> => {
   try {
-    const result = await modelsFT.UsuarioServicioEstado.update(usuarioservicioestado, {
+    const result = await tx.usuario_servicio_estado.update({
+      data: usuarioservicioestado,
       where: {
         usuarioservicioestadoid: usuarioservicioestado.usuarioservicioestadoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -95,13 +92,13 @@ export const updateUsuarioservicioestado = async (transaction, usuarioservicioes
   }
 };
 
-export const deleteUsuarioservicioestado = async (transaction, usuarioservicioestado) => {
+export const deleteUsuarioservicioestado = async (tx: TxClient, usuarioservicioestado: Partial<usuario_servicio_estado>): Promise<usuario_servicio_estado> => {
   try {
-    const result = await modelsFT.UsuarioServicioEstado.update(usuarioservicioestado, {
+    const result = await tx.usuario_servicio_estado.update({
+      data: usuarioservicioestado,
       where: {
         usuarioservicioestadoid: usuarioservicioestado.usuarioservicioestadoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

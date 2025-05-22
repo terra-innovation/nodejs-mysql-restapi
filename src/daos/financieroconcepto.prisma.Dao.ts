@@ -1,43 +1,44 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, financiero_concepto } from "#src/models/prisma/ft_factoring/client";
+
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getComisionFinanzaTech = async (transaction) => {
-  return await getFinancieroconceptoByIdfinancieroconcepto(transaction, 1);
+export const getComisionFinanzaTech = async (tx: TxClient) => {
+  return await getFinancieroconceptoByIdfinancieroconcepto(tx: TxClient, 1);
 };
 
-export const getCostoCAVALI = async (transaction) => {
-  return await getFinancieroconceptoByIdfinancieroconcepto(transaction, 2);
+export const getCostoCAVALI = async (tx: TxClient) => {
+  return await getFinancieroconceptoByIdfinancieroconcepto(tx: TxClient, 2);
 };
 
-export const getCostoTransaccion = async (transaction) => {
-  return await getFinancieroconceptoByIdfinancieroconcepto(transaction, 3);
+export const getCostoTransaccion = async (tx: TxClient) => {
+  return await getFinancieroconceptoByIdfinancieroconcepto(tx: TxClient, 3);
 };
 
-export const getFinancieroconceptos = async (transaction, estados) => {
+export const getFinancieroconceptos = async (tx: TxClient, estados: number[]): Promise<financiero_concepto[]> => {
   try {
-    const financieroconceptos = await modelsFT.FinancieroConcepto.findAll({
+    const financieroconceptos = await tx.financiero_concepto.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
+      
     });
 
     return financieroconceptos;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getFinancieroconceptoByIdfinancieroconcepto = async (transaction, idfinancieroconcepto) => {
+export const getFinancieroconceptoByIdfinancieroconcepto = async (tx: TxClient, idfinancieroconcepto: number): Promise<financiero_concepto> => {
   try {
-    const financieroconcepto = await modelsFT.FinancieroConcepto.findByPk(idfinancieroconcepto, { transaction });
+    const financieroconcepto = await tx.financiero_concepto.findUnique({ where: { idfinancieroconcepto: idfinancieroconcepto, }, })
 
     //const financieroconceptos = await financieroconcepto.getFinancieroconceptos();
 
@@ -48,13 +49,13 @@ export const getFinancieroconceptoByIdfinancieroconcepto = async (transaction, i
   }
 };
 
-export const getFinancieroconceptoByFinancieroconceptoid = async (transaction, financieroconceptoid) => {
+export const getFinancieroconceptoByFinancieroconceptoid = async (tx: TxClient, financieroconceptoid: string): Promise<financiero_concepto> => {
   try {
-    const financieroconcepto = await modelsFT.FinancieroConcepto.findOne({
+    const financieroconcepto = await tx.financiero_concepto.findFirst({
       where: {
         financieroconceptoid: financieroconceptoid,
       },
-      transaction,
+      
     });
 
     return financieroconcepto;
@@ -64,14 +65,14 @@ export const getFinancieroconceptoByFinancieroconceptoid = async (transaction, f
   }
 };
 
-export const findFinancieroconceptoPk = async (transaction, financieroconceptoid) => {
+export const findFinancieroconceptoPk = async (tx: TxClient, financieroconceptoid: string): Promise<{ idfinancieroconcepto: number }> => {
   try {
-    const financieroconcepto = await modelsFT.FinancieroConcepto.findOne({
-      attributes: ["_idfinancieroconcepto"],
+    const financieroconcepto = await tx.financiero_concepto.findFirst({
+      select: { idfinancieroconcepto: true },
       where: {
         financieroconceptoid: financieroconceptoid,
       },
-      transaction,
+      
     });
 
     return financieroconcepto;
@@ -81,24 +82,24 @@ export const findFinancieroconceptoPk = async (transaction, financieroconceptoid
   }
 };
 
-export const insertFinancieroconcepto = async (transaction, financieroconcepto) => {
+export const insertFinancieroconcepto = async (tx: TxClient, financieroconcepto: Prisma.financiero_conceptoCreateInput): Promise<financiero_concepto> => {
   try {
-    const financieroconcepto_nuevo = await modelsFT.FinancieroConcepto.create(financieroconcepto, { transaction });
+const nuevo = await tx.financiero_concepto.create({ data: financieroconcepto });
 
-    return financieroconcepto_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateFinancieroconcepto = async (transaction, financieroconcepto) => {
+export const updateFinancieroconcepto = async (tx: TxClient, financieroconcepto: Partial<financiero_concepto>): Promise<financiero_concepto> => {
   try {
-    const result = await modelsFT.FinancieroConcepto.update(financieroconcepto, {
+    const result = await tx.financiero_concepto.update({ data: financieroconcepto,
       where: {
         financieroconceptoid: financieroconcepto.financieroconceptoid,
       },
-      transaction,
+      
     });
     return result;
   } catch (error) {
@@ -107,13 +108,13 @@ export const updateFinancieroconcepto = async (transaction, financieroconcepto) 
   }
 };
 
-export const deleteFinancieroconcepto = async (transaction, financieroconcepto) => {
+export const deleteFinancieroconcepto = async (tx: TxClient, financieroconcepto: Partial<financiero_concepto>): Promise<financiero_concepto> => {
   try {
-    const result = await modelsFT.FinancieroConcepto.update(financieroconcepto, {
+    const result = await tx.financiero_concepto.update({ data: financieroconcepto,
       where: {
         financieroconceptoid: financieroconcepto.financieroconceptoid,
       },
-      transaction,
+      
     });
     return result;
   } catch (error) {

@@ -1,31 +1,30 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, persona_pep_directo } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getPersonapepdirectos = async (transaction, estados) => {
+export const getPersonapepdirectos = async (tx: TxClient, estados: number[]): Promise<persona_pep_directo[]> => {
   try {
-    const personapepdirectos = await modelsFT.PersonaPepDirecto.findAll({
+    const personapepdirectos = await tx.persona_pep_directo.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return personapepdirectos;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getPersonaPepDirectoByIdpersonapepdirecto = async (transaction, idpersonapepdirecto) => {
+export const getPersonaPepDirectoByIdpersonapepdirecto = async (tx: TxClient, idpersonapepdirecto: number): Promise<persona_pep_directo> => {
   try {
-    const personapepdirecto = await modelsFT.PersonaPepDirecto.findByPk(idpersonapepdirecto, { transaction });
+    const personapepdirecto = await tx.persona_pep_directo.findUnique({ where: { idpersonapepdirecto: idpersonapepdirecto } });
 
     //const personapepdirectos = await personapepdirecto.getPersonapepdirectos();
 
@@ -36,13 +35,12 @@ export const getPersonaPepDirectoByIdpersonapepdirecto = async (transaction, idp
   }
 };
 
-export const getPersonaPepDirectoByPersonaPepDirectoid = async (transaction, personapepdirectoid) => {
+export const getPersonaPepDirectoByPersonaPepDirectoid = async (tx: TxClient, personapepdirectoid: string): Promise<persona_pep_directo> => {
   try {
-    const personapepdirecto = await modelsFT.PersonaPepDirecto.findOne({
+    const personapepdirecto = await tx.persona_pep_directo.findFirst({
       where: {
         personapepdirectoid: personapepdirectoid,
       },
-      transaction,
     });
 
     return personapepdirecto;
@@ -52,14 +50,13 @@ export const getPersonaPepDirectoByPersonaPepDirectoid = async (transaction, per
   }
 };
 
-export const findPersonaPepDirectoPk = async (transaction, personapepdirectoid) => {
+export const findPersonaPepDirectoPk = async (tx: TxClient, personapepdirectoid: string): Promise<{ idpersonapepdirecto: number }> => {
   try {
-    const personapepdirecto = await modelsFT.PersonaPepDirecto.findOne({
-      attributes: ["_idpersonapepdirecto"],
+    const personapepdirecto = await tx.persona_pep_directo.findFirst({
+      select: { idpersonapepdirecto: true },
       where: {
         personapepdirectoid: personapepdirectoid,
       },
-      transaction,
     });
 
     return personapepdirecto;
@@ -69,24 +66,24 @@ export const findPersonaPepDirectoPk = async (transaction, personapepdirectoid) 
   }
 };
 
-export const insertPersonaPepDirecto = async (transaction, personapepdirecto) => {
+export const insertPersonaPepDirecto = async (tx: TxClient, personapepdirecto: Prisma.persona_pep_directoCreateInput): Promise<persona_pep_directo> => {
   try {
-    const personapepdirecto_nuevo = await modelsFT.PersonaPepDirecto.create(personapepdirecto, { transaction });
+    const nuevo = await tx.persona_pep_directo.create({ data: personapepdirecto });
 
-    return personapepdirecto_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updatePersonaPepDirecto = async (transaction, personapepdirecto) => {
+export const updatePersonaPepDirecto = async (tx: TxClient, personapepdirecto: Partial<persona_pep_directo>): Promise<persona_pep_directo> => {
   try {
-    const result = await modelsFT.PersonaPepDirecto.update(personapepdirecto, {
+    const result = await tx.persona_pep_directo.update({
+      data: personapepdirecto,
       where: {
         personapepdirectoid: personapepdirecto.personapepdirectoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -95,13 +92,13 @@ export const updatePersonaPepDirecto = async (transaction, personapepdirecto) =>
   }
 };
 
-export const deletePersonaPepDirecto = async (transaction, personapepdirecto) => {
+export const deletePersonaPepDirecto = async (tx: TxClient, personapepdirecto: Partial<persona_pep_directo>): Promise<persona_pep_directo> => {
   try {
-    const result = await modelsFT.PersonaPepDirecto.update(personapepdirecto, {
+    const result = await tx.persona_pep_directo.update({
+      data: personapepdirecto,
       where: {
         personapepdirectoid: personapepdirecto.personapepdirectoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

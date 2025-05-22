@@ -1,12 +1,13 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, factoring_historial_estado } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getFactoringhistorialestadosByIdfactoring = async (transaction, _idfactoring, estados) => {
+export const getFactoringhistorialestadosByIdfactoring = async (tx: TxClient, idfactoring, estados: number[]) => {
   try {
-    const factoringhistorialestados = await modelsFT.FactoringHistorialEstado.findAll({
+    const factoringhistorialestados = await tx.factoring_historial_estado.findMany({
       include: [
         {
           all: true,
@@ -23,12 +24,11 @@ export const getFactoringhistorialestadosByIdfactoring = async (transaction, _id
         },
       ],
       where: {
-        _idfactoring: _idfactoring,
+        idfactoring: idfactoring,
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return factoringhistorialestados;
@@ -38,28 +38,26 @@ export const getFactoringhistorialestadosByIdfactoring = async (transaction, _id
   }
 };
 
-export const getFactoringhistorialestados = async (transaction, estados) => {
+export const getFactoringhistorialestados = async (tx: TxClient, estados: number[]): Promise<factoring_historial_estado[]> => {
   try {
-    const factoringhistorialestados = await modelsFT.FactoringHistorialEstado.findAll({
+    const factoringhistorialestados = await tx.factoring_historial_estado.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return factoringhistorialestados;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getFactoringhistorialestadoByIdfactoringhistorialestado = async (transaction, idfactoringhistorialestado) => {
+export const getFactoringhistorialestadoByIdfactoringhistorialestado = async (tx: TxClient, idfactoringhistorialestado: number): Promise<factoring_historial_estado> => {
   try {
-    const factoringhistorialestado = await modelsFT.FactoringHistorialEstado.findByPk(idfactoringhistorialestado, { transaction });
+    const factoringhistorialestado = await tx.factoring_historial_estado.findUnique({ where: { idfactoringhistorialestado: idfactoringhistorialestado } });
 
     //const factoringhistorialestados = await factoringhistorialestado.getFactoringhistorialestados();
 
@@ -70,13 +68,12 @@ export const getFactoringhistorialestadoByIdfactoringhistorialestado = async (tr
   }
 };
 
-export const getFactoringhistorialestadoByFactoringhistorialestadoid = async (transaction, factoringhistorialestadoid) => {
+export const getFactoringhistorialestadoByFactoringhistorialestadoid = async (tx: TxClient, factoringhistorialestadoid: string): Promise<factoring_historial_estado> => {
   try {
-    const factoringhistorialestado = await modelsFT.FactoringHistorialEstado.findOne({
+    const factoringhistorialestado = await tx.factoring_historial_estado.findFirst({
       where: {
         factoringhistorialestadoid: factoringhistorialestadoid,
       },
-      transaction,
     });
 
     return factoringhistorialestado;
@@ -86,14 +83,13 @@ export const getFactoringhistorialestadoByFactoringhistorialestadoid = async (tr
   }
 };
 
-export const findFactoringhistorialestadoPk = async (transaction, factoringhistorialestadoid) => {
+export const findFactoringhistorialestadoPk = async (tx: TxClient, factoringhistorialestadoid: string): Promise<{ idfactoringhistorialestado: number }> => {
   try {
-    const factoringhistorialestado = await modelsFT.FactoringHistorialEstado.findOne({
-      attributes: ["_idfactoringhistorialestado"],
+    const factoringhistorialestado = await tx.factoring_historial_estado.findFirst({
+      select: { idfactoringhistorialestado: true },
       where: {
         factoringhistorialestadoid: factoringhistorialestadoid,
       },
-      transaction,
     });
 
     return factoringhistorialestado;
@@ -103,24 +99,24 @@ export const findFactoringhistorialestadoPk = async (transaction, factoringhisto
   }
 };
 
-export const insertFactoringhistorialestado = async (transaction, factoringhistorialestado) => {
+export const insertFactoringhistorialestado = async (tx: TxClient, factoringhistorialestado: Prisma.factoring_historial_estadoCreateInput): Promise<factoring_historial_estado> => {
   try {
-    const factoringhistorialestado_nuevo = await modelsFT.FactoringHistorialEstado.create(factoringhistorialestado, { transaction });
+    const nuevo = await tx.factoring_historial_estado.create({ data: factoringhistorialestado });
 
-    return factoringhistorialestado_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateFactoringhistorialestado = async (transaction, factoringhistorialestado) => {
+export const updateFactoringhistorialestado = async (tx: TxClient, factoringhistorialestado: Partial<factoring_historial_estado>): Promise<factoring_historial_estado> => {
   try {
-    const result = await modelsFT.FactoringHistorialEstado.update(factoringhistorialestado, {
+    const result = await tx.factoring_historial_estado.update({
+      data: factoringhistorialestado,
       where: {
         factoringhistorialestadoid: factoringhistorialestado.factoringhistorialestadoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -129,13 +125,13 @@ export const updateFactoringhistorialestado = async (transaction, factoringhisto
   }
 };
 
-export const deleteFactoringhistorialestado = async (transaction, factoringhistorialestado) => {
+export const deleteFactoringhistorialestado = async (tx: TxClient, factoringhistorialestado: Partial<factoring_historial_estado>): Promise<factoring_historial_estado> => {
   try {
-    const result = await modelsFT.FactoringHistorialEstado.update(factoringhistorialestado, {
+    const result = await tx.factoring_historial_estado.update({
+      data: factoringhistorialestado,
       where: {
         factoringhistorialestadoid: factoringhistorialestado.factoringhistorialestadoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -144,13 +140,13 @@ export const deleteFactoringhistorialestado = async (transaction, factoringhisto
   }
 };
 
-export const activateFactoringhistorialestado = async (transaction, factoringhistorialestado) => {
+export const activateFactoringhistorialestado = async (tx: TxClient, factoringhistorialestado: Partial<factoring_historial_estado>): Promise<factoring_historial_estado> => {
   try {
-    const result = await modelsFT.FactoringHistorialEstado.update(factoringhistorialestado, {
+    const result = await tx.factoring_historial_estado.update({
+      data: factoringhistorialestado,
       where: {
         factoringhistorialestadoid: factoringhistorialestado.factoringhistorialestadoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

@@ -1,32 +1,25 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, distrito } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getDistritos = async (transaction, estados) => {
+export const getDistritos = async (tx: TxClient, estados: number[]): Promise<distrito[]> => {
   try {
-    const distritos = await modelsFT.Distrito.findAll({
-      include: [
-        {
-          model: modelsFT.Provincia,
-          required: true,
-          as: "provincia_provincium",
-          include: [
-            {
-              model: modelsFT.Departamento,
-              required: true,
-              as: "departamento_departamento",
-            },
-          ],
-        },
-      ],
-      where: {
-        estado: {
-          [Op.in]: estados,
+    const distritos = await tx.distrito.findMany({
+      include: {
+        provincia: {
+          include: {
+            departamento: true,
+          },
         },
       },
-      transaction,
+      where: {
+        estado: {
+          in: estados,
+        },
+      },
     });
 
     return distritos;
@@ -36,26 +29,12 @@ export const getDistritos = async (transaction, estados) => {
   }
 };
 
-export const getDistritoByIddistrito = async (transaction, iddistrito) => {
+export const getDistritoByIddistrito = async (tx: TxClient, iddistrito: number): Promise<distrito> => {
   try {
-    const distrito = await modelsFT.Distrito.findByPk(iddistrito, {});
-
-    //const distritos = await distrito.getDistritos();
-
-    return distrito;
-  } catch (error) {
-    log.error(line(), "", formatError(error));
-    throw new ClientError("Ocurrio un error", 500);
-  }
-};
-
-export const getDistritoByDistritoid = async (transaction, distritoid) => {
-  try {
-    const distrito = await modelsFT.Distrito.findOne({
+    const distrito = await tx.distrito.findUnique({
       where: {
-        distritoid: distritoid,
+        iddistrito: iddistrito,
       },
-      transaction,
     });
 
     return distrito;
@@ -65,14 +44,12 @@ export const getDistritoByDistritoid = async (transaction, distritoid) => {
   }
 };
 
-export const findDistritoPk = async (transaction, distritoid) => {
+export const getDistritoByDistritoid = async (tx: TxClient, distritoid: string): Promise<distrito> => {
   try {
-    const distrito = await modelsFT.Distrito.findOne({
-      attributes: ["_iddistrito"],
+    const distrito = await tx.distrito.findFirst({
       where: {
         distritoid: distritoid,
       },
-      transaction,
     });
 
     return distrito;
@@ -82,24 +59,40 @@ export const findDistritoPk = async (transaction, distritoid) => {
   }
 };
 
-export const insertDistrito = async (transaction, distrito) => {
+export const findDistritoPk = async (tx: TxClient, distritoid: string): Promise<{ iddistrito: number }> => {
   try {
-    const distrito_nuevo = await modelsFT.Distrito.create(distrito, { transaction });
+    const distrito = await tx.distrito.findFirst({
+      select: { iddistrito: true },
+      where: {
+        distritoid: distritoid,
+      },
+    });
 
-    return distrito_nuevo;
+    return distrito;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateDistrito = async (transaction, distrito) => {
+export const insertDistrito = async (tx: TxClient, distrito: Prisma.distritoCreateInput): Promise<distrito> => {
   try {
-    const result = await modelsFT.Distrito.update(distrito, {
+    const nuevo = await tx.distrito.create({ data: distrito });
+
+    return nuevo;
+  } catch (error) {
+    log.error(line(), "", formatError(error));
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
+export const updateDistrito = async (tx: TxClient, distrito: Partial<distrito>): Promise<distrito> => {
+  try {
+    const result = await tx.distrito.update({
+      data: distrito,
       where: {
         distritoid: distrito.distritoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -108,13 +101,13 @@ export const updateDistrito = async (transaction, distrito) => {
   }
 };
 
-export const deleteDistrito = async (transaction, distrito) => {
+export const deleteDistrito = async (tx: TxClient, distrito: Partial<distrito>): Promise<distrito> => {
   try {
-    const result = await modelsFT.Distrito.update(distrito, {
+    const result = await tx.distrito.update({
+      data: distrito,
       where: {
         distritoid: distrito.distritoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

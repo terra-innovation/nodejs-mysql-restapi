@@ -1,31 +1,30 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, provincia } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getProvincias = async (transaction, estados) => {
+export const getProvincias = async (tx: TxClient, estados: number[]): Promise<provincia[]> => {
   try {
-    const provincias = await modelsFT.Provincia.findAll({
+    const provincias = await tx.provincia.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return provincias;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getProvinciaByIdprovincia = async (transaction, idprovincia) => {
+export const getProvinciaByIdprovincia = async (tx: TxClient, idprovincia: number): Promise<provincia> => {
   try {
-    const provincia = await modelsFT.Provincia.findByPk(idprovincia, { transaction });
+    const provincia = await tx.provincia.findUnique({ where: { idprovincia: idprovincia } });
 
     return provincia;
   } catch (error) {
@@ -34,13 +33,12 @@ export const getProvinciaByIdprovincia = async (transaction, idprovincia) => {
   }
 };
 
-export const getProvinciaByProvinciaid = async (transaction, provinciaid) => {
+export const getProvinciaByProvinciaid = async (tx: TxClient, provinciaid: string): Promise<provincia> => {
   try {
-    const provincia = await modelsFT.Provincia.findOne({
+    const provincia = await tx.provincia.findFirst({
       where: {
         provinciaid: provinciaid,
       },
-      transaction,
     });
 
     return provincia;
@@ -50,14 +48,13 @@ export const getProvinciaByProvinciaid = async (transaction, provinciaid) => {
   }
 };
 
-export const findProvinciaPk = async (transaction, provinciaid) => {
+export const findProvinciaPk = async (tx: TxClient, provinciaid: string): Promise<{ idprovincia: number }> => {
   try {
-    const provincia = await modelsFT.Provincia.findOne({
-      attributes: ["_idprovincia"],
+    const provincia = await tx.provincia.findFirst({
+      select: { idprovincia: true },
       where: {
         provinciaid: provinciaid,
       },
-      transaction,
     });
 
     return provincia;
@@ -67,24 +64,24 @@ export const findProvinciaPk = async (transaction, provinciaid) => {
   }
 };
 
-export const insertProvincia = async (transaction, provincia) => {
+export const insertProvincia = async (tx: TxClient, provincia: Prisma.provinciaCreateInput): Promise<provincia> => {
   try {
-    const provincia_nuevo = await modelsFT.Provincia.create(provincia, { transaction });
+    const nuevo = await tx.provincia.create({ data: provincia });
 
-    return provincia_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateProvincia = async (transaction, provincia) => {
+export const updateProvincia = async (tx: TxClient, provincia: Partial<provincia>): Promise<provincia> => {
   try {
-    const result = await modelsFT.Provincia.update(provincia, {
+    const result = await tx.provincia.update({
+      data: provincia,
       where: {
         provinciaid: provincia.provinciaid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -93,13 +90,13 @@ export const updateProvincia = async (transaction, provincia) => {
   }
 };
 
-export const deleteProvincia = async (transaction, provincia) => {
+export const deleteProvincia = async (tx: TxClient, provincia: Partial<provincia>): Promise<provincia> => {
   try {
-    const result = await modelsFT.Provincia.update(provincia, {
+    const result = await tx.provincia.update({
+      data: provincia,
       where: {
         provinciaid: provincia.provinciaid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

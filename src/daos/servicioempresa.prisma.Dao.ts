@@ -1,12 +1,13 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, servicio_empresa } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getFactoringempresasByVerificacion = async (transaction, estadologico, _idservicio, _idarchivotipos) => {
+export const getFactoringempresasByVerificacion = async (tx: TxClient, estadologico, idservicio, idarchivotipos) => {
   try {
-    const personas = await modelsFT.ServicioEmpresa.findAll({
+    const personas = await tx.servicio_empresa.findMany({
       include: [
         {
           model: modelsFT.Servicio,
@@ -30,8 +31,8 @@ export const getFactoringempresasByVerificacion = async (transaction, estadologi
                 },
               ],
               where: {
-                _idarchivotipo: {
-                  [Op.in]: _idarchivotipos,
+                idarchivotipo: {
+                  in: idarchivotipos,
                 },
               },
             },
@@ -77,8 +78,8 @@ export const getFactoringempresasByVerificacion = async (transaction, estadologi
                         },
                       ],
                       where: {
-                        _idarchivotipo: {
-                          [Op.in]: _idarchivotipos,
+                        idarchivotipo: {
+                          in: idarchivotipos,
                         },
                       },
                     },
@@ -113,8 +114,8 @@ export const getFactoringempresasByVerificacion = async (transaction, estadologi
                     },
                   ],
                   where: {
-                    _idarchivotipo: {
-                      [Op.in]: _idarchivotipos,
+                    idarchivotipo: {
+                      in: idarchivotipos,
                     },
                   },
                 },
@@ -175,14 +176,13 @@ export const getFactoringempresasByVerificacion = async (transaction, estadologi
         },
       ],
       where: {
-        _idservicio: {
-          [Op.in]: _idservicio,
+        idservicio: {
+          in: idservicio,
         },
         estado: {
-          [Op.in]: estadologico,
+          in: estadologico,
         },
       },
-      transaction,
     });
 
     return personas;
@@ -192,28 +192,26 @@ export const getFactoringempresasByVerificacion = async (transaction, estadologi
   }
 };
 
-export const getServicioempresas = async (transaction, estados) => {
+export const getServicioempresas = async (tx: TxClient, estados: number[]): Promise<servicio_empresa[]> => {
   try {
-    const servicioempresas = await modelsFT.ServicioEmpresa.findAll({
+    const servicioempresas = await tx.servicio_empresa.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return servicioempresas;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getServicioempresaByIdservicioempresa = async (transaction, idservicioempresa) => {
+export const getServicioempresaByIdservicioempresa = async (tx: TxClient, idservicioempresa: number): Promise<servicio_empresa> => {
   try {
-    const servicioempresa = await modelsFT.ServicioEmpresa.findByPk(idservicioempresa, { transaction });
+    const servicioempresa = await tx.servicio_empresa.findUnique({ where: { idservicioempresa: idservicioempresa } });
 
     //const servicioempresas = await servicioempresa.getServicioempresas();
 
@@ -224,13 +222,12 @@ export const getServicioempresaByIdservicioempresa = async (transaction, idservi
   }
 };
 
-export const getServicioempresaByServicioempresaid = async (transaction, servicioempresaid) => {
+export const getServicioempresaByServicioempresaid = async (tx: TxClient, servicioempresaid: string): Promise<servicio_empresa> => {
   try {
-    const servicioempresa = await modelsFT.ServicioEmpresa.findOne({
+    const servicioempresa = await tx.servicio_empresa.findFirst({
       where: {
         servicioempresaid: servicioempresaid,
       },
-      transaction,
     });
 
     return servicioempresa;
@@ -240,14 +237,13 @@ export const getServicioempresaByServicioempresaid = async (transaction, servici
   }
 };
 
-export const findServicioempresaPk = async (transaction, servicioempresaid) => {
+export const findServicioempresaPk = async (tx: TxClient, servicioempresaid: string): Promise<{ idservicioempresa: number }> => {
   try {
-    const servicioempresa = await modelsFT.ServicioEmpresa.findOne({
-      attributes: ["_idservicioempresa"],
+    const servicioempresa = await tx.servicio_empresa.findFirst({
+      select: { idservicioempresa: true },
       where: {
         servicioempresaid: servicioempresaid,
       },
-      transaction,
     });
 
     return servicioempresa;
@@ -257,24 +253,24 @@ export const findServicioempresaPk = async (transaction, servicioempresaid) => {
   }
 };
 
-export const insertServicioempresa = async (transaction, servicioempresa) => {
+export const insertServicioempresa = async (tx: TxClient, servicioempresa: Prisma.servicio_empresaCreateInput): Promise<servicio_empresa> => {
   try {
-    const servicioempresa_nuevo = await modelsFT.ServicioEmpresa.create(servicioempresa, { transaction });
+    const nuevo = await tx.servicio_empresa.create({ data: servicioempresa });
 
-    return servicioempresa_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateServicioempresa = async (transaction, servicioempresa) => {
+export const updateServicioempresa = async (tx: TxClient, servicioempresa: Partial<servicio_empresa>): Promise<servicio_empresa> => {
   try {
-    const result = await modelsFT.ServicioEmpresa.update(servicioempresa, {
+    const result = await tx.servicio_empresa.update({
+      data: servicioempresa,
       where: {
         servicioempresaid: servicioempresa.servicioempresaid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -283,13 +279,13 @@ export const updateServicioempresa = async (transaction, servicioempresa) => {
   }
 };
 
-export const deleteServicioempresa = async (transaction, servicioempresa) => {
+export const deleteServicioempresa = async (tx: TxClient, servicioempresa: Partial<servicio_empresa>): Promise<servicio_empresa> => {
   try {
-    const result = await modelsFT.ServicioEmpresa.update(servicioempresa, {
+    const result = await tx.servicio_empresa.update({
+      data: servicioempresa,
       where: {
         servicioempresaid: servicioempresa.servicioempresaid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

@@ -1,31 +1,30 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, departamento } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getDepartamentos = async (transaction, estados) => {
+export const getDepartamentos = async (tx: TxClient, estados: number[]): Promise<departamento[]> => {
   try {
-    const departamentos = await modelsFT.Departamento.findAll({
+    const departamentos = await tx.departamento.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return departamentos;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getDepartamentoByIddepartamento = async (transaction, iddepartamento) => {
+export const getDepartamentoByIddepartamento = async (tx: TxClient, iddepartamento: number): Promise<departamento> => {
   try {
-    const departamento = await modelsFT.Departamento.findByPk(iddepartamento, { transaction });
+    const departamento = await tx.departamento.findUnique({ where: { iddepartamento: iddepartamento } });
 
     //const departamentos = await departamento.getDepartamentos();
 
@@ -36,13 +35,12 @@ export const getDepartamentoByIddepartamento = async (transaction, iddepartament
   }
 };
 
-export const getDepartamentoByDepartamentoid = async (transaction, departamentoid) => {
+export const getDepartamentoByDepartamentoid = async (tx: TxClient, departamentoid: string): Promise<departamento> => {
   try {
-    const departamento = await modelsFT.Departamento.findOne({
+    const departamento = await tx.departamento.findFirst({
       where: {
         departamentoid: departamentoid,
       },
-      transaction,
     });
 
     return departamento;
@@ -52,14 +50,13 @@ export const getDepartamentoByDepartamentoid = async (transaction, departamentoi
   }
 };
 
-export const findDepartamentoPk = async (transaction, departamentoid) => {
+export const findDepartamentoPk = async (tx: TxClient, departamentoid: string): Promise<{ iddepartamento: number }> => {
   try {
-    const departamento = await modelsFT.Departamento.findOne({
-      attributes: ["_iddepartamento"],
+    const departamento = await tx.departamento.findFirst({
+      select: { iddepartamento: true },
       where: {
         departamentoid: departamentoid,
       },
-      transaction,
     });
 
     return departamento;
@@ -69,24 +66,24 @@ export const findDepartamentoPk = async (transaction, departamentoid) => {
   }
 };
 
-export const insertDepartamento = async (transaction, departamento) => {
+export const insertDepartamento = async (tx: TxClient, departamento: Prisma.departamentoCreateInput): Promise<departamento> => {
   try {
-    const departamento_nuevo = await modelsFT.Departamento.create(departamento, { transaction });
+    const nuevo = await tx.departamento.create({ data: departamento });
 
-    return departamento_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateDepartamento = async (transaction, departamento) => {
+export const updateDepartamento = async (tx: TxClient, departamento: Partial<departamento>): Promise<departamento> => {
   try {
-    const result = await modelsFT.Departamento.update(departamento, {
+    const result = await tx.departamento.update({
+      data: departamento,
       where: {
         departamentoid: departamento.departamentoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -95,13 +92,13 @@ export const updateDepartamento = async (transaction, departamento) => {
   }
 };
 
-export const deleteDepartamento = async (transaction, departamento) => {
+export const deleteDepartamento = async (tx: TxClient, departamento: Partial<departamento>): Promise<departamento> => {
   try {
-    const result = await modelsFT.Departamento.update(departamento, {
+    const result = await tx.departamento.update({
+      data: departamento,
       where: {
         departamentoid: departamento.departamentoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

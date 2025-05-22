@@ -1,27 +1,27 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, inversionista } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getInversionistaByIdusuario = async (transaction, _idusuario, estados) => {
+export const getInversionistaByIdusuario = async (tx: TxClient, idusuario, estados: number[]) => {
   try {
-    const inversionista = await modelsFT.Inversionista.findOne({
+    const inversionista = await tx.inversionista.findFirst({
       include: [
         {
           model: modelsFT.Persona,
           as: "persona_persona",
           where: {
-            _idusuario,
+            idusuario,
           },
         },
       ],
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return inversionista;
@@ -31,9 +31,9 @@ export const getInversionistaByIdusuario = async (transaction, _idusuario, estad
   }
 };
 
-export const getInversionistas = async (transaction, estados) => {
+export const getInversionistas = async (tx: TxClient, estados: number[]): Promise<inversionista[]> => {
   try {
-    const inversionistas = await modelsFT.Inversionista.findAll({
+    const inversionistas = await tx.inversionista.findMany({
       include: [
         {
           model: modelsFT.Persona,
@@ -42,23 +42,21 @@ export const getInversionistas = async (transaction, estados) => {
       ],
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return inversionistas;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getInversionistaByIdinversionista = async (transaction, idinversionista) => {
+export const getInversionistaByIdinversionista = async (tx: TxClient, idinversionista: number): Promise<inversionista> => {
   try {
-    const inversionista = await modelsFT.Inversionista.findByPk(idinversionista, { transaction });
+    const inversionista = await tx.inversionista.findUnique({ where: { idinversionista: idinversionista } });
 
     return inversionista;
   } catch (error) {
@@ -67,13 +65,12 @@ export const getInversionistaByIdinversionista = async (transaction, idinversion
   }
 };
 
-export const getInversionistaByInversionistaid = async (transaction, inversionistaid) => {
+export const getInversionistaByInversionistaid = async (tx: TxClient, inversionistaid: string): Promise<inversionista> => {
   try {
-    const inversionista = await modelsFT.Inversionista.findOne({
+    const inversionista = await tx.inversionista.findFirst({
       where: {
         inversionistaid: inversionistaid,
       },
-      transaction,
     });
 
     return inversionista;
@@ -83,14 +80,13 @@ export const getInversionistaByInversionistaid = async (transaction, inversionis
   }
 };
 
-export const findInversionistaPk = async (transaction, inversionistaid) => {
+export const findInversionistaPk = async (tx: TxClient, inversionistaid: string): Promise<{ idinversionista: number }> => {
   try {
-    const inversionista = await modelsFT.Inversionista.findOne({
-      attributes: ["_idinversionista"],
+    const inversionista = await tx.inversionista.findFirst({
+      select: { idinversionista: true },
       where: {
         inversionistaid: inversionistaid,
       },
-      transaction,
     });
 
     return inversionista;
@@ -100,24 +96,24 @@ export const findInversionistaPk = async (transaction, inversionistaid) => {
   }
 };
 
-export const insertInversionista = async (transaction, inversionista) => {
+export const insertInversionista = async (tx: TxClient, inversionista: Prisma.inversionistaCreateInput): Promise<inversionista> => {
   try {
-    const inversionista_nuevo = await modelsFT.Inversionista.create(inversionista, { transaction });
+    const nuevo = await tx.inversionista.create({ data: inversionista });
 
-    return inversionista_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateInversionista = async (transaction, inversionista) => {
+export const updateInversionista = async (tx: TxClient, inversionista: Partial<inversionista>): Promise<inversionista> => {
   try {
-    const result = await modelsFT.Inversionista.update(inversionista, {
+    const result = await tx.inversionista.update({
+      data: inversionista,
       where: {
         inversionistaid: inversionista.inversionistaid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -126,13 +122,13 @@ export const updateInversionista = async (transaction, inversionista) => {
   }
 };
 
-export const deleteInversionista = async (transaction, inversionista) => {
+export const deleteInversionista = async (tx: TxClient, inversionista: Partial<inversionista>): Promise<inversionista> => {
   try {
-    const result = await modelsFT.Inversionista.update(inversionista, {
+    const result = await tx.inversionista.update({
+      data: inversionista,
       where: {
         inversionistaid: inversionista.inversionistaid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -141,13 +137,13 @@ export const deleteInversionista = async (transaction, inversionista) => {
   }
 };
 
-export const activateInversionista = async (transaction, inversionista) => {
+export const activateInversionista = async (tx: TxClient, inversionista: Partial<inversionista>): Promise<inversionista> => {
   try {
-    const result = await modelsFT.Inversionista.update(inversionista, {
+    const result = await tx.inversionista.update({
+      data: inversionista,
       where: {
         inversionistaid: inversionista.inversionistaid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

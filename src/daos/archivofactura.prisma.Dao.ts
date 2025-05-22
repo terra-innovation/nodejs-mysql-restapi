@@ -1,76 +1,73 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, archivo_factura } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getArchivofacturasByIdfactoring = async (transaction, _idfactoring, estados) => {
+export const getArchivofacturasByIdfactoring = async (tx: TxClient, idfactoring: number, estados: number[]): Promise<archivo_factura[]> => {
   try {
-    const archivofacturas = await modelsFT.ArchivoFactura.findAll({
-      include: [
-        { all: true },
-        {
-          model: modelsFT.Archivo,
-          required: true,
-          as: "archivo_archivo",
-          include: [{ all: true }],
-        },
-        {
-          model: modelsFT.Factura,
-          required: true,
-          as: "factura_factura",
-          include: [
-            {
-              model: modelsFT.Factoring,
-              required: true,
-              as: "factoring_factorings",
-              where: {
-                _idfactoring: _idfactoring,
+    const archivofacturas = await tx.archivo_factura.findMany({
+      include: {
+        archivo: true,
+        factura: {
+          include: {
+            factoring_factura: {
+              include: {
+                factoring: true,
               },
             },
-          ],
-        },
-      ],
-      where: {
-        estado: {
-          [Op.in]: estados,
+          },
         },
       },
-      transaction,
+      where: {
+        estado: { in: estados },
+        factura: {
+          factoring_factura: {
+            some: {
+              factoring: {
+                idfactoring: idfactoring,
+              },
+            },
+          },
+        },
+      },
     });
 
     return archivofacturas;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getArchivofacturas = async (transaction, estados) => {
+export const getArchivofacturas = async (tx: TxClient, estados: number[]): Promise<archivo_factura[]> => {
   try {
-    const archivofacturas = await modelsFT.ArchivoFactura.findAll({
+    const archivofacturas = await tx.archivo_factura.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return archivofacturas;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getArchivoFacturaByIdarchivofactura = async (transaction, idarchivofactura) => {
+export const getArchivoFacturaByIdarchivoIdfactura = async (tx: TxClient, idarchivo: number, idfactura: number): Promise<archivo_factura> => {
   try {
-    const archivofactura = await modelsFT.ArchivoFactura.findByPk(idarchivofactura, { transaction });
-
-    //const archivofacturas = await archivofactura.getArchivofacturas();
+    const archivofactura = await tx.archivo_factura.findUnique({
+      where: {
+        idarchivo_idfactura: {
+          idarchivo: idarchivo,
+          idfactura: idfactura,
+        },
+      },
+    });
 
     return archivofactura;
   } catch (error) {
@@ -79,14 +76,14 @@ export const getArchivoFacturaByIdarchivofactura = async (transaction, idarchivo
   }
 };
 
-export const getArchivoFacturaByArchivoFacturaid = async (transaction, archivofactura) => {
+export const findArchivoFacturaPk = async (tx: TxClient, archivofactura: Partial<archivo_factura>): Promise<{ idarchivo: number; idfactura: bigint } | null> => {
   try {
-    const result = await modelsFT.ArchivoFactura.findOne({
+    const result = await tx.archivo_factura.findFirst({
+      select: { idarchivo: true, idfactura: true },
       where: {
-        _idarchivo: archivofactura._idarchivo,
-        _idfactura: archivofactura._idfactura,
+        idarchivo: archivofactura.idarchivo,
+        idfactura: archivofactura.idfactura,
       },
-      transaction,
     });
 
     return result;
@@ -96,43 +93,27 @@ export const getArchivoFacturaByArchivoFacturaid = async (transaction, archivofa
   }
 };
 
-export const findArchivoFacturaPk = async (transaction, archivofactura) => {
+export const insertArchivoFactura = async (tx: TxClient, archivofactura: Prisma.archivo_facturaCreateInput): Promise<archivo_factura> => {
   try {
-    const result = await modelsFT.ArchivoFactura.findOne({
-      attributes: ["_idarchivofactura"],
-      where: {
-        _idarchivo: archivofactura._idarchivo,
-        _idfactura: archivofactura._idfactura,
-      },
-      transaction,
-    });
+    const nuevo = await tx.archivo_factura.create({ data: archivofactura });
 
-    return result;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const insertArchivoFactura = async (transaction, archivofactura) => {
+export const updateArchivoFactura = async (tx: TxClient, archivofactura: Partial<archivo_factura>): Promise<archivo_factura> => {
   try {
-    const archivofactura_nuevo = await modelsFT.ArchivoFactura.create(archivofactura, { transaction });
-
-    return archivofactura_nuevo;
-  } catch (error) {
-    log.error(line(), "", formatError(error));
-    throw new ClientError("Ocurrio un error", 500);
-  }
-};
-
-export const updateArchivoFactura = async (transaction, archivofactura) => {
-  try {
-    const result = await modelsFT.ArchivoFactura.update(archivofactura, {
+    const result = await tx.archivo_factura.update({
+      data: archivofactura,
       where: {
-        _idarchivo: archivofactura._idarchivo,
-        _idfactura: archivofactura._idfactura,
+        idarchivo_idfactura: {
+          idarchivo: archivofactura.idarchivo,
+          idfactura: archivofactura.idfactura,
+        },
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -141,14 +122,16 @@ export const updateArchivoFactura = async (transaction, archivofactura) => {
   }
 };
 
-export const deleteArchivoFactura = async (transaction, archivofactura) => {
+export const deleteArchivoFactura = async (tx: TxClient, archivofactura: Partial<archivo_factura>): Promise<archivo_factura> => {
   try {
-    const result = await modelsFT.ArchivoFactura.update(archivofactura, {
+    const result = await tx.archivo_factura.update({
+      data: archivofactura,
       where: {
-        _idarchivo: archivofactura._idarchivo,
-        _idfactura: archivofactura._idfactura,
+        idarchivo_idfactura: {
+          idarchivo: archivofactura.idarchivo,
+          idfactura: archivofactura.idfactura,
+        },
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -157,14 +140,16 @@ export const deleteArchivoFactura = async (transaction, archivofactura) => {
   }
 };
 
-export const activateArchivoFactura = async (transaction, archivofactura) => {
+export const activateArchivoFactura = async (tx: TxClient, archivofactura: Partial<archivo_factura>): Promise<archivo_factura> => {
   try {
-    const result = await modelsFT.ArchivoFactura.update(archivofactura, {
+    const result = await tx.archivo_factura.update({
+      data: archivofactura,
       where: {
-        _idarchivo: archivofactura._idarchivo,
-        _idfactura: archivofactura._idfactura,
+        idarchivo_idfactura: {
+          idarchivo: archivofactura.idarchivo,
+          idfactura: archivofactura.idfactura,
+        },
       },
-      transaction,
     });
     return result;
   } catch (error) {

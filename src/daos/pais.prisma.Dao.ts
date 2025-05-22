@@ -1,31 +1,30 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, pais } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getPaises = async (transaction, estados) => {
+export const getPaises = async (tx: TxClient, estados: number[]): Promise<pais[]> => {
   try {
-    const paises = await modelsFT.Pais.findAll({
+    const paises = await tx.pais.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return paises;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getPaisByIdpais = async (transaction, idpais) => {
+export const getPaisByIdpais = async (tx: TxClient, idpais: number): Promise<pais> => {
   try {
-    const pais = await modelsFT.Pais.findByPk(idpais, { transaction });
+    const pais = await tx.pais.findUnique({ where: { idpais: idpais } });
 
     //const paises = await pais.getPaises();
 
@@ -36,13 +35,12 @@ export const getPaisByIdpais = async (transaction, idpais) => {
   }
 };
 
-export const getPaisByPaisid = async (transaction, paisid) => {
+export const getPaisByPaisid = async (tx: TxClient, paisid: string): Promise<pais> => {
   try {
-    const pais = await modelsFT.Pais.findOne({
+    const pais = await tx.pais.findFirst({
       where: {
         paisid: paisid,
       },
-      transaction,
     });
 
     return pais;
@@ -52,14 +50,13 @@ export const getPaisByPaisid = async (transaction, paisid) => {
   }
 };
 
-export const findPaisPk = async (transaction, paisid) => {
+export const findPaisPk = async (tx: TxClient, paisid: string): Promise<{ idpais: number }> => {
   try {
-    const pais = await modelsFT.Pais.findOne({
-      attributes: ["_idpais"],
+    const pais = await tx.pais.findFirst({
+      select: { idpais: true },
       where: {
         paisid: paisid,
       },
-      transaction,
     });
 
     return pais;
@@ -69,24 +66,24 @@ export const findPaisPk = async (transaction, paisid) => {
   }
 };
 
-export const insertPais = async (transaction, pais) => {
+export const insertPais = async (tx: TxClient, pais: Prisma.paisCreateInput): Promise<pais> => {
   try {
-    const pais_nuevo = await modelsFT.Pais.create(pais, { transaction });
+    const nuevo = await tx.pais.create({ data: pais });
 
-    return pais_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updatePais = async (transaction, pais) => {
+export const updatePais = async (tx: TxClient, pais: Partial<pais>): Promise<pais> => {
   try {
-    const result = await modelsFT.Pais.update(pais, {
+    const result = await tx.pais.update({
+      data: pais,
       where: {
         paisid: pais.paisid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -95,13 +92,13 @@ export const updatePais = async (transaction, pais) => {
   }
 };
 
-export const deletePais = async (transaction, pais) => {
+export const deletePais = async (tx: TxClient, pais: Partial<pais>): Promise<pais> => {
   try {
-    const result = await modelsFT.Pais.update(pais, {
+    const result = await tx.pais.update({
+      data: pais,
       where: {
         paisid: pais.paisid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

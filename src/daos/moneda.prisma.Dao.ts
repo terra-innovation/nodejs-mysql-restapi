@@ -1,31 +1,30 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, moneda } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getMonedas = async (transaction, estados) => {
+export const getMonedas = async (tx: TxClient, estados: number[]): Promise<moneda[]> => {
   try {
-    const monedas = await modelsFT.Moneda.findAll({
+    const monedas = await tx.moneda.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return monedas;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getMonedaByIdmoneda = async (transaction, idmoneda) => {
+export const getMonedaByIdmoneda = async (tx: TxClient, idmoneda: number): Promise<moneda> => {
   try {
-    const moneda = await modelsFT.Moneda.findByPk(idmoneda, { transaction });
+    const moneda = await tx.moneda.findUnique({ where: { idmoneda: idmoneda } });
 
     //const monedas = await moneda.getMonedas();
 
@@ -36,13 +35,12 @@ export const getMonedaByIdmoneda = async (transaction, idmoneda) => {
   }
 };
 
-export const getMonedaByCodigo = async (transaction, codigo) => {
+export const getMonedaByCodigo = async (tx: TxClient, codigo) => {
   try {
-    const moneda = await modelsFT.Moneda.findOne({
+    const moneda = await tx.moneda.findFirst({
       where: {
         codigo: codigo,
       },
-      transaction,
     });
 
     return moneda;
@@ -52,13 +50,12 @@ export const getMonedaByCodigo = async (transaction, codigo) => {
   }
 };
 
-export const getMonedaByMonedaid = async (transaction, monedaid) => {
+export const getMonedaByMonedaid = async (tx: TxClient, monedaid: string): Promise<moneda> => {
   try {
-    const moneda = await modelsFT.Moneda.findOne({
+    const moneda = await tx.moneda.findFirst({
       where: {
         monedaid: monedaid,
       },
-      transaction,
     });
 
     return moneda;
@@ -68,14 +65,13 @@ export const getMonedaByMonedaid = async (transaction, monedaid) => {
   }
 };
 
-export const findMonedaPk = async (transaction, monedaid) => {
+export const findMonedaPk = async (tx: TxClient, monedaid: string): Promise<{ idmoneda: number }> => {
   try {
-    const moneda = await modelsFT.Moneda.findOne({
-      attributes: ["_idmoneda"],
+    const moneda = await tx.moneda.findFirst({
+      select: { idmoneda: true },
       where: {
         monedaid: monedaid,
       },
-      transaction,
     });
 
     return moneda;
@@ -85,24 +81,24 @@ export const findMonedaPk = async (transaction, monedaid) => {
   }
 };
 
-export const insertMoneda = async (transaction, moneda) => {
+export const insertMoneda = async (tx: TxClient, moneda: Prisma.monedaCreateInput): Promise<moneda> => {
   try {
-    const moneda_nuevo = await modelsFT.Moneda.create(moneda, { transaction });
+    const nuevo = await tx.moneda.create({ data: moneda });
 
-    return moneda_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateMoneda = async (transaction, moneda) => {
+export const updateMoneda = async (tx: TxClient, moneda: Partial<moneda>): Promise<moneda> => {
   try {
-    const result = await modelsFT.Moneda.update(moneda, {
+    const result = await tx.moneda.update({
+      data: moneda,
       where: {
         monedaid: moneda.monedaid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -111,13 +107,13 @@ export const updateMoneda = async (transaction, moneda) => {
   }
 };
 
-export const deleteMoneda = async (transaction, moneda) => {
+export const deleteMoneda = async (tx: TxClient, moneda: Partial<moneda>): Promise<moneda> => {
   try {
-    const result = await modelsFT.Moneda.update(moneda, {
+    const result = await tx.moneda.update({
+      data: moneda,
       where: {
         monedaid: moneda.monedaid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

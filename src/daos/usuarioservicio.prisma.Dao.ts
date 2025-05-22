@@ -1,14 +1,15 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, usuario_servicio, servicio } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
 import { v4 as uuidv4 } from "uuid";
 
-export const getUsuarioserviciosByIdusuario = async (transaction, idusuario, estados) => {
+export const getUsuarioserviciosByIdusuario = async (tx: TxClient, idusuario, estados: number[]) => {
   try {
-    const usuarioservicios = await modelsFT.UsuarioServicio.findAll({
+    const usuarioservicios = await tx.usuario_servicio.findMany({
       include: [
         {
           model: modelsFT.Usuario,
@@ -27,36 +28,33 @@ export const getUsuarioserviciosByIdusuario = async (transaction, idusuario, est
         },
       ],
       where: {
-        _idusuario: idusuario,
+        idusuario: idusuario,
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return usuarioservicios;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const habilitarServiciosParaUsuario = async (transaction, idusuario, idusuario_session) => {
+export const habilitarServiciosParaUsuario = async (tx: TxClient, idusuario, idusuario_session) => {
   try {
     // 1. Buscar todos los servicios que el usuario NO tiene asignados
-    const serviciosFaltantes = await modelsFT.Servicio.findAll({
+    const serviciosFaltantes = await tx.servicio.findMany({
       where: {
-        _idservicio: {
+        idservicio: {
           [Op.notIn]: Sequelize.literal(`
-            (SELECT _idservicio
+            (SELECT idservicio
             FROM usuario_servicio
-            WHERE _idusuario = ${idusuario})
+            WHERE idusuario = ${idusuario})
           `),
         },
       },
-      transaction,
     });
 
     // 2. Comprobar si no hay servicios faltantes
@@ -67,10 +65,10 @@ export const habilitarServiciosParaUsuario = async (transaction, idusuario, idus
     // 3. Insertar los registros en la tabla usuario_servicio
     const serviciosAInsertar = serviciosFaltantes.map((servicio) => ({
       usuarioservicioid: uuidv4(),
-      _idusuario: idusuario,
-      _idservicio: servicio._idservicio,
+      idusuario: idusuario,
+      idservicio: servicio.idservicio,
       code: uuidv4().split("-")[0],
-      _idusuarioservicioestado: 1, // 1: Suscribirse
+      idusuarioservicioestado: 1, // 1: Suscribirse
       idusuariocrea: idusuario_session,
       fechacrea: Sequelize.fn("now", 3),
       idusuariomod: idusuario_session,
@@ -78,36 +76,33 @@ export const habilitarServiciosParaUsuario = async (transaction, idusuario, idus
       estado: 1,
     }));
 
-    await modelsFT.UsuarioServicio.bulkCreate(serviciosAInsertar, { transaction });
+    await tx.UsuarioServicio.bulkCreate(serviciosAInsertar);
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getUsuarioservicios = async (transaction, estados) => {
+export const getUsuarioservicios = async (tx: TxClient, estados: number[]) => {
   try {
-    const usuarioservicios = await modelsFT.UsuarioServicio.findAll({
+    const usuarioservicios = await tx.usuario_servicio.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return usuarioservicios;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getUsuarioservicioByIdusuarioIdservicio = async (transaction, _idusuario, _idservicio) => {
+export const getUsuarioservicioByIdusuarioIdservicio = async (tx: TxClient, idusuario, idservicio) => {
   try {
-    const usuarioservicio = await modelsFT.UsuarioServicio.findOne({
+    const usuarioservicio = await tx.usuario_servicio.findFirst({
       include: [
         {
           model: modelsFT.Usuario,
@@ -126,10 +121,9 @@ export const getUsuarioservicioByIdusuarioIdservicio = async (transaction, _idus
         },
       ],
       where: {
-        _idusuario: _idusuario,
-        _idservicio: _idservicio,
+        idusuario: idusuario,
+        idservicio: idservicio,
       },
-      transaction,
     });
 
     return usuarioservicio;
@@ -139,9 +133,9 @@ export const getUsuarioservicioByIdusuarioIdservicio = async (transaction, _idus
   }
 };
 
-export const getUsuarioservicioByIdusuarioservicio = async (transaction, idusuarioservicio) => {
+export const getUsuarioservicioByIdusuarioservicio = async (tx: TxClient, idusuarioservicio: number) => {
   try {
-    const usuarioservicio = await modelsFT.UsuarioServicio.findByPk(idusuarioservicio, { transaction });
+    const usuarioservicio = await tx.usuario_servicio.findUnique({ where: { idusuarioservicio: idusuarioservicio } });
 
     //const usuarioservicios = await usuarioservicio.getUsuarioservicios();
 
@@ -152,9 +146,9 @@ export const getUsuarioservicioByIdusuarioservicio = async (transaction, idusuar
   }
 };
 
-export const getUsuarioservicioByUsuarioservicioid = async (transaction, usuarioservicioid) => {
+export const getUsuarioservicioByUsuarioservicioid = async (tx: TxClient, usuarioservicioid: string) => {
   try {
-    const usuarioservicio = await modelsFT.UsuarioServicio.findOne({
+    const usuarioservicio = await tx.usuario_servicio.findFirst({
       include: [
         {
           model: modelsFT.Usuario,
@@ -175,7 +169,6 @@ export const getUsuarioservicioByUsuarioservicioid = async (transaction, usuario
       where: {
         usuarioservicioid: usuarioservicioid,
       },
-      transaction,
     });
 
     return usuarioservicio;
@@ -185,14 +178,13 @@ export const getUsuarioservicioByUsuarioservicioid = async (transaction, usuario
   }
 };
 
-export const findUsuarioservicioPk = async (transaction, usuarioservicioid) => {
+export const findUsuarioservicioPk = async (tx: TxClient, usuarioservicioid: string) => {
   try {
-    const usuarioservicio = await modelsFT.UsuarioServicio.findOne({
-      attributes: ["_idusuarioservicio"],
+    const usuarioservicio = await tx.usuario_servicio.findFirst({
+      select: { idusuarioservicio: true },
       where: {
         usuarioservicioid: usuarioservicioid,
       },
-      transaction,
     });
 
     return usuarioservicio;
@@ -202,24 +194,24 @@ export const findUsuarioservicioPk = async (transaction, usuarioservicioid) => {
   }
 };
 
-export const insertUsuarioservicio = async (transaction, usuarioservicio) => {
+export const insertUsuarioservicio = async (tx: TxClient, usuarioservicio) => {
   try {
-    const usuarioservicio_nuevo = await modelsFT.UsuarioServicio.create(usuarioservicio, { transaction });
+    const nuevo = await tx.usuario_servicio.create({ data: usuarioservicio });
 
-    return usuarioservicio_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateUsuarioservicio = async (transaction, usuarioservicio) => {
+export const updateUsuarioservicio = async (tx: TxClient, usuarioservicio) => {
   try {
-    const result = await modelsFT.UsuarioServicio.update(usuarioservicio, {
+    const result = await tx.usuario_servicio.update({
+      data: usuarioservicio,
       where: {
         usuarioservicioid: usuarioservicio.usuarioservicioid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -228,13 +220,13 @@ export const updateUsuarioservicio = async (transaction, usuarioservicio) => {
   }
 };
 
-export const deleteUsuarioservicio = async (transaction, usuarioservicio) => {
+export const deleteUsuarioservicio = async (tx: TxClient, usuarioservicio) => {
   try {
-    const result = await modelsFT.UsuarioServicio.update(usuarioservicio, {
+    const result = await tx.usuario_servicio.update({
+      data: usuarioservicio,
       where: {
         usuarioservicioid: usuarioservicio.usuarioservicioid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

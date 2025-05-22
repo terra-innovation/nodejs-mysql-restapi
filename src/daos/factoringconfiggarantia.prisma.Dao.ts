@@ -1,31 +1,30 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, factoring_config_garantia } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getFactoringconfiggarantias = async (transaction, estados) => {
+export const getFactoringconfiggarantias = async (tx: TxClient, estados: number[]): Promise<factoring_config_garantia[]> => {
   try {
-    const factoringconfiggarantias = await modelsFT.FactoringConfigGarantia.findAll({
+    const factoringconfiggarantias = await tx.factoring_config_garantia.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return factoringconfiggarantias;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getFactoringconfiggarantiaByIdfactoringconfiggarantia = async (transaction, idfactoringconfiggarantia) => {
+export const getFactoringconfiggarantiaByIdfactoringconfiggarantia = async (tx: TxClient, idfactoringconfiggarantia: number): Promise<factoring_config_garantia> => {
   try {
-    const factoringconfiggarantia = await modelsFT.FactoringConfigGarantia.findByPk(idfactoringconfiggarantia, { transaction });
+    const factoringconfiggarantia = await tx.factoring_config_garantia.findUnique({ where: { idfactoringconfiggarantia: idfactoringconfiggarantia } });
 
     //const factoringconfiggarantias = await factoringconfiggarantia.getFactoringconfiggarantias();
 
@@ -36,13 +35,12 @@ export const getFactoringconfiggarantiaByIdfactoringconfiggarantia = async (tran
   }
 };
 
-export const getFactoringconfiggarantiaByFactoringconfiggarantiaid = async (transaction, factoringconfiggarantiaid) => {
+export const getFactoringconfiggarantiaByFactoringconfiggarantiaid = async (tx: TxClient, factoringconfiggarantiaid: string): Promise<factoring_config_garantia> => {
   try {
-    const factoringconfiggarantia = await modelsFT.FactoringConfigGarantia.findOne({
+    const factoringconfiggarantia = await tx.factoring_config_garantia.findFirst({
       where: {
         factoringconfiggarantiaid: factoringconfiggarantiaid,
       },
-      transaction,
     });
 
     return factoringconfiggarantia;
@@ -52,14 +50,13 @@ export const getFactoringconfiggarantiaByFactoringconfiggarantiaid = async (tran
   }
 };
 
-export const findFactoringconfiggarantiaPk = async (transaction, factoringconfiggarantiaid) => {
+export const findFactoringconfiggarantiaPk = async (tx: TxClient, factoringconfiggarantiaid: string): Promise<{ idfactoringconfiggarantia: number }> => {
   try {
-    const factoringconfiggarantia = await modelsFT.FactoringConfigGarantia.findOne({
-      attributes: ["_idfactoringconfiggarantia"],
+    const factoringconfiggarantia = await tx.factoring_config_garantia.findFirst({
+      select: { idfactoringconfiggarantia: true },
       where: {
         factoringconfiggarantiaid: factoringconfiggarantiaid,
       },
-      transaction,
     });
 
     return factoringconfiggarantia;
@@ -69,24 +66,24 @@ export const findFactoringconfiggarantiaPk = async (transaction, factoringconfig
   }
 };
 
-export const insertFactoringconfiggarantia = async (transaction, factoringconfiggarantia) => {
+export const insertFactoringconfiggarantia = async (tx: TxClient, factoringconfiggarantia: Prisma.factoring_config_garantiaCreateInput): Promise<factoring_config_garantia> => {
   try {
-    const factoringconfiggarantia_nuevo = await modelsFT.FactoringConfigGarantia.create(factoringconfiggarantia, { transaction });
+    const nuevo = await tx.factoring_config_garantia.create({ data: factoringconfiggarantia });
 
-    return factoringconfiggarantia_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateFactoringconfiggarantia = async (transaction, factoringconfiggarantia) => {
+export const updateFactoringconfiggarantia = async (tx: TxClient, factoringconfiggarantia: Partial<factoring_config_garantia>): Promise<factoring_config_garantia> => {
   try {
-    const result = await modelsFT.FactoringConfigGarantia.update(factoringconfiggarantia, {
+    const result = await tx.factoring_config_garantia.update({
+      data: factoringconfiggarantia,
       where: {
         factoringconfiggarantiaid: factoringconfiggarantia.factoringconfiggarantiaid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -95,13 +92,13 @@ export const updateFactoringconfiggarantia = async (transaction, factoringconfig
   }
 };
 
-export const deleteFactoringconfiggarantia = async (transaction, factoringconfiggarantia) => {
+export const deleteFactoringconfiggarantia = async (tx: TxClient, factoringconfiggarantia: Partial<factoring_config_garantia>): Promise<factoring_config_garantia> => {
   try {
-    const result = await modelsFT.FactoringConfigGarantia.update(factoringconfiggarantia, {
+    const result = await tx.factoring_config_garantia.update({
+      data: factoringconfiggarantia,
       where: {
         factoringconfiggarantiaid: factoringconfiggarantia.factoringconfiggarantiaid,
       },
-      transaction,
     });
     return result;
   } catch (error) {

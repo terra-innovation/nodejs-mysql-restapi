@@ -1,31 +1,30 @@
-import { Sequelize, Op } from "sequelize";
-import { modelsFT } from "#src/config/bd/sequelize_db_factoring.js";
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, cuenta_tipo } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getCuentatipos = async (transaction, estados) => {
+export const getCuentatipos = async (tx: TxClient, estados: number[]): Promise<cuenta_tipo[]> => {
   try {
-    const cuentatipos = await modelsFT.CuentaTipo.findAll({
+    const cuentatipos = await tx.cuenta_tipo.findMany({
       where: {
         estado: {
-          [Op.in]: estados,
+          in: estados,
         },
       },
-      transaction,
     });
 
     return cuentatipos;
   } catch (error) {
-    log.error(line(), error.original.code);
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const getCuentatipoByIdcuentatipo = async (transaction, idcuentatipo) => {
+export const getCuentatipoByIdcuentatipo = async (tx: TxClient, idcuentatipo: number): Promise<cuenta_tipo> => {
   try {
-    const cuentatipo = await modelsFT.CuentaTipo.findByPk(idcuentatipo, { transaction });
+    const cuentatipo = await tx.cuenta_tipo.findUnique({ where: { idcuentatipo: idcuentatipo } });
 
     //const cuentatipos = await cuentatipo.getCuentatipos();
 
@@ -36,13 +35,12 @@ export const getCuentatipoByIdcuentatipo = async (transaction, idcuentatipo) => 
   }
 };
 
-export const getCuentatipoByCuentatipoid = async (transaction, cuentatipoid) => {
+export const getCuentatipoByCuentatipoid = async (tx: TxClient, cuentatipoid: string): Promise<cuenta_tipo> => {
   try {
-    const cuentatipo = await modelsFT.CuentaTipo.findOne({
+    const cuentatipo = await tx.cuenta_tipo.findFirst({
       where: {
         cuentatipoid: cuentatipoid,
       },
-      transaction,
     });
 
     return cuentatipo;
@@ -52,14 +50,13 @@ export const getCuentatipoByCuentatipoid = async (transaction, cuentatipoid) => 
   }
 };
 
-export const findCuentatipoPk = async (transaction, cuentatipoid) => {
+export const findCuentatipoPk = async (tx: TxClient, cuentatipoid: string): Promise<{ idcuentatipo: number }> => {
   try {
-    const cuentatipo = await modelsFT.CuentaTipo.findOne({
-      attributes: ["_idcuentatipo"],
+    const cuentatipo = await tx.cuenta_tipo.findFirst({
+      select: { idcuentatipo: true },
       where: {
         cuentatipoid: cuentatipoid,
       },
-      transaction,
     });
 
     return cuentatipo;
@@ -69,24 +66,24 @@ export const findCuentatipoPk = async (transaction, cuentatipoid) => {
   }
 };
 
-export const insertCuentatipo = async (transaction, cuentatipo) => {
+export const insertCuentatipo = async (tx: TxClient, cuentatipo: Prisma.cuenta_tipoCreateInput): Promise<cuenta_tipo> => {
   try {
-    const cuentatipo_nuevo = await modelsFT.CuentaTipo.create(cuentatipo, { transaction });
+    const nuevo = await tx.cuenta_tipo.create({ data: cuentatipo });
 
-    return cuentatipo_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updateCuentatipo = async (transaction, cuentatipo) => {
+export const updateCuentatipo = async (tx: TxClient, cuentatipo: Partial<cuenta_tipo>): Promise<cuenta_tipo> => {
   try {
-    const result = await modelsFT.CuentaTipo.update(cuentatipo, {
+    const result = await tx.cuenta_tipo.update({
+      data: cuentatipo,
       where: {
         cuentatipoid: cuentatipo.cuentatipoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
@@ -95,13 +92,13 @@ export const updateCuentatipo = async (transaction, cuentatipo) => {
   }
 };
 
-export const deleteCuentatipo = async (transaction, cuentatipo) => {
+export const deleteCuentatipo = async (tx: TxClient, cuentatipo: Partial<cuenta_tipo>): Promise<cuenta_tipo> => {
   try {
-    const result = await modelsFT.CuentaTipo.update(cuentatipo, {
+    const result = await tx.cuenta_tipo.update({
+      data: cuentatipo,
       where: {
         cuentatipoid: cuentatipo.cuentatipoid,
       },
-      transaction,
     });
     return result;
   } catch (error) {
