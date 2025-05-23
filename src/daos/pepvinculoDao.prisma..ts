@@ -1,5 +1,5 @@
 import { TxClient } from "#src/types/Prisma.types.js";
-import type { Prisma, pais } from "#src/models/prisma/ft_factoring/client";
+import type { Prisma, pep_vinculo } from "#src/models/prisma/ft_factoring/client";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
@@ -22,11 +22,13 @@ export const getPepvinculos = async (tx: TxClient, estados: number[]) => {
   }
 };
 
-export const getPepvinculoByIdpepvinculo = async (tx: TxClient, idpepvinculo) => {
+export const getPepvinculoByIdpepvinculo = async (tx: TxClient, idpepvinculo: number): Promise<pep_vinculo> => {
   try {
-    const pepvinculo = await tx.pep_vinculo.findByPk(idpepvinculo);
-
-    //const pepvinculos = await pepvinculo.getPepvinculos();
+    const pepvinculo = await tx.pep_vinculo.findUnique({
+      where: {
+        idpepvinculo: idpepvinculo,
+      },
+    });
 
     return pepvinculo;
   } catch (error) {
@@ -35,9 +37,9 @@ export const getPepvinculoByIdpepvinculo = async (tx: TxClient, idpepvinculo) =>
   }
 };
 
-export const getPepvinculoByPepvinculoid = async (tx: TxClient, pepvinculoid: string) => {
+export const getPepvinculoByPepvinculoid = async (tx: TxClient, pepvinculoid: string): Promise<pep_vinculo> => {
   try {
-    const pepvinculo = await tx.pep_vinculo.findFirst({
+    const pepvinculo = await tx.pep_vinculo.findUnique({
       where: {
         pepvinculoid: pepvinculoid,
       },
@@ -50,10 +52,10 @@ export const getPepvinculoByPepvinculoid = async (tx: TxClient, pepvinculoid: st
   }
 };
 
-export const findPepvinculoPk = async (tx: TxClient, pepvinculoid: string) => {
+export const findPepvinculoPk = async (tx: TxClient, pepvinculoid: string): Promise<{ idpepvinculo: number }> => {
   try {
-    const pepvinculo = await tx.pep_vinculo.findFirst({
-      attributes: ["idpepvinculo"],
+    const pepvinculo = await tx.pep_vinculo.findUnique({
+      select: { idpepvinculo: true },
       where: {
         pepvinculoid: pepvinculoid,
       },
@@ -66,20 +68,21 @@ export const findPepvinculoPk = async (tx: TxClient, pepvinculoid: string) => {
   }
 };
 
-export const insertPepvinculo = async (tx: TxClient, pepvinculo) => {
+export const insertPepvinculo = async (tx: TxClient, pepvinculo: Prisma.pep_vinculoCreateInput): Promise<pep_vinculo> => {
   try {
-    const pepvinculo_nuevo = await tx.pep_vinculo.create(pepvinculo);
+    const nuevo = await tx.pep_vinculo.create({ data: pepvinculo });
 
-    return pepvinculo_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
   }
 };
 
-export const updatePepvinculo = async (tx: TxClient, pepvinculo) => {
+export const updatePepvinculo = async (tx: TxClient, pepvinculo: Partial<pep_vinculo>): Promise<pep_vinculo> => {
   try {
-    const result = await tx.pep_vinculo.update(pepvinculo, {
+    const result = await tx.pep_vinculo.update({
+      data: pepvinculo,
       where: {
         pepvinculoid: pepvinculo.pepvinculoid,
       },
@@ -91,9 +94,10 @@ export const updatePepvinculo = async (tx: TxClient, pepvinculo) => {
   }
 };
 
-export const deletePepvinculo = async (tx: TxClient, pepvinculo) => {
+export const deletePepvinculo = async (tx: TxClient, pepvinculo: Partial<pep_vinculo>): Promise<pep_vinculo> => {
   try {
-    const result = await tx.pep_vinculo.update(pepvinculo, {
+    const result = await tx.pep_vinculo.update({
+      data: pepvinculo,
       where: {
         pepvinculoid: pepvinculo.pepvinculoid,
       },

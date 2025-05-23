@@ -63,7 +63,7 @@ export const getPersonasByVerificacion = async (tx: TxClient, estado: number[], 
 
 export const getPersonaByIdusuario = async (tx: TxClient, idusuario: bigint): Promise<persona> => {
   try {
-    const persona = await tx.persona.findFirst({
+    const persona = await tx.persona.findUnique({
       include: {
         usuario: true,
         documento_tipo: true,
@@ -126,7 +126,7 @@ export const getPersonaByIdpersona = async (tx: TxClient, idpersona: bigint): Pr
 
 export const getPersonaByPersonaid = async (tx: TxClient, personaid: string): Promise<persona> => {
   try {
-    const persona = await tx.persona.findFirst({
+    const persona = await tx.persona.findUnique({
       include: {
         usuario: true,
         documento_tipo: true,
@@ -148,7 +148,6 @@ export const getPersonaByPersonaid = async (tx: TxClient, personaid: string): Pr
         personaid: personaid,
       },
     });
-    //log.debug(line(), persona);
     return persona;
   } catch (error) {
     log.error(line(), "", formatError(error));
@@ -158,7 +157,7 @@ export const getPersonaByPersonaid = async (tx: TxClient, personaid: string): Pr
 
 export const findPersonaPk = async (tx: TxClient, personaid: string): Promise<{ idpersona: bigint }> => {
   try {
-    const persona = await tx.persona.findFirst({
+    const persona = await tx.persona.findUnique({
       select: {
         idpersona: true,
       },
@@ -174,7 +173,7 @@ export const findPersonaPk = async (tx: TxClient, personaid: string): Promise<{ 
   }
 };
 
-export const getPersonas = async (tx: TxClient, estado: number[]) => {
+export const getPersonas = async (tx: TxClient, estado: number[]): Promise<persona[]> => {
   try {
     const personas = await tx.persona.findMany({
       include: {
@@ -209,11 +208,11 @@ export const getPersonas = async (tx: TxClient, estado: number[]) => {
   }
 };
 
-export const insertPersona = async (tx: TxClient, persona) => {
+export const insertPersona = async (tx: TxClient, persona: Prisma.personaCreateInput): Promise<persona> => {
   try {
-    const persona_nuevo = await tx.persona.create(persona);
+    const nuevo = await tx.persona.create({ data: persona });
 
-    return persona_nuevo;
+    return nuevo;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
