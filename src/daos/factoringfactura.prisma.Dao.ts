@@ -5,14 +5,13 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getFactoringsfacturasEmpresasActivas = async (tx: TxClient) => {
+export const getFactoringsfacturasEmpresasActivas = async (tx: TxClient): Promise<factoring_factura[]> => {
   try {
     const factoringsfacturasempresas = await tx.factoring_factura.findMany({
-      include: [
-        {
-          all: true,
-        },
-      ],
+      include: {
+        factoring: true,
+        factura: true,
+      },
       where: {
         estado: 1,
       },
@@ -25,11 +24,16 @@ export const getFactoringsfacturasEmpresasActivas = async (tx: TxClient) => {
   }
 };
 
-export const getFactoringfacturaByIdfactoringfactura = async (tx: TxClient, idfactoringfactura: number): Promise<factoring_factura> => {
+export const getFactoringfacturaByIdfactoringfactura = async (tx: TxClient, idfactoring: bigint, idfactura: bigint): Promise<factoring_factura> => {
   try {
-    const factoringfactura = await tx.factoring_factura.findUnique({ where: { idfactoringfactura: idfactoringfactura } });
-
-    //const factoringsfacturasempresas = await factoringfactura.getFactoringsfacturasEmpresas();
+    const factoringfactura = await tx.factoring_factura.findUnique({
+      where: {
+        idfactoring_idfactura: {
+          idfactoring: idfactoring,
+          idfactura: idfactura,
+        },
+      },
+    });
 
     return factoringfactura;
   } catch (error) {
@@ -38,7 +42,7 @@ export const getFactoringfacturaByIdfactoringfactura = async (tx: TxClient, idfa
   }
 };
 
-export const getFactoringfacturaByFactoringfacturaid = async (tx: TxClient, factoringfactura) => {
+export const getFactoringfacturaByFactoringfacturaid = async (tx: TxClient, factoringfactura: Partial<factoring_factura>): Promise<factoring_factura> => {
   try {
     const result = await tx.factoring_factura.findFirst({
       where: {
@@ -54,10 +58,10 @@ export const getFactoringfacturaByFactoringfacturaid = async (tx: TxClient, fact
   }
 };
 
-export const findFactoringfacturaPk = async (tx: TxClient, factoringfactura) => {
+export const findFactoringfacturaPk = async (tx: TxClient, factoringfactura: Partial<factoring_factura>): Promise<{ idfactoring: bigint; idfactura: bigint }> => {
   try {
     const result = await tx.factoring_factura.findFirst({
-      select: { idfactoringfactura: true },
+      select: { idfactoring: true, idfactura: true },
       where: {
         idfactoring: factoringfactura.idfactoring,
         idfactura: factoringfactura.idfactura,
@@ -87,8 +91,10 @@ export const updateFactoringfactura = async (tx: TxClient, factoringfactura: Par
     const result = await tx.factoring_factura.update({
       data: factoringfactura,
       where: {
-        idfactoring: factoringfactura.idfactoring,
-        idfactura: factoringfactura.idfactura,
+        idfactoring_idfactura: {
+          idfactoring: factoringfactura.idfactoring,
+          idfactura: factoringfactura.idfactura,
+        },
       },
     });
     return result;
@@ -103,8 +109,10 @@ export const deleteFactoringfactura = async (tx: TxClient, factoringfactura: Par
     const result = await tx.factoring_factura.update({
       data: factoringfactura,
       where: {
-        idfactoring: factoringfactura.idfactoring,
-        idfactura: factoringfactura.idfactura,
+        idfactoring_idfactura: {
+          idfactoring: factoringfactura.idfactoring,
+          idfactura: factoringfactura.idfactura,
+        },
       },
     });
     return result;

@@ -1,21 +1,20 @@
 import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma, financiero_concepto } from "#src/models/prisma/ft_factoring/client";
 
-
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
 export const getComisionFinanzaTech = async (tx: TxClient) => {
-  return await getFinancieroconceptoByIdfinancieroconcepto(tx: TxClient, 1);
+  return await getFinancieroconceptoByIdfinancieroconcepto(tx, 1);
 };
 
 export const getCostoCAVALI = async (tx: TxClient) => {
-  return await getFinancieroconceptoByIdfinancieroconcepto(tx: TxClient, 2);
+  return await getFinancieroconceptoByIdfinancieroconcepto(tx, 2);
 };
 
 export const getCostoTransaccion = async (tx: TxClient) => {
-  return await getFinancieroconceptoByIdfinancieroconcepto(tx: TxClient, 3);
+  return await getFinancieroconceptoByIdfinancieroconcepto(tx, 3);
 };
 
 export const getFinancieroconceptos = async (tx: TxClient, estados: number[]): Promise<financiero_concepto[]> => {
@@ -26,7 +25,6 @@ export const getFinancieroconceptos = async (tx: TxClient, estados: number[]): P
           in: estados,
         },
       },
-      
     });
 
     return financieroconceptos;
@@ -38,7 +36,7 @@ export const getFinancieroconceptos = async (tx: TxClient, estados: number[]): P
 
 export const getFinancieroconceptoByIdfinancieroconcepto = async (tx: TxClient, idfinancieroconcepto: number): Promise<financiero_concepto> => {
   try {
-    const financieroconcepto = await tx.financiero_concepto.findUnique({ where: { idfinancieroconcepto: idfinancieroconcepto, }, })
+    const financieroconcepto = await tx.financiero_concepto.findUnique({ where: { idfinancieroconcepto: idfinancieroconcepto } });
 
     //const financieroconceptos = await financieroconcepto.getFinancieroconceptos();
 
@@ -55,7 +53,6 @@ export const getFinancieroconceptoByFinancieroconceptoid = async (tx: TxClient, 
       where: {
         financieroconceptoid: financieroconceptoid,
       },
-      
     });
 
     return financieroconcepto;
@@ -72,7 +69,6 @@ export const findFinancieroconceptoPk = async (tx: TxClient, financieroconceptoi
       where: {
         financieroconceptoid: financieroconceptoid,
       },
-      
     });
 
     return financieroconcepto;
@@ -84,7 +80,7 @@ export const findFinancieroconceptoPk = async (tx: TxClient, financieroconceptoi
 
 export const insertFinancieroconcepto = async (tx: TxClient, financieroconcepto: Prisma.financiero_conceptoCreateInput): Promise<financiero_concepto> => {
   try {
-const nuevo = await tx.financiero_concepto.create({ data: financieroconcepto });
+    const nuevo = await tx.financiero_concepto.create({ data: financieroconcepto });
 
     return nuevo;
   } catch (error) {
@@ -95,11 +91,11 @@ const nuevo = await tx.financiero_concepto.create({ data: financieroconcepto });
 
 export const updateFinancieroconcepto = async (tx: TxClient, financieroconcepto: Partial<financiero_concepto>): Promise<financiero_concepto> => {
   try {
-    const result = await tx.financiero_concepto.update({ data: financieroconcepto,
+    const result = await tx.financiero_concepto.update({
+      data: financieroconcepto,
       where: {
         financieroconceptoid: financieroconcepto.financieroconceptoid,
       },
-      
     });
     return result;
   } catch (error) {
@@ -110,11 +106,11 @@ export const updateFinancieroconcepto = async (tx: TxClient, financieroconcepto:
 
 export const deleteFinancieroconcepto = async (tx: TxClient, financieroconcepto: Partial<financiero_concepto>): Promise<financiero_concepto> => {
   try {
-    const result = await tx.financiero_concepto.update({ data: financieroconcepto,
+    const result = await tx.financiero_concepto.update({
+      data: financieroconcepto,
       where: {
         financieroconceptoid: financieroconcepto.financieroconceptoid,
       },
-      
     });
     return result;
   } catch (error) {

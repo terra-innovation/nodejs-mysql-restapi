@@ -24,9 +24,11 @@ export const getUsuarioservicioverificacions = async (tx: TxClient, estados: num
 
 export const getUsuarioservicioverificacionByIdusuarioservicioverificacion = async (tx: TxClient, idusuarioservicioverificacion: number): Promise<usuario_servicio_verificacion> => {
   try {
-    const usuarioservicioverificacion = await tx.usuario_servicio_verificacion.findUnique({ where: { idusuarioservicioverificacion: idusuarioservicioverificacion } });
-
-    //const usuarioservicioverificacions = await usuarioservicioverificacion.getUsuarioservicioverificacions();
+    const usuarioservicioverificacion = await tx.usuario_servicio_verificacion.findUnique({
+      where: {
+        idusuarioservicioverificacion: idusuarioservicioverificacion,
+      },
+    });
 
     return usuarioservicioverificacion;
   } catch (error) {

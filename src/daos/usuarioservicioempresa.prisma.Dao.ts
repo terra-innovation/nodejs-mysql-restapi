@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getUsuarioservicioempresaByIdusuarioIdServicioIdempresa = async (tx: TxClient, idusuario, idservicio, idempresa) => {
+export const getUsuarioservicioempresaByIdusuarioIdServicioIdempresa = async (tx: TxClient, idusuario: bigint, idservicio: number, idempresa: number) => {
   try {
     const usuarioservicioempresa = await tx.usuario_servicio_empresa.findFirst({
       where: {
@@ -41,9 +41,11 @@ export const getUsuarioservicioempresas = async (tx: TxClient, estados: number[]
 
 export const getUsuarioservicioempresaByIdusuarioservicioempresa = async (tx: TxClient, idusuarioservicioempresa: number): Promise<usuario_servicio_empresa> => {
   try {
-    const usuarioservicioempresa = await tx.usuario_servicio_empresa.findUnique({ where: { idusuarioservicioempresa: idusuarioservicioempresa } });
-
-    //const usuarioservicioempresas = await usuarioservicioempresa.getUsuarioservicioempresas();
+    const usuarioservicioempresa = await tx.usuario_servicio_empresa.findUnique({
+      where: {
+        idusuarioservicioempresa: idusuarioservicioempresa,
+      },
+    });
 
     return usuarioservicioempresa;
   } catch (error) {

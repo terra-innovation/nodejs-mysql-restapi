@@ -24,9 +24,11 @@ export const getUsuarioservicioempresaestados = async (tx: TxClient, estados: nu
 
 export const getUsuarioservicioempresaestadoByIdusuarioservicioempresaestado = async (tx: TxClient, idusuarioservicioempresaestado: number): Promise<usuario_servicio_empresa_estado> => {
   try {
-    const usuarioservicioempresaestado = await tx.usuario_servicio_empresa_estado.findUnique({ where: { idusuarioservicioempresaestado: idusuarioservicioempresaestado } });
-
-    //const usuarioservicioempresaestados = await usuarioservicioempresaestado.getUsuarioservicioempresaestados();
+    const usuarioservicioempresaestado = await tx.usuario_servicio_empresa_estado.findUnique({
+      where: {
+        idusuarioservicioempresaestado: idusuarioservicioempresaestado,
+      },
+    });
 
     return usuarioservicioempresaestado;
   } catch (error) {

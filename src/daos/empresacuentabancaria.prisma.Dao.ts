@@ -5,115 +5,31 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getEmpresacuentabancariasForFactoring = async (tx: TxClient, idempresa, idmoneda, idcuentabancariaestado, estados: number[]) => {
+export const getEmpresacuentabancariasForFactoring = async (tx: TxClient, idempresa: number, idmoneda: number, idcuentabancariaestado: number[], estados: number[]) => {
   try {
     const empresacuentabancaria = await tx.empresa_cuenta_bancaria.findMany({
-      include: [
-        {
-          model: modelsFT.CuentaBancaria,
-          required: true,
-          as: "cuentabancaria_cuenta_bancarium",
-          include: [
-            {
-              model: modelsFT.Banco,
-              required: true,
-              as: "banco_banco",
-            },
-            {
-              model: modelsFT.Moneda,
-              required: true,
-              as: "moneda_moneda",
-              where: {
-                idmoneda: idmoneda,
-              },
-            },
-            {
-              model: modelsFT.CuentaTipo,
-              required: true,
-              as: "cuentatipo_cuenta_tipo",
-            },
-            {
-              model: modelsFT.CuentaBancariaEstado,
-              required: true,
-              as: "cuentabancariaestado_cuenta_bancaria_estado",
-              where: {
-                idcuentabancariaestado: {
-                  in: idcuentabancariaestado,
-                },
-              },
-            },
-          ],
-          where: {
-            estado: {
-              in: estados,
-            },
+      include: {
+        cuenta_bancaria: {
+          include: {
+            banco: true,
+            moneda: true,
+            cuenta_tipo: true,
+            cuenta_bancaria_estado: true,
           },
         },
-      ],
+      },
       where: {
         idempresa: idempresa,
         estado: {
           in: estados,
         },
-      },
-    });
-
-    return empresacuentabancaria;
-  } catch (error) {
-    log.error(line(), "", formatError(error));
-    throw new ClientError("Ocurrio un error", 500);
-  }
-};
-
-export const getEmpresacuentabancariasByIdempresaAndAlias = async (tx: TxClient, idempresa, alias, estados: number[]) => {
-  try {
-    const empresacuentabancaria = await tx.empresa_cuenta_bancaria.findMany({
-      include: [
-        {
-          model: modelsFT.Empresa,
-          required: true,
-          as: "empresa_empresa",
-          where: {
-            idempresa: idempresa,
+        cuenta_bancaria: {
+          idcuentabancariaestado: {
+            in: idcuentabancariaestado,
           },
-        },
-        {
-          model: modelsFT.CuentaBancaria,
-          required: true,
-          as: "cuentabancaria_cuenta_bancarium",
-          include: [
-            {
-              model: modelsFT.Banco,
-              required: true,
-              as: "banco_banco",
-            },
-            {
-              model: modelsFT.Moneda,
-              required: true,
-              as: "moneda_moneda",
-            },
-            {
-              model: modelsFT.CuentaTipo,
-              required: true,
-              as: "cuentatipo_cuenta_tipo",
-            },
-            {
-              model: modelsFT.CuentaBancariaEstado,
-              required: true,
-              as: "cuentabancariaestado_cuenta_bancaria_estado",
-            },
-          ],
-          where: {
-            alias: alias,
-            estado: {
-              in: estados,
-            },
+          estado: {
+            in: estados,
           },
-        },
-      ],
-      where: {
-        estado: {
-          in: estados,
         },
       },
     });
@@ -125,56 +41,68 @@ export const getEmpresacuentabancariasByIdempresaAndAlias = async (tx: TxClient,
   }
 };
 
-export const getEmpresacuentabancariasByIdusuario = async (tx: TxClient, idusuario, estados: number[]) => {
+export const getEmpresacuentabancariasByIdempresaAndAlias = async (tx: TxClient, idempresa: number, alias: string, estados: number[]) => {
   try {
     const empresacuentabancaria = await tx.empresa_cuenta_bancaria.findMany({
-      include: [
-        {
-          model: modelsFT.Empresa,
-          required: true,
-          as: "empresa_empresa",
-          include: [
-            {
-              model: modelsFT.UsuarioServicioEmpresa,
-              required: true,
-              as: "usuario_servicio_empresas",
-              where: {
-                idusuario: idusuario,
-              },
-            },
-          ],
+      include: {
+        empresa: true,
+        cuenta_bancaria: {
+          include: {
+            banco: true,
+            moneda: true,
+            cuenta_tipo: true,
+            cuenta_bancaria_estado: true,
+          },
         },
-        {
-          model: modelsFT.CuentaBancaria,
-          required: true,
-          as: "cuentabancaria_cuenta_bancarium",
-          include: [
-            {
-              model: modelsFT.Banco,
-              required: true,
-              as: "banco_banco",
-            },
-            {
-              model: modelsFT.Moneda,
-              required: true,
-              as: "moneda_moneda",
-            },
-            {
-              model: modelsFT.CuentaTipo,
-              required: true,
-              as: "cuentatipo_cuenta_tipo",
-            },
-            {
-              model: modelsFT.CuentaBancariaEstado,
-              required: true,
-              as: "cuentabancariaestado_cuenta_bancaria_estado",
-            },
-          ],
-        },
-      ],
+      },
       where: {
         estado: {
           in: estados,
+        },
+        cuenta_bancaria: {
+          alias: alias,
+          estado: {
+            in: estados,
+          },
+        },
+      },
+    });
+
+    return empresacuentabancaria;
+  } catch (error) {
+    log.error(line(), "", formatError(error));
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
+export const getEmpresacuentabancariasByIdusuario = async (tx: TxClient, idusuario: bigint, estados: number[]) => {
+  try {
+    const empresacuentabancaria = await tx.empresa_cuenta_bancaria.findMany({
+      include: {
+        empresa: {
+          include: {
+            usuario_servicio_empresas: true,
+          },
+        },
+        cuenta_bancaria: {
+          include: {
+            banco: true,
+            moneda: true,
+            cuenta_tipo: true,
+            cuenta_bancaria_estado: true,
+          },
+        },
+      },
+      where: {
+        estado: {
+          in: estados,
+        },
+        empresa: {
+          usuario_servicio_empresas: {
+            some: {
+              idusuario: idusuario,
+            },
+          },
         },
       },
     });
@@ -189,59 +117,30 @@ export const getEmpresacuentabancariasByIdusuario = async (tx: TxClient, idusuar
 export const getEmpresacuentabancarias = async (tx: TxClient, estados: number[]): Promise<empresa_cuenta_bancaria[]> => {
   try {
     const empresacuentabancarias = await tx.empresa_cuenta_bancaria.findMany({
-      include: [
-        {
-          model: modelsFT.Empresa,
-          required: true,
-          as: "empresa_empresa",
-          include: [
-            {
-              model: modelsFT.UsuarioServicioEmpresa,
-              required: true,
-              as: "usuario_servicio_empresas",
-            },
-          ],
+      include: {
+        empresa: {
+          include: {
+            usuario_servicio_empresas: true,
+          },
         },
-        {
-          model: modelsFT.CuentaBancaria,
-          required: true,
-          as: "cuentabancaria_cuenta_bancarium",
-          include: [
-            {
-              model: modelsFT.Banco,
-              required: true,
-              as: "banco_banco",
-            },
-            {
-              model: modelsFT.Moneda,
-              required: true,
-              as: "moneda_moneda",
-            },
-            {
-              model: modelsFT.CuentaTipo,
-              required: true,
-              as: "cuentatipo_cuenta_tipo",
-            },
-            {
-              model: modelsFT.CuentaBancariaEstado,
-              required: true,
-              as: "cuentabancariaestado_cuenta_bancaria_estado",
-            },
-            {
-              model: modelsFT.Archivo,
-              required: false,
-              as: "archivo_archivo_archivo_cuenta_bancaria",
-              include: [
-                {
-                  model: modelsFT.ArchivoTipo,
-                  required: true,
-                  as: "archivotipo_archivo_tipo",
+        cuenta_bancaria: {
+          include: {
+            banco: true,
+            moneda: true,
+            cuenta_tipo: true,
+            cuenta_bancaria_estado: true,
+            archivo_cuenta_bancarias: {
+              include: {
+                archivo: {
+                  include: {
+                    archivo_tipo: true,
+                  },
                 },
-              ],
+              },
             },
-          ],
+          },
         },
-      ],
+      },
       where: {
         estado: {
           in: estados,
@@ -256,57 +155,35 @@ export const getEmpresacuentabancarias = async (tx: TxClient, estados: number[])
   }
 };
 
-export const getEmpresacuentabancariaByIdempresaAndIdusuario = async (tx: TxClient, idempresa, idusuario, estados: number[]) => {
+export const getEmpresacuentabancariaByIdempresaAndIdusuario = async (tx: TxClient, idempresa: number, idusuario, estados: number[]) => {
   try {
     const empresacuentabancaria = await tx.empresa_cuenta_bancaria.findFirst({
-      include: [
-        {
-          model: modelsFT.Empresa,
-          required: true,
-          as: "empresa_empresa",
-          include: [
-            {
-              model: modelsFT.UsuarioServicioEmpresa,
-              required: true,
-              as: "usuario_servicio_empresas",
-              where: {
-                idempresa: idempresa,
-                idusuario: idusuario,
-              },
-            },
-          ],
+      include: {
+        empresa: {
+          include: {
+            usuario_servicio_empresas: true,
+          },
         },
-        {
-          model: modelsFT.CuentaBancaria,
-          required: true,
-          as: "cuentabancaria_cuenta_bancarium",
-          include: [
-            {
-              model: modelsFT.Banco,
-              required: true,
-              as: "banco_banco",
-            },
-            {
-              model: modelsFT.Moneda,
-              required: true,
-              as: "moneda_moneda",
-            },
-            {
-              model: modelsFT.CuentaTipo,
-              required: true,
-              as: "cuentatipo_cuenta_tipo",
-            },
-            {
-              model: modelsFT.CuentaBancariaEstado,
-              required: true,
-              as: "cuentabancariaestado_cuenta_bancaria_estado",
-            },
-          ],
+        cuenta_bancaria: {
+          include: {
+            banco: true,
+            moneda: true,
+            cuenta_tipo: true,
+            cuenta_bancaria_estado: true,
+          },
         },
-      ],
+      },
       where: {
         estado: {
           in: estados,
+        },
+        empresa: {
+          usuario_servicio_empresas: {
+            some: {
+              idempresa: idempresa,
+              idusuario: idusuario,
+            },
+          },
         },
       },
     });
@@ -321,8 +198,6 @@ export const getEmpresacuentabancariaByIdempresaAndIdusuario = async (tx: TxClie
 export const getEmpresacuentabancariaByIdempresacuentabancaria = async (tx: TxClient, idempresacuentabancaria: number): Promise<empresa_cuenta_bancaria> => {
   try {
     const empresacuentabancaria = await tx.empresa_cuenta_bancaria.findUnique({ where: { idempresacuentabancaria: idempresacuentabancaria } });
-
-    //const empresacuentabancarias = await empresacuentabancaria.getEmpresacuentabancarias();
 
     return empresacuentabancaria;
   } catch (error) {

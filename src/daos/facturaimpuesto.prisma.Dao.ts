@@ -24,10 +24,11 @@ export const getFacturaimpuestos = async (tx: TxClient, estados: number[]): Prom
 
 export const getFacturaimpuestoByIdfacturaimpuesto = async (tx: TxClient, idfacturaimpuesto: number): Promise<factura_impuesto> => {
   try {
-    const facturaimpuesto = await tx.factura_impuesto.findUnique({ where: { idfacturaimpuesto: idfacturaimpuesto } });
-
-    //const facturaimpuestos = await facturaimpuesto.getFacturaimpuestos();
-
+    const facturaimpuesto = await tx.factura_impuesto.findUnique({
+      where: {
+        idfacturaimpuesto: idfacturaimpuesto,
+      },
+    });
     return facturaimpuesto;
   } catch (error) {
     log.error(line(), "", formatError(error));
@@ -50,7 +51,7 @@ export const getFacturaimpuestoByFacturaimpuestoid = async (tx: TxClient, factur
   }
 };
 
-export const findFacturaimpuestoPk = async (tx: TxClient, facturaimpuestoid: string): Promise<{ idfacturaimpuesto: number }> => {
+export const findFacturaimpuestoPk = async (tx: TxClient, facturaimpuestoid: string): Promise<{ idfacturaimpuesto: bigint }> => {
   try {
     const facturaimpuesto = await tx.factura_impuesto.findFirst({
       select: { idfacturaimpuesto: true },

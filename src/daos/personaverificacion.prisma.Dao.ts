@@ -50,7 +50,7 @@ export const getPersonaverificacionByPersonaverificacionid = async (tx: TxClient
   }
 };
 
-export const findPersonaverificacionPk = async (tx: TxClient, personaverificacionid: string): Promise<{ idpersonaverificacion: number }> => {
+export const findPersonaverificacionPk = async (tx: TxClient, personaverificacionid: string): Promise<{ idpersonaverificacion: bigint }> => {
   try {
     const personaverificacion = await tx.persona_verificacion.findFirst({
       select: { idpersonaverificacion: true },

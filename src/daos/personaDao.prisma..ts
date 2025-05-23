@@ -1,103 +1,55 @@
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, persona } from "#src/models/prisma/ft_factoring/client";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getPersonasByVerificacion = async (tx: TxClient, estado, idarchivotipo) => {
+export const getPersonasByVerificacion = async (tx: TxClient, estado: number[], idarchivotipo: number): Promise<persona[]> => {
   try {
-    const personas = await tx.Persona.findMany({
-      include: [
-        {
-          model: modelsFT.Usuario,
-          required: true,
-          as: "usuario_usuario",
-        },
-        {
-          model: modelsFT.PersonaVerificacionEstado,
-          required: true,
-          as: "personaverificacionestado_persona_verificacion_estado",
-        },
-        {
-          model: modelsFT.DocumentoTipo,
-          required: true,
-          as: "documentotipo_documento_tipo",
-        },
-        {
-          model: modelsFT.Pais,
-          required: true,
-          as: "paisnacionalidad_pai",
-        },
-        {
-          model: modelsFT.Pais,
-          required: true,
-          as: "paisnacimiento_pai",
-        },
-        {
-          model: modelsFT.Pais,
-          required: true,
-          as: "paisresidencia_pai",
-        },
-        {
-          model: modelsFT.Distrito,
-          required: true,
-          as: "distritoresidencia_distrito",
-          include: [
-            {
-              model: modelsFT.Provincia,
-              required: true,
-              as: "provincia_provincium",
-              include: [
-                {
-                  model: modelsFT.Departamento,
-                  required: true,
-                  as: "departamento_departamento",
-                },
-              ],
-            },
-          ],
-        },
-        {
-          model: modelsFT.Genero,
-          required: true,
-          as: "genero_genero",
-        },
-        {
-          model: modelsFT.PersonaVerificacion,
-          required: true,
-          as: "persona_verificacions",
-          include: [
-            {
-              model: modelsFT.PersonaVerificacionEstado,
-              required: true,
-              as: "personaverificacionestado_persona_verificacion_estado",
-            },
-            {
-              model: modelsFT.Usuario,
-              required: true,
-              as: "usuarioverifica_usuario",
-            },
-          ],
-        },
-        {
-          model: modelsFT.Archivo,
-          required: true,
-          as: "archivo_archivo_archivo_personas",
-          include: [
-            {
-              model: modelsFT.ArchivoTipo,
-              required: true,
-              as: "archivotipo_archivo_tipo",
-            },
-          ],
-          where: {
-            idarchivotipo: {
-              in: idarchivotipo,
+    const personas = await tx.persona.findMany({
+      include: {
+        usuario: true,
+        persona_verificacion_estado: true,
+        documento_tipo: true,
+        pais_nacimiento: true,
+        pais_nacionalidad: true,
+        pais_residencia: true,
+        distrito: {
+          include: {
+            provincia: {
+              include: {
+                departamento: true,
+              },
             },
           },
         },
-      ],
+        genero: true,
+        persona_verificaciones: {
+          include: {
+            persona_verificacion_estado: true,
+            usuario: true,
+          },
+        },
+        archivo_personas: {
+          include: {
+            archivo: {
+              include: {
+                archivo_tipo: true,
+              },
+            },
+          },
+        },
+      },
       where: {
         estado: {
           in: estado,
+        },
+        archivo_personas: {
+          some: {
+            archivo: {
+              idarchivotipo: idarchivotipo,
+            },
+          },
         },
       },
     });
@@ -109,60 +61,26 @@ export const getPersonasByVerificacion = async (tx: TxClient, estado, idarchivot
   }
 };
 
-export const getPersonaByIdusuario = async (tx: TxClient, idusuario) => {
+export const getPersonaByIdusuario = async (tx: TxClient, idusuario: bigint): Promise<persona> => {
   try {
-    const persona = await tx.Persona.findFirst({
-      include: [
-        {
-          model: modelsFT.Usuario,
-          required: true,
-          as: "usuario_usuario",
-        },
-        {
-          model: modelsFT.DocumentoTipo,
-          required: true,
-          as: "documentotipo_documento_tipo",
-        },
-        {
-          model: modelsFT.Pais,
-          required: true,
-          as: "paisnacionalidad_pai",
-        },
-        {
-          model: modelsFT.Pais,
-          required: true,
-          as: "paisnacimiento_pai",
-        },
-        {
-          model: modelsFT.Pais,
-          required: true,
-          as: "paisresidencia_pai",
-        },
-        {
-          model: modelsFT.Distrito,
-          required: true,
-          as: "distritoresidencia_distrito",
-          include: [
-            {
-              model: modelsFT.Provincia,
-              required: true,
-              as: "provincia_provincium",
-              include: [
-                {
-                  model: modelsFT.Departamento,
-                  required: true,
-                  as: "departamento_departamento",
-                },
-              ],
+    const persona = await tx.persona.findFirst({
+      include: {
+        usuario: true,
+        documento_tipo: true,
+        pais_nacimiento: true,
+        pais_nacionalidad: true,
+        pais_residencia: true,
+        distrito: {
+          include: {
+            provincia: {
+              include: {
+                departamento: true,
+              },
             },
-          ],
+          },
         },
-        {
-          model: modelsFT.Genero,
-          required: true,
-          as: "genero_genero",
-        },
-      ],
+        genero: true,
+      },
       where: {
         idusuario: idusuario,
       },
@@ -174,60 +92,29 @@ export const getPersonaByIdusuario = async (tx: TxClient, idusuario) => {
   }
 };
 
-export const getPersonaByIdpersona = async (tx: TxClient, idpersona) => {
+export const getPersonaByIdpersona = async (tx: TxClient, idpersona: bigint): Promise<persona> => {
   try {
-    const persona = await tx.Persona.findByPk(idpersona, {
-      include: [
-        {
-          model: modelsFT.Usuario,
-          required: true,
-          as: "usuario_usuario",
-        },
-        {
-          model: modelsFT.DocumentoTipo,
-          required: true,
-          as: "documentotipo_documento_tipo",
-        },
-        {
-          model: modelsFT.Pais,
-          required: true,
-          as: "paisnacionalidad_pai",
-        },
-        {
-          model: modelsFT.Pais,
-          required: true,
-          as: "paisnacimiento_pai",
-        },
-        {
-          model: modelsFT.Pais,
-          required: true,
-          as: "paisresidencia_pai",
-        },
-        {
-          model: modelsFT.Distrito,
-          required: true,
-          as: "distritoresidencia_distrito",
-          include: [
-            {
-              model: modelsFT.Provincia,
-              required: true,
-              as: "provincia_provincium",
-              include: [
-                {
-                  model: modelsFT.Departamento,
-                  required: true,
-                  as: "departamento_departamento",
-                },
-              ],
+    const persona = await tx.persona.findUnique({
+      include: {
+        usuario: true,
+        documento_tipo: true,
+        pais_nacimiento: true,
+        pais_nacionalidad: true,
+        pais_residencia: true,
+        distrito: {
+          include: {
+            provincia: {
+              include: {
+                departamento: true,
+              },
             },
-          ],
+          },
         },
-        {
-          model: modelsFT.Genero,
-          required: true,
-          as: "genero_genero",
-        },
-      ],
+        genero: true,
+      },
+      where: {
+        idpersona: idpersona,
+      },
     });
 
     return persona;
@@ -237,60 +124,26 @@ export const getPersonaByIdpersona = async (tx: TxClient, idpersona) => {
   }
 };
 
-export const getPersonaByPersonaid = async (tx: TxClient, personaid: string) => {
+export const getPersonaByPersonaid = async (tx: TxClient, personaid: string): Promise<persona> => {
   try {
-    const persona = await tx.Persona.findFirst({
-      include: [
-        {
-          model: modelsFT.Usuario,
-          required: true,
-          as: "usuario_usuario",
-        },
-        {
-          model: modelsFT.DocumentoTipo,
-          required: true,
-          as: "documentotipo_documento_tipo",
-        },
-        {
-          model: modelsFT.Pais,
-          required: true,
-          as: "paisnacionalidad_pai",
-        },
-        {
-          model: modelsFT.Pais,
-          required: true,
-          as: "paisnacimiento_pai",
-        },
-        {
-          model: modelsFT.Pais,
-          required: true,
-          as: "paisresidencia_pai",
-        },
-        {
-          model: modelsFT.Distrito,
-          required: true,
-          as: "distritoresidencia_distrito",
-          include: [
-            {
-              model: modelsFT.Provincia,
-              required: true,
-              as: "provincia_provincium",
-              include: [
-                {
-                  model: modelsFT.Departamento,
-                  required: true,
-                  as: "departamento_departamento",
-                },
-              ],
+    const persona = await tx.persona.findFirst({
+      include: {
+        usuario: true,
+        documento_tipo: true,
+        pais_nacimiento: true,
+        pais_nacionalidad: true,
+        pais_residencia: true,
+        distrito: {
+          include: {
+            provincia: {
+              include: {
+                departamento: true,
+              },
             },
-          ],
+          },
         },
-        {
-          model: modelsFT.Genero,
-          required: true,
-          as: "genero_genero",
-        },
-      ],
+        genero: true,
+      },
       where: {
         personaid: personaid,
       },
@@ -303,10 +156,12 @@ export const getPersonaByPersonaid = async (tx: TxClient, personaid: string) => 
   }
 };
 
-export const findPersonaPk = async (tx: TxClient, personaid: string) => {
+export const findPersonaPk = async (tx: TxClient, personaid: string): Promise<{ idpersona: bigint }> => {
   try {
-    const persona = await tx.Persona.findFirst({
-      attributes: ["idpersona"],
+    const persona = await tx.persona.findFirst({
+      select: {
+        idpersona: true,
+      },
       where: {
         personaid: personaid,
       },
@@ -319,65 +174,27 @@ export const findPersonaPk = async (tx: TxClient, personaid: string) => {
   }
 };
 
-export const getPersonas = async (tx: TxClient, estado) => {
+export const getPersonas = async (tx: TxClient, estado: number[]) => {
   try {
-    const personas = await tx.Persona.findMany({
-      include: [
-        {
-          model: modelsFT.Usuario,
-          required: true,
-          as: "usuario_usuario",
-        },
-        {
-          model: modelsFT.DocumentoTipo,
-          required: true,
-          as: "documentotipo_documento_tipo",
-        },
-        {
-          model: modelsFT.Pais,
-          required: true,
-          as: "paisnacionalidad_pai",
-        },
-        {
-          model: modelsFT.Pais,
-          required: true,
-          as: "paisnacimiento_pai",
-        },
-        {
-          model: modelsFT.Pais,
-          required: true,
-          as: "paisresidencia_pai",
-        },
-        {
-          model: modelsFT.Distrito,
-          required: true,
-          as: "distritoresidencia_distrito",
-          include: [
-            {
-              model: modelsFT.Provincia,
-              required: true,
-              as: "provincia_provincium",
-              include: [
-                {
-                  model: modelsFT.Departamento,
-                  required: true,
-                  as: "departamento_departamento",
-                },
-              ],
+    const personas = await tx.persona.findMany({
+      include: {
+        usuario: true,
+        documento_tipo: true,
+        pais_nacimiento: true,
+        pais_nacionalidad: true,
+        pais_residencia: true,
+        distrito: {
+          include: {
+            provincia: {
+              include: {
+                departamento: true,
+              },
             },
-          ],
+          },
         },
-        {
-          model: modelsFT.Genero,
-          required: true,
-          as: "genero_genero",
-        },
-        {
-          model: modelsFT.PersonaVerificacionEstado,
-          required: true,
-          as: "personaverificacionestado_persona_verificacion_estado",
-        },
-      ],
+        genero: true,
+        persona_verificacion_estado: true,
+      },
       where: {
         estado: {
           in: estado,
@@ -394,7 +211,7 @@ export const getPersonas = async (tx: TxClient, estado) => {
 
 export const insertPersona = async (tx: TxClient, persona) => {
   try {
-    const persona_nuevo = await tx.Persona.create(persona);
+    const persona_nuevo = await tx.persona.create(persona);
 
     return persona_nuevo;
   } catch (error) {
@@ -403,9 +220,10 @@ export const insertPersona = async (tx: TxClient, persona) => {
   }
 };
 
-export const updatePersona = async (tx: TxClient, persona) => {
+export const updatePersona = async (tx: TxClient, persona: Partial<persona>): Promise<persona> => {
   try {
-    const result = await tx.Persona.update(persona, {
+    const result = await tx.persona.update({
+      data: persona,
       where: {
         personaid: persona.personaid,
       },
@@ -417,9 +235,10 @@ export const updatePersona = async (tx: TxClient, persona) => {
   }
 };
 
-export const deletePersona = async (tx: TxClient, persona) => {
+export const deletePersona = async (tx: TxClient, persona: Partial<persona>): Promise<persona> => {
   try {
-    const result = await tx.Persona.update(persona, {
+    const result = await tx.persona.update({
+      data: persona,
       where: {
         personaid: persona.personaid,
       },
@@ -431,9 +250,10 @@ export const deletePersona = async (tx: TxClient, persona) => {
   }
 };
 
-export const activatePersona = async (tx: TxClient, persona) => {
+export const activatePersona = async (tx: TxClient, persona: Partial<persona>): Promise<persona> => {
   try {
-    const result = await tx.Persona.update(persona, {
+    const result = await tx.persona.update({
+      data: persona,
       where: {
         personaid: persona.personaid,
       },

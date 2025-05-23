@@ -5,21 +5,18 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getInversionistaByIdusuario = async (tx: TxClient, idusuario, estados: number[]) => {
+export const getInversionistaByIdusuario = async (tx: TxClient, idusuario: bigint, estados: number[]): Promise<inversionista> => {
   try {
     const inversionista = await tx.inversionista.findFirst({
-      include: [
-        {
-          model: modelsFT.Persona,
-          as: "persona_persona",
-          where: {
-            idusuario,
-          },
-        },
-      ],
+      include: {
+        persona: true,
+      },
       where: {
         estado: {
           in: estados,
+        },
+        persona: {
+          idusuario: idusuario,
         },
       },
     });
@@ -34,12 +31,9 @@ export const getInversionistaByIdusuario = async (tx: TxClient, idusuario, estad
 export const getInversionistas = async (tx: TxClient, estados: number[]): Promise<inversionista[]> => {
   try {
     const inversionistas = await tx.inversionista.findMany({
-      include: [
-        {
-          model: modelsFT.Persona,
-          as: "persona_persona",
-        },
-      ],
+      include: {
+        persona: true,
+      },
       where: {
         estado: {
           in: estados,
@@ -80,7 +74,7 @@ export const getInversionistaByInversionistaid = async (tx: TxClient, inversioni
   }
 };
 
-export const findInversionistaPk = async (tx: TxClient, inversionistaid: string): Promise<{ idinversionista: number }> => {
+export const findInversionistaPk = async (tx: TxClient, inversionistaid: string): Promise<{ idinversionista: bigint }> => {
   try {
     const inversionista = await tx.inversionista.findFirst({
       select: { idinversionista: true },

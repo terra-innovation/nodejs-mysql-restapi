@@ -50,7 +50,7 @@ export const getFacturanotaByFacturanotaid = async (tx: TxClient, facturanotaid:
   }
 };
 
-export const findFacturanotaPk = async (tx: TxClient, facturanotaid: string): Promise<{ idfacturanota: number }> => {
+export const findFacturanotaPk = async (tx: TxClient, facturanotaid: string): Promise<{ idfacturanota: bigint }> => {
   try {
     const facturanota = await tx.factura_nota.findFirst({
       select: { idfacturanota: true },

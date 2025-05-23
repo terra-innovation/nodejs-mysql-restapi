@@ -5,10 +5,17 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getUsuarioDatosContactoByIdusuario = async (tx: TxClient, idusuario, estado) => {
+export const getUsuarioDatosContactoByIdusuario = async (tx: TxClient, idusuario: bigint, estado: number[]) => {
   try {
     const usuario = await tx.usuario.findFirst({
-      attributes: ["usuarioid", "usuarionombres", "apellidopaterno", "apellidomaterno", "email", "celular"],
+      select: {
+        usuarioid: true,
+        usuarionombres: true,
+        apellidopaterno: true,
+        apellidomaterno: true,
+        email: true,
+        celular: true,
+      },
       where: {
         estado: {
           in: estado,
@@ -23,15 +30,15 @@ export const getUsuarioDatosContactoByIdusuario = async (tx: TxClient, idusuario
   }
 };
 
-export const getUsuariosActivos = async (tx: TxClient) => {
+export const getUsuariosActivos = async (tx: TxClient): Promise<usuario[]> => {
   try {
-    const usuarioes = await tx.usuario.findMany({
+    const usuarios = await tx.usuario.findMany({
       where: {
         estado: 1,
       },
     });
 
-    return usuarioes;
+    return usuarios;
   } catch (error) {
     log.error(line(), "", formatError(error));
     throw new ClientError("Ocurrio un error", 500);
@@ -40,14 +47,13 @@ export const getUsuariosActivos = async (tx: TxClient) => {
 
 export const getUsuarioByIdusuario = async (tx: TxClient, idusuario: number): Promise<usuario> => {
   try {
-    const usuario = await tx.usuario.findByPk(idusuario, {
-      include: [
-        {
-          model: modelsFT.Persona,
-          required: false,
-          as: "persona",
-        },
-      ],
+    const usuario = await tx.usuario.findUnique({
+      include: {
+        persona: true,
+      },
+      where: {
+        idusuario: idusuario,
+      },
     });
 
     return usuario;
@@ -57,18 +63,19 @@ export const getUsuarioByIdusuario = async (tx: TxClient, idusuario: number): Pr
   }
 };
 
-export const autenticarUsuario = async (tx: TxClient, email) => {
+export const autenticarUsuario = async (tx: TxClient, email: string) => {
   try {
-    const usuario = await tx.usuario.findFirst({
-      attributes: ["idusuario", "usuarioid", "email"],
-      include: [
-        {
-          attributes: ["password"],
-          model: modelsFT.Credencial,
-          required: false,
-          as: "credencial",
+    const usuario = await tx.usuario.findUnique({
+      select: {
+        idusuario: true,
+        usuarioid: true,
+        email: true,
+        credencial: {
+          select: {
+            password: true,
+          },
         },
-      ],
+      },
       where: {
         email: email,
       },
@@ -81,15 +88,16 @@ export const autenticarUsuario = async (tx: TxClient, email) => {
   }
 };
 
-export const getUsuarioAndRolesByEmail = async (tx: TxClient, email) => {
+export const getUsuarioAndRolesByEmail = async (tx: TxClient, email: string): Promise<usuario[]> => {
   try {
     const usuario = await tx.usuario.findMany({
-      include: [
-        {
-          model: modelsFT.Rol,
-          as: "rol_rols",
+      include: {
+        usuario_roles: {
+          include: {
+            rol: true,
+          },
         },
-      ],
+      },
       where: {
         email: email,
       },
@@ -104,12 +112,11 @@ export const getUsuarioAndRolesByEmail = async (tx: TxClient, email) => {
 
 export const getUsuarioByUsuarioid = async (tx: TxClient, usuarioid: string): Promise<usuario> => {
   try {
-    const usuario = await tx.usuario.findMany({
+    const usuario = await tx.usuario.findFirst({
       where: {
         usuarioid: usuarioid,
       },
     });
-
     return usuario;
   } catch (error) {
     log.error(line(), "", formatError(error));
@@ -117,7 +124,7 @@ export const getUsuarioByUsuarioid = async (tx: TxClient, usuarioid: string): Pr
   }
 };
 
-export const getUsuarioByEmail = async (tx: TxClient, email) => {
+export const getUsuarioByEmail = async (tx: TxClient, email: string): Promise<usuario> => {
   try {
     const usuario = await tx.usuario.findFirst({
       where: {
@@ -132,7 +139,7 @@ export const getUsuarioByEmail = async (tx: TxClient, email) => {
   }
 };
 
-export const getUsuarioByHash = async (tx: TxClient, hash) => {
+export const getUsuarioByHash = async (tx: TxClient, hash: string): Promise<usuario> => {
   try {
     const usuario = await tx.usuario.findFirst({
       where: {
@@ -162,9 +169,9 @@ export const getUsuarioByNumerodocumento = async (tx: TxClient, documentonumero)
   }
 };
 
-export const findUsuarioPk = async (tx: TxClient, usuarioid: string): Promise<{ idusuario: number }> => {
+export const findUsuarioPk = async (tx: TxClient, usuarioid: string): Promise<{ idusuario: bigint }> => {
   try {
-    const usuario = await tx.usuario.findMany({
+    const usuario = await tx.usuario.findFirst({
       select: { idusuario: true },
       where: {
         usuarioid: usuarioid,

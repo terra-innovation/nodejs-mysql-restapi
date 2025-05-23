@@ -13,7 +13,9 @@ export const getFactoringestados = async (tx: TxClient, estados: number[]): Prom
           in: estados,
         },
       },
-      order: [["orden", "ASC"]],
+      orderBy: {
+        orden: "asc",
+      },
     });
 
     return factoringestados;

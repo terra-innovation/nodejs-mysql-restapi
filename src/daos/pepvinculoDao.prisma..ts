@@ -1,10 +1,13 @@
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, pais } from "#src/models/prisma/ft_factoring/client";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
 export const getPepvinculos = async (tx: TxClient, estados: number[]) => {
   try {
-    const pepvinculos = await tx.PepVinculo.findMany({
+    const pepvinculos = await tx.pep_vinculo.findMany({
       where: {
         estado: {
           in: estados,
@@ -21,7 +24,7 @@ export const getPepvinculos = async (tx: TxClient, estados: number[]) => {
 
 export const getPepvinculoByIdpepvinculo = async (tx: TxClient, idpepvinculo) => {
   try {
-    const pepvinculo = await tx.PepVinculo.findByPk(idpepvinculo);
+    const pepvinculo = await tx.pep_vinculo.findByPk(idpepvinculo);
 
     //const pepvinculos = await pepvinculo.getPepvinculos();
 
@@ -34,7 +37,7 @@ export const getPepvinculoByIdpepvinculo = async (tx: TxClient, idpepvinculo) =>
 
 export const getPepvinculoByPepvinculoid = async (tx: TxClient, pepvinculoid: string) => {
   try {
-    const pepvinculo = await tx.PepVinculo.findFirst({
+    const pepvinculo = await tx.pep_vinculo.findFirst({
       where: {
         pepvinculoid: pepvinculoid,
       },
@@ -49,7 +52,7 @@ export const getPepvinculoByPepvinculoid = async (tx: TxClient, pepvinculoid: st
 
 export const findPepvinculoPk = async (tx: TxClient, pepvinculoid: string) => {
   try {
-    const pepvinculo = await tx.PepVinculo.findFirst({
+    const pepvinculo = await tx.pep_vinculo.findFirst({
       attributes: ["idpepvinculo"],
       where: {
         pepvinculoid: pepvinculoid,
@@ -65,7 +68,7 @@ export const findPepvinculoPk = async (tx: TxClient, pepvinculoid: string) => {
 
 export const insertPepvinculo = async (tx: TxClient, pepvinculo) => {
   try {
-    const pepvinculo_nuevo = await tx.PepVinculo.create(pepvinculo);
+    const pepvinculo_nuevo = await tx.pep_vinculo.create(pepvinculo);
 
     return pepvinculo_nuevo;
   } catch (error) {
@@ -76,7 +79,7 @@ export const insertPepvinculo = async (tx: TxClient, pepvinculo) => {
 
 export const updatePepvinculo = async (tx: TxClient, pepvinculo) => {
   try {
-    const result = await tx.PepVinculo.update(pepvinculo, {
+    const result = await tx.pep_vinculo.update(pepvinculo, {
       where: {
         pepvinculoid: pepvinculo.pepvinculoid,
       },
@@ -90,7 +93,7 @@ export const updatePepvinculo = async (tx: TxClient, pepvinculo) => {
 
 export const deletePepvinculo = async (tx: TxClient, pepvinculo) => {
   try {
-    const result = await tx.PepVinculo.update(pepvinculo, {
+    const result = await tx.pep_vinculo.update(pepvinculo, {
       where: {
         pepvinculoid: pepvinculo.pepvinculoid,
       },

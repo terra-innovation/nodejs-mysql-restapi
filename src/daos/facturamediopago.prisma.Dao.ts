@@ -50,7 +50,7 @@ export const getFacturamediopagoByFacturamediopagoid = async (tx: TxClient, fact
   }
 };
 
-export const findFacturamediopagoPk = async (tx: TxClient, facturamediopagoid: string): Promise<{ idfacturamediopago: number }> => {
+export const findFacturamediopagoPk = async (tx: TxClient, facturamediopagoid: string): Promise<{ idfacturamediopago: bigint }> => {
   try {
     const facturamediopago = await tx.factura_medio_pago.findFirst({
       select: { idfacturamediopago: true },

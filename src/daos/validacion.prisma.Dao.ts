@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getValidacionByIdusuarioAndValor = async (tx: TxClient, idusuario, valor, estados: number[]) => {
+export const getValidacionByIdusuarioAndValor = async (tx: TxClient, idusuario: bigint, valor: string, estados: number[]) => {
   try {
     const validacions = await tx.validacion.findFirst({
       where: {
@@ -24,7 +24,7 @@ export const getValidacionByIdusuarioAndValor = async (tx: TxClient, idusuario, 
   }
 };
 
-export const getValidacionByIdusuarioAndIdvalidaciontipo = async (tx: TxClient, idusuario, idvalidaciontipo, estados: number[]) => {
+export const getValidacionByIdusuarioAndIdvalidaciontipo = async (tx: TxClient, idusuario: bigint, idvalidaciontipo: number, estados: number[]) => {
   try {
     const validacions = await tx.validacion.findFirst({
       where: {
@@ -43,7 +43,7 @@ export const getValidacionByIdusuarioAndIdvalidaciontipo = async (tx: TxClient, 
   }
 };
 
-export const getValidacionByIdusuarioAndCodigo = async (tx: TxClient, idusuario, codigo, estados: number[]) => {
+export const getValidacionByIdusuarioAndCodigo = async (tx: TxClient, idusuario: bigint, codigo: string, estados: number[]) => {
   try {
     const validacions = await tx.validacion.findFirst({
       where: {
@@ -81,16 +81,11 @@ export const getValidacions = async (tx: TxClient, estados: number[]): Promise<v
 
 export const getValidacionByIdvalidacion = async (tx: TxClient, idvalidacion: number): Promise<validacion> => {
   try {
-    const validacion = await tx.validacion.findByPk(idvalidacion, {
-      include: [
-        {
-          model: modelsFT.Colaborador,
-          as: "colaboradors",
-        },
-      ],
+    const validacion = await tx.validacion.findUnique({
+      where: {
+        idvalidacion: idvalidacion,
+      },
     });
-
-    //const colaboradores = await validacion.getColaboradors();
 
     return validacion;
   } catch (error) {
@@ -101,13 +96,7 @@ export const getValidacionByIdvalidacion = async (tx: TxClient, idvalidacion: nu
 
 export const getValidacionByValidacionid = async (tx: TxClient, validacionid: string): Promise<validacion> => {
   try {
-    const validacion = await tx.validacion.findMany({
-      include: [
-        {
-          model: modelsFT.Colaborador,
-          as: "colaboradors",
-        },
-      ],
+    const validacion = await tx.validacion.findUnique({
       where: {
         validacionid: validacionid,
       },
@@ -122,7 +111,7 @@ export const getValidacionByValidacionid = async (tx: TxClient, validacionid: st
 
 export const findValidacionPk = async (tx: TxClient, validacionid: string): Promise<{ idvalidacion: number }> => {
   try {
-    const validacion = await tx.validacion.findFirst({
+    const validacion = await tx.validacion.findUnique({
       select: { idvalidacion: true },
       where: {
         validacionid: validacionid,

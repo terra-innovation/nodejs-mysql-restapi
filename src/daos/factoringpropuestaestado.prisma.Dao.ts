@@ -24,9 +24,11 @@ export const getFactoringpropuestaestados = async (tx: TxClient, estados: number
 
 export const getFactoringpropuestaestadoByIdfactoringpropuestaestado = async (tx: TxClient, idfactoringpropuestaestado: number): Promise<factoring_propuesta_estado> => {
   try {
-    const factoringpropuestaestado = await tx.factoring_propuesta_estado.findUnique({ where: { idfactoringpropuestaestado: idfactoringpropuestaestado } });
-
-    //const factoringpropuestaestados = await factoringpropuestaestado.getFactoringpropuestaestados();
+    const factoringpropuestaestado = await tx.factoring_propuesta_estado.findUnique({
+      where: {
+        idfactoringpropuestaestado: idfactoringpropuestaestado,
+      },
+    });
 
     return factoringpropuestaestado;
   } catch (error) {

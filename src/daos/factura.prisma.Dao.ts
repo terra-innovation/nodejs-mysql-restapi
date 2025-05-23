@@ -22,32 +22,36 @@ export const getFacturas = async (tx: TxClient, estados: number[]): Promise<fact
   }
 };
 
-export const getFacturasByIdfactoring = async (tx: TxClient, idfactoring, estados: number[]) => {
+export const getFacturasByIdfactoring = async (tx: TxClient, idfactoring: bigint, estados: number[]) => {
   try {
     const facturas = await tx.factura.findMany({
-      include: [
-        { all: true },
-        {
-          model: modelsFT.Factoring,
-          required: true,
-          as: "factoring_factorings",
-          where: {
-            idfactoring: idfactoring,
+      include: {
+        archivo_facturas: {
+          include: {
+            archivo: {
+              include: {
+                archivo_tipo: true,
+                archivo_estado: true,
+              },
+            },
           },
         },
-        {
-          model: modelsFT.Archivo,
-          required: true,
-          as: "archivo_archivo_archivo_facturas",
-          include: [
-            { model: modelsFT.ArchivoTipo, required: true, as: "archivotipo_archivo_tipo" },
-            { model: modelsFT.ArchivoEstado, required: true, as: "archivoestado_archivo_estado" },
-          ],
-        },
-      ],
+        factoring_facturas: true,
+        factura_impuestos: true,
+        factura_itemes: true,
+        factura_medio_pagos: true,
+        factura_notas: true,
+        factura_termino_pagos: true,
+        usuario: true,
+      },
       where: {
         estado: {
           in: estados,
+        },
+        factoring_facturas: {
+          some: {
+            idfactoring: idfactoring,
+          },
         },
       },
     });
@@ -117,7 +121,7 @@ export const getFacturaByFacturaid = async (tx: TxClient, facturaid: string): Pr
   }
 };
 
-export const findFacturaPk = async (tx: TxClient, facturaid: string): Promise<{ idfactura: number }> => {
+export const findFacturaPk = async (tx: TxClient, facturaid: string): Promise<{ idfactura: bigint }> => {
   try {
     const factura = await tx.factura.findFirst({
       select: { idfactura: true },

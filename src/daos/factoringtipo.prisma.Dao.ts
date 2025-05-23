@@ -24,9 +24,11 @@ export const getFactoringtipos = async (tx: TxClient, estados: number[]): Promis
 
 export const getFactoringtipoByIdfactoringtipo = async (tx: TxClient, idfactoringtipo: number): Promise<factoring_tipo> => {
   try {
-    const factoringtipo = await tx.factoring_tipo.findUnique({ where: { idfactoringtipo: idfactoringtipo } });
-
-    //const factoringtipos = await factoringtipo.getFactoringtipos();
+    const factoringtipo = await tx.factoring_tipo.findUnique({
+      where: {
+        idfactoringtipo: idfactoringtipo,
+      },
+    });
 
     return factoringtipo;
   } catch (error) {

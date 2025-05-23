@@ -8,30 +8,17 @@ import { log, line } from "#src/utils/logger.pino.js";
 export const getFactoringsOportunidades = async (tx: TxClient, idfactoringestados, estados: number[]) => {
   try {
     const factorings = await tx.factoring.findMany({
-      include: [
-        {
-          model: modelsFT.Empresa,
-          as: "aceptante_empresa",
+      include: {
+        empresa_aceptante: true,
+        factoring_propuesta_aceptada: {
+          include: {
+            factoring_tipo: true,
+            riesgo_operacion: true,
+          },
         },
-        {
-          model: modelsFT.Moneda,
-          as: "moneda_moneda",
-        },
-        {
-          model: modelsFT.FactoringPropuesta,
-          as: "factoringpropuestaaceptada_factoring_propuestum",
-          include: [
-            {
-              model: modelsFT.FactoringTipo,
-              as: "factoringtipo_factoring_tipo",
-            },
-            {
-              model: modelsFT.Riesgo,
-              as: "riesgooperacion_riesgo",
-            },
-          ],
-        },
-      ],
+
+        moneda: true,
+      },
       where: {
         idfactoringestado: {
           in: idfactoringestados,
@@ -52,53 +39,37 @@ export const getFactoringsOportunidades = async (tx: TxClient, idfactoringestado
 export const getFactoringsByIdfactoringestado = async (tx: TxClient, idfactoringestados, estados: number[]) => {
   try {
     const factorings = await tx.factoring.findMany({
-      include: [
-        {
-          all: true,
+      include: {
+        colaborador: true,
+        contacto: true,
+        cuenta_bancaria: {
+          include: {
+            banco: true,
+            cuenta_bancaria_estado: true,
+            cuenta_tipo: true,
+            moneda: true,
+          },
         },
-        {
-          model: modelsFT.FactoringPropuesta,
-          as: "factoringpropuestaaceptada_factoring_propuestum",
-          include: [
-            {
-              model: modelsFT.FactoringTipo,
-              as: "factoringtipo_factoring_tipo",
-            },
-          ],
+        empresa_aceptante: true,
+        empresa_cedente: true,
+        factoring_ejecutado: true,
+        factoring_ejecutado_factoringes: true,
+        factoring_estado: true,
+        factoring_facturas: true,
+        factoring_historial_estados: true,
+        factoring_pagos: true,
+        factoring_propuesta_aceptada: {
+          include: {
+            factoring_tipo: true,
+          },
         },
-        {
-          model: modelsFT.FactoringPropuesta,
-          as: "factoring_propuesta",
-          include: [
-            {
-              model: modelsFT.FactoringPropuestaEstado,
-              as: "factoringpropuestaestado_factoring_propuesta_estado",
-            },
-          ],
+        factoring_propuesta_factoringes: {
+          include: {
+            factoring_propuesta_estado: true,
+          },
         },
-        {
-          model: modelsFT.CuentaBancaria,
-          as: "cuentabancaria_cuenta_bancarium",
-          include: [
-            {
-              model: modelsFT.Banco,
-              as: "banco_banco",
-            },
-            {
-              model: modelsFT.CuentaBancariaEstado,
-              as: "cuentabancariaestado_cuenta_bancaria_estado",
-            },
-            {
-              model: modelsFT.CuentaTipo,
-              as: "cuentatipo_cuenta_tipo",
-            },
-            {
-              model: modelsFT.Moneda,
-              as: "moneda_moneda",
-            },
-          ],
-        },
-      ],
+        moneda: true,
+      },
       where: {
         idfactoringestado: {
           in: idfactoringestados,
@@ -116,56 +87,40 @@ export const getFactoringsByIdfactoringestado = async (tx: TxClient, idfactoring
   }
 };
 
-export const getFactoringsByIdcedentes = async (tx: TxClient, idcedentes, estados: number[]) => {
+export const getFactoringsByIdcedentes = async (tx: TxClient, idcedentes: number[], estados: number[]) => {
   try {
     const factorings = await tx.factoring.findMany({
-      include: [
-        {
-          all: true,
+      include: {
+        colaborador: true,
+        contacto: true,
+        cuenta_bancaria: {
+          include: {
+            banco: true,
+            cuenta_bancaria_estado: true,
+            cuenta_tipo: true,
+            moneda: true,
+          },
         },
-        {
-          model: modelsFT.FactoringPropuesta,
-          as: "factoringpropuestaaceptada_factoring_propuestum",
-          include: [
-            {
-              model: modelsFT.FactoringTipo,
-              as: "factoringtipo_factoring_tipo",
-            },
-          ],
+        empresa_aceptante: true,
+        empresa_cedente: true,
+        factoring_ejecutado: true,
+        factoring_ejecutado_factoringes: true,
+        factoring_estado: true,
+        factoring_facturas: true,
+        factoring_historial_estados: true,
+        factoring_pagos: true,
+        factoring_propuesta_aceptada: {
+          include: {
+            factoring_tipo: true,
+          },
         },
-        {
-          model: modelsFT.FactoringPropuesta,
-          as: "factoring_propuesta",
-          include: [
-            {
-              model: modelsFT.FactoringPropuestaEstado,
-              as: "factoringpropuestaestado_factoring_propuesta_estado",
-            },
-          ],
+        factoring_propuesta_factoringes: {
+          include: {
+            factoring_propuesta_estado: true,
+          },
         },
-        {
-          model: modelsFT.CuentaBancaria,
-          as: "cuentabancaria_cuenta_bancarium",
-          include: [
-            {
-              model: modelsFT.Banco,
-              as: "banco_banco",
-            },
-            {
-              model: modelsFT.CuentaBancariaEstado,
-              as: "cuentabancariaestado_cuenta_bancaria_estado",
-            },
-            {
-              model: modelsFT.CuentaTipo,
-              as: "cuentatipo_cuenta_tipo",
-            },
-            {
-              model: modelsFT.Moneda,
-              as: "moneda_moneda",
-            },
-          ],
-        },
-      ],
+        moneda: true,
+      },
       where: {
         idcedente: {
           in: idcedentes,
@@ -186,27 +141,26 @@ export const getFactoringsByIdcedentes = async (tx: TxClient, idcedentes, estado
 export const getFactoringByRucCedenteAndCodigoFactura = async (tx: TxClient, ruc_cedente, factura_serie, factura_numero, estados: number[]) => {
   try {
     const factoring = await tx.factoring.findFirst({
-      include: [
-        {
-          model: modelsFT.Empresa,
-          required: true,
-          as: "cedente_empresa",
-          where: {
-            ruc: ruc_cedente,
+      include: {
+        empresa_cedente: true,
+        factoring_facturas: {
+          include: {
+            factura: true,
           },
         },
-
-        {
-          model: modelsFT.Factura,
-          required: true,
-          as: "factura_factura_factoring_facturas",
-          where: {
-            serie: factura_serie,
-            numero_comprobante: factura_numero,
-          },
-        },
-      ],
+      },
       where: {
+        empresa_cedente: {
+          ruc: ruc_cedente,
+        },
+        factoring_facturas: {
+          some: {
+            factura: {
+              serie: factura_serie,
+              numero_comprobante: factura_numero,
+            },
+          },
+        },
         estado: {
           in: estados,
         },
@@ -222,11 +176,22 @@ export const getFactoringByRucCedenteAndCodigoFactura = async (tx: TxClient, ruc
 export const getFactoringByFactoringidAndIdcontactocedente = async (tx: TxClient, factoringid, idcontactocedete, estados: number[]) => {
   try {
     const factoring = await tx.factoring.findFirst({
-      include: [
-        {
-          all: true,
-        },
-      ],
+      include: {
+        colaborador: true,
+        contacto: true,
+        cuenta_bancaria: true,
+        empresa_aceptante: true,
+        empresa_cedente: true,
+        factoring_ejecutado: true,
+        factoring_ejecutado_factoringes: true,
+        factoring_estado: true,
+        factoring_facturas: true,
+        factoring_historial_estados: true,
+        factoring_pagos: true,
+        factoring_propuesta_aceptada: true,
+        factoring_propuesta_factoringes: true,
+        moneda: true,
+      },
       where: {
         idcontactocedente: idcontactocedete,
         factoringid: factoringid,
@@ -246,11 +211,22 @@ export const getFactoringByFactoringidAndIdcontactocedente = async (tx: TxClient
 export const getFactoringsCotizacionesByIdcontactocedente = async (tx: TxClient, idcontactocedete, estados: number[]) => {
   try {
     const factorings = await tx.factoring.findMany({
-      include: [
-        {
-          all: true,
-        },
-      ],
+      include: {
+        colaborador: true,
+        contacto: true,
+        cuenta_bancaria: true,
+        empresa_aceptante: true,
+        empresa_cedente: true,
+        factoring_ejecutado: true,
+        factoring_ejecutado_factoringes: true,
+        factoring_estado: true,
+        factoring_facturas: true,
+        factoring_historial_estados: true,
+        factoring_pagos: true,
+        factoring_propuesta_aceptada: true,
+        factoring_propuesta_factoringes: true,
+        moneda: true,
+      },
       where: {
         estado: {
           in: estados,
@@ -269,53 +245,37 @@ export const getFactoringsCotizacionesByIdcontactocedente = async (tx: TxClient,
 export const getFactoringsByEstados = async (tx: TxClient, estados: number[]): Promise<factoring[]> => {
   try {
     const factorings = await tx.factoring.findMany({
-      include: [
-        {
-          all: true,
+      include: {
+        colaborador: true,
+        contacto: true,
+        cuenta_bancaria: {
+          include: {
+            banco: true,
+            cuenta_bancaria_estado: true,
+            cuenta_tipo: true,
+            moneda: true,
+          },
         },
-        {
-          model: modelsFT.FactoringPropuesta,
-          as: "factoringpropuestaaceptada_factoring_propuestum",
-          include: [
-            {
-              model: modelsFT.FactoringTipo,
-              as: "factoringtipo_factoring_tipo",
-            },
-          ],
+        empresa_aceptante: true,
+        empresa_cedente: true,
+        factoring_ejecutado: true,
+        factoring_ejecutado_factoringes: true,
+        factoring_estado: true,
+        factoring_facturas: true,
+        factoring_historial_estados: true,
+        factoring_pagos: true,
+        factoring_propuesta_aceptada: {
+          include: {
+            factoring_tipo: true,
+          },
         },
-        {
-          model: modelsFT.FactoringPropuesta,
-          as: "factoring_propuesta",
-          include: [
-            {
-              model: modelsFT.FactoringPropuestaEstado,
-              as: "factoringpropuestaestado_factoring_propuesta_estado",
-            },
-          ],
+        factoring_propuesta_factoringes: {
+          include: {
+            factoring_propuesta_estado: true,
+          },
         },
-        {
-          model: modelsFT.CuentaBancaria,
-          as: "cuentabancaria_cuenta_bancarium",
-          include: [
-            {
-              model: modelsFT.Banco,
-              as: "banco_banco",
-            },
-            {
-              model: modelsFT.CuentaBancariaEstado,
-              as: "cuentabancariaestado_cuenta_bancaria_estado",
-            },
-            {
-              model: modelsFT.CuentaTipo,
-              as: "cuentatipo_cuenta_tipo",
-            },
-            {
-              model: modelsFT.Moneda,
-              as: "moneda_moneda",
-            },
-          ],
-        },
-      ],
+        moneda: true,
+      },
       where: {
         estado: {
           in: estados,
@@ -332,44 +292,37 @@ export const getFactoringsByEstados = async (tx: TxClient, estados: number[]): P
 
 export const getFactoringByIdfactoring = async (tx: TxClient, idfactoring: number): Promise<factoring> => {
   try {
-    const factoring = await tx.factoring.findByPk(idfactoring, {
-      include: [
-        {
-          all: true,
+    const factoring = await tx.factoring.findUnique({
+      include: {
+        colaborador: true,
+        contacto: true,
+        cuenta_bancaria: {
+          include: {
+            banco: true,
+            cuenta_bancaria_estado: true,
+            cuenta_tipo: true,
+            moneda: true,
+          },
         },
-        {
-          model: modelsFT.FactoringPropuesta,
-          as: "factoring_propuesta",
-          include: [
-            {
-              model: modelsFT.FactoringPropuestaEstado,
-              as: "factoringpropuestaestado_factoring_propuesta_estado",
-            },
-          ],
+        empresa_aceptante: true,
+        empresa_cedente: true,
+        factoring_ejecutado: true,
+        factoring_ejecutado_factoringes: true,
+        factoring_estado: true,
+        factoring_facturas: true,
+        factoring_historial_estados: true,
+        factoring_pagos: true,
+        factoring_propuesta_aceptada: true,
+        factoring_propuesta_factoringes: {
+          include: {
+            factoring_propuesta_estado: true,
+          },
         },
-        {
-          model: modelsFT.CuentaBancaria,
-          as: "cuentabancaria_cuenta_bancarium",
-          include: [
-            {
-              model: modelsFT.Banco,
-              as: "banco_banco",
-            },
-            {
-              model: modelsFT.CuentaBancariaEstado,
-              as: "cuentabancariaestado_cuenta_bancaria_estado",
-            },
-            {
-              model: modelsFT.CuentaTipo,
-              as: "cuentatipo_cuenta_tipo",
-            },
-            {
-              model: modelsFT.Moneda,
-              as: "moneda_moneda",
-            },
-          ],
-        },
-      ],
+        moneda: true,
+      },
+      where: {
+        idfactoring: idfactoring,
+      },
     });
 
     return factoring;
@@ -382,16 +335,26 @@ export const getFactoringByIdfactoring = async (tx: TxClient, idfactoring: numbe
 export const getFactoringByFactoringid = async (tx: TxClient, factoringid: string): Promise<factoring> => {
   try {
     const factoring = await tx.factoring.findFirst({
-      include: [
-        {
-          all: true,
-        },
-      ],
+      include: {
+        colaborador: true,
+        contacto: true,
+        cuenta_bancaria: true,
+        empresa_aceptante: true,
+        empresa_cedente: true,
+        factoring_ejecutado: true,
+        factoring_ejecutado_factoringes: true,
+        factoring_estado: true,
+        factoring_facturas: true,
+        factoring_historial_estados: true,
+        factoring_pagos: true,
+        factoring_propuesta_aceptada: true,
+        factoring_propuesta_factoringes: true,
+        moneda: true,
+      },
       where: {
         factoringid: factoringid,
       },
     });
-    //log.debug(line(),"factoring: ", factoring);
     return factoring;
   } catch (error) {
     log.error(line(), "", formatError(error));
@@ -399,7 +362,7 @@ export const getFactoringByFactoringid = async (tx: TxClient, factoringid: strin
   }
 };
 
-export const findFactoringPk = async (tx: TxClient, factoringid: string): Promise<{ idfactoring: number }> => {
+export const findFactoringPk = async (tx: TxClient, factoringid: string): Promise<{ idfactoring: bigint }> => {
   try {
     const factoring = await tx.factoring.findFirst({
       select: { idfactoring: true },

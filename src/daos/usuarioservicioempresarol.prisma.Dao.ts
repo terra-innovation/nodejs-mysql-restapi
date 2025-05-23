@@ -24,9 +24,11 @@ export const getUsuarioservicioempresarols = async (tx: TxClient, estados: numbe
 
 export const getUsuarioservicioempresarolByIdusuarioservicioempresarol = async (tx: TxClient, idusuarioservicioempresarol: number): Promise<usuario_servicio_empresa_rol> => {
   try {
-    const usuarioservicioempresarol = await tx.usuario_servicio_empresa_rol.findUnique({ where: { idusuarioservicioempresarol: idusuarioservicioempresarol } });
-
-    //const usuarioservicioempresarols = await usuarioservicioempresarol.getUsuarioservicioempresarols();
+    const usuarioservicioempresarol = await tx.usuario_servicio_empresa_rol.findUnique({
+      where: {
+        idusuarioservicioempresarol: idusuarioservicioempresarol,
+      },
+    });
 
     return usuarioservicioempresarol;
   } catch (error) {

@@ -1206,7 +1206,7 @@ model factura {
 
 model factura_impuesto {
   idfacturaimpuesto BigInt   @id @default(autoincrement()) @map("_idfacturaimpuesto")
-  facturaimpuestoid String   @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  facturaimpuestoid String   @unique(map: "UQ_facrtura_impuesto_facturaimpuestoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   idfactura         BigInt   @map("_idfactura")
   id                String?  @db.VarChar(200)
   codigo_sunat      String?  @db.VarChar(100)
@@ -1226,7 +1226,7 @@ model factura_impuesto {
 
 model factura_item {
   idfacturaitem                    BigInt   @id @default(autoincrement()) @map("_idfacturaitem")
-  facturaitemid                    String   @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  facturaitemid                    String   @unique(map: "UQ_factura_item_facturaitemid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   idfactura                        BigInt   @map("_idfactura")
   id                               String?  @db.VarChar(200)
   codigo_producto_sunat            String?  @db.VarChar(100)
@@ -1255,7 +1255,7 @@ model factura_item {
 
 model factura_medio_pago {
   idfacturamediopago BigInt   @id @default(autoincrement()) @map("_idfacturamediopago")
-  facturamediopagoid String   @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  facturamediopagoid String   @unique(map: "UQ_factura_medio_pago_facturamediopagoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   idfactura          BigInt   @map("_idfactura")
   id                 String?  @db.VarChar(200)
   medio_pago_codigo  String?  @db.VarChar(100)
@@ -1272,7 +1272,7 @@ model factura_medio_pago {
 
 model factura_nota {
   idfacturanota BigInt   @id @default(autoincrement()) @map("_idfacturanota")
-  facturanotaid String   @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  facturanotaid String   @unique(map: "UQ_factura_item_facturanotaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   idfactura     BigInt   @map("_idfactura")
   id            String?  @db.VarChar(20)
   descripcion   String?  @db.Text
@@ -1288,7 +1288,7 @@ model factura_nota {
 
 model factura_termino_pago {
   idfacturaterminopago BigInt    @id @default(autoincrement()) @map("_idfacturaterminopago")
-  facturaterminopagoid String    @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  facturaterminopagoid String    @unique(map: "UQ_factura_termino_pago_facturaterminopagoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   idfactura            BigInt    @map("_idfactura")
   id                   String?   @db.VarChar(200)
   forma_pago           String?   @db.VarChar(100)
@@ -2080,7 +2080,7 @@ model zlaboratorio_usuario {
 }
 
 /// --- INICIO LOG SCRIPT: pluralizar-schema.js ---
-/// Fecha de ejecución: 22/5/2025, 18:10:10
+/// Fecha de ejecución: 23/5/2025, 10:34:10
 /// Total líneas con relaciones tipo '[]': 137
 /// Modificaciones realizadas: 0
 /// Sin modificar (ya pluralizadas): 137
@@ -2225,7 +2225,7 @@ model zlaboratorio_usuario {
 /// --- FIN LOG SCRIPT
 
 /// --- INICIO LOG DE SCRIPT: renombrar-atributos-especiales.js ---
-/// Fecha de ejecución: 22/5/2025, 18:10:10
+/// Fecha de ejecución: 23/5/2025, 10:34:11
 /// ✔️ Línea 282: (singular) banco_transaccion_estado_historial ya está correcto | Relación: 'banco_transaccion_idbancotransaccionestadohistorialTobanco_transaccion_estado_historial'
 /// ✔️ Línea 284: (plural) banco_transaccion_estado_historial_bancotransacciones ya está correcto | Relación: 'banco_transaccion_estado_historial_idbancotransaccionTobanco_transaccion'
 /// ✔️ Línea 322: (plural) banco_transaccion_bancotransaccionestadohistoriales ya está correcto | Relación: 'banco_transaccion_idbancotransaccionestadohistorialTobanco_transaccion_estado_historial'

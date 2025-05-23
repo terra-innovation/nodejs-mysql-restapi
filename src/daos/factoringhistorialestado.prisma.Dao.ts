@@ -5,24 +5,24 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getFactoringhistorialestadosByIdfactoring = async (tx: TxClient, idfactoring, estados: number[]) => {
+export const getFactoringhistorialestadosByIdfactoring = async (tx: TxClient, idfactoring: bigint, estados: number[]) => {
   try {
     const factoringhistorialestados = await tx.factoring_historial_estado.findMany({
-      include: [
-        {
-          all: true,
-        },
-        {
-          model: modelsFT.Archivo,
-          required: false,
-          as: "archivo_archivo_archivo_factoring_historial_estados",
-          include: [
-            {
-              all: true,
+      include: {
+        archivo_factoring_historial_estados: {
+          include: {
+            archivo: {
+              include: {
+                archivo_estado: true,
+                archivo_tipo: true,
+              },
             },
-          ],
+          },
         },
-      ],
+        factoring: true,
+        factoring_estado: true,
+        usuario: true,
+      },
       where: {
         idfactoring: idfactoring,
         estado: {
@@ -83,7 +83,7 @@ export const getFactoringhistorialestadoByFactoringhistorialestadoid = async (tx
   }
 };
 
-export const findFactoringhistorialestadoPk = async (tx: TxClient, factoringhistorialestadoid: string): Promise<{ idfactoringhistorialestado: number }> => {
+export const findFactoringhistorialestadoPk = async (tx: TxClient, factoringhistorialestadoid: string): Promise<{ idfactoringhistorialestado: bigint }> => {
   try {
     const factoringhistorialestado = await tx.factoring_historial_estado.findFirst({
       select: { idfactoringhistorialestado: true },

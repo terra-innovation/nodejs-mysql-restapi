@@ -24,9 +24,11 @@ export const getUsuarioservicioestados = async (tx: TxClient, estados: number[])
 
 export const getUsuarioservicioestadoByIdusuarioservicioestado = async (tx: TxClient, idusuarioservicioestado: number): Promise<usuario_servicio_estado> => {
   try {
-    const usuarioservicioestado = await tx.usuario_servicio_estado.findUnique({ where: { idusuarioservicioestado: idusuarioservicioestado } });
-
-    //const usuarioservicioestados = await usuarioservicioestado.getUsuarioservicioestados();
+    const usuarioservicioestado = await tx.usuario_servicio_estado.findUnique({
+      where: {
+        idusuarioservicioestado: idusuarioservicioestado,
+      },
+    });
 
     return usuarioservicioestado;
   } catch (error) {
