@@ -106,8 +106,8 @@ export const createFactoringempresaverificacion = async (req: Request, res: Resp
 
       // Si el estado es estado 3 (Suscrito)
       if (servicioempresaestado._idservicioempresaestado == 3) {
-        await darAccesoAlUsuarioServicioEmpresa(req, transaction, servicioempresa, personasuscriptor);
-        await darAccesoAlUsuarioServicio(req, transaction, servicioempresaverificacionValidated, servicioempresa, empresa, personasuscriptor);
+        await darAccesoAlUsuarioServicioEmpresa(req, tx, servicioempresa, personasuscriptor);
+        await darAccesoAlUsuarioServicio(req, tx, servicioempresaverificacionValidated, servicioempresa, empresa, personasuscriptor);
       }
 
       await enviarCorreoSegunCorrespondeNuevoEstadoDeServicioEmpresa(servicioempresaverificacionValidated, servicioempresa, servicioempresaestado, empresa, personasuscriptor);
@@ -119,7 +119,7 @@ export const createFactoringempresaverificacion = async (req: Request, res: Resp
   response(res, 201, {});
 };
 
-const darAccesoAlUsuarioServicioEmpresa = async (req, transaction, servicioempresa, personasuscriptor) => {
+const darAccesoAlUsuarioServicioEmpresa = async (req, tx, servicioempresa, personasuscriptor) => {
   const usuarioservicioempresa = await usuarioservicioempresaDao.getUsuarioservicioempresaByIdusuarioIdServicioIdempresa(tx, personasuscriptor._idusuario, servicioempresa._idservicio, servicioempresa._idempresa);
   if (!usuarioservicioempresa) {
     log.warn(line(), "Usuario servicio empresa no existe: [" + personasuscriptor._idusuario + " - " + servicioempresa._idservicio + " - " + servicioempresa._idempresa + "]");
@@ -152,7 +152,7 @@ const darAccesoAlUsuarioServicioEmpresa = async (req, transaction, servicioempre
   log.debug(line(), "usuarioservicioempresaUpdated", usuarioservicioempresaUpdated);
 };
 
-const darAccesoAlUsuarioServicio = async (req, transaction, servicioempresaverificacionValidated, servicioempresa, empresa, personasuscriptor) => {
+const darAccesoAlUsuarioServicio = async (req, tx, servicioempresaverificacionValidated, servicioempresa, empresa, personasuscriptor) => {
   const usuarioservicio = await usuarioservicioDao.getUsuarioservicioByIdusuarioIdservicio(tx, personasuscriptor._idusuario, servicioempresa._idservicio);
   if (!usuarioservicio) {
     log.warn(line(), "Usuario servicio no existe: [" + personasuscriptor._idusuario + " - " + servicioempresa._idservicio + "]");

@@ -32,7 +32,7 @@ import { UsuarioAttributes } from "#root/src/models/ft_factoring/Usuario";
 
 export const getPersonaMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getPersonaMaster");
-  const resultado = await prismaFT.client.$transaction(
+  const personaMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const session_idusuario = req.session_user?.usuario?._idusuario;
       const filter_estados = [1];
@@ -60,7 +60,7 @@ export const getPersonaMaster = async (req: Request, res: Response) => {
       //jsonUtils.prettyPrint(personaMasterObfuscated);
       let personaMasterFiltered = jsonUtils.removeAttributesPrivates(personaMasterObfuscated);
       //jsonUtils.prettyPrint(personaMaster);
-      return {};
+      return personaMasterFiltered;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -206,13 +206,13 @@ export const verifyPersona = async (req: Request, res: Response) => {
 
       //let personaCreated = { _idpersona: 4 };
 
-      const identificacionanversoCreated = await crearIdentificacionAnverso(req, transaction, personaValidated, personaCreated);
+      const identificacionanversoCreated = await crearIdentificacionAnverso(req, tx, personaValidated, personaCreated);
       log.debug(line(), "identificacionanversoCreated:", identificacionanversoCreated);
 
-      const identificacionreversoCreated = await crearIdentificacionReverso(req, transaction, personaValidated, personaCreated);
+      const identificacionreversoCreated = await crearIdentificacionReverso(req, tx, personaValidated, personaCreated);
       log.debug(line(), "identificacionreversoCreated:", identificacionreversoCreated);
 
-      const identificacionselfiCreated = await crearIdentificacionSelfi(req, transaction, personaValidated, personaCreated);
+      const identificacionselfiCreated = await crearIdentificacionSelfi(req, tx, personaValidated, personaCreated);
       log.debug(line(), "identificacionselfiCreated:", identificacionselfiCreated);
 
       const personaDeclaracionCreate: Partial<PersonaDeclaracionAttributes> = {};
@@ -259,7 +259,7 @@ export const verifyPersona = async (req: Request, res: Response) => {
   response(res, 200, {});
 };
 
-const crearIdentificacionSelfi = async (req, transaction, personaValidated, personaCreated) => {
+const crearIdentificacionSelfi = async (req, tx, personaValidated, personaCreated) => {
   //Copiamos el archivo
   const { identificacion_selfi } = personaValidated;
   const { anio_upload, mes_upload, dia_upload, filename, path: archivoOrigen } = identificacion_selfi[0];
@@ -306,7 +306,7 @@ const crearIdentificacionSelfi = async (req, transaction, personaValidated, pers
   return identificacionselfiCreated;
 };
 
-const crearIdentificacionReverso = async (req, transaction, personaValidated, personaCreated) => {
+const crearIdentificacionReverso = async (req, tx, personaValidated, personaCreated) => {
   //Copiamos el archivo
   const { identificacion_reverso } = personaValidated;
   const { anio_upload, mes_upload, dia_upload, filename, path: archivoOrigen } = identificacion_reverso[0];
@@ -353,7 +353,7 @@ const crearIdentificacionReverso = async (req, transaction, personaValidated, pe
   return identificacionreversoCreated;
 };
 
-const crearIdentificacionAnverso = async (req, transaction, personaValidated, personaCreated) => {
+const crearIdentificacionAnverso = async (req, tx, personaValidated, personaCreated) => {
   //Copiamos el archivo
   const { identificacion_anverso } = personaValidated;
   const { anio_upload, mes_upload, dia_upload, filename, path: archivoOrigen } = identificacion_anverso[0];

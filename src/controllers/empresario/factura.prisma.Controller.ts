@@ -86,7 +86,7 @@ export const subirFactura = async (req: Request, res: Response) => {
     { timeout: prismaFT.transactionTimeout }
   );
 
-  const resultado2 = await prismaFT.client.$transaction(
+  const facturaFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       // Validar si el factoring ya existe
 
@@ -174,7 +174,7 @@ export const subirFactura = async (req: Request, res: Response) => {
       facturaFiltered = jsonUtils.removeAttributes(facturaCreate, ["items", "terminos_pago", "notas", "medios_pago"]);
       facturaFiltered = jsonUtils.removeAttributesPrivates(facturaFiltered);
 
-      return {};
+      return facturaFiltered;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -200,7 +200,7 @@ const procesarDatos = async (tx, _idfactura, items, _idusuario, insertFunction) 
   return results;
 };
 
-const crearFacturaPDF = async (req, transaction, facturaValidated, facturaCreated) => {
+const crearFacturaPDF = async (req, tx, facturaValidated, facturaCreated) => {
   //Copiamos el archivo
   const { factura_pdf } = facturaValidated;
   const { anio_upload, mes_upload, dia_upload, filename, path: archivoOrigen } = factura_pdf[0];
@@ -247,7 +247,7 @@ const crearFacturaPDF = async (req, transaction, facturaValidated, facturaCreate
   return identificacionselfiCreated;
 };
 
-const crearFacturaXML = async (req, transaction, facturaValidated, facturaCreated) => {
+const crearFacturaXML = async (req, tx, facturaValidated, facturaCreated) => {
   //Copiamos el archivo
   const { factura_xml } = facturaValidated;
   const { anio_upload, mes_upload, dia_upload, filename, path: archivoOrigen } = factura_xml[0];

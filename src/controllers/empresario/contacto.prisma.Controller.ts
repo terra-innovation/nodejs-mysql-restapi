@@ -92,7 +92,7 @@ export const createContacto = async (req: Request, res: Response) => {
   var contactoValidated = contactoCreateSchema.validateSync({ ...req.body }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "contactoValidated:", contactoValidated);
 
-  const resultado = await prismaFT.client.$transaction(
+  const contactoFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estados = [1];
       var empresa = await empresaDao.getEmpresaByEmpresaid(tx, contactoValidated.empresaid);
@@ -141,7 +141,7 @@ export const createContacto = async (req: Request, res: Response) => {
 
       const contactoFiltered = jsonUtils.removeAttributesPrivates(contactoCreated.dataValues);
 
-      return {};
+      return contactoFiltered;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -150,7 +150,7 @@ export const createContacto = async (req: Request, res: Response) => {
 
 export const getContactos = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getContactos");
-  const resultado = await prismaFT.client.$transaction(
+  const contactosFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       //log.info(line(),req.session_user.usuario._idusuario);
 
@@ -166,7 +166,7 @@ export const getContactos = async (req: Request, res: Response) => {
 
       var contactosFiltered = jsonUtils.removeAttributes(contactosJson, ["score"]);
       contactosFiltered = jsonUtils.removeAttributesPrivates(contactosFiltered);
-      return {};
+      return contactosFiltered;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -175,10 +175,10 @@ export const getContactos = async (req: Request, res: Response) => {
 
 export const getContactoMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getContactoMaster");
-  const resultado = await prismaFT.client.$transaction(
+  const contactoMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estados = [1];
-      const session_idusuario = req.session_user.usuario._idusuario;
+      const session_idusuario = req.session_user.usuario.idusuario;
       //log.info(line(),req.session_user.usuario.rol_rols);
       const roles = [2]; // Administrador
       const rolesUsuario = req.session_user.usuario.rol_rols.map((role) => role._idrol);
@@ -199,7 +199,7 @@ export const getContactoMaster = async (req: Request, res: Response) => {
       //jsonUtils.prettyPrint(contactoMasterObfuscated);
       var contactoMasterFiltered = jsonUtils.removeAttributesPrivates(contactoMasterObfuscated);
       //jsonUtils.prettyPrint(contactoMaster);
-      return {};
+      return contactoMasterFiltered;
     },
     { timeout: prismaFT.transactionTimeout }
   );

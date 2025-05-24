@@ -22,13 +22,13 @@ import * as yup from "yup";
 
 export const getFactorings = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFactorings");
-  const resultado = await prismaFT.client.$transaction(
+  const factorings = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estados = [1];
       const _idusuario_session = req.session_user.usuario._idusuario;
       const _idfactoringestados = [5];
       const factorings = await factoringDao.getFactoringsOportunidades(tx, _idfactoringestados, filter_estados);
-      return {};
+      return factorings;
     },
     { timeout: prismaFT.transactionTimeout }
   );

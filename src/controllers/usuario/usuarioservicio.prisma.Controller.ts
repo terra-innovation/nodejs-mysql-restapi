@@ -596,16 +596,16 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
 
       log.debug(line(), "usuarioservicioempresaCreated:", usuarioservicioempresaCreated);
 
-      const ficharucCreated = await crearArchivoFichaRuc(req, transaction, usuarioservicioValidated, empresaCreated);
+      const ficharucCreated = await crearArchivoFichaRuc(req, tx, usuarioservicioValidated, empresaCreated);
       log.debug(line(), "ficharucCreated:", ficharucCreated);
 
-      const reportetributarioCreated = await crearArchivoReporteTributarioParaTerceros(req, transaction, usuarioservicioValidated, empresaCreated);
+      const reportetributarioCreated = await crearArchivoReporteTributarioParaTerceros(req, tx, usuarioservicioValidated, empresaCreated);
       log.debug(line(), "reportetributarioCreated:", reportetributarioCreated);
 
-      const vigenciapoderCreated = await crearArchivoVigenciaPoderRepresentanteLegal(req, transaction, usuarioservicioValidated, colaboradorCreated);
+      const vigenciapoderCreated = await crearArchivoVigenciaPoderRepresentanteLegal(req, tx, usuarioservicioValidated, colaboradorCreated);
       log.debug(line(), "vigenciapoderCreated:", vigenciapoderCreated);
 
-      const encabezadocuentabancariaCreated = await crearArchivoEncabezadoCuentaBancaria(req, transaction, usuarioservicioValidated, cuentabancariaCreated);
+      const encabezadocuentabancariaCreated = await crearArchivoEncabezadoCuentaBancaria(req, tx, usuarioservicioValidated, cuentabancariaCreated);
       log.debug(line(), "encabezadocuentabancariaCreated:", encabezadocuentabancariaCreated);
 
       /* Registramos para la verificación del servicio_empresa en la tabla servicio_empresa_verificacion */
@@ -672,7 +672,7 @@ export const getUsuarioservicioMaster = async (req: Request, res: Response) => {
     .required();
   const usuarioservicioValidated = usuarioservicioSchema.validateSync({ usuarioservicioid: id }, { abortEarly: false, stripUnknown: true });
 
-  const resultado = await prismaFT.client.$transaction(
+  const usuarioservicioMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estados = [1];
 
@@ -699,7 +699,7 @@ export const getUsuarioservicioMaster = async (req: Request, res: Response) => {
       //jsonUtils.prettyPrint(usuarioservicioMasterObfuscated);
       let usuarioservicioMasterFiltered = jsonUtils.removeAttributesPrivates(usuarioservicioMasterObfuscated);
       //jsonUtils.prettyPrint(usuarioservicioMaster);
-      return {};
+      return usuarioservicioMasterFiltered;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -708,7 +708,7 @@ export const getUsuarioservicioMaster = async (req: Request, res: Response) => {
 
 export const getUsuarioservicios = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getUsuarioservicios");
-  const resultado = await prismaFT.client.$transaction(
+  const usuarioserviciosFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       //log.info(line(),req.session_user.usuario._idusuario);
 
@@ -720,14 +720,14 @@ export const getUsuarioservicios = async (req: Request, res: Response) => {
 
       var usuarioserviciosFiltered = jsonUtils.removeAttributes(usuarioserviciosJson, ["score"]);
       usuarioserviciosFiltered = jsonUtils.removeAttributesPrivates(usuarioserviciosFiltered);
-      return {};
+      return usuarioserviciosFiltered;
     },
     { timeout: prismaFT.transactionTimeout }
   );
   response(res, 201, usuarioserviciosFiltered);
 };
 
-const crearArchivoEncabezadoCuentaBancaria = async (req, transaction, usuarioservicioValidated, cuentabancariaCreated) => {
+const crearArchivoEncabezadoCuentaBancaria = async (req, tx, usuarioservicioValidated, cuentabancariaCreated) => {
   //Copiamos el archivo
   const { encabezado_cuenta_bancaria } = usuarioservicioValidated;
   const { anio_upload, mes_upload, dia_upload, filename, path: archivoOrigen } = encabezado_cuenta_bancaria[0];
@@ -775,7 +775,7 @@ const crearArchivoEncabezadoCuentaBancaria = async (req, transaction, usuarioser
   return archivoCreated;
 };
 
-const crearArchivoVigenciaPoderRepresentanteLegal = async (req, transaction, usuarioservicioValidated, colaboradorCreated) => {
+const crearArchivoVigenciaPoderRepresentanteLegal = async (req, tx, usuarioservicioValidated, colaboradorCreated) => {
   //Copiamos el archivo
   const { certificado_vigencia_poder } = usuarioservicioValidated;
   const { anio_upload, mes_upload, dia_upload, filename, path: archivoOrigen } = certificado_vigencia_poder[0];
@@ -823,7 +823,7 @@ const crearArchivoVigenciaPoderRepresentanteLegal = async (req, transaction, usu
   return archivoCreated;
 };
 
-const crearArchivoReporteTributarioParaTerceros = async (req, transaction, usuarioservicioValidated, empresaCreated) => {
+const crearArchivoReporteTributarioParaTerceros = async (req, tx, usuarioservicioValidated, empresaCreated) => {
   //Copiamos el archivo
   const { reporte_tributario_para_terceros } = usuarioservicioValidated;
   const { anio_upload, mes_upload, dia_upload, filename, path: archivoOrigen } = reporte_tributario_para_terceros[0];
@@ -871,7 +871,7 @@ const crearArchivoReporteTributarioParaTerceros = async (req, transaction, usuar
   return archivoCreated;
 };
 
-const crearArchivoFichaRuc = async (req, transaction, usuarioservicioValidated, empresaCreated) => {
+const crearArchivoFichaRuc = async (req, tx, usuarioservicioValidated, empresaCreated) => {
   //Copiamos el archivo
   const { ficha_ruc } = usuarioservicioValidated;
   const { anio_upload, mes_upload, dia_upload, filename, path: archivoOrigen } = ficha_ruc[0];

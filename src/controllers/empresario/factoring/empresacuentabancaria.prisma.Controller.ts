@@ -197,7 +197,7 @@ export const createEmpresacuentabancaria = async (req: Request, res: Response) =
       });
       log.debug(line(), "cuentabancariaCreated:", cuentabancariaCreated);
 
-      const encabezadocuentabancariaCreated = await crearArchivoEncabezadoCuentaBancaria(req, transaction, empresacuentabancariaValidated, cuentabancariaCreated);
+      const encabezadocuentabancariaCreated = await crearArchivoEncabezadoCuentaBancaria(req, tx, empresacuentabancariaValidated, cuentabancariaCreated);
       log.debug(line(), "encabezadocuentabancariaCreated:", encabezadocuentabancariaCreated);
 
       var camposEmpresaCuentaBancariaCreate: Partial<EmpresaCuentaBancariaAttributes> = {};
@@ -223,7 +223,7 @@ export const createEmpresacuentabancaria = async (req: Request, res: Response) =
   response(res, 201, { ...empresacuentabancariaFiltered });
 };
 
-const crearArchivoEncabezadoCuentaBancaria = async (req, transaction, usuarioservicioValidated, cuentabancariaCreated) => {
+const crearArchivoEncabezadoCuentaBancaria = async (req, tx, usuarioservicioValidated, cuentabancariaCreated) => {
   //Copiamos el archivo
   const { encabezado_cuenta_bancaria } = usuarioservicioValidated;
   const { anio_upload, mes_upload, dia_upload, filename, path: archivoOrigen } = encabezado_cuenta_bancaria[0];

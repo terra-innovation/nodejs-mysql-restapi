@@ -44,7 +44,7 @@ export const createInversionistacuentabancaria = async (req: Request, res: Respo
   var inversionistacuentabancariaValidated = inversionistacuentabancariaCreateSchema.validateSync({ ...req.body }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "inversionistacuentabancariaValidated:", inversionistacuentabancariaValidated);
 
-  const resultado = await prismaFT.client.$transaction(
+  const inversionistacuentabancariaFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       var inversionista = await inversionistaDao.getInversionistaByInversionistaid(tx, inversionistacuentabancariaValidated.inversionistaid);
       if (!inversionista) {
@@ -134,7 +134,7 @@ export const createInversionistacuentabancaria = async (req: Request, res: Respo
 
       const inversionistacuentabancariaFiltered = jsonUtils.removeAttributesPrivates(camposEmpresaCuentaBancariaCreate);
 
-      return {};
+      return inversionistacuentabancariaFiltered;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -197,7 +197,7 @@ export const updateInversionistacuentabancariaOnlyAlias = async (req: Request, r
 
 export const getInversionistacuentabancarias = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getInversionistacuentabancarias");
-  const resultado = await prismaFT.client.$transaction(
+  const inversionistacuentabancariasFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       //log.info(line(),req.session_user.usuario._idusuario);
 
@@ -209,7 +209,7 @@ export const getInversionistacuentabancarias = async (req: Request, res: Respons
 
       var inversionistacuentabancariasFiltered = jsonUtils.removeAttributes(inversionistacuentabancariasJson, ["score"]);
       inversionistacuentabancariasFiltered = jsonUtils.removeAttributesPrivates(inversionistacuentabancariasFiltered);
-      return {};
+      return inversionistacuentabancariasFiltered;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -218,7 +218,7 @@ export const getInversionistacuentabancarias = async (req: Request, res: Respons
 
 export const getInversionistacuentabancariaMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getInversionistacuentabancariaMaster");
-  const resultado = await prismaFT.client.$transaction(
+  const cuentasbancariasMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estados = [1];
       const session_idusuario = req.session_user.usuario._idusuario;
@@ -246,7 +246,7 @@ export const getInversionistacuentabancariaMaster = async (req: Request, res: Re
       //jsonUtils.prettyPrint(cuentasbancariasMasterObfuscated);
       var cuentasbancariasMasterFiltered = jsonUtils.removeAttributesPrivates(cuentasbancariasMasterObfuscated);
       //jsonUtils.prettyPrint(cuentasbancariasMaster);
-      return {};
+      return cuentasbancariasMasterFiltered;
     },
     { timeout: prismaFT.transactionTimeout }
   );

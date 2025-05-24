@@ -38,7 +38,7 @@ export const resetPassword = async (req: Request, res: Response) => {
   }).required();
   const validacionValidated = validateChangePasswordSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
 
-  const resultado = await prismaFT.client.$transaction(
+  const validacionReturned = await prismaFT.client.$transaction(
     async (tx) => {
       const usuario = await usuarioDao.getUsuarioByHash(tx, validacionValidated.hash);
       if (!usuario) {
@@ -111,7 +111,7 @@ export const resetPassword = async (req: Request, res: Response) => {
       }
       var validacionReturned: Record<string, any> = {};
       validacionReturned.hash = validacionValidated.hash;
-      return {};
+      return validacionReturned;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -120,17 +120,18 @@ export const resetPassword = async (req: Request, res: Response) => {
 
 export const validateRestorePassword = async (req: Request, res: Response) => {
   log.debug(line(), "controller::validateRestorePassword");
-  const resultado = await prismaFT.client.$transaction(
-    async (tx) => {
-      //log.info(line(),req);
-      const filter_estado = [1];
-      const validateRestorePasswordSchema = Yup.object({
-        hash: Yup.string().trim().required().max(50),
-        codigo: Yup.string().trim().required().max(100),
-        token: Yup.string().trim().required().max(255),
-      }).required();
-      const validacionValidated = validateRestorePasswordSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
 
+  //log.info(line(),req);
+  const filter_estado = [1];
+  const validateRestorePasswordSchema = Yup.object({
+    hash: Yup.string().trim().required().max(50),
+    codigo: Yup.string().trim().required().max(100),
+    token: Yup.string().trim().required().max(255),
+  }).required();
+  const validacionValidated = validateRestorePasswordSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
+
+  const validacionReturned = await prismaFT.client.$transaction(
+    async (tx) => {
       const usuario = await usuarioDao.getUsuarioByHash(tx, validacionValidated.hash);
       if (!usuario) {
         log.warn(line(), "Usuario no existe: ", validacionValidated);
@@ -172,7 +173,7 @@ export const validateRestorePassword = async (req: Request, res: Response) => {
       }
       var validacionReturned: Record<string, any> = {};
       validacionReturned.hash = validacionValidated.hash;
-      return {};
+      return validacionReturned;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -181,7 +182,7 @@ export const validateRestorePassword = async (req: Request, res: Response) => {
 
 export const sendTokenPassword = async (req: Request, res: Response) => {
   log.debug(line(), "controller::sendTokenPassword");
-  const resultado = await prismaFT.client.$transaction(
+  const validacionReturned = await prismaFT.client.$transaction(
     async (tx) => {
       let EMAIL_REGX = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
       const filter_estado = [1];
@@ -245,7 +246,7 @@ export const sendTokenPassword = async (req: Request, res: Response) => {
       }
 
       let validacionReturned = {};
-      return {};
+      return validacionReturned;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -254,17 +255,18 @@ export const sendTokenPassword = async (req: Request, res: Response) => {
 
 export const sendVerificactionCode = async (req: Request, res: Response) => {
   log.debug(line(), "controller::sendVerificactionCode");
-  const resultado = await prismaFT.client.$transaction(
-    async (tx) => {
-      const filter_estado = [1];
-      const validacionCreateSchema = Yup.object()
-        .shape({
-          hash: Yup.string().max(50).trim().required(),
-          codigo: Yup.string().max(100).trim().required(),
-        })
-        .required();
-      const validacionValidated = validacionCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
 
+  const filter_estado = [1];
+  const validacionCreateSchema = Yup.object()
+    .shape({
+      hash: Yup.string().max(50).trim().required(),
+      codigo: Yup.string().max(100).trim().required(),
+    })
+    .required();
+  const validacionValidated = validacionCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
+
+  const validacionReturned = await prismaFT.client.$transaction(
+    async (tx) => {
       const usuario = await usuarioDao.getUsuarioByHash(tx, validacionValidated.hash);
       if (!usuario) {
         log.warn(line(), "Usuario no existe: ", validacionValidated);
@@ -296,7 +298,7 @@ export const sendVerificactionCode = async (req: Request, res: Response) => {
 
       let validacionReturned = {};
 
-      return {};
+      return validacionReturned;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -316,7 +318,7 @@ export const loginUser = async (req: Request, res: Response) => {
     .required();
   const loginUserValidated = loginUserSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
 
-  const resultado = await prismaFT.client.$transaction(
+  const token = await prismaFT.client.$transaction(
     async (tx) => {
       // Validate if user exist in our database
       const usuario_login = await usuarioDao.autenticarUsuario(tx, loginUserValidated.email);
@@ -339,7 +341,7 @@ export const loginUser = async (req: Request, res: Response) => {
         log.warn(line(), "Credenciales no válidas: [" + loginUserValidated.email + "]");
         throw new ClientError("Usuario y/o contraseña no válida", 404);
       }
-      return {};
+      return token;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -348,7 +350,7 @@ export const loginUser = async (req: Request, res: Response) => {
 
 export const registerUsuario = async (req: Request, res: Response) => {
   log.debug(line(), "controller::registerUsuario");
-  const resultado = await prismaFT.client.$transaction(
+  const usuarioObfuscated = await prismaFT.client.$transaction(
     async (tx) => {
       let EMAIL_REGX = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
       let NAME_REGX = /^[a-zA-Z ]+$/;
@@ -476,7 +478,7 @@ export const registerUsuario = async (req: Request, res: Response) => {
 
       var usuarioObfuscated = jsonUtils.ofuscarAtributos(usuarioReturned, ["email"], jsonUtils.PATRON_OFUSCAR_EMAIL);
 
-      return {};
+      return usuarioObfuscated;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -485,7 +487,7 @@ export const registerUsuario = async (req: Request, res: Response) => {
 
 export const validateEmail = async (req: Request, res: Response) => {
   log.debug(line(), "controller::validateEmail");
-  const resultado = await prismaFT.client.$transaction(
+  const validacionReturned = await prismaFT.client.$transaction(
     async (tx) => {
       //log.info(line(),req);
       const filter_estado = [1];
@@ -544,7 +546,7 @@ export const validateEmail = async (req: Request, res: Response) => {
       }
       var validacionReturned: Record<string, any> = {};
       validacionReturned.hash = validacionValidated.hash;
-      return {};
+      return validacionReturned;
     },
     { timeout: prismaFT.transactionTimeout }
   );
