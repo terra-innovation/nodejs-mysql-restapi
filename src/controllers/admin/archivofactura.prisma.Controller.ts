@@ -1,15 +1,16 @@
+import type { Prisma } from "#src/models/prisma/ft_factoring/client";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 
-import * as archivofacturaDao from "#src/daos/archivofacturaDao.js";
-import * as factoringDao from "#src/daos/factoringDao.js";
-import * as riesgoDao from "#src/daos/riesgoDao.js";
+import * as archivofacturaDao from "#src/daos/archivofactura.prisma.Dao.js";
+import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
+import * as riesgoDao from "#src/daos/riesgo.prisma.Dao.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-import { ArchivoFacturaAttributes } from "#src/models/ft_factoring/ArchivoFactura.js";
+import type { archivo_factura } from "#src/models/prisma/ft_factoring/client";
 
 import { Sequelize, Op } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
@@ -28,7 +29,7 @@ export const getArchivofacturasByFactoringid = async (req: Request, res: Respons
   const archivofacturaValidated = archivofacturaSearchSchema.validateSync({ factoringid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "archivofacturaValidated:", archivofacturaValidated);
 
-  const resultado = await prismaFT.client.$transaction(
+  const archivofacturasJson = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estado = [1, 2];
 
@@ -38,13 +39,13 @@ export const getArchivofacturasByFactoringid = async (req: Request, res: Respons
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const archivofacturas = await archivofacturaDao.getArchivofacturasByIdfactoring(tx, factoring._idfactoring, filter_estado);
+      const archivofacturas = await archivofacturaDao.getArchivofacturasByIdfactoring(tx, factoring.idfactoring, filter_estado);
       var archivofacturasJson = jsonUtils.sequelizeToJSON(archivofacturas);
       //log.info(line(),archivofacturaObfuscated);
 
       //var archivofacturasFiltered = jsonUtils.removeAttributes(archivofacturasJson, ["score"]);
       //archivofacturasFiltered = jsonUtils.removeAttributesPrivates(archivofacturasFiltered);
-      return {};
+      return archivofacturasJson;
     },
     { timeout: prismaFT.transactionTimeout }
   );

@@ -1,18 +1,19 @@
+import type { Prisma } from "#src/models/prisma/ft_factoring/client";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import * as factoringpropuestaDao from "#src/daos/factoringpropuestaDao.js";
-import * as factoringpropuestafinancieroDao from "#src/daos/factoringpropuestafinancieroDao.js";
-import * as factoringpropuestaestadoDao from "#src/daos/factoringpropuestaestadoDao.js";
-import * as factoringtipoDao from "#src/daos/factoringtipoDao.js";
-import * as factoringestrategiaDao from "#src/daos/factoringestrategiaDao.js";
-import * as factoringDao from "#src/daos/factoringDao.js";
-import * as riesgoDao from "#src/daos/riesgoDao.js";
+import * as factoringpropuestaDao from "#src/daos/factoringpropuesta.prisma.Dao.js";
+import * as factoringpropuestafinancieroDao from "#src/daos/factoringpropuestafinanciero.prisma.Dao.js";
+import * as factoringpropuestaestadoDao from "#src/daos/factoringpropuestaestado.prisma.Dao.js";
+import * as factoringtipoDao from "#src/daos/factoringtipo.prisma.Dao.js";
+import * as factoringestrategiaDao from "#src/daos/factoringestrategia.prisma.Dao.js";
+import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
+import * as riesgoDao from "#src/daos/riesgo.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-import { FactoringPropuestaAttributes } from "#src/models/ft_factoring/FactoringPropuesta.js";
+import type { factoring_propuesta } from "#src/models/prisma/ft_factoring/client";
 import { Simulacion } from "#src/types/Simulacion.types.js";
 
 import * as luxon from "luxon";
@@ -108,13 +109,13 @@ export const updateFactoringpropuesta = async (req: Request, res: Response) => {
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var camposFk: Partial<FactoringPropuestaAttributes> = {};
+      var camposFk: Partial<factoring_propuesta> = {};
       camposFk._idfactoringpropuestaestado = factoringpropuestaestado._idfactoringpropuestaestado;
 
-      var camposAdicionales: Partial<FactoringPropuestaAttributes> = {};
+      var camposAdicionales: Partial<factoring_propuesta> = {};
       camposAdicionales.factoringpropuestaid = factoringpropuestaValidated.factoringpropuestaid;
 
-      var camposAuditoria: Partial<FactoringPropuestaAttributes> = {};
+      var camposAuditoria: Partial<factoring_propuesta> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
 
@@ -205,21 +206,21 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
 
       log.info(line(), "simulacion: ", simulacion);
 
-      var camposFk: Partial<FactoringPropuestaAttributes> = {};
+      var camposFk: Partial<factoring_propuesta> = {};
       camposFk._idfactoring = factoring._idfactoring;
       camposFk._idfactoringtipo = factoringtipo._idfactoringtipo;
       camposFk._idfactoringpropuestaestado = factoringpropuestaestado._idfactoringpropuestaestado;
       camposFk._idriesgooperacion = riesgooperacion._idriesgo;
       camposFk._idfactoringestrategia = factoringestrategia._idfactoringestrategia;
 
-      var camposAdicionales: Partial<FactoringPropuestaAttributes> = {};
+      var camposAdicionales: Partial<factoring_propuesta> = {};
       camposAdicionales.factoringpropuestaid = uuidv4();
       camposAdicionales.code = uuidv4().split("-")[0];
       camposAdicionales.fecha_propuesta = new Date();
       camposAdicionales.dias_antiguedad_estimado = dias_antiguedad_estimado;
       camposAdicionales.fecha_pago_estimado = factoring.fecha_pago_estimado;
 
-      var camposAuditoria: Partial<FactoringPropuestaAttributes> = {};
+      var camposAuditoria: Partial<factoring_propuesta> = {};
       camposAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
       camposAuditoria.fechacrea = new Date();
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
@@ -418,7 +419,7 @@ export const activateFactoringpropuesta = async (req: Request, res: Response) =>
 
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
-      var camposAuditoria: Partial<FactoringPropuestaAttributes> = {};
+      var camposAuditoria: Partial<factoring_propuesta> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 1;
@@ -449,7 +450,7 @@ export const deleteFactoringpropuesta = async (req: Request, res: Response) => {
 
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
-      var camposAuditoria: Partial<FactoringPropuestaAttributes> = {};
+      var camposAuditoria: Partial<factoring_propuesta> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 2;

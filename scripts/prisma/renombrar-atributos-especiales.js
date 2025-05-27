@@ -9,6 +9,19 @@ const scriptName = path.basename(__filename);
 
 const schemaFilePath = path.resolve("prisma/ft_factoring", "schema.prisma");
 
+const excepcionesRelacion = [
+  {
+    atributo_original: "colaborador", // atributo_A
+    campo: "contactocedente", // atributo_B
+    atributo_final: "contacto_cedente", // nuevo nombre deseado
+  },
+  {
+    atributo_original: "zlaboratorio_usuario", // atributo_A
+    campo: "usuario", // atributo_B
+    atributo_final: "usuario", // nuevo nombre deseado
+  },
+];
+
 const configurarPluralizacionEspanol = (p) => {
   p.addPluralRule(/([aeiouáéíóú])$/, "$1s");
   p.addPluralRule(/([íú])$/, "$1es");
@@ -85,12 +98,12 @@ const renombrarAtributosEspeciales = (filePath) => {
   const updatedLines = lines.map((line, i) => {
     const originalLine = line;
 
-    if (!line.includes('@relation("')) return line;
+    //if (!line.includes('@relation("')) return line;
 
-    totalMatches++;
-
+    // --- Caso 1: Relaciones con array ([]), aplicar pluralización ---
     const matchMuchos = line.match(/^(\s*)(\w+)(\s+)(\w+(?:_\w+)*)\[\](.*@relation\("([^"]+)"[^)]*\))/);
     if (matchMuchos) {
+      totalMatches++;
       const [_, indent, attr, spacing, tipoDato, rest, relName] = matchMuchos;
       const campoExtraido = relName.match(/_id([a-zA-Z0-9]+)To/);
       if (campoExtraido) {
@@ -114,8 +127,10 @@ const renombrarAtributosEspeciales = (filePath) => {
       return line;
     }
 
+    // --- Caso 2: Relaciones singulares ---
     const matchUno = line.match(/^(\s*)(\w+)(\s+)(\w+(?:_\w+)*)(\??)(.*@relation\("([^"]+)"[^)]*\))/);
     if (matchUno) {
+      totalMatches++;
       const [_, indent, attr, spacing, tipoDato, opcional, rest, relName] = matchUno;
       const campoExtraido = relName.match(/_id([a-zA-Z0-9]+)To/);
 
@@ -135,6 +150,76 @@ const renombrarAtributosEspeciales = (filePath) => {
           logDetalles.push(log);
         }
       }
+      return line;
+    }
+
+    // --- Caso 3: Nuevas relaciones con fields:[id...] y references:[id...] ---
+    const matchRelationField = line.match(/^(\s*)(\w+(?:_\w+)*)(\s+)(\w+(?:_\w+)*)(.*@relation\(fields: \[id(\w+)\], references: \[id\w+\].*)$/);
+    if (matchRelationField) {
+      totalMatches++;
+      const [_, indent, attrA, spacing, tipoDato, rest, attrB] = matchRelationField;
+
+      const cleanA = attrA.toLowerCase().replace(/_/g, "");
+      const cleanB = attrB.toLowerCase().replace(/_/g, "");
+
+      // Si ya son iguales, no hacer nada
+      if (cleanA === cleanB) {
+        const log = `✔️ Línea ${i + 1}: (relation-field) ${attrA} ya coincide con '${attrB}'`;
+        console.log(log);
+        logDetalles.push(log);
+        return line;
+      }
+
+      // Caso especial: buscar en excepciones
+      const excepcion = excepcionesRelacion.find((e) => e.atributo_original === attrA && e.campo === attrB);
+
+      if (excepcion) {
+        const nuevoNombre = excepcion.atributo_final;
+        const nombreConEspacios = `${nuevoNombre}${" ".repeat(Math.max(0, (attrA + spacing).length - nuevoNombre.length))}`;
+        const nuevaLinea = `${indent}${nombreConEspacios}${tipoDato}${rest}`;
+        modificados++;
+        const log = `🛠️ Línea ${i + 1}: (relation-field) (EXCEPTION) ${attrA} ➜ ${nuevoNombre} | Campo: '${attrB}' | Original: '${originalLine.trim()}'`;
+        console.log(log);
+        logDetalles.push(log);
+        return nuevaLinea;
+      }
+
+      // Si attrB no comienza con attrA, no procesar
+      if (!cleanB.startsWith(cleanA)) {
+        const log = `⚠️ Línea ${i + 1}: (relation-field) '${attrB}' no comienza con '${attrA}' (limpio: '${cleanA}') | Original: '${originalLine.trim()}'`;
+        console.log(log);
+        logDetalles.push(log);
+        return line;
+      }
+
+      // Separar attrA por palabras
+      const palabrasA = attrA.toLowerCase().split("_");
+
+      let index = 0;
+      let nuevoNombreParts = [];
+
+      for (let palabra of palabrasA) {
+        const pos = cleanB.indexOf(palabra, index);
+        if (pos === -1) break;
+        nuevoNombreParts.push(palabra);
+        index = pos + palabra.length;
+      }
+
+      const sufijo = cleanB.slice(index);
+      if (sufijo) nuevoNombreParts.push(sufijo);
+
+      const nuevoNombre = nuevoNombreParts.join("_");
+
+      if (attrA !== nuevoNombre) {
+        const nombreConEspacios = `${nuevoNombre}${" ".repeat(Math.max(0, (attrA + spacing).length - nuevoNombre.length))}`;
+        const nuevaLinea = `${indent}${nombreConEspacios}${tipoDato}${rest}`;
+        modificados++;
+        //const log = `🛠️ Línea ${i + 1}: (relation-field) ${attrA} ➜ ${nuevoNombre} | A partir de: '${attrB}' | Original: '${originalLine.trim()}'`;
+        //console.log(log);
+        //logDetalles.push(log);
+        return nuevaLinea;
+      }
+      return line;
     }
 
     return line;

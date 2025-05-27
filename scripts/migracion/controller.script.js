@@ -592,13 +592,104 @@ function fixFunctionByModel(filePath) {
   }
 }
 
+function pascalCase(str) {
+  return str
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join("");
+}
+
+function migrarAttributes(filePath, schemaPath = "./prisma/ft_factoring/schema.prisma") {
+  if (!fs.existsSync(schemaPath)) {
+    console.error(`❌ No se encontró el archivo schema.prisma en: ${schemaPath}`);
+    return;
+  }
+
+  const schemaContent = fs.readFileSync(schemaPath, "utf-8");
+
+  // 1. Extraer modelos
+  const modelRegex = /^model\s+(\w+)\s+{/gm;
+  let match;
+  const modelNames = [];
+
+  while ((match = modelRegex.exec(schemaContent)) !== null) {
+    modelNames.push(match[1]);
+  }
+
+  if (modelNames.length === 0) {
+    console.warn(`⚠ No se encontraron modelos en el schema`);
+    return;
+  }
+
+  // 2. Crear diccionario PascalCase -> snake_case
+  const modelMap = {};
+  modelNames.forEach((model) => {
+    const snake = pascalCase(model.replace(/([a-z0-9])([A-Z])/g, "$1_$2").toLowerCase());
+    modelMap[snake] = model;
+  });
+
+  // 3. Procesar archivo
+
+  const originalCode = fs.readFileSync(filePath, "utf-8");
+  let modifiedCode = originalCode;
+
+  Object.entries(modelMap).forEach(([pascal, snake]) => {
+    const regex = new RegExp(`\\b${pascal}Attributes\\b`, "g");
+    modifiedCode = modifiedCode.replace(regex, snake);
+  });
+
+  if (modifiedCode !== originalCode) {
+    fs.writeFileSync(filePath, modifiedCode, "utf-8");
+    archivosActualizados++;
+    console.log(`✔ Reemplazos realizados en: ${filePath}`);
+  } else {
+    archivosSinCambios++;
+    console.log(`ℹ Sin cambios: ${filePath}`);
+  }
+}
+
+function ajustarTypesDePrisma(filePath) {
+  const originalCode = fs.readFileSync(filePath, "utf-8");
+  const lines = originalCode.split("\n");
+
+  let updated = false;
+
+  const modifiedLines = lines.map((line) => {
+    // Regex que encuentra: attributes: ["_algo"],
+    const debeterminar = '"#src/models/prisma/ft_factoring/client";';
+    const match = line.trim().endsWith(debeterminar);
+
+    if (match) {
+      const start = line.startsWith("import type {");
+
+      if (!start) {
+        updated = true;
+        const newLine = line.replace("import {", "import type {");
+        return newLine;
+      }
+    }
+
+    return line;
+  });
+
+  if (updated) {
+    const updatedCode = modifiedLines.join("\n");
+    fs.writeFileSync(filePath, updatedCode, "utf-8");
+    console.log(`✔ Archivo modificado: ${filePath}`);
+    archivosActualizados++;
+  } else {
+    console.log(`ℹ Sin cambios: ${filePath}`);
+    archivosSinCambios++;
+  }
+}
+
 export const run = async () => {
   console.log(`\n🚀 Iniciando Migración a PRISMA en: ${targetDir}\n`);
 
   const tsFiles = getAllControllerPrismaTsFiles(targetDir);
 
   tsFiles.forEach((filePath) => {
-    addImportIfNotExist(filePath, 'import { Request, Response } from "express";');
+    //addImportIfNotExist(filePath, 'import type { Prisma } from "#src/models/prisma/ft_factoring/client";');
     //addImportIfNotExist(filePath, 'import { TxClient } from "#src/types/Prisma.types.js";');
     //adjustNextCharCase(filePath, " = await tx.");
     //modifyNameOfTables(filePath, " = await tx.");
@@ -612,6 +703,8 @@ export const run = async () => {
     //fixFunctionSignaturesByModel(filePath);
     //fixFunctionSignaturesGetAll(filePath);
     //fixFunctionByModel(filePath);
+    //migrarAttributes(filePath);
+    //ajustarTypesDePrisma(filePath);
   });
 
   // Resumen final

@@ -1,10 +1,11 @@
+import type { Prisma } from "#src/models/prisma/ft_factoring/client";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 
-import * as contactoDao from "#src/daos/contactoDao.js";
-import * as empresaDao from "#src/daos/empresaDao.js";
-import * as facturaDao from "#src/daos/facturaDao.js";
-import * as factoringDao from "#src/daos/factoringDao.js";
+import * as contactoDao from "#src/daos/contacto.prisma.Dao.js";
+import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
+import * as facturaDao from "#src/daos/factura.prisma.Dao.js";
+import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
@@ -13,7 +14,7 @@ import { log, line } from "#src/utils/logger.pino.js";
 import { Sequelize, Op } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-import { ContactoAttributes } from "#root/src/models/ft_factoring/Contacto";
+import { contacto } from "#root/src/models/ft_factoring/Contacto";
 
 export const getContactos = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getContactos");
@@ -121,14 +122,14 @@ export const createContacto = async (req: Request, res: Response) => {
         throw new ClientError("El email [" + contactoValidated.email + "] se encuentra registrado. Ingrese un contacto diferente.", 404);
       }
 
-      var camposContactoFk: Partial<ContactoAttributes> = {};
+      var camposContactoFk: Partial<contacto> = {};
       camposContactoFk._idempresa = empresa._idempresa;
 
-      var camposContactoAdicionales: Partial<ContactoAttributes> = {};
+      var camposContactoAdicionales: Partial<contacto> = {};
       camposContactoAdicionales.contactoid = uuidv4();
       camposContactoAdicionales.code = uuidv4().split("-")[0];
 
-      var camposContactoAuditoria: Partial<ContactoAttributes> = {};
+      var camposContactoAuditoria: Partial<contacto> = {};
       camposContactoAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
       camposContactoAuditoria.fechacrea = new Date();
       camposContactoAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;

@@ -1,15 +1,16 @@
+import type { Prisma } from "#src/models/prisma/ft_factoring/client";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import * as personaDao from "#src/daos/personaDao.js";
-import * as documentotipoDao from "#src/daos/documentotipoDao.js";
-import * as paisDao from "#src/daos/paisDao.js";
-import * as provinciaDao from "#src/daos/provinciaDao.js";
-import * as distritoDao from "#src/daos/distritoDao.js";
-import * as generoDao from "#src/daos/generoDao.js";
-import * as personadeclaracionDao from "#src/daos/personadeclaracionDao.js";
-import * as usuarioDao from "#src/daos/usuarioDao.js";
-import * as archivoDao from "#src/daos/archivoDao.js";
-import * as archivopersonaDao from "#src/daos/archivopersonaDao.js";
+import * as personaDao from "#src/daos/persona.prisma.Dao.js";
+import * as documentotipoDao from "#src/daos/documentotipo.prisma.Dao.js";
+import * as paisDao from "#src/daos/pais.prisma.Dao.js";
+import * as provinciaDao from "#src/daos/provincia.prisma.Dao.js";
+import * as distritoDao from "#src/daos/distrito.prisma.Dao.js";
+import * as generoDao from "#src/daos/genero.prisma.Dao.js";
+import * as personadeclaracionDao from "#src/daos/personadeclaracion.prisma.Dao.js";
+import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
+import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
+import * as archivopersonaDao from "#src/daos/archivopersona.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
@@ -18,7 +19,7 @@ import { log, line } from "#src/utils/logger.pino.js";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { Sequelize, Op } from "sequelize";
-import { PersonaAttributes } from "#root/src/models/ft_factoring/Persona";
+import { persona } from "#root/src/models/ft_factoring/Persona";
 
 export const activatePersona = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activatePersona");
@@ -34,7 +35,7 @@ export const activatePersona = async (req: Request, res: Response) => {
 
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
-      var camposAuditoria: Partial<PersonaAttributes> = {};
+      var camposAuditoria: Partial<persona> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 1;
@@ -65,7 +66,7 @@ export const deletePersona = async (req: Request, res: Response) => {
 
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
-      var camposAuditoria: Partial<PersonaAttributes> = {};
+      var camposAuditoria: Partial<persona> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 2;
@@ -140,10 +141,10 @@ export const updatePersona = async (req: Request, res: Response) => {
     async (tx) => {
       var camposFk = {};
 
-      var camposAdicionales: Partial<PersonaAttributes> = {};
+      var camposAdicionales: Partial<persona> = {};
       camposAdicionales.personaid = personaValidated.personaid;
 
-      var camposAuditoria: Partial<PersonaAttributes> = {};
+      var camposAuditoria: Partial<persona> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
 

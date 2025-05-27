@@ -1,0 +1,30 @@
+import { type Request, type Response, type NextFunction } from "express";
+import { ValidationError } from "yup";
+import { log, line } from "#src/utils/logger.pino.js";
+import { customResponseError } from "#src/utils/CustomResponseError.js";
+import util from "util";
+
+export function errorHandlerMiddleware(err: any, req: Request, res: Response, next: NextFunction): void {
+  let { statusCode, message } = err;
+
+  if (err instanceof ValidationError) {
+    statusCode = 400;
+    message = "Datos no válidos";
+
+    const mensajeError = err.inner.map((dato) => ({
+      message: dato.message,
+      originalValue: dato.value,
+      path: dato.path,
+    }));
+
+    log.error(line(), "ValidationError:", util.inspect(mensajeError, { colors: true, depth: null }));
+  }
+
+  if (statusCode === undefined) {
+    statusCode = 500;
+    message = "Ocurrió un error";
+  }
+
+  log.error(line(), "Uncaught Error:", util.inspect(err, { colors: true, depth: null }));
+  customResponseError(res, statusCode, message);
+}

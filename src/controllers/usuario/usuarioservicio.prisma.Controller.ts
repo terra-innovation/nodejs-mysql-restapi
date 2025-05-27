@@ -1,34 +1,35 @@
+import type { Prisma } from "#src/models/prisma/ft_factoring/client";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import * as paisDao from "#src/daos/paisDao.js";
-import * as provinciaDao from "#src/daos/provinciaDao.js";
-import * as distritoDao from "#src/daos/distritoDao.js";
-import * as bancoDao from "#src/daos/bancoDao.js";
-import * as cuentatipoDao from "#src/daos/cuentatipoDao.js";
-import * as monedaDao from "#src/daos/monedaDao.js";
-import * as personaDao from "#src/daos/personaDao.js";
-import * as inversionistaDao from "#src/daos/inversionistaDao.js";
-import * as cuentabancariaDao from "#src/daos/cuentabancariaDao.js";
-import * as cuentabancariaestadoDao from "#src/daos/cuentabancariaestadoDao.js";
-import * as empresacuentabancariaDao from "#src/daos/empresacuentabancariaDao.js";
-import * as inversionistacuentabancariaDao from "#src/daos/inversionistacuentabancariaDao.js";
-import * as colaboradortipoDao from "#src/daos/colaboradortipoDao.js";
-import * as colaboradorDao from "#src/daos/colaboradorDao.js";
-import * as servicioempresaDao from "#src/daos/servicioempresaDao.js";
-import * as servicioempresaestadoDao from "#src/daos/servicioempresaestadoDao.js";
-import * as servicioempresaverificacionDao from "#src/daos/servicioempresaverificacionDao.js";
-import * as usuarioDao from "#src/daos/usuarioDao.js";
-import * as usuarioservicioempresaDao from "#src/daos/usuarioservicioempresaDao.js";
-import * as usuarioservicioempresaestadoDao from "#src/daos/usuarioservicioempresaestadoDao.js";
-import * as usuarioservicioempresarolDao from "#src/daos/usuarioservicioempresarolDao.js";
-import * as usuarioservicioDao from "#src/daos/usuarioservicioDao.js";
-import * as usuarioservicioestadoDao from "#src/daos/usuarioservicioestadoDao.js";
-import * as usuarioservicioverificacionDao from "#src/daos/usuarioservicioverificacionDao.js";
-import * as archivoDao from "#src/daos/archivoDao.js";
-import * as archivoempresaDao from "#src/daos/archivoempresaDao.js";
-import * as archivocolaboradorDao from "#src/daos/archivocolaboradorDao.js";
-import * as archivocuentabancariaDao from "#src/daos/archivocuentabancariaDao.js";
-import * as empresaDao from "#src/daos/empresaDao.js";
+import * as paisDao from "#src/daos/pais.prisma.Dao.js";
+import * as provinciaDao from "#src/daos/provincia.prisma.Dao.js";
+import * as distritoDao from "#src/daos/distrito.prisma.Dao.js";
+import * as bancoDao from "#src/daos/banco.prisma.Dao.js";
+import * as cuentatipoDao from "#src/daos/cuentatipo.prisma.Dao.js";
+import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
+import * as personaDao from "#src/daos/persona.prisma.Dao.js";
+import * as inversionistaDao from "#src/daos/inversionista.prisma.Dao.js";
+import * as cuentabancariaDao from "#src/daos/cuentabancaria.prisma.Dao.js";
+import * as cuentabancariaestadoDao from "#src/daos/cuentabancariaestado.prisma.Dao.js";
+import * as empresacuentabancariaDao from "#src/daos/empresacuentabancaria.prisma.Dao.js";
+import * as inversionistacuentabancariaDao from "#src/daos/inversionistacuentabancaria.prisma.Dao.js";
+import * as colaboradortipoDao from "#src/daos/colaboradortipo.prisma.Dao.js";
+import * as colaboradorDao from "#src/daos/colaborador.prisma.Dao.js";
+import * as servicioempresaDao from "#src/daos/servicioempresa.prisma.Dao.js";
+import * as servicioempresaestadoDao from "#src/daos/servicioempresaestado.prisma.Dao.js";
+import * as servicioempresaverificacionDao from "#src/daos/servicioempresaverificacion.prisma.Dao.js";
+import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
+import * as usuarioservicioempresaDao from "#src/daos/usuarioservicioempresa.prisma.Dao.js";
+import * as usuarioservicioempresaestadoDao from "#src/daos/usuarioservicioempresaestado.prisma.Dao.js";
+import * as usuarioservicioempresarolDao from "#src/daos/usuarioservicioempresarol.prisma.Dao.js";
+import * as usuarioservicioDao from "#src/daos/usuarioservicio.prisma.Dao.js";
+import * as usuarioservicioestadoDao from "#src/daos/usuarioservicioestado.prisma.Dao.js";
+import * as usuarioservicioverificacionDao from "#src/daos/usuarioservicioverificacion.prisma.Dao.js";
+import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
+import * as archivoempresaDao from "#src/daos/archivoempresa.prisma.Dao.js";
+import * as archivocolaboradorDao from "#src/daos/archivocolaborador.prisma.Dao.js";
+import * as archivocuentabancariaDao from "#src/daos/archivocuentabancaria.prisma.Dao.js";
+import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
@@ -42,16 +43,16 @@ import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { Sequelize, Op } from "sequelize";
-import { CuentaBancariaAttributes } from "#root/src/models/ft_factoring/CuentaBancaria";
-import { InversionistaCuentaBancariaAttributes } from "#root/src/models/ft_factoring/InversionistaCuentaBancaria";
-import { UsuarioServicioVerificacionAttributes } from "#root/src/models/ft_factoring/UsuarioServicioVerificacion";
-import { UsuarioServicioAttributes } from "#root/src/models/ft_factoring/UsuarioServicio";
-import { EmpresaAttributes } from "#root/src/models/ft_factoring/Empresa";
-import { ColaboradorAttributes } from "#root/src/models/ft_factoring/Colaborador";
-import { EmpresaCuentaBancaria, EmpresaCuentaBancariaAttributes } from "#root/src/models/ft_factoring/EmpresaCuentaBancaria";
-import { ServicioEmpresaAttributes } from "#root/src/models/ft_factoring/ServicioEmpresa";
-import { UsuarioServicioEmpresaAttributes } from "#root/src/models/ft_factoring/UsuarioServicioEmpresa";
-import { ServicioEmpresaVerificacionAttributes } from "#root/src/models/ft_factoring/ServicioEmpresaVerificacion";
+import { cuenta_bancaria } from "#root/src/models/ft_factoring/CuentaBancaria";
+import { inversionista_cuenta_bancaria } from "#root/src/models/ft_factoring/InversionistaCuentaBancaria";
+import { usuario_servicio_verificacion } from "#root/src/models/ft_factoring/UsuarioServicioVerificacion";
+import { usuario_servicio } from "#root/src/models/ft_factoring/UsuarioServicio";
+import { empresa } from "#root/src/models/ft_factoring/Empresa";
+import { colaborador } from "#root/src/models/ft_factoring/Colaborador";
+import { EmpresaCuentaBancaria, empresa_cuenta_bancaria } from "#root/src/models/ft_factoring/EmpresaCuentaBancaria";
+import { servicio_empresa } from "#root/src/models/ft_factoring/ServicioEmpresa";
+import { usuario_servicio_empresa } from "#root/src/models/ft_factoring/UsuarioServicioEmpresa";
+import { servicio_empresa_verificacion } from "#root/src/models/ft_factoring/ServicioEmpresaVerificacion";
 
 export const suscribirUsuarioServicioFactoringInversionista = async (req: Request, res: Response) => {
   log.debug(line(), "controller::suscribirUsuarioServicioFactoringInversionista");
@@ -160,22 +161,22 @@ export const suscribirUsuarioServicioFactoringInversionista = async (req: Reques
 
       /* Creamos la Cuenta Bancaria asociada al Inversionista */
 
-      let camposCuentabancariaNuevo: Partial<CuentaBancariaAttributes> = {};
+      let camposCuentabancariaNuevo: Partial<cuenta_bancaria> = {};
       camposCuentabancariaNuevo.numero = usuarioservicioValidated.numero;
       camposCuentabancariaNuevo.cci = usuarioservicioValidated.cci;
       camposCuentabancariaNuevo.alias = usuarioservicioValidated.alias;
 
-      let camposCuentabancariaNuevoFk: Partial<CuentaBancariaAttributes> = {};
+      let camposCuentabancariaNuevoFk: Partial<cuenta_bancaria> = {};
       camposCuentabancariaNuevoFk._idbanco = banco._idbanco;
       camposCuentabancariaNuevoFk._idcuentatipo = cuentatipo._idcuentatipo;
       camposCuentabancariaNuevoFk._idmoneda = moneda._idmoneda;
       camposCuentabancariaNuevoFk._idcuentabancariaestado = cuentabancariaestado._idcuentabancariaestado;
 
-      let camposCuentabancariaNuevoAdicionales: Partial<CuentaBancariaAttributes> = {};
+      let camposCuentabancariaNuevoAdicionales: Partial<cuenta_bancaria> = {};
       camposCuentabancariaNuevoAdicionales.cuentabancariaid = uuidv4();
       camposCuentabancariaNuevoAdicionales.code = uuidv4().split("-")[0];
 
-      let camposCuentabancariaNuevoAuditoria: Partial<CuentaBancariaAttributes> = {};
+      let camposCuentabancariaNuevoAuditoria: Partial<cuenta_bancaria> = {};
       camposCuentabancariaNuevoAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
       camposCuentabancariaNuevoAuditoria.fechacrea = new Date();
       camposCuentabancariaNuevoAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
@@ -191,15 +192,15 @@ export const suscribirUsuarioServicioFactoringInversionista = async (req: Reques
 
       log.debug(line(), "cuentabancariaCreated:", cuentabancariaCreated.dataValues);
 
-      let camposInversionistacuentabancariaNuevoFk: Partial<InversionistaCuentaBancariaAttributes> = {};
+      let camposInversionistacuentabancariaNuevoFk: Partial<inversionista_cuenta_bancaria> = {};
       camposInversionistacuentabancariaNuevoFk._idinversionista = inversionistaCreated._idinversionista;
       camposInversionistacuentabancariaNuevoFk._idcuentabancaria = cuentabancariaCreated._idcuentabancaria;
 
-      let camposInversionistacuentabancariaNuevoAdicionales: Partial<InversionistaCuentaBancariaAttributes> = {};
+      let camposInversionistacuentabancariaNuevoAdicionales: Partial<inversionista_cuenta_bancaria> = {};
       camposInversionistacuentabancariaNuevoAdicionales.inversionistacuentabancariaid = uuidv4();
       camposInversionistacuentabancariaNuevoAdicionales.code = uuidv4().split("-")[0];
 
-      let camposInversionistacuentabancariaNuevoAuditoria: Partial<InversionistaCuentaBancariaAttributes> = {};
+      let camposInversionistacuentabancariaNuevoAuditoria: Partial<inversionista_cuenta_bancaria> = {};
       camposInversionistacuentabancariaNuevoAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
       camposInversionistacuentabancariaNuevoAuditoria.fechacrea = new Date();
       camposInversionistacuentabancariaNuevoAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
@@ -215,7 +216,7 @@ export const suscribirUsuarioServicioFactoringInversionista = async (req: Reques
       log.debug(line(), "imversionistacuentabancariaCreated:", imversionistacuentabancariaCreated.dataValues);
 
       /* Registramos para la verificación del usuario_servicio en la tabla usuario_servicio_verificacion */
-      const camposUsuarioservicioverificacionCreate: Partial<UsuarioServicioVerificacionAttributes> = {};
+      const camposUsuarioservicioverificacionCreate: Partial<usuario_servicio_verificacion> = {};
       camposUsuarioservicioverificacionCreate.usuarioservicioverificacionid = uuidv4();
       camposUsuarioservicioverificacionCreate._idusuarioservicio = usuarioservicio._idusuarioservicio;
       camposUsuarioservicioverificacionCreate._idusuarioservicioestado = usuarioservicioestado._idusuarioservicioestado;
@@ -232,7 +233,7 @@ export const suscribirUsuarioServicioFactoringInversionista = async (req: Reques
       log.debug(line(), "usuarioservicioverificacionCreated:", usuarioservicioverificacionCreated.dataValues);
 
       /* Actualizamos el estado del usuario_servicio*/
-      const camposUsuarioservicioUpdate: Partial<UsuarioServicioAttributes> = {};
+      const camposUsuarioservicioUpdate: Partial<usuario_servicio> = {};
       camposUsuarioservicioUpdate._idusuarioservicio = usuarioservicio._idusuarioservicio;
       camposUsuarioservicioUpdate.usuarioservicioid = usuarioservicio.usuarioservicioid;
       camposUsuarioservicioUpdate._idusuarioservicioestado = usuarioservicioestado._idusuarioservicioestado;
@@ -414,23 +415,23 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       /* Creamos la Empresa */
       const provinciaResidencia = await provinciaDao.getProvinciaByIdprovincia(tx, distritoSede._idprovincia);
 
-      let camposEmpresaNuevo: Partial<EmpresaAttributes> = {};
+      let camposEmpresaNuevo: Partial<empresa> = {};
       camposEmpresaNuevo.ruc = usuarioservicioValidated.ruc;
       camposEmpresaNuevo.razon_social = usuarioservicioValidated.razon_social;
       camposEmpresaNuevo.direccion_sede = usuarioservicioValidated.direccion_sede;
       camposEmpresaNuevo.direccion_sede_referencia = usuarioservicioValidated.direccion_sede_referencia;
 
-      let camposEmpresaNuevoFk: Partial<EmpresaAttributes> = {};
+      let camposEmpresaNuevoFk: Partial<empresa> = {};
       camposEmpresaNuevoFk._idpaissede = paisSede._idpais;
       camposEmpresaNuevoFk._iddepartamentosede = provinciaResidencia._iddepartamento;
       camposEmpresaNuevoFk._idprovinciasede = distritoSede._idprovincia;
       camposEmpresaNuevoFk._iddistritosede = distritoSede._iddistrito;
 
-      let camposEmpresaNuevoAdicionales: Partial<EmpresaAttributes> = {};
+      let camposEmpresaNuevoAdicionales: Partial<empresa> = {};
       camposEmpresaNuevoAdicionales.empresaid = uuidv4();
       camposEmpresaNuevoAdicionales.code = uuidv4().split("-")[0];
 
-      let camposEmpresaNuevoAuditoria: Partial<EmpresaAttributes> = {};
+      let camposEmpresaNuevoAuditoria: Partial<empresa> = {};
       camposEmpresaNuevoAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
       camposEmpresaNuevoAuditoria.fechacrea = new Date();
       camposEmpresaNuevoAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
@@ -450,7 +451,7 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       const usuarioConected = await usuarioDao.getUsuarioByIdusuario(tx, usuarioservicioValidated._idusuario);
       const personaConected = await personaDao.getPersonaByIdusuario(tx, usuarioservicioValidated._idusuario);
 
-      let camposColaboradorNuevo: Partial<ColaboradorAttributes> = {};
+      let camposColaboradorNuevo: Partial<colaborador> = {};
       camposColaboradorNuevo.documentonumero = personaConected.documentonumero;
       camposColaboradorNuevo.nombrecolaborador = personaConected.personanombres;
       camposColaboradorNuevo.apellidocolaborador = personaConected.apellidopaterno + " " + personaConected.apellidomaterno;
@@ -460,16 +461,16 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       camposColaboradorNuevo.poderpartidanumero = usuarioservicioValidated.poderpartidanumero;
       camposColaboradorNuevo.poderpartidaciudad = usuarioservicioValidated.poderpartidaciudad;
 
-      let camposColaboradorNuevoFk: Partial<ColaboradorAttributes> = {};
+      let camposColaboradorNuevoFk: Partial<colaborador> = {};
       camposColaboradorNuevoFk._idempresa = empresaCreated._idempresa;
       camposColaboradorNuevoFk._idpersona = personaConected._idpersona;
       camposColaboradorNuevoFk._idcolaboradortipo = colaboradorttipo._idcolaboradortipo;
       camposColaboradorNuevoFk._iddocumentotipo = personaConected._iddocumentotipo;
 
-      let camposColaboradorNuevoAdicionales: Partial<ColaboradorAttributes> = {};
+      let camposColaboradorNuevoAdicionales: Partial<colaborador> = {};
       camposColaboradorNuevoAdicionales.colaboradorid = uuidv4();
 
-      let camposColaboradorNuevoAuditoria: Partial<ColaboradorAttributes> = {};
+      let camposColaboradorNuevoAuditoria: Partial<colaborador> = {};
       camposColaboradorNuevoAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
       camposColaboradorNuevoAuditoria.fechacrea = new Date();
       camposColaboradorNuevoAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
@@ -487,22 +488,22 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
 
       /* Creamos la Cuenta Bancaria asociada a la Empresa */
 
-      let camposCuentabancariaNuevo: Partial<CuentaBancariaAttributes> = {};
+      let camposCuentabancariaNuevo: Partial<cuenta_bancaria> = {};
       camposCuentabancariaNuevo.numero = usuarioservicioValidated.numero;
       camposCuentabancariaNuevo.cci = usuarioservicioValidated.cci;
       camposCuentabancariaNuevo.alias = usuarioservicioValidated.alias;
 
-      let camposCuentabancariaNuevoFk: Partial<CuentaBancariaAttributes> = {};
+      let camposCuentabancariaNuevoFk: Partial<cuenta_bancaria> = {};
       camposCuentabancariaNuevoFk._idbanco = banco._idbanco;
       camposCuentabancariaNuevoFk._idcuentatipo = cuentatipo._idcuentatipo;
       camposCuentabancariaNuevoFk._idmoneda = moneda._idmoneda;
       camposCuentabancariaNuevoFk._idcuentabancariaestado = cuentabancariaestado._idcuentabancariaestado;
 
-      let camposCuentabancariaNuevoAdicionales: Partial<CuentaBancariaAttributes> = {};
+      let camposCuentabancariaNuevoAdicionales: Partial<cuenta_bancaria> = {};
       camposCuentabancariaNuevoAdicionales.cuentabancariaid = uuidv4();
       camposCuentabancariaNuevoAdicionales.code = uuidv4().split("-")[0];
 
-      let camposCuentabancariaNuevoAuditoria: Partial<CuentaBancariaAttributes> = {};
+      let camposCuentabancariaNuevoAuditoria: Partial<cuenta_bancaria> = {};
       camposCuentabancariaNuevoAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
       camposCuentabancariaNuevoAuditoria.fechacrea = new Date();
       camposCuentabancariaNuevoAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
@@ -518,15 +519,15 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
 
       log.debug(line(), "cuentabancariaCreated:", cuentabancariaCreated);
 
-      let camposEmpresacuentabancariaNuevoFk: Partial<EmpresaCuentaBancariaAttributes> = {};
+      let camposEmpresacuentabancariaNuevoFk: Partial<empresa_cuenta_bancaria> = {};
       camposEmpresacuentabancariaNuevoFk._idempresa = empresaCreated._idempresa;
       camposEmpresacuentabancariaNuevoFk._idcuentabancaria = cuentabancariaCreated._idcuentabancaria;
 
-      let camposEmpresacuentabancariaNuevoAdicionales: Partial<EmpresaCuentaBancariaAttributes> = {};
+      let camposEmpresacuentabancariaNuevoAdicionales: Partial<empresa_cuenta_bancaria> = {};
       camposEmpresacuentabancariaNuevoAdicionales.empresacuentabancariaid = uuidv4();
       camposEmpresacuentabancariaNuevoAdicionales.code = uuidv4().split("-")[0];
 
-      let camposEmpresacuentabancariaNuevoAuditoria: Partial<EmpresaCuentaBancariaAttributes> = {};
+      let camposEmpresacuentabancariaNuevoAuditoria: Partial<empresa_cuenta_bancaria> = {};
       camposEmpresacuentabancariaNuevoAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
       camposEmpresacuentabancariaNuevoAuditoria.fechacrea = new Date();
       camposEmpresacuentabancariaNuevoAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
@@ -543,17 +544,17 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
 
       /* Registramos el Servicio para la Empresa en la tabla servicio_empresa */
 
-      let camposServicioempresaNuevoFk: Partial<ServicioEmpresaAttributes> = {};
+      let camposServicioempresaNuevoFk: Partial<servicio_empresa> = {};
       camposServicioempresaNuevoFk._idservicio = 1;
       camposServicioempresaNuevoFk._idempresa = empresaCreated._idempresa;
       camposServicioempresaNuevoFk._idusuariosuscriptor = usuarioConected._idusuario;
       camposServicioempresaNuevoFk._idservicioempresaestado = servicioempresaestado._idservicioempresaestado;
 
-      let camposServicioempresaNuevoAdicionales: Partial<ServicioEmpresaAttributes> = {};
+      let camposServicioempresaNuevoAdicionales: Partial<servicio_empresa> = {};
       camposServicioempresaNuevoAdicionales.servicioempresaid = uuidv4();
       camposServicioempresaNuevoAdicionales.code = uuidv4().split("-")[0];
 
-      let camposServicioempresaNuevoAuditoria: Partial<ServicioEmpresaAttributes> = {};
+      let camposServicioempresaNuevoAuditoria: Partial<servicio_empresa> = {};
       camposServicioempresaNuevoAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
       camposServicioempresaNuevoAuditoria.fechacrea = new Date();
       camposServicioempresaNuevoAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
@@ -570,18 +571,18 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
 
       /* Registramos el acceso del usuario a la Empresa en la tabla usuario_servicio_empresa */
 
-      let camposUsuarioservicioempresaNuevoFk: Partial<UsuarioServicioEmpresaAttributes> = {};
+      let camposUsuarioservicioempresaNuevoFk: Partial<usuario_servicio_empresa> = {};
       camposUsuarioservicioempresaNuevoFk._idusuario = usuarioConected._idusuario;
       camposUsuarioservicioempresaNuevoFk._idservicio = 1;
       camposUsuarioservicioempresaNuevoFk._idempresa = empresaCreated._idempresa;
       camposUsuarioservicioempresaNuevoFk._idusuarioservicioempresaestado = usuarioservicioempresaestado._idusuarioservicioempresaestado;
       camposUsuarioservicioempresaNuevoFk._idusuarioservicioempresarol = usuarioservicioempresarol._idusuarioservicioempresarol;
 
-      let camposUsuarioservicioempresaNuevoAdicionales: Partial<UsuarioServicioEmpresaAttributes> = {};
+      let camposUsuarioservicioempresaNuevoAdicionales: Partial<usuario_servicio_empresa> = {};
       camposUsuarioservicioempresaNuevoAdicionales.usuarioservicioempresaid = uuidv4();
       camposUsuarioservicioempresaNuevoAdicionales.code = uuidv4().split("-")[0];
 
-      let camposUsuarioservicioempresaNuevoAuditoria: Partial<UsuarioServicioEmpresaAttributes> = {};
+      let camposUsuarioservicioempresaNuevoAuditoria: Partial<usuario_servicio_empresa> = {};
       camposUsuarioservicioempresaNuevoAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
       camposUsuarioservicioempresaNuevoAuditoria.fechacrea = new Date();
       camposUsuarioservicioempresaNuevoAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
@@ -609,7 +610,7 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       log.debug(line(), "encabezadocuentabancariaCreated:", encabezadocuentabancariaCreated);
 
       /* Registramos para la verificación del servicio_empresa en la tabla servicio_empresa_verificacion */
-      const camposServicioempresaverificacionCreate: Partial<ServicioEmpresaVerificacionAttributes> = {};
+      const camposServicioempresaverificacionCreate: Partial<servicio_empresa_verificacion> = {};
       camposServicioempresaverificacionCreate.servicioempresaverificacionid = uuidv4();
       camposServicioempresaverificacionCreate._idservicioempresa = servicioempresaCreated._idservicioempresa;
       camposServicioempresaverificacionCreate._idservicioempresaestado = servicioempresaestado._idservicioempresaestado;
@@ -626,7 +627,7 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       log.debug(line(), "servicioempresaverificacionCreated:", servicioempresaverificacionCreated);
 
       /* Registramos para la verificación del usuario_servicio en la tabla usuario_servicio_verificacion */
-      const camposUsuarioservicioverificacionCreate: Partial<UsuarioServicioVerificacionAttributes> = {};
+      const camposUsuarioservicioverificacionCreate: Partial<usuario_servicio_verificacion> = {};
       camposUsuarioservicioverificacionCreate.usuarioservicioverificacionid = uuidv4();
       camposUsuarioservicioverificacionCreate._idusuarioservicio = usuarioservicio._idusuarioservicio;
       camposUsuarioservicioverificacionCreate._idusuarioservicioestado = usuarioservicioestado._idusuarioservicioestado;
@@ -643,7 +644,7 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       log.debug(line(), "usuarioservicioverificacionCreated:", usuarioservicioverificacionCreated);
 
       /* Actualizamos el estado del usuario_servicio*/
-      const camposUsuarioservicioUpdate: Partial<UsuarioServicioAttributes> = {};
+      const camposUsuarioservicioUpdate: Partial<usuario_servicio> = {};
       camposUsuarioservicioUpdate._idusuarioservicio = usuarioservicio._idusuarioservicio;
       camposUsuarioservicioUpdate.usuarioservicioid = usuarioservicio.usuarioservicioid;
       camposUsuarioservicioUpdate._idusuarioservicioestado = usuarioservicioestado._idusuarioservicioestado;

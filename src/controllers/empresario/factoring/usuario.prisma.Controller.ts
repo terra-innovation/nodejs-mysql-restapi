@@ -1,7 +1,8 @@
+import type { Prisma } from "#src/models/prisma/ft_factoring/client";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 
-import * as usuarioDao from "#src/daos/usuarioDao.js";
+import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";

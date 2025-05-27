@@ -1,16 +1,17 @@
+import type { Prisma } from "#src/models/prisma/ft_factoring/client";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 
-import * as cuentabancariaDao from "#src/daos/cuentabancariaDao.js";
-import * as empresaDao from "#src/daos/empresaDao.js";
-import * as personaDao from "#src/daos/personaDao.js";
-import * as factoringDao from "#src/daos/factoringDao.js";
-import * as factoringfacturaDao from "#src/daos/factoringfacturaDao.js";
-import * as factoringhistorialestadoDao from "#src/daos/factoringhistorialestadoDao.js";
-import * as facturaDao from "#src/daos/facturaDao.js";
-import * as contactoDao from "#src/daos/contactoDao.js";
-import * as colaboradorDao from "#src/daos/colaboradorDao.js";
-import * as monedaDao from "#src/daos/monedaDao.js";
+import * as cuentabancariaDao from "#src/daos/cuentabancaria.prisma.Dao.js";
+import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
+import * as personaDao from "#src/daos/persona.prisma.Dao.js";
+import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
+import * as factoringfacturaDao from "#src/daos/factoringfactura.prisma.Dao.js";
+import * as factoringhistorialestadoDao from "#src/daos/factoringhistorialestado.prisma.Dao.js";
+import * as facturaDao from "#src/daos/factura.prisma.Dao.js";
+import * as contactoDao from "#src/daos/contacto.prisma.Dao.js";
+import * as colaboradorDao from "#src/daos/colaborador.prisma.Dao.js";
+import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { log, line } from "#src/utils/logger.pino.js";

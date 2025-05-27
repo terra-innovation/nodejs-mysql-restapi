@@ -1,15 +1,16 @@
+import type { Prisma } from "#src/models/prisma/ft_factoring/client";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import * as facturaDao from "#src/daos/facturaDao.js";
-import * as bancoDao from "#src/daos/bancoDao.js";
-import * as factoringDao from "#src/daos/factoringDao.js";
-import * as riesgoDao from "#src/daos/riesgoDao.js";
+import * as facturaDao from "#src/daos/factura.prisma.Dao.js";
+import * as bancoDao from "#src/daos/banco.prisma.Dao.js";
+import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
+import * as riesgoDao from "#src/daos/riesgo.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-import { FacturaAttributes } from "#src/models/ft_factoring/Factura";
+import type { factura } from "#src/models/prisma/ft_factoring/client";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
@@ -65,7 +66,7 @@ export const activateFactura = async (req: Request, res: Response) => {
 
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
-      var camposAuditoria: Partial<FacturaAttributes> = {};
+      var camposAuditoria: Partial<factura> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 1;
@@ -96,7 +97,7 @@ export const deleteFactura = async (req: Request, res: Response) => {
 
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
-      var camposAuditoria: Partial<FacturaAttributes> = {};
+      var camposAuditoria: Partial<factura> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 2;

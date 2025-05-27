@@ -1,22 +1,23 @@
+import type { Prisma } from "#src/models/prisma/ft_factoring/client";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import * as factoringpropuestaDao from "#src/daos/factoringpropuestaDao.js";
-import * as factoringpropuestafinancieroDao from "#src/daos/factoringpropuestafinancieroDao.js";
-import * as factoringpropuestaestadoDao from "#src/daos/factoringpropuestaestadoDao.js";
-import * as factoringtipoDao from "#src/daos/factoringtipoDao.js";
-import * as factoringestadoDao from "#src/daos/factoringestadoDao.js";
-import * as factoringestrategiaDao from "#src/daos/factoringestrategiaDao.js";
-import * as factoringDao from "#src/daos/factoringDao.js";
-import * as factoringhistorialestadoDao from "#src/daos/factoringhistorialestadoDao.js";
-import * as archivofactoringhistorialestadoDao from "#src/daos/archivofactoringhistorialestadoDao.js";
-import * as archivoDao from "#src/daos/archivoDao.js";
-import * as riesgoDao from "#src/daos/riesgoDao.js";
+import * as factoringpropuestaDao from "#src/daos/factoringpropuesta.prisma.Dao.js";
+import * as factoringpropuestafinancieroDao from "#src/daos/factoringpropuestafinanciero.prisma.Dao.js";
+import * as factoringpropuestaestadoDao from "#src/daos/factoringpropuestaestado.prisma.Dao.js";
+import * as factoringtipoDao from "#src/daos/factoringtipo.prisma.Dao.js";
+import * as factoringestadoDao from "#src/daos/factoringestado.prisma.Dao.js";
+import * as factoringestrategiaDao from "#src/daos/factoringestrategia.prisma.Dao.js";
+import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
+import * as factoringhistorialestadoDao from "#src/daos/factoringhistorialestado.prisma.Dao.js";
+import * as archivofactoringhistorialestadoDao from "#src/daos/archivofactoringhistorialestado.prisma.Dao.js";
+import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
+import * as riesgoDao from "#src/daos/riesgo.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-import { FactoringHistorialEstadoAttributes } from "#src/models/ft_factoring/FactoringHistorialEstado.js";
+import type { factoring_historial_estado } from "#src/models/prisma/ft_factoring/client";
 
 import * as luxon from "luxon";
 import { v4 as uuidv4 } from "uuid";
@@ -44,10 +45,10 @@ export const updateFactoringhistorialestado = async (req: Request, res: Response
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var camposFk: Partial<FactoringHistorialEstadoAttributes> = {};
+      var camposFk: Partial<factoring_historial_estado> = {};
       camposFk._idfactoringhistorialestado = factoringhistorialestado._idfactoringhistorialestado;
 
-      var camposAuditoria: Partial<FactoringHistorialEstadoAttributes> = {};
+      var camposAuditoria: Partial<factoring_historial_estado> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
 
@@ -168,16 +169,16 @@ export const createFactoringhistorialestado = async (req: Request, res: Response
         }
       }
 
-      var camposFk: Partial<FactoringHistorialEstadoAttributes> = {};
+      var camposFk: Partial<factoring_historial_estado> = {};
       camposFk._idfactoring = factoring._idfactoring;
       camposFk._idfactoringestado = factoringestado._idfactoringestado;
       camposFk._idusuariomodifica = req.session_user.usuario._idusuario;
 
-      var camposAdicionales: Partial<FactoringHistorialEstadoAttributes> = {};
+      var camposAdicionales: Partial<factoring_historial_estado> = {};
       camposAdicionales.factoringhistorialestadoid = uuidv4();
       camposAdicionales.code = uuidv4().split("-")[0];
 
-      var camposAuditoria: Partial<FactoringHistorialEstadoAttributes> = {};
+      var camposAuditoria: Partial<factoring_historial_estado> = {};
       camposAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
       camposAuditoria.fechacrea = new Date();
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
@@ -249,7 +250,7 @@ export const activateFactoringhistorialestado = async (req: Request, res: Respon
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var camposAuditoria: Partial<FactoringHistorialEstadoAttributes> = {};
+      var camposAuditoria: Partial<factoring_historial_estado> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 1;
@@ -284,7 +285,7 @@ export const deleteFactoringhistorialestado = async (req: Request, res: Response
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var camposAuditoria: Partial<FactoringHistorialEstadoAttributes> = {};
+      var camposAuditoria: Partial<factoring_historial_estado> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 2;

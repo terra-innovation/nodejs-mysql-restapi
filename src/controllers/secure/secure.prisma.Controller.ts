@@ -1,10 +1,11 @@
+import type { Prisma } from "#src/models/prisma/ft_factoring/client";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import * as usuarioDao from "#src/daos/usuarioDao.js";
-import * as documentotipoDao from "#src/daos/documentotipoDao.js";
-import * as validacionDao from "#src/daos/validacionDao.js";
-import * as credencialDao from "#src/daos/credencialDao.js";
-import * as personaverificacionestadoDao from "#src/daos/personaverificacionestadoDao.js";
+import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
+import * as documentotipoDao from "#src/daos/documentotipo.prisma.Dao.js";
+import * as validacionDao from "#src/daos/validacion.prisma.Dao.js";
+import * as credencialDao from "#src/daos/credencial.prisma.Dao.js";
+import * as personaverificacionestadoDao from "#src/daos/personaverificacionestado.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
@@ -18,9 +19,9 @@ import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import * as Yup from "yup";
 import { Sequelize } from "sequelize";
-import { CredencialAttributes } from "#root/src/models/ft_factoring/Credencial";
-import { ValidacionAttributes } from "#root/src/models/ft_factoring/Validacion";
-import { UsuarioAttributes } from "#root/src/models/ft_factoring/Usuario";
+import { credencial } from "#root/src/models/ft_factoring/Credencial";
+import { validacion } from "#root/src/models/ft_factoring/Validacion";
+import { usuario } from "#root/src/models/ft_factoring/Usuario";
 
 export const resetPassword = async (req: Request, res: Response) => {
   log.debug(line(), "controller::resetPassword");
@@ -77,7 +78,7 @@ export const resetPassword = async (req: Request, res: Response) => {
               throw new ClientError("El código de verificación no es válido o ha expidado", 404);
             }
 
-            let credencialUpdate: Partial<CredencialAttributes> = {};
+            let credencialUpdate: Partial<credencial> = {};
             credencialUpdate.credencialid = credencial.credencialid;
             credencialUpdate.password = encryptedPassword;
             credencialUpdate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
@@ -90,7 +91,7 @@ export const resetPassword = async (req: Request, res: Response) => {
             }
 
             // Actualizamos el validate
-            var validacionUpdate: Partial<ValidacionAttributes> = {};
+            var validacionUpdate: Partial<validacion> = {};
             validacionUpdate.validacionid = validacion.validacionid;
             validacionUpdate.verificado = 1;
             validacionUpdate.fecha_verificado = new Date();
@@ -202,7 +203,7 @@ export const sendTokenPassword = async (req: Request, res: Response) => {
         const validacionPrev = await validacionDao.getValidacionByIdusuarioAndIdvalidaciontipo(tx, usuario._idusuario, _idvalidaciontipo, filter_estado);
         if (!validacionPrev) {
           log.warn(line(), "Validación no existe: ", validacionValidated);
-          let validacionNew: Partial<ValidacionAttributes> = {};
+          let validacionNew: Partial<validacion> = {};
           validacionNew._idusuario = usuario._idusuario;
           validacionNew._idvalidaciontipo = _idvalidaciontipo;
           validacionNew.valor = validacionValidated.email;
@@ -221,7 +222,7 @@ export const sendTokenPassword = async (req: Request, res: Response) => {
             log.warn(line(), "No fue posible insertar el objeto: ", validacionNew);
           }
         } else {
-          let validacionUpdate: Partial<ValidacionAttributes> = {};
+          let validacionUpdate: Partial<validacion> = {};
           validacionUpdate.validacionid = validacionPrev.validacionid;
           validacionUpdate.otp = resetpasswordvalidationcode;
           validacionUpdate.tiempo_marca = new Date();
@@ -286,7 +287,7 @@ export const sendVerificactionCode = async (req: Request, res: Response) => {
 
       const emailvalidationcode = String(Math.floor(100000 + Math.random() * 900000)); // Código aleaatorio de 6 dígitos
 
-      let validacionUpdate: Partial<ValidacionAttributes> = {};
+      let validacionUpdate: Partial<validacion> = {};
       validacionUpdate.validacionid = validacion.validacionid;
       validacionUpdate.otp = emailvalidationcode;
       validacionUpdate.tiempo_marca = new Date();
@@ -408,16 +409,16 @@ export const registerUsuario = async (req: Request, res: Response) => {
 
       delete usuarioValidated.password;
 
-      let camposUsuarioFk: Partial<UsuarioAttributes> = {};
+      let camposUsuarioFk: Partial<usuario> = {};
       camposUsuarioFk._iddocumentotipo = documentotipo._iddocumentotipo;
 
-      let camposUsuarioAdicionales: Partial<UsuarioAttributes> = {};
+      let camposUsuarioAdicionales: Partial<usuario> = {};
       camposUsuarioAdicionales.usuarioid = uuidv4();
       camposUsuarioAdicionales.code = uuidv4().split("-")[0];
       camposUsuarioAdicionales.hash = hash;
       camposUsuarioAdicionales.ispersonavalidated = personaverificacionestado.ispersonavalidated;
 
-      let camposUsuarioAuditoria: Partial<UsuarioAttributes> = {};
+      let camposUsuarioAuditoria: Partial<usuario> = {};
       camposUsuarioAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
       camposUsuarioAuditoria.fechacrea = new Date();
       camposUsuarioAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
@@ -432,15 +433,15 @@ export const registerUsuario = async (req: Request, res: Response) => {
       });
       log.debug(line(), "usuarioCreated", usuarioCreated);
 
-      let camposCredencialFk: Partial<CredencialAttributes> = {};
+      let camposCredencialFk: Partial<credencial> = {};
       camposCredencialFk._idusuario = usuarioCreated._idusuario;
 
-      let camposCredencialAdicionales: Partial<CredencialAttributes> = {};
+      let camposCredencialAdicionales: Partial<credencial> = {};
       camposCredencialAdicionales.credencialid = uuidv4();
       camposCredencialAdicionales.code = uuidv4().split("-")[0];
       camposCredencialAdicionales.password = encryptedPassword;
 
-      let camposCredencialoAuditoria: Partial<CredencialAttributes> = {};
+      let camposCredencialoAuditoria: Partial<credencial> = {};
       camposCredencialoAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
       camposCredencialoAuditoria.fechacrea = new Date();
       camposCredencialoAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
@@ -454,7 +455,7 @@ export const registerUsuario = async (req: Request, res: Response) => {
       });
       log.debug(line(), "credencialCreated", credencialCreated);
 
-      let validacion: Partial<ValidacionAttributes> = {};
+      let validacion: Partial<validacion> = {};
       validacion._idusuario = usuarioCreated._idusuario;
       validacion._idvalidaciontipo = 1; // 1: Para Correo electrónico
       validacion.valor = usuarioValidated.email;
@@ -520,7 +521,7 @@ export const validateEmail = async (req: Request, res: Response) => {
           // Obtener la fecha actual
           const fechaActual = new Date();
           if (fechaActual <= fechaConAjustes) {
-            var validacionUpdate: Partial<ValidacionAttributes> = {};
+            var validacionUpdate: Partial<validacion> = {};
             validacionUpdate.validacionid = validacion.validacionid;
             validacionUpdate.verificado = 1;
             validacionUpdate.fecha_verificado = new Date();
@@ -528,7 +529,7 @@ export const validateEmail = async (req: Request, res: Response) => {
             validacionUpdate.fechamod = new Date();
             const validacionUpdated = await validacionDao.updateValidacion(tx, validacionUpdate);
 
-            var usuarioUpdate: Partial<UsuarioAttributes> = {};
+            var usuarioUpdate: Partial<usuario> = {};
             usuarioUpdate.usuarioid = usuario.usuarioid;
             usuarioUpdate.isemailvalidated = 1; // true
             const usuarioUpdated = await usuarioDao.updateUsuario(tx, usuarioUpdate);

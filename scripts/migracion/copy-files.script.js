@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Configuración inicial
-const PROJECT_PATH = path.resolve("src/controllers"); // Ajusta esto a tu ruta raíz
+const PROJECT_PATH = path.resolve("src/routes"); // Ajusta esto a tu ruta raíz
 
 // Función recursiva para obtener archivos
 async function findControllerFiles(dir) {
@@ -20,7 +20,7 @@ async function findControllerFiles(dir) {
     if (item.isDirectory()) {
       const subFiles = await findControllerFiles(fullPath);
       files = files.concat(subFiles);
-    } else if (item.isFile() && item.name.endsWith("Controller.ts") && !item.name.includes("prisma")) {
+    } else if (item.isFile() && item.name.endsWith(".routes.ts") && !item.name.includes("prisma")) {
       files.push(fullPath);
     }
   }
@@ -36,7 +36,7 @@ async function processFiles(files) {
   for (const originalPath of files) {
     const dir = path.dirname(originalPath);
     const originalName = path.basename(originalPath);
-    const newName = originalName.replace("Controller.ts", ".prisma.Controller.ts");
+    const newName = originalName.replace(".routes.ts", ".prisma.routes.ts");
     const newPath = path.join(dir, newName);
 
     try {

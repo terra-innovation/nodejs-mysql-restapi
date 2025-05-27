@@ -1,4 +1,5 @@
 import { type Request, type Response, type NextFunction } from "express";
+import { ArchivoError, ClientError, ConexionError, AuthClientError } from "#src/utils/CustomErrors.js";
 import { ValidationError } from "yup";
 import { log, line } from "#src/utils/logger.pino.js";
 import { customResponseError } from "#src/utils/CustomResponseError.js";
@@ -25,6 +26,11 @@ export function errorHandlerMiddleware(err: any, req: Request, res: Response, ne
     message = "Ocurrió un error";
   }
 
-  log.error(line(), "Uncaught Error:", util.inspect(err, { colors: true, depth: null }));
+  const esErrorConocido = err instanceof ArchivoError || err instanceof ClientError || err instanceof ConexionError || err instanceof AuthClientError || err instanceof ValidationError;
+
+  if (!esErrorConocido) {
+    log.error(line(), "Uncaught Error:", util.inspect(err, { colors: true, depth: null }));
+  }
+
   customResponseError(res, statusCode, message);
 }

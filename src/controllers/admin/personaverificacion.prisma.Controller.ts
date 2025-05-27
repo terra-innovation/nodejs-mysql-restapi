@@ -1,10 +1,11 @@
+import type { Prisma } from "#src/models/prisma/ft_factoring/client";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import * as personaverificacionDao from "#src/daos/personaverificacionDao.js";
-import * as personaverificacionestadoDao from "#src/daos/personaverificacionestadoDao.js";
-import * as personaDao from "#src/daos/personaDao.js";
-import * as usuarioDao from "#src/daos/usuarioDao.js";
-import * as usuarioservicioDao from "#src/daos/usuarioservicioDao.js";
+import * as personaverificacionDao from "#src/daos/personaverificacion.prisma.Dao.js";
+import * as personaverificacionestadoDao from "#src/daos/personaverificacionestado.prisma.Dao.js";
+import * as personaDao from "#src/daos/persona.prisma.Dao.js";
+import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
+import * as usuarioservicioDao from "#src/daos/usuarioservicio.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
@@ -16,9 +17,9 @@ import TemplateManager from "#src/utils/email/TemplateManager.js";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { Sequelize, Op } from "sequelize";
-import { PersonaVerificacionAttributes } from "#root/src/models/ft_factoring/PersonaVerificacion";
-import { PersonaAttributes } from "#root/src/models/ft_factoring/Persona";
-import { UsuarioAttributes } from "#root/src/models/ft_factoring/Usuario";
+import { persona_verificacion } from "#root/src/models/ft_factoring/PersonaVerificacion";
+import { persona } from "#root/src/models/ft_factoring/Persona";
+import { usuario } from "#root/src/models/ft_factoring/Usuario";
 
 export const activatePersonaverificacion = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activatePersonaverificacion");
@@ -34,7 +35,7 @@ export const activatePersonaverificacion = async (req: Request, res: Response) =
 
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
-      var camposAuditoria: Partial<PersonaVerificacionAttributes> = {};
+      var camposAuditoria: Partial<persona_verificacion> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 1;
@@ -65,7 +66,7 @@ export const deletePersonaverificacion = async (req: Request, res: Response) => 
 
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
-      var camposAuditoria: Partial<PersonaVerificacionAttributes> = {};
+      var camposAuditoria: Partial<persona_verificacion> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 2;
@@ -134,10 +135,10 @@ export const updatePersonaverificacion = async (req: Request, res: Response) => 
     async (tx) => {
       var camposFk = {};
 
-      var camposAdicionales: Partial<PersonaVerificacionAttributes> = {};
+      var camposAdicionales: Partial<persona_verificacion> = {};
       camposAdicionales.personaverificacionid = personaverificacionValidated.personaverificacionid;
 
-      var camposAuditoria: Partial<PersonaVerificacionAttributes> = {};
+      var camposAuditoria: Partial<persona_verificacion> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
 
@@ -210,15 +211,15 @@ export const createPersonaverificacion = async (req: Request, res: Response) => 
         log.warn(line(), "Persona verificación estado no existe: [" + personaverificacionValidated.personaverificacionestadoid + "]");
         throw new ClientError("Datos no válidos", 404);
       }
-      var camposFk: Partial<PersonaVerificacionAttributes> = {};
+      var camposFk: Partial<persona_verificacion> = {};
       camposFk._idpersona = persona._idpersona;
       camposFk._idpersonaverificacionestado = personaverificacionestado._idpersonaverificacionestado;
       camposFk._idusuarioverifica = req.session_user.usuario._idusuario;
 
-      var camposAdicionales: Partial<PersonaVerificacionAttributes> = {};
+      var camposAdicionales: Partial<persona_verificacion> = {};
       camposAdicionales.personaverificacionid = uuidv4();
 
-      var camposAuditoria: Partial<PersonaVerificacionAttributes> = {};
+      var camposAuditoria: Partial<persona_verificacion> = {};
       camposAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
       camposAuditoria.fechacrea = new Date();
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
@@ -233,7 +234,7 @@ export const createPersonaverificacion = async (req: Request, res: Response) => 
       });
       log.debug(line(), "personaverificacionCreated");
 
-      const personaUpdate: Partial<PersonaAttributes> = {};
+      const personaUpdate: Partial<persona> = {};
       personaUpdate.personaid = persona.personaid;
       personaUpdate._idpersonaverificacionestado = personaverificacionestado._idpersonaverificacionestado;
       personaUpdate.idusuariomod = req.session_user.usuario._idusuario ?? 1;
@@ -244,7 +245,7 @@ export const createPersonaverificacion = async (req: Request, res: Response) => 
 
       // Actualizamos el usuario solo si la validación de la persona es aprobado
       if (personaverificacionestado.ispersonavalidated) {
-        const usuarioUpdate: Partial<UsuarioAttributes> = {};
+        const usuarioUpdate: Partial<usuario> = {};
         usuarioUpdate.usuarioid = persona.usuario_usuario.usuarioid;
         usuarioUpdate.ispersonavalidated = personaverificacionestado.ispersonavalidated;
         usuarioUpdate.idusuariomod = req.session_user.usuario._idusuario ?? 1;

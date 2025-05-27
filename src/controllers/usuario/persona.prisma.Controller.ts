@@ -1,17 +1,18 @@
+import type { Prisma } from "#src/models/prisma/ft_factoring/client";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import * as personaDao from "#src/daos/personaDao.js";
-import * as documentotipoDao from "#src/daos/documentotipoDao.js";
-import * as paisDao from "#src/daos/paisDao.js";
-import * as provinciaDao from "#src/daos/provinciaDao.js";
-import * as distritoDao from "#src/daos/distritoDao.js";
-import * as generoDao from "#src/daos/generoDao.js";
-import * as personadeclaracionDao from "#src/daos/personadeclaracionDao.js";
-import * as personaverificacionDao from "#src/daos/personaverificacionDao.js";
-import * as usuarioDao from "#src/daos/usuarioDao.js";
-import * as archivoDao from "#src/daos/archivoDao.js";
-import * as archivopersonaDao from "#src/daos/archivopersonaDao.js";
-import * as personaverificacionestadoDao from "#src/daos/personaverificacionestadoDao.js";
+import * as personaDao from "#src/daos/persona.prisma.Dao.js";
+import * as documentotipoDao from "#src/daos/documentotipo.prisma.Dao.js";
+import * as paisDao from "#src/daos/pais.prisma.Dao.js";
+import * as provinciaDao from "#src/daos/provincia.prisma.Dao.js";
+import * as distritoDao from "#src/daos/distrito.prisma.Dao.js";
+import * as generoDao from "#src/daos/genero.prisma.Dao.js";
+import * as personadeclaracionDao from "#src/daos/personadeclaracion.prisma.Dao.js";
+import * as personaverificacionDao from "#src/daos/personaverificacion.prisma.Dao.js";
+import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
+import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
+import * as archivopersonaDao from "#src/daos/archivopersona.prisma.Dao.js";
+import * as personaverificacionestadoDao from "#src/daos/personaverificacionestado.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
@@ -25,10 +26,10 @@ import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { Sequelize, Op } from "sequelize";
-import { PersonaAttributes } from "#root/src/models/ft_factoring/Persona";
-import { PersonaDeclaracionAttributes } from "#root/src/models/ft_factoring/PersonaDeclaracion";
-import { PersonaVerificacionAttributes } from "#root/src/models/ft_factoring/PersonaVerificacion";
-import { UsuarioAttributes } from "#root/src/models/ft_factoring/Usuario";
+import { persona } from "#root/src/models/ft_factoring/Persona";
+import { persona_declaracion } from "#root/src/models/ft_factoring/PersonaDeclaracion";
+import { persona_verificacion } from "#root/src/models/ft_factoring/PersonaVerificacion";
+import { usuario } from "#root/src/models/ft_factoring/Usuario";
 
 export const getPersonaMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getPersonaMaster");
@@ -171,7 +172,7 @@ export const verifyPersona = async (req: Request, res: Response) => {
       const usuarioConected = await usuarioDao.getUsuarioByIdusuario(tx, personaValidated._idusuario);
       const provinciaResidencia = await provinciaDao.getProvinciaByIdprovincia(tx, distritoResidencia._idprovincia);
 
-      let camposFk: Partial<PersonaAttributes> = {};
+      let camposFk: Partial<persona> = {};
       camposFk._idusuario = usuarioConected._idusuario;
       camposFk._idpersonaverificacionestado = personaverificacionestado._idpersonaverificacionestado; // 3: En revisión
       camposFk._iddocumentotipo = documentotipo._iddocumentotipo;
@@ -184,13 +185,13 @@ export const verifyPersona = async (req: Request, res: Response) => {
       camposFk._idgenero = genero._idgenero;
       camposFk._iddocumentotipo = documentotipo._iddocumentotipo;
 
-      let camposAdicionales: Partial<PersonaAttributes> = {};
+      let camposAdicionales: Partial<persona> = {};
       camposAdicionales.personaid = uuidv4();
       camposAdicionales.code = uuidv4().split("-")[0];
       camposAdicionales.email = usuarioConected.email;
       camposAdicionales.celular = usuarioConected.celular;
 
-      let camposAuditoria: Partial<PersonaAttributes> = {};
+      let camposAuditoria: Partial<persona> = {};
       camposAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
       camposAuditoria.fechacrea = new Date();
       camposAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
@@ -215,7 +216,7 @@ export const verifyPersona = async (req: Request, res: Response) => {
       const identificacionselfiCreated = await crearIdentificacionSelfi(req, tx, personaValidated, personaCreated);
       log.debug(line(), "identificacionselfiCreated:", identificacionselfiCreated);
 
-      const personaDeclaracionCreate: Partial<PersonaDeclaracionAttributes> = {};
+      const personaDeclaracionCreate: Partial<persona_declaracion> = {};
       personaDeclaracionCreate.personadeclaracionid = uuidv4();
       personaDeclaracionCreate._idpersona = personaCreated._idpersona;
       personaDeclaracionCreate.espep = personaValidated.espep;
@@ -228,7 +229,7 @@ export const verifyPersona = async (req: Request, res: Response) => {
 
       await personadeclaracionDao.insertPersonadeclaracion(tx, personaDeclaracionCreate);
 
-      const personaVerificacionCreate: Partial<PersonaVerificacionAttributes> = {};
+      const personaVerificacionCreate: Partial<persona_verificacion> = {};
       personaVerificacionCreate.personaverificacionid = uuidv4();
       personaVerificacionCreate._idpersona = personaCreated._idpersona;
       personaVerificacionCreate._idpersonaverificacionestado = personaverificacionestado._idpersonaverificacionestado; // 3: En revisión
@@ -243,7 +244,7 @@ export const verifyPersona = async (req: Request, res: Response) => {
 
       await personaverificacionDao.insertPersonaverificacion(tx, personaVerificacionCreate);
 
-      const usuarioUpdate: Partial<UsuarioAttributes> = {};
+      const usuarioUpdate: Partial<usuario> = {};
       usuarioUpdate.usuarioid = usuarioConected.usuarioid;
       usuarioUpdate.ispersonavalidated = personaverificacionestado.ispersonavalidated;
       usuarioUpdate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;

@@ -1,16 +1,17 @@
+import type { Prisma } from "#src/models/prisma/ft_factoring/client";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 
-import * as cuentabancariaDao from "#src/daos/cuentabancariaDao.js";
-import * as empresaDao from "#src/daos/empresaDao.js";
-import * as personaDao from "#src/daos/personaDao.js";
-import * as factoringDao from "#src/daos/factoringDao.js";
-import * as factoringfacturaDao from "#src/daos/factoringfacturaDao.js";
-import * as factoringhistorialestadoDao from "#src/daos/factoringhistorialestadoDao.js";
-import * as facturaDao from "#src/daos/facturaDao.js";
-import * as contactoDao from "#src/daos/contactoDao.js";
-import * as colaboradorDao from "#src/daos/colaboradorDao.js";
-import * as monedaDao from "#src/daos/monedaDao.js";
+import * as cuentabancariaDao from "#src/daos/cuentabancaria.prisma.Dao.js";
+import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
+import * as personaDao from "#src/daos/persona.prisma.Dao.js";
+import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
+import * as factoringfacturaDao from "#src/daos/factoringfactura.prisma.Dao.js";
+import * as factoringhistorialestadoDao from "#src/daos/factoringhistorialestado.prisma.Dao.js";
+import * as facturaDao from "#src/daos/factura.prisma.Dao.js";
+import * as contactoDao from "#src/daos/contacto.prisma.Dao.js";
+import * as colaboradorDao from "#src/daos/colaborador.prisma.Dao.js";
+import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { log, line } from "#src/utils/logger.pino.js";
@@ -19,8 +20,8 @@ import * as luxon from "luxon";
 import { Sequelize, Op } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-import { FactoringAttributes } from "#root/src/models/ft_factoring/Factoring";
-import { FactoringFacturaAttributes } from "#root/src/models/ft_factoring/FactoringFactura";
+import { factoring } from "#root/src/models/ft_factoring/Factoring";
+import { factoring_factura } from "#root/src/models/ft_factoring/FactoringFactura";
 
 export const getFactorings = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFactorings");
@@ -146,7 +147,7 @@ export const createFactoring = async (req: Request, res: Response) => {
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var camposFk: Partial<FactoringAttributes> = {};
+      var camposFk: Partial<factoring> = {};
       camposFk._idcedente = cedente._idempresa;
       camposFk._idaceptante = aceptante._idempresa;
       camposFk._idcuentabancaria = cuentabancaria._idcuentabancaria;
@@ -155,7 +156,7 @@ export const createFactoring = async (req: Request, res: Response) => {
       camposFk._idcontactocedente = colaborador._idcolaborador;
       camposFk._idfactoringestado = 1; // Por defecto
 
-      var camposAdicionales: Partial<FactoringAttributes> = {};
+      var camposAdicionales: Partial<factoring> = {};
       camposAdicionales.factoringid = uuidv4();
       camposAdicionales.code = uuidv4().split("-")[0];
       camposAdicionales.fecha_registro = new Date();
@@ -165,7 +166,7 @@ export const createFactoring = async (req: Request, res: Response) => {
       camposAdicionales.monto_detraccion = facturas.reduce((acc, item) => acc + (typeof item.detraccion_monto === "number" ? item.detraccion_monto : 0), 0);
       camposAdicionales.monto_neto = facturas.reduce((acc, item) => acc + (typeof item.importe_neto === "number" ? item.importe_neto : 0), 0);
 
-      var camposAuditoria: Partial<FactoringAttributes> = {};
+      var camposAuditoria: Partial<factoring> = {};
       camposAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
       camposAuditoria.fechacrea = new Date();
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
@@ -192,7 +193,7 @@ export const createFactoring = async (req: Request, res: Response) => {
       log.debug(line(), "factoringhistorialestadoCreated:", factoringhistorialestadoCreated.dataValues);
 
       for (const [index, factura] of facturas.entries()) {
-        var factoringfacturaFk: Partial<FactoringFacturaAttributes> = {};
+        var factoringfacturaFk: Partial<factoring_factura> = {};
         factoringfacturaFk._idfactoring = factoringCreated._idfactoring;
         factoringfacturaFk._idfactura = factura._idfactura;
         const factoringfacturaCreated = await factoringfacturaDao.insertFactoringfactura(tx, { ...factoringfacturaFk, ...camposAuditoria });

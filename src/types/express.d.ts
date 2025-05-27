@@ -3,7 +3,19 @@ import { Multer } from "multer";
 import type { Prisma, usuario } from "#src/models/prisma/ft_factoring/client";
 
 interface UsuarioSession {
-  usuario?: usuario;
+  //usuario?: usuario;
+  usuario?: {
+    idusuario: number;
+    _idusuario: number;
+  };
+}
+
+interface CustomFile extends Multer.File {
+  codigo_archivo?: string;
+  extension?: string;
+  anio_upload?: string;
+  mes_upload?: string;
+  dia_upload?: string;
 }
 
 declare global {
@@ -11,8 +23,8 @@ declare global {
     interface Request {
       correlationId?: string;
       session_user?: UsuarioSession;
-      file?: Multer.File; // para upload.single()
-      files?: Multer.File[] | { [fieldname: string]: Multer.File[] }; // para upload.array() o upload.fields()
+      file?: CustomFile; // para upload.single()
+      files?: CustomFile[] | { [fieldname: string]: CustomFile[] }; // para upload.array() o upload.fields()
     }
   }
 }

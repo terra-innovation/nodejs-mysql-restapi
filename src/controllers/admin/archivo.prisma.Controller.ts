@@ -1,12 +1,13 @@
+import type { Prisma } from "#src/models/prisma/ft_factoring/client";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-
-import * as archivoDao from "#src/daos/archivoDao.js";
-import * as archivotipoDao from "#src/daos/archivotipoDao.js";
-import * as distritoDao from "#src/daos/distritoDao.js";
-import * as documentotipoDao from "#src/daos/documentotipoDao.js";
-import * as generoDao from "#src/daos/generoDao.js";
-import * as paisDao from "#src/daos/paisDao.js";
+import type { archivo } from "#src/models/prisma/ft_factoring/client";
+import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
+import * as archivotipoDao from "#src/daos/archivotipo.prisma.Dao.js";
+import * as distritoDao from "#src/daos/distrito.prisma.Dao.js";
+import * as documentotipoDao from "#src/daos/documentotipo.prisma.Dao.js";
+import * as generoDao from "#src/daos/genero.prisma.Dao.js";
+import * as paisDao from "#src/daos/pais.prisma.Dao.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
@@ -14,7 +15,6 @@ import { log, line } from "#src/utils/logger.pino.js";
 import * as storageUtils from "#src/utils/storageUtils.js";
 
 import * as validacionesYup from "#src/utils/validacionesYup.js";
-import { ArchivoAttributes } from "#src/models/ft_factoring/Archivo.js";
 
 import * as fs from "fs";
 import { unlink } from "fs/promises";
@@ -27,7 +27,7 @@ import * as yup from "yup";
 
 export const cargarArchivo = async (req: Request, res: Response) => {
   log.debug(line(), "controller::cargarArchivo");
-  const resultado = await prismaFT.client.$transaction(
+  const archivoCreated = await prismaFT.client.$transaction(
     async (tx) => {
       const _idusuario = req.session_user?.usuario?._idusuario;
       const archivoUploadSchema = yup
@@ -44,14 +44,14 @@ export const cargarArchivo = async (req: Request, res: Response) => {
       const archivoValidated = archivoUploadSchema.validateSync({ ...req.files, ...req.body, _idusuario }, { abortEarly: false, stripUnknown: true });
       log.debug(line(), "archivoValidated:", archivoValidated);
 
-      let _idarchivotipo = 10; // Sin tipo
+      let idarchivotipo = 10; // Sin tipo
       if (archivoValidated.archivotipo_code) {
         const archivotipo = await archivotipoDao.getArchivotipoByCode(tx, archivoValidated.archivotipo_code);
         if (!archivotipo) {
           log.warn(line(), "Archivo tipo no existe: [" + archivoValidated.archivotipo_code + "]");
           throw new ClientError("Datos no válidos", 404);
         }
-        _idarchivotipo = archivotipo._idarchivotipo;
+        idarchivotipo = archivotipo.idarchivotipo;
       }
 
       const { archivo } = archivoValidated;
@@ -65,8 +65,8 @@ export const cargarArchivo = async (req: Request, res: Response) => {
 
       let archivoNuevo = {
         archivoid: uuidv4(),
-        _idarchivotipo: _idarchivotipo,
-        _idarchivoestado: 1,
+        idarchivotipo: idarchivotipo,
+        idarchivoestado: 1,
         codigo: codigo_archivo,
         nombrereal: originalname,
         nombrealmacenamiento: filename,
@@ -84,11 +84,11 @@ export const cargarArchivo = async (req: Request, res: Response) => {
         estado: 1,
       };
       const archivoCreated = await archivoDao.insertArchivo(tx, archivoNuevo);
-      log.debug(line(), "archivoCreated:", archivoCreated.dataValues);
+      log.debug(line(), "archivoCreated:", archivoCreated);
 
       await unlink(archivoOrigen); // Eliminamos el archivo temporal
 
-      return {};
+      return archivoCreated;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -107,7 +107,7 @@ export const descargarArchivo = async (req: Request, res: Response) => {
   const archivoValidated = archivoSchema.validateSync({ archivoid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "archivoValidated:", archivoValidated);
 
-  const resultado = await prismaFT.client.$transaction(
+  const rutaAbsoluta = await prismaFT.client.$transaction(
     async (tx) => {
       const archivo = await archivoDao.getArchivoByArchivoid(tx, archivoValidated.archivoid);
       if (archivo[0] === 0) {
@@ -129,14 +129,14 @@ export const descargarArchivo = async (req: Request, res: Response) => {
       // Convierte la ruta relativa a una ruta absoluta
       const rutaAbsoluta = path.resolve(proyectoRutaAbsoluta, archivoPath);
 
-      return {};
+      return rutaAbsoluta;
     },
     { timeout: prismaFT.transactionTimeout }
   );
 
   res.sendFile(rutaAbsoluta, (err) => {
     if (err) {
-      logger.error("Error al descargar el archivo:", err);
+      log.error(line(), "Error al descargar el archivo:", err);
       res.status(500).send("Error");
     }
   });
@@ -154,9 +154,9 @@ export const activateArchivo = async (req: Request, res: Response) => {
   const archivoValidated = archivoSchema.validateSync({ archivoid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "archivoValidated:", archivoValidated);
 
-  const resultado = await prismaFT.client.$transaction(
+  const archivoDeleted = await prismaFT.client.$transaction(
     async (tx) => {
-      var camposAuditoria: Partial<ArchivoAttributes> = {};
+      var camposAuditoria: Partial<archivo> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 1;
@@ -166,7 +166,7 @@ export const activateArchivo = async (req: Request, res: Response) => {
         throw new ClientError("Archivo no existe", 404);
       }
       log.debug(line(), "archivoActivated:", archivoDeleted);
-      return {};
+      return archivoDeleted;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -193,7 +193,7 @@ export const deleteArchivo = async (req: Request, res: Response) => {
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var camposAuditoria: Partial<ArchivoAttributes> = {};
+      var camposAuditoria: Partial<archivo> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 2;
@@ -210,7 +210,7 @@ export const deleteArchivo = async (req: Request, res: Response) => {
 
 export const getArchivoMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getArchivoMaster");
-  const resultado = await prismaFT.client.$transaction(
+  const archivoMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const session_idusuario = req.session_user?.usuario?._idusuario;
       const filter_estados = [1];
@@ -231,7 +231,7 @@ export const getArchivoMaster = async (req: Request, res: Response) => {
       //jsonUtils.prettyPrint(archivoMasterObfuscated);
       let archivoMasterFiltered = jsonUtils.removeAttributesPrivates(archivoMasterObfuscated);
       //jsonUtils.prettyPrint(archivoMaster);
-      return {};
+      return archivoMasterFiltered;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -266,10 +266,10 @@ export const updateArchivo = async (req: Request, res: Response) => {
     async (tx) => {
       var camposFk = {};
 
-      var camposAdicionales: Partial<ArchivoAttributes> = {};
+      var camposAdicionales: Partial<archivo> = {};
       camposAdicionales.archivoid = archivoValidated.archivoid;
 
-      var camposAuditoria: Partial<ArchivoAttributes> = {};
+      var camposAuditoria: Partial<archivo> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
 
@@ -295,8 +295,7 @@ export const updateArchivo = async (req: Request, res: Response) => {
 
 export const getArchivos = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getArchivos");
-  //log.info(line(),req.session_user.usuario._idusuario);
-  const resultado = await prismaFT.client.$transaction(
+  const archivosJson = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estado = [1, 2];
       const archivos = await archivoDao.getArchivos(tx, filter_estado);
@@ -305,7 +304,7 @@ export const getArchivos = async (req: Request, res: Response) => {
 
       //var archivosFiltered = jsonUtils.removeAttributes(archivosJson, ["score"]);
       //archivosFiltered = jsonUtils.removeAttributesPrivates(archivosFiltered);
-      return {};
+      return archivosJson;
     },
     { timeout: prismaFT.transactionTimeout }
   );

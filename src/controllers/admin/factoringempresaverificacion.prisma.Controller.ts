@@ -1,21 +1,22 @@
+import type { Prisma } from "#src/models/prisma/ft_factoring/client";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import * as servicioempresaDao from "#src/daos/servicioempresaDao.js";
-import * as personaDao from "#src/daos/personaDao.js";
-import * as empresaDao from "#src/daos/empresaDao.js";
-import * as servicioempresaestadoDao from "#src/daos/servicioempresaestadoDao.js";
-import * as servicioempresaverificacionDao from "#src/daos/servicioempresaverificacionDao.js";
-import * as usuarioservicioDao from "#src/daos/usuarioservicioDao.js";
-import * as usuarioservicioestadoDao from "#src/daos/usuarioservicioestadoDao.js";
-import * as usuarioservicioverificacionDao from "#src/daos/usuarioservicioverificacionDao.js";
-import * as usuarioservicioempresaDao from "#src/daos/usuarioservicioempresaDao.js";
-import * as usuarioservicioempresaestadoDao from "#src/daos/usuarioservicioempresaestadoDao.js";
-import * as usuarioservicioempresarolDao from "#src/daos/usuarioservicioempresarolDao.js";
-import { ServicioEmpresaVerificacionAttributes } from "#src/models/ft_factoring/ServicioEmpresaVerificacion.js";
-import { ServicioEmpresaAttributes } from "#src/models/ft_factoring/ServicioEmpresa.js";
-import { UsuarioServicioEmpresaAttributes } from "#src/models/ft_factoring/UsuarioServicioEmpresa.js";
-import { UsuarioServicioVerificacionAttributes } from "#src/models/ft_factoring/UsuarioServicioVerificacion.js";
-import { UsuarioServicioAttributes } from "#src/models/ft_factoring/UsuarioServicio.js";
+import * as servicioempresaDao from "#src/daos/servicioempresa.prisma.Dao.js";
+import * as personaDao from "#src/daos/persona.prisma.Dao.js";
+import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
+import * as servicioempresaestadoDao from "#src/daos/servicioempresaestado.prisma.Dao.js";
+import * as servicioempresaverificacionDao from "#src/daos/servicioempresaverificacion.prisma.Dao.js";
+import * as usuarioservicioDao from "#src/daos/usuarioservicio.prisma.Dao.js";
+import * as usuarioservicioestadoDao from "#src/daos/usuarioservicioestado.prisma.Dao.js";
+import * as usuarioservicioverificacionDao from "#src/daos/usuarioservicioverificacion.prisma.Dao.js";
+import * as usuarioservicioempresaDao from "#src/daos/usuarioservicioempresa.prisma.Dao.js";
+import * as usuarioservicioempresaestadoDao from "#src/daos/usuarioservicioempresaestado.prisma.Dao.js";
+import * as usuarioservicioempresarolDao from "#src/daos/usuarioservicioempresarol.prisma.Dao.js";
+import type { servicio_empresa_verificacion } from "#src/models/prisma/ft_factoring/client";
+import type { servicio_empresa } from "#src/models/prisma/ft_factoring/client";
+import type { usuario_servicio_empresa } from "#src/models/prisma/ft_factoring/client";
+import type { usuario_servicio_verificacion } from "#src/models/prisma/ft_factoring/client";
+import type { usuario_servicio } from "#src/models/prisma/ft_factoring/client";
 
 import { response } from "#src/utils/CustomResponseOk.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
@@ -52,15 +53,15 @@ export const createFactoringempresaverificacion = async (req: Request, res: Resp
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const personasuscriptor = await personaDao.getPersonaByIdusuario(tx, servicioempresa._idusuariosuscriptor);
+      const personasuscriptor = await personaDao.getPersonaByIdusuario(tx, servicioempresa.idusuariosuscriptor);
       if (!personasuscriptor) {
-        log.warn(line(), "Usuario suscriptor no existe: [" + servicioempresa._idusuariosuscriptor + "]");
+        log.warn(line(), "Usuario suscriptor no existe: [" + servicioempresa.idusuariosuscriptor + "]");
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const empresa = await empresaDao.getEmpresaByIdempresa(tx, servicioempresa._idempresa);
+      const empresa = await empresaDao.getEmpresaByIdempresa(tx, servicioempresa.idempresa);
       if (!empresa) {
-        log.warn(line(), "Empresa no existe: [" + servicioempresa._idempresa + "]");
+        log.warn(line(), "Empresa no existe: [" + servicioempresa.idempresa + "]");
         throw new ClientError("Datos no válidos", 404);
       }
 
@@ -71,20 +72,24 @@ export const createFactoringempresaverificacion = async (req: Request, res: Resp
       }
 
       // Inserta un nuevo registro en la tabla servicioempresaverificacion con el nuevo estado
-      var camposFk: Partial<ServicioEmpresaVerificacionAttributes> = {};
-      camposFk._idservicioempresa = servicioempresa._idservicioempresa;
-      camposFk._idservicioempresaestado = servicioempresaestado._idservicioempresaestado;
-      camposFk._idusuarioverifica = req.session_user.usuario._idusuario;
+      var camposFk: Partial<servicio_empresa_verificacion> = {};
+      camposFk.idservicioempresa = servicioempresa.idservicioempresa;
+      camposFk.idservicioempresaestado = servicioempresaestado.idservicioempresaestado;
+      camposFk.idusuarioverifica = req.session_user.usuario.idusuario;
 
-      var camposAdicionales: Partial<ServicioEmpresaVerificacionAttributes> = {};
-      camposAdicionales.servicioempresaverificacionid = uuidv4();
-
-      var camposAuditoria: Partial<ServicioEmpresaVerificacionAttributes> = {};
-      camposAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
-      camposAuditoria.fechacrea = new Date();
-      camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
-      camposAuditoria.fechamod = new Date();
-      camposAuditoria.estado = 1;
+      var servicioempresaverificacionToCreate: Prisma.servicio_empresa_verificacionCreateInput = {
+        servicio_empresa: { connect: { idservicioempresa: servicioempresa.idservicioempresa } },
+        servicio_empresa_estado: { connect: { idservicioempresaestado: servicioempresaestado.idservicioempresaestado } },
+        usuario_verifica: { connect: { idusuario: req.session_user.usuario.idusuario } },
+        comentariointerno: servicioempresaverificacionValidated.comentariointerno,
+        comentariousuario: servicioempresaverificacionValidated.comentariointerno,
+        servicioempresaverificacionid: uuidv4(),
+        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
 
       const servicioempresaverificacionCreated = await servicioempresaverificacionDao.insertServicioempresaverificacion(tx, {
         ...camposFk,
@@ -95,9 +100,9 @@ export const createFactoringempresaverificacion = async (req: Request, res: Resp
       log.debug(line(), "servicioempresaverificacionCreated", servicioempresaverificacionCreated);
 
       // Actualiza la tabla servicioempresa con el nuevo estado
-      const servicioempresaUpdate: Partial<ServicioEmpresaAttributes> = {};
+      const servicioempresaUpdate: Partial<servicio_empresa> = {};
       servicioempresaUpdate.servicioempresaid = servicioempresaverificacionValidated.servicioempresaid;
-      servicioempresaUpdate._idservicioempresaestado = servicioempresaestado._idservicioempresaestado;
+      servicioempresaUpdate.idservicioempresaestado = servicioempresaestado.idservicioempresaestado;
       servicioempresaUpdate.idusuariomod = req.session_user.usuario._idusuario ?? 1;
       servicioempresaUpdate.fechamod = new Date();
 
@@ -105,7 +110,7 @@ export const createFactoringempresaverificacion = async (req: Request, res: Resp
       log.debug(line(), "servicioempresaUpdate", servicioempresaUpdate);
 
       // Si el estado es estado 3 (Suscrito)
-      if (servicioempresaestado._idservicioempresaestado == 3) {
+      if (servicioempresaestado.idservicioempresaestado == 3) {
         await darAccesoAlUsuarioServicioEmpresa(req, tx, servicioempresa, personasuscriptor);
         await darAccesoAlUsuarioServicio(req, tx, servicioempresaverificacionValidated, servicioempresa, empresa, personasuscriptor);
       }
@@ -120,9 +125,9 @@ export const createFactoringempresaverificacion = async (req: Request, res: Resp
 };
 
 const darAccesoAlUsuarioServicioEmpresa = async (req, tx, servicioempresa, personasuscriptor) => {
-  const usuarioservicioempresa = await usuarioservicioempresaDao.getUsuarioservicioempresaByIdusuarioIdServicioIdempresa(tx, personasuscriptor._idusuario, servicioempresa._idservicio, servicioempresa._idempresa);
+  const usuarioservicioempresa = await usuarioservicioempresaDao.getUsuarioservicioempresaByIdusuarioIdServicioIdempresa(tx, personasuscriptor.idusuario, servicioempresa.idservicio, servicioempresa.idempresa);
   if (!usuarioservicioempresa) {
-    log.warn(line(), "Usuario servicio empresa no existe: [" + personasuscriptor._idusuario + " - " + servicioempresa._idservicio + " - " + servicioempresa._idempresa + "]");
+    log.warn(line(), "Usuario servicio empresa no existe: [" + personasuscriptor.idusuario + " - " + servicioempresa.idservicio + " - " + servicioempresa.idempresa + "]");
     throw new ClientError("Datos no válidos", 404);
   }
 
@@ -141,10 +146,10 @@ const darAccesoAlUsuarioServicioEmpresa = async (req, tx, servicioempresa, perso
   }
 
   // Actualiza la tabla usuarioservicioempresa con el nuevo estado
-  const usuarioservicioempresaUpdate: Partial<UsuarioServicioEmpresaAttributes> = {};
+  const usuarioservicioempresaUpdate: Partial<usuario_servicio_empresa> = {};
   usuarioservicioempresaUpdate.usuarioservicioempresaid = usuarioservicioempresa.usuarioservicioempresaid;
-  usuarioservicioempresaUpdate._idusuarioservicioempresaestado = usuarioservicioempresaestado._idusuarioservicioempresaestado;
-  usuarioservicioempresaUpdate._idusuarioservicioempresarol = usuarioservicioempresarol._idusuarioservicioempresarol;
+  usuarioservicioempresaUpdate.idusuarioservicioempresaestado = usuarioservicioempresaestado.idusuarioservicioempresaestado;
+  usuarioservicioempresaUpdate.idusuarioservicioempresarol = usuarioservicioempresarol.idusuarioservicioempresarol;
   usuarioservicioempresaUpdate.idusuariomod = req.session_user.usuario._idusuario ?? 1;
   usuarioservicioempresaUpdate.fechamod = new Date();
 
@@ -153,9 +158,9 @@ const darAccesoAlUsuarioServicioEmpresa = async (req, tx, servicioempresa, perso
 };
 
 const darAccesoAlUsuarioServicio = async (req, tx, servicioempresaverificacionValidated, servicioempresa, empresa, personasuscriptor) => {
-  const usuarioservicio = await usuarioservicioDao.getUsuarioservicioByIdusuarioIdservicio(tx, personasuscriptor._idusuario, servicioempresa._idservicio);
+  const usuarioservicio = await usuarioservicioDao.getUsuarioservicioByIdusuarioIdservicio(tx, personasuscriptor.idusuario, servicioempresa.idservicio);
   if (!usuarioservicio) {
-    log.warn(line(), "Usuario servicio no existe: [" + personasuscriptor._idusuario + " - " + servicioempresa._idservicio + "]");
+    log.warn(line(), "Usuario servicio no existe: [" + personasuscriptor.idusuario + " - " + servicioempresa.idservicio + "]");
     throw new ClientError("Datos no válidos", 404);
   }
 
@@ -167,17 +172,17 @@ const darAccesoAlUsuarioServicio = async (req, tx, servicioempresaverificacionVa
   }
 
   // Inserta un nuevo registro en la tabla usuarioservicioverificacion con el nuevo estado
-  var camposUsuarioservicioverificacionFk: Partial<UsuarioServicioVerificacionAttributes> = {};
-  camposUsuarioservicioverificacionFk._idusuarioservicio = usuarioservicio._idusuarioservicio;
-  camposUsuarioservicioverificacionFk._idusuarioservicioestado = usuarioservicioestado._idusuarioservicioestado;
-  camposUsuarioservicioverificacionFk._idusuarioverifica = req.session_user.usuario._idusuario;
+  var camposUsuarioservicioverificacionFk: Partial<usuario_servicio_verificacion> = {};
+  camposUsuarioservicioverificacionFk.idusuarioservicio = usuarioservicio.idusuarioservicio;
+  camposUsuarioservicioverificacionFk.idusuarioservicioestado = usuarioservicioestado.idusuarioservicioestado;
+  camposUsuarioservicioverificacionFk.idusuarioverifica = req.session_user.usuario._idusuario;
 
-  var camposUsuarioservicioverificacionAdicionales: Partial<UsuarioServicioVerificacionAttributes> = {};
+  var camposUsuarioservicioverificacionAdicionales: Partial<usuario_servicio_verificacion> = {};
   camposUsuarioservicioverificacionAdicionales.usuarioservicioverificacionid = uuidv4();
   camposUsuarioservicioverificacionAdicionales.comentariousuario = servicioempresaverificacionValidated.comentariousuario;
   camposUsuarioservicioverificacionAdicionales.comentariointerno = servicioempresaverificacionValidated.comentariointerno + " // Proceso automático. Se concedió acceso por la verificación de la empresa: " + empresa.code + " - " + empresa.ruc + " - " + empresa.razon_social;
 
-  var camposUsuarioservicioverificacionAuditoria: Partial<UsuarioServicioVerificacionAttributes> = {};
+  var camposUsuarioservicioverificacionAuditoria: Partial<usuario_servicio_verificacion> = {};
   camposUsuarioservicioverificacionAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
   camposUsuarioservicioverificacionAuditoria.fechacrea = new Date();
   camposUsuarioservicioverificacionAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
@@ -192,9 +197,9 @@ const darAccesoAlUsuarioServicio = async (req, tx, servicioempresaverificacionVa
   log.debug(line(), "usuarioservicioverificacionCreated", usuarioservicioverificacionCreated);
 
   // Actualiza la tabla usuarioservicio con el nuevo estado
-  const usuarioservicioUpdate: Partial<UsuarioServicioAttributes> = {};
+  const usuarioservicioUpdate: Partial<usuario_servicio> = {};
   usuarioservicioUpdate.usuarioservicioid = usuarioservicio.usuarioservicioid;
-  usuarioservicioUpdate._idusuarioservicioestado = usuarioservicioestado._idusuarioservicioestado;
+  usuarioservicioUpdate.idusuarioservicioestado = usuarioservicioestado.idusuarioservicioestado;
   usuarioservicioUpdate.idusuariomod = req.session_user.usuario._idusuario ?? 1;
   usuarioservicioUpdate.fechamod = new Date();
 
@@ -231,7 +236,7 @@ const enviarCorreoSegunCorrespondeNuevoEstadoDeServicioEmpresa = async (servicio
     }
   }
 
-  if (servicioempresaestado._idservicioempresaestado == 3) {
+  if (servicioempresaestado.idservicioempresaestado == 3) {
     // Email de aprobado
     const dataEmail = {
       codigo_servicio_empresa: servicioempresa.code,
@@ -249,7 +254,7 @@ const enviarCorreoSegunCorrespondeNuevoEstadoDeServicioEmpresa = async (servicio
       html: emailTemplate.html,
     };
     await emailSender.sendContactoFinanzatech(mailOptions);
-  } else if (servicioempresaestado._idservicioempresaestado == 2) {
+  } else if (servicioempresaestado.idservicioempresaestado == 2) {
     // Email de rechazado
     const dataEmail = {
       codigo_servicio_empresa: servicioempresa.code,

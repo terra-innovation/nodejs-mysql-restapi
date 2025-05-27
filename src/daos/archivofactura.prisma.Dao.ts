@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getArchivofacturasByIdfactoring = async (tx: TxClient, idfactoring: number, estados: number[]): Promise<archivo_factura[]> => {
+export const getArchivofacturasByIdfactoring = async (tx: TxClient, idfactoring: bigint, estados: number[]): Promise<archivo_factura[]> => {
   try {
     const archivofacturas = await tx.archivo_factura.findMany({
       include: {

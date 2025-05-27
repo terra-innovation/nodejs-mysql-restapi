@@ -266,7 +266,7 @@ model banco_transaccion {
   bancotransaccionid                                    String                                     @unique(map: "UQ_bancotransaccio_bancotransaccioid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                                                  String                                     @unique(map: "UQ_bancotransaccio_code") @db.VarChar(20)
   idbancocuenta                                         BigInt                                     @map("_idbancocuenta")
-  idbancotransaciontipo                                 Int                                        @map("_idbancotransaciontipo")
+  idbancotransacciontipo                                Int                                        @map("_idbancotransacciontipo")
   idbancotransaccionestado                              Int                                        @map("_idbancotransaccionestado")
   idbancotransaccionestadohistorial                     BigInt?                                    @map("_idbancotransaccionestadohistorial")
   fecha_solicitud                                       DateTime                                   @db.DateTime(0)
@@ -280,7 +280,7 @@ model banco_transaccion {
   banco_cuenta                                          banco_cuenta                               @relation(fields: [idbancocuenta], references: [idbancocuenta], onUpdate: Restrict, map: "FK_bancotransaccion_idbancocuenta")
   banco_transaccion_estado                              banco_transaccion_estado                   @relation(fields: [idbancotransaccionestado], references: [idbancotransaccionestado], onUpdate: Restrict, map: "FK_bancotransaccion_idbancotransaccionestado")
   banco_transaccion_estado_historial                    banco_transaccion_estado_historial?        @relation("banco_transaccion_idbancotransaccionestadohistorialTobanco_transaccion_estado_historial", fields: [idbancotransaccionestadohistorial], references: [idbancotransaccionestadohistorial], onDelete: Restrict, onUpdate: Restrict, map: "FK_bancotransaccion_idbancotransaccionestadohistorial")
-  banco_transaccion_tipo                                banco_transaccion_tipo                     @relation(fields: [idbancotransaciontipo], references: [idbancotransacciontipo], onUpdate: Restrict, map: "FK_bancotransaccion_idbancotransacciontipo")
+  banco_transaccion_tipo                                banco_transaccion_tipo                     @relation(fields: [idbancotransacciontipo], references: [idbancotransacciontipo], onDelete: NoAction, onUpdate: Restrict, map: "FK_bancotransaccion_idbancotransacciontipo")
   banco_transaccion_estado_historial_bancotransacciones banco_transaccion_estado_historial[]       @relation("banco_transaccion_estado_historial_idbancotransaccionTobanco_transaccion")
   banco_transaccion_factoring_inversiones               banco_transaccion_factoring_inversion[]
   banco_transaccion_inversionista_depositos             banco_transaccion_inversionista_deposito[]
@@ -289,7 +289,7 @@ model banco_transaccion {
   @@index([idbancocuenta], map: "FK_bancotransaccion_idbancocuenta")
   @@index([idbancotransaccionestado], map: "FK_bancotransaccion_idbancotransaccionestado")
   @@index([idbancotransaccionestadohistorial], map: "FK_bancotransaccion_idbancotransaccionestadohistorial")
-  @@index([idbancotransaciontipo], map: "FK_bancotransaccion_idbancotransacciontipo")
+  @@index([idbancotransacciontipo], map: "FK_bancotransaccion_idbancotransacciontipo")
 }
 
 model banco_transaccion_estado {
@@ -312,7 +312,7 @@ model banco_transaccion_estado_historial {
   code                                                String                   @unique(map: "UQ_bteh_code") @db.VarChar(255)
   idbancotransaccion                                  BigInt                   @map("_idbancotransaccion")
   idbancotransaccionestado                            Int                      @map("_idbancotransaccionestado")
-  idusuariomodifica                                   BigInt                   @map("_idusuariomodifica")
+  idusuariomodifica                                   Int                      @map("_idusuariomodifica") @db.UnsignedInt
   motivo                                              String?                  @db.Text
   idusuariocrea                                       Int                      @default(1)
   fechacrea                                           DateTime                 @default(now())
@@ -322,7 +322,7 @@ model banco_transaccion_estado_historial {
   banco_transaccion_bancotransaccionestadohistoriales banco_transaccion[]      @relation("banco_transaccion_idbancotransaccionestadohistorialTobanco_transaccion_estado_historial")
   banco_transaccion                                   banco_transaccion        @relation("banco_transaccion_estado_historial_idbancotransaccionTobanco_transaccion", fields: [idbancotransaccion], references: [idbancotransaccion], onUpdate: Restrict, map: "FK_bteh_idbancotransaccion")
   banco_transaccion_estado                            banco_transaccion_estado @relation(fields: [idbancotransaccionestado], references: [idbancotransaccionestado], onUpdate: Restrict, map: "FK_bteh_idbancotransaccionestado")
-  usuario                                             usuario                  @relation(fields: [idusuariomodifica], references: [idusuario], onUpdate: Restrict, map: "FK_bteh_idusuariomodifica")
+  usuario_modifica                                    usuario                  @relation(fields: [idusuariomodifica], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_bteh_idusuariomodifica")
 
   @@index([idbancotransaccionestado], map: "FK_bteh_idbancotransaccionestado")
   @@index([idbancotransaccion], map: "FK_bteh_idtransaccion")
@@ -476,14 +476,14 @@ model credencial {
   idcredencial  BigInt   @id @default(autoincrement()) @map("_idcredencial")
   credencialid  String   @unique(map: "UQ_credencial_credencialid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code          String   @unique(map: "UQ_credencial_code") @db.VarChar(20)
-  idusuario     BigInt   @unique(map: "UQ_credencual_idusuario") @map("_idusuario")
+  idusuario     Int      @unique(map: "UQ_credencual_idusuario") @map("_idusuario") @db.UnsignedInt
   password      String   @db.VarChar(200)
   idusuariocrea Int      @default(1)
   fechacrea     DateTime @default(now())
   idusuariomod  Int      @default(1)
   fechamod      DateTime @default(now())
   estado        Int      @default(1) @db.TinyInt
-  usuario       usuario  @relation(fields: [idusuario], references: [idusuario], onUpdate: Restrict, map: "FK_credencial_idusuario")
+  usuario       usuario  @relation(fields: [idusuario], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_credencial_idusuario")
 
   @@index([idusuario], map: "FK_credencial_idusuario")
 }
@@ -632,10 +632,10 @@ model empresa {
   archivo_empresas          archivo_empresa[]
   colaboradores             colaborador[]
   contactos                 contacto[]
-  departamento              departamento?              @relation(fields: [iddepartamentosede], references: [iddepartamento], onDelete: Restrict, onUpdate: Restrict, map: "FK_empresa_iddepartamentosede")
-  distrito                  distrito?                  @relation(fields: [iddistritosede], references: [iddistrito], onDelete: Restrict, onUpdate: Restrict, map: "FK_empresa_iddistritosede")
-  pais                      pais?                      @relation(fields: [idpaissede], references: [idpais], onDelete: Restrict, onUpdate: Restrict, map: "FK_empresa_idpaissede")
-  provincia                 provincia?                 @relation(fields: [idprovinciasede], references: [idprovincia], onDelete: Restrict, onUpdate: Restrict, map: "FK_empresa_idprovinciasede")
+  departamento_sede         departamento?              @relation(fields: [iddepartamentosede], references: [iddepartamento], onDelete: Restrict, onUpdate: Restrict, map: "FK_empresa_iddepartamentosede")
+  distrito_sede             distrito?                  @relation(fields: [iddistritosede], references: [iddistrito], onDelete: Restrict, onUpdate: Restrict, map: "FK_empresa_iddistritosede")
+  pais_sede                 pais?                      @relation(fields: [idpaissede], references: [idpais], onDelete: Restrict, onUpdate: Restrict, map: "FK_empresa_idpaissede")
+  provincia_sede            provincia?                 @relation(fields: [idprovinciasede], references: [idprovincia], onDelete: Restrict, onUpdate: Restrict, map: "FK_empresa_idprovinciasede")
   riesgo                    riesgo?                    @relation(fields: [idriesgo], references: [idriesgo], onDelete: Restrict, onUpdate: Restrict, map: "FK_empresa_idriesgo")
   empresa_cuenta_bancarias  empresa_cuenta_bancaria[]
   factoring_aceptantes      factoring[]                @relation("factoring_idaceptanteToempresa")
@@ -707,10 +707,10 @@ model factor {
   idusuariomod              Int                      @default(1)
   fechamod                  DateTime                 @default(now()) @db.Timestamp(3)
   estado                    Int                      @default(1) @db.TinyInt
-  departamento              departamento?            @relation(fields: [iddepartamentosede], references: [iddepartamento], onDelete: Restrict, onUpdate: Restrict, map: "FK_factor_iddepartamentosede")
-  distrito                  distrito?                @relation(fields: [iddistritosede], references: [iddistrito], onDelete: Restrict, onUpdate: Restrict, map: "FK_factor_iddistritosede")
-  pais                      pais?                    @relation(fields: [idpaissede], references: [idpais], onDelete: Restrict, onUpdate: Restrict, map: "FK_factor_idpaissede")
-  provincia                 provincia?               @relation(fields: [idprovinciasede], references: [idprovincia], onDelete: Restrict, onUpdate: Restrict, map: "FK_factor_idprovinciasede")
+  departamento_sede         departamento?            @relation(fields: [iddepartamentosede], references: [iddepartamento], onDelete: Restrict, onUpdate: Restrict, map: "FK_factor_iddepartamentosede")
+  distrito_sede             distrito?                @relation(fields: [iddistritosede], references: [iddistrito], onDelete: Restrict, onUpdate: Restrict, map: "FK_factor_iddistritosede")
+  pais_sede                 pais?                    @relation(fields: [idpaissede], references: [idpais], onDelete: Restrict, onUpdate: Restrict, map: "FK_factor_idpaissede")
+  provincia_sede            provincia?               @relation(fields: [idprovinciasede], references: [idprovincia], onDelete: Restrict, onUpdate: Restrict, map: "FK_factor_idprovinciasede")
   riesgo                    riesgo?                  @relation(fields: [idriesgo], references: [idriesgo], onDelete: Restrict, onUpdate: Restrict, map: "FK_factor_idriesgo")
   factor_cuenta_bancarias   factor_cuenta_bancaria[]
 
@@ -771,8 +771,8 @@ model factoring {
   estado                          Int                          @default(1) @db.TinyInt
   empresa_aceptante               empresa                      @relation("factoring_idaceptanteToempresa", fields: [idaceptante], references: [idempresa], onUpdate: Restrict, map: "FK_factoring_idaceptante")
   empresa_cedente                 empresa                      @relation("factoring_idcedenteToempresa", fields: [idcedente], references: [idempresa], onUpdate: Restrict, map: "FK_factoring_idcedente")
-  contacto                        contacto?                    @relation(fields: [idcontactoaceptante], references: [idcontacto], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_idcontactoaceptante")
-  colaborador                     colaborador?                 @relation(fields: [idcontactocedente], references: [idcolaborador], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_idcontactocedente")
+  contacto_aceptante              contacto?                    @relation(fields: [idcontactoaceptante], references: [idcontacto], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_idcontactoaceptante")
+  contacto_cedente                colaborador?                 @relation(fields: [idcontactocedente], references: [idcolaborador], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_idcontactocedente")
   cuenta_bancaria                 cuenta_bancaria?             @relation(fields: [idcuentabancaria], references: [idcuentabancaria], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_idcuentabancaria")
   factoring_ejecutado             factoring_ejecutado?         @relation("factoring_idfactoringejecutadoTofactoring_ejecutado", fields: [idfactoringejecutado], references: [idfactoringejecutado], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_idfactoringejecutado")
   factoring_estado                factoring_estado             @relation(fields: [idfactoringestado], references: [idfactoringestado], onUpdate: Restrict, map: "FK_factoring_idfactoringestado")
@@ -860,7 +860,7 @@ model factoring_ejecutado {
   factoringejecutadoid          String                     @unique(map: "UQ_factoring_ejecutado_factoringejecutadoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                          String                     @unique(map: "UQ_factoring_ejecutado_code") @db.VarChar(255)
   idfactoring                   BigInt?                    @map("_idfactoring")
-  idfactoringejecutadoaestado   Int                        @map("_idfactoringejecutadoaestado")
+  idfactoringejecutadoestado    Int                        @map("_idfactoringejecutadoestado")
   fecha_propuesta               DateTime                   @db.DateTime(0)
   fecha_pago_real               DateTime                   @db.Date
   dias_pago_real                Int
@@ -891,10 +891,10 @@ model factoring_ejecutado {
   estado                        Int                        @default(1) @db.TinyInt
   factoring_factoringejecutados factoring[]                @relation("factoring_idfactoringejecutadoTofactoring_ejecutado")
   factoring                     factoring?                 @relation("factoring_ejecutado_idfactoringTofactoring", fields: [idfactoring], references: [idfactoring], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_ejecutado_idfactoring")
-  factoring_ejecutado_estado    factoring_ejecutado_estado @relation(fields: [idfactoringejecutadoaestado], references: [idfactoringejecutadoestado], onUpdate: Restrict, map: "FK_factoring_ejecutado_idfactoringejecutadoestado")
+  factoring_ejecutado_estado    factoring_ejecutado_estado @relation(fields: [idfactoringejecutadoestado], references: [idfactoringejecutadoestado], onDelete: NoAction, onUpdate: Restrict, map: "FK_factoring_ejecutado_idfactoringejecutadoestado")
 
   @@index([idfactoring], map: "FK_factoring_ejecutado_idfactoring")
-  @@index([idfactoringejecutadoaestado], map: "FK_factoring_ejecutado_idfactoringejecutadoestado")
+  @@index([idfactoringejecutadoestado], map: "FK_factoring_ejecutado_idfactoringejecutadoestado")
 }
 
 model factoring_ejecutado_estado {
@@ -966,7 +966,7 @@ model factoring_historial_estado {
   code                                String                               @unique(map: "UQ_factoringhistorialestado_code") @db.VarChar(20)
   idfactoring                         BigInt                               @map("_idfactoring")
   idfactoringestado                   Int                                  @map("_idfactoringestado")
-  idusuariomodifica                   BigInt                               @map("_idusuariomodifica")
+  idusuariomodifica                   Int                                  @map("_idusuariomodifica") @db.UnsignedInt
   comentario                          String                               @db.Text
   idusuariocrea                       Int                                  @default(1)
   fechacrea                           DateTime                             @default(now())
@@ -976,7 +976,7 @@ model factoring_historial_estado {
   archivo_factoring_historial_estados archivo_factoring_historial_estado[]
   factoring_estado                    factoring_estado                     @relation(fields: [idfactoringestado], references: [idfactoringestado], onUpdate: Restrict, map: "FK_factoringhistorialestado_idfactoringestado")
   factoring                           factoring                            @relation(fields: [idfactoring], references: [idfactoring], onUpdate: Restrict, map: "FK_factoringhistorialestado_idfactoting")
-  usuario                             usuario                              @relation(fields: [idusuariomodifica], references: [idusuario], onUpdate: Restrict, map: "FK_factoringhistorialestado_idusuariomodifica")
+  usuario_modifica                    usuario                              @relation(fields: [idusuariomodifica], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_factoringhistorialestado_idusuariomodifica")
 
   @@index([idfactoringestado], map: "FK_factoringhistorialestado_idfactoringestado")
   @@index([idfactoring], map: "FK_factoringhistorialestado_idfactoting")
@@ -1151,7 +1151,7 @@ model factura {
   idfactura                                     BigInt                 @id @default(autoincrement()) @map("_idfactura")
   facturaid                                     String                 @unique(map: "UQ_factura_facturaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                                          String                 @unique(map: "UQ_factura_code") @db.VarChar(20)
-  idusuarioupload                               BigInt                 @map("_idusuarioupload")
+  idusuarioupload                               Int                    @map("_idusuarioupload") @db.UnsignedInt
   UBLVersionID                                  String?                @db.VarChar(10)
   CustomizationID                               String?                @db.VarChar(10)
   serie                                         String                 @db.VarChar(20)
@@ -1194,7 +1194,7 @@ model factura {
   estado                                        Int                    @default(1) @db.TinyInt
   archivo_facturas                              archivo_factura[]
   factoring_facturas                            factoring_factura[]
-  usuario                                       usuario                @relation(fields: [idusuarioupload], references: [idusuario], onUpdate: Restrict, map: "FK_factura_idusuarioupload")
+  usuario_upload                                usuario                @relation(fields: [idusuarioupload], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_factura_idusuarioupload")
   factura_impuestos                             factura_impuesto[]
   factura_itemes                                factura_item[]
   factura_medio_pagos                           factura_medio_pago[]
@@ -1493,14 +1493,14 @@ model pais {
 }
 
 model pep_vinculo {
-  idpepvinculo           Int                     @id @default(autoincrement()) @map("_idpepvinculo")
-  pepvinculoid           String                  @unique(map: "UQ_pepvinculoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
-  nombrepepvinculo       String                  @db.VarChar(200)
-  idusuariocrea          Int                     @default(1)
-  fechacrea              DateTime                @default(now())
-  idusuariomod           Int                     @default(1)
-  fechamod               DateTime                @default(now())
-  estado                 Int                     @default(1) @db.TinyInt
+  idpepvinculo          Int                     @id @default(autoincrement()) @map("_idpepvinculo")
+  pepvinculoid          String                  @unique(map: "UQ_pepvinculoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  nombrepepvinculo      String                  @db.VarChar(200)
+  idusuariocrea         Int                     @default(1)
+  fechacrea             DateTime                @default(now())
+  idusuariomod          Int                     @default(1)
+  fechamod              DateTime                @default(now())
+  estado                Int                     @default(1) @db.TinyInt
   persona_pep_indirectos persona_pep_indirecto[]
 }
 
@@ -1508,7 +1508,7 @@ model persona {
   idpersona                   BigInt                      @id @default(autoincrement()) @map("_idpersona")
   personaid                   String                      @unique(map: "UQ_personaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                        String                      @unique(map: "UQ_code") @db.VarChar(20)
-  idusuario                   BigInt                      @unique(map: "UQ_idusuario") @map("_idusuario")
+  idusuario                   Int                         @unique(map: "UQ_idusuario") @map("_idusuario") @db.UnsignedInt
   idpersonaverificacionestado Int                         @map("_idpersonaverificacionestado")
   iddocumentotipo             Int?                        @map("_iddocumentotipo")
   idpaisnacionalidad          Int?                        @map("_idpaisnacionalidad")
@@ -1535,16 +1535,16 @@ model persona {
   archivo_personas            archivo_persona[]
   colaboradores               colaborador[]
   inversionista               inversionista?
-  departamento                departamento?               @relation(fields: [iddepartamentoresidencia], references: [iddepartamento], onDelete: Restrict, onUpdate: Restrict, map: "FK_persona_iddepartamentoresidencia")
-  distrito                    distrito?                   @relation(fields: [iddistritoresidencia], references: [iddistrito], onDelete: Restrict, onUpdate: Restrict, map: "FK_persona_iddistritoresidencia")
+  departamento_residencia     departamento?               @relation(fields: [iddepartamentoresidencia], references: [iddepartamento], onDelete: Restrict, onUpdate: Restrict, map: "FK_persona_iddepartamentoresidencia")
+  distrito_residencia         distrito?                   @relation(fields: [iddistritoresidencia], references: [iddistrito], onDelete: Restrict, onUpdate: Restrict, map: "FK_persona_iddistritoresidencia")
   documento_tipo              documento_tipo?             @relation(fields: [iddocumentotipo], references: [iddocumentotipo], onDelete: Restrict, onUpdate: Restrict, map: "FK_persona_iddocumentotipo")
   genero                      genero?                     @relation(fields: [idgenero], references: [idgenero], onDelete: Restrict, onUpdate: Restrict, map: "FK_persona_idgenero")
   pais_nacimiento             pais?                       @relation("persona_idpaisnacimientoTopais", fields: [idpaisnacimiento], references: [idpais], onDelete: Restrict, onUpdate: Restrict, map: "FK_persona_idpaisnacimiento")
   pais_nacionalidad           pais?                       @relation("persona_idpaisnacionalidadTopais", fields: [idpaisnacionalidad], references: [idpais], onDelete: Restrict, onUpdate: Restrict, map: "FK_persona_idpaisnacionalidad")
   pais_residencia             pais?                       @relation("persona_idpaisresidenciaTopais", fields: [idpaisresidencia], references: [idpais], onDelete: Restrict, onUpdate: Restrict, map: "FK_persona_idpaisresidencia")
   persona_verificacion_estado persona_verificacion_estado @relation(fields: [idpersonaverificacionestado], references: [idpersonaverificacionestado], onUpdate: Restrict, map: "FK_persona_idpersonaverificacionestado")
-  provincia                   provincia?                  @relation(fields: [idprovinciaresidencia], references: [idprovincia], onDelete: Restrict, onUpdate: Restrict, map: "FK_persona_idprovinciaresidencia")
-  usuario                     usuario                     @relation(fields: [idusuario], references: [idusuario], onUpdate: Restrict, map: "FK_persona_idusuario")
+  provincia_residencia        provincia?                  @relation(fields: [idprovinciaresidencia], references: [idprovincia], onDelete: Restrict, onUpdate: Restrict, map: "FK_persona_idprovinciaresidencia")
+  usuario                     usuario                     @relation(fields: [idusuario], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_persona_idusuario")
   persona_cuenta_bancarias    persona_cuenta_bancaria[]
   persona_declaraciones       persona_declaracion[]
   persona_pep_directos        persona_pep_directo[]
@@ -1623,7 +1623,7 @@ model persona_pep_indirecto {
   idpersonapepindirecto Int          @id @default(autoincrement()) @map("_idpersonapepindirecto")
   personapepindirectoid String       @unique(map: "UQ_personapepdirectoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   idpersona             BigInt?      @map("_idpersona")
-  idpepevinculo         Int?         @map("_idpepevinculo")
+  idpepvinculo          Int?         @map("_idpepvinculo")
   identificacionpep     String       @db.VarChar(12)
   nombrescompletospep   String       @db.VarChar(300)
   rucentidad            String       @db.VarChar(11)
@@ -1637,11 +1637,11 @@ model persona_pep_indirecto {
   idusuariomod          Int          @default(1)
   fechamod              DateTime     @default(now())
   estado                Int          @default(1) @db.TinyInt
-  pep_vinculo           pep_vinculo? @relation(fields: [idpepevinculo], references: [idpepvinculo], onDelete: NoAction, onUpdate: NoAction, map: "FK_persona_pep_indirecto_idpepevinculo")
-  persona               persona?     @relation(fields: [idpersona], references: [idpersona], onDelete: NoAction, onUpdate: NoAction, map: "FK_persona_pep_indirecto_idpersona")
+  pep_vinculo           pep_vinculo? @relation(fields: [idpepvinculo], references: [idpepvinculo], onDelete: NoAction, onUpdate: Restrict, map: "FK_persona_pep_indirecto_idpepvinculo")
+  persona               persona?     @relation(fields: [idpersona], references: [idpersona], onDelete: NoAction, onUpdate: Restrict, map: "FK_persona_pep_indirecto_idpersona")
 
   @@index([idpersona], map: "FK_persona_pep_directo_idpersona")
-  @@index([idpepevinculo], map: "FK_persona_pep_indirecto_idpepevinculo")
+  @@index([idpepvinculo], map: "FK_persona_pep_indirecto_idpepevinculo")
 }
 
 model persona_verificacion {
@@ -1649,7 +1649,7 @@ model persona_verificacion {
   personaverificacionid       String                      @unique(map: "UQ_personaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   idpersona                   BigInt                      @map("_idpersona")
   idpersonaverificacionestado Int                         @map("_idpersonaverificacionestado")
-  idusuarioverifica           BigInt                      @map("_idusuarioverifica")
+  idusuarioverifica           Int                         @map("_idusuarioverifica") @db.UnsignedInt
   comentariousuario           String                      @db.Text
   comentariointerno           String                      @db.Text
   idusuariocrea               Int                         @default(1)
@@ -1659,7 +1659,7 @@ model persona_verificacion {
   estado                      Int                         @default(1) @db.TinyInt
   persona                     persona                     @relation(fields: [idpersona], references: [idpersona], onUpdate: Restrict, map: "FK_persona_verificacion_idpersona")
   persona_verificacion_estado persona_verificacion_estado @relation(fields: [idpersonaverificacionestado], references: [idpersonaverificacionestado], onUpdate: Restrict, map: "FK_persona_verificacion_idpersonaverificacionestado")
-  usuario                     usuario                     @relation(fields: [idusuarioverifica], references: [idusuario], onUpdate: Restrict, map: "FK_persona_verificacion_idusuarioverifica")
+  usuario_verifica            usuario                     @relation(fields: [idusuarioverifica], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_persona_verificacion_idusuarioverifica")
 
   @@index([idpersona], map: "FK_persona_verificacion_idpersona")
   @@index([idpersonaverificacionestado], map: "FK_persona_verificacion_idpersonaverificacionestado")
@@ -1785,7 +1785,7 @@ model servicio_empresa {
   code                            String                          @unique(map: "UQ_servicioempresa_code") @db.VarChar(20)
   idservicio                      Int                             @map("_idservicio")
   idempresa                       Int                             @map("_idempresa")
-  idusuariosuscriptor             BigInt                          @map("_idusuariosuscriptor")
+  idusuariosuscriptor             Int                             @map("_idusuariosuscriptor") @db.UnsignedInt
   idservicioempresaestado         Int                             @map("_idservicioempresaestado")
   idusuariocrea                   Int                             @default(1)
   fechacrea                       DateTime                        @default(now())
@@ -1795,7 +1795,7 @@ model servicio_empresa {
   empresa                         empresa                         @relation(fields: [idempresa], references: [idempresa], onUpdate: Restrict, map: "FK_servicioempresa_idempresa")
   servicio                        servicio                        @relation(fields: [idservicio], references: [idservicio], onUpdate: Restrict, map: "FK_servicioempresa_idservicio")
   servicio_empresa_estado         servicio_empresa_estado         @relation(fields: [idservicioempresaestado], references: [idservicioempresaestado], onUpdate: Restrict, map: "FK_servicioempresa_idservicioempresaestado")
-  usuario                         usuario                         @relation(fields: [idusuariosuscriptor], references: [idusuario], onUpdate: Restrict, map: "FK_servicioempresa_idusuariosuscriptor")
+  usuario_suscriptor              usuario                         @relation(fields: [idusuariosuscriptor], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_servicioempresa_idusuariosuscriptor")
   servicio_empresa_verificaciones servicio_empresa_verificacion[]
 
   @@unique([idservicio, idempresa], map: "UQ_servicioempresa_idservicio__idempresa")
@@ -1829,7 +1829,7 @@ model servicio_empresa_verificacion {
   servicioempresaverificacionid String                  @unique(map: "UQ_servicioempresaverificacion_servicioempresaverificacionid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   idservicioempresa             Int                     @map("_idservicioempresa")
   idservicioempresaestado       Int                     @map("_idservicioempresaestado")
-  idusuarioverifica             BigInt                  @map("_idusuarioverifica")
+  idusuarioverifica             Int                     @map("_idusuarioverifica") @db.UnsignedInt
   comentariousuario             String                  @db.Text
   comentariointerno             String                  @db.Text
   idusuariocrea                 Int                     @default(1)
@@ -1839,7 +1839,7 @@ model servicio_empresa_verificacion {
   estado                        Int                     @default(1) @db.TinyInt
   servicio_empresa              servicio_empresa        @relation(fields: [idservicioempresa], references: [idservicioempresa], onUpdate: Restrict, map: "FK_servicioempresaverificacion_idservicioempresa")
   servicio_empresa_estado       servicio_empresa_estado @relation(fields: [idservicioempresaestado], references: [idservicioempresaestado], onUpdate: Restrict, map: "FK_servicioempresaverificacion_idservicioempresaestado")
-  usuario                       usuario                 @relation(fields: [idusuarioverifica], references: [idusuario], onUpdate: Restrict, map: "FK_servicioempresaverificacion_idusuarioverifica")
+  usuario_verifica              usuario                 @relation(fields: [idusuarioverifica], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_servicioempresaverificacion_idusuarioverifica")
 
   @@index([idservicioempresa], map: "FK_servicioempresaverificacion_idservicioempresa")
   @@index([idservicioempresaestado], map: "FK_servicioempresaverificacion_idservicioempresaestado")
@@ -1848,7 +1848,7 @@ model servicio_empresa_verificacion {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model usuario {
-  idusuario                            BigInt                               @id @default(autoincrement()) @map("_idusuario")
+  idusuario                            Int                                  @id @default(autoincrement()) @map("_idusuario") @db.UnsignedInt
   usuarioid                            String                               @unique(map: "UQ_usuario_usuarioid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                                 String                               @unique(map: "UQ_usuario_code") @db.VarChar(20)
   iddocumentotipo                      Int                                  @map("_iddocumentotipo")
@@ -1885,7 +1885,7 @@ model usuario {
 }
 
 model usuario_rol {
-  idusuario     BigInt   @map("_idusuario")
+  idusuario     Int      @map("_idusuario") @db.UnsignedInt
   idrol         Int      @map("_idrol")
   idusuariocrea Int      @default(1)
   fechacrea     DateTime @default(now())
@@ -1893,7 +1893,7 @@ model usuario_rol {
   fechamod      DateTime @default(now())
   estado        Int      @default(1) @db.TinyInt
   rol           rol      @relation(fields: [idrol], references: [idrol], onUpdate: Restrict, map: "FK_usuario_rol_idrol")
-  usuario       usuario  @relation(fields: [idusuario], references: [idusuario], onUpdate: Restrict, map: "FK_usuario_rol_idusuario")
+  usuario       usuario  @relation(fields: [idusuario], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_usuario_rol_idusuario")
 
   @@id([idusuario, idrol])
   @@index([idrol], map: "FK_usuario_rol_idrol")
@@ -1903,7 +1903,7 @@ model usuario_servicio {
   idusuarioservicio               Int                             @id @default(autoincrement()) @map("_idusuarioservicio")
   usuarioservicioid               String                          @unique(map: "UQ_usuarioservicio_usuarioservicioid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                            String                          @unique(map: "UQ_usuarioservicio_code") @db.VarChar(20)
-  idusuario                       BigInt                          @map("_idusuario")
+  idusuario                       Int                             @map("_idusuario") @db.UnsignedInt
   idservicio                      Int                             @map("_idservicio")
   idusuarioservicioestado         Int                             @map("_idusuarioservicioestado")
   idusuariocrea                   Int                             @default(1)
@@ -1912,7 +1912,7 @@ model usuario_servicio {
   fechamod                        DateTime                        @default(now())
   estado                          Int                             @default(1) @db.TinyInt
   servicio                        servicio                        @relation(fields: [idservicio], references: [idservicio], onUpdate: Restrict, map: "FK_usuarioservicio_idservicio")
-  usuario                         usuario                         @relation(fields: [idusuario], references: [idusuario], onUpdate: Restrict, map: "FK_usuarioservicio_idusuario")
+  usuario                         usuario                         @relation(fields: [idusuario], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_usuarioservicio_idusuario")
   usuario_servicio_estado         usuario_servicio_estado         @relation(fields: [idusuarioservicioestado], references: [idusuarioservicioestado], onUpdate: Restrict, map: "FK_usuarioservicio_idusuarioservicioestado")
   usuario_servicio_verificaciones usuario_servicio_verificacion[]
 
@@ -1925,7 +1925,7 @@ model usuario_servicio_empresa {
   idusuarioservicioempresa        Int                             @id @default(autoincrement()) @map("_idusuarioservicioempresa")
   usuarioservicioempresaid        String                          @unique(map: "UQ_usuarioservicioempresa_usuarioempresaservicioid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                            String                          @unique(map: "UQ_usuarioservicioempresa_code") @db.VarChar(20)
-  idusuario                       BigInt                          @map("_idusuario")
+  idusuario                       Int                             @map("_idusuario") @db.UnsignedInt
   idempresa                       Int                             @map("_idempresa")
   idservicio                      Int                             @map("_idservicio")
   idusuarioservicioempresaestado  Int                             @map("_idusuarioservicioempresaestado")
@@ -1937,7 +1937,7 @@ model usuario_servicio_empresa {
   estado                          Int                             @default(1) @db.TinyInt
   empresa                         empresa                         @relation(fields: [idempresa], references: [idempresa], onUpdate: Restrict, map: "FK_usuarioservicioempresa_idempresa")
   servicio                        servicio                        @relation(fields: [idservicio], references: [idservicio], onUpdate: Restrict, map: "FK_usuarioservicioempresa_idservicio")
-  usuario                         usuario                         @relation(fields: [idusuario], references: [idusuario], onUpdate: Restrict, map: "FK_usuarioservicioempresa_idusuario")
+  usuario                         usuario                         @relation(fields: [idusuario], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_usuarioservicioempresa_idusuario")
   usuario_servicio_empresa_estado usuario_servicio_empresa_estado @relation(fields: [idusuarioservicioempresaestado], references: [idusuarioservicioempresaestado], onUpdate: Restrict, map: "FK_usuarioservicioempresa_idusuarioservicioempresaestado")
   usuario_servicio_empresa_rol    usuario_servicio_empresa_rol    @relation(fields: [idusuarioservicioempresarol], references: [idusuarioservicioempresarol], onUpdate: Restrict, map: "FK_usuarioservicioempresa_idusuarioservicioempresarol")
 
@@ -1999,7 +1999,7 @@ model usuario_servicio_verificacion {
   usuarioservicioverificacionid String                  @unique(map: "UQ_usuarioservicioverificacion_usuarioservicioverificacionid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   idusuarioservicio             Int                     @map("_idusuarioservicio")
   idusuarioservicioestado       Int                     @map("_idusuarioservicioestado")
-  idusuarioverifica             BigInt                  @map("_idusuarioverifica")
+  idusuarioverifica             Int                     @map("_idusuarioverifica") @db.UnsignedInt
   comentariousuario             String                  @db.Text
   comentariointerno             String                  @db.Text
   idusuariocrea                 Int                     @default(1)
@@ -2009,7 +2009,7 @@ model usuario_servicio_verificacion {
   estado                        Int                     @default(1) @db.TinyInt
   usuario_servicio              usuario_servicio        @relation(fields: [idusuarioservicio], references: [idusuarioservicio], onUpdate: Restrict, map: "FK_usuarioservicioverificacion_idusuarioservicio")
   usuario_servicio_estado       usuario_servicio_estado @relation(fields: [idusuarioservicioestado], references: [idusuarioservicioestado], onUpdate: Restrict, map: "FK_usuarioservicioverificacion_idusuarioservicioestado")
-  usuario                       usuario                 @relation(fields: [idusuarioverifica], references: [idusuario], onUpdate: Restrict, map: "FK_usuarioservicioverificacion_idusuarioverifica")
+  usuario_verifica              usuario                 @relation(fields: [idusuarioverifica], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_usuarioservicioverificacion_idusuarioverifica")
 
   @@index([idusuarioservicio], map: "FK_usuarioservicioverificacion_idusuarioservicio")
   @@index([idusuarioservicioestado], map: "FK_usuarioservicioverificacion_idusuarioservicioestado")
@@ -2020,7 +2020,7 @@ model usuario_servicio_verificacion {
 model validacion {
   idvalidacion      Int             @id @default(autoincrement()) @map("_idvalidacion")
   validacionid      String          @unique(map: "UQ_validacion_validacionid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
-  idusuario         BigInt          @map("_idusuario")
+  idusuario         Int             @map("_idusuario") @db.UnsignedInt
   idvalidaciontipo  Int             @map("_idvalidaciontipo")
   valor             String          @default("") @db.VarChar(250)
   otp               String          @db.VarChar(20)
@@ -2034,7 +2034,7 @@ model validacion {
   idusuariomod      Int             @default(1)
   fechamod          DateTime        @default(now()) @db.Timestamp(3)
   estado            Int             @default(1) @db.TinyInt
-  usuario           usuario         @relation(fields: [idusuario], references: [idusuario], onUpdate: Restrict, map: "FK_validacion_idusuario")
+  usuario           usuario         @relation(fields: [idusuario], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_validacion_idusuario")
   validacion_tipo   validacion_tipo @relation(fields: [idvalidaciontipo], references: [idvalidaciontipo], onUpdate: Restrict, map: "FK_validacion_idvalidaciontipo")
 
   @@index([idusuario], map: "FK_validacion_idusuario")
@@ -2054,16 +2054,16 @@ model validacion_tipo {
 }
 
 model zlaboratorio_pedido {
-  idpedido             Int                  @id @default(autoincrement()) @map("_idpedido")
-  idusuario            Int                  @map("_idusuario")
-  code                 String               @unique(map: "UQ_zlaboratorio_pedido_code") @default("") @db.VarChar(20)
-  nombre               String               @db.VarChar(100)
-  idusuariocrea        Int                  @default(1)
-  fechacrea            DateTime             @default(now())
-  idusuariomod         Int                  @default(1)
-  fechamod             DateTime             @default(now())
-  estado               Int                  @default(1) @db.TinyInt
-  zlaboratorio_usuario zlaboratorio_usuario @relation(fields: [idusuario], references: [idusuario], onUpdate: Restrict, map: "FK_zlaboratorio_pedido__idusuario")
+  idpedido      Int                  @id @default(autoincrement()) @map("_idpedido")
+  idusuario     Int                  @map("_idusuario")
+  code          String               @unique(map: "UQ_zlaboratorio_pedido_code") @default("") @db.VarChar(20)
+  nombre        String               @db.VarChar(100)
+  idusuariocrea Int                  @default(1)
+  fechacrea     DateTime             @default(now())
+  idusuariomod  Int                  @default(1)
+  fechamod      DateTime             @default(now())
+  estado        Int                  @default(1) @db.TinyInt
+  usuario       zlaboratorio_usuario @relation(fields: [idusuario], references: [idusuario], onUpdate: Restrict, map: "FK_zlaboratorio_pedido__idusuario")
 
   @@index([idusuario], map: "FK_zlaboratorio_pedido_idusuario")
 }
@@ -2080,10 +2080,10 @@ model zlaboratorio_usuario {
 }
 
 /// --- INICIO LOG SCRIPT: pluralizar-schema.js ---
-/// Fecha de ejecución: 23/5/2025, 10:34:10
+/// Fecha de ejecución: 27/5/2025, 18:49:23
 /// Total líneas con relaciones tipo '[]': 137
-/// Modificaciones realizadas: 0
-/// Sin modificar (ya pluralizadas): 137
+/// Modificaciones realizadas: 3
+/// Sin modificar (ya pluralizadas): 134
 /// --- Detalle de líneas evaluadas ---
 /// Línea 34: 'archivo_colaboradores' ya está pluralizado correctamente.
 /// Línea 35: 'archivo_cuenta_bancarias' ya está pluralizado correctamente.
@@ -2107,7 +2107,7 @@ model zlaboratorio_usuario {
 /// Línea 287: 'banco_transaccion_inversionista_retiros' ya está pluralizado correctamente.
 /// Línea 305: 'banco_transacciones' ya está pluralizado correctamente.
 /// Línea 306: 'banco_transaccion_estado_historiales' ya está pluralizado correctamente.
-/// Línea 387: 'banco_transacciones' ya está pluralizado correctamente.
+/// Línea 387: 'banco_transaccion' ➜ 'banco_transacciones'
 /// Línea 410: 'archivo_colaboradores' ya está pluralizado correctamente.
 /// Línea 415: 'factoringes' ya está pluralizado correctamente.
 /// Línea 434: 'colaboradores' ya está pluralizado correctamente.
@@ -2144,7 +2144,7 @@ model zlaboratorio_usuario {
 /// Línea 782: 'factoring_facturas' ya está pluralizado correctamente.
 /// Línea 783: 'factoring_historial_estados' ya está pluralizado correctamente.
 /// Línea 784: 'factoring_pagos' ya está pluralizado correctamente.
-/// Línea 912: 'factoring_ejecutados' ya está pluralizado correctamente.
+/// Línea 912: 'factoring_ejecutado' ➜ 'factoring_ejecutados'
 /// Línea 929: 'factoringes' ya está pluralizado correctamente.
 /// Línea 930: 'factoring_historial_estados' ya está pluralizado correctamente.
 /// Línea 945: 'factoring_propuestas' ya está pluralizado correctamente.
@@ -2177,7 +2177,7 @@ model zlaboratorio_usuario {
 /// Línea 1487: 'departamentos' ya está pluralizado correctamente.
 /// Línea 1488: 'empresas' ya está pluralizado correctamente.
 /// Línea 1489: 'factores' ya está pluralizado correctamente.
-/// Línea 1504: 'persona_pep_indirectos' ya está pluralizado correctamente.
+/// Línea 1504: 'persona_pep_indirecto' ➜ 'persona_pep_indirectos'
 /// Línea 1535: 'archivo_personas' ya está pluralizado correctamente.
 /// Línea 1536: 'colaboradores' ya está pluralizado correctamente.
 /// Línea 1548: 'persona_cuenta_bancarias' ya está pluralizado correctamente.
@@ -2226,37 +2226,177 @@ model zlaboratorio_usuario {
 
 
 /// --- INICIO LOG DE SCRIPT: renombrar-atributos-especiales.js ---
-/// Fecha de ejecución: 23/5/2025, 10:34:11
+/// Fecha de ejecución: 27/5/2025, 18:49:24
+/// ✔️ Línea 32: (relation-field) archivo_estado ya coincide con 'archivoestado'
+/// ✔️ Línea 33: (relation-field) archivo_tipo ya coincide con 'archivotipo'
+/// ✔️ Línea 55: (relation-field) archivo ya coincide con 'archivo'
+/// ✔️ Línea 56: (relation-field) colaborador ya coincide con 'colaborador'
+/// ✔️ Línea 70: (relation-field) archivo ya coincide con 'archivo'
+/// ✔️ Línea 71: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
+/// ✔️ Línea 85: (relation-field) archivo ya coincide con 'archivo'
+/// ✔️ Línea 86: (relation-field) empresa ya coincide con 'empresa'
+/// ✔️ Línea 112: (relation-field) archivo ya coincide con 'archivo'
+/// ✔️ Línea 113: (relation-field) factoring_historial_estado ya coincide con 'factoringhistorialestado'
+/// ✔️ Línea 127: (relation-field) archivo ya coincide con 'archivo'
+/// ✔️ Línea 128: (relation-field) factura ya coincide con 'factura'
+/// ✔️ Línea 142: (relation-field) archivo ya coincide con 'archivo'
+/// ✔️ Línea 143: (relation-field) inversionista_deposito ya coincide con 'inversionistadeposito'
+/// ✔️ Línea 157: (relation-field) archivo ya coincide con 'archivo'
+/// ✔️ Línea 158: (relation-field) inversionista_retiro ya coincide con 'inversionistaretiro'
+/// ✔️ Línea 172: (relation-field) archivo ya coincide con 'archivo'
+/// ✔️ Línea 173: (relation-field) persona ya coincide con 'persona'
+/// ✔️ Línea 225: (relation-field) banco_cuenta_estado ya coincide con 'bancocuentaestado'
+/// ✔️ Línea 226: (relation-field) banco_cuenta_tipo ya coincide con 'bancocuentatipo'
+/// ✔️ Línea 227: (relation-field) moneda ya coincide con 'moneda'
+/// ✔️ Línea 280: (relation-field) banco_cuenta ya coincide con 'bancocuenta'
+/// ✔️ Línea 281: (relation-field) banco_transaccion_estado ya coincide con 'bancotransaccionestado'
 /// ✔️ Línea 282: (singular) banco_transaccion_estado_historial ya está correcto | Relación: 'banco_transaccion_idbancotransaccionestadohistorialTobanco_transaccion_estado_historial'
+/// ✔️ Línea 283: (relation-field) banco_transaccion_tipo ya coincide con 'bancotransacciontipo'
 /// ✔️ Línea 284: (plural) banco_transaccion_estado_historial_bancotransacciones ya está correcto | Relación: 'banco_transaccion_estado_historial_idbancotransaccionTobanco_transaccion'
 /// ✔️ Línea 322: (plural) banco_transaccion_bancotransaccionestadohistoriales ya está correcto | Relación: 'banco_transaccion_idbancotransaccionestadohistorialTobanco_transaccion_estado_historial'
 /// ✔️ Línea 323: (singular) banco_transaccion ya está correcto | Relación: 'banco_transaccion_estado_historial_idbancotransaccionTobanco_transaccion'
+/// ✔️ Línea 324: (relation-field) banco_transaccion_estado ya coincide con 'bancotransaccionestado'
+/// ✔️ Línea 325: (relation-field) usuario_modifica ya coincide con 'usuariomodifica'
+/// ✔️ Línea 340: (relation-field) banco_transaccion ya coincide con 'bancotransaccion'
+/// ✔️ Línea 341: (relation-field) factoring_inversion ya coincide con 'factoringinversion'
+/// ✔️ Línea 355: (relation-field) banco_transaccion ya coincide con 'bancotransaccion'
+/// ✔️ Línea 356: (relation-field) inversionista_deposito ya coincide con 'inversionistadeposito'
+/// ✔️ Línea 370: (relation-field) banco_transaccion ya coincide con 'bancotransaccion'
+/// ✔️ Línea 371: (relation-field) inversionista_retiro ya coincide con 'inversionistaretiro'
+/// ✔️ Línea 411: (relation-field) colaborador_tipo ya coincide con 'colaboradortipo'
+/// ✔️ Línea 412: (relation-field) documento_tipo ya coincide con 'documentotipo'
+/// ✔️ Línea 413: (relation-field) empresa ya coincide con 'empresa'
+/// ✔️ Línea 414: (relation-field) persona ya coincide con 'persona'
+/// ✔️ Línea 469: (relation-field) empresa ya coincide con 'empresa'
+/// ✔️ Línea 486: (relation-field) usuario ya coincide con 'usuario'
+/// ✔️ Línea 508: (relation-field) banco ya coincide con 'banco'
+/// ✔️ Línea 509: (relation-field) cuenta_bancaria_estado ya coincide con 'cuentabancariaestado'
+/// ✔️ Línea 510: (relation-field) cuenta_tipo ya coincide con 'cuentatipo'
+/// ✔️ Línea 511: (relation-field) moneda ya coincide con 'moneda'
+/// ✔️ Línea 563: (relation-field) pais ya coincide con 'pais'
+/// ✔️ Línea 586: (relation-field) provincia ya coincide con 'provincia'
+/// ✔️ Línea 587: (relation-field) region_natural ya coincide con 'regionnatural'
+/// ✔️ Línea 635: (relation-field) departamento_sede ya coincide con 'departamentosede'
+/// ✔️ Línea 636: (relation-field) distrito_sede ya coincide con 'distritosede'
+/// ✔️ Línea 637: (relation-field) pais_sede ya coincide con 'paissede'
+/// ✔️ Línea 638: (relation-field) provincia_sede ya coincide con 'provinciasede'
+/// ✔️ Línea 639: (relation-field) riesgo ya coincide con 'riesgo'
 /// ✔️ Línea 641: (plural) factoring_aceptantes ya está correcto | Relación: 'factoring_idaceptanteToempresa'
 /// ✔️ Línea 642: (plural) factoring_cedentes ya está correcto | Relación: 'factoring_idcedenteToempresa'
+/// ✔️ Línea 664: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
+/// ✔️ Línea 665: (relation-field) empresa ya coincide con 'empresa'
+/// ✔️ Línea 710: (relation-field) departamento_sede ya coincide con 'departamentosede'
+/// ✔️ Línea 711: (relation-field) distrito_sede ya coincide con 'distritosede'
+/// ✔️ Línea 712: (relation-field) pais_sede ya coincide con 'paissede'
+/// ✔️ Línea 713: (relation-field) provincia_sede ya coincide con 'provinciasede'
+/// ✔️ Línea 714: (relation-field) riesgo ya coincide con 'riesgo'
+/// ✔️ Línea 735: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
+/// ✔️ Línea 736: (relation-field) factor ya coincide con 'factor'
 /// ✔️ Línea 772: (singular) empresa_aceptante ya está correcto | Relación: 'factoring_idaceptanteToempresa'
 /// ✔️ Línea 773: (singular) empresa_cedente ya está correcto | Relación: 'factoring_idcedenteToempresa'
+/// ✔️ Línea 774: (relation-field) contacto_aceptante ya coincide con 'contactoaceptante'
+/// ✔️ Línea 775: (relation-field) contacto_cedente ya coincide con 'contactocedente'
+/// ✔️ Línea 776: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
 /// ✔️ Línea 777: (singular) factoring_ejecutado ya está correcto | Relación: 'factoring_idfactoringejecutadoTofactoring_ejecutado'
+/// ✔️ Línea 778: (relation-field) factoring_estado ya coincide con 'factoringestado'
 /// ✔️ Línea 779: (singular) factoring_propuesta_aceptada ya está correcto | Relación: 'factoring_idfactoringpropuestaaceptadaTofactoring_propuesta'
+/// ✔️ Línea 780: (relation-field) moneda ya coincide con 'moneda'
 /// ✔️ Línea 781: (plural) factoring_ejecutado_factoringes ya está correcto | Relación: 'factoring_ejecutado_idfactoringTofactoring'
 /// ✔️ Línea 785: (plural) factoring_propuesta_factoringes ya está correcto | Relación: 'factoring_propuesta_idfactoringTofactoring'
+/// ✔️ Línea 813: (relation-field) riesgo ya coincide con 'riesgo'
+/// ✔️ Línea 833: (relation-field) riesgo ya coincide con 'riesgo'
+/// ✔️ Línea 852: (relation-field) riesgo ya coincide con 'riesgo'
 /// ✔️ Línea 892: (plural) factoring_factoringejecutados ya está correcto | Relación: 'factoring_idfactoringejecutadoTofactoring_ejecutado'
 /// ✔️ Línea 893: (singular) factoring ya está correcto | Relación: 'factoring_ejecutado_idfactoringTofactoring'
+/// ✔️ Línea 894: (relation-field) factoring_ejecutado_estado ya coincide con 'factoringejecutadoestado'
+/// ✔️ Línea 956: (relation-field) factoring ya coincide con 'factoring'
+/// ✔️ Línea 957: (relation-field) factura ya coincide con 'factura'
+/// ✔️ Línea 977: (relation-field) factoring_estado ya coincide con 'factoringestado'
+/// ✔️ Línea 978: (relation-field) factoring ya coincide con 'factoring'
+/// ✔️ Línea 979: (relation-field) usuario_modifica ya coincide con 'usuariomodifica'
+/// ✔️ Línea 1018: (relation-field) empresa_cuenta_bancaria ya coincide con 'empresacuentabancaria'
+/// ✔️ Línea 1019: (relation-field) factor_cuenta_bancaria ya coincide con 'factorcuentabancaria'
+/// ✔️ Línea 1020: (relation-field) factoring ya coincide con 'factoring'
 /// ✔️ Línea 1076: (plural) factoring_factoringpropuestaaceptadas ya está correcto | Relación: 'factoring_idfactoringpropuestaaceptadaTofactoring_propuesta'
 /// ✔️ Línea 1077: (singular) factoring ya está correcto | Relación: 'factoring_propuesta_idfactoringTofactoring'
+/// ✔️ Línea 1078: (relation-field) factoring_estrategia ya coincide con 'factoringestrategia'
+/// ✔️ Línea 1079: (relation-field) factoring_propuesta_estado ya coincide con 'factoringpropuestaestado'
+/// ✔️ Línea 1080: (relation-field) factoring_tipo ya coincide con 'factoringtipo'
 /// ✔️ Línea 1081: (singular) riesgo_aceptante ya está correcto | Relación: 'factoring_propuesta_idriesgoaceptanteToriesgo'
 /// ✔️ Línea 1082: (singular) riesgo_cedente ya está correcto | Relación: 'factoring_propuesta_idriesgocedenteToriesgo'
 /// ✔️ Línea 1083: (singular) riesgo_operacion ya está correcto | Relación: 'factoring_propuesta_idriesgooperacionToriesgo'
+/// ✔️ Línea 1127: (relation-field) factoring_propuesta ya coincide con 'factoringpropuesta'
+/// ✔️ Línea 1128: (relation-field) financiero_concepto ya coincide con 'financieroconcepto'
+/// ✔️ Línea 1129: (relation-field) financiero_tipo ya coincide con 'financierotipo'
+/// ✔️ Línea 1197: (relation-field) usuario_upload ya coincide con 'usuarioupload'
+/// ✔️ Línea 1222: (relation-field) factura ya coincide con 'factura'
+/// ✔️ Línea 1251: (relation-field) factura ya coincide con 'factura'
+/// ✔️ Línea 1268: (relation-field) factura ya coincide con 'factura'
+/// ✔️ Línea 1284: (relation-field) factura ya coincide con 'factura'
+/// ✔️ Línea 1303: (relation-field) factura ya coincide con 'factura'
+/// ✔️ Línea 1360: (relation-field) persona ya coincide con 'persona'
+/// ✔️ Línea 1373: (relation-field) banco_cuenta ya coincide con 'bancocuenta'
+/// ✔️ Línea 1374: (relation-field) inversionista ya coincide con 'inversionista'
+/// ✔️ Línea 1391: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
+/// ✔️ Línea 1392: (relation-field) inversionista ya coincide con 'inversionista'
+/// ✔️ Línea 1419: (relation-field) banco_cuenta ya coincide con 'bancocuenta'
+/// ✔️ Línea 1420: (relation-field) factor_cuenta_bancaria ya coincide con 'factorcuentabancaria'
+/// ✔️ Línea 1421: (relation-field) inversionista_cuenta_bancaria ya coincide con 'inversionistacuentabancaria'
+/// ✔️ Línea 1447: (relation-field) banco_cuenta ya coincide con 'bancocuenta'
+/// ✔️ Línea 1448: (relation-field) factor_cuenta_bancaria ya coincide con 'factorcuentabancaria'
+/// ✔️ Línea 1449: (relation-field) inversionista_cuenta_bancaria ya coincide con 'inversionistacuentabancaria'
 /// ✔️ Línea 1490: (plural) persona_paisnacimientos ya está correcto | Relación: 'persona_idpaisnacimientoTopais'
 /// ✔️ Línea 1491: (plural) persona_paisnacionalidades ya está correcto | Relación: 'persona_idpaisnacionalidadTopais'
 /// ✔️ Línea 1492: (plural) persona_paisresidencias ya está correcto | Relación: 'persona_idpaisresidenciaTopais'
+/// ✔️ Línea 1538: (relation-field) departamento_residencia ya coincide con 'departamentoresidencia'
+/// ✔️ Línea 1539: (relation-field) distrito_residencia ya coincide con 'distritoresidencia'
+/// ✔️ Línea 1540: (relation-field) documento_tipo ya coincide con 'documentotipo'
+/// ✔️ Línea 1541: (relation-field) genero ya coincide con 'genero'
 /// ✔️ Línea 1542: (singular) pais_nacimiento ya está correcto | Relación: 'persona_idpaisnacimientoTopais'
 /// ✔️ Línea 1543: (singular) pais_nacionalidad ya está correcto | Relación: 'persona_idpaisnacionalidadTopais'
 /// ✔️ Línea 1544: (singular) pais_residencia ya está correcto | Relación: 'persona_idpaisresidenciaTopais'
+/// ✔️ Línea 1545: (relation-field) persona_verificacion_estado ya coincide con 'personaverificacionestado'
+/// ✔️ Línea 1546: (relation-field) provincia_residencia ya coincide con 'provinciaresidencia'
+/// ✔️ Línea 1547: (relation-field) usuario ya coincide con 'usuario'
+/// ✔️ Línea 1576: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
+/// ✔️ Línea 1577: (relation-field) persona ya coincide con 'persona'
+/// ✔️ Línea 1595: (relation-field) persona ya coincide con 'persona'
+/// ✔️ Línea 1616: (relation-field) persona ya coincide con 'persona'
+/// ✔️ Línea 1640: (relation-field) pep_vinculo ya coincide con 'pepvinculo'
+/// ✔️ Línea 1641: (relation-field) persona ya coincide con 'persona'
+/// ✔️ Línea 1660: (relation-field) persona ya coincide con 'persona'
+/// ✔️ Línea 1661: (relation-field) persona_verificacion_estado ya coincide con 'personaverificacionestado'
+/// ✔️ Línea 1662: (relation-field) usuario_verifica ya coincide con 'usuarioverifica'
+/// ✔️ Línea 1706: (relation-field) departamento ya coincide con 'departamento'
 /// ✔️ Línea 1744: (plural) factoring_propuesta_riesgoaceptantes ya está correcto | Relación: 'factoring_propuesta_idriesgoaceptanteToriesgo'
 /// ✔️ Línea 1745: (plural) factoring_propuesta_riesgocedentes ya está correcto | Relación: 'factoring_propuesta_idriesgocedenteToriesgo'
 /// ✔️ Línea 1746: (plural) factoring_propuesta_riesgooperaciones ya está correcto | Relación: 'factoring_propuesta_idriesgooperacionToriesgo'
+/// ✔️ Línea 1795: (relation-field) empresa ya coincide con 'empresa'
+/// ✔️ Línea 1796: (relation-field) servicio ya coincide con 'servicio'
+/// ✔️ Línea 1797: (relation-field) servicio_empresa_estado ya coincide con 'servicioempresaestado'
+/// ✔️ Línea 1798: (relation-field) usuario_suscriptor ya coincide con 'usuariosuscriptor'
+/// ✔️ Línea 1840: (relation-field) servicio_empresa ya coincide con 'servicioempresa'
+/// ✔️ Línea 1841: (relation-field) servicio_empresa_estado ya coincide con 'servicioempresaestado'
+/// ✔️ Línea 1842: (relation-field) usuario_verifica ya coincide con 'usuarioverifica'
+/// ✔️ Línea 1877: (relation-field) documento_tipo ya coincide con 'documentotipo'
+/// ✔️ Línea 1895: (relation-field) rol ya coincide con 'rol'
+/// ✔️ Línea 1896: (relation-field) usuario ya coincide con 'usuario'
+/// ✔️ Línea 1914: (relation-field) servicio ya coincide con 'servicio'
+/// ✔️ Línea 1915: (relation-field) usuario ya coincide con 'usuario'
+/// ✔️ Línea 1916: (relation-field) usuario_servicio_estado ya coincide con 'usuarioservicioestado'
+/// ✔️ Línea 1938: (relation-field) empresa ya coincide con 'empresa'
+/// ✔️ Línea 1939: (relation-field) servicio ya coincide con 'servicio'
+/// ✔️ Línea 1940: (relation-field) usuario ya coincide con 'usuario'
+/// ✔️ Línea 1941: (relation-field) usuario_servicio_empresa_estado ya coincide con 'usuarioservicioempresaestado'
+/// ✔️ Línea 1942: (relation-field) usuario_servicio_empresa_rol ya coincide con 'usuarioservicioempresarol'
+/// ✔️ Línea 2010: (relation-field) usuario_servicio ya coincide con 'usuarioservicio'
+/// ✔️ Línea 2011: (relation-field) usuario_servicio_estado ya coincide con 'usuarioservicioestado'
+/// ✔️ Línea 2012: (relation-field) usuario_verifica ya coincide con 'usuarioverifica'
+/// ✔️ Línea 2037: (relation-field) usuario ya coincide con 'usuario'
+/// ✔️ Línea 2038: (relation-field) validacion_tipo ya coincide con 'validaciontipo'
+/// ✔️ Línea 2066: (relation-field) usuario ya coincide con 'usuario'
 /// 📊 Resumen del script: renombrar-atributos-especiales.js
-/// 🔎 Total relaciones '@relation' detectadas: 28
+/// 🔎 Total relaciones '@relation' detectadas: 168
 /// ✅ Atributos renombrados: 0
-/// ⚠️ Ya estaban correctos: 28
+/// ⚠️ Ya estaban correctos: 168
 /// --- FIN LOG DE SCRIPT ---

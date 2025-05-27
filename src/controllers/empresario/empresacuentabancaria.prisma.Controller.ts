@@ -1,14 +1,15 @@
+import type { Prisma } from "#src/models/prisma/ft_factoring/client";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 
-import * as archivocuentabancariaDao from "#src/daos/archivocuentabancariaDao.js";
-import * as archivoDao from "#src/daos/archivoDao.js";
-import * as bancoDao from "#src/daos/bancoDao.js";
-import * as cuentabancariaDao from "#src/daos/cuentabancariaDao.js";
-import * as cuentatipoDao from "#src/daos/cuentatipoDao.js";
-import * as empresacuentabancariaDao from "#src/daos/empresacuentabancariaDao.js";
-import * as empresaDao from "#src/daos/empresaDao.js";
-import * as monedaDao from "#src/daos/monedaDao.js";
+import * as archivocuentabancariaDao from "#src/daos/archivocuentabancaria.prisma.Dao.js";
+import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
+import * as bancoDao from "#src/daos/banco.prisma.Dao.js";
+import * as cuentabancariaDao from "#src/daos/cuentabancaria.prisma.Dao.js";
+import * as cuentatipoDao from "#src/daos/cuentatipo.prisma.Dao.js";
+import * as empresacuentabancariaDao from "#src/daos/empresacuentabancaria.prisma.Dao.js";
+import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
+import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
@@ -22,8 +23,8 @@ import { Sequelize, Op } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import * as storageUtils from "#src/utils/storageUtils.js";
-import { CuentaBancariaAttributes } from "#root/src/models/ft_factoring/CuentaBancaria";
-import { EmpresaCuentaBancariaAttributes } from "#root/src/models/ft_factoring/EmpresaCuentaBancaria";
+import { cuenta_bancaria } from "#root/src/models/ft_factoring/CuentaBancaria";
+import { empresa_cuenta_bancaria } from "#root/src/models/ft_factoring/EmpresaCuentaBancaria";
 
 export const createEmpresacuentabancaria = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createEmpresacuentabancaria");
@@ -93,17 +94,17 @@ export const createEmpresacuentabancaria = async (req: Request, res: Response) =
         throw new ClientError("El alias [" + empresacuentabancariaValidated.alias + "] se encuentra registrado. Ingrese un alias diferente.", 404);
       }
 
-      var camposCuentaBancariaFk: Partial<CuentaBancariaAttributes> = {};
+      var camposCuentaBancariaFk: Partial<cuenta_bancaria> = {};
       camposCuentaBancariaFk._idbanco = banco._idbanco;
       camposCuentaBancariaFk._idcuentatipo = cuentatipo._idcuentatipo;
       camposCuentaBancariaFk._idmoneda = moneda._idmoneda;
       camposCuentaBancariaFk._idcuentabancariaestado = 1; // Por defecto
 
-      var camposCuentaBancariaAdicionales: Partial<CuentaBancariaAttributes> = {};
+      var camposCuentaBancariaAdicionales: Partial<cuenta_bancaria> = {};
       camposCuentaBancariaAdicionales.cuentabancariaid = uuidv4();
       camposCuentaBancariaAdicionales.code = uuidv4().split("-")[0];
 
-      var camposCuentaBancariaAuditoria: Partial<CuentaBancariaAttributes> = {};
+      var camposCuentaBancariaAuditoria: Partial<cuenta_bancaria> = {};
       camposCuentaBancariaAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
       camposCuentaBancariaAuditoria.fechacrea = new Date();
       camposCuentaBancariaAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
@@ -121,7 +122,7 @@ export const createEmpresacuentabancaria = async (req: Request, res: Response) =
       const encabezadocuentabancariaCreated = await crearArchivoEncabezadoCuentaBancaria(req, tx, empresacuentabancariaValidated, cuentabancariaCreated);
       log.debug(line(), "encabezadocuentabancariaCreated:", encabezadocuentabancariaCreated);
 
-      var camposEmpresaCuentaBancariaCreate: Partial<EmpresaCuentaBancariaAttributes> = {};
+      var camposEmpresaCuentaBancariaCreate: Partial<empresa_cuenta_bancaria> = {};
       camposEmpresaCuentaBancariaCreate._idempresa = empresa_por_idusuario._idempresa;
       camposEmpresaCuentaBancariaCreate._idcuentabancaria = cuentabancariaCreated._idcuentabancaria;
       camposEmpresaCuentaBancariaCreate.empresacuentabancariaid = uuidv4();
@@ -211,10 +212,10 @@ export const updateEmpresacuentabancariaOnlyAlias = async (req: Request, res: Re
 
       const cuentabancaria = await cuentabancariaDao.getCuentabancariaByIdcuentabancaria(tx, empresacuentabancaria._idcuentabancaria);
 
-      var camposCuentaBancariaAdicionales: Partial<CuentaBancariaAttributes> = {};
+      var camposCuentaBancariaAdicionales: Partial<cuenta_bancaria> = {};
       camposCuentaBancariaAdicionales.cuentabancariaid = cuentabancaria.cuentabancariaid;
 
-      var camposCuentaBancariaAuditoria: Partial<CuentaBancariaAttributes> = {};
+      var camposCuentaBancariaAuditoria: Partial<cuenta_bancaria> = {};
       camposCuentaBancariaAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
       camposCuentaBancariaAuditoria.fechamod = new Date();
 

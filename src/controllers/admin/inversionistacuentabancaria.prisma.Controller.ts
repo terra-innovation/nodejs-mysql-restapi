@@ -1,14 +1,15 @@
+import type { Prisma } from "#src/models/prisma/ft_factoring/client";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import * as inversionistacuentabancariaDao from "#src/daos/inversionistacuentabancariaDao.js";
-import * as cuentabancariaDao from "#src/daos/cuentabancariaDao.js";
-import * as empresaDao from "#src/daos/empresaDao.js";
-import * as bancoDao from "#src/daos/bancoDao.js";
-import * as cuentatipoDao from "#src/daos/cuentatipoDao.js";
-import * as monedaDao from "#src/daos/monedaDao.js";
-import * as personaDao from "#src/daos/personaDao.js";
-import * as inversionistaDao from "#src/daos/inversionistaDao.js";
-import * as cuentabancariaestadoDao from "#src/daos/cuentabancariaestadoDao.js";
+import * as inversionistacuentabancariaDao from "#src/daos/inversionistacuentabancaria.prisma.Dao.js";
+import * as cuentabancariaDao from "#src/daos/cuentabancaria.prisma.Dao.js";
+import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
+import * as bancoDao from "#src/daos/banco.prisma.Dao.js";
+import * as cuentatipoDao from "#src/daos/cuentatipo.prisma.Dao.js";
+import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
+import * as personaDao from "#src/daos/persona.prisma.Dao.js";
+import * as inversionistaDao from "#src/daos/inversionista.prisma.Dao.js";
+import * as cuentabancariaestadoDao from "#src/daos/cuentabancariaestado.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
@@ -17,8 +18,8 @@ import { log, line } from "#src/utils/logger.pino.js";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { Sequelize, Op } from "sequelize";
-import { CuentaBancariaAttributes } from "#root/src/models/ft_factoring/CuentaBancaria";
-import { InversionistaCuentaBancariaAttributes } from "#root/src/models/ft_factoring/InversionistaCuentaBancaria";
+import { cuenta_bancaria } from "#root/src/models/ft_factoring/CuentaBancaria";
+import { inversionista_cuenta_bancaria } from "#root/src/models/ft_factoring/InversionistaCuentaBancaria";
 
 export const updateInversionistacuentabancariaOnlyAliasAndCuentaBancariaEstado = async (req: Request, res: Response) => {
   log.debug(line(), "controller::updateInversionistacuentabancariaOnlyAliasAndCuentaBancariaEstado");
@@ -54,13 +55,13 @@ export const updateInversionistacuentabancariaOnlyAliasAndCuentaBancariaEstado =
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var camposCuentabancariaFk: Partial<CuentaBancariaAttributes> = {};
+      var camposCuentabancariaFk: Partial<cuenta_bancaria> = {};
       camposCuentabancariaFk._idcuentabancariaestado = inversionistacuentabancariaestado._idcuentabancariaestado;
 
-      var camposCuentabancariaAdicionales: Partial<CuentaBancariaAttributes> = {};
+      var camposCuentabancariaAdicionales: Partial<cuenta_bancaria> = {};
       camposCuentabancariaAdicionales.cuentabancariaid = cuentabancaria.cuentabancariaid;
 
-      var camposCuentabancariaAuditoria: Partial<CuentaBancariaAttributes> = {};
+      var camposCuentabancariaAuditoria: Partial<cuenta_bancaria> = {};
       camposCuentabancariaAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
       camposCuentabancariaAuditoria.fechamod = new Date();
 
@@ -121,7 +122,7 @@ export const activateInversionistacuentabancaria = async (req: Request, res: Res
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var camposCuentaBancariaActivate: Partial<CuentaBancariaAttributes> = {};
+      var camposCuentaBancariaActivate: Partial<cuenta_bancaria> = {};
       camposCuentaBancariaActivate.cuentabancariaid = cuentabancaria.cuentabancariaid;
       camposCuentaBancariaActivate.idusuariomod = req.session_user.usuario._idusuario ?? 1;
       camposCuentaBancariaActivate.fechamod = new Date();
@@ -163,7 +164,7 @@ export const deleteInversionistacuentabancaria = async (req: Request, res: Respo
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var camposCuentaBancariaDelete: Partial<CuentaBancariaAttributes> = {};
+      var camposCuentaBancariaDelete: Partial<cuenta_bancaria> = {};
       camposCuentaBancariaDelete.cuentabancariaid = cuentabancaria.cuentabancariaid;
       camposCuentaBancariaDelete.idusuariomod = req.session_user.usuario._idusuario ?? 1;
       camposCuentaBancariaDelete.fechamod = new Date();
@@ -267,17 +268,17 @@ export const createInversionistacuentabancaria = async (req: Request, res: Respo
         throw new ClientError("El alias [" + inversionistacuentabancariaValidated.alias + "] se encuentra registrado. Ingrese un alias diferente.", 404);
       }
 
-      var camposCuentaBancariaFk: Partial<CuentaBancariaAttributes> = {};
+      var camposCuentaBancariaFk: Partial<cuenta_bancaria> = {};
       camposCuentaBancariaFk._idbanco = banco._idbanco;
       camposCuentaBancariaFk._idcuentatipo = cuentatipo._idcuentatipo;
       camposCuentaBancariaFk._idmoneda = moneda._idmoneda;
       camposCuentaBancariaFk._idcuentabancariaestado = 1; // Por defecto
 
-      var camposCuentaBancariaAdicionales: Partial<CuentaBancariaAttributes> = {};
+      var camposCuentaBancariaAdicionales: Partial<cuenta_bancaria> = {};
       camposCuentaBancariaAdicionales.cuentabancariaid = uuidv4();
       camposCuentaBancariaAdicionales.code = uuidv4().split("-")[0];
 
-      var camposCuentaBancariaAuditoria: Partial<CuentaBancariaAttributes> = {};
+      var camposCuentaBancariaAuditoria: Partial<cuenta_bancaria> = {};
       camposCuentaBancariaAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
       camposCuentaBancariaAuditoria.fechacrea = new Date();
       camposCuentaBancariaAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
@@ -292,7 +293,7 @@ export const createInversionistacuentabancaria = async (req: Request, res: Respo
       });
       log.debug(line(), "cuentabancariaCreated:", cuentabancariaCreated.dataValues);
 
-      var camposInversionistaCuentaBancariaCreate: Partial<InversionistaCuentaBancariaAttributes> = {};
+      var camposInversionistaCuentaBancariaCreate: Partial<inversionista_cuenta_bancaria> = {};
       camposInversionistaCuentaBancariaCreate._idinversionista = inversionista._idinversionista;
       camposInversionistaCuentaBancariaCreate._idcuentabancaria = cuentabancariaCreated._idcuentabancaria;
       camposInversionistaCuentaBancariaCreate.inversionistacuentabancariaid = uuidv4();

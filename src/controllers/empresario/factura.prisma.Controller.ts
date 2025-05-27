@@ -1,19 +1,20 @@
+import type { Prisma } from "#src/models/prisma/ft_factoring/client";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as fs from "fs";
 import path from "path";
 
-import * as factoringDao from "#src/daos/factoringDao.js";
-import * as monedaDao from "#src/daos/monedaDao.js";
-import * as empresaDao from "#src/daos/empresaDao.js";
-import * as archivoDao from "#src/daos/archivoDao.js";
-import * as facturaDao from "#src/daos/facturaDao.js";
-import * as facturaimpuestoDao from "#src/daos/facturaimpuestoDao.js";
-import * as facturaitemDao from "#src/daos/facturaitemDao.js";
-import * as facturamediopagoDao from "#src/daos/facturamediopagoDao.js";
-import * as facturanotaDao from "#src/daos/facturanotaDao.js";
-import * as facturaterminopagoDao from "#src/daos/facturaterminopagoDao.js";
-import * as archivofacturaDao from "#src/daos/archivofacturaDao.js";
+import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
+import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
+import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
+import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
+import * as facturaDao from "#src/daos/factura.prisma.Dao.js";
+import * as facturaimpuestoDao from "#src/daos/facturaimpuesto.prisma.Dao.js";
+import * as facturaitemDao from "#src/daos/facturaitem.prisma.Dao.js";
+import * as facturamediopagoDao from "#src/daos/facturamediopago.prisma.Dao.js";
+import * as facturanotaDao from "#src/daos/facturanota.prisma.Dao.js";
+import * as facturaterminopagoDao from "#src/daos/facturaterminopago.prisma.Dao.js";
+import * as archivofacturaDao from "#src/daos/archivofactura.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { log, line } from "#src/utils/logger.pino.js";
 

@@ -1,15 +1,16 @@
+import type { Prisma } from "#src/models/prisma/ft_factoring/client";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import * as empresaDao from "#src/daos/empresaDao.js";
-import * as bancoDao from "#src/daos/bancoDao.js";
-import * as cuentatipoDao from "#src/daos/cuentatipoDao.js";
-import * as riesgoDao from "#src/daos/riesgoDao.js";
+import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
+import * as bancoDao from "#src/daos/banco.prisma.Dao.js";
+import * as cuentatipoDao from "#src/daos/cuentatipo.prisma.Dao.js";
+import * as riesgoDao from "#src/daos/riesgo.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-import { EmpresaAttributes } from "#src/models/ft_factoring/Empresa.js";
+import type { empresa } from "#src/models/prisma/ft_factoring/client";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
@@ -27,9 +28,9 @@ export const activateEmpresa = async (req: Request, res: Response) => {
   const empresaValidated = empresaSchema.validateSync({ empresaid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "empresaValidated:", empresaValidated);
 
-  const resultado = await prismaFT.client.$transaction(
+  const empresaDeleted = await prismaFT.client.$transaction(
     async (tx) => {
-      var camposAuditoria: Partial<EmpresaAttributes> = {};
+      var camposAuditoria: Partial<empresa> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 1;
@@ -39,7 +40,7 @@ export const activateEmpresa = async (req: Request, res: Response) => {
         throw new ClientError("Empresa no existe", 404);
       }
       log.debug(line(), "empresaActivated:", empresaDeleted);
-      return {};
+      return empresaDeleted;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -58,9 +59,9 @@ export const deleteEmpresa = async (req: Request, res: Response) => {
   const empresaValidated = empresaSchema.validateSync({ empresaid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "empresaValidated:", empresaValidated);
 
-  const resultado = await prismaFT.client.$transaction(
+  const empresaDeleted = await prismaFT.client.$transaction(
     async (tx) => {
-      var camposAuditoria: Partial<EmpresaAttributes> = {};
+      var camposAuditoria: Partial<empresa> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 2;
@@ -70,7 +71,7 @@ export const deleteEmpresa = async (req: Request, res: Response) => {
         throw new ClientError("Empresa no existe", 404);
       }
       log.debug(line(), "empresaDeleted:", empresaDeleted);
-      return {};
+      return empresaDeleted;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -79,7 +80,7 @@ export const deleteEmpresa = async (req: Request, res: Response) => {
 
 export const getEmpresaMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getEmpresaMaster");
-  const resultado = await prismaFT.client.$transaction(
+  const empresasMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estados = [1];
       const riesgos = await riesgoDao.getRiesgos(tx, filter_estados);
@@ -91,7 +92,7 @@ export const getEmpresaMaster = async (req: Request, res: Response) => {
       //jsonUtils.prettyPrint(empresasMasterObfuscated);
       var empresasMasterFiltered = jsonUtils.removeAttributesPrivates(empresasMasterObfuscated);
       //jsonUtils.prettyPrint(empresasMaster);
-      return {};
+      return empresasMasterFiltered;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -128,13 +129,13 @@ export const updateEmpresa = async (req: Request, res: Response) => {
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var camposFk: Partial<EmpresaAttributes> = {};
-      camposFk._idriesgo = riesgo._idriesgo;
+      var camposFk: Partial<empresa> = {};
+      camposFk.idriesgo = riesgo.idriesgo;
 
-      var camposAdicionales: Partial<EmpresaAttributes> = {};
+      var camposAdicionales: Partial<empresa> = {};
       camposAdicionales.empresaid = id;
 
-      var camposAuditoria: Partial<EmpresaAttributes> = {};
+      var camposAuditoria: Partial<empresa> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
 
@@ -157,7 +158,7 @@ export const getEmpresas = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getEmpresas");
   //log.info(line(),req.session_user.usuario._idusuario);
 
-  const resultado = await prismaFT.client.$transaction(
+  const empresasJson = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estado = [1, 2];
       const empresas = await empresaDao.getEmpresas(tx, filter_estado);
@@ -166,7 +167,7 @@ export const getEmpresas = async (req: Request, res: Response) => {
 
       //var empresasFiltered = jsonUtils.removeAttributes(empresasJson, ["score"]);
       //empresasFiltered = jsonUtils.removeAttributesPrivates(empresasFiltered);
-      return {};
+      return empresasJson;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -194,7 +195,7 @@ export const createEmpresa = async (req: Request, res: Response) => {
   var empresaValidated = empresaCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "empresaValidated:", empresaValidated);
 
-  const resultado = await prismaFT.client.$transaction(
+  const empresaCreated = await prismaFT.client.$transaction(
     async (tx) => {
       var riesgo = await riesgoDao.getRiesgoByRiesgoid(tx, empresaValidated.riesgoid);
       if (!riesgo) {
@@ -208,30 +209,26 @@ export const createEmpresa = async (req: Request, res: Response) => {
         throw new ClientError("La empresa [" + empresaValidated.ruc + "] se encuentra registrada. Ingrese un ruc diferente.", 404);
       }
 
-      var camposFk: Partial<EmpresaAttributes> = {};
-      camposFk._idriesgo = riesgo._idriesgo;
+      const empresaCreate = {
+        idriesgo: riesgo.idriesgo,
+        empresaid: uuidv4(),
+        code: uuidv4().split("-")[0],
+        ruc: empresaValidated.ruc,
+        razon_social: empresaValidated.razon_social,
+        nombre_comercial: empresaValidated.nombre_comercial,
+        domicilio_fiscal: empresaValidated.domicilio_fiscal,
+        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
 
-      var camposAdicionales: Partial<EmpresaAttributes> = {};
-      camposAdicionales.empresaid = uuidv4();
-      camposAdicionales.code = uuidv4().split("-")[0];
+      const empresaCreated = await empresaDao.insertEmpresa(tx, empresaCreate);
 
-      var camposAuditoria: Partial<EmpresaAttributes> = {};
-      camposAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
-      camposAuditoria.fechacrea = new Date();
-      camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
-      camposAuditoria.fechamod = new Date();
-      camposAuditoria.estado = 1;
-
-      const empresaCreated = await empresaDao.insertEmpresa(tx, {
-        ...camposFk,
-        ...camposAdicionales,
-        ...empresaValidated,
-        ...camposAuditoria,
-      });
-
-      return {};
+      return empresaCreated;
     },
     { timeout: prismaFT.transactionTimeout }
   );
-  response(res, 201, { ...camposAdicionales, ...empresaValidated });
+  response(res, 201, empresaCreated);
 };

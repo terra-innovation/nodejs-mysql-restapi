@@ -1,16 +1,17 @@
+import type { Prisma } from "#src/models/prisma/ft_factoring/client";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 
-import * as archivocuentabancariaDao from "#src/daos/archivocuentabancariaDao.js";
-import * as archivoDao from "#src/daos/archivoDao.js";
-import * as bancoDao from "#src/daos/bancoDao.js";
-import * as cuentabancariaDao from "#src/daos/cuentabancariaDao.js";
-import * as cuentatipoDao from "#src/daos/cuentatipoDao.js";
-import * as inversionistacuentabancariaDao from "#src/daos/inversionistacuentabancariaDao.js";
-import * as inversionistaDao from "#src/daos/inversionistaDao.js";
-import * as personaDao from "#src/daos/personaDao.js";
-import * as empresaDao from "#src/daos/empresaDao.js";
-import * as monedaDao from "#src/daos/monedaDao.js";
+import * as archivocuentabancariaDao from "#src/daos/archivocuentabancaria.prisma.Dao.js";
+import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
+import * as bancoDao from "#src/daos/banco.prisma.Dao.js";
+import * as cuentabancariaDao from "#src/daos/cuentabancaria.prisma.Dao.js";
+import * as cuentatipoDao from "#src/daos/cuentatipo.prisma.Dao.js";
+import * as inversionistacuentabancariaDao from "#src/daos/inversionistacuentabancaria.prisma.Dao.js";
+import * as inversionistaDao from "#src/daos/inversionista.prisma.Dao.js";
+import * as personaDao from "#src/daos/persona.prisma.Dao.js";
+import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
+import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
