@@ -14,7 +14,7 @@ export const getPersonasByVerificacion = async (tx: TxClient, estado: number[], 
         pais_nacimiento: true,
         pais_nacionalidad: true,
         pais_residencia: true,
-        distrito: {
+        distrito_residencia: {
           include: {
             provincia: {
               include: {
@@ -27,7 +27,7 @@ export const getPersonasByVerificacion = async (tx: TxClient, estado: number[], 
         persona_verificaciones: {
           include: {
             persona_verificacion_estado: true,
-            usuario: true,
+            usuario_verifica: true,
           },
         },
         archivo_personas: {
@@ -61,7 +61,7 @@ export const getPersonasByVerificacion = async (tx: TxClient, estado: number[], 
   }
 };
 
-export const getPersonaByIdusuario = async (tx: TxClient, idusuario: bigint): Promise<persona> => {
+export const getPersonaByIdusuario = async (tx: TxClient, idusuario: number): Promise<persona> => {
   try {
     const persona = await tx.persona.findUnique({
       include: {
@@ -70,7 +70,7 @@ export const getPersonaByIdusuario = async (tx: TxClient, idusuario: bigint): Pr
         pais_nacimiento: true,
         pais_nacionalidad: true,
         pais_residencia: true,
-        distrito: {
+        distrito_residencia: {
           include: {
             provincia: {
               include: {
@@ -101,7 +101,7 @@ export const getPersonaByIdpersona = async (tx: TxClient, idpersona: bigint): Pr
         pais_nacimiento: true,
         pais_nacionalidad: true,
         pais_residencia: true,
-        distrito: {
+        distrito_residencia: {
           include: {
             provincia: {
               include: {
@@ -133,7 +133,7 @@ export const getPersonaByPersonaid = async (tx: TxClient, personaid: string): Pr
         pais_nacimiento: true,
         pais_nacionalidad: true,
         pais_residencia: true,
-        distrito: {
+        distrito_residencia: {
           include: {
             provincia: {
               include: {
@@ -182,7 +182,7 @@ export const getPersonas = async (tx: TxClient, estado: number[]): Promise<perso
         pais_nacimiento: true,
         pais_nacionalidad: true,
         pais_residencia: true,
-        distrito: {
+        distrito_residencia: {
           include: {
             provincia: {
               include: {

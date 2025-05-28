@@ -72,11 +72,6 @@ export const createFactoringempresaverificacion = async (req: Request, res: Resp
       }
 
       // Inserta un nuevo registro en la tabla servicioempresaverificacion con el nuevo estado
-      var camposFk: Partial<servicio_empresa_verificacion> = {};
-      camposFk.idservicioempresa = servicioempresa.idservicioempresa;
-      camposFk.idservicioempresaestado = servicioempresaestado.idservicioempresaestado;
-      camposFk.idusuarioverifica = req.session_user.usuario.idusuario;
-
       var servicioempresaverificacionToCreate: Prisma.servicio_empresa_verificacionCreateInput = {
         servicio_empresa: { connect: { idservicioempresa: servicioempresa.idservicioempresa } },
         servicio_empresa_estado: { connect: { idservicioempresaestado: servicioempresaestado.idservicioempresaestado } },
@@ -91,12 +86,7 @@ export const createFactoringempresaverificacion = async (req: Request, res: Resp
         estado: 1,
       };
 
-      const servicioempresaverificacionCreated = await servicioempresaverificacionDao.insertServicioempresaverificacion(tx, {
-        ...camposFk,
-        ...camposAdicionales,
-        ...servicioempresaverificacionValidated,
-        ...camposAuditoria,
-      });
+      const servicioempresaverificacionCreated = await servicioempresaverificacionDao.insertServicioempresaverificacion(tx, servicioempresaverificacionToCreate);
       log.debug(line(), "servicioempresaverificacionCreated", servicioempresaverificacionCreated);
 
       // Actualiza la tabla servicioempresa con el nuevo estado
@@ -172,28 +162,22 @@ const darAccesoAlUsuarioServicio = async (req, tx, servicioempresaverificacionVa
   }
 
   // Inserta un nuevo registro en la tabla usuarioservicioverificacion con el nuevo estado
-  var camposUsuarioservicioverificacionFk: Partial<usuario_servicio_verificacion> = {};
-  camposUsuarioservicioverificacionFk.idusuarioservicio = usuarioservicio.idusuarioservicio;
-  camposUsuarioservicioverificacionFk.idusuarioservicioestado = usuarioservicioestado.idusuarioservicioestado;
-  camposUsuarioservicioverificacionFk.idusuarioverifica = req.session_user.usuario._idusuario;
+  const usuarioservicioverificacionToCreate: Prisma.usuario_servicio_verificacionCreateInput = {
+    usuario_servicio: { connect: { idusuarioservicio: usuarioservicio.idusuarioservicio } },
+    usuario_servicio_estado: { connect: { idusuarioservicioestado: usuarioservicioestado.idusuarioservicioestado } },
+    usuario_verifica: { connect: { idusuario: req.session_user.usuario._idusuario } },
+    usuarioservicioverificacionid: uuidv4(),
+    comentariousuario: servicioempresaverificacionValidated.comentariousuario,
+    comentariointerno: servicioempresaverificacionValidated.comentariointerno + " // Proceso automático. Se concedió acceso por la verificación de la empresa: " + empresa.code + " - " + empresa.ruc + " - " + empresa.razon_social,
 
-  var camposUsuarioservicioverificacionAdicionales: Partial<usuario_servicio_verificacion> = {};
-  camposUsuarioservicioverificacionAdicionales.usuarioservicioverificacionid = uuidv4();
-  camposUsuarioservicioverificacionAdicionales.comentariousuario = servicioempresaverificacionValidated.comentariousuario;
-  camposUsuarioservicioverificacionAdicionales.comentariointerno = servicioempresaverificacionValidated.comentariointerno + " // Proceso automático. Se concedió acceso por la verificación de la empresa: " + empresa.code + " - " + empresa.ruc + " - " + empresa.razon_social;
+    idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+    fechacrea: new Date(),
+    idusuariomod: req.session_user.usuario._idusuario ?? 1,
+    fechamod: new Date(),
+    estado: 1,
+  };
 
-  var camposUsuarioservicioverificacionAuditoria: Partial<usuario_servicio_verificacion> = {};
-  camposUsuarioservicioverificacionAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
-  camposUsuarioservicioverificacionAuditoria.fechacrea = new Date();
-  camposUsuarioservicioverificacionAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
-  camposUsuarioservicioverificacionAuditoria.fechamod = new Date();
-  camposUsuarioservicioverificacionAuditoria.estado = 1;
-
-  const usuarioservicioverificacionCreated = await usuarioservicioverificacionDao.insertUsuarioservicioverificacion(tx, {
-    ...camposUsuarioservicioverificacionFk,
-    ...camposUsuarioservicioverificacionAdicionales,
-    ...camposUsuarioservicioverificacionAuditoria,
-  });
+  const usuarioservicioverificacionCreated = await usuarioservicioverificacionDao.insertUsuarioservicioverificacion(tx, usuarioservicioverificacionToCreate);
   log.debug(line(), "usuarioservicioverificacionCreated", usuarioservicioverificacionCreated);
 
   // Actualiza la tabla usuarioservicio con el nuevo estado
@@ -279,7 +263,7 @@ export const getFactoringempresasByVerificacion = async (req: Request, res: Resp
   log.debug(line(), "controller::getFactoringempresasByVerificacion");
   //log.info(line(),req.session_user.usuario._idusuario);
 
-  const resultado = await prismaFT.client.$transaction(
+  const factoringempresasJson = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estadologico = [1, 2];
       const filter_idservicio = [1];
@@ -290,7 +274,7 @@ export const getFactoringempresasByVerificacion = async (req: Request, res: Resp
 
       //var factoringempresasFiltered = jsonUtils.removeAttributes(factoringempresasJson, ["score"]);
       //factoringempresasFiltered = jsonUtils.removeAttributesPrivates(factoringempresasFiltered);
-      return {};
+      return factoringempresasJson;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -299,7 +283,7 @@ export const getFactoringempresasByVerificacion = async (req: Request, res: Resp
 
 export const getFactoringempresaverificacionMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFactoringempresaverificacionMaster");
-  const resultado = await prismaFT.client.$transaction(
+  const servicioempresaverificacionMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const session_idusuario = req.session_user?.usuario?._idusuario;
       const filter_estados = [1];
@@ -314,7 +298,7 @@ export const getFactoringempresaverificacionMaster = async (req: Request, res: R
       //jsonUtils.prettyPrint(servicioempresaverificacionMasterObfuscated);
       let servicioempresaverificacionMasterFiltered = jsonUtils.removeAttributesPrivates(servicioempresaverificacionMasterObfuscated);
       //jsonUtils.prettyPrint(servicioempresaverificacionMaster);
-      return {};
+      return servicioempresaverificacionMasterFiltered;
     },
     { timeout: prismaFT.transactionTimeout }
   );

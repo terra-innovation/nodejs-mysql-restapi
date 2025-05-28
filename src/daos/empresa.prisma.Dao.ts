@@ -25,7 +25,7 @@ export const getEmpresasByIdempresas = async (tx: TxClient, idempresas: number[]
   }
 };
 
-export const getEmpresasByIdusuario = async (tx: TxClient, idusuario: bigint, estados: number[]) => {
+export const getEmpresasByIdusuario = async (tx: TxClient, idusuario: number, estados: number[]) => {
   try {
     const empresas = await tx.empresa.findMany({
       include: {
@@ -53,7 +53,7 @@ export const getEmpresasByIdusuario = async (tx: TxClient, idusuario: bigint, es
   }
 };
 
-export const getEmpresaByIdusuarioAndRuc = async (tx: TxClient, idusuario: bigint, ruc: string, estados: number[]) => {
+export const getEmpresaByIdusuarioAndRuc = async (tx: TxClient, idusuario: number, ruc: string, estados: number[]) => {
   try {
     const empresas = await tx.empresa.findFirst({
       include: {
@@ -82,7 +82,7 @@ export const getEmpresaByIdusuarioAndRuc = async (tx: TxClient, idusuario: bigin
   }
 };
 
-export const getEmpresaByIdusuarioAndEmpresaid = async (tx: TxClient, idusuario: bigint, empresaid: string, estado: number) => {
+export const getEmpresaByIdusuarioAndEmpresaid = async (tx: TxClient, idusuario: number, empresaid: string, estado: number) => {
   try {
     const empresas = await tx.empresa.findFirst({
       include: {
@@ -114,11 +114,11 @@ export const getEmpresas = async (tx: TxClient, estados: number[]): Promise<empr
         archivo_empresas: true,
         colaboradores: true,
         contactos: true,
-        departamento: true,
-        distrito: true,
+        departamento_sede: true,
+        distrito_sede: true,
         empresa_cuenta_bancarias: true,
-        pais: true,
-        provincia: true,
+        pais_sede: true,
+        provincia_sede: true,
         riesgo: true,
         servicio_empresas: true,
         usuario_servicio_empresas: true,
