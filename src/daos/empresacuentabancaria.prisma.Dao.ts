@@ -75,7 +75,7 @@ export const getEmpresacuentabancariasByIdempresaAndAlias = async (tx: TxClient,
   }
 };
 
-export const getEmpresacuentabancariasByIdusuario = async (tx: TxClient, idusuario: bigint, estados: number[]) => {
+export const getEmpresacuentabancariasByIdusuario = async (tx: TxClient, idusuario: number, estados: number[]) => {
   try {
     const empresacuentabancaria = await tx.empresa_cuenta_bancaria.findMany({
       include: {

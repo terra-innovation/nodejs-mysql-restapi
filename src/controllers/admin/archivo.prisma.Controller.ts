@@ -63,10 +63,10 @@ export const cargarArchivo = async (req: Request, res: Response) => {
 
       const { codigo_archivo, originalname, size, mimetype, encoding, extension } = archivo[0];
 
-      let archivoNuevo = {
+      let archivoNuevo: Prisma.archivoCreateInput = {
         archivoid: uuidv4(),
-        idarchivotipo: idarchivotipo,
-        idarchivoestado: 1,
+        archivo_tipo: { connect: { idarchivotipo: idarchivotipo } },
+        archivo_estado: { connect: { idarchivoestado: 1 } },
         codigo: codigo_archivo,
         nombrereal: originalname,
         nombrealmacenamiento: filename,

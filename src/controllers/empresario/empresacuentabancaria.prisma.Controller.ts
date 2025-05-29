@@ -50,7 +50,7 @@ export const createEmpresacuentabancaria = async (req: Request, res: Response) =
   var empresacuentabancariaValidated = empresacuentabancariaCreateSchema.validateSync({ ...req.files, ...req.body }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "empresacuentabancariaValidated:", empresacuentabancariaValidated);
 
-  const resultado = await prismaFT.client.$transaction(
+  const empresacuentabancariaFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       var empresa = await empresaDao.getEmpresaByEmpresaid(tx, empresacuentabancariaValidated.empresaid);
       if (!empresa) {
@@ -94,51 +94,49 @@ export const createEmpresacuentabancaria = async (req: Request, res: Response) =
         throw new ClientError("El alias [" + empresacuentabancariaValidated.alias + "] se encuentra registrado. Ingrese un alias diferente.", 404);
       }
 
-      var camposCuentaBancariaFk: Partial<cuenta_bancaria> = {};
-      camposCuentaBancariaFk.idbanco = banco.idbanco;
-      camposCuentaBancariaFk.idcuentatipo = cuentatipo.idcuentatipo;
-      camposCuentaBancariaFk.idmoneda = moneda.idmoneda;
-      camposCuentaBancariaFk.idcuentabancariaestado = 1; // Por defecto
+      const idcuentabancariaestado = 1; // Por defecto
 
-      var camposCuentaBancariaAdicionales: Partial<cuenta_bancaria> = {};
-      camposCuentaBancariaAdicionales.cuentabancariaid = uuidv4();
-      camposCuentaBancariaAdicionales.code = uuidv4().split("-")[0];
+      const cuentabancariaToCreate: Prisma.cuenta_bancariaCreateInput = {
+        banco: { connect: { idbanco: banco.idbanco } },
+        cuenta_tipo: { connect: { idcuentatipo: cuentatipo.idcuentatipo } },
+        moneda: { connect: { idmoneda: moneda.idmoneda } },
+        cuenta_bancaria_estado: { connect: { idcuentabancariaestado: idcuentabancariaestado } },
+        cuentabancariaid: uuidv4(),
+        code: uuidv4().split("-")[0],
+        numero: empresacuentabancariaValidated.numero,
+        cci: empresacuentabancariaValidated.cci,
+        alias: empresacuentabancariaValidated.alias,
+        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
 
-      var camposCuentaBancariaAuditoria: Partial<cuenta_bancaria> = {};
-      camposCuentaBancariaAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
-      camposCuentaBancariaAuditoria.fechacrea = new Date();
-      camposCuentaBancariaAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
-      camposCuentaBancariaAuditoria.fechamod = new Date();
-      camposCuentaBancariaAuditoria.estado = 1;
-
-      const cuentabancariaCreated = await cuentabancariaDao.insertCuentabancaria(tx, {
-        ...camposCuentaBancariaFk,
-        ...camposCuentaBancariaAdicionales,
-        ...empresacuentabancariaValidated,
-        ...camposCuentaBancariaAuditoria,
-      });
+      const cuentabancariaCreated = await cuentabancariaDao.insertCuentabancaria(tx, cuentabancariaToCreate);
       log.debug(line(), "cuentabancariaCreated:", cuentabancariaCreated);
 
       const encabezadocuentabancariaCreated = await crearArchivoEncabezadoCuentaBancaria(req, tx, empresacuentabancariaValidated, cuentabancariaCreated);
       log.debug(line(), "encabezadocuentabancariaCreated:", encabezadocuentabancariaCreated);
 
-      var camposEmpresaCuentaBancariaCreate: Partial<empresa_cuenta_bancaria> = {};
-      camposEmpresaCuentaBancariaCreate.idempresa = empresa_por_idusuario.idempresa;
-      camposEmpresaCuentaBancariaCreate.idcuentabancaria = cuentabancariaCreated.idcuentabancaria;
-      camposEmpresaCuentaBancariaCreate.empresacuentabancariaid = uuidv4();
-      camposEmpresaCuentaBancariaCreate.code = uuidv4().split("-")[0];
-      camposEmpresaCuentaBancariaCreate.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
-      camposEmpresaCuentaBancariaCreate.fechacrea = new Date();
-      camposEmpresaCuentaBancariaCreate.idusuariomod = req.session_user.usuario._idusuario ?? 1;
-      camposEmpresaCuentaBancariaCreate.fechamod = new Date();
-      camposEmpresaCuentaBancariaCreate.estado = 1;
+      const empresacuentabancariaToCreate: Prisma.empresa_cuenta_bancariaCreateInput = {
+        empresa: { connect: { idempresa: empresa.idempresa } },
+        cuenta_bancaria: { connect: { idcuentabancaria: cuentabancariaCreated.idcuentabancaria } },
+        empresacuentabancariaid: uuidv4(),
+        code: uuidv4().split("-")[0],
+        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
 
-      const empresacuentabancariaCreated = await empresacuentabancariaDao.insertEmpresacuentabancaria(tx, camposEmpresaCuentaBancariaCreate);
+      const empresacuentabancariaCreated = await empresacuentabancariaDao.insertEmpresacuentabancaria(tx, empresacuentabancariaToCreate);
       log.debug(line(), "empresacuentabancariaCreated:", empresacuentabancariaCreated);
 
-      const empresacuentabancariaFiltered = jsonUtils.removeAttributesPrivates(camposEmpresaCuentaBancariaCreate);
+      const empresacuentabancariaFiltered = jsonUtils.removeAttributesPrivates(empresacuentabancariaToCreate);
 
-      return {};
+      return empresacuentabancariaFiltered;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -147,14 +145,10 @@ export const createEmpresacuentabancaria = async (req: Request, res: Response) =
 
 export const getEmpresacuentabancariaMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getEmpresacuentabancariaMaster");
-  const resultado = await prismaFT.client.$transaction(
+  const cuentasbancariasMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estados = [1];
       const session_idusuario = req.session_user.usuario._idusuario;
-      //log.info(line(),req.session_user.usuario.rol_rols);
-      const roles = [2]; // Administrador
-      const rolesUsuario = req.session_user.usuario.rol_rols.map((role) => role.idrol);
-      const tieneRol = roles.some((rol) => rolesUsuario.includes(rol));
 
       const empresas = await empresaDao.getEmpresasByIdusuario(tx, session_idusuario, filter_estados);
 
@@ -174,7 +168,7 @@ export const getEmpresacuentabancariaMaster = async (req: Request, res: Response
       //jsonUtils.prettyPrint(cuentasbancariasMasterObfuscated);
       var cuentasbancariasMasterFiltered = jsonUtils.removeAttributesPrivates(cuentasbancariasMasterObfuscated);
       //jsonUtils.prettyPrint(cuentasbancariasMaster);
-      return {};
+      return cuentasbancariasMasterFiltered;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -235,7 +229,7 @@ export const updateEmpresacuentabancariaOnlyAlias = async (req: Request, res: Re
 
 export const getEmpresacuentabancarias = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getEmpresacuentabancarias");
-  const resultado = await prismaFT.client.$transaction(
+  const empresacuentabancariasFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       //log.info(line(),req.session_user.usuario._idusuario);
 
@@ -247,7 +241,7 @@ export const getEmpresacuentabancarias = async (req: Request, res: Response) => 
 
       var empresacuentabancariasFiltered = jsonUtils.removeAttributes(empresacuentabancariasJson, ["score"]);
       empresacuentabancariasFiltered = jsonUtils.removeAttributesPrivates(empresacuentabancariasFiltered);
-      return {};
+      return empresacuentabancariasFiltered;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -265,10 +259,10 @@ const crearArchivoEncabezadoCuentaBancaria = async (req, tx, usuarioservicioVali
 
   const { codigo_archivo, originalname, size, mimetype, encoding, extension } = encabezado_cuenta_bancaria[0];
 
-  let camposArchivoNuevo = {
+  const archivoToCreate: Prisma.archivoCreateInput = {
     archivoid: uuidv4(),
-    _idarchivotipo: 7,
-    _idarchivoestado: 1,
+    archivo_tipo: { connect: { idarchivotipo: 7 } },
+    archivo_estado: { connect: { idarchivoestado: 1 } },
     codigo: codigo_archivo,
     nombrereal: originalname,
     nombrealmacenamiento: filename,
@@ -285,17 +279,19 @@ const crearArchivoEncabezadoCuentaBancaria = async (req, tx, usuarioservicioVali
     fechamod: new Date(),
     estado: 1,
   };
-  const archivoCreated = await archivoDao.insertArchivo(tx, camposArchivoNuevo);
+  const archivoCreated = await archivoDao.insertArchivo(tx, archivoToCreate);
 
-  await archivocuentabancariaDao.insertArchivoCuentaBancaria(tx, {
-    _idarchivo: archivoCreated.idarchivo,
-    _idcuentabancaria: cuentabancariaCreated.idcuentabancaria,
+  const archivocuentabancariaToCreate: Prisma.archivo_cuenta_bancariaCreateInput = {
+    archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
+    cuenta_bancaria: { connect: { idcuentabancaria: cuentabancariaCreated.idcuentabancaria } },
     idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
     fechacrea: new Date(),
     idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
-  });
+  };
+
+  await archivocuentabancariaDao.insertArchivoCuentaBancaria(tx, archivocuentabancariaToCreate);
 
   fs.unlinkSync(archivoOrigen);
 

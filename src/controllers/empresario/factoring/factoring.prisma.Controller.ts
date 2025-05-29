@@ -78,7 +78,7 @@ export const createFactoring = async (req: Request, res: Response) => {
   var factoringValidated = factoringCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
   //log.debug(line(),"factoringValidated:", factoringValidated);
 
-  const resultado = await prismaFT.client.$transaction(
+  const factoringToCreate = await prismaFT.client.$transaction(
     async (tx) => {
       const session_idusuario = req.session_user.usuario._idusuario;
       const filter_estados = [1];
@@ -147,46 +147,43 @@ export const createFactoring = async (req: Request, res: Response) => {
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var camposFk: Partial<factoring> = {};
-      camposFk.idcedente = cedente.idempresa;
-      camposFk.idaceptante = aceptante.idempresa;
-      camposFk.idcuentabancaria = cuentabancaria.idcuentabancaria;
-      camposFk.idmoneda = moneda.idmoneda;
-      camposFk.idcontactoaceptante = contactoaceptante.idcontacto;
-      camposFk.idcontactocedente = colaborador.idcolaborador;
-      camposFk.idfactoringestado = 1; // Por defecto
+      const idfactoringestado = 1; // Por defecto
 
-      var camposAdicionales: Partial<factoring> = {};
-      camposAdicionales.factoringid = uuidv4();
-      camposAdicionales.code = uuidv4().split("-")[0];
-      camposAdicionales.fecha_registro = new Date();
-      camposAdicionales.fecha_emision = facturas.reduce((min, item) => (!min || new Date(item.fecha_emision) < new Date(min) ? item.fecha_emision : min), null);
-      camposAdicionales.cantidad_facturas = factoringValidated.facturas.length;
-      camposAdicionales.monto_factura = facturas.reduce((acc, item) => acc + (typeof item.importe_bruto === "number" ? item.importe_bruto : 0), 0);
-      camposAdicionales.monto_detraccion = facturas.reduce((acc, item) => acc + (typeof item.detraccion_monto === "number" ? item.detraccion_monto : 0), 0);
-      camposAdicionales.monto_neto = facturas.reduce((acc, item) => acc + (typeof item.importe_neto === "number" ? item.importe_neto : 0), 0);
+      const factoringToCreate: Prisma.factoringCreateInput = {
+        empresa_cedente: { connect: { idempresa: cedente.idempresa } },
+        empresa_aceptante: { connect: { idempresa: aceptante.idempresa } },
+        cuenta_bancaria: { connect: { idcuentabancaria: cuentabancaria.idcuentabancaria } },
+        moneda: { connect: { idmoneda: moneda.idmoneda } },
+        contacto_aceptante: { connect: { idcontacto: contactoaceptante.idcontacto } },
+        contacto_cedente: { connect: { idcolaborador: colaborador.idcolaborador } },
+        factoring_estado: { connect: { idfactoringestado: idfactoringestado } },
 
-      var camposAuditoria: Partial<factoring> = {};
-      camposAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
-      camposAuditoria.fechacrea = new Date();
-      camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
-      camposAuditoria.fechamod = new Date();
-      camposAuditoria.estado = 1;
+        fecha_pago_estimado: factoringValidated.fecha_pago_estimado,
 
-      const factoringCreated = await factoringDao.insertFactoring(tx, {
-        ...camposFk,
-        ...camposAdicionales,
-        ...factoringValidated,
-        ...camposAuditoria,
-      });
+        factoringid: uuidv4(),
+        code: uuidv4().split("-")[0],
+        fecha_registro: new Date(),
+        fecha_emision: facturas.reduce((min, item) => (!min || new Date(item.fecha_emision) < new Date(min) ? item.fecha_emision : min), null),
+        cantidad_facturas: factoringValidated.facturas.length,
+        monto_factura: facturas.reduce((acc, item) => acc + (typeof item.importe_bruto === "number" ? item.importe_bruto : 0), 0),
+        monto_detraccion: facturas.reduce((acc, item) => acc + (typeof item.detraccion_monto === "number" ? item.detraccion_monto : 0), 0),
+        monto_neto: facturas.reduce((acc, item) => acc + (typeof item.importe_neto === "number" ? item.importe_neto : 0), 0),
+        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
+
+      const factoringCreated = await factoringDao.insertFactoring(tx, factoringToCreate);
       log.debug(line(), "factoringCreated:", factoringCreated);
 
-      const factoringhistorialestadoCreate = {
+      const factoringhistorialestadoToCreate: Prisma.factoring_historial_estadoCreateInput = {
         factoringhistorialestadoid: uuidv4(),
         code: uuidv4().split("-")[0],
-        _idfactoring: factoringCreated.idfactoring,
-        _idfactoringestado: camposFk.idfactoringestado,
-        _idusuariomodifica: req.session_user.usuario._idusuario,
+        factoring: { connect: { idfactoring: factoringCreated.idfactoring } },
+        factoring_estado: { connect: { idfactoringestado: idfactoringestado } },
+        usuario_modifica: { connect: { idusuario: req.session_user.usuario._idusuario } },
         comentario: "",
         idusuariocrea: req.session_user.usuario._idusuario ?? 1,
         fechacrea: new Date(),
@@ -194,20 +191,28 @@ export const createFactoring = async (req: Request, res: Response) => {
         fechamod: new Date(),
         estado: 1,
       };
-      const factoringhistorialestadoCreated = await factoringhistorialestadoDao.insertFactoringhistorialestado(tx, factoringhistorialestadoCreate);
+      const factoringhistorialestadoCreated = await factoringhistorialestadoDao.insertFactoringhistorialestado(tx, factoringhistorialestadoToCreate);
       log.debug(line(), "factoringhistorialestadoCreated:", factoringhistorialestadoCreated);
 
       for (const [index, factura] of facturas.entries()) {
         var factoringfacturaFk: Partial<factoring_factura> = {};
-        factoringfacturaFk.idfactoring = factoringCreated.idfactoring;
-        factoringfacturaFk.idfactura = factura.idfactura;
-        const factoringfacturaCreated = await factoringfacturaDao.insertFactoringfactura(tx, { ...factoringfacturaFk, ...camposAuditoria });
+
+        const factoringfacturaToCreate: Prisma.factoring_facturaCreateInput = {
+          factoring: { connect: { idfactoring: factoringCreated.idfactoring } },
+          factura: { connect: { idfactura: factura.idfactura } },
+          idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+          fechacrea: new Date(),
+          idusuariomod: req.session_user.usuario._idusuario ?? 1,
+          fechamod: new Date(),
+          estado: 1,
+        };
+        const factoringfacturaCreated = await factoringfacturaDao.insertFactoringfactura(tx, factoringfacturaToCreate);
         log.debug(line(), "factoringfacturaCreated:", factoringfacturaCreated);
       }
 
-      return {};
+      return factoringToCreate;
     },
     { timeout: prismaFT.transactionTimeout }
   );
-  response(res, 201, { ...camposAdicionales, ...factoringValidated });
+  response(res, 201, factoringToCreate);
 };

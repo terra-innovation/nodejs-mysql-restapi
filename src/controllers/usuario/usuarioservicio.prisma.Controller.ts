@@ -739,10 +739,10 @@ const crearArchivoEncabezadoCuentaBancaria = async (req, tx, usuarioservicioVali
 
   const { codigo_archivo, originalname, size, mimetype, encoding, extension } = encabezado_cuenta_bancaria[0];
 
-  let camposArchivoNuevo = {
+  const archivoToCreate: Prisma.archivoCreateInput = {
     archivoid: uuidv4(),
-    _idarchivotipo: 7,
-    _idarchivoestado: 1,
+    archivo_tipo: { connect: { idarchivotipo: 7 } },
+    archivo_estado: { connect: { idarchivoestado: 1 } },
     codigo: codigo_archivo,
     nombrereal: originalname,
     nombrealmacenamiento: filename,
@@ -759,17 +759,19 @@ const crearArchivoEncabezadoCuentaBancaria = async (req, tx, usuarioservicioVali
     fechamod: new Date(),
     estado: 1,
   };
-  const archivoCreated = await archivoDao.insertArchivo(tx, camposArchivoNuevo);
+  const archivoCreated = await archivoDao.insertArchivo(tx, archivoToCreate);
 
-  await archivocuentabancariaDao.insertArchivoCuentaBancaria(tx, {
-    _idarchivo: archivoCreated.idarchivo,
-    _idcuentabancaria: cuentabancariaCreated.idcuentabancaria,
+  const archivocuentabancariaToCreate: Prisma.archivo_cuenta_bancariaCreateInput = {
+    archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
+    cuenta_bancaria: { connect: { idcuentabancaria: cuentabancariaCreated.idcuentabancaria } },
     idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
     fechacrea: new Date(),
     idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
-  });
+  };
+
+  await archivocuentabancariaDao.insertArchivoCuentaBancaria(tx, archivocuentabancariaToCreate);
 
   fs.unlinkSync(archivoOrigen);
 
@@ -787,10 +789,10 @@ const crearArchivoVigenciaPoderRepresentanteLegal = async (req, tx, usuarioservi
 
   const { codigo_archivo, originalname, size, mimetype, encoding, extension } = certificado_vigencia_poder[0];
 
-  let camposArchivoNuevo = {
+  const archivoToCreate: Prisma.archivoCreateInput = {
     archivoid: uuidv4(),
-    _idarchivotipo: 6,
-    _idarchivoestado: 1,
+    archivo_tipo: { connect: { idarchivotipo: 6 } },
+    archivo_estado: { connect: { idarchivoestado: 1 } },
     codigo: codigo_archivo,
     nombrereal: originalname,
     nombrealmacenamiento: filename,
@@ -807,17 +809,18 @@ const crearArchivoVigenciaPoderRepresentanteLegal = async (req, tx, usuarioservi
     fechamod: new Date(),
     estado: 1,
   };
-  const archivoCreated = await archivoDao.insertArchivo(tx, camposArchivoNuevo);
+  const archivoCreated = await archivoDao.insertArchivo(tx, archivoToCreate);
 
-  await archivocolaboradorDao.insertArchivoColaborador(tx, {
-    _idarchivo: archivoCreated.idarchivo,
-    _idcolaborador: colaboradorCreated.idcolaborador,
+  const archivocolaboradorToCreate: Prisma.archivo_colaboradorCreateInput = {
+    archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
+    colaborador: { connect: { idcolaborador: colaboradorCreated.idcolaborador } },
     idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
     fechacrea: new Date(),
     idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
-  });
+  };
+  await archivocolaboradorDao.insertArchivoColaborador(tx, archivocolaboradorToCreate);
 
   fs.unlinkSync(archivoOrigen);
 
@@ -835,10 +838,10 @@ const crearArchivoReporteTributarioParaTerceros = async (req, tx, usuarioservici
 
   const { codigo_archivo, originalname, size, mimetype, encoding, extension } = reporte_tributario_para_terceros[0];
 
-  let camposArchivoNuevo = {
+  const archivoToCreate: Prisma.archivoCreateInput = {
     archivoid: uuidv4(),
-    _idarchivotipo: 5,
-    _idarchivoestado: 1,
+    archivo_tipo: { connect: { idarchivotipo: 5 } },
+    archivo_estado: { connect: { idarchivoestado: 1 } },
     codigo: codigo_archivo,
     nombrereal: originalname,
     nombrealmacenamiento: filename,
@@ -855,17 +858,18 @@ const crearArchivoReporteTributarioParaTerceros = async (req, tx, usuarioservici
     fechamod: new Date(),
     estado: 1,
   };
-  const archivoCreated = await archivoDao.insertArchivo(tx, camposArchivoNuevo);
+  const archivoCreated = await archivoDao.insertArchivo(tx, archivoToCreate);
 
-  await archivoempresaDao.insertArchivoEmpresa(tx, {
-    _idarchivo: archivoCreated.idarchivo,
-    _idempresa: empresaCreated.idempresa,
+  const archivoempresaToCreate: Prisma.archivo_empresaCreateInput = {
+    archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
+    empresa: { connect: { idempresa: empresaCreated.idempresa } },
     idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
     fechacrea: new Date(),
     idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
-  });
+  };
+  await archivoempresaDao.insertArchivoEmpresa(tx, archivoempresaToCreate);
 
   fs.unlinkSync(archivoOrigen);
 
@@ -883,10 +887,10 @@ const crearArchivoFichaRuc = async (req, tx, usuarioservicioValidated, empresaCr
 
   const { codigo_archivo, originalname, size, mimetype, encoding, extension } = ficha_ruc[0];
 
-  let camposArchivoNuevo = {
+  const archivoToCreate: Prisma.archivoCreateInput = {
     archivoid: uuidv4(),
-    _idarchivotipo: 4,
-    _idarchivoestado: 1,
+    archivo_tipo: { connect: { idarchivotipo: 4 } },
+    archivo_estado: { connect: { idarchivoestado: 1 } },
     codigo: codigo_archivo,
     nombrereal: originalname,
     nombrealmacenamiento: filename,
@@ -903,17 +907,18 @@ const crearArchivoFichaRuc = async (req, tx, usuarioservicioValidated, empresaCr
     fechamod: new Date(),
     estado: 1,
   };
-  const archivoCreated = await archivoDao.insertArchivo(tx, camposArchivoNuevo);
+  const archivoCreated = await archivoDao.insertArchivo(tx, archivoToCreate);
 
-  await archivoempresaDao.insertArchivoEmpresa(tx, {
-    _idarchivo: archivoCreated.idarchivo,
-    _idempresa: empresaCreated.idempresa,
+  const archivoempresaToCreate: Prisma.archivo_empresaCreateInput = {
+    archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
+    empresa: { connect: { idempresa: empresaCreated.idempresa } },
     idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
     fechacrea: new Date(),
     idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
-  });
+  };
+  await archivoempresaDao.insertArchivoEmpresa(tx, archivoempresaToCreate);
 
   fs.unlinkSync(archivoOrigen);
 

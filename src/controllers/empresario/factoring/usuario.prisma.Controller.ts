@@ -10,7 +10,7 @@ import { log, line } from "#src/utils/logger.pino.js";
 export const getUsuario = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getUsuario");
 
-  const resultado = await prismaFT.client.$transaction(
+  const usuarioFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_idusuario = req.session_user.usuario._idusuario;
       const filter_estado = [1, 2];
@@ -19,7 +19,7 @@ export const getUsuario = async (req: Request, res: Response) => {
       usuarioObfuscated = jsonUtils.ofuscarAtributos(usuarioObfuscated, ["celular"], jsonUtils.PATRON_OFUSCAR_TELEFONO);
       //log.info(line(),empresaObfuscated);
       var usuarioFiltered = jsonUtils.removeAttributesPrivates(usuarioObfuscated);
-      return {};
+      return usuarioFiltered;
     },
     { timeout: prismaFT.transactionTimeout }
   );

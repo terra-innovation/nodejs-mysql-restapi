@@ -118,26 +118,25 @@ export const createContacto = async (req: Request, res: Response) => {
         throw new ClientError("El email [" + contactoValidated.email + "] se encuentra registrado. Ingrese un contacto diferente.", 404);
       }
 
-      var camposContactoFk: Partial<contacto> = {};
-      camposContactoFk.idempresa = empresa.idempresa;
+      const contactoToCreate: Prisma.contactoCreateInput = {
+        empresa: { connect: { idempresa: empresa.idempresa } },
+        contactoid: uuidv4(),
+        code: uuidv4().split("-")[0],
 
-      var camposContactoAdicionales: Partial<contacto> = {};
-      camposContactoAdicionales.contactoid = uuidv4();
-      camposContactoAdicionales.code = uuidv4().split("-")[0];
+        nombrecontacto: contactoValidated.nombrecontacto,
+        apellidocontacto: contactoValidated.apellidocontacto,
+        cargo: contactoValidated.cargo,
+        email: contactoValidated.email,
+        celular: contactoValidated.celular,
+        telefono: contactoValidated.telefono,
+        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
 
-      var camposContactoAuditoria: Partial<contacto> = {};
-      camposContactoAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
-      camposContactoAuditoria.fechacrea = new Date();
-      camposContactoAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
-      camposContactoAuditoria.fechamod = new Date();
-      camposContactoAuditoria.estado = 1;
-
-      const contactoCreated = await contactoDao.insertContacto(tx, {
-        ...camposContactoFk,
-        ...camposContactoAdicionales,
-        ...contactoValidated,
-        ...camposContactoAuditoria,
-      });
+      const contactoCreated = await contactoDao.insertContacto(tx, contactoToCreate);
       log.debug(line(), "contactoCreated:", contactoCreated);
 
       const contactoFiltered = jsonUtils.removeAttributesPrivates(contactoCreated);
@@ -180,10 +179,6 @@ export const getContactoMaster = async (req: Request, res: Response) => {
     async (tx) => {
       const filter_estados = [1];
       const session_idusuario = req.session_user.usuario.idusuario;
-      //log.info(line(),req.session_user.usuario.rol_rols);
-      const roles = [2]; // Administrador
-      const rolesUsuario = req.session_user.usuario.rol_rols.map((role) => role.idrol);
-      const tieneRol = roles.some((rol) => rolesUsuario.includes(rol));
 
       const empresas_cedentes = await empresaDao.getEmpresasByIdusuario(tx, session_idusuario, filter_estados);
       const _idcedentes = empresas_cedentes.map((empresa) => empresa.idempresa);

@@ -212,10 +212,10 @@ const crearFacturaPDF = async (req, tx, facturaValidated, facturaCreated) => {
 
   const { codigo_archivo, originalname, size, mimetype, encoding, extension } = factura_pdf[0];
 
-  let identificacionselfiNew = {
+  const archivoToCreate: Prisma.archivoCreateInput = {
     archivoid: uuidv4(),
-    _idarchivotipo: 9,
-    _idarchivoestado: 1,
+    archivo_tipo: { connect: { idarchivotipo: 9 } },
+    archivo_estado: { connect: { idarchivoestado: 1 } },
     codigo: codigo_archivo,
     nombrereal: originalname,
     nombrealmacenamiento: filename,
@@ -232,20 +232,22 @@ const crearFacturaPDF = async (req, tx, facturaValidated, facturaCreated) => {
     fechamod: new Date(),
     estado: 1,
   };
-  const identificacionselfiCreated = await archivoDao.insertArchivo(tx, identificacionselfiNew);
+  const archivoCreated = await archivoDao.insertArchivo(tx, archivoToCreate);
 
-  await archivofacturaDao.insertArchivoFactura(tx, {
-    _idarchivo: identificacionselfiCreated.idarchivo,
-    _idfactura: facturaCreated.idfactura,
+  const archivofacturaToCreate: Prisma.archivo_facturaCreateInput = {
+    archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
+    factura: { connect: { idfactura: facturaCreated.idfactura } },
     idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
     fechacrea: new Date(),
     idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
-  });
+  };
+
+  await archivofacturaDao.insertArchivoFactura(tx, archivofacturaToCreate);
 
   fs.unlinkSync(archivoOrigen);
-  return identificacionselfiCreated;
+  return archivoCreated;
 };
 
 const crearFacturaXML = async (req, tx, facturaValidated, facturaCreated) => {
@@ -259,10 +261,10 @@ const crearFacturaXML = async (req, tx, facturaValidated, facturaCreated) => {
 
   const { codigo_archivo, originalname, size, mimetype, encoding, extension } = factura_xml[0];
 
-  let identificacionselfiNew = {
+  const archivoToCreate: Prisma.archivoCreateInput = {
     archivoid: uuidv4(),
-    _idarchivotipo: 8,
-    _idarchivoestado: 1,
+    archivo_tipo: { connect: { idarchivotipo: 8 } },
+    archivo_estado: { connect: { idarchivoestado: 1 } },
     codigo: codigo_archivo,
     nombrereal: originalname,
     nombrealmacenamiento: filename,
@@ -279,18 +281,20 @@ const crearFacturaXML = async (req, tx, facturaValidated, facturaCreated) => {
     fechamod: new Date(),
     estado: 1,
   };
-  const identificacionselfiCreated = await archivoDao.insertArchivo(tx, identificacionselfiNew);
+  const archivoCreated = await archivoDao.insertArchivo(tx, archivoToCreate);
 
-  await archivofacturaDao.insertArchivoFactura(tx, {
-    _idarchivo: identificacionselfiCreated.idarchivo,
-    _idfactura: facturaCreated.idfactura,
+  const archivofacturaToCreate: Prisma.archivo_facturaCreateInput = {
+    archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
+    factura: { connect: { idfactura: facturaCreated.idfactura } },
     idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
     fechacrea: new Date(),
     idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
-  });
+  };
+
+  await archivofacturaDao.insertArchivoFactura(tx, archivofacturaToCreate);
 
   fs.unlinkSync(archivoOrigen);
-  return identificacionselfiCreated;
+  return archivoCreated;
 };

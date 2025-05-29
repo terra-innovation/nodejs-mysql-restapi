@@ -266,21 +266,13 @@ export const createEmpresacuentabancaria = async (req: Request, res: Response) =
         throw new ClientError("El alias [" + empresacuentabancariaValidated.alias + "] se encuentra registrado. Ingrese un alias diferente.", 404);
       }
 
+      const idcuentabancariaestado = 1; // Por defecto
+
       const cuentabancariaToCreate: Prisma.cuenta_bancariaCreateInput = {
-        banco: {
-          connect: { idbanco: banco.idbanco },
-        },
-        cuenta_tipo: {
-          connect: { idcuentatipo: cuentatipo.idcuentatipo },
-        },
-        moneda: {
-          connect: { idmoneda: moneda.idmoneda },
-        },
-        cuenta_bancaria_estado: {
-          connect: {
-            idcuentabancariaestado: 1, // Por defecto
-          },
-        },
+        banco: { connect: { idbanco: banco.idbanco } },
+        cuenta_tipo: { connect: { idcuentatipo: cuentatipo.idcuentatipo } },
+        moneda: { connect: { idmoneda: moneda.idmoneda } },
+        cuenta_bancaria_estado: { connect: { idcuentabancariaestado: idcuentabancariaestado } },
         cuentabancariaid: uuidv4(),
         code: uuidv4().split("-")[0],
         numero: empresacuentabancariaValidated.numero,
@@ -297,12 +289,8 @@ export const createEmpresacuentabancaria = async (req: Request, res: Response) =
       log.debug(line(), "cuentabancariaCreated:", cuentabancariaCreated);
 
       const empresacuentabancariaToCreate: Prisma.empresa_cuenta_bancariaCreateInput = {
-        empresa: {
-          connect: { idempresa: empresa.idempresa },
-        },
-        cuenta_bancaria: {
-          connect: { idcuentabancaria: cuentabancariaCreated.idcuentabancaria },
-        },
+        empresa: { connect: { idempresa: empresa.idempresa } },
+        cuenta_bancaria: { connect: { idcuentabancaria: cuentabancariaCreated.idcuentabancaria } },
         empresacuentabancariaid: uuidv4(),
         code: uuidv4().split("-")[0],
         idusuariocrea: req.session_user.usuario._idusuario ?? 1,

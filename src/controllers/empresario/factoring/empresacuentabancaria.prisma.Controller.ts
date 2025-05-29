@@ -241,10 +241,10 @@ const crearArchivoEncabezadoCuentaBancaria = async (req, tx, usuarioservicioVali
 
   const { codigo_archivo, originalname, size, mimetype, encoding, extension } = encabezado_cuenta_bancaria[0];
 
-  let camposArchivoNuevo = {
+  let archivoToCreate: Prisma.archivoCreateInput = {
     archivoid: uuidv4(),
-    _idarchivotipo: 7,
-    _idarchivoestado: 1,
+    archivo_tipo: { connect: { idarchivotipo: 7 } },
+    archivo_estado: { connect: { idarchivoestado: 1 } },
     codigo: codigo_archivo,
     nombrereal: originalname,
     nombrealmacenamiento: filename,
@@ -261,7 +261,7 @@ const crearArchivoEncabezadoCuentaBancaria = async (req, tx, usuarioservicioVali
     fechamod: new Date(),
     estado: 1,
   };
-  const archivoCreated = await archivoDao.insertArchivo(tx, camposArchivoNuevo);
+  const archivoCreated = await archivoDao.insertArchivo(tx, archivoToCreate);
 
   const archivocuentabancariaToCreate: Prisma.archivo_cuenta_bancariaCreateInput = {
     archivo: { connect: { idarchivo: archivoCreated.idarchivo } },

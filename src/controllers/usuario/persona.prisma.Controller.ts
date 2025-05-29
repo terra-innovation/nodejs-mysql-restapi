@@ -271,10 +271,10 @@ const crearIdentificacionSelfi = async (req, tx, personaValidated, personaCreate
 
   const { codigo_archivo, originalname, size, mimetype, encoding, extension } = identificacion_selfi[0];
 
-  let identificacionselfiNew = {
+  const archivoToCreate: Prisma.archivoCreateInput = {
     archivoid: uuidv4(),
-    _idarchivotipo: 3,
-    _idarchivoestado: 1,
+    archivo_tipo: { connect: { idarchivotipo: 3 } },
+    archivo_estado: { connect: { idarchivoestado: 1 } },
     codigo: codigo_archivo,
     nombrereal: originalname,
     nombrealmacenamiento: filename,
@@ -291,20 +291,22 @@ const crearIdentificacionSelfi = async (req, tx, personaValidated, personaCreate
     fechamod: new Date(),
     estado: 1,
   };
-  const identificacionselfiCreated = await archivoDao.insertArchivo(tx, identificacionselfiNew);
+  const archivoCreated = await archivoDao.insertArchivo(tx, archivoToCreate);
 
-  await archivopersonaDao.insertArchivoPersona(tx, {
-    _idarchivo: identificacionselfiCreated.idarchivo,
-    _idpersona: personaCreated.idpersona,
+  const archivopersonaToCreate: Prisma.archivo_personaCreateInput = {
+    archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
+    persona: { connect: { idpersona: personaCreated.idcuentabancaria } },
     idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
     fechacrea: new Date(),
     idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
-  });
+  };
+
+  await archivopersonaDao.insertArchivoPersona(tx, archivopersonaToCreate);
 
   fs.unlinkSync(archivoOrigen);
-  return identificacionselfiCreated;
+  return archivoCreated;
 };
 
 const crearIdentificacionReverso = async (req, tx, personaValidated, personaCreated) => {
@@ -318,10 +320,10 @@ const crearIdentificacionReverso = async (req, tx, personaValidated, personaCrea
 
   const { codigo_archivo, originalname, size, mimetype, encoding, extension } = identificacion_reverso[0];
 
-  let identificacionreversoNew = {
+  const archivoToCreate: Prisma.archivoCreateInput = {
     archivoid: uuidv4(),
-    _idarchivotipo: 2,
-    _idarchivoestado: 1,
+    archivo_tipo: { connect: { idarchivotipo: 2 } },
+    archivo_estado: { connect: { idarchivoestado: 1 } },
     codigo: codigo_archivo,
     nombrereal: originalname,
     nombrealmacenamiento: filename,
@@ -338,20 +340,22 @@ const crearIdentificacionReverso = async (req, tx, personaValidated, personaCrea
     fechamod: new Date(),
     estado: 1,
   };
-  const identificacionreversoCreated = await archivoDao.insertArchivo(tx, identificacionreversoNew);
+  const archivoCreated = await archivoDao.insertArchivo(tx, archivoToCreate);
 
-  await archivopersonaDao.insertArchivoPersona(tx, {
-    _idarchivo: identificacionreversoCreated.idarchivo,
-    _idpersona: personaCreated.idpersona,
+  const archivopersonaToCreate: Prisma.archivo_personaCreateInput = {
+    archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
+    persona: { connect: { idpersona: personaCreated.idcuentabancaria } },
     idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
     fechacrea: new Date(),
     idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
-  });
+  };
+
+  await archivopersonaDao.insertArchivoPersona(tx, archivopersonaToCreate);
 
   fs.unlinkSync(archivoOrigen);
-  return identificacionreversoCreated;
+  return archivoCreated;
 };
 
 const crearIdentificacionAnverso = async (req, tx, personaValidated, personaCreated) => {
@@ -365,10 +369,10 @@ const crearIdentificacionAnverso = async (req, tx, personaValidated, personaCrea
 
   const { codigo_archivo, originalname, size, mimetype, encoding, extension } = identificacion_anverso[0];
 
-  let identificacionanversoNew = {
+  const archivoToCreate: Prisma.archivoCreateInput = {
     archivoid: uuidv4(),
-    _idarchivotipo: 1,
-    _idarchivoestado: 1,
+    archivo_tipo: { connect: { idarchivotipo: 1 } },
+    archivo_estado: { connect: { idarchivoestado: 1 } },
     codigo: codigo_archivo,
     nombrereal: originalname,
     nombrealmacenamiento: filename,
@@ -385,18 +389,20 @@ const crearIdentificacionAnverso = async (req, tx, personaValidated, personaCrea
     fechamod: new Date(),
     estado: 1,
   };
-  const identificacionanversoCreated = await archivoDao.insertArchivo(tx, identificacionanversoNew);
+  const archivoCreated = await archivoDao.insertArchivo(tx, archivoToCreate);
 
-  await archivopersonaDao.insertArchivoPersona(tx, {
-    _idarchivo: identificacionanversoCreated.idarchivo,
-    _idpersona: personaCreated.idpersona,
+  const archivopersonaToCreate: Prisma.archivo_personaCreateInput = {
+    archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
+    persona: { connect: { idpersona: personaCreated.idcuentabancaria } },
     idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
     fechacrea: new Date(),
     idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
-  });
+  };
+
+  await archivopersonaDao.insertArchivoPersona(tx, archivopersonaToCreate);
 
   fs.unlinkSync(archivoOrigen);
-  return identificacionanversoCreated;
+  return archivoCreated;
 };
