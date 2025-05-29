@@ -82,7 +82,7 @@ export const getEmpresaByIdusuarioAndRuc = async (tx: TxClient, idusuario: numbe
   }
 };
 
-export const getEmpresaByIdusuarioAndEmpresaid = async (tx: TxClient, idusuario: number, empresaid: string, estado: number) => {
+export const getEmpresaByIdusuarioAndEmpresaid = async (tx: TxClient, idusuario: number, empresaid: string, estado: number[]) => {
   try {
     const empresas = await tx.empresa.findFirst({
       include: {
@@ -90,11 +90,11 @@ export const getEmpresaByIdusuarioAndEmpresaid = async (tx: TxClient, idusuario:
       },
       where: {
         empresaid: empresaid,
-        estado: estado,
+        estado: { in: estado },
         usuario_servicio_empresas: {
           some: {
             idusuario: idusuario,
-            estado: estado,
+            estado: { in: estado },
           },
         },
       },
@@ -107,7 +107,7 @@ export const getEmpresaByIdusuarioAndEmpresaid = async (tx: TxClient, idusuario:
   }
 };
 
-export const getEmpresas = async (tx: TxClient, estados: number[]): Promise<empresa[]> => {
+export const getEmpresas = async (tx: TxClient, estados: number[]) => {
   try {
     const empresas = await tx.empresa.findMany({
       include: {
@@ -137,7 +137,7 @@ export const getEmpresas = async (tx: TxClient, estados: number[]): Promise<empr
   }
 };
 
-export const getEmpresaByIdempresa = async (tx: TxClient, idempresa: number): Promise<empresa> => {
+export const getEmpresaByIdempresa = async (tx: TxClient, idempresa: number) => {
   try {
     const empresa = await tx.empresa.findUnique({
       include: {
@@ -157,7 +157,7 @@ export const getEmpresaByIdempresa = async (tx: TxClient, idempresa: number): Pr
   }
 };
 
-export const getEmpresaByEmpresaid = async (tx: TxClient, empresaid: string): Promise<empresa> => {
+export const getEmpresaByEmpresaid = async (tx: TxClient, empresaid: string) => {
   try {
     const empresa = await tx.empresa.findFirst({
       include: {
@@ -190,7 +190,7 @@ export const getEmpresaByRuc = async (tx: TxClient, ruc) => {
   }
 };
 
-export const findEmpresaPk = async (tx: TxClient, empresaid: string): Promise<{ idempresa: number }> => {
+export const findEmpresaPk = async (tx: TxClient, empresaid: string) => {
   try {
     const empresa = await tx.empresa.findFirst({
       select: { idempresa: true },
@@ -206,7 +206,7 @@ export const findEmpresaPk = async (tx: TxClient, empresaid: string): Promise<{ 
   }
 };
 
-export const insertEmpresa = async (tx: TxClient, empresa: Prisma.empresaCreateInput): Promise<empresa> => {
+export const insertEmpresa = async (tx: TxClient, empresa: Prisma.empresaCreateInput) => {
   try {
     const nuevo = await tx.empresa.create({ data: empresa });
 
@@ -217,7 +217,7 @@ export const insertEmpresa = async (tx: TxClient, empresa: Prisma.empresaCreateI
   }
 };
 
-export const updateEmpresa = async (tx: TxClient, empresa: Partial<empresa>): Promise<empresa> => {
+export const updateEmpresa = async (tx: TxClient, empresa: Partial<empresa>) => {
   try {
     const result = await tx.empresa.update({
       data: empresa,
@@ -232,7 +232,7 @@ export const updateEmpresa = async (tx: TxClient, empresa: Partial<empresa>): Pr
   }
 };
 
-export const deleteEmpresa = async (tx: TxClient, empresa: Partial<empresa>): Promise<empresa> => {
+export const deleteEmpresa = async (tx: TxClient, empresa: Partial<empresa>) => {
   try {
     const result = await tx.empresa.update({
       data: empresa,
@@ -247,7 +247,7 @@ export const deleteEmpresa = async (tx: TxClient, empresa: Partial<empresa>): Pr
   }
 };
 
-export const activateEmpresa = async (tx: TxClient, empresa: Partial<empresa>): Promise<empresa> => {
+export const activateEmpresa = async (tx: TxClient, empresa: Partial<empresa>) => {
   try {
     const result = await tx.empresa.update({
       data: empresa,

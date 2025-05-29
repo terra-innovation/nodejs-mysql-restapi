@@ -19,9 +19,9 @@ import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import * as Yup from "yup";
 import { Sequelize } from "sequelize";
-import { credencial } from "#root/src/models/ft_factoring/Credencial";
-import { validacion } from "#root/src/models/ft_factoring/Validacion";
-import { usuario } from "#root/src/models/ft_factoring/Usuario";
+import type { credencial } from "#src/models/prisma/ft_factoring/client";
+import type { validacion } from "#src/models/prisma/ft_factoring/client";
+import type { usuario } from "#src/models/prisma/ft_factoring/client";
 
 export const resetPassword = async (req: Request, res: Response) => {
   log.debug(line(), "controller::resetPassword");
@@ -205,7 +205,7 @@ export const sendTokenPassword = async (req: Request, res: Response) => {
           log.warn(line(), "Validación no existe: ", validacionValidated);
           let validacionNew: Partial<validacion> = {};
           validacionNew._idusuario = usuario._idusuario;
-          validacionNew._idvalidaciontipo = _idvalidaciontipo;
+          validacionNew.idvalidaciontipo = _idvalidaciontipo;
           validacionNew.valor = validacionValidated.email;
           validacionNew.otp = resetpasswordvalidationcode;
           validacionNew.tiempo_marca = new Date();
@@ -410,7 +410,7 @@ export const registerUsuario = async (req: Request, res: Response) => {
       delete usuarioValidated.password;
 
       let camposUsuarioFk: Partial<usuario> = {};
-      camposUsuarioFk._iddocumentotipo = documentotipo._iddocumentotipo;
+      camposUsuarioFk.iddocumentotipo = documentotipo.iddocumentotipo;
 
       let camposUsuarioAdicionales: Partial<usuario> = {};
       camposUsuarioAdicionales.usuarioid = uuidv4();
@@ -457,7 +457,7 @@ export const registerUsuario = async (req: Request, res: Response) => {
 
       let validacion: Partial<validacion> = {};
       validacion._idusuario = usuarioCreated._idusuario;
-      validacion._idvalidaciontipo = 1; // 1: Para Correo electrónico
+      validacion.idvalidaciontipo = 1; // 1: Para Correo electrónico
       validacion.valor = usuarioValidated.email;
       validacion.otp = emailvalidationcode;
       validacion.tiempo_marca = new Date();

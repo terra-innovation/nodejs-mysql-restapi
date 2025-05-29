@@ -58,7 +58,7 @@ export const getContactosByIdempresas = async (tx: TxClient, idempresas: number[
   }
 };
 
-export const getContactos = async (tx: TxClient, estados: number[]): Promise<contacto[]> => {
+export const getContactos = async (tx: TxClient, estados: number[]) => {
   try {
     const contactos = await tx.contacto.findMany({
       where: {
@@ -75,7 +75,7 @@ export const getContactos = async (tx: TxClient, estados: number[]): Promise<con
   }
 };
 
-export const getContactoByIdcontacto = async (tx: TxClient, idcontacto: number): Promise<contacto> => {
+export const getContactoByIdcontacto = async (tx: TxClient, idcontacto: number) => {
   try {
     const contacto = await tx.contacto.findUnique({ where: { idcontacto: idcontacto } });
 
@@ -86,7 +86,7 @@ export const getContactoByIdcontacto = async (tx: TxClient, idcontacto: number):
   }
 };
 
-export const getContactoByContactoid = async (tx: TxClient, contactoid: string): Promise<contacto> => {
+export const getContactoByContactoid = async (tx: TxClient, contactoid: string) => {
   try {
     const contacto = await tx.contacto.findFirst({
       where: {
@@ -101,7 +101,7 @@ export const getContactoByContactoid = async (tx: TxClient, contactoid: string):
   }
 };
 
-export const findContactoPk = async (tx: TxClient, contactoid: string): Promise<{ idcontacto: number }> => {
+export const findContactoPk = async (tx: TxClient, contactoid: string) => {
   try {
     const contacto = await tx.contacto.findFirst({
       select: { idcontacto: true },
@@ -117,7 +117,7 @@ export const findContactoPk = async (tx: TxClient, contactoid: string): Promise<
   }
 };
 
-export const insertContacto = async (tx: TxClient, contacto: Prisma.contactoCreateInput): Promise<contacto> => {
+export const insertContacto = async (tx: TxClient, contacto: Prisma.contactoCreateInput) => {
   try {
     const nuevo = await tx.contacto.create({ data: contacto });
 
@@ -128,7 +128,7 @@ export const insertContacto = async (tx: TxClient, contacto: Prisma.contactoCrea
   }
 };
 
-export const updateContacto = async (tx: TxClient, contacto: Partial<contacto>): Promise<contacto> => {
+export const updateContacto = async (tx: TxClient, contacto: Partial<contacto>) => {
   try {
     const result = await tx.contacto.update({
       data: contacto,
@@ -143,7 +143,7 @@ export const updateContacto = async (tx: TxClient, contacto: Partial<contacto>):
   }
 };
 
-export const deleteContacto = async (tx: TxClient, contacto: Partial<contacto>): Promise<contacto> => {
+export const deleteContacto = async (tx: TxClient, contacto: Partial<contacto>) => {
   try {
     const result = await tx.contacto.update({
       data: contacto,

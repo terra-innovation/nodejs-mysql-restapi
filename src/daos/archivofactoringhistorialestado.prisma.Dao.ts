@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getArchivofactoringhistorialestados = async (tx: TxClient, estados: number[]): Promise<archivo_factoring_historial_estado[]> => {
+export const getArchivofactoringhistorialestados = async (tx: TxClient, estados: number[]) => {
   try {
     const archivofactoringhistorialestados = await tx.archivo_factoring_historial_estado.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getArchivofactoringhistorialestados = async (tx: TxClient, estados:
   }
 };
 
-export const getArchivofactoringhistorialestadoByIdarchivofactoringhistorialestado = async (tx: TxClient, idarchivo: number, idfactoringhistorialestado: number): Promise<archivo_factoring_historial_estado> => {
+export const getArchivofactoringhistorialestadoByIdarchivofactoringhistorialestado = async (tx: TxClient, idarchivo: number, idfactoringhistorialestado: number) => {
   try {
     const archivofactoringhistorialestado = await tx.archivo_factoring_historial_estado.findUnique({
       where: {
@@ -40,7 +40,7 @@ export const getArchivofactoringhistorialestadoByIdarchivofactoringhistorialesta
   }
 };
 
-export const insertArchivofactoringhistorialestado = async (tx: TxClient, archivofactoringhistorialestado: Prisma.archivo_factoring_historial_estadoCreateInput): Promise<archivo_factoring_historial_estado> => {
+export const insertArchivofactoringhistorialestado = async (tx: TxClient, archivofactoringhistorialestado: Prisma.archivo_factoring_historial_estadoCreateInput) => {
   try {
     const nuevo = await tx.archivo_factoring_historial_estado.create({ data: archivofactoringhistorialestado });
 
@@ -51,7 +51,7 @@ export const insertArchivofactoringhistorialestado = async (tx: TxClient, archiv
   }
 };
 
-export const updateArchivofactoringhistorialestado = async (tx: TxClient, archivofactoringhistorialestado: Partial<archivo_factoring_historial_estado>): Promise<archivo_factoring_historial_estado> => {
+export const updateArchivofactoringhistorialestado = async (tx: TxClient, archivofactoringhistorialestado: Partial<archivo_factoring_historial_estado>) => {
   try {
     const result = await tx.archivo_factoring_historial_estado.update({
       data: archivofactoringhistorialestado,
@@ -69,7 +69,7 @@ export const updateArchivofactoringhistorialestado = async (tx: TxClient, archiv
   }
 };
 
-export const deleteArchivofactoringhistorialestado = async (tx: TxClient, archivofactoringhistorialestado: Partial<archivo_factoring_historial_estado>): Promise<archivo_factoring_historial_estado> => {
+export const deleteArchivofactoringhistorialestado = async (tx: TxClient, archivofactoringhistorialestado: Partial<archivo_factoring_historial_estado>) => {
   try {
     const result = await tx.archivo_factoring_historial_estado.update({
       data: archivofactoringhistorialestado,

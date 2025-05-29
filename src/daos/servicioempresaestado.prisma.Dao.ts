@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getServicioempresaestados = async (tx: TxClient, estados: number[]): Promise<servicio_empresa_estado[]> => {
+export const getServicioempresaestados = async (tx: TxClient, estados: number[]) => {
   try {
     const servicioempresaestados = await tx.servicio_empresa_estado.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getServicioempresaestados = async (tx: TxClient, estados: number[])
   }
 };
 
-export const getServicioempresaestadoByIdservicioempresaestado = async (tx: TxClient, idservicioempresaestado: number): Promise<servicio_empresa_estado> => {
+export const getServicioempresaestadoByIdservicioempresaestado = async (tx: TxClient, idservicioempresaestado: number) => {
   try {
     const servicioempresaestado = await tx.servicio_empresa_estado.findUnique({ where: { idservicioempresaestado: idservicioempresaestado } });
 
@@ -35,7 +35,7 @@ export const getServicioempresaestadoByIdservicioempresaestado = async (tx: TxCl
   }
 };
 
-export const getServicioempresaestadoByServicioempresaestadoid = async (tx: TxClient, servicioempresaestadoid: string): Promise<servicio_empresa_estado> => {
+export const getServicioempresaestadoByServicioempresaestadoid = async (tx: TxClient, servicioempresaestadoid: string) => {
   try {
     const servicioempresaestado = await tx.servicio_empresa_estado.findFirst({
       where: {
@@ -50,7 +50,7 @@ export const getServicioempresaestadoByServicioempresaestadoid = async (tx: TxCl
   }
 };
 
-export const findServicioempresaestadoPk = async (tx: TxClient, servicioempresaestadoid: string): Promise<{ idservicioempresaestado: number }> => {
+export const findServicioempresaestadoPk = async (tx: TxClient, servicioempresaestadoid: string) => {
   try {
     const servicioempresaestado = await tx.servicio_empresa_estado.findFirst({
       select: { idservicioempresaestado: true },
@@ -66,7 +66,7 @@ export const findServicioempresaestadoPk = async (tx: TxClient, servicioempresae
   }
 };
 
-export const insertServicioempresaestado = async (tx: TxClient, servicioempresaestado: Prisma.servicio_empresa_estadoCreateInput): Promise<servicio_empresa_estado> => {
+export const insertServicioempresaestado = async (tx: TxClient, servicioempresaestado: Prisma.servicio_empresa_estadoCreateInput) => {
   try {
     const nuevo = await tx.servicio_empresa_estado.create({ data: servicioempresaestado });
 
@@ -77,7 +77,7 @@ export const insertServicioempresaestado = async (tx: TxClient, servicioempresae
   }
 };
 
-export const updateServicioempresaestado = async (tx: TxClient, servicioempresaestado: Partial<servicio_empresa_estado>): Promise<servicio_empresa_estado> => {
+export const updateServicioempresaestado = async (tx: TxClient, servicioempresaestado: Partial<servicio_empresa_estado>) => {
   try {
     const result = await tx.servicio_empresa_estado.update({
       data: servicioempresaestado,
@@ -92,7 +92,7 @@ export const updateServicioempresaestado = async (tx: TxClient, servicioempresae
   }
 };
 
-export const deleteServicioempresaestado = async (tx: TxClient, servicioempresaestado: Partial<servicio_empresa_estado>): Promise<servicio_empresa_estado> => {
+export const deleteServicioempresaestado = async (tx: TxClient, servicioempresaestado: Partial<servicio_empresa_estado>) => {
   try {
     const result = await tx.servicio_empresa_estado.update({
       data: servicioempresaestado,

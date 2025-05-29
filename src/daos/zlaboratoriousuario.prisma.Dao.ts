@@ -4,7 +4,26 @@ import { log, line } from "#src/utils/logger.pino.js";
 import type { Prisma, zlaboratorio_usuario } from "#src/models/prisma/ft_factoring/client";
 import { TxClient } from "#src/types/Prisma.types.js";
 
-export const getZlaboratorioUsuarios = async (tx: TxClient, estados: number[]): Promise<zlaboratorio_usuario[]> => {
+export const getZlaboratorioUsuariosConPedidos = async (tx: TxClient, estados: number[]) => {
+  try {
+    const zlaboratoriousuarios = await tx.zlaboratorio_usuario.findMany({
+      include: {
+        zlaboratorio_pedidos: true,
+      },
+      where: {
+        estado: {
+          in: estados,
+        },
+      },
+    });
+    return zlaboratoriousuarios;
+  } catch (error) {
+    log.error(line(), error);
+    throw new ClientError("Ocurrió un error", 500);
+  }
+};
+
+export const getZlaboratorioUsuarios = async (tx: TxClient, estados: number[]) => {
   try {
     const zlaboratoriousuarios = await tx.zlaboratorio_usuario.findMany({
       where: {
@@ -20,7 +39,7 @@ export const getZlaboratorioUsuarios = async (tx: TxClient, estados: number[]): 
   }
 };
 
-export const getZlaboratorioUsuarioByIdzlaboratoriousuario = async (tx: TxClient, idzlaboratoriousuario: number): Promise<zlaboratorio_usuario> => {
+export const getZlaboratorioUsuarioByIdzlaboratoriousuario = async (tx: TxClient, idzlaboratoriousuario: number) => {
   try {
     const zlaboratoriousuario = await tx.zlaboratorio_usuario.findUnique({
       where: {
@@ -34,7 +53,7 @@ export const getZlaboratorioUsuarioByIdzlaboratoriousuario = async (tx: TxClient
   }
 };
 
-export const getZlaboratorioUsuarioByZlaboratorioUsuarioid = async (tx: TxClient, idzlaboratoriousuario: number): Promise<zlaboratorio_usuario> => {
+export const getZlaboratorioUsuarioByZlaboratorioUsuarioid = async (tx: TxClient, idzlaboratoriousuario: number) => {
   try {
     const zlaboratoriousuario = await tx.zlaboratorio_usuario.findFirst({
       where: {
@@ -48,7 +67,7 @@ export const getZlaboratorioUsuarioByZlaboratorioUsuarioid = async (tx: TxClient
   }
 };
 
-export const findZlaboratorioUsuarioPk = async (tx: TxClient, zlaboratoriousuarioid: number): Promise<zlaboratorio_usuario> => {
+export const findZlaboratorioUsuarioPk = async (tx: TxClient, zlaboratoriousuarioid: number) => {
   try {
     const zlaboratoriousuario = await tx.zlaboratorio_usuario.findFirst({
       where: {
@@ -62,7 +81,7 @@ export const findZlaboratorioUsuarioPk = async (tx: TxClient, zlaboratoriousuari
   }
 };
 
-export const insertZlaboratorioUsuario = async (tx: TxClient, zlaboratoriousuario: Prisma.zlaboratorio_usuarioCreateInput): Promise<zlaboratorio_usuario> => {
+export const insertZlaboratorioUsuario = async (tx: TxClient, zlaboratoriousuario: Prisma.zlaboratorio_usuarioCreateInput) => {
   try {
     const nuevo = await tx.zlaboratorio_usuario.create({
       data: zlaboratoriousuario,
@@ -74,7 +93,7 @@ export const insertZlaboratorioUsuario = async (tx: TxClient, zlaboratoriousuari
   }
 };
 
-export const updateZlaboratorioUsuario = async (tx: TxClient, zlaboratoriousuario: Partial<zlaboratorio_usuario>): Promise<zlaboratorio_usuario> => {
+export const updateZlaboratorioUsuario = async (tx: TxClient, zlaboratoriousuario: Partial<zlaboratorio_usuario>) => {
   try {
     const result = await tx.zlaboratorio_usuario.update({
       where: {
@@ -89,7 +108,7 @@ export const updateZlaboratorioUsuario = async (tx: TxClient, zlaboratoriousuari
   }
 };
 
-export const deleteZlaboratorioUsuario = async (tx: TxClient, zlaboratoriousuario: Partial<zlaboratorio_usuario>): Promise<zlaboratorio_usuario> => {
+export const deleteZlaboratorioUsuario = async (tx: TxClient, zlaboratoriousuario: Partial<zlaboratorio_usuario>) => {
   try {
     const result = await tx.zlaboratorio_usuario.delete({
       where: {

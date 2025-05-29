@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getFactoringtipos = async (tx: TxClient, estados: number[]): Promise<factoring_tipo[]> => {
+export const getFactoringtipos = async (tx: TxClient, estados: number[]) => {
   try {
     const factoringtipos = await tx.factoring_tipo.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getFactoringtipos = async (tx: TxClient, estados: number[]): Promis
   }
 };
 
-export const getFactoringtipoByIdfactoringtipo = async (tx: TxClient, idfactoringtipo: number): Promise<factoring_tipo> => {
+export const getFactoringtipoByIdfactoringtipo = async (tx: TxClient, idfactoringtipo: number) => {
   try {
     const factoringtipo = await tx.factoring_tipo.findUnique({
       where: {
@@ -37,7 +37,7 @@ export const getFactoringtipoByIdfactoringtipo = async (tx: TxClient, idfactorin
   }
 };
 
-export const getFactoringtipoByFactoringtipoid = async (tx: TxClient, factoringtipoid: string): Promise<factoring_tipo> => {
+export const getFactoringtipoByFactoringtipoid = async (tx: TxClient, factoringtipoid: string) => {
   try {
     const factoringtipo = await tx.factoring_tipo.findFirst({
       where: {
@@ -52,7 +52,7 @@ export const getFactoringtipoByFactoringtipoid = async (tx: TxClient, factoringt
   }
 };
 
-export const findFactoringtipoPk = async (tx: TxClient, factoringtipoid: string): Promise<{ idfactoringtipo: number }> => {
+export const findFactoringtipoPk = async (tx: TxClient, factoringtipoid: string) => {
   try {
     const factoringtipo = await tx.factoring_tipo.findFirst({
       select: { idfactoringtipo: true },
@@ -68,7 +68,7 @@ export const findFactoringtipoPk = async (tx: TxClient, factoringtipoid: string)
   }
 };
 
-export const insertFactoringtipo = async (tx: TxClient, factoringtipo: Prisma.factoring_tipoCreateInput): Promise<factoring_tipo> => {
+export const insertFactoringtipo = async (tx: TxClient, factoringtipo: Prisma.factoring_tipoCreateInput) => {
   try {
     const nuevo = await tx.factoring_tipo.create({ data: factoringtipo });
 
@@ -79,7 +79,7 @@ export const insertFactoringtipo = async (tx: TxClient, factoringtipo: Prisma.fa
   }
 };
 
-export const updateFactoringtipo = async (tx: TxClient, factoringtipo: Partial<factoring_tipo>): Promise<factoring_tipo> => {
+export const updateFactoringtipo = async (tx: TxClient, factoringtipo: Partial<factoring_tipo>) => {
   try {
     const result = await tx.factoring_tipo.update({
       data: factoringtipo,
@@ -94,7 +94,7 @@ export const updateFactoringtipo = async (tx: TxClient, factoringtipo: Partial<f
   }
 };
 
-export const deleteFactoringtipo = async (tx: TxClient, factoringtipo: Partial<factoring_tipo>): Promise<factoring_tipo> => {
+export const deleteFactoringtipo = async (tx: TxClient, factoringtipo: Partial<factoring_tipo>) => {
   try {
     const result = await tx.factoring_tipo.update({
       data: factoringtipo,

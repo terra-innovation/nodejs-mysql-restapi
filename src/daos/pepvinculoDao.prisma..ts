@@ -22,7 +22,7 @@ export const getPepvinculos = async (tx: TxClient, estados: number[]) => {
   }
 };
 
-export const getPepvinculoByIdpepvinculo = async (tx: TxClient, idpepvinculo: number): Promise<pep_vinculo> => {
+export const getPepvinculoByIdpepvinculo = async (tx: TxClient, idpepvinculo: number) => {
   try {
     const pepvinculo = await tx.pep_vinculo.findUnique({
       where: {
@@ -37,7 +37,7 @@ export const getPepvinculoByIdpepvinculo = async (tx: TxClient, idpepvinculo: nu
   }
 };
 
-export const getPepvinculoByPepvinculoid = async (tx: TxClient, pepvinculoid: string): Promise<pep_vinculo> => {
+export const getPepvinculoByPepvinculoid = async (tx: TxClient, pepvinculoid: string) => {
   try {
     const pepvinculo = await tx.pep_vinculo.findUnique({
       where: {
@@ -52,7 +52,7 @@ export const getPepvinculoByPepvinculoid = async (tx: TxClient, pepvinculoid: st
   }
 };
 
-export const findPepvinculoPk = async (tx: TxClient, pepvinculoid: string): Promise<{ idpepvinculo: number }> => {
+export const findPepvinculoPk = async (tx: TxClient, pepvinculoid: string) => {
   try {
     const pepvinculo = await tx.pep_vinculo.findUnique({
       select: { idpepvinculo: true },
@@ -68,7 +68,7 @@ export const findPepvinculoPk = async (tx: TxClient, pepvinculoid: string): Prom
   }
 };
 
-export const insertPepvinculo = async (tx: TxClient, pepvinculo: Prisma.pep_vinculoCreateInput): Promise<pep_vinculo> => {
+export const insertPepvinculo = async (tx: TxClient, pepvinculo: Prisma.pep_vinculoCreateInput) => {
   try {
     const nuevo = await tx.pep_vinculo.create({ data: pepvinculo });
 
@@ -79,7 +79,7 @@ export const insertPepvinculo = async (tx: TxClient, pepvinculo: Prisma.pep_vinc
   }
 };
 
-export const updatePepvinculo = async (tx: TxClient, pepvinculo: Partial<pep_vinculo>): Promise<pep_vinculo> => {
+export const updatePepvinculo = async (tx: TxClient, pepvinculo: Partial<pep_vinculo>) => {
   try {
     const result = await tx.pep_vinculo.update({
       data: pepvinculo,
@@ -94,7 +94,7 @@ export const updatePepvinculo = async (tx: TxClient, pepvinculo: Partial<pep_vin
   }
 };
 
-export const deletePepvinculo = async (tx: TxClient, pepvinculo: Partial<pep_vinculo>): Promise<pep_vinculo> => {
+export const deletePepvinculo = async (tx: TxClient, pepvinculo: Partial<pep_vinculo>) => {
   try {
     const result = await tx.pep_vinculo.update({
       data: pepvinculo,

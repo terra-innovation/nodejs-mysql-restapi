@@ -96,7 +96,7 @@ export const getFactoringempresasByVerificacion = async (tx: TxClient, estadolog
   }
 };
 
-export const getServicioempresas = async (tx: TxClient, estados: number[]): Promise<servicio_empresa[]> => {
+export const getServicioempresas = async (tx: TxClient, estados: number[]) => {
   try {
     const servicioempresas = await tx.servicio_empresa.findMany({
       where: {
@@ -113,7 +113,7 @@ export const getServicioempresas = async (tx: TxClient, estados: number[]): Prom
   }
 };
 
-export const getServicioempresaByIdservicioempresa = async (tx: TxClient, idservicioempresa: number): Promise<servicio_empresa> => {
+export const getServicioempresaByIdservicioempresa = async (tx: TxClient, idservicioempresa: number) => {
   try {
     const servicioempresa = await tx.servicio_empresa.findUnique({ where: { idservicioempresa: idservicioempresa } });
 
@@ -126,7 +126,7 @@ export const getServicioempresaByIdservicioempresa = async (tx: TxClient, idserv
   }
 };
 
-export const getServicioempresaByServicioempresaid = async (tx: TxClient, servicioempresaid: string): Promise<servicio_empresa> => {
+export const getServicioempresaByServicioempresaid = async (tx: TxClient, servicioempresaid: string) => {
   try {
     const servicioempresa = await tx.servicio_empresa.findFirst({
       where: {
@@ -141,7 +141,7 @@ export const getServicioempresaByServicioempresaid = async (tx: TxClient, servic
   }
 };
 
-export const findServicioempresaPk = async (tx: TxClient, servicioempresaid: string): Promise<{ idservicioempresa: number }> => {
+export const findServicioempresaPk = async (tx: TxClient, servicioempresaid: string) => {
   try {
     const servicioempresa = await tx.servicio_empresa.findFirst({
       select: { idservicioempresa: true },
@@ -157,7 +157,7 @@ export const findServicioempresaPk = async (tx: TxClient, servicioempresaid: str
   }
 };
 
-export const insertServicioempresa = async (tx: TxClient, servicioempresa: Prisma.servicio_empresaCreateInput): Promise<servicio_empresa> => {
+export const insertServicioempresa = async (tx: TxClient, servicioempresa: Prisma.servicio_empresaCreateInput) => {
   try {
     const nuevo = await tx.servicio_empresa.create({ data: servicioempresa });
 
@@ -168,7 +168,7 @@ export const insertServicioempresa = async (tx: TxClient, servicioempresa: Prism
   }
 };
 
-export const updateServicioempresa = async (tx: TxClient, servicioempresa: Partial<servicio_empresa>): Promise<servicio_empresa> => {
+export const updateServicioempresa = async (tx: TxClient, servicioempresa: Partial<servicio_empresa>) => {
   try {
     const result = await tx.servicio_empresa.update({
       data: servicioempresa,
@@ -183,7 +183,7 @@ export const updateServicioempresa = async (tx: TxClient, servicioempresa: Parti
   }
 };
 
-export const deleteServicioempresa = async (tx: TxClient, servicioempresa: Partial<servicio_empresa>): Promise<servicio_empresa> => {
+export const deleteServicioempresa = async (tx: TxClient, servicioempresa: Partial<servicio_empresa>) => {
   try {
     const result = await tx.servicio_empresa.update({
       data: servicioempresa,

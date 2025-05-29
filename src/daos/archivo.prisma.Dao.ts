@@ -6,7 +6,7 @@ import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 import { ArchivoCreationAttributes } from "../models/ft_factoring/Archivo";
 
-export const getArchivos = async (tx: TxClient, estados: number[]): Promise<archivo[]> => {
+export const getArchivos = async (tx: TxClient, estados: number[]) => {
   try {
     const archivos = await tx.archivo.findMany({
       where: {
@@ -23,7 +23,7 @@ export const getArchivos = async (tx: TxClient, estados: number[]): Promise<arch
   }
 };
 
-export const getArchivoByIdarchivo = async (tx: TxClient, idarchivo: number): Promise<archivo> => {
+export const getArchivoByIdarchivo = async (tx: TxClient, idarchivo: number) => {
   try {
     const archivo = await tx.archivo.findUnique({ where: { idarchivo: idarchivo } });
     return archivo;
@@ -33,7 +33,7 @@ export const getArchivoByIdarchivo = async (tx: TxClient, idarchivo: number): Pr
   }
 };
 
-export const getArchivoByArchivoid = async (tx: TxClient, archivoid: string): Promise<archivo> => {
+export const getArchivoByArchivoid = async (tx: TxClient, archivoid: string) => {
   try {
     const archivo = await tx.archivo.findFirst({
       where: {
@@ -48,7 +48,7 @@ export const getArchivoByArchivoid = async (tx: TxClient, archivoid: string): Pr
   }
 };
 
-export const findArchivoPk = async (tx: TxClient, archivoid: string): Promise<{ idarchivo: number }> => {
+export const findArchivoPk = async (tx: TxClient, archivoid: string) => {
   try {
     const archivo = await tx.archivo.findFirst({
       select: { idarchivo: true },
@@ -64,7 +64,7 @@ export const findArchivoPk = async (tx: TxClient, archivoid: string): Promise<{ 
   }
 };
 
-export const insertArchivo = async (tx: TxClient, archivo: Prisma.archivoCreateInput): Promise<archivo> => {
+export const insertArchivo = async (tx: TxClient, archivo: Prisma.archivoCreateInput) => {
   try {
     const nuevo = await tx.archivo.create({ data: archivo });
 
@@ -75,7 +75,7 @@ export const insertArchivo = async (tx: TxClient, archivo: Prisma.archivoCreateI
   }
 };
 
-export const updateArchivo = async (tx: TxClient, archivo: Partial<archivo>): Promise<archivo> => {
+export const updateArchivo = async (tx: TxClient, archivo: Partial<archivo>) => {
   try {
     const result = await tx.archivo.update({
       data: archivo,
@@ -90,7 +90,7 @@ export const updateArchivo = async (tx: TxClient, archivo: Partial<archivo>): Pr
   }
 };
 
-export const deleteArchivo = async (tx: TxClient, archivo: Partial<archivo>): Promise<archivo> => {
+export const deleteArchivo = async (tx: TxClient, archivo: Partial<archivo>) => {
   try {
     const result = await tx.archivo.update({
       data: archivo,
@@ -105,7 +105,7 @@ export const deleteArchivo = async (tx: TxClient, archivo: Partial<archivo>): Pr
   }
 };
 
-export const activateArchivo = async (tx: TxClient, archivo: Partial<archivo>): Promise<archivo> => {
+export const activateArchivo = async (tx: TxClient, archivo: Partial<archivo>) => {
   try {
     const result = await tx.archivo.update({
       data: archivo,

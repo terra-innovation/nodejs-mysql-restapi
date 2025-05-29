@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getDepartamentos = async (tx: TxClient, estados: number[]): Promise<departamento[]> => {
+export const getDepartamentos = async (tx: TxClient, estados: number[]) => {
   try {
     const departamentos = await tx.departamento.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getDepartamentos = async (tx: TxClient, estados: number[]): Promise
   }
 };
 
-export const getDepartamentoByIddepartamento = async (tx: TxClient, iddepartamento: number): Promise<departamento> => {
+export const getDepartamentoByIddepartamento = async (tx: TxClient, iddepartamento: number) => {
   try {
     const departamento = await tx.departamento.findUnique({ where: { iddepartamento: iddepartamento } });
 
@@ -35,7 +35,7 @@ export const getDepartamentoByIddepartamento = async (tx: TxClient, iddepartamen
   }
 };
 
-export const getDepartamentoByDepartamentoid = async (tx: TxClient, departamentoid: string): Promise<departamento> => {
+export const getDepartamentoByDepartamentoid = async (tx: TxClient, departamentoid: string) => {
   try {
     const departamento = await tx.departamento.findFirst({
       where: {
@@ -50,7 +50,7 @@ export const getDepartamentoByDepartamentoid = async (tx: TxClient, departamento
   }
 };
 
-export const findDepartamentoPk = async (tx: TxClient, departamentoid: string): Promise<{ iddepartamento: number }> => {
+export const findDepartamentoPk = async (tx: TxClient, departamentoid: string) => {
   try {
     const departamento = await tx.departamento.findFirst({
       select: { iddepartamento: true },
@@ -66,7 +66,7 @@ export const findDepartamentoPk = async (tx: TxClient, departamentoid: string): 
   }
 };
 
-export const insertDepartamento = async (tx: TxClient, departamento: Prisma.departamentoCreateInput): Promise<departamento> => {
+export const insertDepartamento = async (tx: TxClient, departamento: Prisma.departamentoCreateInput) => {
   try {
     const nuevo = await tx.departamento.create({ data: departamento });
 
@@ -77,7 +77,7 @@ export const insertDepartamento = async (tx: TxClient, departamento: Prisma.depa
   }
 };
 
-export const updateDepartamento = async (tx: TxClient, departamento: Partial<departamento>): Promise<departamento> => {
+export const updateDepartamento = async (tx: TxClient, departamento: Partial<departamento>) => {
   try {
     const result = await tx.departamento.update({
       data: departamento,
@@ -92,7 +92,7 @@ export const updateDepartamento = async (tx: TxClient, departamento: Partial<dep
   }
 };
 
-export const deleteDepartamento = async (tx: TxClient, departamento: Partial<departamento>): Promise<departamento> => {
+export const deleteDepartamento = async (tx: TxClient, departamento: Partial<departamento>) => {
   try {
     const result = await tx.departamento.update({
       data: departamento,

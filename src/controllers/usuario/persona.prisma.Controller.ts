@@ -42,7 +42,7 @@ export const getPersonaMaster = async (req: Request, res: Response) => {
       const documentotipos = await documentotipoDao.getDocumentotipos(tx, filter_estados);
       const generos = await generoDao.getGeneros(tx, filter_estados);
       const usuario = await usuarioDao.getUsuarioByIdusuario(tx, session_idusuario);
-      const personaverificacionestado = await personaverificacionestadoDao.getPersonaverificacionestadoByIdpersonaverificacionestado(tx, usuario.persona?._idpersonaverificacionestado);
+      const personaverificacionestado = await personaverificacionestadoDao.getPersonaverificacionestadoByIdpersonaverificacionestado(tx, usuario.persona?.idpersonaverificacionestado);
 
       let personaMaster: Record<string, any> = {};
       personaMaster.paises = paises;
@@ -170,20 +170,20 @@ export const verifyPersona = async (req: Request, res: Response) => {
       }
 
       const usuarioConected = await usuarioDao.getUsuarioByIdusuario(tx, personaValidated._idusuario);
-      const provinciaResidencia = await provinciaDao.getProvinciaByIdprovincia(tx, distritoResidencia._idprovincia);
+      const provinciaResidencia = await provinciaDao.getProvinciaByIdprovincia(tx, distritoResidencia.idprovincia);
 
       let camposFk: Partial<persona> = {};
       camposFk._idusuario = usuarioConected._idusuario;
-      camposFk._idpersonaverificacionestado = personaverificacionestado._idpersonaverificacionestado; // 3: En revisión
-      camposFk._iddocumentotipo = documentotipo._iddocumentotipo;
-      camposFk._idpaisnacionalidad = paisNacionalidad._idpais;
-      camposFk._idpaisnacimiento = paisNacimiento._idpais;
-      camposFk._idpaisresidencia = paisResidencia._idpais;
-      camposFk._iddepartamentoresidencia = provinciaResidencia._iddepartamento;
-      camposFk._idprovinciaresidencia = distritoResidencia._idprovincia;
-      camposFk._iddistritoresidencia = distritoResidencia._iddistrito;
-      camposFk._idgenero = genero._idgenero;
-      camposFk._iddocumentotipo = documentotipo._iddocumentotipo;
+      camposFk.idpersonaverificacionestado = personaverificacionestado.idpersonaverificacionestado; // 3: En revisión
+      camposFk.iddocumentotipo = documentotipo.iddocumentotipo;
+      camposFk.idpaisnacionalidad = paisNacionalidad.idpais;
+      camposFk.idpaisnacimiento = paisNacimiento.idpais;
+      camposFk.idpaisresidencia = paisResidencia.idpais;
+      camposFk.iddepartamentoresidencia = provinciaResidencia.iddepartamento;
+      camposFk.idprovinciaresidencia = distritoResidencia.idprovincia;
+      camposFk.iddistritoresidencia = distritoResidencia.iddistrito;
+      camposFk.idgenero = genero.idgenero;
+      camposFk.iddocumentotipo = documentotipo.iddocumentotipo;
 
       let camposAdicionales: Partial<persona> = {};
       camposAdicionales.personaid = uuidv4();
@@ -218,7 +218,7 @@ export const verifyPersona = async (req: Request, res: Response) => {
 
       const personaDeclaracionCreate: Partial<persona_declaracion> = {};
       personaDeclaracionCreate.personadeclaracionid = uuidv4();
-      personaDeclaracionCreate._idpersona = personaCreated._idpersona;
+      personaDeclaracionCreate.idpersona = personaCreated.idpersona;
       personaDeclaracionCreate.espep = personaValidated.espep;
       personaDeclaracionCreate.tienevinculopep = personaValidated.tienevinculopep;
       personaDeclaracionCreate.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
@@ -231,8 +231,8 @@ export const verifyPersona = async (req: Request, res: Response) => {
 
       const personaVerificacionCreate: Partial<persona_verificacion> = {};
       personaVerificacionCreate.personaverificacionid = uuidv4();
-      personaVerificacionCreate._idpersona = personaCreated._idpersona;
-      personaVerificacionCreate._idpersonaverificacionestado = personaverificacionestado._idpersonaverificacionestado; // 3: En revisión
+      personaVerificacionCreate.idpersona = personaCreated.idpersona;
+      personaVerificacionCreate.idpersonaverificacionestado = personaverificacionestado.idpersonaverificacionestado; // 3: En revisión
       personaVerificacionCreate._idusuarioverifica = req.session_user?.usuario?._idusuario;
       personaVerificacionCreate.comentariousuario = "";
       personaVerificacionCreate.comentariointerno = "";
@@ -294,8 +294,8 @@ const crearIdentificacionSelfi = async (req, tx, personaValidated, personaCreate
   const identificacionselfiCreated = await archivoDao.insertArchivo(tx, identificacionselfiNew);
 
   await archivopersonaDao.insertArchivoPersona(tx, {
-    _idarchivo: identificacionselfiCreated._idarchivo,
-    _idpersona: personaCreated._idpersona,
+    _idarchivo: identificacionselfiCreated.idarchivo,
+    _idpersona: personaCreated.idpersona,
     idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
     fechacrea: new Date(),
     idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
@@ -341,8 +341,8 @@ const crearIdentificacionReverso = async (req, tx, personaValidated, personaCrea
   const identificacionreversoCreated = await archivoDao.insertArchivo(tx, identificacionreversoNew);
 
   await archivopersonaDao.insertArchivoPersona(tx, {
-    _idarchivo: identificacionreversoCreated._idarchivo,
-    _idpersona: personaCreated._idpersona,
+    _idarchivo: identificacionreversoCreated.idarchivo,
+    _idpersona: personaCreated.idpersona,
     idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
     fechacrea: new Date(),
     idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
@@ -388,8 +388,8 @@ const crearIdentificacionAnverso = async (req, tx, personaValidated, personaCrea
   const identificacionanversoCreated = await archivoDao.insertArchivo(tx, identificacionanversoNew);
 
   await archivopersonaDao.insertArchivoPersona(tx, {
-    _idarchivo: identificacionanversoCreated._idarchivo,
-    _idpersona: personaCreated._idpersona,
+    _idarchivo: identificacionanversoCreated.idarchivo,
+    _idpersona: personaCreated.idpersona,
     idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
     fechacrea: new Date(),
     idusuariomod: req.session_user?.usuario?._idusuario ?? 1,

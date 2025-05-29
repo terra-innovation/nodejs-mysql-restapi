@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getArchivocuentabancarias = async (tx: TxClient, estados: number[]): Promise<archivo_cuenta_bancaria[]> => {
+export const getArchivocuentabancarias = async (tx: TxClient, estados: number[]) => {
   try {
     const archivocuentabancarias = await tx.archivo_cuenta_bancaria.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getArchivocuentabancarias = async (tx: TxClient, estados: number[])
   }
 };
 
-export const getArchivoCuentaBancariaByIdarchivoIdcuentabancaria = async (tx: TxClient, idarchivo: number, idcuentabancaria: number): Promise<archivo_cuenta_bancaria> => {
+export const getArchivoCuentaBancariaByIdarchivoIdcuentabancaria = async (tx: TxClient, idarchivo: number, idcuentabancaria: number) => {
   try {
     const archivocuentabancaria = await tx.archivo_cuenta_bancaria.findUnique({
       where: {
@@ -40,7 +40,7 @@ export const getArchivoCuentaBancariaByIdarchivoIdcuentabancaria = async (tx: Tx
   }
 };
 
-export const insertArchivoCuentaBancaria = async (tx: TxClient, archivocuentabancaria: Prisma.archivo_cuenta_bancariaCreateInput): Promise<archivo_cuenta_bancaria> => {
+export const insertArchivoCuentaBancaria = async (tx: TxClient, archivocuentabancaria: Prisma.archivo_cuenta_bancariaCreateInput) => {
   try {
     const nuevo = await tx.archivo_cuenta_bancaria.create({ data: archivocuentabancaria });
 
@@ -51,7 +51,7 @@ export const insertArchivoCuentaBancaria = async (tx: TxClient, archivocuentaban
   }
 };
 
-export const updateArchivoCuentaBancaria = async (tx: TxClient, archivocuentabancaria: Partial<archivo_cuenta_bancaria>): Promise<archivo_cuenta_bancaria> => {
+export const updateArchivoCuentaBancaria = async (tx: TxClient, archivocuentabancaria: Partial<archivo_cuenta_bancaria>) => {
   try {
     const result = await tx.archivo_cuenta_bancaria.update({
       data: archivocuentabancaria,
@@ -69,7 +69,7 @@ export const updateArchivoCuentaBancaria = async (tx: TxClient, archivocuentaban
   }
 };
 
-export const deleteArchivoCuentaBancaria = async (tx: TxClient, archivocuentabancaria: Partial<archivo_cuenta_bancaria>): Promise<archivo_cuenta_bancaria> => {
+export const deleteArchivoCuentaBancaria = async (tx: TxClient, archivocuentabancaria: Partial<archivo_cuenta_bancaria>) => {
   try {
     const result = await tx.archivo_cuenta_bancaria.update({
       data: archivocuentabancaria,
@@ -87,7 +87,7 @@ export const deleteArchivoCuentaBancaria = async (tx: TxClient, archivocuentaban
   }
 };
 
-export const activateArchivoCuentaBancaria = async (tx: TxClient, archivocuentabancaria: Partial<archivo_cuenta_bancaria>): Promise<archivo_cuenta_bancaria> => {
+export const activateArchivoCuentaBancaria = async (tx: TxClient, archivocuentabancaria: Partial<archivo_cuenta_bancaria>) => {
   try {
     const result = await tx.archivo_cuenta_bancaria.update({
       data: archivocuentabancaria,

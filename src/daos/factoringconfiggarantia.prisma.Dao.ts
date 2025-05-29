@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getFactoringconfiggarantias = async (tx: TxClient, estados: number[]): Promise<factoring_config_garantia[]> => {
+export const getFactoringconfiggarantias = async (tx: TxClient, estados: number[]) => {
   try {
     const factoringconfiggarantias = await tx.factoring_config_garantia.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getFactoringconfiggarantias = async (tx: TxClient, estados: number[
   }
 };
 
-export const getFactoringconfiggarantiaByIdfactoringconfiggarantia = async (tx: TxClient, idfactoringconfiggarantia: number): Promise<factoring_config_garantia> => {
+export const getFactoringconfiggarantiaByIdfactoringconfiggarantia = async (tx: TxClient, idfactoringconfiggarantia: number) => {
   try {
     const factoringconfiggarantia = await tx.factoring_config_garantia.findUnique({ where: { idfactoringconfiggarantia: idfactoringconfiggarantia } });
 
@@ -35,7 +35,7 @@ export const getFactoringconfiggarantiaByIdfactoringconfiggarantia = async (tx: 
   }
 };
 
-export const getFactoringconfiggarantiaByFactoringconfiggarantiaid = async (tx: TxClient, factoringconfiggarantiaid: string): Promise<factoring_config_garantia> => {
+export const getFactoringconfiggarantiaByFactoringconfiggarantiaid = async (tx: TxClient, factoringconfiggarantiaid: string) => {
   try {
     const factoringconfiggarantia = await tx.factoring_config_garantia.findFirst({
       where: {
@@ -50,7 +50,7 @@ export const getFactoringconfiggarantiaByFactoringconfiggarantiaid = async (tx: 
   }
 };
 
-export const findFactoringconfiggarantiaPk = async (tx: TxClient, factoringconfiggarantiaid: string): Promise<{ idfactoringconfiggarantia: number }> => {
+export const findFactoringconfiggarantiaPk = async (tx: TxClient, factoringconfiggarantiaid: string) => {
   try {
     const factoringconfiggarantia = await tx.factoring_config_garantia.findFirst({
       select: { idfactoringconfiggarantia: true },
@@ -66,7 +66,7 @@ export const findFactoringconfiggarantiaPk = async (tx: TxClient, factoringconfi
   }
 };
 
-export const insertFactoringconfiggarantia = async (tx: TxClient, factoringconfiggarantia: Prisma.factoring_config_garantiaCreateInput): Promise<factoring_config_garantia> => {
+export const insertFactoringconfiggarantia = async (tx: TxClient, factoringconfiggarantia: Prisma.factoring_config_garantiaCreateInput) => {
   try {
     const nuevo = await tx.factoring_config_garantia.create({ data: factoringconfiggarantia });
 
@@ -77,7 +77,7 @@ export const insertFactoringconfiggarantia = async (tx: TxClient, factoringconfi
   }
 };
 
-export const updateFactoringconfiggarantia = async (tx: TxClient, factoringconfiggarantia: Partial<factoring_config_garantia>): Promise<factoring_config_garantia> => {
+export const updateFactoringconfiggarantia = async (tx: TxClient, factoringconfiggarantia: Partial<factoring_config_garantia>) => {
   try {
     const result = await tx.factoring_config_garantia.update({
       data: factoringconfiggarantia,
@@ -92,7 +92,7 @@ export const updateFactoringconfiggarantia = async (tx: TxClient, factoringconfi
   }
 };
 
-export const deleteFactoringconfiggarantia = async (tx: TxClient, factoringconfiggarantia: Partial<factoring_config_garantia>): Promise<factoring_config_garantia> => {
+export const deleteFactoringconfiggarantia = async (tx: TxClient, factoringconfiggarantia: Partial<factoring_config_garantia>) => {
   try {
     const result = await tx.factoring_config_garantia.update({
       data: factoringconfiggarantia,

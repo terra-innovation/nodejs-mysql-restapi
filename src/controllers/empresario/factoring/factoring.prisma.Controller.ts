@@ -20,19 +20,19 @@ import * as luxon from "luxon";
 import { Sequelize, Op } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-import { factoring } from "#root/src/models/ft_factoring/Factoring";
-import { factoring_factura } from "#root/src/models/ft_factoring/FactoringFactura";
+import type { factoring } from "#src/models/prisma/ft_factoring/client";
+import type { factoring_factura } from "#src/models/prisma/ft_factoring/client";
 
 export const getFactorings = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFactorings");
-  const resultado = await prismaFT.client.$transaction(
+  const factorings = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estados = [1];
       const _idusuario_session = req.session_user.usuario._idusuario;
       const empresas_cedentes = await empresaDao.getEmpresasByIdusuario(tx, _idusuario_session, filter_estados);
-      const _idcedentes = empresas_cedentes.map((empresa) => empresa._idempresa);
+      const _idcedentes = empresas_cedentes.map((empresa) => empresa.idempresa);
       const factorings = await factoringDao.getFactoringsByIdcedentes(tx, _idcedentes, filter_estados);
-      return {};
+      return factorings;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -141,20 +141,20 @@ export const createFactoring = async (req: Request, res: Response) => {
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var colaborador = await colaboradorDao.getColaboradorByIdEmpresaAndIdpersona(tx, cedente._idempresa, persona._idpersona);
+      var colaborador = await colaboradorDao.getColaboradorByIdEmpresaAndIdpersona(tx, cedente.idempresa, persona.idpersona);
       if (!colaborador) {
-        log.warn(line(), "Contacto cedente no existe: [" + cedente._idempresa + ", " + persona._idpersona + "]");
+        log.warn(line(), "Contacto cedente no existe: [" + cedente.idempresa + ", " + persona.idpersona + "]");
         throw new ClientError("Datos no válidos", 404);
       }
 
       var camposFk: Partial<factoring> = {};
-      camposFk._idcedente = cedente._idempresa;
-      camposFk._idaceptante = aceptante._idempresa;
-      camposFk._idcuentabancaria = cuentabancaria._idcuentabancaria;
-      camposFk._idmoneda = moneda._idmoneda;
-      camposFk._idcontactoaceptante = contactoaceptante._idcontacto;
-      camposFk._idcontactocedente = colaborador._idcolaborador;
-      camposFk._idfactoringestado = 1; // Por defecto
+      camposFk.idcedente = cedente.idempresa;
+      camposFk.idaceptante = aceptante.idempresa;
+      camposFk.idcuentabancaria = cuentabancaria.idcuentabancaria;
+      camposFk.idmoneda = moneda.idmoneda;
+      camposFk.idcontactoaceptante = contactoaceptante.idcontacto;
+      camposFk.idcontactocedente = colaborador.idcolaborador;
+      camposFk.idfactoringestado = 1; // Por defecto
 
       var camposAdicionales: Partial<factoring> = {};
       camposAdicionales.factoringid = uuidv4();
@@ -173,14 +173,19 @@ export const createFactoring = async (req: Request, res: Response) => {
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 1;
 
-      const factoringCreated = await factoringDao.insertFactoring(tx, { ...camposFk, ...camposAdicionales, ...factoringValidated, ...camposAuditoria });
-      log.debug(line(), "factoringCreated:", factoringCreated.dataValues);
+      const factoringCreated = await factoringDao.insertFactoring(tx, {
+        ...camposFk,
+        ...camposAdicionales,
+        ...factoringValidated,
+        ...camposAuditoria,
+      });
+      log.debug(line(), "factoringCreated:", factoringCreated);
 
       const factoringhistorialestadoCreate = {
         factoringhistorialestadoid: uuidv4(),
         code: uuidv4().split("-")[0],
-        _idfactoring: factoringCreated._idfactoring,
-        _idfactoringestado: camposFk._idfactoringestado,
+        _idfactoring: factoringCreated.idfactoring,
+        _idfactoringestado: camposFk.idfactoringestado,
         _idusuariomodifica: req.session_user.usuario._idusuario,
         comentario: "",
         idusuariocrea: req.session_user.usuario._idusuario ?? 1,
@@ -190,14 +195,14 @@ export const createFactoring = async (req: Request, res: Response) => {
         estado: 1,
       };
       const factoringhistorialestadoCreated = await factoringhistorialestadoDao.insertFactoringhistorialestado(tx, factoringhistorialestadoCreate);
-      log.debug(line(), "factoringhistorialestadoCreated:", factoringhistorialestadoCreated.dataValues);
+      log.debug(line(), "factoringhistorialestadoCreated:", factoringhistorialestadoCreated);
 
       for (const [index, factura] of facturas.entries()) {
         var factoringfacturaFk: Partial<factoring_factura> = {};
-        factoringfacturaFk._idfactoring = factoringCreated._idfactoring;
-        factoringfacturaFk._idfactura = factura._idfactura;
+        factoringfacturaFk.idfactoring = factoringCreated.idfactoring;
+        factoringfacturaFk.idfactura = factura.idfactura;
         const factoringfacturaCreated = await factoringfacturaDao.insertFactoringfactura(tx, { ...factoringfacturaFk, ...camposAuditoria });
-        log.debug(line(), "factoringfacturaCreated:", factoringfacturaCreated.dataValues);
+        log.debug(line(), "factoringfacturaCreated:", factoringfacturaCreated);
       }
 
       return {};

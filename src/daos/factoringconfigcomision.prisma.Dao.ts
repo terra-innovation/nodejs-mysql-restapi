@@ -23,7 +23,7 @@ export const getFactoringconfigcomisionByIdriesgo = async (tx: TxClient, idriesg
   }
 };
 
-export const getFactoringconfigcomisions = async (tx: TxClient, estados: number[]): Promise<factoring_config_comision[]> => {
+export const getFactoringconfigcomisions = async (tx: TxClient, estados: number[]) => {
   try {
     const factoringconfigcomisions = await tx.factoring_config_comision.findMany({
       where: {
@@ -40,7 +40,7 @@ export const getFactoringconfigcomisions = async (tx: TxClient, estados: number[
   }
 };
 
-export const getFactoringconfigcomisionByIdfactoringconfigcomision = async (tx: TxClient, idfactoringconfigcomision: number): Promise<factoring_config_comision> => {
+export const getFactoringconfigcomisionByIdfactoringconfigcomision = async (tx: TxClient, idfactoringconfigcomision: number) => {
   try {
     const factoringconfigcomision = await tx.factoring_config_comision.findUnique({ where: { idfactoringconfigcomision: idfactoringconfigcomision } });
 
@@ -53,7 +53,7 @@ export const getFactoringconfigcomisionByIdfactoringconfigcomision = async (tx: 
   }
 };
 
-export const getFactoringconfigcomisionByFactoringconfigcomisionid = async (tx: TxClient, factoringconfigcomisionid: string): Promise<factoring_config_comision> => {
+export const getFactoringconfigcomisionByFactoringconfigcomisionid = async (tx: TxClient, factoringconfigcomisionid: string) => {
   try {
     const factoringconfigcomision = await tx.factoring_config_comision.findFirst({
       where: {
@@ -68,7 +68,7 @@ export const getFactoringconfigcomisionByFactoringconfigcomisionid = async (tx: 
   }
 };
 
-export const findFactoringconfigcomisionPk = async (tx: TxClient, factoringconfigcomisionid: string): Promise<{ idfactoringconfigcomision: number }> => {
+export const findFactoringconfigcomisionPk = async (tx: TxClient, factoringconfigcomisionid: string) => {
   try {
     const factoringconfigcomision = await tx.factoring_config_comision.findFirst({
       select: { idfactoringconfigcomision: true },
@@ -84,7 +84,7 @@ export const findFactoringconfigcomisionPk = async (tx: TxClient, factoringconfi
   }
 };
 
-export const insertFactoringconfigcomision = async (tx: TxClient, factoringconfigcomision: Prisma.factoring_config_comisionCreateInput): Promise<factoring_config_comision> => {
+export const insertFactoringconfigcomision = async (tx: TxClient, factoringconfigcomision: Prisma.factoring_config_comisionCreateInput) => {
   try {
     const nuevo = await tx.factoring_config_comision.create({ data: factoringconfigcomision });
 
@@ -95,7 +95,7 @@ export const insertFactoringconfigcomision = async (tx: TxClient, factoringconfi
   }
 };
 
-export const updateFactoringconfigcomision = async (tx: TxClient, factoringconfigcomision: Partial<factoring_config_comision>): Promise<factoring_config_comision> => {
+export const updateFactoringconfigcomision = async (tx: TxClient, factoringconfigcomision: Partial<factoring_config_comision>) => {
   try {
     const result = await tx.factoring_config_comision.update({
       data: factoringconfigcomision,
@@ -110,7 +110,7 @@ export const updateFactoringconfigcomision = async (tx: TxClient, factoringconfi
   }
 };
 
-export const deleteFactoringconfigcomision = async (tx: TxClient, factoringconfigcomision: Partial<factoring_config_comision>): Promise<factoring_config_comision> => {
+export const deleteFactoringconfigcomision = async (tx: TxClient, factoringconfigcomision: Partial<factoring_config_comision>) => {
   try {
     const result = await tx.factoring_config_comision.update({
       data: factoringconfigcomision,

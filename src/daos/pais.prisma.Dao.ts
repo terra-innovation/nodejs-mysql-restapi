@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getPaises = async (tx: TxClient, estados: number[]): Promise<pais[]> => {
+export const getPaises = async (tx: TxClient, estados: number[]) => {
   try {
     const paises = await tx.pais.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getPaises = async (tx: TxClient, estados: number[]): Promise<pais[]
   }
 };
 
-export const getPaisByIdpais = async (tx: TxClient, idpais: number): Promise<pais> => {
+export const getPaisByIdpais = async (tx: TxClient, idpais: number) => {
   try {
     const pais = await tx.pais.findUnique({ where: { idpais: idpais } });
 
@@ -35,7 +35,7 @@ export const getPaisByIdpais = async (tx: TxClient, idpais: number): Promise<pai
   }
 };
 
-export const getPaisByPaisid = async (tx: TxClient, paisid: string): Promise<pais> => {
+export const getPaisByPaisid = async (tx: TxClient, paisid: string) => {
   try {
     const pais = await tx.pais.findFirst({
       where: {
@@ -50,7 +50,7 @@ export const getPaisByPaisid = async (tx: TxClient, paisid: string): Promise<pai
   }
 };
 
-export const findPaisPk = async (tx: TxClient, paisid: string): Promise<{ idpais: number }> => {
+export const findPaisPk = async (tx: TxClient, paisid: string) => {
   try {
     const pais = await tx.pais.findFirst({
       select: { idpais: true },
@@ -66,7 +66,7 @@ export const findPaisPk = async (tx: TxClient, paisid: string): Promise<{ idpais
   }
 };
 
-export const insertPais = async (tx: TxClient, pais: Prisma.paisCreateInput): Promise<pais> => {
+export const insertPais = async (tx: TxClient, pais: Prisma.paisCreateInput) => {
   try {
     const nuevo = await tx.pais.create({ data: pais });
 
@@ -77,7 +77,7 @@ export const insertPais = async (tx: TxClient, pais: Prisma.paisCreateInput): Pr
   }
 };
 
-export const updatePais = async (tx: TxClient, pais: Partial<pais>): Promise<pais> => {
+export const updatePais = async (tx: TxClient, pais: Partial<pais>) => {
   try {
     const result = await tx.pais.update({
       data: pais,
@@ -92,7 +92,7 @@ export const updatePais = async (tx: TxClient, pais: Partial<pais>): Promise<pai
   }
 };
 
-export const deletePais = async (tx: TxClient, pais: Partial<pais>): Promise<pais> => {
+export const deletePais = async (tx: TxClient, pais: Partial<pais>) => {
   try {
     const result = await tx.pais.update({
       data: pais,

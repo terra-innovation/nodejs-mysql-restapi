@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getInversionistaByIdusuario = async (tx: TxClient, idusuario: bigint, estados: number[]): Promise<inversionista> => {
+export const getInversionistaByIdusuario = async (tx: TxClient, idusuario: bigint, estados: number[]) => {
   try {
     const inversionista = await tx.inversionista.findFirst({
       include: {
@@ -28,7 +28,7 @@ export const getInversionistaByIdusuario = async (tx: TxClient, idusuario: bigin
   }
 };
 
-export const getInversionistas = async (tx: TxClient, estados: number[]): Promise<inversionista[]> => {
+export const getInversionistas = async (tx: TxClient, estados: number[]) => {
   try {
     const inversionistas = await tx.inversionista.findMany({
       include: {
@@ -48,7 +48,7 @@ export const getInversionistas = async (tx: TxClient, estados: number[]): Promis
   }
 };
 
-export const getInversionistaByIdinversionista = async (tx: TxClient, idinversionista: number): Promise<inversionista> => {
+export const getInversionistaByIdinversionista = async (tx: TxClient, idinversionista: number) => {
   try {
     const inversionista = await tx.inversionista.findUnique({ where: { idinversionista: idinversionista } });
 
@@ -59,7 +59,7 @@ export const getInversionistaByIdinversionista = async (tx: TxClient, idinversio
   }
 };
 
-export const getInversionistaByInversionistaid = async (tx: TxClient, inversionistaid: string): Promise<inversionista> => {
+export const getInversionistaByInversionistaid = async (tx: TxClient, inversionistaid: string) => {
   try {
     const inversionista = await tx.inversionista.findFirst({
       where: {
@@ -74,7 +74,7 @@ export const getInversionistaByInversionistaid = async (tx: TxClient, inversioni
   }
 };
 
-export const findInversionistaPk = async (tx: TxClient, inversionistaid: string): Promise<{ idinversionista: bigint }> => {
+export const findInversionistaPk = async (tx: TxClient, inversionistaid: string) => {
   try {
     const inversionista = await tx.inversionista.findFirst({
       select: { idinversionista: true },
@@ -90,7 +90,7 @@ export const findInversionistaPk = async (tx: TxClient, inversionistaid: string)
   }
 };
 
-export const insertInversionista = async (tx: TxClient, inversionista: Prisma.inversionistaCreateInput): Promise<inversionista> => {
+export const insertInversionista = async (tx: TxClient, inversionista: Prisma.inversionistaCreateInput) => {
   try {
     const nuevo = await tx.inversionista.create({ data: inversionista });
 
@@ -101,7 +101,7 @@ export const insertInversionista = async (tx: TxClient, inversionista: Prisma.in
   }
 };
 
-export const updateInversionista = async (tx: TxClient, inversionista: Partial<inversionista>): Promise<inversionista> => {
+export const updateInversionista = async (tx: TxClient, inversionista: Partial<inversionista>) => {
   try {
     const result = await tx.inversionista.update({
       data: inversionista,
@@ -116,7 +116,7 @@ export const updateInversionista = async (tx: TxClient, inversionista: Partial<i
   }
 };
 
-export const deleteInversionista = async (tx: TxClient, inversionista: Partial<inversionista>): Promise<inversionista> => {
+export const deleteInversionista = async (tx: TxClient, inversionista: Partial<inversionista>) => {
   try {
     const result = await tx.inversionista.update({
       data: inversionista,
@@ -131,7 +131,7 @@ export const deleteInversionista = async (tx: TxClient, inversionista: Partial<i
   }
 };
 
-export const activateInversionista = async (tx: TxClient, inversionista: Partial<inversionista>): Promise<inversionista> => {
+export const activateInversionista = async (tx: TxClient, inversionista: Partial<inversionista>) => {
   try {
     const result = await tx.inversionista.update({
       data: inversionista,

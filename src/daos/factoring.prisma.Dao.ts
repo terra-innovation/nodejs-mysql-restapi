@@ -242,7 +242,7 @@ export const getFactoringsCotizacionesByIdcontactocedente = async (tx: TxClient,
   }
 };
 
-export const getFactoringsByEstados = async (tx: TxClient, estados: number[]): Promise<factoring[]> => {
+export const getFactoringsByEstados = async (tx: TxClient, estados: number[]) => {
   try {
     const factorings = await tx.factoring.findMany({
       include: {
@@ -290,7 +290,7 @@ export const getFactoringsByEstados = async (tx: TxClient, estados: number[]): P
   }
 };
 
-export const getFactoringByIdfactoring = async (tx: TxClient, idfactoring: number): Promise<factoring> => {
+export const getFactoringByIdfactoring = async (tx: TxClient, idfactoring: number) => {
   try {
     const factoring = await tx.factoring.findUnique({
       include: {
@@ -332,7 +332,7 @@ export const getFactoringByIdfactoring = async (tx: TxClient, idfactoring: numbe
   }
 };
 
-export const getFactoringByFactoringid = async (tx: TxClient, factoringid: string): Promise<factoring> => {
+export const getFactoringByFactoringid = async (tx: TxClient, factoringid: string) => {
   try {
     const factoring = await tx.factoring.findFirst({
       include: {
@@ -362,7 +362,7 @@ export const getFactoringByFactoringid = async (tx: TxClient, factoringid: strin
   }
 };
 
-export const findFactoringPk = async (tx: TxClient, factoringid: string): Promise<{ idfactoring: bigint }> => {
+export const findFactoringPk = async (tx: TxClient, factoringid: string) => {
   try {
     const factoring = await tx.factoring.findFirst({
       select: { idfactoring: true },
@@ -378,7 +378,7 @@ export const findFactoringPk = async (tx: TxClient, factoringid: string): Promis
   }
 };
 
-export const insertFactoring = async (tx: TxClient, factoring: Prisma.factoringCreateInput): Promise<factoring> => {
+export const insertFactoring = async (tx: TxClient, factoring: Prisma.factoringCreateInput) => {
   try {
     const nuevo = await tx.factoring.create({ data: factoring });
 
@@ -389,7 +389,7 @@ export const insertFactoring = async (tx: TxClient, factoring: Prisma.factoringC
   }
 };
 
-export const updateFactoring = async (tx: TxClient, factoring: Partial<factoring>): Promise<factoring> => {
+export const updateFactoring = async (tx: TxClient, factoring: Partial<factoring>) => {
   try {
     const result = await tx.factoring.update({
       data: factoring,
@@ -404,7 +404,7 @@ export const updateFactoring = async (tx: TxClient, factoring: Partial<factoring
   }
 };
 
-export const deleteFactoring = async (tx: TxClient, factoring: Partial<factoring>): Promise<factoring> => {
+export const deleteFactoring = async (tx: TxClient, factoring: Partial<factoring>) => {
   try {
     const result = await tx.factoring.update({
       data: factoring,
@@ -419,7 +419,7 @@ export const deleteFactoring = async (tx: TxClient, factoring: Partial<factoring
   }
 };
 
-export const activateFactoring = async (tx: TxClient, factoring: Partial<factoring>): Promise<factoring> => {
+export const activateFactoring = async (tx: TxClient, factoring: Partial<factoring>) => {
   try {
     const result = await tx.factoring.update({
       data: factoring,

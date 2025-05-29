@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getFactoringestrategias = async (tx: TxClient, estados: number[]): Promise<factoring_estrategia[]> => {
+export const getFactoringestrategias = async (tx: TxClient, estados: number[]) => {
   try {
     const factoringestrategias = await tx.factoring_estrategia.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getFactoringestrategias = async (tx: TxClient, estados: number[]): 
   }
 };
 
-export const getFactoringestrategiaByIdfactoringestrategia = async (tx: TxClient, idfactoringestrategia: number): Promise<factoring_estrategia> => {
+export const getFactoringestrategiaByIdfactoringestrategia = async (tx: TxClient, idfactoringestrategia: number) => {
   try {
     const factoringestrategia = await tx.factoring_estrategia.findUnique({ where: { idfactoringestrategia: idfactoringestrategia } });
 
@@ -35,7 +35,7 @@ export const getFactoringestrategiaByIdfactoringestrategia = async (tx: TxClient
   }
 };
 
-export const getFactoringestrategiaByFactoringestrategiaid = async (tx: TxClient, factoringestrategiaid: string): Promise<factoring_estrategia> => {
+export const getFactoringestrategiaByFactoringestrategiaid = async (tx: TxClient, factoringestrategiaid: string) => {
   try {
     const factoringestrategia = await tx.factoring_estrategia.findFirst({
       where: {
@@ -50,7 +50,7 @@ export const getFactoringestrategiaByFactoringestrategiaid = async (tx: TxClient
   }
 };
 
-export const findFactoringestrategiaPk = async (tx: TxClient, factoringestrategiaid: string): Promise<{ idfactoringestrategia: number }> => {
+export const findFactoringestrategiaPk = async (tx: TxClient, factoringestrategiaid: string) => {
   try {
     const factoringestrategia = await tx.factoring_estrategia.findFirst({
       select: { idfactoringestrategia: true },
@@ -66,7 +66,7 @@ export const findFactoringestrategiaPk = async (tx: TxClient, factoringestrategi
   }
 };
 
-export const insertFactoringestrategia = async (tx: TxClient, factoringestrategia: Prisma.factoring_estrategiaCreateInput): Promise<factoring_estrategia> => {
+export const insertFactoringestrategia = async (tx: TxClient, factoringestrategia: Prisma.factoring_estrategiaCreateInput) => {
   try {
     const nuevo = await tx.factoring_estrategia.create({ data: factoringestrategia });
 
@@ -77,7 +77,7 @@ export const insertFactoringestrategia = async (tx: TxClient, factoringestrategi
   }
 };
 
-export const updateFactoringestrategia = async (tx: TxClient, factoringestrategia: Partial<factoring_estrategia>): Promise<factoring_estrategia> => {
+export const updateFactoringestrategia = async (tx: TxClient, factoringestrategia: Partial<factoring_estrategia>) => {
   try {
     const result = await tx.factoring_estrategia.update({
       data: factoringestrategia,
@@ -92,7 +92,7 @@ export const updateFactoringestrategia = async (tx: TxClient, factoringestrategi
   }
 };
 
-export const deleteFactoringestrategia = async (tx: TxClient, factoringestrategia: Partial<factoring_estrategia>): Promise<factoring_estrategia> => {
+export const deleteFactoringestrategia = async (tx: TxClient, factoringestrategia: Partial<factoring_estrategia>) => {
   try {
     const result = await tx.factoring_estrategia.update({
       data: factoringestrategia,

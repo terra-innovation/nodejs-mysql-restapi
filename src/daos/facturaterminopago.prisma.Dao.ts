@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getFacturaterminopagos = async (tx: TxClient, estados: number[]): Promise<factura_termino_pago[]> => {
+export const getFacturaterminopagos = async (tx: TxClient, estados: number[]) => {
   try {
     const facturaterminopagos = await tx.factura_termino_pago.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getFacturaterminopagos = async (tx: TxClient, estados: number[]): P
   }
 };
 
-export const getFacturaterminopagoByIdfacturaterminopago = async (tx: TxClient, idfacturaterminopago: number): Promise<factura_termino_pago> => {
+export const getFacturaterminopagoByIdfacturaterminopago = async (tx: TxClient, idfacturaterminopago: number) => {
   try {
     const facturaterminopago = await tx.factura_termino_pago.findUnique({ where: { idfacturaterminopago: idfacturaterminopago } });
 
@@ -35,7 +35,7 @@ export const getFacturaterminopagoByIdfacturaterminopago = async (tx: TxClient, 
   }
 };
 
-export const getFacturaterminopagoByFacturaterminopagoid = async (tx: TxClient, facturaterminopagoid: string): Promise<factura_termino_pago> => {
+export const getFacturaterminopagoByFacturaterminopagoid = async (tx: TxClient, facturaterminopagoid: string) => {
   try {
     const facturaterminopago = await tx.factura_termino_pago.findFirst({
       where: {
@@ -50,7 +50,7 @@ export const getFacturaterminopagoByFacturaterminopagoid = async (tx: TxClient, 
   }
 };
 
-export const findFacturaterminopagoPk = async (tx: TxClient, facturaterminopagoid: string): Promise<{ idfacturaterminopago: bigint }> => {
+export const findFacturaterminopagoPk = async (tx: TxClient, facturaterminopagoid: string) => {
   try {
     const facturaterminopago = await tx.factura_termino_pago.findFirst({
       select: { idfacturaterminopago: true },
@@ -66,7 +66,7 @@ export const findFacturaterminopagoPk = async (tx: TxClient, facturaterminopagoi
   }
 };
 
-export const insertFacturaterminopago = async (tx: TxClient, facturaterminopago: Prisma.factura_termino_pagoCreateInput): Promise<factura_termino_pago> => {
+export const insertFacturaterminopago = async (tx: TxClient, facturaterminopago: Prisma.factura_termino_pagoCreateInput) => {
   try {
     const nuevo = await tx.factura_termino_pago.create({ data: facturaterminopago });
 
@@ -77,7 +77,7 @@ export const insertFacturaterminopago = async (tx: TxClient, facturaterminopago:
   }
 };
 
-export const updateFacturaterminopago = async (tx: TxClient, facturaterminopago: Partial<factura_termino_pago>): Promise<factura_termino_pago> => {
+export const updateFacturaterminopago = async (tx: TxClient, facturaterminopago: Partial<factura_termino_pago>) => {
   try {
     const result = await tx.factura_termino_pago.update({
       data: facturaterminopago,
@@ -92,7 +92,7 @@ export const updateFacturaterminopago = async (tx: TxClient, facturaterminopago:
   }
 };
 
-export const deleteFacturaterminopago = async (tx: TxClient, facturaterminopago: Partial<factura_termino_pago>): Promise<factura_termino_pago> => {
+export const deleteFacturaterminopago = async (tx: TxClient, facturaterminopago: Partial<factura_termino_pago>) => {
   try {
     const result = await tx.factura_termino_pago.update({
       data: facturaterminopago,

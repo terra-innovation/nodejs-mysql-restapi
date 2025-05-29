@@ -17,9 +17,9 @@ import TemplateManager from "#src/utils/email/TemplateManager.js";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { Sequelize, Op } from "sequelize";
-import { persona_verificacion } from "#root/src/models/ft_factoring/PersonaVerificacion";
-import { persona } from "#root/src/models/ft_factoring/Persona";
-import { usuario } from "#root/src/models/ft_factoring/Usuario";
+import type { persona_verificacion } from "#src/models/prisma/ft_factoring/client";
+import type { persona } from "#src/models/prisma/ft_factoring/client";
+import type { usuario } from "#src/models/prisma/ft_factoring/client";
 
 export const activatePersonaverificacion = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activatePersonaverificacion");
@@ -33,7 +33,7 @@ export const activatePersonaverificacion = async (req: Request, res: Response) =
   const personaverificacionValidated = personaverificacionSchema.validateSync({ personaverificacionid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "personaverificacionValidated:", personaverificacionValidated);
 
-  const resultado = await prismaFT.client.$transaction(
+  const personaverificacionDeleted = await prismaFT.client.$transaction(
     async (tx) => {
       var camposAuditoria: Partial<persona_verificacion> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
@@ -45,7 +45,7 @@ export const activatePersonaverificacion = async (req: Request, res: Response) =
         throw new ClientError("Personaverificacion no existe", 404);
       }
       log.debug(line(), "personaverificacionActivated:", personaverificacionDeleted);
-      return {};
+      return personaverificacionDeleted;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -64,7 +64,7 @@ export const deletePersonaverificacion = async (req: Request, res: Response) => 
   const personaverificacionValidated = personaverificacionSchema.validateSync({ personaverificacionid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "personaverificacionValidated:", personaverificacionValidated);
 
-  const resultado = await prismaFT.client.$transaction(
+  const personaverificacionDeleted = await prismaFT.client.$transaction(
     async (tx) => {
       var camposAuditoria: Partial<persona_verificacion> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
@@ -76,7 +76,7 @@ export const deletePersonaverificacion = async (req: Request, res: Response) => 
         throw new ClientError("Personaverificacion no existe", 404);
       }
       log.debug(line(), "personaverificacionDeleted:", personaverificacionDeleted);
-      return {};
+      return personaverificacionDeleted;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -85,7 +85,7 @@ export const deletePersonaverificacion = async (req: Request, res: Response) => 
 
 export const getPersonaverificacionMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getPersonaverificacionMaster");
-  const resultado = await prismaFT.client.$transaction(
+  const personaverificacionMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const session_idusuario = req.session_user?.usuario?._idusuario;
       const filter_estados = [1];
@@ -100,7 +100,7 @@ export const getPersonaverificacionMaster = async (req: Request, res: Response) 
       //jsonUtils.prettyPrint(personaverificacionMasterObfuscated);
       let personaverificacionMasterFiltered = jsonUtils.removeAttributesPrivates(personaverificacionMasterObfuscated);
       //jsonUtils.prettyPrint(personaverificacionMaster);
-      return {};
+      return personaverificacionMasterFiltered;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -164,7 +164,7 @@ export const updatePersonaverificacion = async (req: Request, res: Response) => 
 
 export const getPersonaverificacions = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getPersonaverificacions");
-  const resultado = await prismaFT.client.$transaction(
+  const personaverificacionverificacionsJson = await prismaFT.client.$transaction(
     async (tx) => {
       //log.info(line(),req.session_user.usuario._idusuario);
 
@@ -176,7 +176,7 @@ export const getPersonaverificacions = async (req: Request, res: Response) => {
 
       //var personaverificacionverificacionsFiltered = jsonUtils.removeAttributes(personaverificacionverificacionsJson, ["score"]);
       //personaverificacionverificacionsFiltered = jsonUtils.removeAttributesPrivates(personaverificacionverificacionsFiltered);
-      return {};
+      return personaverificacionverificacionsJson;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -211,54 +211,63 @@ export const createPersonaverificacion = async (req: Request, res: Response) => 
         log.warn(line(), "Persona verificación estado no existe: [" + personaverificacionValidated.personaverificacionestadoid + "]");
         throw new ClientError("Datos no válidos", 404);
       }
-      var camposFk: Partial<persona_verificacion> = {};
-      camposFk._idpersona = persona._idpersona;
-      camposFk._idpersonaverificacionestado = personaverificacionestado._idpersonaverificacionestado;
-      camposFk._idusuarioverifica = req.session_user.usuario._idusuario;
 
-      var camposAdicionales: Partial<persona_verificacion> = {};
-      camposAdicionales.personaverificacionid = uuidv4();
+      const personaverificacionToCreate: Prisma.persona_verificacionCreateInput = {
+        persona: {
+          connect: {
+            idpersona: persona.idpersona,
+          },
+        },
+        persona_verificacion_estado: {
+          connect: {
+            idpersonaverificacionestado: personaverificacionestado.idpersonaverificacionestado,
+          },
+        },
+        usuario_verifica: {
+          connect: {
+            idusuario: req.session_user.usuario._idusuario,
+          },
+        },
+        comentariointerno: personaverificacionValidated.comentariointerno,
+        comentariousuario: personaverificacionValidated.comentariousuario,
+        personaverificacionid: uuidv4(),
+        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
 
-      var camposAuditoria: Partial<persona_verificacion> = {};
-      camposAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
-      camposAuditoria.fechacrea = new Date();
-      camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
-      camposAuditoria.fechamod = new Date();
-      camposAuditoria.estado = 1;
+      const personaverificacionCreated = await personaverificacionDao.insertPersonaverificacion(tx, personaverificacionToCreate);
+      log.debug(line(), "personaverificacionCreated", personaverificacionCreated);
 
-      const personaverificacionCreated = await personaverificacionDao.insertPersonaverificacion(tx, {
-        ...camposFk,
-        ...camposAdicionales,
-        ...personaverificacionValidated,
-        ...camposAuditoria,
-      });
-      log.debug(line(), "personaverificacionCreated");
+      const personaToUpdate: Partial<persona> = {
+        personaid: persona.personaid,
+        idpersonaverificacionestado: personaverificacionestado.idpersonaverificacionestado,
+        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        fechamod: new Date(),
+      };
 
-      const personaUpdate: Partial<persona> = {};
-      personaUpdate.personaid = persona.personaid;
-      personaUpdate._idpersonaverificacionestado = personaverificacionestado._idpersonaverificacionestado;
-      personaUpdate.idusuariomod = req.session_user.usuario._idusuario ?? 1;
-      personaUpdate.fechamod = new Date();
-
-      await personaDao.updatePersona(tx, personaUpdate);
-      log.debug(line(), "personaUpdate");
+      const personaUpdated = await personaDao.updatePersona(tx, personaToUpdate);
+      log.debug(line(), "personaUpdated", personaUpdated);
 
       // Actualizamos el usuario solo si la validación de la persona es aprobado
       if (personaverificacionestado.ispersonavalidated) {
-        const usuarioUpdate: Partial<usuario> = {};
-        usuarioUpdate.usuarioid = persona.usuario_usuario.usuarioid;
-        usuarioUpdate.ispersonavalidated = personaverificacionestado.ispersonavalidated;
-        usuarioUpdate.idusuariomod = req.session_user.usuario._idusuario ?? 1;
-        usuarioUpdate.fechamod = new Date();
+        const usuarioToUpdate: Partial<usuario> = {
+          usuarioid: persona.usuario.usuarioid,
+          ispersonavalidated: personaverificacionestado.ispersonavalidated,
+          idusuariomod: req.session_user.usuario._idusuario ?? 1,
+          fechamod: new Date(),
+        };
 
-        await usuarioDao.updateUsuario(tx, usuarioUpdate);
-        log.debug(line(), "usuarioUpdate");
+        const usuarioUpdated = await usuarioDao.updateUsuario(tx, usuarioToUpdate);
+        log.debug(line(), "usuarioUpdated", usuarioUpdated);
       }
 
       /* Si la verificación tiene código 4 que es aprobado, se habilitan los servicios para que pueda suscribirse */
       const idusuario_session = req.session_user.usuario._idusuario ?? 1;
-      if (personaverificacionestado._idpersonaverificacionestado == 4) {
-        await usuarioservicioDao.habilitarServiciosParaUsuario(tx, persona.usuario_usuario._idusuario, idusuario_session);
+      if (personaverificacionestado.idpersonaverificacionestado == 4) {
+        await usuarioservicioDao.habilitarServiciosParaUsuario(tx, persona.usuario.idusuario, idusuario_session);
       }
 
       await enviarCorreoSegunCorrespondeNuevoEstadoDePersona(personaverificacionValidated, personaverificacionestado, persona);
@@ -297,7 +306,7 @@ const enviarCorreoSegunCorrespondeNuevoEstadoDePersona = async (personaverificac
   }
 
   /* Si la verificación tiene código 4 que es aprobado, se le envía un correo de éxito */
-  if (personaverificacionestado._idpersonaverificacionestado == 4) {
+  if (personaverificacionestado.idpersonaverificacionestado == 4) {
     const dataEmail = {
       codigo_usuario: persona.usuario_usuario.code,
       nombres: persona.usuario_usuario.usuarionombres,

@@ -38,7 +38,7 @@ export const getFactoringhistorialestadosByIdfactoring = async (tx: TxClient, id
   }
 };
 
-export const getFactoringhistorialestados = async (tx: TxClient, estados: number[]): Promise<factoring_historial_estado[]> => {
+export const getFactoringhistorialestados = async (tx: TxClient, estados: number[]) => {
   try {
     const factoringhistorialestados = await tx.factoring_historial_estado.findMany({
       where: {
@@ -55,7 +55,7 @@ export const getFactoringhistorialestados = async (tx: TxClient, estados: number
   }
 };
 
-export const getFactoringhistorialestadoByIdfactoringhistorialestado = async (tx: TxClient, idfactoringhistorialestado: number): Promise<factoring_historial_estado> => {
+export const getFactoringhistorialestadoByIdfactoringhistorialestado = async (tx: TxClient, idfactoringhistorialestado: number) => {
   try {
     const factoringhistorialestado = await tx.factoring_historial_estado.findUnique({ where: { idfactoringhistorialestado: idfactoringhistorialestado } });
 
@@ -68,7 +68,7 @@ export const getFactoringhistorialestadoByIdfactoringhistorialestado = async (tx
   }
 };
 
-export const getFactoringhistorialestadoByFactoringhistorialestadoid = async (tx: TxClient, factoringhistorialestadoid: string): Promise<factoring_historial_estado> => {
+export const getFactoringhistorialestadoByFactoringhistorialestadoid = async (tx: TxClient, factoringhistorialestadoid: string) => {
   try {
     const factoringhistorialestado = await tx.factoring_historial_estado.findFirst({
       where: {
@@ -83,7 +83,7 @@ export const getFactoringhistorialestadoByFactoringhistorialestadoid = async (tx
   }
 };
 
-export const findFactoringhistorialestadoPk = async (tx: TxClient, factoringhistorialestadoid: string): Promise<{ idfactoringhistorialestado: bigint }> => {
+export const findFactoringhistorialestadoPk = async (tx: TxClient, factoringhistorialestadoid: string) => {
   try {
     const factoringhistorialestado = await tx.factoring_historial_estado.findFirst({
       select: { idfactoringhistorialestado: true },
@@ -99,7 +99,7 @@ export const findFactoringhistorialestadoPk = async (tx: TxClient, factoringhist
   }
 };
 
-export const insertFactoringhistorialestado = async (tx: TxClient, factoringhistorialestado: Prisma.factoring_historial_estadoCreateInput): Promise<factoring_historial_estado> => {
+export const insertFactoringhistorialestado = async (tx: TxClient, factoringhistorialestado: Prisma.factoring_historial_estadoCreateInput) => {
   try {
     const nuevo = await tx.factoring_historial_estado.create({ data: factoringhistorialestado });
 
@@ -110,7 +110,7 @@ export const insertFactoringhistorialestado = async (tx: TxClient, factoringhist
   }
 };
 
-export const updateFactoringhistorialestado = async (tx: TxClient, factoringhistorialestado: Partial<factoring_historial_estado>): Promise<factoring_historial_estado> => {
+export const updateFactoringhistorialestado = async (tx: TxClient, factoringhistorialestado: Partial<factoring_historial_estado>) => {
   try {
     const result = await tx.factoring_historial_estado.update({
       data: factoringhistorialestado,
@@ -125,7 +125,7 @@ export const updateFactoringhistorialestado = async (tx: TxClient, factoringhist
   }
 };
 
-export const deleteFactoringhistorialestado = async (tx: TxClient, factoringhistorialestado: Partial<factoring_historial_estado>): Promise<factoring_historial_estado> => {
+export const deleteFactoringhistorialestado = async (tx: TxClient, factoringhistorialestado: Partial<factoring_historial_estado>) => {
   try {
     const result = await tx.factoring_historial_estado.update({
       data: factoringhistorialestado,
@@ -140,7 +140,7 @@ export const deleteFactoringhistorialestado = async (tx: TxClient, factoringhist
   }
 };
 
-export const activateFactoringhistorialestado = async (tx: TxClient, factoringhistorialestado: Partial<factoring_historial_estado>): Promise<factoring_historial_estado> => {
+export const activateFactoringhistorialestado = async (tx: TxClient, factoringhistorialestado: Partial<factoring_historial_estado>) => {
   try {
     const result = await tx.factoring_historial_estado.update({
       data: factoringhistorialestado,

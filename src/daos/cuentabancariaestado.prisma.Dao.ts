@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getCuentabancariaestados = async (tx: TxClient, estados: number[]): Promise<cuenta_bancaria_estado[]> => {
+export const getCuentabancariaestados = async (tx: TxClient, estados: number[]) => {
   try {
     const cuentabancariaestados = await tx.cuenta_bancaria_estado.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getCuentabancariaestados = async (tx: TxClient, estados: number[]):
   }
 };
 
-export const getCuentabancariaestadoByIdcuentabancariaestado = async (tx: TxClient, idcuentabancariaestado: number): Promise<cuenta_bancaria_estado> => {
+export const getCuentabancariaestadoByIdcuentabancariaestado = async (tx: TxClient, idcuentabancariaestado: number) => {
   try {
     const cuentabancariaestado = await tx.cuenta_bancaria_estado.findUnique({ where: { idcuentabancariaestado: idcuentabancariaestado } });
 
@@ -35,7 +35,7 @@ export const getCuentabancariaestadoByIdcuentabancariaestado = async (tx: TxClie
   }
 };
 
-export const getCuentabancariaestadoByCuentabancariaestadoid = async (tx: TxClient, cuentabancariaestadoid: string): Promise<cuenta_bancaria_estado> => {
+export const getCuentabancariaestadoByCuentabancariaestadoid = async (tx: TxClient, cuentabancariaestadoid: string) => {
   try {
     const cuentabancariaestado = await tx.cuenta_bancaria_estado.findFirst({
       where: {
@@ -50,7 +50,7 @@ export const getCuentabancariaestadoByCuentabancariaestadoid = async (tx: TxClie
   }
 };
 
-export const findCuentabancariaestadoPk = async (tx: TxClient, cuentabancariaestadoid: string): Promise<{ idcuentabancariaestado: number }> => {
+export const findCuentabancariaestadoPk = async (tx: TxClient, cuentabancariaestadoid: string) => {
   try {
     const cuentabancariaestado = await tx.cuenta_bancaria_estado.findFirst({
       select: { idcuentabancariaestado: true },
@@ -66,7 +66,7 @@ export const findCuentabancariaestadoPk = async (tx: TxClient, cuentabancariaest
   }
 };
 
-export const insertCuentabancariaestado = async (tx: TxClient, cuentabancariaestado: Prisma.cuenta_bancaria_estadoCreateInput): Promise<cuenta_bancaria_estado> => {
+export const insertCuentabancariaestado = async (tx: TxClient, cuentabancariaestado: Prisma.cuenta_bancaria_estadoCreateInput) => {
   try {
     const nuevo = await tx.cuenta_bancaria_estado.create({ data: cuentabancariaestado });
 
@@ -77,7 +77,7 @@ export const insertCuentabancariaestado = async (tx: TxClient, cuentabancariaest
   }
 };
 
-export const updateCuentabancariaestado = async (tx: TxClient, cuentabancariaestado: Partial<cuenta_bancaria_estado>): Promise<cuenta_bancaria_estado> => {
+export const updateCuentabancariaestado = async (tx: TxClient, cuentabancariaestado: Partial<cuenta_bancaria_estado>) => {
   try {
     const result = await tx.cuenta_bancaria_estado.update({
       data: cuentabancariaestado,
@@ -92,7 +92,7 @@ export const updateCuentabancariaestado = async (tx: TxClient, cuentabancariaest
   }
 };
 
-export const deleteCuentabancariaestado = async (tx: TxClient, cuentabancariaestado: Partial<cuenta_bancaria_estado>): Promise<cuenta_bancaria_estado> => {
+export const deleteCuentabancariaestado = async (tx: TxClient, cuentabancariaestado: Partial<cuenta_bancaria_estado>) => {
   try {
     const result = await tx.cuenta_bancaria_estado.update({
       data: cuentabancariaestado,
@@ -107,7 +107,7 @@ export const deleteCuentabancariaestado = async (tx: TxClient, cuentabancariaest
   }
 };
 
-export const activateCuentabancariaestado = async (tx: TxClient, cuentabancariaestado: Partial<cuenta_bancaria_estado>): Promise<cuenta_bancaria_estado> => {
+export const activateCuentabancariaestado = async (tx: TxClient, cuentabancariaestado: Partial<cuenta_bancaria_estado>) => {
   try {
     const result = await tx.cuenta_bancaria_estado.update({
       data: cuentabancariaestado,

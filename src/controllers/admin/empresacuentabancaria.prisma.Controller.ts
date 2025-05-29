@@ -266,7 +266,7 @@ export const createEmpresacuentabancaria = async (req: Request, res: Response) =
         throw new ClientError("El alias [" + empresacuentabancariaValidated.alias + "] se encuentra registrado. Ingrese un alias diferente.", 404);
       }
 
-      const cuentabancariaCreate: Prisma.cuenta_bancariaCreateInput = {
+      const cuentabancariaToCreate: Prisma.cuenta_bancariaCreateInput = {
         banco: {
           connect: { idbanco: banco.idbanco },
         },
@@ -293,10 +293,10 @@ export const createEmpresacuentabancaria = async (req: Request, res: Response) =
         estado: 1,
       };
 
-      const cuentabancariaCreated = await cuentabancariaDao.insertCuentabancaria(tx, cuentabancariaCreate);
+      const cuentabancariaCreated = await cuentabancariaDao.insertCuentabancaria(tx, cuentabancariaToCreate);
       log.debug(line(), "cuentabancariaCreated:", cuentabancariaCreated);
 
-      var camposEmpresaCuentaBancariaCreate: Prisma.empresa_cuenta_bancariaCreateInput = {
+      const empresacuentabancariaToCreate: Prisma.empresa_cuenta_bancariaCreateInput = {
         empresa: {
           connect: { idempresa: empresa.idempresa },
         },
@@ -312,10 +312,10 @@ export const createEmpresacuentabancaria = async (req: Request, res: Response) =
         estado: 1,
       };
 
-      const empresacuentabancariaCreated = await empresacuentabancariaDao.insertEmpresacuentabancaria(tx, camposEmpresaCuentaBancariaCreate);
+      const empresacuentabancariaCreated = await empresacuentabancariaDao.insertEmpresacuentabancaria(tx, empresacuentabancariaToCreate);
       log.debug(line(), "empresacuentabancariaCreated:", empresacuentabancariaCreated);
 
-      const empresacuentabancariaFiltered = jsonUtils.removeAttributesPrivates(camposEmpresaCuentaBancariaCreate);
+      const empresacuentabancariaFiltered = jsonUtils.removeAttributesPrivates(empresacuentabancariaToCreate);
 
       return empresacuentabancariaFiltered;
     },

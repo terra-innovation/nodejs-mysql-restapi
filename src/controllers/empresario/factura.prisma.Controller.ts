@@ -70,11 +70,11 @@ export const subirFactura = async (req: Request, res: Response) => {
     async (tx) => {
       const facturaCreated = await facturaDao.insertFactura(tx, facturaCreate);
 
-      await procesarDatos(tx, facturaCreated._idfactura, facturaCreate.items, session_idusuario, facturaitemDao.insertFacturaitem);
-      await procesarDatos(tx, facturaCreated._idfactura, facturaCreate.medios_pago, session_idusuario, facturamediopagoDao.insertFacturamediopago);
-      await procesarDatos(tx, facturaCreated._idfactura, facturaCreate.terminos_pago, session_idusuario, facturaterminopagoDao.insertFacturaterminopago);
-      await procesarDatos(tx, facturaCreated._idfactura, facturaCreate.impuesto.impuestos, session_idusuario, facturaimpuestoDao.insertFacturaimpuesto);
-      await procesarDatos(tx, facturaCreated._idfactura, facturaCreate.notas, session_idusuario, facturanotaDao.insertFacturanota);
+      await procesarDatos(tx, facturaCreated.idfactura, facturaCreate.items, session_idusuario, facturaitemDao.insertFacturaitem);
+      await procesarDatos(tx, facturaCreated.idfactura, facturaCreate.medios_pago, session_idusuario, facturamediopagoDao.insertFacturamediopago);
+      await procesarDatos(tx, facturaCreated.idfactura, facturaCreate.terminos_pago, session_idusuario, facturaterminopagoDao.insertFacturaterminopago);
+      await procesarDatos(tx, facturaCreated.idfactura, facturaCreate.impuesto.impuestos, session_idusuario, facturaimpuestoDao.insertFacturaimpuesto);
+      await procesarDatos(tx, facturaCreated.idfactura, facturaCreate.notas, session_idusuario, facturanotaDao.insertFacturanota);
 
       const facturaxmlCreated = await crearFacturaXML(req, tx, facturaValidated, facturaCreated);
       log.debug(line(), "facturaxmlCreated:", facturaxmlCreated);
@@ -235,8 +235,8 @@ const crearFacturaPDF = async (req, tx, facturaValidated, facturaCreated) => {
   const identificacionselfiCreated = await archivoDao.insertArchivo(tx, identificacionselfiNew);
 
   await archivofacturaDao.insertArchivoFactura(tx, {
-    _idarchivo: identificacionselfiCreated._idarchivo,
-    _idfactura: facturaCreated._idfactura,
+    _idarchivo: identificacionselfiCreated.idarchivo,
+    _idfactura: facturaCreated.idfactura,
     idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
     fechacrea: new Date(),
     idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
@@ -282,8 +282,8 @@ const crearFacturaXML = async (req, tx, facturaValidated, facturaCreated) => {
   const identificacionselfiCreated = await archivoDao.insertArchivo(tx, identificacionselfiNew);
 
   await archivofacturaDao.insertArchivoFactura(tx, {
-    _idarchivo: identificacionselfiCreated._idarchivo,
-    _idfactura: facturaCreated._idfactura,
+    _idarchivo: identificacionselfiCreated.idarchivo,
+    _idfactura: facturaCreated.idfactura,
     idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
     fechacrea: new Date(),
     idusuariomod: req.session_user?.usuario?._idusuario ?? 1,

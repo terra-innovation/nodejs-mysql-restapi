@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getPersonapepindirectos = async (tx: TxClient, estados: number[]): Promise<persona_pep_indirecto[]> => {
+export const getPersonapepindirectos = async (tx: TxClient, estados: number[]) => {
   try {
     const personapepindirectos = await tx.persona_pep_indirecto.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getPersonapepindirectos = async (tx: TxClient, estados: number[]): 
   }
 };
 
-export const getPersonaPepIndirectoByIdpersonapepindirecto = async (tx: TxClient, idpersonapepindirecto: number): Promise<persona_pep_indirecto> => {
+export const getPersonaPepIndirectoByIdpersonapepindirecto = async (tx: TxClient, idpersonapepindirecto: number) => {
   try {
     const personapepindirecto = await tx.persona_pep_indirecto.findUnique({ where: { idpersonapepindirecto: idpersonapepindirecto } });
 
@@ -35,7 +35,7 @@ export const getPersonaPepIndirectoByIdpersonapepindirecto = async (tx: TxClient
   }
 };
 
-export const getPersonaPepIndirectoByPersonaPepIndirectoid = async (tx: TxClient, personapepindirectoid: string): Promise<persona_pep_indirecto> => {
+export const getPersonaPepIndirectoByPersonaPepIndirectoid = async (tx: TxClient, personapepindirectoid: string) => {
   try {
     const personapepindirecto = await tx.persona_pep_indirecto.findFirst({
       where: {
@@ -50,7 +50,7 @@ export const getPersonaPepIndirectoByPersonaPepIndirectoid = async (tx: TxClient
   }
 };
 
-export const findPersonaPepIndirectoPk = async (tx: TxClient, personapepindirectoid: string): Promise<{ idpersonapepindirecto: number }> => {
+export const findPersonaPepIndirectoPk = async (tx: TxClient, personapepindirectoid: string) => {
   try {
     const personapepindirecto = await tx.persona_pep_indirecto.findFirst({
       select: { idpersonapepindirecto: true },
@@ -66,7 +66,7 @@ export const findPersonaPepIndirectoPk = async (tx: TxClient, personapepindirect
   }
 };
 
-export const insertPersonaPepIndirecto = async (tx: TxClient, personapepindirecto: Prisma.persona_pep_indirectoCreateInput): Promise<persona_pep_indirecto> => {
+export const insertPersonaPepIndirecto = async (tx: TxClient, personapepindirecto: Prisma.persona_pep_indirectoCreateInput) => {
   try {
     const nuevo = await tx.persona_pep_indirecto.create({ data: personapepindirecto });
 
@@ -77,7 +77,7 @@ export const insertPersonaPepIndirecto = async (tx: TxClient, personapepindirect
   }
 };
 
-export const updatePersonaPepIndirecto = async (tx: TxClient, personapepindirecto: Partial<persona_pep_indirecto>): Promise<persona_pep_indirecto> => {
+export const updatePersonaPepIndirecto = async (tx: TxClient, personapepindirecto: Partial<persona_pep_indirecto>) => {
   try {
     const result = await tx.persona_pep_indirecto.update({
       data: personapepindirecto,
@@ -92,7 +92,7 @@ export const updatePersonaPepIndirecto = async (tx: TxClient, personapepindirect
   }
 };
 
-export const deletePersonaPepIndirecto = async (tx: TxClient, personapepindirecto: Partial<persona_pep_indirecto>): Promise<persona_pep_indirecto> => {
+export const deletePersonaPepIndirecto = async (tx: TxClient, personapepindirecto: Partial<persona_pep_indirecto>) => {
   try {
     const result = await tx.persona_pep_indirecto.update({
       data: personapepindirecto,

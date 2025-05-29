@@ -17,7 +17,7 @@ export const getGasto = async (tx: TxClient) => {
   return await getFinancierotipoByIdfinancierotipo(tx, 3);
 };
 
-export const getFinancierotipos = async (tx: TxClient, estados: number[]): Promise<financiero_tipo[]> => {
+export const getFinancierotipos = async (tx: TxClient, estados: number[]) => {
   try {
     const financierotipos = await tx.financiero_tipo.findMany({
       where: {
@@ -34,7 +34,7 @@ export const getFinancierotipos = async (tx: TxClient, estados: number[]): Promi
   }
 };
 
-export const getFinancierotipoByIdfinancierotipo = async (tx: TxClient, idfinancierotipo: number): Promise<financiero_tipo> => {
+export const getFinancierotipoByIdfinancierotipo = async (tx: TxClient, idfinancierotipo: number) => {
   try {
     const financierotipo = await tx.financiero_tipo.findUnique({ where: { idfinancierotipo: idfinancierotipo } });
 
@@ -47,7 +47,7 @@ export const getFinancierotipoByIdfinancierotipo = async (tx: TxClient, idfinanc
   }
 };
 
-export const getFinancierotipoByFinancierotipoid = async (tx: TxClient, financierotipoid: string): Promise<financiero_tipo> => {
+export const getFinancierotipoByFinancierotipoid = async (tx: TxClient, financierotipoid: string) => {
   try {
     const financierotipo = await tx.financiero_tipo.findFirst({
       where: {
@@ -62,7 +62,7 @@ export const getFinancierotipoByFinancierotipoid = async (tx: TxClient, financie
   }
 };
 
-export const findFinancierotipoPk = async (tx: TxClient, financierotipoid: string): Promise<{ idfinancierotipo: number }> => {
+export const findFinancierotipoPk = async (tx: TxClient, financierotipoid: string) => {
   try {
     const financierotipo = await tx.financiero_tipo.findFirst({
       select: { idfinancierotipo: true },
@@ -78,7 +78,7 @@ export const findFinancierotipoPk = async (tx: TxClient, financierotipoid: strin
   }
 };
 
-export const insertFinancierotipo = async (tx: TxClient, financierotipo: Prisma.financiero_tipoCreateInput): Promise<financiero_tipo> => {
+export const insertFinancierotipo = async (tx: TxClient, financierotipo: Prisma.financiero_tipoCreateInput) => {
   try {
     const nuevo = await tx.financiero_tipo.create({ data: financierotipo });
 
@@ -89,7 +89,7 @@ export const insertFinancierotipo = async (tx: TxClient, financierotipo: Prisma.
   }
 };
 
-export const updateFinancierotipo = async (tx: TxClient, financierotipo: Partial<financiero_tipo>): Promise<financiero_tipo> => {
+export const updateFinancierotipo = async (tx: TxClient, financierotipo: Partial<financiero_tipo>) => {
   try {
     const result = await tx.financiero_tipo.update({
       data: financierotipo,
@@ -104,7 +104,7 @@ export const updateFinancierotipo = async (tx: TxClient, financierotipo: Partial
   }
 };
 
-export const deleteFinancierotipo = async (tx: TxClient, financierotipo: Partial<financiero_tipo>): Promise<financiero_tipo> => {
+export const deleteFinancierotipo = async (tx: TxClient, financierotipo: Partial<financiero_tipo>) => {
   try {
     const result = await tx.financiero_tipo.update({
       data: financierotipo,

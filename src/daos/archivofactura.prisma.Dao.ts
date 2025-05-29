@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getArchivofacturasByIdfactoring = async (tx: TxClient, idfactoring: bigint, estados: number[]): Promise<archivo_factura[]> => {
+export const getArchivofacturasByIdfactoring = async (tx: TxClient, idfactoring: bigint, estados: number[]) => {
   try {
     const archivofacturas = await tx.archivo_factura.findMany({
       include: {
@@ -41,7 +41,7 @@ export const getArchivofacturasByIdfactoring = async (tx: TxClient, idfactoring:
   }
 };
 
-export const getArchivofacturas = async (tx: TxClient, estados: number[]): Promise<archivo_factura[]> => {
+export const getArchivofacturas = async (tx: TxClient, estados: number[]) => {
   try {
     const archivofacturas = await tx.archivo_factura.findMany({
       where: {
@@ -58,7 +58,7 @@ export const getArchivofacturas = async (tx: TxClient, estados: number[]): Promi
   }
 };
 
-export const getArchivoFacturaByIdarchivoIdfactura = async (tx: TxClient, idarchivo: number, idfactura: number): Promise<archivo_factura> => {
+export const getArchivoFacturaByIdarchivoIdfactura = async (tx: TxClient, idarchivo: number, idfactura: number) => {
   try {
     const archivofactura = await tx.archivo_factura.findUnique({
       where: {
@@ -76,7 +76,7 @@ export const getArchivoFacturaByIdarchivoIdfactura = async (tx: TxClient, idarch
   }
 };
 
-export const findArchivoFacturaPk = async (tx: TxClient, archivofactura: Partial<archivo_factura>): Promise<{ idarchivo: number; idfactura: bigint } | null> => {
+export const findArchivoFacturaPk = async (tx: TxClient, archivofactura: Partial<archivo_factura>) => {
   try {
     const result = await tx.archivo_factura.findFirst({
       select: { idarchivo: true, idfactura: true },
@@ -93,7 +93,7 @@ export const findArchivoFacturaPk = async (tx: TxClient, archivofactura: Partial
   }
 };
 
-export const insertArchivoFactura = async (tx: TxClient, archivofactura: Prisma.archivo_facturaCreateInput): Promise<archivo_factura> => {
+export const insertArchivoFactura = async (tx: TxClient, archivofactura: Prisma.archivo_facturaCreateInput) => {
   try {
     const nuevo = await tx.archivo_factura.create({ data: archivofactura });
 
@@ -104,7 +104,7 @@ export const insertArchivoFactura = async (tx: TxClient, archivofactura: Prisma.
   }
 };
 
-export const updateArchivoFactura = async (tx: TxClient, archivofactura: Partial<archivo_factura>): Promise<archivo_factura> => {
+export const updateArchivoFactura = async (tx: TxClient, archivofactura: Partial<archivo_factura>) => {
   try {
     const result = await tx.archivo_factura.update({
       data: archivofactura,
@@ -122,7 +122,7 @@ export const updateArchivoFactura = async (tx: TxClient, archivofactura: Partial
   }
 };
 
-export const deleteArchivoFactura = async (tx: TxClient, archivofactura: Partial<archivo_factura>): Promise<archivo_factura> => {
+export const deleteArchivoFactura = async (tx: TxClient, archivofactura: Partial<archivo_factura>) => {
   try {
     const result = await tx.archivo_factura.update({
       data: archivofactura,
@@ -140,7 +140,7 @@ export const deleteArchivoFactura = async (tx: TxClient, archivofactura: Partial
   }
 };
 
-export const activateArchivoFactura = async (tx: TxClient, archivofactura: Partial<archivo_factura>): Promise<archivo_factura> => {
+export const activateArchivoFactura = async (tx: TxClient, archivofactura: Partial<archivo_factura>) => {
   try {
     const result = await tx.archivo_factura.update({
       data: archivofactura,

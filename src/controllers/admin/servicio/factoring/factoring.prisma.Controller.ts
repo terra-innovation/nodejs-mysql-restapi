@@ -118,11 +118,11 @@ export const updateFactoring = async (req: Request, res: Response) => {
       }
 
       var camposFactoringFk: Partial<factoring> = {};
-      camposFactoringFk._idfactoringestado = factoringestado._idfactoringestado;
+      camposFactoringFk.idfactoringestado = factoringestado.idfactoringestado;
       if (factoringValidated.factoringpropuestaaceptadaid) {
-        camposFactoringFk._idfactoringpropuestaaceptada = factoringpropuesta._idfactoringpropuesta;
+        camposFactoringFk.idfactoringpropuestaaceptada = factoringpropuesta.idfactoringpropuesta;
       } else {
-        camposFactoringFk._idfactoringpropuestaaceptada = null;
+        camposFactoringFk.idfactoringpropuestaaceptada = null;
       }
 
       var camposFactoringAdicionales: Partial<factoring> = {};
@@ -188,7 +188,7 @@ export const simulateFactoring = async (req: Request, res: Response) => {
 
       var dias_pago_estimado = luxon.DateTime.fromISO(factoring.fecha_pago_estimado).startOf("day").diff(luxon.DateTime.local().startOf("day"), "days").days; // Actualizamos la cantidad de dias para el pago
       var simulacion = {};
-      simulacion = await simulateFactoringLogicV1(riesgooperacion._idriesgo, factoring.cuentabancaria_cuenta_bancarium._idbanco, factoring.cantidad_facturas, factoring.monto_neto, dias_pago_estimado, factoringValidated.porcentaje_adelanto, factoringValidated.tnm);
+      simulacion = await simulateFactoringLogicV1(riesgooperacion.idriesgo, factoring.cuentabancaria_cuenta_bancarium.idbanco, factoring.cantidad_facturas, factoring.monto_neto, dias_pago_estimado, factoringValidated.porcentaje_adelanto, factoringValidated.tnm);
 
       log.info(line(), "simulacion: ", simulacion);
 

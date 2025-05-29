@@ -10,6 +10,7 @@ import { log, line } from "#src/utils/logger.pino.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
+import { Usuario } from "#root/src/models/ft_factoring/Usuario.js";
 
 export const validateTransaction = async (req: Request, res: Response) => {
   log.debug(line(), "controller::validateTransaction");
@@ -27,7 +28,7 @@ export const validateTransaction = async (req: Request, res: Response) => {
 
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
-      const camposUsuario = {
+      const usuarioToCreate: Prisma.zlaboratorio_usuarioCreateInput = {
         //idusuario: 67,// Simulamos un error de código duplicado
         nombre: usuariopedidoValidated.nombre,
         idusuariocrea: req.session_user.usuario._idusuario ?? 1,
@@ -37,11 +38,11 @@ export const validateTransaction = async (req: Request, res: Response) => {
         estado: 1,
       };
 
-      const usuarioCreated = await zlaboratoriousuarioDao.insertZlaboratorioUsuario(tx, camposUsuario);
+      const usuarioCreated = await zlaboratoriousuarioDao.insertZlaboratorioUsuario(tx, usuarioToCreate);
       log.debug(line(), "usuarioCreated", usuarioCreated);
 
-      const camposPedido = {
-        zlaboratorio_usuario: {
+      const pedidoToCreate: Prisma.zlaboratorio_pedidoCreateInput = {
+        usuario: {
           connect: { idusuario: usuarioCreated.idusuario },
         },
         code: uuidv4().split("-")[0],
@@ -54,10 +55,13 @@ export const validateTransaction = async (req: Request, res: Response) => {
         estado: 1,
       };
 
-      const pedidoCreated = await zlaboratoriopedidoDao.insertZlaboratorioPedido(tx, camposPedido);
+      const pedidoCreated = await zlaboratoriopedidoDao.insertZlaboratorioPedido(tx, pedidoToCreate);
       log.debug(line(), "pedidoCreated", pedidoCreated);
 
       const usuarios = await zlaboratoriousuarioDao.getZlaboratorioUsuarios(tx, filter_estado);
+
+      const usuariosConPedidos = await zlaboratoriousuarioDao.getZlaboratorioUsuariosConPedidos(tx, filter_estado);
+      log.debug(line(), "usuariosConPedidos", usuariosConPedidos);
 
       const getZlaboratorioUsuarioByIdzlaboratoriousuario = await zlaboratoriousuarioDao.getZlaboratorioUsuarioByIdzlaboratoriousuario(tx, 10);
 
@@ -69,9 +73,13 @@ export const validateTransaction = async (req: Request, res: Response) => {
 
       const deleteZlaboratorioUsuario = await zlaboratoriopedidoDao.deleteZlaboratorioPedido(tx, pedidoCreated);
 
-      const pedidoUpdate = { idpedido: 3, nombre: "una computadora actualizada", fechamod: new Date() };
+      const pedidoToUpdate = {
+        idpedido: 3,
+        nombre: "una computadora actualizada",
+        fechamod: new Date(),
+      };
 
-      const updateZlaboratorioPedido = await zlaboratoriopedidoDao.updateZlaboratorioPedido(tx, pedidoUpdate);
+      const updateZlaboratorioPedido = await zlaboratoriopedidoDao.updateZlaboratorioPedido(tx, pedidoToUpdate);
 
       const pedidoEncontrado = await zlaboratoriopedidoDao.findZlaboratorioPedidoPk(tx, "c019c569pppp");
       log.debug(line(), "pedidoEncontrado", pedidoEncontrado);

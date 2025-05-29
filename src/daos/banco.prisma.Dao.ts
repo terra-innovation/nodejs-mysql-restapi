@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getBancos = async (tx: TxClient, estados: number[]): Promise<banco[]> => {
+export const getBancos = async (tx: TxClient, estados: number[]) => {
   try {
     const bancos = await tx.banco.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getBancos = async (tx: TxClient, estados: number[]): Promise<banco[
   }
 };
 
-export const getBancoByIdbanco = async (tx: TxClient, idbanco: number): Promise<banco> => {
+export const getBancoByIdbanco = async (tx: TxClient, idbanco: number) => {
   try {
     const banco = await tx.banco.findUnique({ where: { idbanco: idbanco } });
     return banco;
@@ -32,7 +32,7 @@ export const getBancoByIdbanco = async (tx: TxClient, idbanco: number): Promise<
   }
 };
 
-export const getBancoByBancoid = async (tx: TxClient, bancoid: string): Promise<banco> => {
+export const getBancoByBancoid = async (tx: TxClient, bancoid: string) => {
   try {
     const banco = await tx.banco.findFirst({
       where: {
@@ -47,7 +47,7 @@ export const getBancoByBancoid = async (tx: TxClient, bancoid: string): Promise<
   }
 };
 
-export const findBancoPk = async (tx: TxClient, bancoid: string): Promise<{ idbanco: number }> => {
+export const findBancoPk = async (tx: TxClient, bancoid: string) => {
   try {
     const banco = await tx.banco.findFirst({
       select: { idbanco: true },
@@ -63,7 +63,7 @@ export const findBancoPk = async (tx: TxClient, bancoid: string): Promise<{ idba
   }
 };
 
-export const insertBanco = async (tx: TxClient, banco: Prisma.bancoCreateInput): Promise<banco> => {
+export const insertBanco = async (tx: TxClient, banco: Prisma.bancoCreateInput) => {
   try {
     const nuevo = await tx.banco.create({ data: banco });
 
@@ -74,7 +74,7 @@ export const insertBanco = async (tx: TxClient, banco: Prisma.bancoCreateInput):
   }
 };
 
-export const updateBanco = async (tx: TxClient, banco: Partial<banco>): Promise<banco> => {
+export const updateBanco = async (tx: TxClient, banco: Partial<banco>) => {
   try {
     const result = await tx.banco.update({
       data: banco,
@@ -89,7 +89,7 @@ export const updateBanco = async (tx: TxClient, banco: Partial<banco>): Promise<
   }
 };
 
-export const deleteBanco = async (tx: TxClient, banco: Partial<banco>): Promise<banco> => {
+export const deleteBanco = async (tx: TxClient, banco: Partial<banco>) => {
   try {
     const result = await tx.banco.update({
       data: banco,
@@ -104,7 +104,7 @@ export const deleteBanco = async (tx: TxClient, banco: Partial<banco>): Promise<
   }
 };
 
-export const activateBanco = async (tx: TxClient, banco: Partial<banco>): Promise<banco> => {
+export const activateBanco = async (tx: TxClient, banco: Partial<banco>) => {
   try {
     const result = await tx.banco.update({
       data: banco,

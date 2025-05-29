@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getArchivopersonas = async (tx: TxClient, estados: number[]): Promise<archivo_persona[]> => {
+export const getArchivopersonas = async (tx: TxClient, estados: number[]) => {
   try {
     const archivopersonas = await tx.archivo_persona.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getArchivopersonas = async (tx: TxClient, estados: number[]): Promi
   }
 };
 
-export const getArchivoPersonaByIdarchivopersona = async (tx: TxClient, idarchivo: number, idpersona: number): Promise<archivo_persona> => {
+export const getArchivoPersonaByIdarchivopersona = async (tx: TxClient, idarchivo: number, idpersona: number) => {
   try {
     const archivopersona = await tx.archivo_persona.findUnique({
       where: {
@@ -40,7 +40,7 @@ export const getArchivoPersonaByIdarchivopersona = async (tx: TxClient, idarchiv
   }
 };
 
-export const insertArchivoPersona = async (tx: TxClient, archivopersona: Prisma.archivo_personaCreateInput): Promise<archivo_persona> => {
+export const insertArchivoPersona = async (tx: TxClient, archivopersona: Prisma.archivo_personaCreateInput) => {
   try {
     const nuevo = await tx.archivo_persona.create({ data: archivopersona });
 
@@ -51,7 +51,7 @@ export const insertArchivoPersona = async (tx: TxClient, archivopersona: Prisma.
   }
 };
 
-export const updateArchivoPersona = async (tx: TxClient, archivopersona: Partial<archivo_persona>): Promise<archivo_persona> => {
+export const updateArchivoPersona = async (tx: TxClient, archivopersona: Partial<archivo_persona>) => {
   try {
     const result = await tx.archivo_persona.update({
       data: archivopersona,
@@ -69,7 +69,7 @@ export const updateArchivoPersona = async (tx: TxClient, archivopersona: Partial
   }
 };
 
-export const deleteArchivoPersona = async (tx: TxClient, archivopersona: Partial<archivo_persona>): Promise<archivo_persona> => {
+export const deleteArchivoPersona = async (tx: TxClient, archivopersona: Partial<archivo_persona>) => {
   try {
     const result = await tx.archivo_persona.update({
       data: archivopersona,
@@ -87,7 +87,7 @@ export const deleteArchivoPersona = async (tx: TxClient, archivopersona: Partial
   }
 };
 
-export const activateArchivoPersona = async (tx: TxClient, archivopersona: Partial<archivo_persona>): Promise<archivo_persona> => {
+export const activateArchivoPersona = async (tx: TxClient, archivopersona: Partial<archivo_persona>) => {
   try {
     const result = await tx.archivo_persona.update({
       data: archivopersona,

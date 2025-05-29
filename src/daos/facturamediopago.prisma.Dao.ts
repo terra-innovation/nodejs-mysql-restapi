@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getFacturamediopagos = async (tx: TxClient, estados: number[]): Promise<factura_medio_pago[]> => {
+export const getFacturamediopagos = async (tx: TxClient, estados: number[]) => {
   try {
     const facturamediopagos = await tx.factura_medio_pago.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getFacturamediopagos = async (tx: TxClient, estados: number[]): Pro
   }
 };
 
-export const getFacturamediopagoByIdfacturamediopago = async (tx: TxClient, idfacturamediopago: number): Promise<factura_medio_pago> => {
+export const getFacturamediopagoByIdfacturamediopago = async (tx: TxClient, idfacturamediopago: number) => {
   try {
     const facturamediopago = await tx.factura_medio_pago.findUnique({ where: { idfacturamediopago: idfacturamediopago } });
 
@@ -35,7 +35,7 @@ export const getFacturamediopagoByIdfacturamediopago = async (tx: TxClient, idfa
   }
 };
 
-export const getFacturamediopagoByFacturamediopagoid = async (tx: TxClient, facturamediopagoid: string): Promise<factura_medio_pago> => {
+export const getFacturamediopagoByFacturamediopagoid = async (tx: TxClient, facturamediopagoid: string) => {
   try {
     const facturamediopago = await tx.factura_medio_pago.findFirst({
       where: {
@@ -50,7 +50,7 @@ export const getFacturamediopagoByFacturamediopagoid = async (tx: TxClient, fact
   }
 };
 
-export const findFacturamediopagoPk = async (tx: TxClient, facturamediopagoid: string): Promise<{ idfacturamediopago: bigint }> => {
+export const findFacturamediopagoPk = async (tx: TxClient, facturamediopagoid: string) => {
   try {
     const facturamediopago = await tx.factura_medio_pago.findFirst({
       select: { idfacturamediopago: true },
@@ -66,7 +66,7 @@ export const findFacturamediopagoPk = async (tx: TxClient, facturamediopagoid: s
   }
 };
 
-export const insertFacturamediopago = async (tx: TxClient, facturamediopago: Prisma.factura_medio_pagoCreateInput): Promise<factura_medio_pago> => {
+export const insertFacturamediopago = async (tx: TxClient, facturamediopago: Prisma.factura_medio_pagoCreateInput) => {
   try {
     const nuevo = await tx.factura_medio_pago.create({ data: facturamediopago });
 
@@ -77,7 +77,7 @@ export const insertFacturamediopago = async (tx: TxClient, facturamediopago: Pri
   }
 };
 
-export const updateFacturamediopago = async (tx: TxClient, facturamediopago: Partial<factura_medio_pago>): Promise<factura_medio_pago> => {
+export const updateFacturamediopago = async (tx: TxClient, facturamediopago: Partial<factura_medio_pago>) => {
   try {
     const result = await tx.factura_medio_pago.update({
       data: facturamediopago,
@@ -92,7 +92,7 @@ export const updateFacturamediopago = async (tx: TxClient, facturamediopago: Par
   }
 };
 
-export const deleteFacturamediopago = async (tx: TxClient, facturamediopago: Partial<factura_medio_pago>): Promise<factura_medio_pago> => {
+export const deleteFacturamediopago = async (tx: TxClient, facturamediopago: Partial<factura_medio_pago>) => {
   try {
     const result = await tx.factura_medio_pago.update({
       data: facturamediopago,

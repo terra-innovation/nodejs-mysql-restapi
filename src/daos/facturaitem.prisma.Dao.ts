@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getFacturaitems = async (tx: TxClient, estados: number[]): Promise<factura_item[]> => {
+export const getFacturaitems = async (tx: TxClient, estados: number[]) => {
   try {
     const facturaitems = await tx.factura_item.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getFacturaitems = async (tx: TxClient, estados: number[]): Promise<
   }
 };
 
-export const getFacturaitemByIdfacturaitem = async (tx: TxClient, idfacturaitem: number): Promise<factura_item> => {
+export const getFacturaitemByIdfacturaitem = async (tx: TxClient, idfacturaitem: number) => {
   try {
     const facturaitem = await tx.factura_item.findUnique({ where: { idfacturaitem: idfacturaitem } });
 
@@ -35,7 +35,7 @@ export const getFacturaitemByIdfacturaitem = async (tx: TxClient, idfacturaitem:
   }
 };
 
-export const getFacturaitemByFacturaitemid = async (tx: TxClient, facturaitemid: string): Promise<factura_item> => {
+export const getFacturaitemByFacturaitemid = async (tx: TxClient, facturaitemid: string) => {
   try {
     const facturaitem = await tx.factura_item.findFirst({
       where: {
@@ -50,7 +50,7 @@ export const getFacturaitemByFacturaitemid = async (tx: TxClient, facturaitemid:
   }
 };
 
-export const findFacturaitemPk = async (tx: TxClient, facturaitemid: string): Promise<{ idfacturaitem: bigint }> => {
+export const findFacturaitemPk = async (tx: TxClient, facturaitemid: string) => {
   try {
     const facturaitem = await tx.factura_item.findFirst({
       select: { idfacturaitem: true },
@@ -66,7 +66,7 @@ export const findFacturaitemPk = async (tx: TxClient, facturaitemid: string): Pr
   }
 };
 
-export const insertFacturaitem = async (tx: TxClient, facturaitem: Prisma.factura_itemCreateInput): Promise<factura_item> => {
+export const insertFacturaitem = async (tx: TxClient, facturaitem: Prisma.factura_itemCreateInput) => {
   try {
     const nuevo = await tx.factura_item.create({ data: facturaitem });
 
@@ -77,7 +77,7 @@ export const insertFacturaitem = async (tx: TxClient, facturaitem: Prisma.factur
   }
 };
 
-export const updateFacturaitem = async (tx: TxClient, facturaitem: Partial<factura_item>): Promise<factura_item> => {
+export const updateFacturaitem = async (tx: TxClient, facturaitem: Partial<factura_item>) => {
   try {
     const result = await tx.factura_item.update({
       data: facturaitem,
@@ -92,7 +92,7 @@ export const updateFacturaitem = async (tx: TxClient, facturaitem: Partial<factu
   }
 };
 
-export const deleteFacturaitem = async (tx: TxClient, facturaitem: Partial<factura_item>): Promise<factura_item> => {
+export const deleteFacturaitem = async (tx: TxClient, facturaitem: Partial<factura_item>) => {
   try {
     const result = await tx.factura_item.update({
       data: facturaitem,

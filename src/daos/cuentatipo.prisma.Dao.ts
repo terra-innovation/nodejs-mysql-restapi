@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getCuentatipos = async (tx: TxClient, estados: number[]): Promise<cuenta_tipo[]> => {
+export const getCuentatipos = async (tx: TxClient, estados: number[]) => {
   try {
     const cuentatipos = await tx.cuenta_tipo.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getCuentatipos = async (tx: TxClient, estados: number[]): Promise<c
   }
 };
 
-export const getCuentatipoByIdcuentatipo = async (tx: TxClient, idcuentatipo: number): Promise<cuenta_tipo> => {
+export const getCuentatipoByIdcuentatipo = async (tx: TxClient, idcuentatipo: number) => {
   try {
     const cuentatipo = await tx.cuenta_tipo.findUnique({ where: { idcuentatipo: idcuentatipo } });
 
@@ -35,7 +35,7 @@ export const getCuentatipoByIdcuentatipo = async (tx: TxClient, idcuentatipo: nu
   }
 };
 
-export const getCuentatipoByCuentatipoid = async (tx: TxClient, cuentatipoid: string): Promise<cuenta_tipo> => {
+export const getCuentatipoByCuentatipoid = async (tx: TxClient, cuentatipoid: string) => {
   try {
     const cuentatipo = await tx.cuenta_tipo.findFirst({
       where: {
@@ -50,7 +50,7 @@ export const getCuentatipoByCuentatipoid = async (tx: TxClient, cuentatipoid: st
   }
 };
 
-export const findCuentatipoPk = async (tx: TxClient, cuentatipoid: string): Promise<{ idcuentatipo: number }> => {
+export const findCuentatipoPk = async (tx: TxClient, cuentatipoid: string) => {
   try {
     const cuentatipo = await tx.cuenta_tipo.findFirst({
       select: { idcuentatipo: true },
@@ -66,7 +66,7 @@ export const findCuentatipoPk = async (tx: TxClient, cuentatipoid: string): Prom
   }
 };
 
-export const insertCuentatipo = async (tx: TxClient, cuentatipo: Prisma.cuenta_tipoCreateInput): Promise<cuenta_tipo> => {
+export const insertCuentatipo = async (tx: TxClient, cuentatipo: Prisma.cuenta_tipoCreateInput) => {
   try {
     const nuevo = await tx.cuenta_tipo.create({ data: cuentatipo });
 
@@ -77,7 +77,7 @@ export const insertCuentatipo = async (tx: TxClient, cuentatipo: Prisma.cuenta_t
   }
 };
 
-export const updateCuentatipo = async (tx: TxClient, cuentatipo: Partial<cuenta_tipo>): Promise<cuenta_tipo> => {
+export const updateCuentatipo = async (tx: TxClient, cuentatipo: Partial<cuenta_tipo>) => {
   try {
     const result = await tx.cuenta_tipo.update({
       data: cuentatipo,
@@ -92,7 +92,7 @@ export const updateCuentatipo = async (tx: TxClient, cuentatipo: Partial<cuenta_
   }
 };
 
-export const deleteCuentatipo = async (tx: TxClient, cuentatipo: Partial<cuenta_tipo>): Promise<cuenta_tipo> => {
+export const deleteCuentatipo = async (tx: TxClient, cuentatipo: Partial<cuenta_tipo>) => {
   try {
     const result = await tx.cuenta_tipo.update({
       data: cuentatipo,

@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getGeneros = async (tx: TxClient, estados: number[]): Promise<genero[]> => {
+export const getGeneros = async (tx: TxClient, estados: number[]) => {
   try {
     const generos = await tx.genero.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getGeneros = async (tx: TxClient, estados: number[]): Promise<gener
   }
 };
 
-export const getGeneroByIdgenero = async (tx: TxClient, idgenero: number): Promise<genero> => {
+export const getGeneroByIdgenero = async (tx: TxClient, idgenero: number) => {
   try {
     const genero = await tx.genero.findUnique({ where: { idgenero: idgenero } });
 
@@ -35,7 +35,7 @@ export const getGeneroByIdgenero = async (tx: TxClient, idgenero: number): Promi
   }
 };
 
-export const getGeneroByGeneroid = async (tx: TxClient, generoid: string): Promise<genero> => {
+export const getGeneroByGeneroid = async (tx: TxClient, generoid: string) => {
   try {
     const genero = await tx.genero.findFirst({
       where: {
@@ -50,7 +50,7 @@ export const getGeneroByGeneroid = async (tx: TxClient, generoid: string): Promi
   }
 };
 
-export const findGeneroPk = async (tx: TxClient, generoid: string): Promise<{ idgenero: number }> => {
+export const findGeneroPk = async (tx: TxClient, generoid: string) => {
   try {
     const genero = await tx.genero.findFirst({
       select: { idgenero: true },
@@ -66,7 +66,7 @@ export const findGeneroPk = async (tx: TxClient, generoid: string): Promise<{ id
   }
 };
 
-export const insertGenero = async (tx: TxClient, genero: Prisma.generoCreateInput): Promise<genero> => {
+export const insertGenero = async (tx: TxClient, genero: Prisma.generoCreateInput) => {
   try {
     const nuevo = await tx.genero.create({ data: genero });
 
@@ -77,7 +77,7 @@ export const insertGenero = async (tx: TxClient, genero: Prisma.generoCreateInpu
   }
 };
 
-export const updateGenero = async (tx: TxClient, genero: Partial<genero>): Promise<genero> => {
+export const updateGenero = async (tx: TxClient, genero: Partial<genero>) => {
   try {
     const result = await tx.genero.update({
       data: genero,
@@ -92,7 +92,7 @@ export const updateGenero = async (tx: TxClient, genero: Partial<genero>): Promi
   }
 };
 
-export const deleteGenero = async (tx: TxClient, genero: Partial<genero>): Promise<genero> => {
+export const deleteGenero = async (tx: TxClient, genero: Partial<genero>) => {
   try {
     const result = await tx.genero.update({
       data: genero,

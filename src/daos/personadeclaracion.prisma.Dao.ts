@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getPersonadeclaracions = async (tx: TxClient, estados: number[]): Promise<persona_declaracion[]> => {
+export const getPersonadeclaracions = async (tx: TxClient, estados: number[]) => {
   try {
     const personadeclaracions = await tx.persona_declaracion.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getPersonadeclaracions = async (tx: TxClient, estados: number[]): P
   }
 };
 
-export const getPersonadeclaracionByIdpersonadeclaracion = async (tx: TxClient, idpersonadeclaracion: number): Promise<persona_declaracion> => {
+export const getPersonadeclaracionByIdpersonadeclaracion = async (tx: TxClient, idpersonadeclaracion: number) => {
   try {
     const personadeclaracion = await tx.persona_declaracion.findUnique({ where: { idpersonadeclaracion: idpersonadeclaracion } });
 
@@ -35,7 +35,7 @@ export const getPersonadeclaracionByIdpersonadeclaracion = async (tx: TxClient, 
   }
 };
 
-export const getPersonadeclaracionByPersonadeclaracionid = async (tx: TxClient, personadeclaracionid: string): Promise<persona_declaracion> => {
+export const getPersonadeclaracionByPersonadeclaracionid = async (tx: TxClient, personadeclaracionid: string) => {
   try {
     const personadeclaracion = await tx.persona_declaracion.findFirst({
       where: {
@@ -50,7 +50,7 @@ export const getPersonadeclaracionByPersonadeclaracionid = async (tx: TxClient, 
   }
 };
 
-export const findPersonadeclaracionPk = async (tx: TxClient, personadeclaracionid: string): Promise<{ idpersonadeclaracion: bigint }> => {
+export const findPersonadeclaracionPk = async (tx: TxClient, personadeclaracionid: string) => {
   try {
     const personadeclaracion = await tx.persona_declaracion.findFirst({
       select: { idpersonadeclaracion: true },
@@ -66,7 +66,7 @@ export const findPersonadeclaracionPk = async (tx: TxClient, personadeclaracioni
   }
 };
 
-export const insertPersonadeclaracion = async (tx: TxClient, personadeclaracion: Prisma.persona_declaracionCreateInput): Promise<persona_declaracion> => {
+export const insertPersonadeclaracion = async (tx: TxClient, personadeclaracion: Prisma.persona_declaracionCreateInput) => {
   try {
     const nuevo = await tx.persona_declaracion.create({ data: personadeclaracion });
 
@@ -77,7 +77,7 @@ export const insertPersonadeclaracion = async (tx: TxClient, personadeclaracion:
   }
 };
 
-export const updatePersonadeclaracion = async (tx: TxClient, personadeclaracion: Partial<persona_declaracion>): Promise<persona_declaracion> => {
+export const updatePersonadeclaracion = async (tx: TxClient, personadeclaracion: Partial<persona_declaracion>) => {
   try {
     const result = await tx.persona_declaracion.update({
       data: personadeclaracion,
@@ -92,7 +92,7 @@ export const updatePersonadeclaracion = async (tx: TxClient, personadeclaracion:
   }
 };
 
-export const deletePersonadeclaracion = async (tx: TxClient, personadeclaracion: Partial<persona_declaracion>): Promise<persona_declaracion> => {
+export const deletePersonadeclaracion = async (tx: TxClient, personadeclaracion: Partial<persona_declaracion>) => {
   try {
     const result = await tx.persona_declaracion.update({
       data: personadeclaracion,

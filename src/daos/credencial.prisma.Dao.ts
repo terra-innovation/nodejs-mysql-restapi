@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getCredencials = async (tx: TxClient, estados: number[]): Promise<credencial[]> => {
+export const getCredencials = async (tx: TxClient, estados: number[]) => {
   try {
     const credencials = await tx.credencial.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getCredencials = async (tx: TxClient, estados: number[]): Promise<c
   }
 };
 
-export const getCredencialByIdusuario = async (tx: TxClient, idusuario: bigint): Promise<credencial> => {
+export const getCredencialByIdusuario = async (tx: TxClient, idusuario: bigint) => {
   try {
     const credencial = await tx.credencial.findFirst({
       where: {
@@ -37,7 +37,7 @@ export const getCredencialByIdusuario = async (tx: TxClient, idusuario: bigint):
   }
 };
 
-export const getCredencialByIdcredencial = async (tx: TxClient, idcredencial: number): Promise<credencial> => {
+export const getCredencialByIdcredencial = async (tx: TxClient, idcredencial: number) => {
   try {
     const credencial = await tx.credencial.findUnique({ where: { idcredencial: idcredencial } });
 
@@ -50,7 +50,7 @@ export const getCredencialByIdcredencial = async (tx: TxClient, idcredencial: nu
   }
 };
 
-export const getCredencialByCredencialid = async (tx: TxClient, credencialid: string): Promise<credencial> => {
+export const getCredencialByCredencialid = async (tx: TxClient, credencialid: string) => {
   try {
     const credencial = await tx.credencial.findFirst({
       where: {
@@ -65,7 +65,7 @@ export const getCredencialByCredencialid = async (tx: TxClient, credencialid: st
   }
 };
 
-export const findCredencialPk = async (tx: TxClient, credencialid: string): Promise<{ idcredencial: bigint }> => {
+export const findCredencialPk = async (tx: TxClient, credencialid: string) => {
   try {
     const credencial = await tx.credencial.findFirst({
       select: { idcredencial: true },
@@ -80,7 +80,7 @@ export const findCredencialPk = async (tx: TxClient, credencialid: string): Prom
   }
 };
 
-export const insertCredencial = async (tx: TxClient, credencial: Prisma.credencialCreateInput): Promise<credencial> => {
+export const insertCredencial = async (tx: TxClient, credencial: Prisma.credencialCreateInput) => {
   try {
     const nuevo = await tx.credencial.create({ data: credencial });
 
@@ -91,7 +91,7 @@ export const insertCredencial = async (tx: TxClient, credencial: Prisma.credenci
   }
 };
 
-export const updateCredencial = async (tx: TxClient, credencial: Partial<credencial>): Promise<credencial> => {
+export const updateCredencial = async (tx: TxClient, credencial: Partial<credencial>) => {
   try {
     const result = await tx.credencial.update({
       data: credencial,
@@ -106,7 +106,7 @@ export const updateCredencial = async (tx: TxClient, credencial: Partial<credenc
   }
 };
 
-export const deleteCredencial = async (tx: TxClient, credencial: Partial<credencial>): Promise<credencial> => {
+export const deleteCredencial = async (tx: TxClient, credencial: Partial<credencial>) => {
   try {
     const result = await tx.credencial.update({
       data: credencial,

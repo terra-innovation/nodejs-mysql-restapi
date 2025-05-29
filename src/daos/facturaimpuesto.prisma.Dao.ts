@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getFacturaimpuestos = async (tx: TxClient, estados: number[]): Promise<factura_impuesto[]> => {
+export const getFacturaimpuestos = async (tx: TxClient, estados: number[]) => {
   try {
     const facturaimpuestos = await tx.factura_impuesto.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getFacturaimpuestos = async (tx: TxClient, estados: number[]): Prom
   }
 };
 
-export const getFacturaimpuestoByIdfacturaimpuesto = async (tx: TxClient, idfacturaimpuesto: number): Promise<factura_impuesto> => {
+export const getFacturaimpuestoByIdfacturaimpuesto = async (tx: TxClient, idfacturaimpuesto: number) => {
   try {
     const facturaimpuesto = await tx.factura_impuesto.findUnique({
       where: {
@@ -36,7 +36,7 @@ export const getFacturaimpuestoByIdfacturaimpuesto = async (tx: TxClient, idfact
   }
 };
 
-export const getFacturaimpuestoByFacturaimpuestoid = async (tx: TxClient, facturaimpuestoid: string): Promise<factura_impuesto> => {
+export const getFacturaimpuestoByFacturaimpuestoid = async (tx: TxClient, facturaimpuestoid: string) => {
   try {
     const facturaimpuesto = await tx.factura_impuesto.findFirst({
       where: {
@@ -51,7 +51,7 @@ export const getFacturaimpuestoByFacturaimpuestoid = async (tx: TxClient, factur
   }
 };
 
-export const findFacturaimpuestoPk = async (tx: TxClient, facturaimpuestoid: string): Promise<{ idfacturaimpuesto: bigint }> => {
+export const findFacturaimpuestoPk = async (tx: TxClient, facturaimpuestoid: string) => {
   try {
     const facturaimpuesto = await tx.factura_impuesto.findFirst({
       select: { idfacturaimpuesto: true },
@@ -67,7 +67,7 @@ export const findFacturaimpuestoPk = async (tx: TxClient, facturaimpuestoid: str
   }
 };
 
-export const insertFacturaimpuesto = async (tx: TxClient, facturaimpuesto: Prisma.factura_impuestoCreateInput): Promise<factura_impuesto> => {
+export const insertFacturaimpuesto = async (tx: TxClient, facturaimpuesto: Prisma.factura_impuestoCreateInput) => {
   try {
     const nuevo = await tx.factura_impuesto.create({ data: facturaimpuesto });
 
@@ -78,7 +78,7 @@ export const insertFacturaimpuesto = async (tx: TxClient, facturaimpuesto: Prism
   }
 };
 
-export const updateFacturaimpuesto = async (tx: TxClient, facturaimpuesto: Partial<factura_impuesto>): Promise<factura_impuesto> => {
+export const updateFacturaimpuesto = async (tx: TxClient, facturaimpuesto: Partial<factura_impuesto>) => {
   try {
     const result = await tx.factura_impuesto.update({
       data: facturaimpuesto,
@@ -93,7 +93,7 @@ export const updateFacturaimpuesto = async (tx: TxClient, facturaimpuesto: Parti
   }
 };
 
-export const deleteFacturaimpuesto = async (tx: TxClient, facturaimpuesto: Partial<factura_impuesto>): Promise<factura_impuesto> => {
+export const deleteFacturaimpuesto = async (tx: TxClient, facturaimpuesto: Partial<factura_impuesto>) => {
   try {
     const result = await tx.factura_impuesto.update({
       data: facturaimpuesto,

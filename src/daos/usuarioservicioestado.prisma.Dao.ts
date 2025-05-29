@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getUsuarioservicioestados = async (tx: TxClient, estados: number[]): Promise<usuario_servicio_estado[]> => {
+export const getUsuarioservicioestados = async (tx: TxClient, estados: number[]) => {
   try {
     const usuarioservicioestados = await tx.usuario_servicio_estado.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getUsuarioservicioestados = async (tx: TxClient, estados: number[])
   }
 };
 
-export const getUsuarioservicioestadoByIdusuarioservicioestado = async (tx: TxClient, idusuarioservicioestado: number): Promise<usuario_servicio_estado> => {
+export const getUsuarioservicioestadoByIdusuarioservicioestado = async (tx: TxClient, idusuarioservicioestado: number) => {
   try {
     const usuarioservicioestado = await tx.usuario_servicio_estado.findUnique({
       where: {
@@ -37,7 +37,7 @@ export const getUsuarioservicioestadoByIdusuarioservicioestado = async (tx: TxCl
   }
 };
 
-export const getUsuarioservicioestadoByUsuarioservicioestadoid = async (tx: TxClient, usuarioservicioestadoid: string): Promise<usuario_servicio_estado> => {
+export const getUsuarioservicioestadoByUsuarioservicioestadoid = async (tx: TxClient, usuarioservicioestadoid: string) => {
   try {
     const usuarioservicioestado = await tx.usuario_servicio_estado.findFirst({
       where: {
@@ -52,7 +52,7 @@ export const getUsuarioservicioestadoByUsuarioservicioestadoid = async (tx: TxCl
   }
 };
 
-export const findUsuarioservicioestadoPk = async (tx: TxClient, usuarioservicioestadoid: string): Promise<{ idusuarioservicioestado: number }> => {
+export const findUsuarioservicioestadoPk = async (tx: TxClient, usuarioservicioestadoid: string) => {
   try {
     const usuarioservicioestado = await tx.usuario_servicio_estado.findFirst({
       select: { idusuarioservicioestado: true },
@@ -68,7 +68,7 @@ export const findUsuarioservicioestadoPk = async (tx: TxClient, usuarioservicioe
   }
 };
 
-export const insertUsuarioservicioestado = async (tx: TxClient, usuarioservicioestado: Prisma.usuario_servicio_estadoCreateInput): Promise<usuario_servicio_estado> => {
+export const insertUsuarioservicioestado = async (tx: TxClient, usuarioservicioestado: Prisma.usuario_servicio_estadoCreateInput) => {
   try {
     const nuevo = await tx.usuario_servicio_estado.create({ data: usuarioservicioestado });
 
@@ -79,7 +79,7 @@ export const insertUsuarioservicioestado = async (tx: TxClient, usuarioservicioe
   }
 };
 
-export const updateUsuarioservicioestado = async (tx: TxClient, usuarioservicioestado: Partial<usuario_servicio_estado>): Promise<usuario_servicio_estado> => {
+export const updateUsuarioservicioestado = async (tx: TxClient, usuarioservicioestado: Partial<usuario_servicio_estado>) => {
   try {
     const result = await tx.usuario_servicio_estado.update({
       data: usuarioservicioestado,
@@ -94,7 +94,7 @@ export const updateUsuarioservicioestado = async (tx: TxClient, usuarioservicioe
   }
 };
 
-export const deleteUsuarioservicioestado = async (tx: TxClient, usuarioservicioestado: Partial<usuario_servicio_estado>): Promise<usuario_servicio_estado> => {
+export const deleteUsuarioservicioestado = async (tx: TxClient, usuarioservicioestado: Partial<usuario_servicio_estado>) => {
   try {
     const result = await tx.usuario_servicio_estado.update({
       data: usuarioservicioestado,

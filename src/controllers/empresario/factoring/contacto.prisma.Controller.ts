@@ -1,4 +1,4 @@
-import type { Prisma } from "#src/models/prisma/ft_factoring/client";
+import { Prisma } from "#src/models/prisma/ft_factoring/client";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 
@@ -14,7 +14,7 @@ import { log, line } from "#src/utils/logger.pino.js";
 import { Sequelize, Op } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-import { contacto } from "#root/src/models/ft_factoring/Contacto";
+import type { contacto } from "#src/models/prisma/ft_factoring/client";
 
 export const getContactos = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getContactos");
@@ -27,7 +27,7 @@ export const getContactos = async (req: Request, res: Response) => {
     .required();
   const contactoValidated = contactoSchema.validateSync({ ...req.body }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "contactoValidated:", contactoValidated);
-  const resultado = await prismaFT.client.$transaction(
+  const contactosFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const session_idusuario = req.session_user.usuario._idusuario;
       const filter_estados = [1];
@@ -43,25 +43,25 @@ export const getContactos = async (req: Request, res: Response) => {
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var factura_upload = await facturaDao.getFacturaByIdfacturaAndIdusuarioupload(tx, factura._idfactura, session_idusuario);
+      var factura_upload = await facturaDao.getFacturaByIdfacturaAndIdusuarioupload(tx, factura.idfactura, session_idusuario);
       if (!factura_upload) {
-        log.warn(line(), "Factura no asociada al usuario: ", factura.dataValues, session_idusuario);
+        log.warn(line(), "Factura no asociada al usuario: ", { factura, session_idusuario });
         throw new ClientError("Datos no válidos", 404);
       }
 
       const isEmpresaAllowed = empresa.ruc === factura_upload.cliente_ruc;
       if (!isEmpresaAllowed) {
-        log.warn(line(), "Empresa aceptante no asociada a la factura: ", empresa.dataValues, factura_upload.dataValues);
+        log.warn(line(), "Empresa aceptante no asociada a la factura: ", { empresa, factura_upload });
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const contactos = await contactoDao.getContactosByIdempresas(tx, [empresa._idempresa], filter_estados);
+      const contactos = await contactoDao.getContactosByIdempresas(tx, [empresa.idempresa], filter_estados);
       var contactosJson = jsonUtils.sequelizeToJSON(contactos);
       //log.info(line(),empresaObfuscated);
 
       var contactosFiltered = jsonUtils.removeAttributes(contactosJson, ["score"]);
       contactosFiltered = jsonUtils.removeAttributesPrivates(contactosFiltered);
-      return {};
+      return contactosFiltered;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -88,7 +88,7 @@ export const createContacto = async (req: Request, res: Response) => {
   var contactoValidated = contactoCreateSchema.validateSync({ ...req.body }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "contactoValidated:", contactoValidated);
 
-  const resultado = await prismaFT.client.$transaction(
+  const contactoFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const session_idusuario = req.session_user.usuario._idusuario;
       const filter_estados = [1];
@@ -104,49 +104,49 @@ export const createContacto = async (req: Request, res: Response) => {
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var factura_upload = await facturaDao.getFacturaByIdfacturaAndIdusuarioupload(tx, factura._idfactura, session_idusuario);
+      var factura_upload = await facturaDao.getFacturaByIdfacturaAndIdusuarioupload(tx, factura.idfactura, session_idusuario);
       if (!factura_upload) {
-        log.warn(line(), "Factura no asociada al usuario: ", factura.dataValues, session_idusuario);
+        log.warn(line(), "Factura no asociada al usuario: ", { factura, session_idusuario });
         throw new ClientError("Datos no válidos", 404);
       }
 
       const isEmpresaAllowed = empresa.ruc === factura_upload.cliente_ruc;
       if (!isEmpresaAllowed) {
-        log.warn(line(), "Empresa aceptante no asociada a la factura: ", empresa.dataValues, factura_upload.dataValues);
+        log.warn(line(), "Empresa aceptante no asociada a la factura: ", { empresa, factura_upload });
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var contacto_por_email = await contactoDao.getContactosByIdempresaAndEmail(tx, empresa._idempresa, contactoValidated.email, filter_estado);
+      var contacto_por_email = await contactoDao.getContactosByIdempresaAndEmail(tx, empresa.idempresa, contactoValidated.email, filter_estado);
       if (contacto_por_email && contacto_por_email.length > 0) {
         log.warn(line(), "El email [" + contactoValidated.email + "] se encuentra registrado. Ingrese un contacto diferente.");
         throw new ClientError("El email [" + contactoValidated.email + "] se encuentra registrado. Ingrese un contacto diferente.", 404);
       }
 
-      var camposContactoFk: Partial<contacto> = {};
-      camposContactoFk._idempresa = empresa._idempresa;
+      const contactoToCreate: Prisma.contactoCreateInput = {
+        empresa: { connect: { idempresa: empresa.idempresa } },
+        contactoid: uuidv4(),
+        code: uuidv4().split("-")[0],
 
-      var camposContactoAdicionales: Partial<contacto> = {};
-      camposContactoAdicionales.contactoid = uuidv4();
-      camposContactoAdicionales.code = uuidv4().split("-")[0];
+        nombrecontacto: contactoValidated.nombrecontacto,
+        apellidocontacto: contactoValidated.apellidocontacto,
+        cargo: contactoValidated.cargo,
+        email: contactoValidated.email,
+        celular: contactoValidated.celular,
+        telefono: contactoValidated.telefono,
 
-      var camposContactoAuditoria: Partial<contacto> = {};
-      camposContactoAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
-      camposContactoAuditoria.fechacrea = new Date();
-      camposContactoAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
-      camposContactoAuditoria.fechamod = new Date();
-      camposContactoAuditoria.estado = 1;
+        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
 
-      const contactoCreated = await contactoDao.insertContacto(tx, {
-        ...camposContactoFk,
-        ...camposContactoAdicionales,
-        ...contactoValidated,
-        ...camposContactoAuditoria,
-      });
+      const contactoCreated = await contactoDao.insertContacto(tx, contactoToCreate);
       log.debug(line(), "contactoCreated:", contactoCreated);
 
-      const contactoFiltered = jsonUtils.removeAttributesPrivates(contactoCreated.dataValues);
+      const contactoFiltered = jsonUtils.removeAttributesPrivates(contactoCreated);
 
-      return {};
+      return contactoFiltered;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -164,7 +164,7 @@ export const getContactoMaster = async (req: Request, res: Response) => {
     .required();
   const contactoValidated = contactoSchema.validateSync({ ...req.body }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "contactoValidated:", contactoValidated);
-  const resultado = await prismaFT.client.$transaction(
+  const contactoMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const session_idusuario = req.session_user.usuario._idusuario;
       const filter_estados = [1];
@@ -180,15 +180,15 @@ export const getContactoMaster = async (req: Request, res: Response) => {
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var factura_upload = await facturaDao.getFacturaByIdfacturaAndIdusuarioupload(tx, factura._idfactura, session_idusuario);
+      var factura_upload = await facturaDao.getFacturaByIdfacturaAndIdusuarioupload(tx, factura.idfactura, session_idusuario);
       if (!factura_upload) {
-        log.warn(line(), "Factura no asociada al usuario: ", factura.dataValues, session_idusuario);
+        log.warn(line(), "Factura no asociada al usuario: ", { factura, session_idusuario });
         throw new ClientError("Datos no válidos", 404);
       }
 
       const isEmpresaAllowed = empresa.ruc === factura_upload.cliente_ruc;
       if (!isEmpresaAllowed) {
-        log.warn(line(), "Empresa aceptante no asociada a la factura: ", empresa.dataValues, factura_upload.dataValues);
+        log.warn(line(), "Empresa aceptante no asociada a la factura: ", { empresa, factura_upload });
         throw new ClientError("Datos no válidos", 404);
       }
 
@@ -201,7 +201,7 @@ export const getContactoMaster = async (req: Request, res: Response) => {
       //jsonUtils.prettyPrint(contactoMasterObfuscated);
       var contactoMasterFiltered = jsonUtils.removeAttributesPrivates(contactoMasterObfuscated);
       //jsonUtils.prettyPrint(contactoMaster);
-      return {};
+      return contactoMasterFiltered;
     },
     { timeout: prismaFT.transactionTimeout }
   );

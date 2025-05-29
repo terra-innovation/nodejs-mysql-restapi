@@ -17,7 +17,7 @@ export const getComisionBCP = async (tx: TxClient) => {
   return await getConfiguracionappByIdconfiguracionapp(tx, 3);
 };
 
-export const getConfiguracionapps = async (tx: TxClient, estados: number[]): Promise<configuracion_app[]> => {
+export const getConfiguracionapps = async (tx: TxClient, estados: number[]) => {
   try {
     const configuracionapps = await tx.configuracion_app.findMany({
       where: {
@@ -34,7 +34,7 @@ export const getConfiguracionapps = async (tx: TxClient, estados: number[]): Pro
   }
 };
 
-export const getConfiguracionappByIdconfiguracionapp = async (tx: TxClient, idconfiguracionapp: number): Promise<configuracion_app> => {
+export const getConfiguracionappByIdconfiguracionapp = async (tx: TxClient, idconfiguracionapp: number) => {
   try {
     const configuracionapp = await tx.configuracion_app.findUnique({
       where: { idconfiguracionapp: idconfiguracionapp },
@@ -47,7 +47,7 @@ export const getConfiguracionappByIdconfiguracionapp = async (tx: TxClient, idco
   }
 };
 
-export const getConfiguracionappByConfiguracionappid = async (tx: TxClient, configuracionappid: string): Promise<configuracion_app> => {
+export const getConfiguracionappByConfiguracionappid = async (tx: TxClient, configuracionappid: string) => {
   try {
     const configuracionapp = await tx.configuracion_app.findFirst({
       where: {
@@ -62,7 +62,7 @@ export const getConfiguracionappByConfiguracionappid = async (tx: TxClient, conf
   }
 };
 
-export const findConfiguracionappPk = async (tx: TxClient, configuracionappid: string): Promise<{ idconfiguracionapp: number }> => {
+export const findConfiguracionappPk = async (tx: TxClient, configuracionappid: string) => {
   try {
     const configuracionapp = await tx.configuracion_app.findFirst({
       select: { idconfiguracionapp: true },
@@ -78,7 +78,7 @@ export const findConfiguracionappPk = async (tx: TxClient, configuracionappid: s
   }
 };
 
-export const insertConfiguracionapp = async (tx: TxClient, configuracionapp: Prisma.configuracion_appCreateInput): Promise<configuracion_app> => {
+export const insertConfiguracionapp = async (tx: TxClient, configuracionapp: Prisma.configuracion_appCreateInput) => {
   try {
     const nuevo = await tx.configuracion_app.create({ data: configuracionapp });
 
@@ -89,7 +89,7 @@ export const insertConfiguracionapp = async (tx: TxClient, configuracionapp: Pri
   }
 };
 
-export const updateConfiguracionapp = async (tx: TxClient, configuracionapp: Partial<configuracion_app>): Promise<configuracion_app> => {
+export const updateConfiguracionapp = async (tx: TxClient, configuracionapp: Partial<configuracion_app>) => {
   try {
     const result = await tx.configuracion_app.update({
       data: configuracionapp,
@@ -104,7 +104,7 @@ export const updateConfiguracionapp = async (tx: TxClient, configuracionapp: Par
   }
 };
 
-export const deleteConfiguracionapp = async (tx: TxClient, configuracionapp: Partial<configuracion_app>): Promise<configuracion_app> => {
+export const deleteConfiguracionapp = async (tx: TxClient, configuracionapp: Partial<configuracion_app>) => {
   try {
     const result = await tx.configuracion_app.update({
       data: configuracionapp,

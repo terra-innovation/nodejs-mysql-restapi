@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getFactoringestados = async (tx: TxClient, estados: number[]): Promise<factoring_estado[]> => {
+export const getFactoringestados = async (tx: TxClient, estados: number[]) => {
   try {
     const factoringestados = await tx.factoring_estado.findMany({
       where: {
@@ -25,7 +25,7 @@ export const getFactoringestados = async (tx: TxClient, estados: number[]): Prom
   }
 };
 
-export const getFactoringestadoByIdfactoringestado = async (tx: TxClient, idfactoringestado: number): Promise<factoring_estado> => {
+export const getFactoringestadoByIdfactoringestado = async (tx: TxClient, idfactoringestado: number) => {
   try {
     const factoringestado = await tx.factoring_estado.findUnique({ where: { idfactoringestado: idfactoringestado } });
 
@@ -38,7 +38,7 @@ export const getFactoringestadoByIdfactoringestado = async (tx: TxClient, idfact
   }
 };
 
-export const getFactoringestadoByFactoringestadoid = async (tx: TxClient, factoringestadoid: string): Promise<factoring_estado> => {
+export const getFactoringestadoByFactoringestadoid = async (tx: TxClient, factoringestadoid: string) => {
   try {
     const factoringestado = await tx.factoring_estado.findFirst({
       where: {
@@ -53,7 +53,7 @@ export const getFactoringestadoByFactoringestadoid = async (tx: TxClient, factor
   }
 };
 
-export const findFactoringestadoPk = async (tx: TxClient, factoringestadoid: string): Promise<{ idfactoringestado: number }> => {
+export const findFactoringestadoPk = async (tx: TxClient, factoringestadoid: string) => {
   try {
     const factoringestado = await tx.factoring_estado.findFirst({
       select: { idfactoringestado: true },
@@ -69,7 +69,7 @@ export const findFactoringestadoPk = async (tx: TxClient, factoringestadoid: str
   }
 };
 
-export const insertFactoringestado = async (tx: TxClient, factoringestado: Prisma.factoring_estadoCreateInput): Promise<factoring_estado> => {
+export const insertFactoringestado = async (tx: TxClient, factoringestado: Prisma.factoring_estadoCreateInput) => {
   try {
     const nuevo = await tx.factoring_estado.create({ data: factoringestado });
 
@@ -80,7 +80,7 @@ export const insertFactoringestado = async (tx: TxClient, factoringestado: Prism
   }
 };
 
-export const updateFactoringestado = async (tx: TxClient, factoringestado: Partial<factoring_estado>): Promise<factoring_estado> => {
+export const updateFactoringestado = async (tx: TxClient, factoringestado: Partial<factoring_estado>) => {
   try {
     const result = await tx.factoring_estado.update({
       data: factoringestado,
@@ -95,7 +95,7 @@ export const updateFactoringestado = async (tx: TxClient, factoringestado: Parti
   }
 };
 
-export const deleteFactoringestado = async (tx: TxClient, factoringestado: Partial<factoring_estado>): Promise<factoring_estado> => {
+export const deleteFactoringestado = async (tx: TxClient, factoringestado: Partial<factoring_estado>) => {
   try {
     const result = await tx.factoring_estado.update({
       data: factoringestado,

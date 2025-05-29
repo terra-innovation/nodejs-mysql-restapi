@@ -46,7 +46,7 @@ export const updateFactoringhistorialestado = async (req: Request, res: Response
       }
 
       var camposFk: Partial<factoring_historial_estado> = {};
-      camposFk._idfactoringhistorialestado = factoringhistorialestado._idfactoringhistorialestado;
+      camposFk.idfactoringhistorialestado = factoringhistorialestado.idfactoringhistorialestado;
 
       var camposAuditoria: Partial<factoring_historial_estado> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
@@ -89,7 +89,7 @@ export const getFactoringhistorialestadosByFactoringid = async (req: Request, re
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const factoringhistorialestados = await factoringhistorialestadoDao.getFactoringhistorialestadosByIdfactoring(tx, factoring._idfactoring, filter_estado);
+      const factoringhistorialestados = await factoringhistorialestadoDao.getFactoringhistorialestadosByIdfactoring(tx, factoring.idfactoring, filter_estado);
       var factoringhistorialestadosJson = jsonUtils.sequelizeToJSON(factoringhistorialestados);
       //log.info(line(),factoringpropuestaObfuscated);
 
@@ -170,8 +170,8 @@ export const createFactoringhistorialestado = async (req: Request, res: Response
       }
 
       var camposFk: Partial<factoring_historial_estado> = {};
-      camposFk._idfactoring = factoring._idfactoring;
-      camposFk._idfactoringestado = factoringestado._idfactoringestado;
+      camposFk.idfactoring = factoring.idfactoring;
+      camposFk.idfactoringestado = factoringestado.idfactoringestado;
       camposFk._idusuariomodifica = req.session_user.usuario._idusuario;
 
       var camposAdicionales: Partial<factoring_historial_estado> = {};
@@ -192,10 +192,10 @@ export const createFactoringhistorialestado = async (req: Request, res: Response
         ...camposAuditoria,
       });
 
-      log.debug(line(), "factoringhistorialestadoCreated:", factoringhistorialestadoCreated.dataValues);
+      log.debug(line(), "factoringhistorialestadoCreated:", factoringhistorialestadoCreated);
       const factoringUpdate = {
         factoringid: factoringhistorialestadoValidated.factoringid,
-        _idfactoringestado: factoringestado._idfactoringestado,
+        _idfactoringestado: factoringestado.idfactoringestado,
         idusuariomod: req.session_user.usuario._idusuario ?? 1,
         fechamod: new Date(),
       };
@@ -206,8 +206,8 @@ export const createFactoringhistorialestado = async (req: Request, res: Response
 
       for (const archivo of archivos) {
         const archivofactoringhistorialestadoCreate = {
-          _idarchivo: archivo._idarchivo,
-          _idfactoringhistorialestado: factoringhistorialestadoCreated._idfactoringhistorialestado,
+          _idarchivo: archivo.idarchivo,
+          _idfactoringhistorialestado: factoringhistorialestadoCreated.idfactoringhistorialestado,
           idusuariocrea: req.session_user.usuario._idusuario ?? 1,
           fechacrea: new Date(),
           idusuariomod: req.session_user.usuario._idusuario ?? 1,
@@ -219,7 +219,7 @@ export const createFactoringhistorialestado = async (req: Request, res: Response
           ...archivofactoringhistorialestadoCreate,
         });
 
-        log.debug(line(), "archivofactoringhistorialestadoCreated:", archivofactoringhistorialestadoCreated.dataValues);
+        log.debug(line(), "archivofactoringhistorialestadoCreated:", archivofactoringhistorialestadoCreated);
       }
 
       return {};

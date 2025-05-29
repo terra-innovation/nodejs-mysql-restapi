@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getFactoringpropuestaestados = async (tx: TxClient, estados: number[]): Promise<factoring_propuesta_estado[]> => {
+export const getFactoringpropuestaestados = async (tx: TxClient, estados: number[]) => {
   try {
     const factoringpropuestaestados = await tx.factoring_propuesta_estado.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getFactoringpropuestaestados = async (tx: TxClient, estados: number
   }
 };
 
-export const getFactoringpropuestaestadoByIdfactoringpropuestaestado = async (tx: TxClient, idfactoringpropuestaestado: number): Promise<factoring_propuesta_estado> => {
+export const getFactoringpropuestaestadoByIdfactoringpropuestaestado = async (tx: TxClient, idfactoringpropuestaestado: number) => {
   try {
     const factoringpropuestaestado = await tx.factoring_propuesta_estado.findUnique({
       where: {
@@ -37,7 +37,7 @@ export const getFactoringpropuestaestadoByIdfactoringpropuestaestado = async (tx
   }
 };
 
-export const getFactoringpropuestaestadoByFactoringpropuestaestadoid = async (tx: TxClient, factoringpropuestaestadoid: string): Promise<factoring_propuesta_estado> => {
+export const getFactoringpropuestaestadoByFactoringpropuestaestadoid = async (tx: TxClient, factoringpropuestaestadoid: string) => {
   try {
     const factoringpropuestaestado = await tx.factoring_propuesta_estado.findFirst({
       where: {
@@ -52,7 +52,7 @@ export const getFactoringpropuestaestadoByFactoringpropuestaestadoid = async (tx
   }
 };
 
-export const findFactoringpropuestaestadoPk = async (tx: TxClient, factoringpropuestaestadoid: string): Promise<{ idfactoringpropuestaestado: number }> => {
+export const findFactoringpropuestaestadoPk = async (tx: TxClient, factoringpropuestaestadoid: string) => {
   try {
     const factoringpropuestaestado = await tx.factoring_propuesta_estado.findFirst({
       select: { idfactoringpropuestaestado: true },
@@ -68,7 +68,7 @@ export const findFactoringpropuestaestadoPk = async (tx: TxClient, factoringprop
   }
 };
 
-export const insertFactoringpropuestaestado = async (tx: TxClient, factoringpropuestaestado: Prisma.factoring_propuesta_estadoCreateInput): Promise<factoring_propuesta_estado> => {
+export const insertFactoringpropuestaestado = async (tx: TxClient, factoringpropuestaestado: Prisma.factoring_propuesta_estadoCreateInput) => {
   try {
     const nuevo = await tx.factoring_propuesta_estado.create({ data: factoringpropuestaestado });
 
@@ -79,7 +79,7 @@ export const insertFactoringpropuestaestado = async (tx: TxClient, factoringprop
   }
 };
 
-export const updateFactoringpropuestaestado = async (tx: TxClient, factoringpropuestaestado: Partial<factoring_propuesta_estado>): Promise<factoring_propuesta_estado> => {
+export const updateFactoringpropuestaestado = async (tx: TxClient, factoringpropuestaestado: Partial<factoring_propuesta_estado>) => {
   try {
     const result = await tx.factoring_propuesta_estado.update({
       data: factoringpropuestaestado,
@@ -94,7 +94,7 @@ export const updateFactoringpropuestaestado = async (tx: TxClient, factoringprop
   }
 };
 
-export const deleteFactoringpropuestaestado = async (tx: TxClient, factoringpropuestaestado: Partial<factoring_propuesta_estado>): Promise<factoring_propuesta_estado> => {
+export const deleteFactoringpropuestaestado = async (tx: TxClient, factoringpropuestaestado: Partial<factoring_propuesta_estado>) => {
   try {
     const result = await tx.factoring_propuesta_estado.update({
       data: factoringpropuestaestado,

@@ -1,7 +1,7 @@
 import type { Prisma } from "#src/models/prisma/ft_factoring/client";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import { contacto } from "#root/src/models/ft_factoring/Contacto";
+import type { contacto } from "#src/models/prisma/ft_factoring/client";
 
 import * as contactoDao from "#src/daos/contacto.prisma.Dao.js";
 import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
@@ -44,12 +44,12 @@ export const updateContacto = async (req: Request, res: Response) => {
       }
 
       const empresas_cedentes = await empresaDao.getEmpresasByIdusuario(tx, _idusuario_session, filter_estados);
-      const _idcedentes = empresas_cedentes.map((empresa) => empresa._idempresa);
+      const _idcedentes = empresas_cedentes.map((empresa) => empresa.idempresa);
       const factorings = await factoringDao.getFactoringsByIdcedentes(tx, _idcedentes, filter_estados);
-      const contactoAllowed = factorings.find((factoring) => factoring._idaceptante === contacto._idempresa);
+      const contactoAllowed = factorings.find((factoring) => factoring.idaceptante === contacto.idempresa);
 
       if (!contactoAllowed) {
-        log.warn(line(), "Empresa aceptante no asociada al usuario: [" + contacto._idempresa + ", " + _idusuario_session + "]");
+        log.warn(line(), "Empresa aceptante no asociada al usuario: [" + contacto.idempresa + ", " + _idusuario_session + "]");
         throw new ClientError("Datos no válidos", 404);
       }
 
@@ -103,23 +103,23 @@ export const createContacto = async (req: Request, res: Response) => {
       }
 
       const empresas_cedentes = await empresaDao.getEmpresasByIdusuario(tx, session_idusuario, filter_estados);
-      const _idcedentes = empresas_cedentes.map((empresa) => empresa._idempresa);
+      const _idcedentes = empresas_cedentes.map((empresa) => empresa.idempresa);
       const factorings = await factoringDao.getFactoringsByIdcedentes(tx, _idcedentes, filter_estados);
-      const empresa_aceptante_por_idusuario = factorings.find((factoring) => factoring._idaceptante === empresa._idempresa);
+      const empresa_aceptante_por_idusuario = factorings.find((factoring) => factoring.idaceptante === empresa.idempresa);
 
       if (!empresa_aceptante_por_idusuario) {
         log.warn(line(), "Empresa aceptante no asociada al usuario: [" + contactoValidated.empresaid + ", " + session_idusuario + "]");
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var contacto_por_email = await contactoDao.getContactosByIdempresaAndEmail(tx, empresa_aceptante_por_idusuario._idaceptante, contactoValidated.email, filter_estado);
+      var contacto_por_email = await contactoDao.getContactosByIdempresaAndEmail(tx, empresa_aceptante_por_idusuario.idaceptante, contactoValidated.email, filter_estado);
       if (contacto_por_email && contacto_por_email.length > 0) {
         log.warn(line(), "El email [" + contactoValidated.email + "] se encuentra registrado. Ingrese un contacto diferente.");
         throw new ClientError("El email [" + contactoValidated.email + "] se encuentra registrado. Ingrese un contacto diferente.", 404);
       }
 
       var camposContactoFk: Partial<contacto> = {};
-      camposContactoFk._idempresa = empresa._idempresa;
+      camposContactoFk.idempresa = empresa.idempresa;
 
       var camposContactoAdicionales: Partial<contacto> = {};
       camposContactoAdicionales.contactoid = uuidv4();
@@ -140,7 +140,7 @@ export const createContacto = async (req: Request, res: Response) => {
       });
       log.debug(line(), "contactoCreated:", contactoCreated);
 
-      const contactoFiltered = jsonUtils.removeAttributesPrivates(contactoCreated.dataValues);
+      const contactoFiltered = jsonUtils.removeAttributesPrivates(contactoCreated);
 
       return contactoFiltered;
     },
@@ -158,9 +158,9 @@ export const getContactos = async (req: Request, res: Response) => {
       const session_idusuario = req.session_user.usuario._idusuario;
       const filter_estados = [1];
       const empresas_cedentes = await empresaDao.getEmpresasByIdusuario(tx, session_idusuario, filter_estados);
-      const _idcedentes = empresas_cedentes.map((empresa) => empresa._idempresa);
+      const _idcedentes = empresas_cedentes.map((empresa) => empresa.idempresa);
       const factorings = await factoringDao.getFactoringsByIdcedentes(tx, _idcedentes, filter_estados);
-      const _idaceptantes = factorings.map((factoring) => factoring._idaceptante);
+      const _idaceptantes = factorings.map((factoring) => factoring.idaceptante);
       const contactos = await contactoDao.getContactosByIdempresas(tx, _idaceptantes, filter_estados);
       var contactosJson = jsonUtils.sequelizeToJSON(contactos);
       //log.info(line(),empresaObfuscated);
@@ -182,13 +182,13 @@ export const getContactoMaster = async (req: Request, res: Response) => {
       const session_idusuario = req.session_user.usuario.idusuario;
       //log.info(line(),req.session_user.usuario.rol_rols);
       const roles = [2]; // Administrador
-      const rolesUsuario = req.session_user.usuario.rol_rols.map((role) => role._idrol);
+      const rolesUsuario = req.session_user.usuario.rol_rols.map((role) => role.idrol);
       const tieneRol = roles.some((rol) => rolesUsuario.includes(rol));
 
       const empresas_cedentes = await empresaDao.getEmpresasByIdusuario(tx, session_idusuario, filter_estados);
-      const _idcedentes = empresas_cedentes.map((empresa) => empresa._idempresa);
+      const _idcedentes = empresas_cedentes.map((empresa) => empresa.idempresa);
       const factorings = await factoringDao.getFactoringsByIdcedentes(tx, _idcedentes, filter_estados);
-      const _idaceptantes = factorings.map((factoring) => factoring._idaceptante);
+      const _idaceptantes = factorings.map((factoring) => factoring.idaceptante);
       const aceptantes = await empresaDao.getEmpresasByIdempresas(tx, _idaceptantes, filter_estados);
 
       var contactoMaster: Record<string, any> = {};

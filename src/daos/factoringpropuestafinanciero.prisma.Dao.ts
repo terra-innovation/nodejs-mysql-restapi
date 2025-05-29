@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getFactoringpropuestafinancieros = async (tx: TxClient, estados: number[]): Promise<factoring_propuesta_financiero[]> => {
+export const getFactoringpropuestafinancieros = async (tx: TxClient, estados: number[]) => {
   try {
     const factoringpropuestafinancieros = await tx.factoring_propuesta_financiero.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getFactoringpropuestafinancieros = async (tx: TxClient, estados: nu
   }
 };
 
-export const getFactoringpropuestafinancieroByIdfactoringpropuestafinanciero = async (tx: TxClient, idfactoringpropuestafinanciero: number): Promise<factoring_propuesta_financiero> => {
+export const getFactoringpropuestafinancieroByIdfactoringpropuestafinanciero = async (tx: TxClient, idfactoringpropuestafinanciero: number) => {
   try {
     const factoringpropuestafinanciero = await tx.factoring_propuesta_financiero.findUnique({
       where: {
@@ -37,7 +37,7 @@ export const getFactoringpropuestafinancieroByIdfactoringpropuestafinanciero = a
   }
 };
 
-export const getFactoringpropuestafinancieroByFactoringpropuestafinancieroid = async (tx: TxClient, factoringpropuestafinancieroid: string): Promise<factoring_propuesta_financiero> => {
+export const getFactoringpropuestafinancieroByFactoringpropuestafinancieroid = async (tx: TxClient, factoringpropuestafinancieroid: string) => {
   try {
     const factoringpropuestafinanciero = await tx.factoring_propuesta_financiero.findFirst({
       where: {
@@ -52,7 +52,7 @@ export const getFactoringpropuestafinancieroByFactoringpropuestafinancieroid = a
   }
 };
 
-export const findFactoringpropuestafinancieroPk = async (tx: TxClient, factoringpropuestafinancieroid: string): Promise<{ idfactoringpropuestafinanciero: number }> => {
+export const findFactoringpropuestafinancieroPk = async (tx: TxClient, factoringpropuestafinancieroid: string) => {
   try {
     const factoringpropuestafinanciero = await tx.factoring_propuesta_financiero.findFirst({
       select: { idfactoringpropuestafinanciero: true },
@@ -68,7 +68,7 @@ export const findFactoringpropuestafinancieroPk = async (tx: TxClient, factoring
   }
 };
 
-export const insertFactoringpropuestafinanciero = async (tx: TxClient, factoringpropuestafinanciero: Prisma.factoring_propuesta_financieroCreateInput): Promise<factoring_propuesta_financiero> => {
+export const insertFactoringpropuestafinanciero = async (tx: TxClient, factoringpropuestafinanciero: Prisma.factoring_propuesta_financieroCreateInput) => {
   try {
     const nuevo = await tx.factoring_propuesta_financiero.create({ data: factoringpropuestafinanciero });
 
@@ -79,7 +79,7 @@ export const insertFactoringpropuestafinanciero = async (tx: TxClient, factoring
   }
 };
 
-export const updateFactoringpropuestafinanciero = async (tx: TxClient, factoringpropuestafinanciero: Partial<factoring_propuesta_financiero>): Promise<factoring_propuesta_financiero> => {
+export const updateFactoringpropuestafinanciero = async (tx: TxClient, factoringpropuestafinanciero: Partial<factoring_propuesta_financiero>) => {
   try {
     const result = await tx.factoring_propuesta_financiero.update({
       data: factoringpropuestafinanciero,
@@ -94,7 +94,7 @@ export const updateFactoringpropuestafinanciero = async (tx: TxClient, factoring
   }
 };
 
-export const deleteFactoringpropuestafinanciero = async (tx: TxClient, factoringpropuestafinanciero: Partial<factoring_propuesta_financiero>): Promise<factoring_propuesta_financiero> => {
+export const deleteFactoringpropuestafinanciero = async (tx: TxClient, factoringpropuestafinanciero: Partial<factoring_propuesta_financiero>) => {
   try {
     const result = await tx.factoring_propuesta_financiero.update({
       data: factoringpropuestafinanciero,

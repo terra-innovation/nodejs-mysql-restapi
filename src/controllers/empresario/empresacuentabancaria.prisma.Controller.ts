@@ -23,8 +23,8 @@ import { Sequelize, Op } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import * as storageUtils from "#src/utils/storageUtils.js";
-import { cuenta_bancaria } from "#root/src/models/ft_factoring/CuentaBancaria";
-import { empresa_cuenta_bancaria } from "#root/src/models/ft_factoring/EmpresaCuentaBancaria";
+import type { cuenta_bancaria } from "#src/models/prisma/ft_factoring/client";
+import type { empresa_cuenta_bancaria } from "#src/models/prisma/ft_factoring/client";
 
 export const createEmpresacuentabancaria = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createEmpresacuentabancaria");
@@ -82,23 +82,23 @@ export const createEmpresacuentabancaria = async (req: Request, res: Response) =
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var cuentasbancarias_por_numero = await cuentabancariaDao.getCuentasbancariasByIdbancoAndNumero(tx, banco._idbanco, empresacuentabancariaValidated.numero, filter_estado);
+      var cuentasbancarias_por_numero = await cuentabancariaDao.getCuentasbancariasByIdbancoAndNumero(tx, banco.idbanco, empresacuentabancariaValidated.numero, filter_estado);
       if (cuentasbancarias_por_numero && cuentasbancarias_por_numero.length > 0) {
         log.warn(line(), "El número de cuenta [" + empresacuentabancariaValidated.numero + "] se encuentra registrado. Ingrese un número de cuenta diferente.");
         throw new ClientError("El número de cuenta [" + empresacuentabancariaValidated.numero + "] se encuentra registrado. Ingrese un número de cuenta diferente.", 404);
       }
 
-      var cuentasbancarias_por_alias = await empresacuentabancariaDao.getEmpresacuentabancariasByIdempresaAndAlias(tx, empresa_por_idusuario._idempresa, empresacuentabancariaValidated.alias, filter_estado);
+      var cuentasbancarias_por_alias = await empresacuentabancariaDao.getEmpresacuentabancariasByIdempresaAndAlias(tx, empresa_por_idusuario.idempresa, empresacuentabancariaValidated.alias, filter_estado);
       if (cuentasbancarias_por_alias && cuentasbancarias_por_alias.length > 0) {
         log.warn(line(), "El alias [" + empresacuentabancariaValidated.alias + "] se encuentra registrado. Ingrese un alias diferente.");
         throw new ClientError("El alias [" + empresacuentabancariaValidated.alias + "] se encuentra registrado. Ingrese un alias diferente.", 404);
       }
 
       var camposCuentaBancariaFk: Partial<cuenta_bancaria> = {};
-      camposCuentaBancariaFk._idbanco = banco._idbanco;
-      camposCuentaBancariaFk._idcuentatipo = cuentatipo._idcuentatipo;
-      camposCuentaBancariaFk._idmoneda = moneda._idmoneda;
-      camposCuentaBancariaFk._idcuentabancariaestado = 1; // Por defecto
+      camposCuentaBancariaFk.idbanco = banco.idbanco;
+      camposCuentaBancariaFk.idcuentatipo = cuentatipo.idcuentatipo;
+      camposCuentaBancariaFk.idmoneda = moneda.idmoneda;
+      camposCuentaBancariaFk.idcuentabancariaestado = 1; // Por defecto
 
       var camposCuentaBancariaAdicionales: Partial<cuenta_bancaria> = {};
       camposCuentaBancariaAdicionales.cuentabancariaid = uuidv4();
@@ -123,8 +123,8 @@ export const createEmpresacuentabancaria = async (req: Request, res: Response) =
       log.debug(line(), "encabezadocuentabancariaCreated:", encabezadocuentabancariaCreated);
 
       var camposEmpresaCuentaBancariaCreate: Partial<empresa_cuenta_bancaria> = {};
-      camposEmpresaCuentaBancariaCreate._idempresa = empresa_por_idusuario._idempresa;
-      camposEmpresaCuentaBancariaCreate._idcuentabancaria = cuentabancariaCreated._idcuentabancaria;
+      camposEmpresaCuentaBancariaCreate.idempresa = empresa_por_idusuario.idempresa;
+      camposEmpresaCuentaBancariaCreate.idcuentabancaria = cuentabancariaCreated.idcuentabancaria;
       camposEmpresaCuentaBancariaCreate.empresacuentabancariaid = uuidv4();
       camposEmpresaCuentaBancariaCreate.code = uuidv4().split("-")[0];
       camposEmpresaCuentaBancariaCreate.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
@@ -153,7 +153,7 @@ export const getEmpresacuentabancariaMaster = async (req: Request, res: Response
       const session_idusuario = req.session_user.usuario._idusuario;
       //log.info(line(),req.session_user.usuario.rol_rols);
       const roles = [2]; // Administrador
-      const rolesUsuario = req.session_user.usuario.rol_rols.map((role) => role._idrol);
+      const rolesUsuario = req.session_user.usuario.rol_rols.map((role) => role.idrol);
       const tieneRol = roles.some((rol) => rolesUsuario.includes(rol));
 
       const empresas = await empresaDao.getEmpresasByIdusuario(tx, session_idusuario, filter_estados);
@@ -204,13 +204,13 @@ export const updateEmpresacuentabancariaOnlyAlias = async (req: Request, res: Re
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const empresacuentabancariaAllowed = await empresacuentabancariaDao.getEmpresacuentabancariaByIdempresaAndIdusuario(tx, empresacuentabancaria._idempresa, _idusuario_session, filter_estado);
+      const empresacuentabancariaAllowed = await empresacuentabancariaDao.getEmpresacuentabancariaByIdempresaAndIdusuario(tx, empresacuentabancaria.idempresa, _idusuario_session, filter_estado);
       if (!empresacuentabancariaAllowed) {
-        log.warn(line(), "Empresa no asociada al usuario: [" + empresacuentabancaria._idempresa + ", " + _idusuario_session + "]");
+        log.warn(line(), "Empresa no asociada al usuario: [" + empresacuentabancaria.idempresa + ", " + _idusuario_session + "]");
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const cuentabancaria = await cuentabancariaDao.getCuentabancariaByIdcuentabancaria(tx, empresacuentabancaria._idcuentabancaria);
+      const cuentabancaria = await cuentabancariaDao.getCuentabancariaByIdcuentabancaria(tx, empresacuentabancaria.idcuentabancaria);
 
       var camposCuentaBancariaAdicionales: Partial<cuenta_bancaria> = {};
       camposCuentaBancariaAdicionales.cuentabancariaid = cuentabancaria.cuentabancariaid;
@@ -288,8 +288,8 @@ const crearArchivoEncabezadoCuentaBancaria = async (req, tx, usuarioservicioVali
   const archivoCreated = await archivoDao.insertArchivo(tx, camposArchivoNuevo);
 
   await archivocuentabancariaDao.insertArchivoCuentaBancaria(tx, {
-    _idarchivo: archivoCreated._idarchivo,
-    _idcuentabancaria: cuentabancariaCreated._idcuentabancaria,
+    _idarchivo: archivoCreated.idarchivo,
+    _idcuentabancaria: cuentabancariaCreated.idcuentabancaria,
     idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
     fechacrea: new Date(),
     idusuariomod: req.session_user?.usuario?._idusuario ?? 1,

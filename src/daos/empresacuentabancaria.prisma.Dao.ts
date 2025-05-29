@@ -114,7 +114,7 @@ export const getEmpresacuentabancariasByIdusuario = async (tx: TxClient, idusuar
   }
 };
 
-export const getEmpresacuentabancarias = async (tx: TxClient, estados: number[]): Promise<empresa_cuenta_bancaria[]> => {
+export const getEmpresacuentabancarias = async (tx: TxClient, estados: number[]) => {
   try {
     const empresacuentabancarias = await tx.empresa_cuenta_bancaria.findMany({
       include: {
@@ -195,7 +195,7 @@ export const getEmpresacuentabancariaByIdempresaAndIdusuario = async (tx: TxClie
   }
 };
 
-export const getEmpresacuentabancariaByIdempresacuentabancaria = async (tx: TxClient, idempresacuentabancaria: number): Promise<empresa_cuenta_bancaria> => {
+export const getEmpresacuentabancariaByIdempresacuentabancaria = async (tx: TxClient, idempresacuentabancaria: number) => {
   try {
     const empresacuentabancaria = await tx.empresa_cuenta_bancaria.findUnique({ where: { idempresacuentabancaria: idempresacuentabancaria } });
 
@@ -206,7 +206,7 @@ export const getEmpresacuentabancariaByIdempresacuentabancaria = async (tx: TxCl
   }
 };
 
-export const getEmpresacuentabancariaByEmpresacuentabancariaid = async (tx: TxClient, empresacuentabancariaid: string): Promise<empresa_cuenta_bancaria> => {
+export const getEmpresacuentabancariaByEmpresacuentabancariaid = async (tx: TxClient, empresacuentabancariaid: string) => {
   try {
     const empresacuentabancaria = await tx.empresa_cuenta_bancaria.findFirst({
       where: {
@@ -221,7 +221,7 @@ export const getEmpresacuentabancariaByEmpresacuentabancariaid = async (tx: TxCl
   }
 };
 
-export const findEmpresacuentabancariaPk = async (tx: TxClient, empresacuentabancariaid: string): Promise<{ idempresacuentabancaria: number }> => {
+export const findEmpresacuentabancariaPk = async (tx: TxClient, empresacuentabancariaid: string) => {
   try {
     const empresacuentabancaria = await tx.empresa_cuenta_bancaria.findFirst({
       select: { idempresacuentabancaria: true },
@@ -237,7 +237,7 @@ export const findEmpresacuentabancariaPk = async (tx: TxClient, empresacuentaban
   }
 };
 
-export const insertEmpresacuentabancaria = async (tx: TxClient, empresacuentabancaria: Prisma.empresa_cuenta_bancariaCreateInput): Promise<empresa_cuenta_bancaria> => {
+export const insertEmpresacuentabancaria = async (tx: TxClient, empresacuentabancaria: Prisma.empresa_cuenta_bancariaCreateInput) => {
   try {
     const nuevo = await tx.empresa_cuenta_bancaria.create({ data: empresacuentabancaria });
 
@@ -248,7 +248,7 @@ export const insertEmpresacuentabancaria = async (tx: TxClient, empresacuentaban
   }
 };
 
-export const updateEmpresacuentabancaria = async (tx: TxClient, empresacuentabancaria: Partial<empresa_cuenta_bancaria>): Promise<empresa_cuenta_bancaria> => {
+export const updateEmpresacuentabancaria = async (tx: TxClient, empresacuentabancaria: Partial<empresa_cuenta_bancaria>) => {
   try {
     const result = await tx.empresa_cuenta_bancaria.update({
       data: empresacuentabancaria,
@@ -263,7 +263,7 @@ export const updateEmpresacuentabancaria = async (tx: TxClient, empresacuentaban
   }
 };
 
-export const deleteEmpresacuentabancaria = async (tx: TxClient, empresacuentabancaria: Partial<empresa_cuenta_bancaria>): Promise<empresa_cuenta_bancaria> => {
+export const deleteEmpresacuentabancaria = async (tx: TxClient, empresacuentabancaria: Partial<empresa_cuenta_bancaria>) => {
   try {
     const result = await tx.empresa_cuenta_bancaria.update({
       data: empresacuentabancaria,

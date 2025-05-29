@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getRiesgos = async (tx: TxClient, estados: number[]): Promise<riesgo[]> => {
+export const getRiesgos = async (tx: TxClient, estados: number[]) => {
   try {
     const riesgos = await tx.riesgo.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getRiesgos = async (tx: TxClient, estados: number[]): Promise<riesg
   }
 };
 
-export const getRiesgoByIdriesgo = async (tx: TxClient, idriesgo: number): Promise<riesgo> => {
+export const getRiesgoByIdriesgo = async (tx: TxClient, idriesgo: number) => {
   try {
     const riesgo = await tx.riesgo.findUnique({ where: { idriesgo: idriesgo } });
 
@@ -33,7 +33,7 @@ export const getRiesgoByIdriesgo = async (tx: TxClient, idriesgo: number): Promi
   }
 };
 
-export const getRiesgoByRiesgoid = async (tx: TxClient, riesgoid: string): Promise<riesgo> => {
+export const getRiesgoByRiesgoid = async (tx: TxClient, riesgoid: string) => {
   try {
     const riesgo = await tx.riesgo.findFirst({
       where: {
@@ -48,7 +48,7 @@ export const getRiesgoByRiesgoid = async (tx: TxClient, riesgoid: string): Promi
   }
 };
 
-export const findRiesgoPk = async (tx: TxClient, riesgoid: string): Promise<{ idriesgo: number }> => {
+export const findRiesgoPk = async (tx: TxClient, riesgoid: string) => {
   try {
     const riesgo = await tx.riesgo.findFirst({
       select: { idriesgo: true },
@@ -64,7 +64,7 @@ export const findRiesgoPk = async (tx: TxClient, riesgoid: string): Promise<{ id
   }
 };
 
-export const insertRiesgo = async (tx: TxClient, riesgo: Prisma.riesgoCreateInput): Promise<riesgo> => {
+export const insertRiesgo = async (tx: TxClient, riesgo: Prisma.riesgoCreateInput) => {
   try {
     const nuevo = await tx.riesgo.create({ data: riesgo });
 
@@ -75,7 +75,7 @@ export const insertRiesgo = async (tx: TxClient, riesgo: Prisma.riesgoCreateInpu
   }
 };
 
-export const updateRiesgo = async (tx: TxClient, riesgo: Partial<riesgo>): Promise<riesgo> => {
+export const updateRiesgo = async (tx: TxClient, riesgo: Partial<riesgo>) => {
   try {
     const result = await tx.riesgo.update({
       data: riesgo,
@@ -90,7 +90,7 @@ export const updateRiesgo = async (tx: TxClient, riesgo: Partial<riesgo>): Promi
   }
 };
 
-export const deleteRiesgo = async (tx: TxClient, riesgo: Partial<riesgo>): Promise<riesgo> => {
+export const deleteRiesgo = async (tx: TxClient, riesgo: Partial<riesgo>) => {
   try {
     const result = await tx.riesgo.update({
       data: riesgo,

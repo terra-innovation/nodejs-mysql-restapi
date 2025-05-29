@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getDistritos = async (tx: TxClient, estados: number[]): Promise<distrito[]> => {
+export const getDistritos = async (tx: TxClient, estados: number[]) => {
   try {
     const distritos = await tx.distrito.findMany({
       include: {
@@ -29,7 +29,7 @@ export const getDistritos = async (tx: TxClient, estados: number[]): Promise<dis
   }
 };
 
-export const getDistritoByIddistrito = async (tx: TxClient, iddistrito: number): Promise<distrito> => {
+export const getDistritoByIddistrito = async (tx: TxClient, iddistrito: number) => {
   try {
     const distrito = await tx.distrito.findUnique({
       where: {
@@ -44,7 +44,7 @@ export const getDistritoByIddistrito = async (tx: TxClient, iddistrito: number):
   }
 };
 
-export const getDistritoByDistritoid = async (tx: TxClient, distritoid: string): Promise<distrito> => {
+export const getDistritoByDistritoid = async (tx: TxClient, distritoid: string) => {
   try {
     const distrito = await tx.distrito.findFirst({
       where: {
@@ -59,7 +59,7 @@ export const getDistritoByDistritoid = async (tx: TxClient, distritoid: string):
   }
 };
 
-export const findDistritoPk = async (tx: TxClient, distritoid: string): Promise<{ iddistrito: number }> => {
+export const findDistritoPk = async (tx: TxClient, distritoid: string) => {
   try {
     const distrito = await tx.distrito.findFirst({
       select: { iddistrito: true },
@@ -75,7 +75,7 @@ export const findDistritoPk = async (tx: TxClient, distritoid: string): Promise<
   }
 };
 
-export const insertDistrito = async (tx: TxClient, distrito: Prisma.distritoCreateInput): Promise<distrito> => {
+export const insertDistrito = async (tx: TxClient, distrito: Prisma.distritoCreateInput) => {
   try {
     const nuevo = await tx.distrito.create({ data: distrito });
 
@@ -86,7 +86,7 @@ export const insertDistrito = async (tx: TxClient, distrito: Prisma.distritoCrea
   }
 };
 
-export const updateDistrito = async (tx: TxClient, distrito: Partial<distrito>): Promise<distrito> => {
+export const updateDistrito = async (tx: TxClient, distrito: Partial<distrito>) => {
   try {
     const result = await tx.distrito.update({
       data: distrito,
@@ -101,7 +101,7 @@ export const updateDistrito = async (tx: TxClient, distrito: Partial<distrito>):
   }
 };
 
-export const deleteDistrito = async (tx: TxClient, distrito: Partial<distrito>): Promise<distrito> => {
+export const deleteDistrito = async (tx: TxClient, distrito: Partial<distrito>) => {
   try {
     const result = await tx.distrito.update({
       data: distrito,

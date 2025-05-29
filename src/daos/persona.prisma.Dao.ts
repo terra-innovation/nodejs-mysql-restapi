@@ -4,7 +4,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getPersonasByVerificacion = async (tx: TxClient, estado: number[], idarchivotipo: number): Promise<persona[]> => {
+export const getPersonasByVerificacion = async (tx: TxClient, estado: number[], idarchivotipo: number[]) => {
   try {
     const personas = await tx.persona.findMany({
       include: {
@@ -47,7 +47,9 @@ export const getPersonasByVerificacion = async (tx: TxClient, estado: number[], 
         archivo_personas: {
           some: {
             archivo: {
-              idarchivotipo: idarchivotipo,
+              idarchivotipo: {
+                in: idarchivotipo,
+              },
             },
           },
         },
@@ -61,7 +63,7 @@ export const getPersonasByVerificacion = async (tx: TxClient, estado: number[], 
   }
 };
 
-export const getPersonaByIdusuario = async (tx: TxClient, idusuario: number): Promise<persona> => {
+export const getPersonaByIdusuario = async (tx: TxClient, idusuario: number) => {
   try {
     const persona = await tx.persona.findUnique({
       include: {
@@ -92,7 +94,7 @@ export const getPersonaByIdusuario = async (tx: TxClient, idusuario: number): Pr
   }
 };
 
-export const getPersonaByIdpersona = async (tx: TxClient, idpersona: bigint): Promise<persona> => {
+export const getPersonaByIdpersona = async (tx: TxClient, idpersona: bigint) => {
   try {
     const persona = await tx.persona.findUnique({
       include: {
@@ -124,7 +126,7 @@ export const getPersonaByIdpersona = async (tx: TxClient, idpersona: bigint): Pr
   }
 };
 
-export const getPersonaByPersonaid = async (tx: TxClient, personaid: string): Promise<persona> => {
+export const getPersonaByPersonaid = async (tx: TxClient, personaid: string) => {
   try {
     const persona = await tx.persona.findUnique({
       include: {
@@ -155,7 +157,7 @@ export const getPersonaByPersonaid = async (tx: TxClient, personaid: string): Pr
   }
 };
 
-export const findPersonaPk = async (tx: TxClient, personaid: string): Promise<{ idpersona: bigint }> => {
+export const findPersonaPk = async (tx: TxClient, personaid: string) => {
   try {
     const persona = await tx.persona.findUnique({
       select: {
@@ -173,7 +175,7 @@ export const findPersonaPk = async (tx: TxClient, personaid: string): Promise<{ 
   }
 };
 
-export const getPersonas = async (tx: TxClient, estado: number[]): Promise<persona[]> => {
+export const getPersonas = async (tx: TxClient, estado: number[]) => {
   try {
     const personas = await tx.persona.findMany({
       include: {
@@ -208,7 +210,7 @@ export const getPersonas = async (tx: TxClient, estado: number[]): Promise<perso
   }
 };
 
-export const insertPersona = async (tx: TxClient, persona: Prisma.personaCreateInput): Promise<persona> => {
+export const insertPersona = async (tx: TxClient, persona: Prisma.personaCreateInput) => {
   try {
     const nuevo = await tx.persona.create({ data: persona });
 
@@ -219,7 +221,7 @@ export const insertPersona = async (tx: TxClient, persona: Prisma.personaCreateI
   }
 };
 
-export const updatePersona = async (tx: TxClient, persona: Partial<persona>): Promise<persona> => {
+export const updatePersona = async (tx: TxClient, persona: Partial<persona>) => {
   try {
     const result = await tx.persona.update({
       data: persona,
@@ -234,7 +236,7 @@ export const updatePersona = async (tx: TxClient, persona: Partial<persona>): Pr
   }
 };
 
-export const deletePersona = async (tx: TxClient, persona: Partial<persona>): Promise<persona> => {
+export const deletePersona = async (tx: TxClient, persona: Partial<persona>) => {
   try {
     const result = await tx.persona.update({
       data: persona,
@@ -249,7 +251,7 @@ export const deletePersona = async (tx: TxClient, persona: Partial<persona>): Pr
   }
 };
 
-export const activatePersona = async (tx: TxClient, persona: Partial<persona>): Promise<persona> => {
+export const activatePersona = async (tx: TxClient, persona: Partial<persona>) => {
   try {
     const result = await tx.persona.update({
       data: persona,

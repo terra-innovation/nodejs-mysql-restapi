@@ -22,7 +22,7 @@ export const getUsuarioservicioempresaByIdusuarioIdServicioIdempresa = async (tx
   }
 };
 
-export const getUsuarioservicioempresas = async (tx: TxClient, estados: number[]): Promise<usuario_servicio_empresa[]> => {
+export const getUsuarioservicioempresas = async (tx: TxClient, estados: number[]) => {
   try {
     const usuarioservicioempresas = await tx.usuario_servicio_empresa.findMany({
       where: {
@@ -39,7 +39,7 @@ export const getUsuarioservicioempresas = async (tx: TxClient, estados: number[]
   }
 };
 
-export const getUsuarioservicioempresaByIdusuarioservicioempresa = async (tx: TxClient, idusuarioservicioempresa: number): Promise<usuario_servicio_empresa> => {
+export const getUsuarioservicioempresaByIdusuarioservicioempresa = async (tx: TxClient, idusuarioservicioempresa: number) => {
   try {
     const usuarioservicioempresa = await tx.usuario_servicio_empresa.findUnique({
       where: {
@@ -54,7 +54,7 @@ export const getUsuarioservicioempresaByIdusuarioservicioempresa = async (tx: Tx
   }
 };
 
-export const getUsuarioservicioempresaByUsuarioservicioempresaid = async (tx: TxClient, usuarioservicioempresaid: string): Promise<usuario_servicio_empresa> => {
+export const getUsuarioservicioempresaByUsuarioservicioempresaid = async (tx: TxClient, usuarioservicioempresaid: string) => {
   try {
     const usuarioservicioempresa = await tx.usuario_servicio_empresa.findFirst({
       where: {
@@ -69,7 +69,7 @@ export const getUsuarioservicioempresaByUsuarioservicioempresaid = async (tx: Tx
   }
 };
 
-export const findUsuarioservicioempresaPk = async (tx: TxClient, usuarioservicioempresaid: string): Promise<{ idusuarioservicioempresa: number }> => {
+export const findUsuarioservicioempresaPk = async (tx: TxClient, usuarioservicioempresaid: string) => {
   try {
     const usuarioservicioempresa = await tx.usuario_servicio_empresa.findFirst({
       select: { idusuarioservicioempresa: true },
@@ -85,7 +85,7 @@ export const findUsuarioservicioempresaPk = async (tx: TxClient, usuarioservicio
   }
 };
 
-export const insertUsuarioservicioempresa = async (tx: TxClient, usuarioservicioempresa: Prisma.usuario_servicio_empresaCreateInput): Promise<usuario_servicio_empresa> => {
+export const insertUsuarioservicioempresa = async (tx: TxClient, usuarioservicioempresa: Prisma.usuario_servicio_empresaCreateInput) => {
   try {
     const nuevo = await tx.usuario_servicio_empresa.create({ data: usuarioservicioempresa });
 
@@ -96,7 +96,7 @@ export const insertUsuarioservicioempresa = async (tx: TxClient, usuarioservicio
   }
 };
 
-export const updateUsuarioservicioempresa = async (tx: TxClient, usuarioservicioempresa: Partial<usuario_servicio_empresa>): Promise<usuario_servicio_empresa> => {
+export const updateUsuarioservicioempresa = async (tx: TxClient, usuarioservicioempresa: Partial<usuario_servicio_empresa>) => {
   try {
     const result = await tx.usuario_servicio_empresa.update({
       data: usuarioservicioempresa,
@@ -111,7 +111,7 @@ export const updateUsuarioservicioempresa = async (tx: TxClient, usuarioservicio
   }
 };
 
-export const deleteUsuarioservicioempresa = async (tx: TxClient, usuarioservicioempresa: Partial<usuario_servicio_empresa>): Promise<usuario_servicio_empresa> => {
+export const deleteUsuarioservicioempresa = async (tx: TxClient, usuarioservicioempresa: Partial<usuario_servicio_empresa>) => {
   try {
     const result = await tx.usuario_servicio_empresa.update({
       data: usuarioservicioempresa,

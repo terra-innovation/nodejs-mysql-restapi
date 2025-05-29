@@ -68,7 +68,7 @@ export const getColaboradoresActivas = async (tx: TxClient) => {
   }
 };
 
-export const getColaboradorByIdcolaborador = async (tx: TxClient, idcolaborador: number): Promise<colaborador> => {
+export const getColaboradorByIdcolaborador = async (tx: TxClient, idcolaborador: number) => {
   try {
     const colaborador = await tx.colaborador.findUnique({ where: { idcolaborador: idcolaborador } });
 
@@ -81,7 +81,7 @@ export const getColaboradorByIdcolaborador = async (tx: TxClient, idcolaborador:
   }
 };
 
-export const getColaboradorByColaboradorid = async (tx: TxClient, colaboradorid: string): Promise<colaborador> => {
+export const getColaboradorByColaboradorid = async (tx: TxClient, colaboradorid: string) => {
   try {
     const colaborador = await tx.colaborador.findFirst({
       include: { empresa: true },
@@ -97,7 +97,7 @@ export const getColaboradorByColaboradorid = async (tx: TxClient, colaboradorid:
   }
 };
 
-export const findColaboradorPk = async (tx: TxClient, colaboradorid: string): Promise<{ idcolaborador: number }> => {
+export const findColaboradorPk = async (tx: TxClient, colaboradorid: string) => {
   try {
     const colaborador = await tx.colaborador.findFirst({
       select: { idcolaborador: true },
@@ -113,7 +113,7 @@ export const findColaboradorPk = async (tx: TxClient, colaboradorid: string): Pr
   }
 };
 
-export const insertColaborador = async (tx: TxClient, colaborador: Prisma.colaboradorCreateInput): Promise<colaborador> => {
+export const insertColaborador = async (tx: TxClient, colaborador: Prisma.colaboradorCreateInput) => {
   try {
     const nuevo = await tx.colaborador.create({ data: colaborador });
 
@@ -124,7 +124,7 @@ export const insertColaborador = async (tx: TxClient, colaborador: Prisma.colabo
   }
 };
 
-export const updateColaborador = async (tx: TxClient, colaborador: Partial<colaborador>): Promise<colaborador> => {
+export const updateColaborador = async (tx: TxClient, colaborador: Partial<colaborador>) => {
   try {
     const result = await tx.colaborador.update({
       data: colaborador,
@@ -139,7 +139,7 @@ export const updateColaborador = async (tx: TxClient, colaborador: Partial<colab
   }
 };
 
-export const deleteColaborador = async (tx: TxClient, colaborador: Partial<colaborador>): Promise<colaborador> => {
+export const deleteColaborador = async (tx: TxClient, colaborador: Partial<colaborador>) => {
   try {
     const result = await tx.colaborador.update({
       data: colaborador,

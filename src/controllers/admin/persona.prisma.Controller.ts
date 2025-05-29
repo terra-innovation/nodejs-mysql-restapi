@@ -19,7 +19,7 @@ import { log, line } from "#src/utils/logger.pino.js";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { Sequelize, Op } from "sequelize";
-import { persona } from "#root/src/models/ft_factoring/Persona";
+import type { persona } from "#src/models/prisma/ft_factoring/client";
 
 export const activatePersona = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activatePersona");
@@ -33,7 +33,7 @@ export const activatePersona = async (req: Request, res: Response) => {
   const personaValidated = personaSchema.validateSync({ personaid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "personaValidated:", personaValidated);
 
-  const resultado = await prismaFT.client.$transaction(
+  const personaDeleted = await prismaFT.client.$transaction(
     async (tx) => {
       var camposAuditoria: Partial<persona> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
@@ -45,7 +45,7 @@ export const activatePersona = async (req: Request, res: Response) => {
         throw new ClientError("Persona no existe", 404);
       }
       log.debug(line(), "personaActivated:", personaDeleted);
-      return {};
+      return personaDeleted;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -64,7 +64,7 @@ export const deletePersona = async (req: Request, res: Response) => {
   const personaValidated = personaSchema.validateSync({ personaid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "personaValidated:", personaValidated);
 
-  const resultado = await prismaFT.client.$transaction(
+  const personaDeleted = await prismaFT.client.$transaction(
     async (tx) => {
       var camposAuditoria: Partial<persona> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
@@ -76,7 +76,7 @@ export const deletePersona = async (req: Request, res: Response) => {
         throw new ClientError("Persona no existe", 404);
       }
       log.debug(line(), "personaDeleted:", personaDeleted);
-      return {};
+      return personaDeleted;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -85,7 +85,7 @@ export const deletePersona = async (req: Request, res: Response) => {
 
 export const getPersonaMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getPersonaMaster");
-  const resultado = await prismaFT.client.$transaction(
+  const personaMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const session_idusuario = req.session_user?.usuario?._idusuario;
       const filter_estados = [1];
@@ -106,7 +106,7 @@ export const getPersonaMaster = async (req: Request, res: Response) => {
       //jsonUtils.prettyPrint(personaMasterObfuscated);
       let personaMasterFiltered = jsonUtils.removeAttributesPrivates(personaMasterObfuscated);
       //jsonUtils.prettyPrint(personaMaster);
-      return {};
+      return personaMasterFiltered;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -170,7 +170,7 @@ export const updatePersona = async (req: Request, res: Response) => {
 
 export const getPersonas = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getPersonas");
-  const resultado = await prismaFT.client.$transaction(
+  const personasJson = await prismaFT.client.$transaction(
     async (tx) => {
       //log.info(line(),req.session_user.usuario._idusuario);
 
@@ -181,7 +181,7 @@ export const getPersonas = async (req: Request, res: Response) => {
 
       //var personasFiltered = jsonUtils.removeAttributes(personasJson, ["score"]);
       //personasFiltered = jsonUtils.removeAttributesPrivates(personasFiltered);
-      return {};
+      return personasJson;
     },
     { timeout: prismaFT.transactionTimeout }
   );

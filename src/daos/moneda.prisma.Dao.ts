@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getMonedas = async (tx: TxClient, estados: number[]): Promise<moneda[]> => {
+export const getMonedas = async (tx: TxClient, estados: number[]) => {
   try {
     const monedas = await tx.moneda.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getMonedas = async (tx: TxClient, estados: number[]): Promise<moned
   }
 };
 
-export const getMonedaByIdmoneda = async (tx: TxClient, idmoneda: number): Promise<moneda> => {
+export const getMonedaByIdmoneda = async (tx: TxClient, idmoneda: number) => {
   try {
     const moneda = await tx.moneda.findUnique({ where: { idmoneda: idmoneda } });
 
@@ -50,7 +50,7 @@ export const getMonedaByCodigo = async (tx: TxClient, codigo) => {
   }
 };
 
-export const getMonedaByMonedaid = async (tx: TxClient, monedaid: string): Promise<moneda> => {
+export const getMonedaByMonedaid = async (tx: TxClient, monedaid: string) => {
   try {
     const moneda = await tx.moneda.findFirst({
       where: {
@@ -65,7 +65,7 @@ export const getMonedaByMonedaid = async (tx: TxClient, monedaid: string): Promi
   }
 };
 
-export const findMonedaPk = async (tx: TxClient, monedaid: string): Promise<{ idmoneda: number }> => {
+export const findMonedaPk = async (tx: TxClient, monedaid: string) => {
   try {
     const moneda = await tx.moneda.findFirst({
       select: { idmoneda: true },
@@ -81,7 +81,7 @@ export const findMonedaPk = async (tx: TxClient, monedaid: string): Promise<{ id
   }
 };
 
-export const insertMoneda = async (tx: TxClient, moneda: Prisma.monedaCreateInput): Promise<moneda> => {
+export const insertMoneda = async (tx: TxClient, moneda: Prisma.monedaCreateInput) => {
   try {
     const nuevo = await tx.moneda.create({ data: moneda });
 
@@ -92,7 +92,7 @@ export const insertMoneda = async (tx: TxClient, moneda: Prisma.monedaCreateInpu
   }
 };
 
-export const updateMoneda = async (tx: TxClient, moneda: Partial<moneda>): Promise<moneda> => {
+export const updateMoneda = async (tx: TxClient, moneda: Partial<moneda>) => {
   try {
     const result = await tx.moneda.update({
       data: moneda,
@@ -107,7 +107,7 @@ export const updateMoneda = async (tx: TxClient, moneda: Partial<moneda>): Promi
   }
 };
 
-export const deleteMoneda = async (tx: TxClient, moneda: Partial<moneda>): Promise<moneda> => {
+export const deleteMoneda = async (tx: TxClient, moneda: Partial<moneda>) => {
   try {
     const result = await tx.moneda.update({
       data: moneda,

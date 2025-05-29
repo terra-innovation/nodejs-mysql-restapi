@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getFacturas = async (tx: TxClient, estados: number[]): Promise<factura[]> => {
+export const getFacturas = async (tx: TxClient, estados: number[]) => {
   try {
     const facturas = await tx.factura.findMany({
       where: {
@@ -77,7 +77,7 @@ export const getFacturasActivas = async (tx: TxClient) => {
   }
 };
 
-export const getFacturaByIdfactura = async (tx: TxClient, idfactura: number): Promise<factura> => {
+export const getFacturaByIdfactura = async (tx: TxClient, idfactura: number) => {
   try {
     const factura = await tx.factura.findUnique({ where: { idfactura: idfactura } });
 
@@ -106,7 +106,7 @@ export const getFacturaByIdfacturaAndIdusuarioupload = async (tx: TxClient, idfa
   }
 };
 
-export const getFacturaByFacturaid = async (tx: TxClient, facturaid: string): Promise<factura> => {
+export const getFacturaByFacturaid = async (tx: TxClient, facturaid: string) => {
   try {
     const factura = await tx.factura.findFirst({
       where: {
@@ -121,7 +121,7 @@ export const getFacturaByFacturaid = async (tx: TxClient, facturaid: string): Pr
   }
 };
 
-export const findFacturaPk = async (tx: TxClient, facturaid: string): Promise<{ idfactura: bigint }> => {
+export const findFacturaPk = async (tx: TxClient, facturaid: string) => {
   try {
     const factura = await tx.factura.findFirst({
       select: { idfactura: true },
@@ -137,7 +137,7 @@ export const findFacturaPk = async (tx: TxClient, facturaid: string): Promise<{ 
   }
 };
 
-export const insertFactura = async (tx: TxClient, factura: Prisma.facturaCreateInput): Promise<factura> => {
+export const insertFactura = async (tx: TxClient, factura: Prisma.facturaCreateInput) => {
   try {
     const nuevo = await tx.factura.create({ data: factura });
 
@@ -148,7 +148,7 @@ export const insertFactura = async (tx: TxClient, factura: Prisma.facturaCreateI
   }
 };
 
-export const updateFactura = async (tx: TxClient, factura: Partial<factura>): Promise<factura> => {
+export const updateFactura = async (tx: TxClient, factura: Partial<factura>) => {
   try {
     const result = await tx.factura.update({
       data: factura,
@@ -163,7 +163,7 @@ export const updateFactura = async (tx: TxClient, factura: Partial<factura>): Pr
   }
 };
 
-export const deleteFactura = async (tx: TxClient, factura: Partial<factura>): Promise<factura> => {
+export const deleteFactura = async (tx: TxClient, factura: Partial<factura>) => {
   try {
     const result = await tx.factura.update({
       data: factura,
@@ -178,7 +178,7 @@ export const deleteFactura = async (tx: TxClient, factura: Partial<factura>): Pr
   }
 };
 
-export const activateFactura = async (tx: TxClient, factura: Partial<factura>): Promise<factura> => {
+export const activateFactura = async (tx: TxClient, factura: Partial<factura>) => {
   try {
     const result = await tx.factura.update({
       data: factura,

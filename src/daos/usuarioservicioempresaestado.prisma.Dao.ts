@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getUsuarioservicioempresaestados = async (tx: TxClient, estados: number[]): Promise<usuario_servicio_empresa_estado[]> => {
+export const getUsuarioservicioempresaestados = async (tx: TxClient, estados: number[]) => {
   try {
     const usuarioservicioempresaestados = await tx.usuario_servicio_empresa_estado.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getUsuarioservicioempresaestados = async (tx: TxClient, estados: nu
   }
 };
 
-export const getUsuarioservicioempresaestadoByIdusuarioservicioempresaestado = async (tx: TxClient, idusuarioservicioempresaestado: number): Promise<usuario_servicio_empresa_estado> => {
+export const getUsuarioservicioempresaestadoByIdusuarioservicioempresaestado = async (tx: TxClient, idusuarioservicioempresaestado: number) => {
   try {
     const usuarioservicioempresaestado = await tx.usuario_servicio_empresa_estado.findUnique({
       where: {
@@ -37,7 +37,7 @@ export const getUsuarioservicioempresaestadoByIdusuarioservicioempresaestado = a
   }
 };
 
-export const getUsuarioservicioempresaestadoByUsuarioservicioempresaestadoid = async (tx: TxClient, usuarioservicioempresaestadoid: string): Promise<usuario_servicio_empresa_estado> => {
+export const getUsuarioservicioempresaestadoByUsuarioservicioempresaestadoid = async (tx: TxClient, usuarioservicioempresaestadoid: string) => {
   try {
     const usuarioservicioempresaestado = await tx.usuario_servicio_empresa_estado.findFirst({
       where: {
@@ -52,7 +52,7 @@ export const getUsuarioservicioempresaestadoByUsuarioservicioempresaestadoid = a
   }
 };
 
-export const findUsuarioservicioempresaestadoPk = async (tx: TxClient, usuarioservicioempresaestadoid: string): Promise<{ idusuarioservicioempresaestado: number }> => {
+export const findUsuarioservicioempresaestadoPk = async (tx: TxClient, usuarioservicioempresaestadoid: string) => {
   try {
     const usuarioservicioempresaestado = await tx.usuario_servicio_empresa_estado.findFirst({
       select: { idusuarioservicioempresaestado: true },
@@ -68,7 +68,7 @@ export const findUsuarioservicioempresaestadoPk = async (tx: TxClient, usuariose
   }
 };
 
-export const insertUsuarioservicioempresaestado = async (tx: TxClient, usuarioservicioempresaestado: Prisma.usuario_servicio_empresa_estadoCreateInput): Promise<usuario_servicio_empresa_estado> => {
+export const insertUsuarioservicioempresaestado = async (tx: TxClient, usuarioservicioempresaestado: Prisma.usuario_servicio_empresa_estadoCreateInput) => {
   try {
     const nuevo = await tx.usuario_servicio_empresa_estado.create({ data: usuarioservicioempresaestado });
 
@@ -79,7 +79,7 @@ export const insertUsuarioservicioempresaestado = async (tx: TxClient, usuariose
   }
 };
 
-export const updateUsuarioservicioempresaestado = async (tx: TxClient, usuarioservicioempresaestado: Partial<usuario_servicio_empresa_estado>): Promise<usuario_servicio_empresa_estado> => {
+export const updateUsuarioservicioempresaestado = async (tx: TxClient, usuarioservicioempresaestado: Partial<usuario_servicio_empresa_estado>) => {
   try {
     const result = await tx.usuario_servicio_empresa_estado.update({
       data: usuarioservicioempresaestado,
@@ -94,7 +94,7 @@ export const updateUsuarioservicioempresaestado = async (tx: TxClient, usuariose
   }
 };
 
-export const deleteUsuarioservicioempresaestado = async (tx: TxClient, usuarioservicioempresaestado: Partial<usuario_servicio_empresa_estado>): Promise<usuario_servicio_empresa_estado> => {
+export const deleteUsuarioservicioempresaestado = async (tx: TxClient, usuarioservicioempresaestado: Partial<usuario_servicio_empresa_estado>) => {
   try {
     const result = await tx.usuario_servicio_empresa_estado.update({
       data: usuarioservicioempresaestado,

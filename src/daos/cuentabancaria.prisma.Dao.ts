@@ -148,7 +148,7 @@ export const getCuentasbancariasByIdusuario = async (tx: TxClient, idusuario: bi
   }
 };
 
-export const getCuentabancariaByIdcuentabancaria = async (tx: TxClient, idcuentabancaria: number): Promise<cuenta_bancaria> => {
+export const getCuentabancariaByIdcuentabancaria = async (tx: TxClient, idcuentabancaria: number) => {
   try {
     const cuentabancaria = await tx.cuenta_bancaria.findUnique({ where: { idcuentabancaria: idcuentabancaria } });
 
@@ -238,7 +238,7 @@ export const getCuentabancariaByIdcuentabancariaIdempresaIdusuario = async (tx: 
   }
 };
 
-export const getCuentabancariaByCuentabancariaid = async (tx: TxClient, cuentabancariaid: string): Promise<cuenta_bancaria> => {
+export const getCuentabancariaByCuentabancariaid = async (tx: TxClient, cuentabancariaid: string) => {
   try {
     const cuentabancaria = await tx.cuenta_bancaria.findFirst({
       include: {
@@ -263,7 +263,7 @@ export const getCuentabancariaByCuentabancariaid = async (tx: TxClient, cuentaba
   }
 };
 
-export const findCuentabancariaPk = async (tx: TxClient, cuentabancariaid: string): Promise<{ idcuentabancaria: number }> => {
+export const findCuentabancariaPk = async (tx: TxClient, cuentabancariaid: string) => {
   try {
     const cuentabancaria = await tx.cuenta_bancaria.findFirst({
       select: { idcuentabancaria: true },
@@ -307,7 +307,7 @@ export const getCuentasbancarias = async (tx: TxClient, estado) => {
   }
 };
 
-export const insertCuentabancaria = async (tx: TxClient, cuentabancaria: Prisma.cuenta_bancariaCreateInput): Promise<cuenta_bancaria> => {
+export const insertCuentabancaria = async (tx: TxClient, cuentabancaria: Prisma.cuenta_bancariaCreateInput) => {
   try {
     const nuevo = await tx.cuenta_bancaria.create({ data: cuentabancaria });
 
@@ -318,7 +318,7 @@ export const insertCuentabancaria = async (tx: TxClient, cuentabancaria: Prisma.
   }
 };
 
-export const updateCuentabancariaOnlyAliasByCuentabancariaid = async (tx: TxClient, cuentabancaria: Partial<cuenta_bancaria>): Promise<cuenta_bancaria> => {
+export const updateCuentabancariaOnlyAliasByCuentabancariaid = async (tx: TxClient, cuentabancaria: Partial<cuenta_bancaria>) => {
   try {
     const result = await tx.cuenta_bancaria.update({
       data: {
@@ -337,7 +337,7 @@ export const updateCuentabancariaOnlyAliasByCuentabancariaid = async (tx: TxClie
   }
 };
 
-export const updateCuentabancaria = async (tx: TxClient, cuentabancaria: Partial<cuenta_bancaria>): Promise<cuenta_bancaria> => {
+export const updateCuentabancaria = async (tx: TxClient, cuentabancaria: Partial<cuenta_bancaria>) => {
   try {
     const result = await tx.cuenta_bancaria.update({
       data: cuentabancaria,
@@ -352,7 +352,7 @@ export const updateCuentabancaria = async (tx: TxClient, cuentabancaria: Partial
   }
 };
 
-export const deleteCuentabancaria = async (tx: TxClient, cuentabancaria: Partial<cuenta_bancaria>): Promise<cuenta_bancaria> => {
+export const deleteCuentabancaria = async (tx: TxClient, cuentabancaria: Partial<cuenta_bancaria>) => {
   try {
     const result = await tx.cuenta_bancaria.update({
       data: cuentabancaria,
@@ -367,7 +367,7 @@ export const deleteCuentabancaria = async (tx: TxClient, cuentabancaria: Partial
   }
 };
 
-export const activateCuentabancaria = async (tx: TxClient, cuentabancaria: Partial<cuenta_bancaria>): Promise<cuenta_bancaria> => {
+export const activateCuentabancaria = async (tx: TxClient, cuentabancaria: Partial<cuenta_bancaria>) => {
   try {
     const result = await tx.cuenta_bancaria.update({
       data: cuentabancaria,

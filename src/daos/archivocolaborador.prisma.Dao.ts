@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getArchivocolaboradors = async (tx: TxClient, estados: number[]): Promise<archivo_colaborador[]> => {
+export const getArchivocolaboradors = async (tx: TxClient, estados: number[]) => {
   try {
     const archivocolaboradors = await tx.archivo_colaborador.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getArchivocolaboradors = async (tx: TxClient, estados: number[]): P
   }
 };
 
-export const getArchivoColaboradorByIdarchivoIdcolaborador = async (tx: TxClient, idarchivo: number, idcolaborador: number): Promise<archivo_colaborador> => {
+export const getArchivoColaboradorByIdarchivoIdcolaborador = async (tx: TxClient, idarchivo: number, idcolaborador: number) => {
   try {
     const archivocolaborador = await tx.archivo_colaborador.findFirst({ where: { idarchivo: idarchivo, idcolaborador: idcolaborador } });
 
@@ -33,7 +33,7 @@ export const getArchivoColaboradorByIdarchivoIdcolaborador = async (tx: TxClient
   }
 };
 
-export const insertArchivoColaborador = async (tx: TxClient, archivocolaborador: Prisma.archivo_colaboradorCreateInput): Promise<archivo_colaborador> => {
+export const insertArchivoColaborador = async (tx: TxClient, archivocolaborador: Prisma.archivo_colaboradorCreateInput) => {
   try {
     const nuevo = await tx.archivo_colaborador.create({ data: archivocolaborador });
 
@@ -44,7 +44,7 @@ export const insertArchivoColaborador = async (tx: TxClient, archivocolaborador:
   }
 };
 
-export const updateArchivoColaborador = async (tx: TxClient, archivocolaborador: Partial<archivo_colaborador>): Promise<archivo_colaborador> => {
+export const updateArchivoColaborador = async (tx: TxClient, archivocolaborador: Partial<archivo_colaborador>) => {
   try {
     const result = await tx.archivo_colaborador.update({
       data: archivocolaborador,
@@ -62,7 +62,7 @@ export const updateArchivoColaborador = async (tx: TxClient, archivocolaborador:
   }
 };
 
-export const deleteArchivoColaborador = async (tx: TxClient, archivocolaborador: Partial<archivo_colaborador>): Promise<archivo_colaborador> => {
+export const deleteArchivoColaborador = async (tx: TxClient, archivocolaborador: Partial<archivo_colaborador>) => {
   try {
     const result = await tx.archivo_colaborador.update({
       data: archivocolaborador,
@@ -80,7 +80,7 @@ export const deleteArchivoColaborador = async (tx: TxClient, archivocolaborador:
   }
 };
 
-export const activateArchivoColaborador = async (tx: TxClient, archivocolaborador: Partial<archivo_colaborador>): Promise<archivo_colaborador> => {
+export const activateArchivoColaborador = async (tx: TxClient, archivocolaborador: Partial<archivo_colaborador>) => {
   try {
     const result = await tx.archivo_colaborador.update({
       data: archivocolaborador,

@@ -4,7 +4,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getDocumentotipos = async (tx: TxClient, estados: number[]): Promise<documento_tipo[]> => {
+export const getDocumentotipos = async (tx: TxClient, estados: number[]) => {
   try {
     const documentotipos = await tx.documento_tipo.findMany({
       where: {
@@ -21,7 +21,7 @@ export const getDocumentotipos = async (tx: TxClient, estados: number[]): Promis
   }
 };
 
-export const getDocumentotipoByIddocumentotipo = async (tx: TxClient, iddocumentotipo: number): Promise<documento_tipo> => {
+export const getDocumentotipoByIddocumentotipo = async (tx: TxClient, iddocumentotipo: number) => {
   try {
     const documentotipo = await tx.documento_tipo.findUnique({
       include: {
@@ -41,7 +41,7 @@ export const getDocumentotipoByIddocumentotipo = async (tx: TxClient, iddocument
   }
 };
 
-export const getDocumentotipoByDocumentotipoid = async (tx: TxClient, documentotipoid: string): Promise<documento_tipo> => {
+export const getDocumentotipoByDocumentotipoid = async (tx: TxClient, documentotipoid: string) => {
   try {
     const documentotipo = await tx.documento_tipo.findFirst({
       include: {
@@ -59,7 +59,7 @@ export const getDocumentotipoByDocumentotipoid = async (tx: TxClient, documentot
   }
 };
 
-export const findDocumentotipoPk = async (tx: TxClient, documentotipoid: string): Promise<{ iddocumentotipo: number }> => {
+export const findDocumentotipoPk = async (tx: TxClient, documentotipoid: string) => {
   try {
     const documentotipo = await tx.documento_tipo.findFirst({
       select: { iddocumentotipo: true },
@@ -75,7 +75,7 @@ export const findDocumentotipoPk = async (tx: TxClient, documentotipoid: string)
   }
 };
 
-export const insertDocumentotipo = async (tx: TxClient, documentotipo: Prisma.documento_tipoCreateInput): Promise<documento_tipo> => {
+export const insertDocumentotipo = async (tx: TxClient, documentotipo: Prisma.documento_tipoCreateInput) => {
   try {
     const nuevo = await tx.documento_tipo.create({ data: documentotipo });
 
@@ -86,7 +86,7 @@ export const insertDocumentotipo = async (tx: TxClient, documentotipo: Prisma.do
   }
 };
 
-export const updateDocumentotipo = async (tx: TxClient, documentotipo: Partial<documento_tipo>): Promise<documento_tipo> => {
+export const updateDocumentotipo = async (tx: TxClient, documentotipo: Partial<documento_tipo>) => {
   try {
     const result = await tx.documento_tipo.update({
       data: documentotipo,
@@ -101,7 +101,7 @@ export const updateDocumentotipo = async (tx: TxClient, documentotipo: Partial<d
   }
 };
 
-export const deleteDocumentotipo = async (tx: TxClient, documentotipo: Partial<documento_tipo>): Promise<documento_tipo> => {
+export const deleteDocumentotipo = async (tx: TxClient, documentotipo: Partial<documento_tipo>) => {
   try {
     const result = await tx.documento_tipo.update({
       data: documentotipo,
@@ -116,7 +116,7 @@ export const deleteDocumentotipo = async (tx: TxClient, documentotipo: Partial<d
   }
 };
 
-export const activateDocumentotipo = async (tx: TxClient, documentotipo: Partial<documento_tipo>): Promise<documento_tipo> => {
+export const activateDocumentotipo = async (tx: TxClient, documentotipo: Partial<documento_tipo>) => {
   try {
     const result = await tx.documento_tipo.update({
       data: documentotipo,

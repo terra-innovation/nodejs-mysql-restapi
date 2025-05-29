@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getProvincias = async (tx: TxClient, estados: number[]): Promise<provincia[]> => {
+export const getProvincias = async (tx: TxClient, estados: number[]) => {
   try {
     const provincias = await tx.provincia.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getProvincias = async (tx: TxClient, estados: number[]): Promise<pr
   }
 };
 
-export const getProvinciaByIdprovincia = async (tx: TxClient, idprovincia: number): Promise<provincia> => {
+export const getProvinciaByIdprovincia = async (tx: TxClient, idprovincia: number) => {
   try {
     const provincia = await tx.provincia.findUnique({ where: { idprovincia: idprovincia } });
 
@@ -33,7 +33,7 @@ export const getProvinciaByIdprovincia = async (tx: TxClient, idprovincia: numbe
   }
 };
 
-export const getProvinciaByProvinciaid = async (tx: TxClient, provinciaid: string): Promise<provincia> => {
+export const getProvinciaByProvinciaid = async (tx: TxClient, provinciaid: string) => {
   try {
     const provincia = await tx.provincia.findFirst({
       where: {
@@ -48,7 +48,7 @@ export const getProvinciaByProvinciaid = async (tx: TxClient, provinciaid: strin
   }
 };
 
-export const findProvinciaPk = async (tx: TxClient, provinciaid: string): Promise<{ idprovincia: number }> => {
+export const findProvinciaPk = async (tx: TxClient, provinciaid: string) => {
   try {
     const provincia = await tx.provincia.findFirst({
       select: { idprovincia: true },
@@ -64,7 +64,7 @@ export const findProvinciaPk = async (tx: TxClient, provinciaid: string): Promis
   }
 };
 
-export const insertProvincia = async (tx: TxClient, provincia: Prisma.provinciaCreateInput): Promise<provincia> => {
+export const insertProvincia = async (tx: TxClient, provincia: Prisma.provinciaCreateInput) => {
   try {
     const nuevo = await tx.provincia.create({ data: provincia });
 
@@ -75,7 +75,7 @@ export const insertProvincia = async (tx: TxClient, provincia: Prisma.provinciaC
   }
 };
 
-export const updateProvincia = async (tx: TxClient, provincia: Partial<provincia>): Promise<provincia> => {
+export const updateProvincia = async (tx: TxClient, provincia: Partial<provincia>) => {
   try {
     const result = await tx.provincia.update({
       data: provincia,
@@ -90,7 +90,7 @@ export const updateProvincia = async (tx: TxClient, provincia: Partial<provincia
   }
 };
 
-export const deleteProvincia = async (tx: TxClient, provincia: Partial<provincia>): Promise<provincia> => {
+export const deleteProvincia = async (tx: TxClient, provincia: Partial<provincia>) => {
   try {
     const result = await tx.provincia.update({
       data: provincia,

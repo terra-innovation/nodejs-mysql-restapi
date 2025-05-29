@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getArchivotipos = async (tx: TxClient, estados: number[]): Promise<archivo_tipo[]> => {
+export const getArchivotipos = async (tx: TxClient, estados: number[]) => {
   try {
     const archivotipos = await tx.archivo_tipo.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getArchivotipos = async (tx: TxClient, estados: number[]): Promise<
   }
 };
 
-export const getArchivotipoByIdarchivotipo = async (tx: TxClient, idarchivotipo: number): Promise<archivo_tipo> => {
+export const getArchivotipoByIdarchivotipo = async (tx: TxClient, idarchivotipo: number) => {
   try {
     const archivotipo = await tx.archivo_tipo.findUnique({ where: { idarchivotipo: idarchivotipo } });
 
@@ -48,7 +48,7 @@ export const getArchivotipoByCode = async (tx: TxClient, code) => {
   }
 };
 
-export const getArchivotipoByArchivotipoid = async (tx: TxClient, archivotipoid: string): Promise<archivo_tipo> => {
+export const getArchivotipoByArchivotipoid = async (tx: TxClient, archivotipoid: string) => {
   try {
     const archivotipo = await tx.archivo_tipo.findFirst({
       where: {
@@ -63,7 +63,7 @@ export const getArchivotipoByArchivotipoid = async (tx: TxClient, archivotipoid:
   }
 };
 
-export const findArchivotipoPk = async (tx: TxClient, archivotipoid: string): Promise<{ idarchivotipo: number }> => {
+export const findArchivotipoPk = async (tx: TxClient, archivotipoid: string) => {
   try {
     const archivotipo = await tx.archivo_tipo.findFirst({
       select: { idarchivotipo: true },
@@ -79,7 +79,7 @@ export const findArchivotipoPk = async (tx: TxClient, archivotipoid: string): Pr
   }
 };
 
-export const insertArchivotipo = async (tx: TxClient, archivotipo: Prisma.archivo_tipoCreateInput): Promise<archivo_tipo> => {
+export const insertArchivotipo = async (tx: TxClient, archivotipo: Prisma.archivo_tipoCreateInput) => {
   try {
     const nuevo = await tx.archivo_tipo.create({ data: archivotipo });
 
@@ -90,7 +90,7 @@ export const insertArchivotipo = async (tx: TxClient, archivotipo: Prisma.archiv
   }
 };
 
-export const updateArchivotipo = async (tx: TxClient, archivotipo: Partial<archivo_tipo>): Promise<archivo_tipo> => {
+export const updateArchivotipo = async (tx: TxClient, archivotipo: Partial<archivo_tipo>) => {
   try {
     const result = await tx.archivo_tipo.update({
       data: archivotipo,
@@ -105,7 +105,7 @@ export const updateArchivotipo = async (tx: TxClient, archivotipo: Partial<archi
   }
 };
 
-export const deleteArchivotipo = async (tx: TxClient, archivotipo: Partial<archivo_tipo>): Promise<archivo_tipo> => {
+export const deleteArchivotipo = async (tx: TxClient, archivotipo: Partial<archivo_tipo>) => {
   try {
     const result = await tx.archivo_tipo.update({
       data: archivotipo,

@@ -8,7 +8,7 @@ import { log, line } from "#src/utils/logger.pino.js";
 import { v4 as uuidv4 } from "uuid";
 import { now } from "sequelize/lib/utils";
 
-export const getUsuarioserviciosByIdusuario = async (tx: TxClient, idusuario, estados: number[]): Promise<usuario_servicio[]> => {
+export const getUsuarioserviciosByIdusuario = async (tx: TxClient, idusuario, estados: number[]) => {
   try {
     const usuarioservicios = await tx.usuario_servicio.findMany({
       include: {
@@ -31,7 +31,7 @@ export const getUsuarioserviciosByIdusuario = async (tx: TxClient, idusuario, es
   }
 };
 
-export const habilitarServiciosParaUsuario = async (tx: TxClient, idusuario: bigint, idusuario_session: bigint): Promise<void> => {
+export const habilitarServiciosParaUsuario = async (tx: TxClient, idusuario: number, idusuario_session: number) => {
   try {
     // Buscar todos los servicios
     const todosLosServicios = await tx.servicio.findMany({
@@ -61,7 +61,7 @@ export const habilitarServiciosParaUsuario = async (tx: TxClient, idusuario: big
   }
 };
 
-export const getUsuarioservicios = async (tx: TxClient, estados: number[]): Promise<usuario_servicio[]> => {
+export const getUsuarioservicios = async (tx: TxClient, estados: number[]) => {
   try {
     const usuarioservicios = await tx.usuario_servicio.findMany({
       where: {
@@ -78,7 +78,7 @@ export const getUsuarioservicios = async (tx: TxClient, estados: number[]): Prom
   }
 };
 
-export const getUsuarioservicioByIdusuarioIdservicio = async (tx: TxClient, idusuario: bigint, idservicio: number): Promise<usuario_servicio> => {
+export const getUsuarioservicioByIdusuarioIdservicio = async (tx: TxClient, idusuario: number, idservicio: number) => {
   try {
     const usuarioservicio = await tx.usuario_servicio.findFirst({
       include: {
@@ -99,7 +99,7 @@ export const getUsuarioservicioByIdusuarioIdservicio = async (tx: TxClient, idus
   }
 };
 
-export const getUsuarioservicioByIdusuarioservicio = async (tx: TxClient, idusuarioservicio: number): Promise<usuario_servicio> => {
+export const getUsuarioservicioByIdusuarioservicio = async (tx: TxClient, idusuarioservicio: number) => {
   try {
     const usuarioservicio = await tx.usuario_servicio.findUnique({
       where: { idusuarioservicio: idusuarioservicio },
@@ -112,7 +112,7 @@ export const getUsuarioservicioByIdusuarioservicio = async (tx: TxClient, idusua
   }
 };
 
-export const getUsuarioservicioByUsuarioservicioid = async (tx: TxClient, usuarioservicioid: string): Promise<usuario_servicio> => {
+export const getUsuarioservicioByUsuarioservicioid = async (tx: TxClient, usuarioservicioid: string) => {
   try {
     const usuarioservicio = await tx.usuario_servicio.findUnique({
       include: {
@@ -132,7 +132,7 @@ export const getUsuarioservicioByUsuarioservicioid = async (tx: TxClient, usuari
   }
 };
 
-export const findUsuarioservicioPk = async (tx: TxClient, usuarioservicioid: string): Promise<{ idusuarioservicio: number }> => {
+export const findUsuarioservicioPk = async (tx: TxClient, usuarioservicioid: string) => {
   try {
     const usuarioservicio = await tx.usuario_servicio.findUnique({
       select: { idusuarioservicio: true },
@@ -148,7 +148,7 @@ export const findUsuarioservicioPk = async (tx: TxClient, usuarioservicioid: str
   }
 };
 
-export const insertUsuarioservicio = async (tx: TxClient, usuarioservicio: Prisma.usuario_servicioCreateInput): Promise<usuario_servicio> => {
+export const insertUsuarioservicio = async (tx: TxClient, usuarioservicio: Prisma.usuario_servicioCreateInput) => {
   try {
     const nuevo = await tx.usuario_servicio.create({ data: usuarioservicio });
 
@@ -159,7 +159,7 @@ export const insertUsuarioservicio = async (tx: TxClient, usuarioservicio: Prism
   }
 };
 
-export const updateUsuarioservicio = async (tx: TxClient, usuarioservicio: Partial<usuario_servicio>): Promise<usuario_servicio> => {
+export const updateUsuarioservicio = async (tx: TxClient, usuarioservicio: Partial<usuario_servicio>) => {
   try {
     const result = await tx.usuario_servicio.update({
       data: usuarioservicio,
@@ -174,7 +174,7 @@ export const updateUsuarioservicio = async (tx: TxClient, usuarioservicio: Parti
   }
 };
 
-export const deleteUsuarioservicio = async (tx: TxClient, usuarioservicio: Partial<usuario_servicio>): Promise<usuario_servicio> => {
+export const deleteUsuarioservicio = async (tx: TxClient, usuarioservicio: Partial<usuario_servicio>) => {
   try {
     const result = await tx.usuario_servicio.update({
       data: usuarioservicio,

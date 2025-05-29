@@ -116,7 +116,7 @@ export const getInversionistacuentabancariasByIdinversionistaAndAlias = async (t
   }
 };
 
-export const getInversionistacuentabancarias = async (tx: TxClient, estados: number[]): Promise<inversionista_cuenta_bancaria[]> => {
+export const getInversionistacuentabancarias = async (tx: TxClient, estados: number[]) => {
   try {
     const inversionistacuentabancarias = await tx.inversionista_cuenta_bancaria.findMany({
       include: {
@@ -157,7 +157,7 @@ export const getInversionistacuentabancarias = async (tx: TxClient, estados: num
   }
 };
 
-export const getInversionistacuentabancariaByIdinversionistacuentabancaria = async (tx: TxClient, idinversionistacuentabancaria: number): Promise<inversionista_cuenta_bancaria> => {
+export const getInversionistacuentabancariaByIdinversionistacuentabancaria = async (tx: TxClient, idinversionistacuentabancaria: number) => {
   try {
     const inversionistacuentabancaria = await tx.inversionista_cuenta_bancaria.findUnique({
       where: {
@@ -172,7 +172,7 @@ export const getInversionistacuentabancariaByIdinversionistacuentabancaria = asy
   }
 };
 
-export const getInversionistacuentabancariaByInversionistacuentabancariaid = async (tx: TxClient, inversionistacuentabancariaid: string): Promise<inversionista_cuenta_bancaria> => {
+export const getInversionistacuentabancariaByInversionistacuentabancariaid = async (tx: TxClient, inversionistacuentabancariaid: string) => {
   try {
     const inversionistacuentabancaria = await tx.inversionista_cuenta_bancaria.findFirst({
       where: {
@@ -187,7 +187,7 @@ export const getInversionistacuentabancariaByInversionistacuentabancariaid = asy
   }
 };
 
-export const findInversionistacuentabancariaPk = async (tx: TxClient, inversionistacuentabancariaid: string): Promise<{ idinversionistacuentabancaria: number }> => {
+export const findInversionistacuentabancariaPk = async (tx: TxClient, inversionistacuentabancariaid: string) => {
   try {
     const inversionistacuentabancaria = await tx.inversionista_cuenta_bancaria.findFirst({
       select: { idinversionistacuentabancaria: true },
@@ -203,7 +203,7 @@ export const findInversionistacuentabancariaPk = async (tx: TxClient, inversioni
   }
 };
 
-export const insertInversionistacuentabancaria = async (tx: TxClient, inversionistacuentabancaria: Prisma.inversionista_cuenta_bancariaCreateInput): Promise<inversionista_cuenta_bancaria> => {
+export const insertInversionistacuentabancaria = async (tx: TxClient, inversionistacuentabancaria: Prisma.inversionista_cuenta_bancariaCreateInput) => {
   try {
     const nuevo = await tx.inversionista_cuenta_bancaria.create({ data: inversionistacuentabancaria });
 
@@ -214,7 +214,7 @@ export const insertInversionistacuentabancaria = async (tx: TxClient, inversioni
   }
 };
 
-export const updateInversionistacuentabancaria = async (tx: TxClient, inversionistacuentabancaria: Partial<inversionista_cuenta_bancaria>): Promise<inversionista_cuenta_bancaria> => {
+export const updateInversionistacuentabancaria = async (tx: TxClient, inversionistacuentabancaria: Partial<inversionista_cuenta_bancaria>) => {
   try {
     const result = await tx.inversionista_cuenta_bancaria.update({
       data: inversionistacuentabancaria,
@@ -229,7 +229,7 @@ export const updateInversionistacuentabancaria = async (tx: TxClient, inversioni
   }
 };
 
-export const deleteInversionistacuentabancaria = async (tx: TxClient, inversionistacuentabancaria: Partial<inversionista_cuenta_bancaria>): Promise<inversionista_cuenta_bancaria> => {
+export const deleteInversionistacuentabancaria = async (tx: TxClient, inversionistacuentabancaria: Partial<inversionista_cuenta_bancaria>) => {
   try {
     const result = await tx.inversionista_cuenta_bancaria.update({
       data: inversionistacuentabancaria,
@@ -244,7 +244,7 @@ export const deleteInversionistacuentabancaria = async (tx: TxClient, inversioni
   }
 };
 
-export const activateInversionistacuentabancaria = async (tx: TxClient, inversionistacuentabancaria: Partial<inversionista_cuenta_bancaria>): Promise<inversionista_cuenta_bancaria> => {
+export const activateInversionistacuentabancaria = async (tx: TxClient, inversionistacuentabancaria: Partial<inversionista_cuenta_bancaria>) => {
   try {
     const result = await tx.inversionista_cuenta_bancaria.update({
       data: inversionistacuentabancaria,

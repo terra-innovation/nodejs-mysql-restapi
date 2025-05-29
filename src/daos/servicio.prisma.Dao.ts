@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getServicios = async (tx: TxClient, estados: number[]): Promise<servicio[]> => {
+export const getServicios = async (tx: TxClient, estados: number[]) => {
   try {
     const servicios = await tx.servicio.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getServicios = async (tx: TxClient, estados: number[]): Promise<ser
   }
 };
 
-export const getServicioByIdservicio = async (tx: TxClient, idservicio: number): Promise<servicio> => {
+export const getServicioByIdservicio = async (tx: TxClient, idservicio: number) => {
   try {
     const servicio = await tx.servicio.findUnique({ where: { idservicio: idservicio } });
 
@@ -35,7 +35,7 @@ export const getServicioByIdservicio = async (tx: TxClient, idservicio: number):
   }
 };
 
-export const getServicioByServicioid = async (tx: TxClient, servicioid: string): Promise<servicio> => {
+export const getServicioByServicioid = async (tx: TxClient, servicioid: string) => {
   try {
     const servicio = await tx.servicio.findFirst({
       where: {
@@ -50,7 +50,7 @@ export const getServicioByServicioid = async (tx: TxClient, servicioid: string):
   }
 };
 
-export const findServicioPk = async (tx: TxClient, servicioid: string): Promise<{ idservicio: number }> => {
+export const findServicioPk = async (tx: TxClient, servicioid: string) => {
   try {
     const servicio = await tx.servicio.findFirst({
       select: { idservicio: true },
@@ -66,7 +66,7 @@ export const findServicioPk = async (tx: TxClient, servicioid: string): Promise<
   }
 };
 
-export const insertServicio = async (tx: TxClient, servicio: Prisma.servicioCreateInput): Promise<servicio> => {
+export const insertServicio = async (tx: TxClient, servicio: Prisma.servicioCreateInput) => {
   try {
     const nuevo = await tx.servicio.create({ data: servicio });
 
@@ -77,7 +77,7 @@ export const insertServicio = async (tx: TxClient, servicio: Prisma.servicioCrea
   }
 };
 
-export const updateServicio = async (tx: TxClient, servicio: Partial<servicio>): Promise<servicio> => {
+export const updateServicio = async (tx: TxClient, servicio: Partial<servicio>) => {
   try {
     const result = await tx.servicio.update({
       data: servicio,
@@ -92,7 +92,7 @@ export const updateServicio = async (tx: TxClient, servicio: Partial<servicio>):
   }
 };
 
-export const deleteServicio = async (tx: TxClient, servicio: Partial<servicio>): Promise<servicio> => {
+export const deleteServicio = async (tx: TxClient, servicio: Partial<servicio>) => {
   try {
     const result = await tx.servicio.update({
       data: servicio,

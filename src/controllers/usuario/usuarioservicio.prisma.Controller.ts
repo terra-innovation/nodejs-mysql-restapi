@@ -112,7 +112,7 @@ export const suscribirUsuarioServicioFactoringInversionista = async (req: Reques
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const cuentasbancarias_por_numero = await cuentabancariaDao.getCuentasbancariasByIdbancoAndNumero(tx, banco._idbanco, usuarioservicioValidated.numero, filter_estado);
+      const cuentasbancarias_por_numero = await cuentabancariaDao.getCuentasbancariasByIdbancoAndNumero(tx, banco.idbanco, usuarioservicioValidated.numero, filter_estado);
       if (cuentasbancarias_por_numero && cuentasbancarias_por_numero.length > 0) {
         log.warn(line(), "El número de cuenta [" + usuarioservicioValidated.numero + "] se encuentra registrado. Ingrese un número de cuenta diferente.");
         throw new ClientError("El número de cuenta [" + usuarioservicioValidated.numero + "] se encuentra registrado. Ingrese un número de cuenta diferente.", 404);
@@ -145,7 +145,7 @@ export const suscribirUsuarioServicioFactoringInversionista = async (req: Reques
       /* Creamos al Inversionista */
 
       let inversionistaNuevo = {
-        _idpersona: persona._idpersona,
+        _idpersona: persona.idpersona,
         cuentabancariaid: uuidv4(),
         code: uuidv4().split("-")[0],
         idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
@@ -157,7 +157,7 @@ export const suscribirUsuarioServicioFactoringInversionista = async (req: Reques
 
       const inversionistaCreated = await inversionistaDao.insertInversionista(tx, inversionistaNuevo);
 
-      log.debug(line(), "inversionistaCreated:", inversionistaCreated.dataValues);
+      log.debug(line(), "inversionistaCreated:", inversionistaCreated);
 
       /* Creamos la Cuenta Bancaria asociada al Inversionista */
 
@@ -167,10 +167,10 @@ export const suscribirUsuarioServicioFactoringInversionista = async (req: Reques
       camposCuentabancariaNuevo.alias = usuarioservicioValidated.alias;
 
       let camposCuentabancariaNuevoFk: Partial<cuenta_bancaria> = {};
-      camposCuentabancariaNuevoFk._idbanco = banco._idbanco;
-      camposCuentabancariaNuevoFk._idcuentatipo = cuentatipo._idcuentatipo;
-      camposCuentabancariaNuevoFk._idmoneda = moneda._idmoneda;
-      camposCuentabancariaNuevoFk._idcuentabancariaestado = cuentabancariaestado._idcuentabancariaestado;
+      camposCuentabancariaNuevoFk.idbanco = banco.idbanco;
+      camposCuentabancariaNuevoFk.idcuentatipo = cuentatipo.idcuentatipo;
+      camposCuentabancariaNuevoFk.idmoneda = moneda.idmoneda;
+      camposCuentabancariaNuevoFk.idcuentabancariaestado = cuentabancariaestado.idcuentabancariaestado;
 
       let camposCuentabancariaNuevoAdicionales: Partial<cuenta_bancaria> = {};
       camposCuentabancariaNuevoAdicionales.cuentabancariaid = uuidv4();
@@ -190,11 +190,11 @@ export const suscribirUsuarioServicioFactoringInversionista = async (req: Reques
         ...camposCuentabancariaNuevoAuditoria,
       });
 
-      log.debug(line(), "cuentabancariaCreated:", cuentabancariaCreated.dataValues);
+      log.debug(line(), "cuentabancariaCreated:", cuentabancariaCreated);
 
       let camposInversionistacuentabancariaNuevoFk: Partial<inversionista_cuenta_bancaria> = {};
-      camposInversionistacuentabancariaNuevoFk._idinversionista = inversionistaCreated._idinversionista;
-      camposInversionistacuentabancariaNuevoFk._idcuentabancaria = cuentabancariaCreated._idcuentabancaria;
+      camposInversionistacuentabancariaNuevoFk.idinversionista = inversionistaCreated.idinversionista;
+      camposInversionistacuentabancariaNuevoFk.idcuentabancaria = cuentabancariaCreated.idcuentabancaria;
 
       let camposInversionistacuentabancariaNuevoAdicionales: Partial<inversionista_cuenta_bancaria> = {};
       camposInversionistacuentabancariaNuevoAdicionales.inversionistacuentabancariaid = uuidv4();
@@ -213,7 +213,7 @@ export const suscribirUsuarioServicioFactoringInversionista = async (req: Reques
         ...camposInversionistacuentabancariaNuevoAuditoria,
       });
 
-      log.debug(line(), "imversionistacuentabancariaCreated:", imversionistacuentabancariaCreated.dataValues);
+      log.debug(line(), "imversionistacuentabancariaCreated:", imversionistacuentabancariaCreated);
 
       /* Registramos para la verificación del usuario_servicio en la tabla usuario_servicio_verificacion */
       const camposUsuarioservicioverificacionCreate: Partial<usuario_servicio_verificacion> = {};
@@ -230,7 +230,7 @@ export const suscribirUsuarioServicioFactoringInversionista = async (req: Reques
       camposUsuarioservicioverificacionCreate.estado = 1;
 
       const usuarioservicioverificacionCreated = await usuarioservicioverificacionDao.insertUsuarioservicioverificacion(tx, camposUsuarioservicioverificacionCreate);
-      log.debug(line(), "usuarioservicioverificacionCreated:", usuarioservicioverificacionCreated.dataValues);
+      log.debug(line(), "usuarioservicioverificacionCreated:", usuarioservicioverificacionCreated);
 
       /* Actualizamos el estado del usuario_servicio*/
       const camposUsuarioservicioUpdate: Partial<usuario_servicio> = {};
@@ -349,7 +349,7 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const cuentasbancarias_por_numero = await cuentabancariaDao.getCuentasbancariasByIdbancoAndNumero(tx, banco._idbanco, usuarioservicioValidated.numero, filter_estado);
+      const cuentasbancarias_por_numero = await cuentabancariaDao.getCuentasbancariasByIdbancoAndNumero(tx, banco.idbanco, usuarioservicioValidated.numero, filter_estado);
       if (cuentasbancarias_por_numero && cuentasbancarias_por_numero.length > 0) {
         log.warn(line(), "El número de cuenta [" + usuarioservicioValidated.numero + "] se encuentra registrado. Ingrese un número de cuenta diferente.");
         throw new ClientError("El número de cuenta [" + usuarioservicioValidated.numero + "] se encuentra registrado. Ingrese un número de cuenta diferente.", 404);
@@ -413,7 +413,7 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       }
 
       /* Creamos la Empresa */
-      const provinciaResidencia = await provinciaDao.getProvinciaByIdprovincia(tx, distritoSede._idprovincia);
+      const provinciaResidencia = await provinciaDao.getProvinciaByIdprovincia(tx, distritoSede.idprovincia);
 
       let camposEmpresaNuevo: Partial<empresa> = {};
       camposEmpresaNuevo.ruc = usuarioservicioValidated.ruc;
@@ -422,10 +422,10 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       camposEmpresaNuevo.direccion_sede_referencia = usuarioservicioValidated.direccion_sede_referencia;
 
       let camposEmpresaNuevoFk: Partial<empresa> = {};
-      camposEmpresaNuevoFk._idpaissede = paisSede._idpais;
-      camposEmpresaNuevoFk._iddepartamentosede = provinciaResidencia._iddepartamento;
-      camposEmpresaNuevoFk._idprovinciasede = distritoSede._idprovincia;
-      camposEmpresaNuevoFk._iddistritosede = distritoSede._iddistrito;
+      camposEmpresaNuevoFk.idpaissede = paisSede.idpais;
+      camposEmpresaNuevoFk.iddepartamentosede = provinciaResidencia.iddepartamento;
+      camposEmpresaNuevoFk.idprovinciasede = distritoSede.idprovincia;
+      camposEmpresaNuevoFk.iddistritosede = distritoSede.iddistrito;
 
       let camposEmpresaNuevoAdicionales: Partial<empresa> = {};
       camposEmpresaNuevoAdicionales.empresaid = uuidv4();
@@ -462,10 +462,10 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       camposColaboradorNuevo.poderpartidaciudad = usuarioservicioValidated.poderpartidaciudad;
 
       let camposColaboradorNuevoFk: Partial<colaborador> = {};
-      camposColaboradorNuevoFk._idempresa = empresaCreated._idempresa;
-      camposColaboradorNuevoFk._idpersona = personaConected._idpersona;
-      camposColaboradorNuevoFk._idcolaboradortipo = colaboradorttipo._idcolaboradortipo;
-      camposColaboradorNuevoFk._iddocumentotipo = personaConected._iddocumentotipo;
+      camposColaboradorNuevoFk.idempresa = empresaCreated.idempresa;
+      camposColaboradorNuevoFk.idpersona = personaConected.idpersona;
+      camposColaboradorNuevoFk.idcolaboradortipo = colaboradorttipo.idcolaboradortipo;
+      camposColaboradorNuevoFk.iddocumentotipo = personaConected.iddocumentotipo;
 
       let camposColaboradorNuevoAdicionales: Partial<colaborador> = {};
       camposColaboradorNuevoAdicionales.colaboradorid = uuidv4();
@@ -494,10 +494,10 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       camposCuentabancariaNuevo.alias = usuarioservicioValidated.alias;
 
       let camposCuentabancariaNuevoFk: Partial<cuenta_bancaria> = {};
-      camposCuentabancariaNuevoFk._idbanco = banco._idbanco;
-      camposCuentabancariaNuevoFk._idcuentatipo = cuentatipo._idcuentatipo;
-      camposCuentabancariaNuevoFk._idmoneda = moneda._idmoneda;
-      camposCuentabancariaNuevoFk._idcuentabancariaestado = cuentabancariaestado._idcuentabancariaestado;
+      camposCuentabancariaNuevoFk.idbanco = banco.idbanco;
+      camposCuentabancariaNuevoFk.idcuentatipo = cuentatipo.idcuentatipo;
+      camposCuentabancariaNuevoFk.idmoneda = moneda.idmoneda;
+      camposCuentabancariaNuevoFk.idcuentabancariaestado = cuentabancariaestado.idcuentabancariaestado;
 
       let camposCuentabancariaNuevoAdicionales: Partial<cuenta_bancaria> = {};
       camposCuentabancariaNuevoAdicionales.cuentabancariaid = uuidv4();
@@ -520,8 +520,8 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       log.debug(line(), "cuentabancariaCreated:", cuentabancariaCreated);
 
       let camposEmpresacuentabancariaNuevoFk: Partial<empresa_cuenta_bancaria> = {};
-      camposEmpresacuentabancariaNuevoFk._idempresa = empresaCreated._idempresa;
-      camposEmpresacuentabancariaNuevoFk._idcuentabancaria = cuentabancariaCreated._idcuentabancaria;
+      camposEmpresacuentabancariaNuevoFk.idempresa = empresaCreated.idempresa;
+      camposEmpresacuentabancariaNuevoFk.idcuentabancaria = cuentabancariaCreated.idcuentabancaria;
 
       let camposEmpresacuentabancariaNuevoAdicionales: Partial<empresa_cuenta_bancaria> = {};
       camposEmpresacuentabancariaNuevoAdicionales.empresacuentabancariaid = uuidv4();
@@ -545,10 +545,10 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       /* Registramos el Servicio para la Empresa en la tabla servicio_empresa */
 
       let camposServicioempresaNuevoFk: Partial<servicio_empresa> = {};
-      camposServicioempresaNuevoFk._idservicio = 1;
-      camposServicioempresaNuevoFk._idempresa = empresaCreated._idempresa;
+      camposServicioempresaNuevoFk.idservicio = 1;
+      camposServicioempresaNuevoFk.idempresa = empresaCreated.idempresa;
       camposServicioempresaNuevoFk._idusuariosuscriptor = usuarioConected._idusuario;
-      camposServicioempresaNuevoFk._idservicioempresaestado = servicioempresaestado._idservicioempresaestado;
+      camposServicioempresaNuevoFk.idservicioempresaestado = servicioempresaestado.idservicioempresaestado;
 
       let camposServicioempresaNuevoAdicionales: Partial<servicio_empresa> = {};
       camposServicioempresaNuevoAdicionales.servicioempresaid = uuidv4();
@@ -573,8 +573,8 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
 
       let camposUsuarioservicioempresaNuevoFk: Partial<usuario_servicio_empresa> = {};
       camposUsuarioservicioempresaNuevoFk._idusuario = usuarioConected._idusuario;
-      camposUsuarioservicioempresaNuevoFk._idservicio = 1;
-      camposUsuarioservicioempresaNuevoFk._idempresa = empresaCreated._idempresa;
+      camposUsuarioservicioempresaNuevoFk.idservicio = 1;
+      camposUsuarioservicioempresaNuevoFk.idempresa = empresaCreated.idempresa;
       camposUsuarioservicioempresaNuevoFk._idusuarioservicioempresaestado = usuarioservicioempresaestado._idusuarioservicioempresaestado;
       camposUsuarioservicioempresaNuevoFk._idusuarioservicioempresarol = usuarioservicioempresarol._idusuarioservicioempresarol;
 
@@ -612,8 +612,8 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       /* Registramos para la verificación del servicio_empresa en la tabla servicio_empresa_verificacion */
       const camposServicioempresaverificacionCreate: Partial<servicio_empresa_verificacion> = {};
       camposServicioempresaverificacionCreate.servicioempresaverificacionid = uuidv4();
-      camposServicioempresaverificacionCreate._idservicioempresa = servicioempresaCreated._idservicioempresa;
-      camposServicioempresaverificacionCreate._idservicioempresaestado = servicioempresaestado._idservicioempresaestado;
+      camposServicioempresaverificacionCreate.idservicioempresa = servicioempresaCreated.idservicioempresa;
+      camposServicioempresaverificacionCreate.idservicioempresaestado = servicioempresaestado.idservicioempresaestado;
       camposServicioempresaverificacionCreate._idusuarioverifica = req.session_user?.usuario?._idusuario;
       camposServicioempresaverificacionCreate.comentariousuario = "";
       camposServicioempresaverificacionCreate.comentariointerno = "";
@@ -762,8 +762,8 @@ const crearArchivoEncabezadoCuentaBancaria = async (req, tx, usuarioservicioVali
   const archivoCreated = await archivoDao.insertArchivo(tx, camposArchivoNuevo);
 
   await archivocuentabancariaDao.insertArchivoCuentaBancaria(tx, {
-    _idarchivo: archivoCreated._idarchivo,
-    _idcuentabancaria: cuentabancariaCreated._idcuentabancaria,
+    _idarchivo: archivoCreated.idarchivo,
+    _idcuentabancaria: cuentabancariaCreated.idcuentabancaria,
     idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
     fechacrea: new Date(),
     idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
@@ -810,8 +810,8 @@ const crearArchivoVigenciaPoderRepresentanteLegal = async (req, tx, usuarioservi
   const archivoCreated = await archivoDao.insertArchivo(tx, camposArchivoNuevo);
 
   await archivocolaboradorDao.insertArchivoColaborador(tx, {
-    _idarchivo: archivoCreated._idarchivo,
-    _idcolaborador: colaboradorCreated._idcolaborador,
+    _idarchivo: archivoCreated.idarchivo,
+    _idcolaborador: colaboradorCreated.idcolaborador,
     idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
     fechacrea: new Date(),
     idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
@@ -858,8 +858,8 @@ const crearArchivoReporteTributarioParaTerceros = async (req, tx, usuarioservici
   const archivoCreated = await archivoDao.insertArchivo(tx, camposArchivoNuevo);
 
   await archivoempresaDao.insertArchivoEmpresa(tx, {
-    _idarchivo: archivoCreated._idarchivo,
-    _idempresa: empresaCreated._idempresa,
+    _idarchivo: archivoCreated.idarchivo,
+    _idempresa: empresaCreated.idempresa,
     idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
     fechacrea: new Date(),
     idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
@@ -906,8 +906,8 @@ const crearArchivoFichaRuc = async (req, tx, usuarioservicioValidated, empresaCr
   const archivoCreated = await archivoDao.insertArchivo(tx, camposArchivoNuevo);
 
   await archivoempresaDao.insertArchivoEmpresa(tx, {
-    _idarchivo: archivoCreated._idarchivo,
-    _idempresa: empresaCreated._idempresa,
+    _idarchivo: archivoCreated.idarchivo,
+    _idempresa: empresaCreated.idempresa,
     idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
     fechacrea: new Date(),
     idusuariomod: req.session_user?.usuario?._idusuario ?? 1,

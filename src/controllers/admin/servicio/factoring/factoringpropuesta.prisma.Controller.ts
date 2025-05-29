@@ -50,9 +50,9 @@ export const downloadFactoringpropuestaPDF = async (req: Request, res: Response)
       }
       //log.debug(line(), "factoringpropuesta:", jsonUtils.sequelizeToJSON(factoringpropuesta));
 
-      var factoring = await factoringDao.getFactoringByIdfactoring(tx, factoringpropuesta._idfactoring);
+      var factoring = await factoringDao.getFactoringByIdfactoring(tx, factoringpropuesta.idfactoring);
       if (!factoring) {
-        log.warn(line(), "Factoring no existe: [" + factoringpropuesta._idfactoring + "]");
+        log.warn(line(), "Factoring no existe: [" + factoringpropuesta.idfactoring + "]");
         throw new ClientError("Datos no válidos", 404);
       }
       //log.debug(line(), "factoringpropuesta:", jsonUtils.sequelizeToJSON(factoring));
@@ -110,7 +110,7 @@ export const updateFactoringpropuesta = async (req: Request, res: Response) => {
       }
 
       var camposFk: Partial<factoring_propuesta> = {};
-      camposFk._idfactoringpropuestaestado = factoringpropuestaestado._idfactoringpropuestaestado;
+      camposFk.idfactoringpropuestaestado = factoringpropuestaestado.idfactoringpropuestaestado;
 
       var camposAdicionales: Partial<factoring_propuesta> = {};
       camposAdicionales.factoringpropuestaid = factoringpropuestaValidated.factoringpropuestaid;
@@ -194,8 +194,8 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
       let dias_antiguedad_estimado = fecha_ahora.startOf("day").diff(luxon.DateTime.fromISO(factoring.fecha_emision.toISOString()).startOf("day"), "days").days;
       var simulacion: Partial<Simulacion> = {};
       simulacion = await simulateFactoringLogicV2(
-        riesgooperacion._idriesgo,
-        factoring.cuentabancaria_cuenta_bancarium._idbanco,
+        riesgooperacion.idriesgo,
+        factoring.cuentabancaria_cuenta_bancarium.idbanco,
         factoring.cantidad_facturas,
         factoring.monto_neto,
         dias_pago_estimado,
@@ -207,11 +207,11 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
       log.info(line(), "simulacion: ", simulacion);
 
       var camposFk: Partial<factoring_propuesta> = {};
-      camposFk._idfactoring = factoring._idfactoring;
-      camposFk._idfactoringtipo = factoringtipo._idfactoringtipo;
-      camposFk._idfactoringpropuestaestado = factoringpropuestaestado._idfactoringpropuestaestado;
-      camposFk._idriesgooperacion = riesgooperacion._idriesgo;
-      camposFk._idfactoringestrategia = factoringestrategia._idfactoringestrategia;
+      camposFk.idfactoring = factoring.idfactoring;
+      camposFk.idfactoringtipo = factoringtipo.idfactoringtipo;
+      camposFk.idfactoringpropuestaestado = factoringpropuestaestado.idfactoringpropuestaestado;
+      camposFk.idriesgooperacion = riesgooperacion.idriesgo;
+      camposFk.idfactoringestrategia = factoringestrategia.idfactoringestrategia;
 
       var camposAdicionales: Partial<factoring_propuesta> = {};
       camposAdicionales.factoringpropuestaid = uuidv4();
@@ -235,12 +235,12 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
         ...simulacion,
       });
 
-      log.debug(line(), "factoringpropuestaCreated:", factoringpropuestaCreated.dataValues);
+      log.debug(line(), "factoringpropuestaCreated:", factoringpropuestaCreated);
 
       for (let i = 0; i < simulacion?.comisiones?.length; i++) {
         const comision = simulacion.comisiones[i];
         var factoringpropuestafinanciero_comision = {
-          _idfactoringpropuesta: factoringpropuestaCreated._idfactoringpropuesta,
+          _idfactoringpropuesta: factoringpropuestaCreated.idfactoringpropuesta,
           factoringpropuestafinancieroid: uuidv4(),
           code: uuidv4().split("-")[0],
           idusuariocrea: req.session_user.usuario._idusuario ?? 1,
@@ -251,13 +251,13 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
           ...comision,
         };
         const factoringpropuestafinancieroCreated = await factoringpropuestafinancieroDao.insertFactoringpropuestafinanciero(tx, factoringpropuestafinanciero_comision);
-        log.debug(line(), "factoringpropuestafinancieroCreated:", factoringpropuestafinancieroCreated.dataValues);
+        log.debug(line(), "factoringpropuestafinancieroCreated:", factoringpropuestafinancieroCreated);
       }
 
       for (let i = 0; i < simulacion?.costos?.length; i++) {
         const costo = simulacion.costos[i];
         var factoringpropuestafinanciero_costo = {
-          _idfactoringpropuesta: factoringpropuestaCreated._idfactoringpropuesta,
+          _idfactoringpropuesta: factoringpropuestaCreated.idfactoringpropuesta,
           factoringpropuestafinancieroid: uuidv4(),
           code: uuidv4().split("-")[0],
           idusuariocrea: req.session_user.usuario._idusuario ?? 1,
@@ -268,12 +268,12 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
           ...costo,
         };
         const factoringpropuestafinancieroCreated = await factoringpropuestafinancieroDao.insertFactoringpropuestafinanciero(tx, factoringpropuestafinanciero_costo);
-        log.debug(line(), "factoringpropuestafinancieroCreated:", factoringpropuestafinancieroCreated.dataValues);
+        log.debug(line(), "factoringpropuestafinancieroCreated:", factoringpropuestafinancieroCreated);
       }
       for (let i = 0; i < simulacion?.gastos?.length; i++) {
         const gasto = simulacion.gastos[i];
         var factoringpropuestafinanciero_gasto = {
-          _idfactoringpropuesta: factoringpropuestaCreated._idfactoringpropuesta,
+          _idfactoringpropuesta: factoringpropuestaCreated.idfactoringpropuesta,
           factoringpropuestafinancieroid: uuidv4(),
           code: uuidv4().split("-")[0],
           idusuariocrea: req.session_user.usuario._idusuario ?? 1,
@@ -284,7 +284,7 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
           ...gasto,
         };
         const factoringpropuestafinancieroCreated = await factoringpropuestafinancieroDao.insertFactoringpropuestafinanciero(tx, factoringpropuestafinanciero_gasto);
-        log.debug(line(), "factoringpropuestafinancieroCreated:", factoringpropuestafinancieroCreated.dataValues);
+        log.debug(line(), "factoringpropuestafinancieroCreated:", factoringpropuestafinancieroCreated);
       }
 
       return {};
@@ -349,8 +349,8 @@ export const simulateFactoringpropuesta = async (req: Request, res: Response) =>
       let dias_antiguedad_estimado = fecha_ahora.startOf("day").diff(luxon.DateTime.fromISO(factoring.fecha_emision.toISOString()).startOf("day"), "days").days;
       var simulacion = {};
       simulacion = await simulateFactoringLogicV2(
-        riesgooperacion._idriesgo,
-        factoring.cuentabancaria_cuenta_bancarium._idbanco,
+        riesgooperacion.idriesgo,
+        factoring.cuentabancaria_cuenta_bancarium.idbanco,
         factoring.cantidad_facturas,
         factoring.monto_neto,
         dias_pago_estimado,
@@ -392,7 +392,7 @@ export const getFactoringpropuestasByFactoringid = async (req: Request, res: Res
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const factoringpropuestas = await factoringpropuestaDao.getFactoringpropuestasByIdfactoring(tx, factoring._idfactoring, filter_estado);
+      const factoringpropuestas = await factoringpropuestaDao.getFactoringpropuestasByIdfactoring(tx, factoring.idfactoring, filter_estado);
       var factoringpropuestasJson = jsonUtils.sequelizeToJSON(factoringpropuestas);
       //log.info(line(),factoringpropuestaObfuscated);
 

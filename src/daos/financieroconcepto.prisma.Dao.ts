@@ -17,7 +17,7 @@ export const getCostoTransaccion = async (tx: TxClient) => {
   return await getFinancieroconceptoByIdfinancieroconcepto(tx, 3);
 };
 
-export const getFinancieroconceptos = async (tx: TxClient, estados: number[]): Promise<financiero_concepto[]> => {
+export const getFinancieroconceptos = async (tx: TxClient, estados: number[]) => {
   try {
     const financieroconceptos = await tx.financiero_concepto.findMany({
       where: {
@@ -34,7 +34,7 @@ export const getFinancieroconceptos = async (tx: TxClient, estados: number[]): P
   }
 };
 
-export const getFinancieroconceptoByIdfinancieroconcepto = async (tx: TxClient, idfinancieroconcepto: number): Promise<financiero_concepto> => {
+export const getFinancieroconceptoByIdfinancieroconcepto = async (tx: TxClient, idfinancieroconcepto: number) => {
   try {
     const financieroconcepto = await tx.financiero_concepto.findUnique({ where: { idfinancieroconcepto: idfinancieroconcepto } });
 
@@ -47,7 +47,7 @@ export const getFinancieroconceptoByIdfinancieroconcepto = async (tx: TxClient, 
   }
 };
 
-export const getFinancieroconceptoByFinancieroconceptoid = async (tx: TxClient, financieroconceptoid: string): Promise<financiero_concepto> => {
+export const getFinancieroconceptoByFinancieroconceptoid = async (tx: TxClient, financieroconceptoid: string) => {
   try {
     const financieroconcepto = await tx.financiero_concepto.findFirst({
       where: {
@@ -62,7 +62,7 @@ export const getFinancieroconceptoByFinancieroconceptoid = async (tx: TxClient, 
   }
 };
 
-export const findFinancieroconceptoPk = async (tx: TxClient, financieroconceptoid: string): Promise<{ idfinancieroconcepto: number }> => {
+export const findFinancieroconceptoPk = async (tx: TxClient, financieroconceptoid: string) => {
   try {
     const financieroconcepto = await tx.financiero_concepto.findFirst({
       select: { idfinancieroconcepto: true },
@@ -78,7 +78,7 @@ export const findFinancieroconceptoPk = async (tx: TxClient, financieroconceptoi
   }
 };
 
-export const insertFinancieroconcepto = async (tx: TxClient, financieroconcepto: Prisma.financiero_conceptoCreateInput): Promise<financiero_concepto> => {
+export const insertFinancieroconcepto = async (tx: TxClient, financieroconcepto: Prisma.financiero_conceptoCreateInput) => {
   try {
     const nuevo = await tx.financiero_concepto.create({ data: financieroconcepto });
 
@@ -89,7 +89,7 @@ export const insertFinancieroconcepto = async (tx: TxClient, financieroconcepto:
   }
 };
 
-export const updateFinancieroconcepto = async (tx: TxClient, financieroconcepto: Partial<financiero_concepto>): Promise<financiero_concepto> => {
+export const updateFinancieroconcepto = async (tx: TxClient, financieroconcepto: Partial<financiero_concepto>) => {
   try {
     const result = await tx.financiero_concepto.update({
       data: financieroconcepto,
@@ -104,7 +104,7 @@ export const updateFinancieroconcepto = async (tx: TxClient, financieroconcepto:
   }
 };
 
-export const deleteFinancieroconcepto = async (tx: TxClient, financieroconcepto: Partial<financiero_concepto>): Promise<financiero_concepto> => {
+export const deleteFinancieroconcepto = async (tx: TxClient, financieroconcepto: Partial<financiero_concepto>) => {
   try {
     const result = await tx.financiero_concepto.update({
       data: financieroconcepto,

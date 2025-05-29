@@ -71,29 +71,29 @@ export const createInversionistacuentabancaria = async (req: Request, res: Respo
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const inversionistacuentabancariaAllowed = await inversionistacuentabancariaDao.getInversionistacuentabancariaByIdinversionistaAndIdusuario(tx, inversionista._idinversionista, _idusuario_session, filter_estado);
+      const inversionistacuentabancariaAllowed = await inversionistacuentabancariaDao.getInversionistacuentabancariaByIdinversionistaAndIdusuario(tx, inversionista.idinversionista, _idusuario_session, filter_estado);
       if (!inversionistacuentabancariaAllowed) {
-        log.warn(line(), "Inversionista no asociado al usuario: [" + inversionista._idinversionista + ", " + _idusuario_session + "]");
+        log.warn(line(), "Inversionista no asociado al usuario: [" + inversionista.idinversionista + ", " + _idusuario_session + "]");
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var cuentasbancarias_por_numero = await cuentabancariaDao.getCuentasbancariasByIdbancoAndNumero(tx, banco._idbanco, inversionistacuentabancariaValidated.numero, filter_estado);
+      var cuentasbancarias_por_numero = await cuentabancariaDao.getCuentasbancariasByIdbancoAndNumero(tx, banco.idbanco, inversionistacuentabancariaValidated.numero, filter_estado);
       if (cuentasbancarias_por_numero && cuentasbancarias_por_numero.length > 0) {
         log.warn(line(), "El número de cuenta [" + inversionistacuentabancariaValidated.numero + "] se encuentra registrado. Ingrese un número de cuenta diferente.");
         throw new ClientError("El número de cuenta [" + inversionistacuentabancariaValidated.numero + "] se encuentra registrado. Ingrese un número de cuenta diferente.", 404);
       }
 
-      var cuentasbancarias_por_alias = await inversionistacuentabancariaDao.getInversionistacuentabancariasByIdinversionistaAndAlias(tx, inversionista._idinversionista, inversionistacuentabancariaValidated.alias, filter_estado);
+      var cuentasbancarias_por_alias = await inversionistacuentabancariaDao.getInversionistacuentabancariasByIdinversionistaAndAlias(tx, inversionista.idinversionista, inversionistacuentabancariaValidated.alias, filter_estado);
       if (cuentasbancarias_por_alias && cuentasbancarias_por_alias.length > 0) {
         log.warn(line(), "El alias [" + inversionistacuentabancariaValidated.alias + "] se encuentra registrado. Ingrese un alias diferente.");
         throw new ClientError("El alias [" + inversionistacuentabancariaValidated.alias + "] se encuentra registrado. Ingrese un alias diferente.", 404);
       }
 
       var camposCuentaBancariaFk = {
-        _idinversionista: inversionista._idinversionista,
-        _idbanco: banco._idbanco,
-        _idcuentatipo: cuentatipo._idcuentatipo,
-        _idmoneda: moneda._idmoneda,
+        _idinversionista: inversionista.idinversionista,
+        _idbanco: banco.idbanco,
+        _idcuentatipo: cuentatipo.idcuentatipo,
+        _idmoneda: moneda.idmoneda,
         _idcuentabancariaestado: 1, // Por defecto
       };
 
@@ -116,11 +116,11 @@ export const createInversionistacuentabancaria = async (req: Request, res: Respo
         ...inversionistacuentabancariaValidated,
         ...camposCuentaBancariaAuditoria,
       });
-      log.debug(line(), "cuentabancariaCreated:", cuentabancariaCreated.dataValues);
+      log.debug(line(), "cuentabancariaCreated:", cuentabancariaCreated);
 
       var camposEmpresaCuentaBancariaCreate = {
-        _idinversionista: inversionista._idinversionista,
-        _idcuentabancaria: cuentabancariaCreated._idcuentabancaria,
+        _idinversionista: inversionista.idinversionista,
+        _idcuentabancaria: cuentabancariaCreated.idcuentabancaria,
         inversionistacuentabancariaid: uuidv4(),
         code: uuidv4().split("-")[0],
         idusuariocrea: req.session_user.usuario._idusuario ?? 1,
@@ -131,7 +131,7 @@ export const createInversionistacuentabancaria = async (req: Request, res: Respo
       };
 
       const inversionistacuentabancariaCreated = await inversionistacuentabancariaDao.insertInversionistacuentabancaria(tx, camposEmpresaCuentaBancariaCreate);
-      log.debug(line(), "inversionistacuentabancariaCreated:", inversionistacuentabancariaCreated.dataValues);
+      log.debug(line(), "inversionistacuentabancariaCreated:", inversionistacuentabancariaCreated);
 
       const inversionistacuentabancariaFiltered = jsonUtils.removeAttributesPrivates(camposEmpresaCuentaBancariaCreate);
 
@@ -165,13 +165,13 @@ export const updateInversionistacuentabancariaOnlyAlias = async (req: Request, r
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const inversionistacuentabancariaAllowed = await inversionistacuentabancariaDao.getInversionistacuentabancariaByIdinversionistaAndIdusuario(tx, inversionistacuentabancaria._idinversionista, _idusuario_session, filter_estado);
+      const inversionistacuentabancariaAllowed = await inversionistacuentabancariaDao.getInversionistacuentabancariaByIdinversionistaAndIdusuario(tx, inversionistacuentabancaria.idinversionista, _idusuario_session, filter_estado);
       if (!inversionistacuentabancariaAllowed) {
-        log.warn(line(), "Inversionista no asociado al usuario: [" + inversionistacuentabancaria._idinversionista + ", " + _idusuario_session + "]");
+        log.warn(line(), "Inversionista no asociado al usuario: [" + inversionistacuentabancaria.idinversionista + ", " + _idusuario_session + "]");
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const cuentabancaria = await cuentabancariaDao.getCuentabancariaByIdcuentabancaria(tx, inversionistacuentabancaria._idcuentabancaria);
+      const cuentabancaria = await cuentabancariaDao.getCuentabancariaByIdcuentabancaria(tx, inversionistacuentabancaria.idcuentabancaria);
 
       var camposCuentaBancariaAdicionales = {
         cuentabancariaid: cuentabancaria.cuentabancariaid,
@@ -225,7 +225,7 @@ export const getInversionistacuentabancariaMaster = async (req: Request, res: Re
       const session_idusuario = req.session_user.usuario._idusuario;
       //log.info(line(),req.session_user.usuario.rol_rols);
       //const roles = [2]; // Administrador
-      //const rolesUsuario = req.session_user.usuario.rol_rols.map((role) => role._idrol);
+      //const rolesUsuario = req.session_user.usuario.rol_rols.map((role) => role.idrol);
       // const tieneRol = roles.some((rol) => rolesUsuario.includes(rol));
 
       const inversionista = await inversionistaDao.getInversionistaByIdusuario(tx, session_idusuario, filter_estados);

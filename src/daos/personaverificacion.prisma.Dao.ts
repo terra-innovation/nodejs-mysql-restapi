@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getPersonaverificacions = async (tx: TxClient, estados: number[]): Promise<persona_verificacion[]> => {
+export const getPersonaverificacions = async (tx: TxClient, estados: number[]) => {
   try {
     const personaverificacions = await tx.persona_verificacion.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getPersonaverificacions = async (tx: TxClient, estados: number[]): 
   }
 };
 
-export const getPersonaverificacionByIdpersonaverificacion = async (tx: TxClient, idpersonaverificacion: number): Promise<persona_verificacion> => {
+export const getPersonaverificacionByIdpersonaverificacion = async (tx: TxClient, idpersonaverificacion: number) => {
   try {
     const personaverificacion = await tx.persona_verificacion.findUnique({ where: { idpersonaverificacion: idpersonaverificacion } });
 
@@ -35,7 +35,7 @@ export const getPersonaverificacionByIdpersonaverificacion = async (tx: TxClient
   }
 };
 
-export const getPersonaverificacionByPersonaverificacionid = async (tx: TxClient, personaverificacionid: string): Promise<persona_verificacion> => {
+export const getPersonaverificacionByPersonaverificacionid = async (tx: TxClient, personaverificacionid: string) => {
   try {
     const personaverificacion = await tx.persona_verificacion.findFirst({
       where: {
@@ -50,7 +50,7 @@ export const getPersonaverificacionByPersonaverificacionid = async (tx: TxClient
   }
 };
 
-export const findPersonaverificacionPk = async (tx: TxClient, personaverificacionid: string): Promise<{ idpersonaverificacion: bigint }> => {
+export const findPersonaverificacionPk = async (tx: TxClient, personaverificacionid: string) => {
   try {
     const personaverificacion = await tx.persona_verificacion.findFirst({
       select: { idpersonaverificacion: true },
@@ -66,7 +66,7 @@ export const findPersonaverificacionPk = async (tx: TxClient, personaverificacio
   }
 };
 
-export const insertPersonaverificacion = async (tx: TxClient, personaverificacion: Prisma.persona_verificacionCreateInput): Promise<persona_verificacion> => {
+export const insertPersonaverificacion = async (tx: TxClient, personaverificacion: Prisma.persona_verificacionCreateInput) => {
   try {
     const nuevo = await tx.persona_verificacion.create({ data: personaverificacion });
 
@@ -77,7 +77,7 @@ export const insertPersonaverificacion = async (tx: TxClient, personaverificacio
   }
 };
 
-export const updatePersonaverificacion = async (tx: TxClient, personaverificacion: Partial<persona_verificacion>): Promise<persona_verificacion> => {
+export const updatePersonaverificacion = async (tx: TxClient, personaverificacion: Partial<persona_verificacion>) => {
   try {
     const result = await tx.persona_verificacion.update({
       data: personaverificacion,
@@ -92,7 +92,7 @@ export const updatePersonaverificacion = async (tx: TxClient, personaverificacio
   }
 };
 
-export const deletePersonaverificacion = async (tx: TxClient, personaverificacion: Partial<persona_verificacion>): Promise<persona_verificacion> => {
+export const deletePersonaverificacion = async (tx: TxClient, personaverificacion: Partial<persona_verificacion>) => {
   try {
     const result = await tx.persona_verificacion.update({
       data: personaverificacion,
@@ -107,7 +107,7 @@ export const deletePersonaverificacion = async (tx: TxClient, personaverificacio
   }
 };
 
-export const activatePersonaverificacion = async (tx: TxClient, personaverificacion: Partial<persona_verificacion>): Promise<persona_verificacion> => {
+export const activatePersonaverificacion = async (tx: TxClient, personaverificacion: Partial<persona_verificacion>) => {
   try {
     const result = await tx.persona_verificacion.update({
       data: personaverificacion,

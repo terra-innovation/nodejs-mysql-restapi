@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getFacturanotas = async (tx: TxClient, estados: number[]): Promise<factura_nota[]> => {
+export const getFacturanotas = async (tx: TxClient, estados: number[]) => {
   try {
     const facturanotas = await tx.factura_nota.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getFacturanotas = async (tx: TxClient, estados: number[]): Promise<
   }
 };
 
-export const getFacturanotaByIdfacturanota = async (tx: TxClient, idfacturanota: number): Promise<factura_nota> => {
+export const getFacturanotaByIdfacturanota = async (tx: TxClient, idfacturanota: number) => {
   try {
     const facturanota = await tx.factura_nota.findUnique({ where: { idfacturanota: idfacturanota } });
 
@@ -35,7 +35,7 @@ export const getFacturanotaByIdfacturanota = async (tx: TxClient, idfacturanota:
   }
 };
 
-export const getFacturanotaByFacturanotaid = async (tx: TxClient, facturanotaid: string): Promise<factura_nota> => {
+export const getFacturanotaByFacturanotaid = async (tx: TxClient, facturanotaid: string) => {
   try {
     const facturanota = await tx.factura_nota.findFirst({
       where: {
@@ -50,7 +50,7 @@ export const getFacturanotaByFacturanotaid = async (tx: TxClient, facturanotaid:
   }
 };
 
-export const findFacturanotaPk = async (tx: TxClient, facturanotaid: string): Promise<{ idfacturanota: bigint }> => {
+export const findFacturanotaPk = async (tx: TxClient, facturanotaid: string) => {
   try {
     const facturanota = await tx.factura_nota.findFirst({
       select: { idfacturanota: true },
@@ -66,7 +66,7 @@ export const findFacturanotaPk = async (tx: TxClient, facturanotaid: string): Pr
   }
 };
 
-export const insertFacturanota = async (tx: TxClient, facturanota: Prisma.factura_notaCreateInput): Promise<factura_nota> => {
+export const insertFacturanota = async (tx: TxClient, facturanota: Prisma.factura_notaCreateInput) => {
   try {
     const nuevo = await tx.factura_nota.create({ data: facturanota });
 
@@ -77,7 +77,7 @@ export const insertFacturanota = async (tx: TxClient, facturanota: Prisma.factur
   }
 };
 
-export const updateFacturanota = async (tx: TxClient, facturanota: Partial<factura_nota>): Promise<factura_nota> => {
+export const updateFacturanota = async (tx: TxClient, facturanota: Partial<factura_nota>) => {
   try {
     const result = await tx.factura_nota.update({
       data: facturanota,
@@ -92,7 +92,7 @@ export const updateFacturanota = async (tx: TxClient, facturanota: Partial<factu
   }
 };
 
-export const deleteFacturanota = async (tx: TxClient, facturanota: Partial<factura_nota>): Promise<factura_nota> => {
+export const deleteFacturanota = async (tx: TxClient, facturanota: Partial<factura_nota>) => {
   try {
     const result = await tx.factura_nota.update({
       data: facturanota,

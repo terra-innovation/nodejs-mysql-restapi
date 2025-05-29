@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getArchivoempresas = async (tx: TxClient, estados: number[]): Promise<archivo_empresa[]> => {
+export const getArchivoempresas = async (tx: TxClient, estados: number[]) => {
   try {
     const archivoempresas = await tx.archivo_empresa.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getArchivoempresas = async (tx: TxClient, estados: number[]): Promi
   }
 };
 
-export const getArchivoEmpresaByIdarchivoempresa = async (tx: TxClient, idarchivo: number, idempresa: number): Promise<archivo_empresa> => {
+export const getArchivoEmpresaByIdarchivoempresa = async (tx: TxClient, idarchivo: number, idempresa: number) => {
   try {
     const archivoempresa = await tx.archivo_empresa.findUnique({
       where: {
@@ -40,7 +40,7 @@ export const getArchivoEmpresaByIdarchivoempresa = async (tx: TxClient, idarchiv
   }
 };
 
-export const insertArchivoEmpresa = async (tx: TxClient, archivoempresa: Prisma.archivo_empresaCreateInput): Promise<archivo_empresa> => {
+export const insertArchivoEmpresa = async (tx: TxClient, archivoempresa: Prisma.archivo_empresaCreateInput) => {
   try {
     const nuevo = await tx.archivo_empresa.create({ data: archivoempresa });
 
@@ -51,7 +51,7 @@ export const insertArchivoEmpresa = async (tx: TxClient, archivoempresa: Prisma.
   }
 };
 
-export const updateArchivoEmpresa = async (tx: TxClient, archivoempresa: Partial<archivo_empresa>): Promise<archivo_empresa> => {
+export const updateArchivoEmpresa = async (tx: TxClient, archivoempresa: Partial<archivo_empresa>) => {
   try {
     const result = await tx.archivo_empresa.update({
       data: archivoempresa,
@@ -69,7 +69,7 @@ export const updateArchivoEmpresa = async (tx: TxClient, archivoempresa: Partial
   }
 };
 
-export const deleteArchivoEmpresa = async (tx: TxClient, archivoempresa: Partial<archivo_empresa>): Promise<archivo_empresa> => {
+export const deleteArchivoEmpresa = async (tx: TxClient, archivoempresa: Partial<archivo_empresa>) => {
   try {
     const result = await tx.archivo_empresa.update({
       data: archivoempresa,
@@ -87,7 +87,7 @@ export const deleteArchivoEmpresa = async (tx: TxClient, archivoempresa: Partial
   }
 };
 
-export const activateArchivoEmpresa = async (tx: TxClient, archivoempresa: Partial<archivo_empresa>): Promise<archivo_empresa> => {
+export const activateArchivoEmpresa = async (tx: TxClient, archivoempresa: Partial<archivo_empresa>) => {
   try {
     const result = await tx.archivo_empresa.update({
       data: archivoempresa,

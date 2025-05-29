@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getFactoringconfigtasadescuentos = async (tx: TxClient, estados: number[]): Promise<factoring_config_tasa_descuento[]> => {
+export const getFactoringconfigtasadescuentos = async (tx: TxClient, estados: number[]) => {
   try {
     const factoringconfigtasadescuentos = await tx.factoring_config_tasa_descuento.findMany({
       where: {
@@ -22,7 +22,7 @@ export const getFactoringconfigtasadescuentos = async (tx: TxClient, estados: nu
   }
 };
 
-export const getFactoringconfigtasadescuentoByIdfactoringconfigtasadescuento = async (tx: TxClient, idfactoringconfigtasadescuento: number): Promise<factoring_config_tasa_descuento> => {
+export const getFactoringconfigtasadescuentoByIdfactoringconfigtasadescuento = async (tx: TxClient, idfactoringconfigtasadescuento: number) => {
   try {
     const factoringconfigtasadescuento = await tx.factoring_config_tasa_descuento.findUnique({ where: { idfactoringconfigtasadescuento: idfactoringconfigtasadescuento } });
 
@@ -35,7 +35,7 @@ export const getFactoringconfigtasadescuentoByIdfactoringconfigtasadescuento = a
   }
 };
 
-export const getFactoringconfigtasadescuentoByFactoringconfigtasadescuentoid = async (tx: TxClient, factoringconfigtasadescuentoid: string): Promise<factoring_config_tasa_descuento> => {
+export const getFactoringconfigtasadescuentoByFactoringconfigtasadescuentoid = async (tx: TxClient, factoringconfigtasadescuentoid: string) => {
   try {
     const factoringconfigtasadescuento = await tx.factoring_config_tasa_descuento.findFirst({
       where: {
@@ -50,7 +50,7 @@ export const getFactoringconfigtasadescuentoByFactoringconfigtasadescuentoid = a
   }
 };
 
-export const findFactoringconfigtasadescuentoPk = async (tx: TxClient, factoringconfigtasadescuentoid: string): Promise<{ idfactoringconfigtasadescuento: number }> => {
+export const findFactoringconfigtasadescuentoPk = async (tx: TxClient, factoringconfigtasadescuentoid: string) => {
   try {
     const factoringconfigtasadescuento = await tx.factoring_config_tasa_descuento.findFirst({
       select: { idfactoringconfigtasadescuento: true },
@@ -66,7 +66,7 @@ export const findFactoringconfigtasadescuentoPk = async (tx: TxClient, factoring
   }
 };
 
-export const insertFactoringconfigtasadescuento = async (tx: TxClient, factoringconfigtasadescuento: Prisma.factoring_config_tasa_descuentoCreateInput): Promise<factoring_config_tasa_descuento> => {
+export const insertFactoringconfigtasadescuento = async (tx: TxClient, factoringconfigtasadescuento: Prisma.factoring_config_tasa_descuentoCreateInput) => {
   try {
     const nuevo = await tx.factoring_config_tasa_descuento.create({ data: factoringconfigtasadescuento });
 
@@ -77,7 +77,7 @@ export const insertFactoringconfigtasadescuento = async (tx: TxClient, factoring
   }
 };
 
-export const updateFactoringconfigtasadescuento = async (tx: TxClient, factoringconfigtasadescuento: Partial<factoring_config_tasa_descuento>): Promise<factoring_config_tasa_descuento> => {
+export const updateFactoringconfigtasadescuento = async (tx: TxClient, factoringconfigtasadescuento: Partial<factoring_config_tasa_descuento>) => {
   try {
     const result = await tx.factoring_config_tasa_descuento.update({
       data: factoringconfigtasadescuento,
@@ -92,7 +92,7 @@ export const updateFactoringconfigtasadescuento = async (tx: TxClient, factoring
   }
 };
 
-export const deleteFactoringconfigtasadescuento = async (tx: TxClient, factoringconfigtasadescuento: Partial<factoring_config_tasa_descuento>): Promise<factoring_config_tasa_descuento> => {
+export const deleteFactoringconfigtasadescuento = async (tx: TxClient, factoringconfigtasadescuento: Partial<factoring_config_tasa_descuento>) => {
   try {
     const result = await tx.factoring_config_tasa_descuento.update({
       data: factoringconfigtasadescuento,

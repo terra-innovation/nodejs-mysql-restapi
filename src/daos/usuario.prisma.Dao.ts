@@ -30,7 +30,7 @@ export const getUsuarioDatosContactoByIdusuario = async (tx: TxClient, idusuario
   }
 };
 
-export const getUsuariosActivos = async (tx: TxClient): Promise<usuario[]> => {
+export const getUsuariosActivos = async (tx: TxClient) => {
   try {
     const usuarios = await tx.usuario.findMany({
       where: {
@@ -45,7 +45,7 @@ export const getUsuariosActivos = async (tx: TxClient): Promise<usuario[]> => {
   }
 };
 
-export const getUsuarioByIdusuario = async (tx: TxClient, idusuario: number): Promise<usuario> => {
+export const getUsuarioByIdusuario = async (tx: TxClient, idusuario: number) => {
   try {
     const usuario = await tx.usuario.findUnique({
       include: {
@@ -88,7 +88,7 @@ export const autenticarUsuario = async (tx: TxClient, email: string) => {
   }
 };
 
-export const getUsuarioAndRolesByEmail = async (tx: TxClient, email: string): Promise<usuario[]> => {
+export const getUsuarioAndRolesByEmail = async (tx: TxClient, email: string) => {
   try {
     const usuario = await tx.usuario.findMany({
       include: {
@@ -110,7 +110,7 @@ export const getUsuarioAndRolesByEmail = async (tx: TxClient, email: string): Pr
   }
 };
 
-export const getUsuarioByUsuarioid = async (tx: TxClient, usuarioid: string): Promise<usuario> => {
+export const getUsuarioByUsuarioid = async (tx: TxClient, usuarioid: string) => {
   try {
     const usuario = await tx.usuario.findFirst({
       where: {
@@ -124,7 +124,7 @@ export const getUsuarioByUsuarioid = async (tx: TxClient, usuarioid: string): Pr
   }
 };
 
-export const getUsuarioByEmail = async (tx: TxClient, email: string): Promise<usuario> => {
+export const getUsuarioByEmail = async (tx: TxClient, email: string) => {
   try {
     const usuario = await tx.usuario.findFirst({
       where: {
@@ -139,7 +139,7 @@ export const getUsuarioByEmail = async (tx: TxClient, email: string): Promise<us
   }
 };
 
-export const getUsuarioByHash = async (tx: TxClient, hash: string): Promise<usuario> => {
+export const getUsuarioByHash = async (tx: TxClient, hash: string) => {
   try {
     const usuario = await tx.usuario.findFirst({
       where: {
@@ -169,7 +169,7 @@ export const getUsuarioByNumerodocumento = async (tx: TxClient, documentonumero)
   }
 };
 
-export const findUsuarioPk = async (tx: TxClient, usuarioid: string): Promise<{ idusuario: bigint }> => {
+export const findUsuarioPk = async (tx: TxClient, usuarioid: string) => {
   try {
     const usuario = await tx.usuario.findFirst({
       select: { idusuario: true },
@@ -185,7 +185,7 @@ export const findUsuarioPk = async (tx: TxClient, usuarioid: string): Promise<{ 
   }
 };
 
-export const insertUsuario = async (tx: TxClient, usuario: Prisma.usuarioCreateInput): Promise<usuario> => {
+export const insertUsuario = async (tx: TxClient, usuario: Prisma.usuarioCreateInput) => {
   try {
     const nuevo = await tx.usuario.create({ data: usuario });
 
@@ -196,7 +196,7 @@ export const insertUsuario = async (tx: TxClient, usuario: Prisma.usuarioCreateI
   }
 };
 
-export const updateUsuario = async (tx: TxClient, usuario: Partial<usuario>): Promise<usuario> => {
+export const updateUsuario = async (tx: TxClient, usuario: Partial<usuario>) => {
   try {
     const result = await tx.usuario.update({
       data: usuario,
@@ -211,7 +211,7 @@ export const updateUsuario = async (tx: TxClient, usuario: Partial<usuario>): Pr
   }
 };
 
-export const deleteUsuario = async (tx: TxClient, usuario: Partial<usuario>): Promise<usuario> => {
+export const deleteUsuario = async (tx: TxClient, usuario: Partial<usuario>) => {
   try {
     const result = await tx.usuario.update({
       data: usuario,

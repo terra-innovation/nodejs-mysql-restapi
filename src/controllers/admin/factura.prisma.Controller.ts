@@ -29,7 +29,7 @@ export const getFacturasByFactoringid = async (req: Request, res: Response) => {
   const facturaValidated = facturaSearchSchema.validateSync({ factoringid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "facturaValidated:", facturaValidated);
 
-  const resultado = await prismaFT.client.$transaction(
+  const facturasJson = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estado = [1, 2];
 
@@ -39,13 +39,13 @@ export const getFacturasByFactoringid = async (req: Request, res: Response) => {
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const facturas = await facturaDao.getFacturasByIdfactoring(tx, factoring._idfactoring, filter_estado);
+      const facturas = await facturaDao.getFacturasByIdfactoring(tx, factoring.idfactoring, filter_estado);
       var facturasJson = jsonUtils.sequelizeToJSON(facturas);
       //log.info(line(),facturaObfuscated);
 
       //var facturasFiltered = jsonUtils.removeAttributes(facturasJson, ["score"]);
       //facturasFiltered = jsonUtils.removeAttributesPrivates(facturasFiltered);
-      return {};
+      return facturasJson;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -64,7 +64,7 @@ export const activateFactura = async (req: Request, res: Response) => {
   const facturaValidated = facturaSchema.validateSync({ facturaid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "facturaValidated:", facturaValidated);
 
-  const resultado = await prismaFT.client.$transaction(
+  const facturaDeleted = await prismaFT.client.$transaction(
     async (tx) => {
       var camposAuditoria: Partial<factura> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
@@ -76,7 +76,7 @@ export const activateFactura = async (req: Request, res: Response) => {
         throw new ClientError("Factura no existe", 404);
       }
       log.debug(line(), "facturaActivated:", facturaDeleted);
-      return {};
+      return facturaDeleted;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -95,7 +95,7 @@ export const deleteFactura = async (req: Request, res: Response) => {
   const facturaValidated = facturaSchema.validateSync({ facturaid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "facturaValidated:", facturaValidated);
 
-  const resultado = await prismaFT.client.$transaction(
+  const facturaDeleted = await prismaFT.client.$transaction(
     async (tx) => {
       var camposAuditoria: Partial<factura> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
@@ -107,7 +107,7 @@ export const deleteFactura = async (req: Request, res: Response) => {
         throw new ClientError("Factura no existe", 404);
       }
       log.debug(line(), "facturaDeleted:", facturaDeleted);
-      return {};
+      return facturaDeleted;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -116,7 +116,7 @@ export const deleteFactura = async (req: Request, res: Response) => {
 
 export const getFacturaMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFacturaMaster");
-  const resultado = await prismaFT.client.$transaction(
+  const facturasMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estados = [1];
       const riesgos = await riesgoDao.getRiesgos(tx, filter_estados);
@@ -128,7 +128,7 @@ export const getFacturaMaster = async (req: Request, res: Response) => {
       //jsonUtils.prettyPrint(facturasMasterObfuscated);
       var facturasMasterFiltered = jsonUtils.removeAttributesPrivates(facturasMasterObfuscated);
       //jsonUtils.prettyPrint(facturasMaster);
-      return {};
+      return facturasMasterFiltered;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -139,7 +139,7 @@ export const getFacturas = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFacturas");
   //log.info(line(),req.session_user.usuario._idusuario);
 
-  const resultado = await prismaFT.client.$transaction(
+  const facturasJson = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estado = [1, 2];
       const facturas = await facturaDao.getFacturas(tx, filter_estado);
@@ -148,7 +148,7 @@ export const getFacturas = async (req: Request, res: Response) => {
 
       //var facturasFiltered = jsonUtils.removeAttributes(facturasJson, ["score"]);
       //facturasFiltered = jsonUtils.removeAttributesPrivates(facturasFiltered);
-      return {};
+      return facturasJson;
     },
     { timeout: prismaFT.transactionTimeout }
   );
