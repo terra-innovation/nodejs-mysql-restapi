@@ -28,7 +28,7 @@ export const getContactos = async (req: Request, res: Response) => {
   log.debug(line(), "contactoValidated:", contactoValidated);
   const contactosFiltered = await prismaFT.client.$transaction(
     async (tx) => {
-      const session_idusuario = req.session_user.usuario._idusuario;
+      const session_idusuario = req.session_user.usuario.idusuario;
       const filter_estados = [1];
       var empresa = await empresaDao.getEmpresaByEmpresaid(tx, contactoValidated.empresaid);
       if (!empresa) {
@@ -69,7 +69,7 @@ export const getContactos = async (req: Request, res: Response) => {
 
 export const createContacto = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createContacto");
-  const session_idusuario = req.session_user.usuario._idusuario;
+  const session_idusuario = req.session_user.usuario.idusuario;
   const filter_estado = [1, 2];
   const contactoCreateSchema = yup
     .object()
@@ -89,7 +89,7 @@ export const createContacto = async (req: Request, res: Response) => {
 
   const contactoFiltered = await prismaFT.client.$transaction(
     async (tx) => {
-      const session_idusuario = req.session_user.usuario._idusuario;
+      const session_idusuario = req.session_user.usuario.idusuario;
       const filter_estados = [1];
       var empresa = await empresaDao.getEmpresaByEmpresaid(tx, contactoValidated.empresaid);
       if (!empresa) {
@@ -133,9 +133,9 @@ export const createContacto = async (req: Request, res: Response) => {
         celular: contactoValidated.celular,
         telefono: contactoValidated.telefono,
 
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -165,7 +165,7 @@ export const getContactoMaster = async (req: Request, res: Response) => {
   log.debug(line(), "contactoValidated:", contactoValidated);
   const contactoMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
-      const session_idusuario = req.session_user.usuario._idusuario;
+      const session_idusuario = req.session_user.usuario.idusuario;
       const filter_estados = [1];
       var empresa = await empresaDao.getEmpresaByEmpresaid(tx, contactoValidated.empresaid);
       if (!empresa) {

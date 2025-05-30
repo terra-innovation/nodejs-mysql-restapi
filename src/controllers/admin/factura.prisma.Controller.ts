@@ -17,7 +17,7 @@ import * as yup from "yup";
 
 export const getFacturasByFactoringid = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFacturasByFactoringid");
-  //log.info(line(),req.session_user.usuario._idusuario);
+  //log.info(line(),req.session_user.usuario.idusuario);
   const { id } = req.params;
   const facturaSearchSchema = yup
     .object()
@@ -66,7 +66,7 @@ export const activateFactura = async (req: Request, res: Response) => {
   const facturaDeleted = await prismaFT.client.$transaction(
     async (tx) => {
       var camposAuditoria: Partial<factura> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 1;
 
@@ -97,7 +97,7 @@ export const deleteFactura = async (req: Request, res: Response) => {
   const facturaDeleted = await prismaFT.client.$transaction(
     async (tx) => {
       var camposAuditoria: Partial<factura> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 2;
 
@@ -136,7 +136,7 @@ export const getFacturaMaster = async (req: Request, res: Response) => {
 
 export const getFacturas = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFacturas");
-  //log.info(line(),req.session_user.usuario._idusuario);
+  //log.info(line(),req.session_user.usuario.idusuario);
 
   const facturasJson = await prismaFT.client.$transaction(
     async (tx) => {

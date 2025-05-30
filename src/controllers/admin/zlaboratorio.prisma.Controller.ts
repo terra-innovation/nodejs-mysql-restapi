@@ -14,7 +14,7 @@ import { Usuario } from "#root/src/models/ft_factoring/Usuario.js";
 
 export const validateTransaction = async (req: Request, res: Response) => {
   log.debug(line(), "controller::validateTransaction");
-  const session_idusuario = req.session_user.usuario._idusuario;
+  const session_idusuario = req.session_user.usuario.idusuario;
   const filter_estado = [1, 2];
   const usuariopedidoCreateSchema = yup
     .object()
@@ -31,9 +31,9 @@ export const validateTransaction = async (req: Request, res: Response) => {
       const usuarioToCreate: Prisma.zlaboratorio_usuarioCreateInput = {
         //idusuario: 67,// Simulamos un error de código duplicado
         nombre: usuariopedidoValidated.nombre,
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -48,9 +48,9 @@ export const validateTransaction = async (req: Request, res: Response) => {
         code: uuidv4().split("-")[0],
         //code: "c019c569", // Simulamos un error de código duplicado
         nombre: usuariopedidoValidated.pedido,
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };

@@ -30,7 +30,7 @@ import * as yup from "yup";
 export const subirFactura = async (req: Request, res: Response) => {
   log.debug(line(), "controller::verifyFactura");
 
-  const session_idusuario = req.session_user?.usuario?._idusuario;
+  const session_idusuario = req.session_user?.usuario?.idusuario;
   const filter_estado = [1];
 
   const facturaVerifySchema = yup
@@ -224,9 +224,9 @@ const crearFacturaPDF = async (req, tx, facturaValidated, facturaCreated) => {
     extension: extension,
     observacion: "",
     fechavencimiento: null,
-    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
   };
@@ -235,9 +235,9 @@ const crearFacturaPDF = async (req, tx, facturaValidated, facturaCreated) => {
   const archivofacturaToCreate: Prisma.archivo_facturaCreateInput = {
     archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
     factura: { connect: { idfactura: facturaCreated.idfactura } },
-    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
   };
@@ -273,9 +273,9 @@ const crearFacturaXML = async (req, tx, facturaValidated, facturaCreated) => {
     extension: extension,
     observacion: "",
     fechavencimiento: null,
-    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
   };
@@ -284,9 +284,9 @@ const crearFacturaXML = async (req, tx, facturaValidated, facturaCreated) => {
   const archivofacturaToCreate: Prisma.archivo_facturaCreateInput = {
     archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
     factura: { connect: { idfactura: facturaCreated.idfactura } },
-    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
   };

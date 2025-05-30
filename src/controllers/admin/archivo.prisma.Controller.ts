@@ -28,11 +28,11 @@ export const cargarArchivo = async (req: Request, res: Response) => {
   log.debug(line(), "controller::cargarArchivo");
   const archivoCreated = await prismaFT.client.$transaction(
     async (tx) => {
-      const _idusuario = req.session_user?.usuario?._idusuario;
+      const idusuario = req.session_user?.usuario?.idusuario;
       const archivoUploadSchema = yup
         .object()
         .shape({
-          _idusuario: yup.number().required(),
+          idusuario: yup.number().required(),
           archivo: yup
             .mixed()
             .concat(validacionesYup.fileRequeridValidation())
@@ -40,7 +40,7 @@ export const cargarArchivo = async (req: Request, res: Response) => {
           archivotipo_code: yup.string().trim().min(8).max(8),
         })
         .required();
-      const archivoValidated = archivoUploadSchema.validateSync({ ...req.files, ...req.body, _idusuario }, { abortEarly: false, stripUnknown: true });
+      const archivoValidated = archivoUploadSchema.validateSync({ ...req.files, ...req.body, idusuario }, { abortEarly: false, stripUnknown: true });
       log.debug(line(), "archivoValidated:", archivoValidated);
 
       let idarchivotipo = 10; // Sin tipo
@@ -76,9 +76,9 @@ export const cargarArchivo = async (req: Request, res: Response) => {
         extension: extension,
         observacion: "",
         fechavencimiento: null,
-        idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+        idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+        idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -156,7 +156,7 @@ export const activateArchivo = async (req: Request, res: Response) => {
   const archivoDeleted = await prismaFT.client.$transaction(
     async (tx) => {
       var camposAuditoria: Partial<archivo> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 1;
 
@@ -193,7 +193,7 @@ export const deleteArchivo = async (req: Request, res: Response) => {
       }
 
       var camposAuditoria: Partial<archivo> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 2;
 
@@ -211,7 +211,7 @@ export const getArchivoMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getArchivoMaster");
   const archivoMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
-      const session_idusuario = req.session_user?.usuario?._idusuario;
+      const session_idusuario = req.session_user?.usuario?.idusuario;
       const filter_estados = [1];
       const paises = await paisDao.getPaises(tx, filter_estados);
       const distritos = await distritoDao.getDistritos(tx, filter_estados);
@@ -269,7 +269,7 @@ export const updateArchivo = async (req: Request, res: Response) => {
       camposAdicionales.archivoid = archivoValidated.archivoid;
 
       var camposAuditoria: Partial<archivo> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
 
       const result = await archivoDao.updateArchivo(tx, {

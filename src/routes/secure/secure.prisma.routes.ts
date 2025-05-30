@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { catchedAsync } from "#src/utils/catchedAsync.js";
-import * as secureController from "#src/controllers/secure/secureController.js";
+import * as secureController from "#src/controllers/secure/secure.prisma.Controller.js";
 
 const router = Router();
 

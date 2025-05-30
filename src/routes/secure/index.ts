@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import secureRoutes from "#src/routes/secure/secure.routes.js";
+import secureRoutes from "#src/routes/secure/secure.prisma.routes.js";
 
 const router = Router();
 

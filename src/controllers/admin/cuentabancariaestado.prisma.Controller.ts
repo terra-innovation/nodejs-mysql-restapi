@@ -14,7 +14,7 @@ import * as yup from "yup";
 
 export const activateCuentabancariaestado = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activateCuentabancariaestado");
-  const session_idusuario = req.session_user.usuario._idusuario;
+  const session_idusuario = req.session_user.usuario.idusuario;
   const { id } = req.params;
   const cuentabancariaestadoSchema = yup
     .object()
@@ -46,7 +46,7 @@ export const activateCuentabancariaestado = async (req: Request, res: Response) 
 
 export const deleteCuentabancariaestado = async (req: Request, res: Response) => {
   log.debug(line(), "controller::deleteCuentabancariaestado");
-  const session_idusuario = req.session_user.usuario._idusuario;
+  const session_idusuario = req.session_user.usuario.idusuario;
   const { id } = req.params;
   const cuentabancariaestadoSchema = yup
     .object()
@@ -78,7 +78,7 @@ export const deleteCuentabancariaestado = async (req: Request, res: Response) =>
 
 export const updateCuentabancariaestado = async (req: Request, res: Response) => {
   log.debug(line(), "controller::updateCuentabancariaestado");
-  const session_idusuario = req.session_user.usuario._idusuario;
+  const session_idusuario = req.session_user.usuario.idusuario;
   const { id } = req.params;
   const cuentabancariaestadoUpdateSchema = yup
     .object()
@@ -128,7 +128,7 @@ export const updateCuentabancariaestado = async (req: Request, res: Response) =>
 
 export const getCuentasbancarias = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getCuentasbancarias");
-  //log.info(line(),req.session_user.usuario._idusuario);
+  //log.info(line(),req.session_user.usuario.idusuario);
 
   const cuentabancariaestadosJson = await prismaFT.client.$transaction(
     async (tx) => {
@@ -148,7 +148,7 @@ export const getCuentasbancarias = async (req: Request, res: Response) => {
 
 export const createCuentabancariaestado = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createCuentabancariaestado");
-  const session_idusuario = req.session_user.usuario._idusuario;
+  const session_idusuario = req.session_user.usuario.idusuario;
   const cuentabancariaestadoCreateSchema = yup
     .object()
     .shape({

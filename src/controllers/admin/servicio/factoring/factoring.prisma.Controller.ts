@@ -34,7 +34,7 @@ export const activateFactoring = async (req: Request, res: Response) => {
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
       var camposAuditoria: Partial<factoring> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 1;
 
@@ -65,7 +65,7 @@ export const deleteFactoring = async (req: Request, res: Response) => {
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
       var camposAuditoria: Partial<factoring> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 2;
 
@@ -94,7 +94,7 @@ export const updateFactoring = async (req: Request, res: Response) => {
 
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
-      const session_idusuario = req.session_user.usuario._idusuario;
+      const session_idusuario = req.session_user.usuario.idusuario;
       const filter_estados = [1];
 
       var factoring = await factoringDao.getFactoringByFactoringid(tx, factoringValidated.factoringid);
@@ -129,7 +129,7 @@ export const updateFactoring = async (req: Request, res: Response) => {
       camposFactoringAdicionales.factoringid = factoring.factoringid;
 
       var camposFactoringAuditoria: Partial<factoring> = {};
-      camposFactoringAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposFactoringAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposFactoringAuditoria.fechamod = new Date();
 
       const factoringUpdated = await factoringDao.updateFactoring(tx, {
@@ -165,7 +165,7 @@ export const simulateFactoring = async (req: Request, res: Response) => {
 
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
-      const session_idusuario = req.session_user.usuario._idusuario;
+      const session_idusuario = req.session_user.usuario.idusuario;
       const filter_estados = [1];
 
       var factoring = await factoringDao.getFactoringByFactoringid(tx, factoringValidated.factoringid);

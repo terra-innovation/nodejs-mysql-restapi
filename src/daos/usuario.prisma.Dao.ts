@@ -90,7 +90,7 @@ export const autenticarUsuario = async (tx: TxClient, email: string) => {
 
 export const getUsuarioAndRolesByEmail = async (tx: TxClient, email: string) => {
   try {
-    const usuario = await tx.usuario.findMany({
+    const usuario = await tx.usuario.findFirst({
       include: {
         usuario_roles: {
           include: {

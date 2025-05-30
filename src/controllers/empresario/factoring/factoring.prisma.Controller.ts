@@ -28,7 +28,7 @@ export const getFactorings = async (req: Request, res: Response) => {
   const factorings = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estados = [1];
-      const _idusuario_session = req.session_user.usuario._idusuario;
+      const _idusuario_session = req.session_user.usuario.idusuario;
       const empresas_cedentes = await empresaDao.getEmpresasByIdusuario(tx, _idusuario_session, filter_estados);
       const _idcedentes = empresas_cedentes.map((empresa) => empresa.idempresa);
       const factorings = await factoringDao.getFactoringsByIdcedentes(tx, _idcedentes, filter_estados);
@@ -80,7 +80,7 @@ export const createFactoring = async (req: Request, res: Response) => {
 
   const factoringToCreate = await prismaFT.client.$transaction(
     async (tx) => {
-      const session_idusuario = req.session_user.usuario._idusuario;
+      const session_idusuario = req.session_user.usuario.idusuario;
       const filter_estados = [1];
       const facturas = [];
 
@@ -168,9 +168,9 @@ export const createFactoring = async (req: Request, res: Response) => {
         monto_factura: facturas.reduce((acc, item) => acc + (typeof item.importe_bruto === "number" ? item.importe_bruto : 0), 0),
         monto_detraccion: facturas.reduce((acc, item) => acc + (typeof item.detraccion_monto === "number" ? item.detraccion_monto : 0), 0),
         monto_neto: facturas.reduce((acc, item) => acc + (typeof item.importe_neto === "number" ? item.importe_neto : 0), 0),
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -183,11 +183,11 @@ export const createFactoring = async (req: Request, res: Response) => {
         code: uuidv4().split("-")[0],
         factoring: { connect: { idfactoring: factoringCreated.idfactoring } },
         factoring_estado: { connect: { idfactoringestado: idfactoringestado } },
-        usuario_modifica: { connect: { idusuario: req.session_user.usuario._idusuario } },
+        usuario_modifica: { connect: { idusuario: req.session_user.usuario.idusuario } },
         comentario: "",
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -200,9 +200,9 @@ export const createFactoring = async (req: Request, res: Response) => {
         const factoringfacturaToCreate: Prisma.factoring_facturaCreateInput = {
           factoring: { connect: { idfactoring: factoringCreated.idfactoring } },
           factura: { connect: { idfactura: factura.idfactura } },
-          idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+          idusuariocrea: req.session_user.usuario.idusuario ?? 1,
           fechacrea: new Date(),
-          idusuariomod: req.session_user.usuario._idusuario ?? 1,
+          idusuariomod: req.session_user.usuario.idusuario ?? 1,
           fechamod: new Date(),
           estado: 1,
         };

@@ -29,7 +29,8 @@ export function errorHandlerMiddleware(err: any, req: Request, res: Response, ne
   const esErrorConocido = err instanceof ArchivoError || err instanceof ClientError || err instanceof ConexionError || err instanceof AuthClientError || err instanceof ValidationError;
 
   if (!esErrorConocido) {
-    log.error(line(), "Uncaught Error:", util.inspect(err, { colors: true, depth: null }));
+    //log.error(line(), "Uncaught Error:", util.inspect(err, { colors: true, depth: null }));
+    log.error(line(), "Uncaught Error:", err);
   }
 
   customResponseError(res, statusCode, message);

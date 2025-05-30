@@ -36,7 +36,7 @@ export const updateContacto = async (req: Request, res: Response) => {
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estados = [1, 2];
-      const _idusuario_session = req.session_user.usuario._idusuario;
+      const _idusuario_session = req.session_user.usuario.idusuario;
       const contacto = await contactoDao.getContactoByContactoid(tx, contactoValidated.contactoid);
       if (!contacto) {
         log.warn(line(), "Contacto no existe: [" + contactoValidated.contactoid + "]");
@@ -57,7 +57,7 @@ export const updateContacto = async (req: Request, res: Response) => {
       camposContactoAdicionales.contactoid = contacto.contactoid;
 
       var camposContactoAuditoria: Partial<contacto> = {};
-      camposContactoAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposContactoAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposContactoAuditoria.fechamod = new Date();
 
       const contactoUpdated = await contactoDao.updateContacto(tx, {
@@ -76,7 +76,7 @@ export const updateContacto = async (req: Request, res: Response) => {
 
 export const createContacto = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createContacto");
-  const session_idusuario = req.session_user.usuario._idusuario;
+  const session_idusuario = req.session_user.usuario.idusuario;
   const filter_estado = [1, 2];
   const contactoCreateSchema = yup
     .object()
@@ -129,9 +129,9 @@ export const createContacto = async (req: Request, res: Response) => {
         email: contactoValidated.email,
         celular: contactoValidated.celular,
         telefono: contactoValidated.telefono,
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -152,9 +152,9 @@ export const getContactos = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getContactos");
   const contactosFiltered = await prismaFT.client.$transaction(
     async (tx) => {
-      //log.info(line(),req.session_user.usuario._idusuario);
+      //log.info(line(),req.session_user.usuario.idusuario);
 
-      const session_idusuario = req.session_user.usuario._idusuario;
+      const session_idusuario = req.session_user.usuario.idusuario;
       const filter_estados = [1];
       const empresas_cedentes = await empresaDao.getEmpresasByIdusuario(tx, session_idusuario, filter_estados);
       const _idcedentes = empresas_cedentes.map((empresa) => empresa.idempresa);

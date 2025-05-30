@@ -56,13 +56,13 @@ import { servicio_empresa_verificacion } from "#src/models/prisma/ft_factoring/c
 
 export const suscribirUsuarioServicioFactoringInversionista = async (req: Request, res: Response) => {
   log.debug(line(), "controller::suscribirUsuarioServicioFactoringInversionista");
-  const _idusuario = req.session_user?.usuario?._idusuario;
+  const idusuario = req.session_user?.usuario?.idusuario;
   const { id } = req.params;
   const filter_estado = [1, 2];
   const usuarioservicioSuscripcionSchema = yup
     .object()
     .shape({
-      _idusuario: yup.number().required(),
+      idusuario: yup.number().required(),
       usuarioservicioid: yup.string().trim().required().min(36).max(36),
       personaid: yup.string().trim().required().min(36).max(36),
 
@@ -77,7 +77,7 @@ export const suscribirUsuarioServicioFactoringInversionista = async (req: Reques
       declaracion_datos_reales: yup.boolean().required(),
     })
     .required();
-  const usuarioservicioValidated = usuarioservicioSuscripcionSchema.validateSync({ ...req.files, ...req.body, _idusuario, usuarioservicioid: id }, { abortEarly: false, stripUnknown: true });
+  const usuarioservicioValidated = usuarioservicioSuscripcionSchema.validateSync({ ...req.files, ...req.body, idusuario, usuarioservicioid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "usuarioservicioValidated:", usuarioservicioValidated);
 
   const resultado = await prismaFT.client.$transaction(
@@ -147,9 +147,9 @@ export const suscribirUsuarioServicioFactoringInversionista = async (req: Reques
         persona: { connect: { idpersona: persona.idpersona } },
         inversionistaid: uuidv4(),
         code: uuidv4().split("-")[0],
-        idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+        idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+        idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -169,9 +169,9 @@ export const suscribirUsuarioServicioFactoringInversionista = async (req: Reques
         numero: usuarioservicioValidated.numero,
         cci: usuarioservicioValidated.cci,
         alias: usuarioservicioValidated.alias,
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -186,9 +186,9 @@ export const suscribirUsuarioServicioFactoringInversionista = async (req: Reques
 
         inversionistacuentabancariaid: uuidv4(),
         code: uuidv4().split("-")[0],
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -201,13 +201,13 @@ export const suscribirUsuarioServicioFactoringInversionista = async (req: Reques
       const usuarioservicioverificacionToCreate: Prisma.usuario_servicio_verificacionCreateInput = {
         usuario_servicio: { connect: { idusuarioservicio: usuarioservicio.idusuarioservicio } },
         usuario_servicio_estado: { connect: { idusuarioservicioestado: usuarioservicioestado.idusuarioservicioestado } },
-        usuario_verifica: { connect: { idusuario: req.session_user?.usuario?._idusuario } },
+        usuario_verifica: { connect: { idusuario: req.session_user?.usuario?.idusuario } },
         usuarioservicioverificacionid: uuidv4(),
         comentariousuario: "",
         comentariointerno: "",
-        idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+        idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+        idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -220,7 +220,7 @@ export const suscribirUsuarioServicioFactoringInversionista = async (req: Reques
       camposUsuarioservicioUpdate.idusuarioservicio = usuarioservicio.idusuarioservicio;
       camposUsuarioservicioUpdate.usuarioservicioid = usuarioservicio.usuarioservicioid;
       camposUsuarioservicioUpdate.idusuarioservicioestado = usuarioservicioestado.idusuarioservicioestado;
-      camposUsuarioservicioUpdate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
+      camposUsuarioservicioUpdate.idusuariomod = req.session_user?.usuario?.idusuario ?? 1;
       camposUsuarioservicioUpdate.fechamod = new Date();
 
       const usuarioservicioUpdated = await usuarioservicioDao.updateUsuarioservicio(tx, camposUsuarioservicioUpdate);
@@ -235,13 +235,13 @@ export const suscribirUsuarioServicioFactoringInversionista = async (req: Reques
 
 export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res: Response) => {
   log.debug(line(), "controller::suscribirUsuarioServicioFactoringEmpresa");
-  const _idusuario = req.session_user?.usuario?._idusuario;
+  const idusuario = req.session_user?.usuario?.idusuario;
   const { id } = req.params;
   const filter_estado = [1, 2];
   const usuarioservicioSuscripcionSchema = yup
     .object()
     .shape({
-      _idusuario: yup.number().required(),
+      idusuario: yup.number().required(),
       usuarioservicioid: yup.string().trim().required().min(36).max(36),
       ficha_ruc: yup
         .mixed()
@@ -287,7 +287,7 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       declaracion_datos_reales: yup.boolean().required(),
     })
     .required();
-  const usuarioservicioValidated = usuarioservicioSuscripcionSchema.validateSync({ ...req.files, ...req.body, _idusuario, usuarioservicioid: id }, { abortEarly: false, stripUnknown: true });
+  const usuarioservicioValidated = usuarioservicioSuscripcionSchema.validateSync({ ...req.files, ...req.body, idusuario, usuarioservicioid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "usuarioservicioValidated:", usuarioservicioValidated);
 
   const resultado = await prismaFT.client.$transaction(
@@ -409,9 +409,9 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
         direccion_sede_referencia: usuarioservicioValidated.direccion_sede_referencia,
         empresaid: uuidv4(),
         code: uuidv4().split("-")[0],
-        idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+        idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+        idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -421,8 +421,8 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       log.debug(line(), "empresaCreated:", empresaCreated);
 
       /* Creamos el Colaborador con los datos del usuario cómo representante legal */
-      const usuarioConected = await usuarioDao.getUsuarioByIdusuario(tx, usuarioservicioValidated._idusuario);
-      const personaConected = await personaDao.getPersonaByIdusuario(tx, usuarioservicioValidated._idusuario);
+      const usuarioConected = await usuarioDao.getUsuarioByIdusuario(tx, usuarioservicioValidated.idusuario);
+      const personaConected = await personaDao.getPersonaByIdusuario(tx, usuarioservicioValidated.idusuario);
 
       const colaboradorToCreate: Prisma.colaboradorCreateInput = {
         empresa: { connect: { idempresa: empresaCreated.idempresa } },
@@ -439,9 +439,9 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
         telefono: personaConected.celular,
         poderpartidanumero: usuarioservicioValidated.poderpartidanumero,
         poderpartidaciudad: usuarioservicioValidated.poderpartidaciudad,
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -461,9 +461,9 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
         numero: usuarioservicioValidated.numero,
         cci: usuarioservicioValidated.cci,
         alias: usuarioservicioValidated.alias,
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -476,9 +476,9 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
         cuenta_bancaria: { connect: { idcuentabancaria: cuentabancariaCreated.idcuentabancaria } },
         empresacuentabancariaid: uuidv4(),
         code: uuidv4().split("-")[0],
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -496,9 +496,9 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
 
         servicioempresaid: uuidv4(),
         code: uuidv4().split("-")[0],
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -516,9 +516,9 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
         usuario_servicio_empresa_rol: { connect: { idusuarioservicioempresarol: usuarioservicioempresarol.idusuarioservicioempresarol } },
         usuarioservicioempresaid: uuidv4(),
         code: uuidv4().split("-")[0],
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -547,9 +547,9 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
         comentariointerno: "",
         comentariousuario: "",
         servicioempresaverificacionid: uuidv4(),
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -561,13 +561,13 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       const usuarioservicioverificacionToCreate: Prisma.usuario_servicio_verificacionCreateInput = {
         usuario_servicio: { connect: { idusuarioservicio: usuarioservicio.idusuarioservicio } },
         usuario_servicio_estado: { connect: { idusuarioservicioestado: usuarioservicioestado.idusuarioservicioestado } },
-        usuario_verifica: { connect: { idusuario: req.session_user.usuario._idusuario } },
+        usuario_verifica: { connect: { idusuario: req.session_user.usuario.idusuario } },
         usuarioservicioverificacionid: uuidv4(),
         comentariousuario: "",
         comentariointerno: "",
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -580,7 +580,7 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       camposUsuarioservicioUpdate.idusuarioservicio = usuarioservicio.idusuarioservicio;
       camposUsuarioservicioUpdate.usuarioservicioid = usuarioservicio.usuarioservicioid;
       camposUsuarioservicioUpdate.idusuarioservicioestado = usuarioservicioestado.idusuarioservicioestado;
-      camposUsuarioservicioUpdate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
+      camposUsuarioservicioUpdate.idusuariomod = req.session_user?.usuario?.idusuario ?? 1;
       camposUsuarioservicioUpdate.fechamod = new Date();
 
       const usuarioservicioUpdated = await usuarioservicioDao.updateUsuarioservicio(tx, camposUsuarioservicioUpdate);
@@ -595,7 +595,7 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
 
 export const getUsuarioservicioMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getUsuarioservicioMaster");
-  const session_idusuario = req.session_user?.usuario?._idusuario;
+  const session_idusuario = req.session_user?.usuario?.idusuario;
   const { id } = req.params;
   const usuarioservicioSchema = yup
     .object()
@@ -643,9 +643,9 @@ export const getUsuarioservicios = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getUsuarioservicios");
   const usuarioserviciosFiltered = await prismaFT.client.$transaction(
     async (tx) => {
-      //log.info(line(),req.session_user.usuario._idusuario);
+      //log.info(line(),req.session_user.usuario.idusuario);
 
-      const session_idusuario = req.session_user.usuario._idusuario;
+      const session_idusuario = req.session_user.usuario.idusuario;
       const filter_estado = [1];
       const usuarioservicios = await usuarioservicioDao.getUsuarioserviciosByIdusuario(tx, session_idusuario, filter_estado);
       var usuarioserviciosJson = jsonUtils.sequelizeToJSON(usuarioservicios);
@@ -685,9 +685,9 @@ const crearArchivoEncabezadoCuentaBancaria = async (req, tx, usuarioservicioVali
     extension: extension,
     observacion: "",
     fechavencimiento: null,
-    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
   };
@@ -696,9 +696,9 @@ const crearArchivoEncabezadoCuentaBancaria = async (req, tx, usuarioservicioVali
   const archivocuentabancariaToCreate: Prisma.archivo_cuenta_bancariaCreateInput = {
     archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
     cuenta_bancaria: { connect: { idcuentabancaria: cuentabancariaCreated.idcuentabancaria } },
-    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
   };
@@ -735,9 +735,9 @@ const crearArchivoVigenciaPoderRepresentanteLegal = async (req, tx, usuarioservi
     extension: extension,
     observacion: "",
     fechavencimiento: null,
-    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
   };
@@ -746,9 +746,9 @@ const crearArchivoVigenciaPoderRepresentanteLegal = async (req, tx, usuarioservi
   const archivocolaboradorToCreate: Prisma.archivo_colaboradorCreateInput = {
     archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
     colaborador: { connect: { idcolaborador: colaboradorCreated.idcolaborador } },
-    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
   };
@@ -784,9 +784,9 @@ const crearArchivoReporteTributarioParaTerceros = async (req, tx, usuarioservici
     extension: extension,
     observacion: "",
     fechavencimiento: null,
-    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
   };
@@ -795,9 +795,9 @@ const crearArchivoReporteTributarioParaTerceros = async (req, tx, usuarioservici
   const archivoempresaToCreate: Prisma.archivo_empresaCreateInput = {
     archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
     empresa: { connect: { idempresa: empresaCreated.idempresa } },
-    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
   };
@@ -833,9 +833,9 @@ const crearArchivoFichaRuc = async (req, tx, usuarioservicioValidated, empresaCr
     extension: extension,
     observacion: "",
     fechavencimiento: null,
-    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
   };
@@ -844,9 +844,9 @@ const crearArchivoFichaRuc = async (req, tx, usuarioservicioValidated, empresaCr
   const archivoempresaToCreate: Prisma.archivo_empresaCreateInput = {
     archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
     empresa: { connect: { idempresa: empresaCreated.idempresa } },
-    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
   };

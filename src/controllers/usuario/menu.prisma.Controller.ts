@@ -15,9 +15,9 @@ import * as menuUsuario from "#src/menu/menuUsuario.js";
 export const getMenu = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getMenu");
 
-  log.debug(line(), "session_user", req.session_user.usuario._idusuario);
+  log.debug(line(), "session_user", req.session_user.usuario.idusuario);
 
-  const session_idusuario = req.session_user.usuario._idusuario;
+  const session_idusuario = req.session_user.usuario.idusuario;
   const menuDasboard = {
     id: "group-dashboard",
     title: "dashboard",

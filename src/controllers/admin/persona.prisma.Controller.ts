@@ -36,7 +36,7 @@ export const activatePersona = async (req: Request, res: Response) => {
   const personaDeleted = await prismaFT.client.$transaction(
     async (tx) => {
       var camposAuditoria: Partial<persona> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 1;
 
@@ -67,7 +67,7 @@ export const deletePersona = async (req: Request, res: Response) => {
   const personaDeleted = await prismaFT.client.$transaction(
     async (tx) => {
       var camposAuditoria: Partial<persona> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 2;
 
@@ -87,7 +87,7 @@ export const getPersonaMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getPersonaMaster");
   const personaMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
-      const session_idusuario = req.session_user?.usuario?._idusuario;
+      const session_idusuario = req.session_user?.usuario?.idusuario;
       const filter_estados = [1];
       const paises = await paisDao.getPaises(tx, filter_estados);
       const distritos = await distritoDao.getDistritos(tx, filter_estados);
@@ -145,7 +145,7 @@ export const updatePersona = async (req: Request, res: Response) => {
       camposAdicionales.personaid = personaValidated.personaid;
 
       var camposAuditoria: Partial<persona> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
 
       const result = await personaDao.updatePersona(tx, {
@@ -172,7 +172,7 @@ export const getPersonas = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getPersonas");
   const personasJson = await prismaFT.client.$transaction(
     async (tx) => {
-      //log.info(line(),req.session_user.usuario._idusuario);
+      //log.info(line(),req.session_user.usuario.idusuario);
 
       const filter_estado = [1, 2];
       const personas = await personaDao.getPersonas(tx, filter_estado);

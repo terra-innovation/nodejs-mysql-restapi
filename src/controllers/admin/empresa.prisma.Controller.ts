@@ -30,7 +30,7 @@ export const activateEmpresa = async (req: Request, res: Response) => {
   const empresaDeleted = await prismaFT.client.$transaction(
     async (tx) => {
       var camposAuditoria: Partial<empresa> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 1;
 
@@ -61,7 +61,7 @@ export const deleteEmpresa = async (req: Request, res: Response) => {
   const empresaDeleted = await prismaFT.client.$transaction(
     async (tx) => {
       var camposAuditoria: Partial<empresa> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 2;
 
@@ -135,7 +135,7 @@ export const updateEmpresa = async (req: Request, res: Response) => {
       camposAdicionales.empresaid = id;
 
       var camposAuditoria: Partial<empresa> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
 
       const empresaUpdated = await empresaDao.updateEmpresa(tx, {
@@ -155,7 +155,7 @@ export const updateEmpresa = async (req: Request, res: Response) => {
 
 export const getEmpresas = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getEmpresas");
-  //log.info(line(),req.session_user.usuario._idusuario);
+  //log.info(line(),req.session_user.usuario.idusuario);
 
   const empresasJson = await prismaFT.client.$transaction(
     async (tx) => {
@@ -175,7 +175,7 @@ export const getEmpresas = async (req: Request, res: Response) => {
 
 export const createEmpresa = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createEmpresa");
-  const session_idusuario = req.session_user.usuario._idusuario;
+  const session_idusuario = req.session_user.usuario.idusuario;
   const filter_estado = [1, 2];
   const empresaCreateSchema = yup
     .object()
@@ -216,9 +216,9 @@ export const createEmpresa = async (req: Request, res: Response) => {
         razon_social: empresaValidated.razon_social,
         nombre_comercial: empresaValidated.nombre_comercial,
         domicilio_fiscal: empresaValidated.domicilio_fiscal,
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };

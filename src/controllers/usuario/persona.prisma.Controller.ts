@@ -35,7 +35,7 @@ export const getPersonaMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getPersonaMaster");
   const personaMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
-      const session_idusuario = req.session_user?.usuario?._idusuario;
+      const session_idusuario = req.session_user?.usuario?.idusuario;
       const filter_estados = [1];
       const paises = await paisDao.getPaises(tx, filter_estados);
       const distritos = await distritoDao.getDistritos(tx, filter_estados);
@@ -72,12 +72,12 @@ export const verifyPersona = async (req: Request, res: Response) => {
   log.debug(line(), "controller::verifyPersona");
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
-      const _idusuario = req.session_user?.usuario?._idusuario;
+      const idusuario = req.session_user?.usuario?.idusuario;
       let NAME_REGX = /^[a-zA-Z ]+$/;
       const personaVerifySchema = yup
         .object()
         .shape({
-          _idusuario: yup.number().required(),
+          idusuario: yup.number().required(),
           identificacion_anverso: yup
             .mixed()
             .concat(validacionesYup.fileRequeridValidation())
@@ -117,7 +117,7 @@ export const verifyPersona = async (req: Request, res: Response) => {
           isdatacorrect: yup.boolean().required(),
         })
         .required();
-      const personaValidated = personaVerifySchema.validateSync({ ...req.files, ...req.body, _idusuario }, { abortEarly: false, stripUnknown: true });
+      const personaValidated = personaVerifySchema.validateSync({ ...req.files, ...req.body, idusuario }, { abortEarly: false, stripUnknown: true });
       log.debug(line(), "personaValidated:", personaValidated);
 
       const documentotipo = await documentotipoDao.findDocumentotipoPk(tx, personaValidated.documentotipoid);
@@ -156,7 +156,7 @@ export const verifyPersona = async (req: Request, res: Response) => {
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const persona = await personaDao.getPersonaByIdusuario(tx, personaValidated._idusuario);
+      const persona = await personaDao.getPersonaByIdusuario(tx, personaValidated.idusuario);
       if (persona) {
         log.warn(line(), "Persona ya existe");
         throw new ClientError("Datos no válidos", 404);
@@ -169,7 +169,7 @@ export const verifyPersona = async (req: Request, res: Response) => {
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const usuarioConected = await usuarioDao.getUsuarioByIdusuario(tx, personaValidated._idusuario);
+      const usuarioConected = await usuarioDao.getUsuarioByIdusuario(tx, personaValidated.idusuario);
       const provinciaResidencia = await provinciaDao.getProvinciaByIdprovincia(tx, distritoResidencia.idprovincia);
 
       const personaToCreate: Prisma.personaCreateInput = {
@@ -197,9 +197,9 @@ export const verifyPersona = async (req: Request, res: Response) => {
         code: uuidv4().split("-")[0],
         email: usuarioConected.email,
         celular: usuarioConected.celular,
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -222,9 +222,9 @@ export const verifyPersona = async (req: Request, res: Response) => {
         personadeclaracionid: uuidv4(),
         espep: personaValidated.espep,
         tienevinculopep: personaValidated.tienevinculopep,
-        idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+        idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+        idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -234,13 +234,13 @@ export const verifyPersona = async (req: Request, res: Response) => {
       const personaverificacionToCreate: Prisma.persona_verificacionCreateInput = {
         persona: { connect: { idpersona: personaCreated.idpersona } },
         persona_verificacion_estado: { connect: { idpersonaverificacionestado: personaverificacionestado.idpersonaverificacionestado } },
-        usuario_verifica: { connect: { idusuario: req.session_user?.usuario?._idusuario } },
+        usuario_verifica: { connect: { idusuario: req.session_user?.usuario?.idusuario } },
         personaverificacionid: uuidv4(),
         comentariousuario: "",
         comentariointerno: "",
-        idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+        idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+        idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -249,7 +249,7 @@ export const verifyPersona = async (req: Request, res: Response) => {
       const usuarioUpdate: Partial<usuario> = {};
       usuarioUpdate.usuarioid = usuarioConected.usuarioid;
       usuarioUpdate.ispersonavalidated = personaverificacionestado.ispersonavalidated;
-      usuarioUpdate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
+      usuarioUpdate.idusuariomod = req.session_user?.usuario?.idusuario ?? 1;
       usuarioUpdate.fechamod = new Date();
       usuarioUpdate.estado = 1;
 
@@ -287,9 +287,9 @@ const crearIdentificacionSelfi = async (req, tx, personaValidated, personaCreate
     extension: extension,
     observacion: "",
     fechavencimiento: null,
-    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
   };
@@ -298,9 +298,9 @@ const crearIdentificacionSelfi = async (req, tx, personaValidated, personaCreate
   const archivopersonaToCreate: Prisma.archivo_personaCreateInput = {
     archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
     persona: { connect: { idpersona: personaCreated.idcuentabancaria } },
-    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
   };
@@ -336,9 +336,9 @@ const crearIdentificacionReverso = async (req, tx, personaValidated, personaCrea
     extension: extension,
     observacion: "",
     fechavencimiento: null,
-    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
   };
@@ -347,9 +347,9 @@ const crearIdentificacionReverso = async (req, tx, personaValidated, personaCrea
   const archivopersonaToCreate: Prisma.archivo_personaCreateInput = {
     archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
     persona: { connect: { idpersona: personaCreated.idcuentabancaria } },
-    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
   };
@@ -385,9 +385,9 @@ const crearIdentificacionAnverso = async (req, tx, personaValidated, personaCrea
     extension: extension,
     observacion: "",
     fechavencimiento: null,
-    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
   };
@@ -396,9 +396,9 @@ const crearIdentificacionAnverso = async (req, tx, personaValidated, personaCrea
   const archivopersonaToCreate: Prisma.archivo_personaCreateInput = {
     archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
     persona: { connect: { idpersona: personaCreated.idcuentabancaria } },
-    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
   };

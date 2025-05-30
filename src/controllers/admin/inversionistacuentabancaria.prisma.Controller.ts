@@ -62,7 +62,7 @@ export const updateInversionistacuentabancariaOnlyAliasAndCuentaBancariaEstado =
       camposCuentabancariaAdicionales.cuentabancariaid = cuentabancaria.cuentabancariaid;
 
       var camposCuentabancariaAuditoria: Partial<cuenta_bancaria> = {};
-      camposCuentabancariaAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposCuentabancariaAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposCuentabancariaAuditoria.fechamod = new Date();
 
       const cuentabancariaUpdated = await cuentabancariaDao.updateCuentabancaria(tx, {
@@ -82,7 +82,7 @@ export const updateInversionistacuentabancariaOnlyAliasAndCuentaBancariaEstado =
 
 export const getInversionistacuentabancarias = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getInversionistacuentabancarias");
-  //log.info(line(),req.session_user.usuario._idusuario);
+  //log.info(line(),req.session_user.usuario.idusuario);
   const cuentasbancariasJson = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estado = [1, 2];
@@ -124,7 +124,7 @@ export const activateInversionistacuentabancaria = async (req: Request, res: Res
 
       var camposCuentaBancariaActivate: Partial<cuenta_bancaria> = {};
       camposCuentaBancariaActivate.cuentabancariaid = cuentabancaria.cuentabancariaid;
-      camposCuentaBancariaActivate.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposCuentaBancariaActivate.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposCuentaBancariaActivate.fechamod = new Date();
       camposCuentaBancariaActivate.estado = 1;
 
@@ -166,7 +166,7 @@ export const deleteInversionistacuentabancaria = async (req: Request, res: Respo
 
       var camposCuentaBancariaDelete: Partial<cuenta_bancaria> = {};
       camposCuentaBancariaDelete.cuentabancariaid = cuentabancaria.cuentabancariaid;
-      camposCuentaBancariaDelete.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposCuentaBancariaDelete.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposCuentaBancariaDelete.fechamod = new Date();
       camposCuentaBancariaDelete.estado = 2;
 
@@ -214,7 +214,7 @@ export const getInversionistacuentabancariaMaster = async (req: Request, res: Re
 
 export const createInversionistacuentabancaria = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createInversionistacuentabancaria");
-  const session_idusuario = req.session_user.usuario._idusuario;
+  const session_idusuario = req.session_user.usuario.idusuario;
   const filter_estado = [1, 2];
   const inversionistacuentabancariaCreateSchema = yup
     .object()
@@ -288,9 +288,9 @@ export const createInversionistacuentabancaria = async (req: Request, res: Respo
         numero: inversionistacuentabancariaValidated.numero,
         cci: inversionistacuentabancariaValidated.cci,
         alias: inversionistacuentabancariaValidated.alias,
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -307,9 +307,9 @@ export const createInversionistacuentabancaria = async (req: Request, res: Respo
         },
         inversionistacuentabancariaid: uuidv4(),
         code: uuidv4().split("-")[0],
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };

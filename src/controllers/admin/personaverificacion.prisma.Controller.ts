@@ -36,7 +36,7 @@ export const activatePersonaverificacion = async (req: Request, res: Response) =
   const personaverificacionDeleted = await prismaFT.client.$transaction(
     async (tx) => {
       var camposAuditoria: Partial<persona_verificacion> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 1;
 
@@ -67,7 +67,7 @@ export const deletePersonaverificacion = async (req: Request, res: Response) => 
   const personaverificacionDeleted = await prismaFT.client.$transaction(
     async (tx) => {
       var camposAuditoria: Partial<persona_verificacion> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 2;
 
@@ -87,7 +87,7 @@ export const getPersonaverificacionMaster = async (req: Request, res: Response) 
   log.debug(line(), "controller::getPersonaverificacionMaster");
   const personaverificacionMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
-      const session_idusuario = req.session_user?.usuario?._idusuario;
+      const session_idusuario = req.session_user?.usuario?.idusuario;
       const filter_estados = [1];
       const personaverificacionestados = await personaverificacionestadoDao.getPersonaverificacionestados(tx, filter_estados);
 
@@ -139,7 +139,7 @@ export const updatePersonaverificacion = async (req: Request, res: Response) => 
       camposAdicionales.personaverificacionid = personaverificacionValidated.personaverificacionid;
 
       var camposAuditoria: Partial<persona_verificacion> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
 
       const result = await personaverificacionDao.updatePersonaverificacion(tx, {
@@ -166,7 +166,7 @@ export const getPersonaverificacions = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getPersonaverificacions");
   const personaverificacionverificacionsJson = await prismaFT.client.$transaction(
     async (tx) => {
-      //log.info(line(),req.session_user.usuario._idusuario);
+      //log.info(line(),req.session_user.usuario.idusuario);
 
       const filter_estado = [1, 2];
       const filter_idarchivotipo = [1, 2, 3];
@@ -185,7 +185,7 @@ export const getPersonaverificacions = async (req: Request, res: Response) => {
 
 export const createPersonaverificacion = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createPersonaverificacion");
-  const session_idusuario = req.session_user.usuario._idusuario;
+  const session_idusuario = req.session_user.usuario.idusuario;
   const filter_estado = [1, 2];
   const personaverificacionCreateSchema = yup
     .object()
@@ -225,15 +225,15 @@ export const createPersonaverificacion = async (req: Request, res: Response) => 
         },
         usuario_verifica: {
           connect: {
-            idusuario: req.session_user.usuario._idusuario,
+            idusuario: req.session_user.usuario.idusuario,
           },
         },
         comentariointerno: personaverificacionValidated.comentariointerno,
         comentariousuario: personaverificacionValidated.comentariousuario,
         personaverificacionid: uuidv4(),
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -244,7 +244,7 @@ export const createPersonaverificacion = async (req: Request, res: Response) => 
       const personaToUpdate: Partial<persona> = {
         personaid: persona.personaid,
         idpersonaverificacionestado: personaverificacionestado.idpersonaverificacionestado,
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
       };
 
@@ -256,7 +256,7 @@ export const createPersonaverificacion = async (req: Request, res: Response) => 
         const usuarioToUpdate: Partial<usuario> = {
           usuarioid: persona.usuario.usuarioid,
           ispersonavalidated: personaverificacionestado.ispersonavalidated,
-          idusuariomod: req.session_user.usuario._idusuario ?? 1,
+          idusuariomod: req.session_user.usuario.idusuario ?? 1,
           fechamod: new Date(),
         };
 
@@ -265,7 +265,7 @@ export const createPersonaverificacion = async (req: Request, res: Response) => 
       }
 
       /* Si la verificación tiene código 4 que es aprobado, se habilitan los servicios para que pueda suscribirse */
-      const idusuario_session = req.session_user.usuario._idusuario ?? 1;
+      const idusuario_session = req.session_user.usuario.idusuario ?? 1;
       if (personaverificacionestado.idpersonaverificacionestado == 4) {
         await usuarioservicioDao.habilitarServiciosParaUsuario(tx, persona.usuario.idusuario, idusuario_session);
       }

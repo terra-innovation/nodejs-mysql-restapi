@@ -28,7 +28,7 @@ import type { empresa_cuenta_bancaria } from "#src/models/prisma/ft_factoring/cl
 
 export const createEmpresacuentabancaria = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createEmpresacuentabancaria");
-  const session_idusuario = req.session_user.usuario._idusuario;
+  const session_idusuario = req.session_user.usuario.idusuario;
   const filter_estado = [1, 2];
   const empresacuentabancariaCreateSchema = yup
     .object()
@@ -106,9 +106,9 @@ export const createEmpresacuentabancaria = async (req: Request, res: Response) =
         numero: empresacuentabancariaValidated.numero,
         cci: empresacuentabancariaValidated.cci,
         alias: empresacuentabancariaValidated.alias,
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -124,9 +124,9 @@ export const createEmpresacuentabancaria = async (req: Request, res: Response) =
         cuenta_bancaria: { connect: { idcuentabancaria: cuentabancariaCreated.idcuentabancaria } },
         empresacuentabancariaid: uuidv4(),
         code: uuidv4().split("-")[0],
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -148,7 +148,7 @@ export const getEmpresacuentabancariaMaster = async (req: Request, res: Response
   const cuentasbancariasMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estados = [1];
-      const session_idusuario = req.session_user.usuario._idusuario;
+      const session_idusuario = req.session_user.usuario.idusuario;
 
       const empresas = await empresaDao.getEmpresasByIdusuario(tx, session_idusuario, filter_estados);
 
@@ -191,7 +191,7 @@ export const updateEmpresacuentabancariaOnlyAlias = async (req: Request, res: Re
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estado = [1, 2];
-      const _idusuario_session = req.session_user.usuario._idusuario;
+      const _idusuario_session = req.session_user.usuario.idusuario;
       const empresacuentabancaria = await empresacuentabancariaDao.getEmpresacuentabancariaByEmpresacuentabancariaid(tx, empresacuentabancariaValidated.empresacuentabancariaid);
       if (!empresacuentabancaria) {
         log.warn(line(), "Empresa cuenta bancaria no existe: [" + empresacuentabancariaValidated.empresacuentabancariaid + "]");
@@ -210,7 +210,7 @@ export const updateEmpresacuentabancariaOnlyAlias = async (req: Request, res: Re
       camposCuentaBancariaAdicionales.cuentabancariaid = cuentabancaria.cuentabancariaid;
 
       var camposCuentaBancariaAuditoria: Partial<cuenta_bancaria> = {};
-      camposCuentaBancariaAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposCuentaBancariaAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposCuentaBancariaAuditoria.fechamod = new Date();
 
       const cuentabancariaUpdated = await cuentabancariaDao.updateCuentabancaria(tx, {
@@ -231,9 +231,9 @@ export const getEmpresacuentabancarias = async (req: Request, res: Response) => 
   log.debug(line(), "controller::getEmpresacuentabancarias");
   const empresacuentabancariasFiltered = await prismaFT.client.$transaction(
     async (tx) => {
-      //log.info(line(),req.session_user.usuario._idusuario);
+      //log.info(line(),req.session_user.usuario.idusuario);
 
-      const session_idusuario = req.session_user.usuario._idusuario;
+      const session_idusuario = req.session_user.usuario.idusuario;
       const filter_estado = [1];
       const empresacuentabancarias = await empresacuentabancariaDao.getEmpresacuentabancariasByIdusuario(tx, session_idusuario, filter_estado);
       var empresacuentabancariasJson = jsonUtils.sequelizeToJSON(empresacuentabancarias);
@@ -273,9 +273,9 @@ const crearArchivoEncabezadoCuentaBancaria = async (req, tx, usuarioservicioVali
     extension: extension,
     observacion: "",
     fechavencimiento: null,
-    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
   };
@@ -284,9 +284,9 @@ const crearArchivoEncabezadoCuentaBancaria = async (req, tx, usuarioservicioVali
   const archivocuentabancariaToCreate: Prisma.archivo_cuenta_bancariaCreateInput = {
     archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
     cuenta_bancaria: { connect: { idcuentabancaria: cuentabancariaCreated.idcuentabancaria } },
-    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
   };

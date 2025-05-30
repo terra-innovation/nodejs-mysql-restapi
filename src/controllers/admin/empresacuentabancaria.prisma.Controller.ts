@@ -46,7 +46,7 @@ export const activateEmpresacuentabancaria = async (req: Request, res: Response)
 
       var camposCuentaBancariaActivate: Partial<cuenta_bancaria> = {};
       camposCuentaBancariaActivate.cuentabancariaid = cuentabancaria.cuentabancariaid;
-      camposCuentaBancariaActivate.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposCuentaBancariaActivate.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposCuentaBancariaActivate.fechamod = new Date();
       camposCuentaBancariaActivate.estado = 1;
 
@@ -88,7 +88,7 @@ export const deleteEmpresacuentabancaria = async (req: Request, res: Response) =
 
       var camposCuentaBancariaDelete: Partial<cuenta_bancaria> = {};
       camposCuentaBancariaDelete.cuentabancariaid = cuentabancaria.cuentabancariaid;
-      camposCuentaBancariaDelete.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposCuentaBancariaDelete.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposCuentaBancariaDelete.fechamod = new Date();
       camposCuentaBancariaDelete.estado = 2;
 
@@ -175,7 +175,7 @@ export const updateEmpresacuentabancariaOnlyAliasAndCuentaBancariaEstado = async
       camposCuentabancariaAdicionales.cuentabancariaid = cuentabancaria.cuentabancariaid;
 
       var camposCuentabancariaAuditoria: Partial<cuenta_bancaria> = {};
-      camposCuentabancariaAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposCuentabancariaAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposCuentabancariaAuditoria.fechamod = new Date();
 
       const cuentabancariaUpdated = await cuentabancariaDao.updateCuentabancaria(tx, {
@@ -211,7 +211,7 @@ export const getEmpresacuentabancarias = async (req: Request, res: Response) => 
 
 export const createEmpresacuentabancaria = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createEmpresacuentabancaria");
-  const session_idusuario = req.session_user.usuario._idusuario;
+  const session_idusuario = req.session_user.usuario.idusuario;
   const filter_estado = [1, 2];
   const empresacuentabancariaCreateSchema = yup
     .object()
@@ -277,9 +277,9 @@ export const createEmpresacuentabancaria = async (req: Request, res: Response) =
         numero: empresacuentabancariaValidated.numero,
         cci: empresacuentabancariaValidated.cci,
         alias: empresacuentabancariaValidated.alias,
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -292,9 +292,9 @@ export const createEmpresacuentabancaria = async (req: Request, res: Response) =
         cuenta_bancaria: { connect: { idcuentabancaria: cuentabancariaCreated.idcuentabancaria } },
         empresacuentabancariaid: uuidv4(),
         code: uuidv4().split("-")[0],
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };

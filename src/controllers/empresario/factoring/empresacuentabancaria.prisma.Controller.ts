@@ -39,7 +39,7 @@ export const getEmpresacuentabancarias = async (req: Request, res: Response) => 
   log.debug(line(), "empresacuentabancariaValidated:", empresacuentabancariaValidated);
   const empresacuentabancariasFiltered = await prismaFT.client.$transaction(
     async (tx) => {
-      const session_idusuario = req.session_user.usuario._idusuario;
+      const session_idusuario = req.session_user.usuario.idusuario;
       const filter_estado = [1];
       var empresa_por_idusuario = await empresaDao.getEmpresaByIdusuarioAndEmpresaid(tx, session_idusuario, empresacuentabancariaValidated.empresaid, filter_estado);
       if (!empresa_por_idusuario) {
@@ -74,7 +74,7 @@ export const getEmpresacuentabancariaMaster = async (req: Request, res: Response
   const cuentasbancariasMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estados = [1];
-      const session_idusuario = req.session_user.usuario._idusuario;
+      const session_idusuario = req.session_user.usuario.idusuario;
 
       const empresas = await empresaDao.getEmpresasByIdusuario(tx, session_idusuario, filter_estados);
 
@@ -103,7 +103,7 @@ export const getEmpresacuentabancariaMaster = async (req: Request, res: Response
 
 export const createEmpresacuentabancaria = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createEmpresacuentabancaria");
-  const session_idusuario = req.session_user.usuario._idusuario;
+  const session_idusuario = req.session_user.usuario.idusuario;
   const filter_estado = [1, 2];
   const empresacuentabancariaCreateSchema = yup
     .object()
@@ -189,9 +189,9 @@ export const createEmpresacuentabancaria = async (req: Request, res: Response) =
         numero: empresacuentabancariaValidated.numero,
         cci: empresacuentabancariaValidated.cci,
         alias: empresacuentabancariaValidated.alias,
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -211,9 +211,9 @@ export const createEmpresacuentabancaria = async (req: Request, res: Response) =
         },
         empresacuentabancariaid: uuidv4(),
         code: uuidv4().split("-")[0],
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -255,9 +255,9 @@ const crearArchivoEncabezadoCuentaBancaria = async (req, tx, usuarioservicioVali
     extension: extension,
     observacion: "",
     fechavencimiento: null,
-    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
   };
@@ -266,9 +266,9 @@ const crearArchivoEncabezadoCuentaBancaria = async (req, tx, usuarioservicioVali
   const archivocuentabancariaToCreate: Prisma.archivo_cuenta_bancariaCreateInput = {
     archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
     cuenta_bancaria: { connect: { idcuentabancaria: cuentabancariaCreated.idcuentabancaria } },
-    idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
   };

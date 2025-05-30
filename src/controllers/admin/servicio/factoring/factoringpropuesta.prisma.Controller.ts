@@ -116,7 +116,7 @@ export const updateFactoringpropuesta = async (req: Request, res: Response) => {
       camposAdicionales.factoringpropuestaid = factoringpropuestaValidated.factoringpropuestaid;
 
       var camposAuditoria: Partial<factoring_propuesta> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
 
       const factoringpropuestaUpdated = await factoringpropuestaDao.updateFactoringpropuesta(tx, {
@@ -136,7 +136,7 @@ export const updateFactoringpropuesta = async (req: Request, res: Response) => {
 
 export const createFactoringpropuesta = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createFactoringpropuesta");
-  const session_idusuario = req.session_user.usuario._idusuario;
+  const session_idusuario = req.session_user.usuario.idusuario;
   const filter_estado = [1, 2];
   const factoringSimulateSchema = yup
     .object()
@@ -155,7 +155,7 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
 
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
-      const session_idusuario = req.session_user.usuario._idusuario;
+      const session_idusuario = req.session_user.usuario.idusuario;
       const filter_estados = [1];
 
       var factoring = await factoringDao.getFactoringByFactoringid(tx, factoringValidated.factoringid);
@@ -221,9 +221,9 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
       camposAdicionales.fecha_pago_estimado = factoring.fecha_pago_estimado;
 
       var camposAuditoria: Partial<factoring_propuesta> = {};
-      camposAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
+      camposAuditoria.idusuariocrea = req.session_user.usuario.idusuario ?? 1;
       camposAuditoria.fechacrea = new Date();
-      camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 1;
 
@@ -243,9 +243,9 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
           _idfactoringpropuesta: factoringpropuestaCreated.idfactoringpropuesta,
           factoringpropuestafinancieroid: uuidv4(),
           code: uuidv4().split("-")[0],
-          idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+          idusuariocrea: req.session_user.usuario.idusuario ?? 1,
           fechacrea: new Date(),
-          idusuariomod: req.session_user.usuario._idusuario ?? 1,
+          idusuariomod: req.session_user.usuario.idusuario ?? 1,
           fechamod: new Date(),
           estado: 1,
           ...comision,
@@ -260,9 +260,9 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
           _idfactoringpropuesta: factoringpropuestaCreated.idfactoringpropuesta,
           factoringpropuestafinancieroid: uuidv4(),
           code: uuidv4().split("-")[0],
-          idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+          idusuariocrea: req.session_user.usuario.idusuario ?? 1,
           fechacrea: new Date(),
-          idusuariomod: req.session_user.usuario._idusuario ?? 1,
+          idusuariomod: req.session_user.usuario.idusuario ?? 1,
           fechamod: new Date(),
           estado: 1,
           ...costo,
@@ -276,9 +276,9 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
           _idfactoringpropuesta: factoringpropuestaCreated.idfactoringpropuesta,
           factoringpropuestafinancieroid: uuidv4(),
           code: uuidv4().split("-")[0],
-          idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+          idusuariocrea: req.session_user.usuario.idusuario ?? 1,
           fechacrea: new Date(),
-          idusuariomod: req.session_user.usuario._idusuario ?? 1,
+          idusuariomod: req.session_user.usuario.idusuario ?? 1,
           fechamod: new Date(),
           estado: 1,
           ...gasto,
@@ -297,7 +297,7 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
 
 export const simulateFactoringpropuesta = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createFactoringpropuesta");
-  const session_idusuario = req.session_user.usuario._idusuario;
+  const session_idusuario = req.session_user.usuario.idusuario;
   const filter_estado = [1, 2];
   const { id } = req.params;
   const factoringSimulateSchema = yup
@@ -316,7 +316,7 @@ export const simulateFactoringpropuesta = async (req: Request, res: Response) =>
 
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
-      const session_idusuario = req.session_user.usuario._idusuario;
+      const session_idusuario = req.session_user.usuario.idusuario;
       const filter_estados = [1];
 
       var factoring = await factoringDao.getFactoringByFactoringid(tx, factoringValidated.factoringid);
@@ -371,7 +371,7 @@ export const simulateFactoringpropuesta = async (req: Request, res: Response) =>
 
 export const getFactoringpropuestasByFactoringid = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFactoringpropuestasByFactoringid");
-  //log.info(line(),req.session_user.usuario._idusuario);
+  //log.info(line(),req.session_user.usuario.idusuario);
   const { id } = req.params;
   const factoringpropuestaSearchSchema = yup
     .object()
@@ -420,7 +420,7 @@ export const activateFactoringpropuesta = async (req: Request, res: Response) =>
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
       var camposAuditoria: Partial<factoring_propuesta> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 1;
 
@@ -451,7 +451,7 @@ export const deleteFactoringpropuesta = async (req: Request, res: Response) => {
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
       var camposAuditoria: Partial<factoring_propuesta> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 2;
 
@@ -498,7 +498,7 @@ export const getFactoringpropuestaMaster = async (req: Request, res: Response) =
 
 export const getFactoringpropuestas = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFactoringpropuestas");
-  //log.info(line(),req.session_user.usuario._idusuario);
+  //log.info(line(),req.session_user.usuario.idusuario);
 
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {

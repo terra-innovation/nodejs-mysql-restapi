@@ -48,7 +48,7 @@ export const updateFactoringhistorialestado = async (req: Request, res: Response
       camposFk.idfactoringhistorialestado = factoringhistorialestado.idfactoringhistorialestado;
 
       var camposAuditoria: Partial<factoring_historial_estado> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
 
       const factoringhistorialestadoUpdated = await factoringhistorialestadoDao.updateFactoringhistorialestado(tx, {
@@ -67,7 +67,7 @@ export const updateFactoringhistorialestado = async (req: Request, res: Response
 
 export const getFactoringhistorialestadosByFactoringid = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFactoringhistorialestadosByFactoringid");
-  //log.info(line(),req.session_user.usuario._idusuario);
+  //log.info(line(),req.session_user.usuario.idusuario);
   const { id } = req.params;
   const factoringhistorialestadoSchema = yup
     .object()
@@ -141,7 +141,7 @@ export const createFactoringhistorialestado = async (req: Request, res: Response
 
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
-      const session_idusuario = req.session_user.usuario._idusuario;
+      const session_idusuario = req.session_user.usuario.idusuario;
       const filter_estados = [1];
 
       var factoring = await factoringDao.getFactoringByFactoringid(tx, factoringhistorialestadoValidated.factoringid);
@@ -171,16 +171,16 @@ export const createFactoringhistorialestado = async (req: Request, res: Response
       var camposFk: Partial<factoring_historial_estado> = {};
       camposFk.idfactoring = factoring.idfactoring;
       camposFk.idfactoringestado = factoringestado.idfactoringestado;
-      camposFk._idusuariomodifica = req.session_user.usuario._idusuario;
+      camposFk._idusuariomodifica = req.session_user.usuario.idusuario;
 
       var camposAdicionales: Partial<factoring_historial_estado> = {};
       camposAdicionales.factoringhistorialestadoid = uuidv4();
       camposAdicionales.code = uuidv4().split("-")[0];
 
       var camposAuditoria: Partial<factoring_historial_estado> = {};
-      camposAuditoria.idusuariocrea = req.session_user.usuario._idusuario ?? 1;
+      camposAuditoria.idusuariocrea = req.session_user.usuario.idusuario ?? 1;
       camposAuditoria.fechacrea = new Date();
-      camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 1;
 
@@ -195,7 +195,7 @@ export const createFactoringhistorialestado = async (req: Request, res: Response
       const factoringUpdate = {
         factoringid: factoringhistorialestadoValidated.factoringid,
         _idfactoringestado: factoringestado.idfactoringestado,
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
       };
 
@@ -207,9 +207,9 @@ export const createFactoringhistorialestado = async (req: Request, res: Response
         const archivofactoringhistorialestadoCreate = {
           _idarchivo: archivo.idarchivo,
           _idfactoringhistorialestado: factoringhistorialestadoCreated.idfactoringhistorialestado,
-          idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+          idusuariocrea: req.session_user.usuario.idusuario ?? 1,
           fechacrea: new Date(),
-          idusuariomod: req.session_user.usuario._idusuario ?? 1,
+          idusuariomod: req.session_user.usuario.idusuario ?? 1,
           fechamod: new Date(),
           estado: 1,
         };
@@ -250,7 +250,7 @@ export const activateFactoringhistorialestado = async (req: Request, res: Respon
       }
 
       var camposAuditoria: Partial<factoring_historial_estado> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 1;
 
@@ -285,7 +285,7 @@ export const deleteFactoringhistorialestado = async (req: Request, res: Response
       }
 
       var camposAuditoria: Partial<factoring_historial_estado> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 2;
 
@@ -301,7 +301,7 @@ export const deleteFactoringhistorialestado = async (req: Request, res: Response
 
 export const getFactoringhistorialestados = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFactoringhistorialestados");
-  //log.info(line(),req.session_user.usuario._idusuario);
+  //log.info(line(),req.session_user.usuario.idusuario);
 
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {

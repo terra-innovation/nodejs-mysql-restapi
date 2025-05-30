@@ -22,6 +22,50 @@ import { Sequelize } from "sequelize";
 import type { credencial } from "#src/models/prisma/ft_factoring/client";
 import type { validacion } from "#src/models/prisma/ft_factoring/client";
 import type { usuario } from "#src/models/prisma/ft_factoring/client";
+import { UsuarioSession } from "#root/src/types/UsuarioSession.types.js";
+
+export const loginUser = async (req: Request, res: Response) => {
+  log.debug(line(), "controller::loginUser");
+
+  let EMAIL_REGX = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+
+  const loginUserSchema = Yup.object()
+    .shape({
+      email: Yup.string().trim().required("Correo electrónico es requerido").email("Debe ser un correo válido").matches(EMAIL_REGX, "Debe ser un correo válido.").min(5, "Mínimo 5 caracteres").max(50, "Máximo 50 caracteres"),
+      password: Yup.string().required("Contraseña es requerido").min(6, "Mínimo 6 caracteres").max(20, "Máximo 20 caracteres"),
+    })
+    .required();
+  const loginUserValidated = loginUserSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
+
+  const token = await prismaFT.client.$transaction(
+    async (tx) => {
+      // Validate if user exist in our database
+      const usuario_login = await usuarioDao.autenticarUsuario(tx, loginUserValidated.email);
+      if (!usuario_login) {
+        log.warn(line(), "Usuario no existe: [" + loginUserValidated.email + "]");
+        throw new ClientError("Usuario y/o contraseña no válida", 404);
+      }
+
+      if (usuario_login.email && usuario_login.credencial.password && bcrypt.compareSync(loginUserValidated.password, usuario_login.credencial.password)) {
+        // Consultamos todos los datos del usuario y sus roles
+        const usuario_autenticado = await usuarioDao.getUsuarioAndRolesByEmail(tx, loginUserValidated.email);
+        const jwtPayload: UsuarioSession = {
+          usuario: usuario_autenticado,
+        };
+
+        const token = jwt.sign(jwtPayload, env.TOKEN_KEY_JWT, {
+          expiresIn: "200000h",
+        });
+        return token;
+      } else {
+        log.warn(line(), "Credenciales no válidas: [" + loginUserValidated.email + "]");
+        throw new ClientError("Usuario y/o contraseña no válida", 404);
+      }
+    },
+    { timeout: prismaFT.transactionTimeout }
+  );
+  response(res, 201, { token });
+};
 
 export const resetPassword = async (req: Request, res: Response) => {
   log.debug(line(), "controller::resetPassword");
@@ -81,7 +125,7 @@ export const resetPassword = async (req: Request, res: Response) => {
             let credencialUpdate: Partial<credencial> = {};
             credencialUpdate.credencialid = credencial.credencialid;
             credencialUpdate.password = encryptedPassword;
-            credencialUpdate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
+            credencialUpdate.idusuariomod = req.session_user?.usuario?.idusuario ?? 1;
             credencialUpdate.fechamod = new Date();
 
             const credencialUpdated = await credencialDao.updateCredencial(tx, credencialUpdate);
@@ -95,7 +139,7 @@ export const resetPassword = async (req: Request, res: Response) => {
             validacionUpdate.validacionid = validacion.validacionid;
             validacionUpdate.verificado = 1;
             validacionUpdate.fecha_verificado = new Date();
-            validacionUpdate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
+            validacionUpdate.idusuariomod = req.session_user?.usuario?.idusuario ?? 1;
             validacionUpdate.fechamod = new Date();
             const validacionUpdated = await validacionDao.updateValidacion(tx, validacionUpdate);
           } else {
@@ -213,9 +257,9 @@ export const sendTokenPassword = async (req: Request, res: Response) => {
             tiempo_marca: new Date(),
             tiempo_expiracion: 15, // En minutos
             codigo: crypto.randomBytes(77).toString("hex").slice(0, 77),
-            idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+            idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
             fechacrea: new Date(),
-            idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+            idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
             fechamod: new Date(),
             estado: 1,
           };
@@ -232,7 +276,7 @@ export const sendTokenPassword = async (req: Request, res: Response) => {
           validacionUpdate.tiempo_expiracion = 15; // En minutos
           validacionUpdate.verificado = 0;
           validacionUpdate.fecha_verificado = null;
-          validacionUpdate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
+          validacionUpdate.idusuariomod = req.session_user?.usuario?.idusuario ?? 1;
           validacionUpdate.fechamod = new Date();
 
           const validacionUpdated = await validacionDao.updateValidacion(tx, validacionUpdate);
@@ -295,7 +339,7 @@ export const sendVerificactionCode = async (req: Request, res: Response) => {
       validacionUpdate.otp = emailvalidationcode;
       validacionUpdate.tiempo_marca = new Date();
       validacionUpdate.tiempo_expiracion = 5; // En minutos
-      validacionUpdate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
+      validacionUpdate.idusuariomod = req.session_user?.usuario?.idusuario ?? 1;
       validacionUpdate.fechamod = new Date();
 
       const validacionUpdated = await validacionDao.updateValidacion(tx, validacionUpdate);
@@ -307,49 +351,6 @@ export const sendVerificactionCode = async (req: Request, res: Response) => {
     { timeout: prismaFT.transactionTimeout }
   );
   response(res, 201, { ...validacionReturned });
-};
-
-export const loginUser = async (req: Request, res: Response) => {
-  log.debug(line(), "controller::loginUser");
-
-  let EMAIL_REGX = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
-
-  const loginUserSchema = Yup.object()
-    .shape({
-      email: Yup.string().trim().required("Correo electrónico es requerido").email("Debe ser un correo válido").matches(EMAIL_REGX, "Debe ser un correo válido.").min(5, "Mínimo 5 caracteres").max(50, "Máximo 50 caracteres"),
-      password: Yup.string().required("Contraseña es requerido").min(6, "Mínimo 6 caracteres").max(20, "Máximo 20 caracteres"),
-    })
-    .required();
-  const loginUserValidated = loginUserSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
-
-  const token = await prismaFT.client.$transaction(
-    async (tx) => {
-      // Validate if user exist in our database
-      const usuario_login = await usuarioDao.autenticarUsuario(tx, loginUserValidated.email);
-      if (!usuario_login) {
-        log.warn(line(), "Usuario no existe: [" + loginUserValidated.email + "]");
-        throw new ClientError("Usuario y/o contraseña no válida", 404);
-      }
-
-      if (usuario_login.email && usuario_login.credencial.password && bcrypt.compareSync(loginUserValidated.password, usuario_login.credencial.password)) {
-        // Consultamos todos los datos del usuario y sus roles
-        const usuario_autenticado = await usuarioDao.getUsuarioAndRolesByEmail(tx, loginUserValidated.email);
-        // Obtén el primer registro de usuario_autenticado
-        const usuario = usuario_autenticado[0];
-        //jsonUtils.prettyPrint(usuario);
-        // Create token
-        const token = jwt.sign({ usuario: usuario }, env.TOKEN_KEY_JWT, {
-          expiresIn: "200000h",
-        });
-      } else {
-        log.warn(line(), "Credenciales no válidas: [" + loginUserValidated.email + "]");
-        throw new ClientError("Usuario y/o contraseña no válida", 404);
-      }
-      return token;
-    },
-    { timeout: prismaFT.transactionTimeout }
-  );
-  response(res, 201, { token });
 };
 
 export const registerUsuario = async (req: Request, res: Response) => {
@@ -425,9 +426,9 @@ export const registerUsuario = async (req: Request, res: Response) => {
         celular: usuarioValidated.celular,
         hash: hash,
         ispersonavalidated: personaverificacionestado.ispersonavalidated,
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -440,9 +441,9 @@ export const registerUsuario = async (req: Request, res: Response) => {
         credencialid: uuidv4(),
         code: uuidv4().split("-")[0],
         password: encryptedPassword,
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user?.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user?.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -461,9 +462,9 @@ export const registerUsuario = async (req: Request, res: Response) => {
         tiempo_marca: new Date(),
         tiempo_expiracion: 5, // En minutos
         codigo: crypto.randomBytes(77).toString("hex").slice(0, 77),
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user?.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user?.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -524,7 +525,7 @@ export const validateEmail = async (req: Request, res: Response) => {
             validacionUpdate.validacionid = validacion.validacionid;
             validacionUpdate.verificado = 1;
             validacionUpdate.fecha_verificado = new Date();
-            validacionUpdate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
+            validacionUpdate.idusuariomod = req.session_user?.usuario?.idusuario ?? 1;
             validacionUpdate.fechamod = new Date();
             const validacionUpdated = await validacionDao.updateValidacion(tx, validacionUpdate);
 

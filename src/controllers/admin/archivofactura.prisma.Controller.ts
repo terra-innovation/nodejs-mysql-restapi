@@ -17,7 +17,7 @@ import * as yup from "yup";
 
 export const getArchivofacturasByFactoringid = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getArchivofacturasByFactoringid");
-  //log.info(line(),req.session_user.usuario._idusuario);
+  //log.info(line(),req.session_user.usuario.idusuario);
   const { id } = req.params;
   const archivofacturaSearchSchema = yup
     .object()

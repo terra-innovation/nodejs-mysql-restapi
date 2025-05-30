@@ -31,7 +31,7 @@ import TemplateManager from "#src/utils/email/TemplateManager.js";
 
 export const createFactoringempresaverificacion = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createFactoringempresaverificacion");
-  const session_idusuario = req.session_user.usuario._idusuario;
+  const session_idusuario = req.session_user.usuario.idusuario;
   const filter_estado = [1, 2];
   const servicioempresaverificacionCreateSchema = yup
     .object()
@@ -79,9 +79,9 @@ export const createFactoringempresaverificacion = async (req: Request, res: Resp
         comentariointerno: servicioempresaverificacionValidated.comentariointerno,
         comentariousuario: servicioempresaverificacionValidated.comentariointerno,
         servicioempresaverificacionid: uuidv4(),
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -93,7 +93,7 @@ export const createFactoringempresaverificacion = async (req: Request, res: Resp
       const servicioempresaUpdate: Partial<servicio_empresa> = {};
       servicioempresaUpdate.servicioempresaid = servicioempresaverificacionValidated.servicioempresaid;
       servicioempresaUpdate.idservicioempresaestado = servicioempresaestado.idservicioempresaestado;
-      servicioempresaUpdate.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+      servicioempresaUpdate.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       servicioempresaUpdate.fechamod = new Date();
 
       await servicioempresaDao.updateServicioempresa(tx, servicioempresaUpdate);
@@ -140,7 +140,7 @@ const darAccesoAlUsuarioServicioEmpresa = async (req, tx, servicioempresa, perso
   usuarioservicioempresaUpdate.usuarioservicioempresaid = usuarioservicioempresa.usuarioservicioempresaid;
   usuarioservicioempresaUpdate.idusuarioservicioempresaestado = usuarioservicioempresaestado.idusuarioservicioempresaestado;
   usuarioservicioempresaUpdate.idusuarioservicioempresarol = usuarioservicioempresarol.idusuarioservicioempresarol;
-  usuarioservicioempresaUpdate.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+  usuarioservicioempresaUpdate.idusuariomod = req.session_user.usuario.idusuario ?? 1;
   usuarioservicioempresaUpdate.fechamod = new Date();
 
   const usuarioservicioempresaUpdated = await usuarioservicioempresaDao.updateUsuarioservicioempresa(tx, usuarioservicioempresaUpdate);
@@ -165,14 +165,14 @@ const darAccesoAlUsuarioServicio = async (req, tx, servicioempresaverificacionVa
   const usuarioservicioverificacionToCreate: Prisma.usuario_servicio_verificacionCreateInput = {
     usuario_servicio: { connect: { idusuarioservicio: usuarioservicio.idusuarioservicio } },
     usuario_servicio_estado: { connect: { idusuarioservicioestado: usuarioservicioestado.idusuarioservicioestado } },
-    usuario_verifica: { connect: { idusuario: req.session_user.usuario._idusuario } },
+    usuario_verifica: { connect: { idusuario: req.session_user.usuario.idusuario } },
     usuarioservicioverificacionid: uuidv4(),
     comentariousuario: servicioempresaverificacionValidated.comentariousuario,
     comentariointerno: servicioempresaverificacionValidated.comentariointerno + " // Proceso automático. Se concedió acceso por la verificación de la empresa: " + empresa.code + " - " + empresa.ruc + " - " + empresa.razon_social,
 
-    idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+    idusuariocrea: req.session_user.usuario.idusuario ?? 1,
     fechacrea: new Date(),
-    idusuariomod: req.session_user.usuario._idusuario ?? 1,
+    idusuariomod: req.session_user.usuario.idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
   };
@@ -184,7 +184,7 @@ const darAccesoAlUsuarioServicio = async (req, tx, servicioempresaverificacionVa
   const usuarioservicioUpdate: Partial<usuario_servicio> = {};
   usuarioservicioUpdate.usuarioservicioid = usuarioservicio.usuarioservicioid;
   usuarioservicioUpdate.idusuarioservicioestado = usuarioservicioestado.idusuarioservicioestado;
-  usuarioservicioUpdate.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+  usuarioservicioUpdate.idusuariomod = req.session_user.usuario.idusuario ?? 1;
   usuarioservicioUpdate.fechamod = new Date();
 
   const usuarioservicioUpdated = await usuarioservicioDao.updateUsuarioservicio(tx, usuarioservicioUpdate);
@@ -261,7 +261,7 @@ const enviarCorreoSegunCorrespondeNuevoEstadoDeServicioEmpresa = async (servicio
 
 export const getFactoringempresasByVerificacion = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFactoringempresasByVerificacion");
-  //log.info(line(),req.session_user.usuario._idusuario);
+  //log.info(line(),req.session_user.usuario.idusuario);
 
   const factoringempresasJson = await prismaFT.client.$transaction(
     async (tx) => {
@@ -285,7 +285,7 @@ export const getFactoringempresaverificacionMaster = async (req: Request, res: R
   log.debug(line(), "controller::getFactoringempresaverificacionMaster");
   const servicioempresaverificacionMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
-      const session_idusuario = req.session_user?.usuario?._idusuario;
+      const session_idusuario = req.session_user?.usuario?.idusuario;
       const filter_estados = [1];
       const servicioempresaestados = await servicioempresaestadoDao.getServicioempresaestados(tx, filter_estados);
 

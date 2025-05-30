@@ -28,7 +28,7 @@ import * as storageUtils from "#src/utils/storageUtils.js";
 
 export const createInversionistacuentabancaria = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createInversionistacuentabancaria");
-  const _idusuario_session = req.session_user.usuario._idusuario;
+  const _idusuario_session = req.session_user.usuario.idusuario;
   const filter_estado = [1, 2];
   const inversionistacuentabancariaCreateSchema = yup
     .object()
@@ -101,9 +101,9 @@ export const createInversionistacuentabancaria = async (req: Request, res: Respo
         numero: inversionistacuentabancariaValidated.numero,
         cci: inversionistacuentabancariaValidated.cci,
         alias: inversionistacuentabancariaValidated.alias,
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -117,9 +117,9 @@ export const createInversionistacuentabancaria = async (req: Request, res: Respo
 
         inversionistacuentabancariaid: uuidv4(),
         code: uuidv4().split("-")[0],
-        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
         estado: 1,
       };
@@ -152,7 +152,7 @@ export const updateInversionistacuentabancariaOnlyAlias = async (req: Request, r
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estado = [1, 2];
-      const _idusuario_session = req.session_user.usuario._idusuario;
+      const _idusuario_session = req.session_user.usuario.idusuario;
       const inversionistacuentabancaria = await inversionistacuentabancariaDao.getInversionistacuentabancariaByInversionistacuentabancariaid(tx, inversionistacuentabancariaValidated.inversionistacuentabancariaid);
       if (!inversionistacuentabancaria) {
         log.warn(line(), "Inversionista cuenta bancaria no existe: [" + inversionistacuentabancariaValidated.inversionistacuentabancariaid + "]");
@@ -172,7 +172,7 @@ export const updateInversionistacuentabancariaOnlyAlias = async (req: Request, r
       };
 
       var camposCuentaBancariaAuditoria = {
-        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
       };
 
@@ -194,9 +194,9 @@ export const getInversionistacuentabancarias = async (req: Request, res: Respons
   log.debug(line(), "controller::getInversionistacuentabancarias");
   const inversionistacuentabancariasFiltered = await prismaFT.client.$transaction(
     async (tx) => {
-      //log.info(line(),req.session_user.usuario._idusuario);
+      //log.info(line(),req.session_user.usuario.idusuario);
 
-      const session_idusuario = req.session_user.usuario._idusuario;
+      const session_idusuario = req.session_user.usuario.idusuario;
       const filter_estado = [1];
       const inversionistacuentabancarias = await inversionistacuentabancariaDao.getInversionistacuentabancariasByIdusuario(tx, session_idusuario, filter_estado);
       var inversionistacuentabancariasJson = jsonUtils.sequelizeToJSON(inversionistacuentabancarias);
@@ -216,7 +216,7 @@ export const getInversionistacuentabancariaMaster = async (req: Request, res: Re
   const cuentasbancariasMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estados = [1];
-      const session_idusuario = req.session_user.usuario._idusuario;
+      const session_idusuario = req.session_user.usuario.idusuario;
       //log.info(line(),req.session_user.usuario.rol_rols);
       //const roles = [2]; // Administrador
       //const rolesUsuario = req.session_user.usuario.rol_rols.map((role) => role.idrol);

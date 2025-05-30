@@ -13,7 +13,7 @@ import admin_personaverificacionRoutes from "#src/routes/admin/personaverificaci
 import admin_servicio_factoring_factoringRoutes from "#src/routes/admin/servicio/factoring/factoring.routes.js";
 import admin_servicio_factoring_factoringhistorialestadoRoutes from "#src/routes/admin/servicio/factoring/factoringhistorialestado.routes.js";
 import admin_servicio_factoring_factoringpropuestaRoutes from "#src/routes/admin/servicio/factoring/factoringpropuesta.routes.js";
-import admin_zlaboratorioRoutes from "#src/routes/admin/zlaboratorio.routes.js";
+import admin_zlaboratorioRoutes from "#src/routes/admin/zlaboratorio.prisma.routes.js";
 
 const router = Router();
 

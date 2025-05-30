@@ -3,7 +3,7 @@ import { catchedAsync } from "#src/utils/catchedAsync.js";
 //import * as zlaboratorioController from "#src/controllers/admin/zlaboratorioController.js";
 
 import * as zlaboratorioController from "#src/controllers/admin/zlaboratorio.prisma.Controller.js";
-import { verifyToken, checkRole } from "#src/middlewares/authMiddleware.js";
+import { verifyToken, checkRole } from "#src/middlewares/auth.prisma.Middleware.js";
 
 const router = Router();
 
