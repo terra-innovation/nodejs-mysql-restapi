@@ -72,7 +72,7 @@ export const createFactoringempresaverificacion = async (req: Request, res: Resp
       }
 
       // Inserta un nuevo registro en la tabla servicioempresaverificacion con el nuevo estado
-      var servicioempresaverificacionToCreate: Prisma.servicio_empresa_verificacionCreateInput = {
+      const servicioempresaverificacionToCreate: Prisma.servicio_empresa_verificacionCreateInput = {
         servicio_empresa: { connect: { idservicioempresa: servicioempresa.idservicioempresa } },
         servicio_empresa_estado: { connect: { idservicioempresaestado: servicioempresaestado.idservicioempresaestado } },
         usuario_verifica: { connect: { idusuario: req.session_user.usuario.idusuario } },

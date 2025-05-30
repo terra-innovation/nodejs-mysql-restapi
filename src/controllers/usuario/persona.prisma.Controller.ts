@@ -26,10 +26,10 @@ import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
-import { persona } from "#root/src/models/ft_factoring/Persona";
-import { persona_declaracion } from "#root/src/models/ft_factoring/PersonaDeclaracion";
-import { persona_verificacion } from "#root/src/models/ft_factoring/PersonaVerificacion";
-import { usuario } from "#root/src/models/ft_factoring/Usuario";
+import type { persona } from "#src/models/prisma/ft_factoring/client";
+import type { persona_declaracion } from "#src/models/prisma/ft_factoring/client";
+import type { persona_verificacion } from "#src/models/prisma/ft_factoring/client";
+import type { usuario } from "#src/models/prisma/ft_factoring/client";
 
 export const getPersonaMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getPersonaMaster");
@@ -172,38 +172,39 @@ export const verifyPersona = async (req: Request, res: Response) => {
       const usuarioConected = await usuarioDao.getUsuarioByIdusuario(tx, personaValidated._idusuario);
       const provinciaResidencia = await provinciaDao.getProvinciaByIdprovincia(tx, distritoResidencia.idprovincia);
 
-      let camposFk: Partial<persona> = {};
-      camposFk._idusuario = usuarioConected._idusuario;
-      camposFk.idpersonaverificacionestado = personaverificacionestado.idpersonaverificacionestado; // 3: En revisión
-      camposFk.iddocumentotipo = documentotipo.iddocumentotipo;
-      camposFk.idpaisnacionalidad = paisNacionalidad.idpais;
-      camposFk.idpaisnacimiento = paisNacimiento.idpais;
-      camposFk.idpaisresidencia = paisResidencia.idpais;
-      camposFk.iddepartamentoresidencia = provinciaResidencia.iddepartamento;
-      camposFk.idprovinciaresidencia = distritoResidencia.idprovincia;
-      camposFk.iddistritoresidencia = distritoResidencia.iddistrito;
-      camposFk.idgenero = genero.idgenero;
-      camposFk.iddocumentotipo = documentotipo.iddocumentotipo;
+      const personaToCreate: Prisma.personaCreateInput = {
+        usuario: { connect: { idusuario: usuarioConected.idusuario } },
+        persona_verificacion_estado: { connect: { idpersonaverificacionestado: personaverificacionestado.idpersonaverificacionestado } },
+        documento_tipo: { connect: { iddocumentotipo: documentotipo.iddocumentotipo } },
+        pais_nacionalidad: { connect: { idpais: paisNacionalidad.idpais } },
+        pais_nacimiento: { connect: { idpais: paisNacimiento.idpais } },
+        pais_residencia: { connect: { idpais: paisResidencia.idpais } },
+        departamento_residencia: { connect: { iddepartamento: provinciaResidencia.iddepartamento } },
+        provincia_residencia: { connect: { idprovincia: distritoResidencia.idprovincia } },
+        distrito_residencia: { connect: { iddistrito: distritoResidencia.iddistrito } },
+        genero: { connect: { idgenero: genero.idgenero } },
 
-      let camposAdicionales: Partial<persona> = {};
-      camposAdicionales.personaid = uuidv4();
-      camposAdicionales.code = uuidv4().split("-")[0];
-      camposAdicionales.email = usuarioConected.email;
-      camposAdicionales.celular = usuarioConected.celular;
+        documentonumero: personaValidated.documentonumero,
+        personanombres: personaValidated.personanombres,
+        apellidopaterno: personaValidated.apellidopaterno,
+        apellidomaterno: personaValidated.apellidomaterno,
 
-      let camposAuditoria: Partial<persona> = {};
-      camposAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
-      camposAuditoria.fechacrea = new Date();
-      camposAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
-      camposAuditoria.fechamod = new Date();
-      camposAuditoria.estado = 1;
+        fechanacimiento: personaValidated.fechanacimiento,
+        direccion: personaValidated.direccion,
+        direccionreferencia: personaValidated.direccionreferencia,
 
-      const personaCreated = await personaDao.insertPersona(tx, {
-        ...camposFk,
-        ...camposAdicionales,
-        ...personaValidated,
-        ...camposAuditoria,
-      });
+        personaid: uuidv4(),
+        code: uuidv4().split("-")[0],
+        email: usuarioConected.email,
+        celular: usuarioConected.celular,
+        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
+
+      const personaCreated = await personaDao.insertPersona(tx, personaToCreate);
 
       //let personaCreated = { _idpersona: 4 };
 
@@ -216,33 +217,34 @@ export const verifyPersona = async (req: Request, res: Response) => {
       const identificacionselfiCreated = await crearIdentificacionSelfi(req, tx, personaValidated, personaCreated);
       log.debug(line(), "identificacionselfiCreated:", identificacionselfiCreated);
 
-      const personaDeclaracionCreate: Partial<persona_declaracion> = {};
-      personaDeclaracionCreate.personadeclaracionid = uuidv4();
-      personaDeclaracionCreate.idpersona = personaCreated.idpersona;
-      personaDeclaracionCreate.espep = personaValidated.espep;
-      personaDeclaracionCreate.tienevinculopep = personaValidated.tienevinculopep;
-      personaDeclaracionCreate.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
-      personaDeclaracionCreate.fechacrea = new Date();
-      personaDeclaracionCreate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
-      personaDeclaracionCreate.fechamod = new Date();
-      personaDeclaracionCreate.estado = 1;
+      const personadeclaracionToCreate: Prisma.persona_declaracionCreateInput = {
+        persona: { connect: { idpersona: personaCreated.idpersona } },
+        personadeclaracionid: uuidv4(),
+        espep: personaValidated.espep,
+        tienevinculopep: personaValidated.tienevinculopep,
+        idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
 
-      await personadeclaracionDao.insertPersonadeclaracion(tx, personaDeclaracionCreate);
+      await personadeclaracionDao.insertPersonadeclaracion(tx, personadeclaracionToCreate);
 
-      const personaVerificacionCreate: Partial<persona_verificacion> = {};
-      personaVerificacionCreate.personaverificacionid = uuidv4();
-      personaVerificacionCreate.idpersona = personaCreated.idpersona;
-      personaVerificacionCreate.idpersonaverificacionestado = personaverificacionestado.idpersonaverificacionestado; // 3: En revisión
-      personaVerificacionCreate._idusuarioverifica = req.session_user?.usuario?._idusuario;
-      personaVerificacionCreate.comentariousuario = "";
-      personaVerificacionCreate.comentariointerno = "";
-      personaVerificacionCreate.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
-      personaVerificacionCreate.fechacrea = new Date();
-      personaVerificacionCreate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
-      personaVerificacionCreate.fechamod = new Date();
-      personaVerificacionCreate.estado = 1;
-
-      await personaverificacionDao.insertPersonaverificacion(tx, personaVerificacionCreate);
+      const personaverificacionToCreate: Prisma.persona_verificacionCreateInput = {
+        persona: { connect: { idpersona: personaCreated.idpersona } },
+        persona_verificacion_estado: { connect: { idpersonaverificacionestado: personaverificacionestado.idpersonaverificacionestado } },
+        usuario_verifica: { connect: { idusuario: req.session_user?.usuario?._idusuario } },
+        personaverificacionid: uuidv4(),
+        comentariousuario: "",
+        comentariointerno: "",
+        idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
+      await personaverificacionDao.insertPersonaverificacion(tx, personaverificacionToCreate);
 
       const usuarioUpdate: Partial<usuario> = {};
       usuarioUpdate.usuarioid = usuarioConected.usuarioid;

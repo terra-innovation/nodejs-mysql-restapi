@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getUsuarioservicioempresaByIdusuarioIdServicioIdempresa = async (tx: TxClient, idusuario: bigint, idservicio: number, idempresa: number) => {
+export const getUsuarioservicioempresaByIdusuarioIdServicioIdempresa = async (tx: TxClient, idusuario: number, idservicio: number, idempresa: number) => {
   try {
     const usuarioservicioempresa = await tx.usuario_servicio_empresa.findFirst({
       where: {

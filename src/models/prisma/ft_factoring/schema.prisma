@@ -390,6 +390,7 @@ model banco_transaccion_tipo {
 model colaborador {
   idcolaborador         Int                   @id @default(autoincrement()) @map("_idcolaborador")
   colaboradorid         String                @unique(map: "UQ_colaborador_colaboradorid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                  String                @unique(map: "UQ_colaborador_code") @db.VarChar(20)
   idempresa             Int?                  @map("_idempresa")
   idpersona             BigInt?               @map("_idpersona")
   idcolaboradortipo     Int?                  @map("_idcolaboradortipo")
@@ -422,7 +423,7 @@ model colaborador {
 
 model colaborador_tipo {
   idcolaboradortipo Int           @id @map("_idcolaboradortipo")
-  colaboradortipoid String        @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  colaboradortipoid String        @unique(map: "UQ_colaboradortipo_colaboradortipoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code              String        @db.VarChar(50)
   nombre            String        @db.VarChar(50)
   alias             String        @db.VarChar(50)
@@ -2080,10 +2081,10 @@ model zlaboratorio_usuario {
 }
 
 /// --- INICIO LOG SCRIPT: pluralizar-schema.js ---
-/// Fecha de ejecución: 27/5/2025, 18:49:23
+/// Fecha de ejecución: 29/5/2025, 21:38:25
 /// Total líneas con relaciones tipo '[]': 137
-/// Modificaciones realizadas: 3
-/// Sin modificar (ya pluralizadas): 134
+/// Modificaciones realizadas: 0
+/// Sin modificar (ya pluralizadas): 137
 /// --- Detalle de líneas evaluadas ---
 /// Línea 34: 'archivo_colaboradores' ya está pluralizado correctamente.
 /// Línea 35: 'archivo_cuenta_bancarias' ya está pluralizado correctamente.
@@ -2107,125 +2108,125 @@ model zlaboratorio_usuario {
 /// Línea 287: 'banco_transaccion_inversionista_retiros' ya está pluralizado correctamente.
 /// Línea 305: 'banco_transacciones' ya está pluralizado correctamente.
 /// Línea 306: 'banco_transaccion_estado_historiales' ya está pluralizado correctamente.
-/// Línea 387: 'banco_transaccion' ➜ 'banco_transacciones'
-/// Línea 410: 'archivo_colaboradores' ya está pluralizado correctamente.
-/// Línea 415: 'factoringes' ya está pluralizado correctamente.
-/// Línea 434: 'colaboradores' ya está pluralizado correctamente.
-/// Línea 470: 'factoringes' ya está pluralizado correctamente.
-/// Línea 507: 'archivo_cuenta_bancarias' ya está pluralizado correctamente.
-/// Línea 512: 'empresa_cuenta_bancarias' ya está pluralizado correctamente.
-/// Línea 513: 'factor_cuenta_bancarias' ya está pluralizado correctamente.
-/// Línea 514: 'factoringes' ya está pluralizado correctamente.
-/// Línea 515: 'inversionista_cuenta_bancarias' ya está pluralizado correctamente.
-/// Línea 516: 'persona_cuenta_bancarias' ya está pluralizado correctamente.
-/// Línea 535: 'cuenta_bancarias' ya está pluralizado correctamente.
-/// Línea 548: 'cuenta_bancarias' ya está pluralizado correctamente.
-/// Línea 564: 'empresas' ya está pluralizado correctamente.
-/// Línea 565: 'factores' ya está pluralizado correctamente.
-/// Línea 566: 'personas' ya está pluralizado correctamente.
-/// Línea 567: 'provincias' ya está pluralizado correctamente.
-/// Línea 588: 'empresas' ya está pluralizado correctamente.
-/// Línea 589: 'factores' ya está pluralizado correctamente.
-/// Línea 590: 'personas' ya está pluralizado correctamente.
-/// Línea 606: 'colaboradores' ya está pluralizado correctamente.
-/// Línea 607: 'personas' ya está pluralizado correctamente.
-/// Línea 608: 'usuarios' ya está pluralizado correctamente.
-/// Línea 632: 'archivo_empresas' ya está pluralizado correctamente.
-/// Línea 633: 'colaboradores' ya está pluralizado correctamente.
-/// Línea 634: 'contactos' ya está pluralizado correctamente.
-/// Línea 640: 'empresa_cuenta_bancarias' ya está pluralizado correctamente.
-/// Línea 643: 'servicio_empresas' ya está pluralizado correctamente.
-/// Línea 644: 'usuario_servicio_empresas' ya está pluralizado correctamente.
-/// Línea 666: 'factoring_pagos' ya está pluralizado correctamente.
-/// Línea 715: 'factor_cuenta_bancarias' ya está pluralizado correctamente.
-/// Línea 737: 'factoring_pagos' ya está pluralizado correctamente.
-/// Línea 738: 'inversionista_depositos' ya está pluralizado correctamente.
-/// Línea 739: 'inversionista_retiros' ya está pluralizado correctamente.
-/// Línea 782: 'factoring_facturas' ya está pluralizado correctamente.
-/// Línea 783: 'factoring_historial_estados' ya está pluralizado correctamente.
-/// Línea 784: 'factoring_pagos' ya está pluralizado correctamente.
-/// Línea 912: 'factoring_ejecutado' ➜ 'factoring_ejecutados'
-/// Línea 929: 'factoringes' ya está pluralizado correctamente.
-/// Línea 930: 'factoring_historial_estados' ya está pluralizado correctamente.
-/// Línea 945: 'factoring_propuestas' ya está pluralizado correctamente.
-/// Línea 976: 'archivo_factoring_historial_estados' ya está pluralizado correctamente.
-/// Línea 1000: 'banco_transaccion_factoring_inversiones' ya está pluralizado correctamente.
-/// Línea 1084: 'factoring_propuesta_financieros' ya está pluralizado correctamente.
-/// Línea 1107: 'factoring_propuestas' ya está pluralizado correctamente.
-/// Línea 1147: 'factoring_propuestas' ya está pluralizado correctamente.
-/// Línea 1195: 'archivo_facturas' ya está pluralizado correctamente.
-/// Línea 1196: 'factoring_facturas' ya está pluralizado correctamente.
-/// Línea 1198: 'factura_impuestos' ya está pluralizado correctamente.
-/// Línea 1199: 'factura_itemes' ya está pluralizado correctamente.
-/// Línea 1200: 'factura_medio_pagos' ya está pluralizado correctamente.
-/// Línea 1201: 'factura_notas' ya está pluralizado correctamente.
-/// Línea 1202: 'factura_termino_pagos' ya está pluralizado correctamente.
-/// Línea 1320: 'factoring_propuesta_financieros' ya está pluralizado correctamente.
-/// Línea 1335: 'factoring_propuesta_financieros' ya está pluralizado correctamente.
-/// Línea 1347: 'personas' ya está pluralizado correctamente.
-/// Línea 1361: 'inversionista_banco_cuentas' ya está pluralizado correctamente.
-/// Línea 1362: 'inversionista_cuenta_bancarias' ya está pluralizado correctamente.
-/// Línea 1393: 'inversionista_depositos' ya está pluralizado correctamente.
-/// Línea 1394: 'inversionista_retiros' ya está pluralizado correctamente.
-/// Línea 1417: 'archivo_inversionista_depositos' ya está pluralizado correctamente.
-/// Línea 1418: 'banco_transaccion_inversionista_depositos' ya está pluralizado correctamente.
-/// Línea 1445: 'archivo_inversionista_retiros' ya está pluralizado correctamente.
-/// Línea 1446: 'banco_transaccion_inversionista_retiros' ya está pluralizado correctamente.
-/// Línea 1470: 'banco_cuentas' ya está pluralizado correctamente.
-/// Línea 1471: 'cuenta_bancarias' ya está pluralizado correctamente.
-/// Línea 1472: 'factoringes' ya está pluralizado correctamente.
-/// Línea 1487: 'departamentos' ya está pluralizado correctamente.
-/// Línea 1488: 'empresas' ya está pluralizado correctamente.
-/// Línea 1489: 'factores' ya está pluralizado correctamente.
-/// Línea 1504: 'persona_pep_indirecto' ➜ 'persona_pep_indirectos'
-/// Línea 1535: 'archivo_personas' ya está pluralizado correctamente.
-/// Línea 1536: 'colaboradores' ya está pluralizado correctamente.
-/// Línea 1548: 'persona_cuenta_bancarias' ya está pluralizado correctamente.
-/// Línea 1549: 'persona_declaraciones' ya está pluralizado correctamente.
-/// Línea 1550: 'persona_pep_directos' ya está pluralizado correctamente.
-/// Línea 1551: 'persona_pep_indirectos' ya está pluralizado correctamente.
-/// Línea 1552: 'persona_verificaciones' ya está pluralizado correctamente.
-/// Línea 1686: 'personas' ya está pluralizado correctamente.
-/// Línea 1687: 'persona_verificaciones' ya está pluralizado correctamente.
-/// Línea 1702: 'distritos' ya está pluralizado correctamente.
-/// Línea 1703: 'empresas' ya está pluralizado correctamente.
-/// Línea 1704: 'factores' ya está pluralizado correctamente.
-/// Línea 1705: 'personas' ya está pluralizado correctamente.
-/// Línea 1721: 'distritos' ya está pluralizado correctamente.
-/// Línea 1739: 'empresas' ya está pluralizado correctamente.
-/// Línea 1740: 'factores' ya está pluralizado correctamente.
-/// Línea 1741: 'factoring_config_comisiones' ya está pluralizado correctamente.
-/// Línea 1742: 'factoring_config_garantias' ya está pluralizado correctamente.
-/// Línea 1743: 'factoring_config_tasa_descuentos' ya está pluralizado correctamente.
-/// Línea 1760: 'usuario_roles' ya está pluralizado correctamente.
-/// Línea 1777: 'servicio_empresas' ya está pluralizado correctamente.
-/// Línea 1778: 'usuario_servicios' ya está pluralizado correctamente.
-/// Línea 1779: 'usuario_servicio_empresas' ya está pluralizado correctamente.
-/// Línea 1799: 'servicio_empresa_verificaciones' ya está pluralizado correctamente.
-/// Línea 1823: 'servicio_empresas' ya está pluralizado correctamente.
-/// Línea 1824: 'servicio_empresa_verificaciones' ya está pluralizado correctamente.
-/// Línea 1869: 'banco_transaccion_estado_historiales' ya está pluralizado correctamente.
-/// Línea 1871: 'factoring_historial_estados' ya está pluralizado correctamente.
-/// Línea 1872: 'facturas' ya está pluralizado correctamente.
-/// Línea 1874: 'persona_verificaciones' ya está pluralizado correctamente.
-/// Línea 1875: 'servicio_empresas' ya está pluralizado correctamente.
-/// Línea 1876: 'servicio_empresa_verificaciones' ya está pluralizado correctamente.
-/// Línea 1878: 'usuario_roles' ya está pluralizado correctamente.
-/// Línea 1879: 'usuario_servicios' ya está pluralizado correctamente.
-/// Línea 1880: 'usuario_servicio_empresas' ya está pluralizado correctamente.
-/// Línea 1881: 'usuario_servicio_verificaciones' ya está pluralizado correctamente.
-/// Línea 1882: 'validaciones' ya está pluralizado correctamente.
-/// Línea 1917: 'usuario_servicio_verificaciones' ya está pluralizado correctamente.
-/// Línea 1963: 'usuario_servicio_empresas' ya está pluralizado correctamente.
-/// Línea 1978: 'usuario_servicio_empresas' ya está pluralizado correctamente.
-/// Línea 1993: 'usuario_servicios' ya está pluralizado correctamente.
-/// Línea 1994: 'usuario_servicio_verificaciones' ya está pluralizado correctamente.
-/// Línea 2053: 'validaciones' ya está pluralizado correctamente.
-/// Línea 2079: 'zlaboratorio_pedidos' ya está pluralizado correctamente.
+/// Línea 387: 'banco_transacciones' ya está pluralizado correctamente.
+/// Línea 411: 'archivo_colaboradores' ya está pluralizado correctamente.
+/// Línea 416: 'factoringes' ya está pluralizado correctamente.
+/// Línea 435: 'colaboradores' ya está pluralizado correctamente.
+/// Línea 471: 'factoringes' ya está pluralizado correctamente.
+/// Línea 508: 'archivo_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 513: 'empresa_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 514: 'factor_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 515: 'factoringes' ya está pluralizado correctamente.
+/// Línea 516: 'inversionista_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 517: 'persona_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 536: 'cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 549: 'cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 565: 'empresas' ya está pluralizado correctamente.
+/// Línea 566: 'factores' ya está pluralizado correctamente.
+/// Línea 567: 'personas' ya está pluralizado correctamente.
+/// Línea 568: 'provincias' ya está pluralizado correctamente.
+/// Línea 589: 'empresas' ya está pluralizado correctamente.
+/// Línea 590: 'factores' ya está pluralizado correctamente.
+/// Línea 591: 'personas' ya está pluralizado correctamente.
+/// Línea 607: 'colaboradores' ya está pluralizado correctamente.
+/// Línea 608: 'personas' ya está pluralizado correctamente.
+/// Línea 609: 'usuarios' ya está pluralizado correctamente.
+/// Línea 633: 'archivo_empresas' ya está pluralizado correctamente.
+/// Línea 634: 'colaboradores' ya está pluralizado correctamente.
+/// Línea 635: 'contactos' ya está pluralizado correctamente.
+/// Línea 641: 'empresa_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 644: 'servicio_empresas' ya está pluralizado correctamente.
+/// Línea 645: 'usuario_servicio_empresas' ya está pluralizado correctamente.
+/// Línea 667: 'factoring_pagos' ya está pluralizado correctamente.
+/// Línea 716: 'factor_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 738: 'factoring_pagos' ya está pluralizado correctamente.
+/// Línea 739: 'inversionista_depositos' ya está pluralizado correctamente.
+/// Línea 740: 'inversionista_retiros' ya está pluralizado correctamente.
+/// Línea 783: 'factoring_facturas' ya está pluralizado correctamente.
+/// Línea 784: 'factoring_historial_estados' ya está pluralizado correctamente.
+/// Línea 785: 'factoring_pagos' ya está pluralizado correctamente.
+/// Línea 913: 'factoring_ejecutados' ya está pluralizado correctamente.
+/// Línea 930: 'factoringes' ya está pluralizado correctamente.
+/// Línea 931: 'factoring_historial_estados' ya está pluralizado correctamente.
+/// Línea 946: 'factoring_propuestas' ya está pluralizado correctamente.
+/// Línea 977: 'archivo_factoring_historial_estados' ya está pluralizado correctamente.
+/// Línea 1001: 'banco_transaccion_factoring_inversiones' ya está pluralizado correctamente.
+/// Línea 1085: 'factoring_propuesta_financieros' ya está pluralizado correctamente.
+/// Línea 1108: 'factoring_propuestas' ya está pluralizado correctamente.
+/// Línea 1148: 'factoring_propuestas' ya está pluralizado correctamente.
+/// Línea 1196: 'archivo_facturas' ya está pluralizado correctamente.
+/// Línea 1197: 'factoring_facturas' ya está pluralizado correctamente.
+/// Línea 1199: 'factura_impuestos' ya está pluralizado correctamente.
+/// Línea 1200: 'factura_itemes' ya está pluralizado correctamente.
+/// Línea 1201: 'factura_medio_pagos' ya está pluralizado correctamente.
+/// Línea 1202: 'factura_notas' ya está pluralizado correctamente.
+/// Línea 1203: 'factura_termino_pagos' ya está pluralizado correctamente.
+/// Línea 1321: 'factoring_propuesta_financieros' ya está pluralizado correctamente.
+/// Línea 1336: 'factoring_propuesta_financieros' ya está pluralizado correctamente.
+/// Línea 1348: 'personas' ya está pluralizado correctamente.
+/// Línea 1362: 'inversionista_banco_cuentas' ya está pluralizado correctamente.
+/// Línea 1363: 'inversionista_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 1394: 'inversionista_depositos' ya está pluralizado correctamente.
+/// Línea 1395: 'inversionista_retiros' ya está pluralizado correctamente.
+/// Línea 1418: 'archivo_inversionista_depositos' ya está pluralizado correctamente.
+/// Línea 1419: 'banco_transaccion_inversionista_depositos' ya está pluralizado correctamente.
+/// Línea 1446: 'archivo_inversionista_retiros' ya está pluralizado correctamente.
+/// Línea 1447: 'banco_transaccion_inversionista_retiros' ya está pluralizado correctamente.
+/// Línea 1471: 'banco_cuentas' ya está pluralizado correctamente.
+/// Línea 1472: 'cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 1473: 'factoringes' ya está pluralizado correctamente.
+/// Línea 1488: 'departamentos' ya está pluralizado correctamente.
+/// Línea 1489: 'empresas' ya está pluralizado correctamente.
+/// Línea 1490: 'factores' ya está pluralizado correctamente.
+/// Línea 1505: 'persona_pep_indirectos' ya está pluralizado correctamente.
+/// Línea 1536: 'archivo_personas' ya está pluralizado correctamente.
+/// Línea 1537: 'colaboradores' ya está pluralizado correctamente.
+/// Línea 1549: 'persona_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 1550: 'persona_declaraciones' ya está pluralizado correctamente.
+/// Línea 1551: 'persona_pep_directos' ya está pluralizado correctamente.
+/// Línea 1552: 'persona_pep_indirectos' ya está pluralizado correctamente.
+/// Línea 1553: 'persona_verificaciones' ya está pluralizado correctamente.
+/// Línea 1687: 'personas' ya está pluralizado correctamente.
+/// Línea 1688: 'persona_verificaciones' ya está pluralizado correctamente.
+/// Línea 1703: 'distritos' ya está pluralizado correctamente.
+/// Línea 1704: 'empresas' ya está pluralizado correctamente.
+/// Línea 1705: 'factores' ya está pluralizado correctamente.
+/// Línea 1706: 'personas' ya está pluralizado correctamente.
+/// Línea 1722: 'distritos' ya está pluralizado correctamente.
+/// Línea 1740: 'empresas' ya está pluralizado correctamente.
+/// Línea 1741: 'factores' ya está pluralizado correctamente.
+/// Línea 1742: 'factoring_config_comisiones' ya está pluralizado correctamente.
+/// Línea 1743: 'factoring_config_garantias' ya está pluralizado correctamente.
+/// Línea 1744: 'factoring_config_tasa_descuentos' ya está pluralizado correctamente.
+/// Línea 1761: 'usuario_roles' ya está pluralizado correctamente.
+/// Línea 1778: 'servicio_empresas' ya está pluralizado correctamente.
+/// Línea 1779: 'usuario_servicios' ya está pluralizado correctamente.
+/// Línea 1780: 'usuario_servicio_empresas' ya está pluralizado correctamente.
+/// Línea 1800: 'servicio_empresa_verificaciones' ya está pluralizado correctamente.
+/// Línea 1824: 'servicio_empresas' ya está pluralizado correctamente.
+/// Línea 1825: 'servicio_empresa_verificaciones' ya está pluralizado correctamente.
+/// Línea 1870: 'banco_transaccion_estado_historiales' ya está pluralizado correctamente.
+/// Línea 1872: 'factoring_historial_estados' ya está pluralizado correctamente.
+/// Línea 1873: 'facturas' ya está pluralizado correctamente.
+/// Línea 1875: 'persona_verificaciones' ya está pluralizado correctamente.
+/// Línea 1876: 'servicio_empresas' ya está pluralizado correctamente.
+/// Línea 1877: 'servicio_empresa_verificaciones' ya está pluralizado correctamente.
+/// Línea 1879: 'usuario_roles' ya está pluralizado correctamente.
+/// Línea 1880: 'usuario_servicios' ya está pluralizado correctamente.
+/// Línea 1881: 'usuario_servicio_empresas' ya está pluralizado correctamente.
+/// Línea 1882: 'usuario_servicio_verificaciones' ya está pluralizado correctamente.
+/// Línea 1883: 'validaciones' ya está pluralizado correctamente.
+/// Línea 1918: 'usuario_servicio_verificaciones' ya está pluralizado correctamente.
+/// Línea 1964: 'usuario_servicio_empresas' ya está pluralizado correctamente.
+/// Línea 1979: 'usuario_servicio_empresas' ya está pluralizado correctamente.
+/// Línea 1994: 'usuario_servicios' ya está pluralizado correctamente.
+/// Línea 1995: 'usuario_servicio_verificaciones' ya está pluralizado correctamente.
+/// Línea 2054: 'validaciones' ya está pluralizado correctamente.
+/// Línea 2080: 'zlaboratorio_pedidos' ya está pluralizado correctamente.
 /// --- FIN LOG SCRIPT
 
 /// --- INICIO LOG DE SCRIPT: renombrar-atributos-especiales.js ---
-/// Fecha de ejecución: 27/5/2025, 18:49:24
+/// Fecha de ejecución: 29/5/2025, 21:38:25
 /// ✔️ Línea 32: (relation-field) archivo_estado ya coincide con 'archivoestado'
 /// ✔️ Línea 33: (relation-field) archivo_tipo ya coincide con 'archivotipo'
 /// ✔️ Línea 55: (relation-field) archivo ya coincide con 'archivo'
@@ -2262,138 +2263,138 @@ model zlaboratorio_usuario {
 /// ✔️ Línea 356: (relation-field) inversionista_deposito ya coincide con 'inversionistadeposito'
 /// ✔️ Línea 370: (relation-field) banco_transaccion ya coincide con 'bancotransaccion'
 /// ✔️ Línea 371: (relation-field) inversionista_retiro ya coincide con 'inversionistaretiro'
-/// ✔️ Línea 411: (relation-field) colaborador_tipo ya coincide con 'colaboradortipo'
-/// ✔️ Línea 412: (relation-field) documento_tipo ya coincide con 'documentotipo'
-/// ✔️ Línea 413: (relation-field) empresa ya coincide con 'empresa'
-/// ✔️ Línea 414: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 469: (relation-field) empresa ya coincide con 'empresa'
-/// ✔️ Línea 486: (relation-field) usuario ya coincide con 'usuario'
-/// ✔️ Línea 508: (relation-field) banco ya coincide con 'banco'
-/// ✔️ Línea 509: (relation-field) cuenta_bancaria_estado ya coincide con 'cuentabancariaestado'
-/// ✔️ Línea 510: (relation-field) cuenta_tipo ya coincide con 'cuentatipo'
-/// ✔️ Línea 511: (relation-field) moneda ya coincide con 'moneda'
-/// ✔️ Línea 563: (relation-field) pais ya coincide con 'pais'
-/// ✔️ Línea 586: (relation-field) provincia ya coincide con 'provincia'
-/// ✔️ Línea 587: (relation-field) region_natural ya coincide con 'regionnatural'
-/// ✔️ Línea 635: (relation-field) departamento_sede ya coincide con 'departamentosede'
-/// ✔️ Línea 636: (relation-field) distrito_sede ya coincide con 'distritosede'
-/// ✔️ Línea 637: (relation-field) pais_sede ya coincide con 'paissede'
-/// ✔️ Línea 638: (relation-field) provincia_sede ya coincide con 'provinciasede'
-/// ✔️ Línea 639: (relation-field) riesgo ya coincide con 'riesgo'
-/// ✔️ Línea 641: (plural) factoring_aceptantes ya está correcto | Relación: 'factoring_idaceptanteToempresa'
-/// ✔️ Línea 642: (plural) factoring_cedentes ya está correcto | Relación: 'factoring_idcedenteToempresa'
-/// ✔️ Línea 664: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
-/// ✔️ Línea 665: (relation-field) empresa ya coincide con 'empresa'
-/// ✔️ Línea 710: (relation-field) departamento_sede ya coincide con 'departamentosede'
-/// ✔️ Línea 711: (relation-field) distrito_sede ya coincide con 'distritosede'
-/// ✔️ Línea 712: (relation-field) pais_sede ya coincide con 'paissede'
-/// ✔️ Línea 713: (relation-field) provincia_sede ya coincide con 'provinciasede'
-/// ✔️ Línea 714: (relation-field) riesgo ya coincide con 'riesgo'
-/// ✔️ Línea 735: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
-/// ✔️ Línea 736: (relation-field) factor ya coincide con 'factor'
-/// ✔️ Línea 772: (singular) empresa_aceptante ya está correcto | Relación: 'factoring_idaceptanteToempresa'
-/// ✔️ Línea 773: (singular) empresa_cedente ya está correcto | Relación: 'factoring_idcedenteToempresa'
-/// ✔️ Línea 774: (relation-field) contacto_aceptante ya coincide con 'contactoaceptante'
-/// ✔️ Línea 775: (relation-field) contacto_cedente ya coincide con 'contactocedente'
-/// ✔️ Línea 776: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
-/// ✔️ Línea 777: (singular) factoring_ejecutado ya está correcto | Relación: 'factoring_idfactoringejecutadoTofactoring_ejecutado'
-/// ✔️ Línea 778: (relation-field) factoring_estado ya coincide con 'factoringestado'
-/// ✔️ Línea 779: (singular) factoring_propuesta_aceptada ya está correcto | Relación: 'factoring_idfactoringpropuestaaceptadaTofactoring_propuesta'
-/// ✔️ Línea 780: (relation-field) moneda ya coincide con 'moneda'
-/// ✔️ Línea 781: (plural) factoring_ejecutado_factoringes ya está correcto | Relación: 'factoring_ejecutado_idfactoringTofactoring'
-/// ✔️ Línea 785: (plural) factoring_propuesta_factoringes ya está correcto | Relación: 'factoring_propuesta_idfactoringTofactoring'
-/// ✔️ Línea 813: (relation-field) riesgo ya coincide con 'riesgo'
-/// ✔️ Línea 833: (relation-field) riesgo ya coincide con 'riesgo'
-/// ✔️ Línea 852: (relation-field) riesgo ya coincide con 'riesgo'
-/// ✔️ Línea 892: (plural) factoring_factoringejecutados ya está correcto | Relación: 'factoring_idfactoringejecutadoTofactoring_ejecutado'
-/// ✔️ Línea 893: (singular) factoring ya está correcto | Relación: 'factoring_ejecutado_idfactoringTofactoring'
-/// ✔️ Línea 894: (relation-field) factoring_ejecutado_estado ya coincide con 'factoringejecutadoestado'
-/// ✔️ Línea 956: (relation-field) factoring ya coincide con 'factoring'
-/// ✔️ Línea 957: (relation-field) factura ya coincide con 'factura'
-/// ✔️ Línea 977: (relation-field) factoring_estado ya coincide con 'factoringestado'
-/// ✔️ Línea 978: (relation-field) factoring ya coincide con 'factoring'
-/// ✔️ Línea 979: (relation-field) usuario_modifica ya coincide con 'usuariomodifica'
-/// ✔️ Línea 1018: (relation-field) empresa_cuenta_bancaria ya coincide con 'empresacuentabancaria'
-/// ✔️ Línea 1019: (relation-field) factor_cuenta_bancaria ya coincide con 'factorcuentabancaria'
-/// ✔️ Línea 1020: (relation-field) factoring ya coincide con 'factoring'
-/// ✔️ Línea 1076: (plural) factoring_factoringpropuestaaceptadas ya está correcto | Relación: 'factoring_idfactoringpropuestaaceptadaTofactoring_propuesta'
-/// ✔️ Línea 1077: (singular) factoring ya está correcto | Relación: 'factoring_propuesta_idfactoringTofactoring'
-/// ✔️ Línea 1078: (relation-field) factoring_estrategia ya coincide con 'factoringestrategia'
-/// ✔️ Línea 1079: (relation-field) factoring_propuesta_estado ya coincide con 'factoringpropuestaestado'
-/// ✔️ Línea 1080: (relation-field) factoring_tipo ya coincide con 'factoringtipo'
-/// ✔️ Línea 1081: (singular) riesgo_aceptante ya está correcto | Relación: 'factoring_propuesta_idriesgoaceptanteToriesgo'
-/// ✔️ Línea 1082: (singular) riesgo_cedente ya está correcto | Relación: 'factoring_propuesta_idriesgocedenteToriesgo'
-/// ✔️ Línea 1083: (singular) riesgo_operacion ya está correcto | Relación: 'factoring_propuesta_idriesgooperacionToriesgo'
-/// ✔️ Línea 1127: (relation-field) factoring_propuesta ya coincide con 'factoringpropuesta'
-/// ✔️ Línea 1128: (relation-field) financiero_concepto ya coincide con 'financieroconcepto'
-/// ✔️ Línea 1129: (relation-field) financiero_tipo ya coincide con 'financierotipo'
-/// ✔️ Línea 1197: (relation-field) usuario_upload ya coincide con 'usuarioupload'
-/// ✔️ Línea 1222: (relation-field) factura ya coincide con 'factura'
-/// ✔️ Línea 1251: (relation-field) factura ya coincide con 'factura'
-/// ✔️ Línea 1268: (relation-field) factura ya coincide con 'factura'
-/// ✔️ Línea 1284: (relation-field) factura ya coincide con 'factura'
-/// ✔️ Línea 1303: (relation-field) factura ya coincide con 'factura'
-/// ✔️ Línea 1360: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 1373: (relation-field) banco_cuenta ya coincide con 'bancocuenta'
-/// ✔️ Línea 1374: (relation-field) inversionista ya coincide con 'inversionista'
-/// ✔️ Línea 1391: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
-/// ✔️ Línea 1392: (relation-field) inversionista ya coincide con 'inversionista'
-/// ✔️ Línea 1419: (relation-field) banco_cuenta ya coincide con 'bancocuenta'
-/// ✔️ Línea 1420: (relation-field) factor_cuenta_bancaria ya coincide con 'factorcuentabancaria'
-/// ✔️ Línea 1421: (relation-field) inversionista_cuenta_bancaria ya coincide con 'inversionistacuentabancaria'
-/// ✔️ Línea 1447: (relation-field) banco_cuenta ya coincide con 'bancocuenta'
-/// ✔️ Línea 1448: (relation-field) factor_cuenta_bancaria ya coincide con 'factorcuentabancaria'
-/// ✔️ Línea 1449: (relation-field) inversionista_cuenta_bancaria ya coincide con 'inversionistacuentabancaria'
-/// ✔️ Línea 1490: (plural) persona_paisnacimientos ya está correcto | Relación: 'persona_idpaisnacimientoTopais'
-/// ✔️ Línea 1491: (plural) persona_paisnacionalidades ya está correcto | Relación: 'persona_idpaisnacionalidadTopais'
-/// ✔️ Línea 1492: (plural) persona_paisresidencias ya está correcto | Relación: 'persona_idpaisresidenciaTopais'
-/// ✔️ Línea 1538: (relation-field) departamento_residencia ya coincide con 'departamentoresidencia'
-/// ✔️ Línea 1539: (relation-field) distrito_residencia ya coincide con 'distritoresidencia'
-/// ✔️ Línea 1540: (relation-field) documento_tipo ya coincide con 'documentotipo'
-/// ✔️ Línea 1541: (relation-field) genero ya coincide con 'genero'
-/// ✔️ Línea 1542: (singular) pais_nacimiento ya está correcto | Relación: 'persona_idpaisnacimientoTopais'
-/// ✔️ Línea 1543: (singular) pais_nacionalidad ya está correcto | Relación: 'persona_idpaisnacionalidadTopais'
-/// ✔️ Línea 1544: (singular) pais_residencia ya está correcto | Relación: 'persona_idpaisresidenciaTopais'
-/// ✔️ Línea 1545: (relation-field) persona_verificacion_estado ya coincide con 'personaverificacionestado'
-/// ✔️ Línea 1546: (relation-field) provincia_residencia ya coincide con 'provinciaresidencia'
-/// ✔️ Línea 1547: (relation-field) usuario ya coincide con 'usuario'
-/// ✔️ Línea 1576: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
-/// ✔️ Línea 1577: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 1595: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 1616: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 1640: (relation-field) pep_vinculo ya coincide con 'pepvinculo'
-/// ✔️ Línea 1641: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 1660: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 1661: (relation-field) persona_verificacion_estado ya coincide con 'personaverificacionestado'
-/// ✔️ Línea 1662: (relation-field) usuario_verifica ya coincide con 'usuarioverifica'
-/// ✔️ Línea 1706: (relation-field) departamento ya coincide con 'departamento'
-/// ✔️ Línea 1744: (plural) factoring_propuesta_riesgoaceptantes ya está correcto | Relación: 'factoring_propuesta_idriesgoaceptanteToriesgo'
-/// ✔️ Línea 1745: (plural) factoring_propuesta_riesgocedentes ya está correcto | Relación: 'factoring_propuesta_idriesgocedenteToriesgo'
-/// ✔️ Línea 1746: (plural) factoring_propuesta_riesgooperaciones ya está correcto | Relación: 'factoring_propuesta_idriesgooperacionToriesgo'
-/// ✔️ Línea 1795: (relation-field) empresa ya coincide con 'empresa'
-/// ✔️ Línea 1796: (relation-field) servicio ya coincide con 'servicio'
-/// ✔️ Línea 1797: (relation-field) servicio_empresa_estado ya coincide con 'servicioempresaestado'
-/// ✔️ Línea 1798: (relation-field) usuario_suscriptor ya coincide con 'usuariosuscriptor'
-/// ✔️ Línea 1840: (relation-field) servicio_empresa ya coincide con 'servicioempresa'
-/// ✔️ Línea 1841: (relation-field) servicio_empresa_estado ya coincide con 'servicioempresaestado'
-/// ✔️ Línea 1842: (relation-field) usuario_verifica ya coincide con 'usuarioverifica'
-/// ✔️ Línea 1877: (relation-field) documento_tipo ya coincide con 'documentotipo'
-/// ✔️ Línea 1895: (relation-field) rol ya coincide con 'rol'
-/// ✔️ Línea 1896: (relation-field) usuario ya coincide con 'usuario'
-/// ✔️ Línea 1914: (relation-field) servicio ya coincide con 'servicio'
-/// ✔️ Línea 1915: (relation-field) usuario ya coincide con 'usuario'
-/// ✔️ Línea 1916: (relation-field) usuario_servicio_estado ya coincide con 'usuarioservicioestado'
-/// ✔️ Línea 1938: (relation-field) empresa ya coincide con 'empresa'
-/// ✔️ Línea 1939: (relation-field) servicio ya coincide con 'servicio'
-/// ✔️ Línea 1940: (relation-field) usuario ya coincide con 'usuario'
-/// ✔️ Línea 1941: (relation-field) usuario_servicio_empresa_estado ya coincide con 'usuarioservicioempresaestado'
-/// ✔️ Línea 1942: (relation-field) usuario_servicio_empresa_rol ya coincide con 'usuarioservicioempresarol'
-/// ✔️ Línea 2010: (relation-field) usuario_servicio ya coincide con 'usuarioservicio'
-/// ✔️ Línea 2011: (relation-field) usuario_servicio_estado ya coincide con 'usuarioservicioestado'
-/// ✔️ Línea 2012: (relation-field) usuario_verifica ya coincide con 'usuarioverifica'
-/// ✔️ Línea 2037: (relation-field) usuario ya coincide con 'usuario'
-/// ✔️ Línea 2038: (relation-field) validacion_tipo ya coincide con 'validaciontipo'
-/// ✔️ Línea 2066: (relation-field) usuario ya coincide con 'usuario'
+/// ✔️ Línea 412: (relation-field) colaborador_tipo ya coincide con 'colaboradortipo'
+/// ✔️ Línea 413: (relation-field) documento_tipo ya coincide con 'documentotipo'
+/// ✔️ Línea 414: (relation-field) empresa ya coincide con 'empresa'
+/// ✔️ Línea 415: (relation-field) persona ya coincide con 'persona'
+/// ✔️ Línea 470: (relation-field) empresa ya coincide con 'empresa'
+/// ✔️ Línea 487: (relation-field) usuario ya coincide con 'usuario'
+/// ✔️ Línea 509: (relation-field) banco ya coincide con 'banco'
+/// ✔️ Línea 510: (relation-field) cuenta_bancaria_estado ya coincide con 'cuentabancariaestado'
+/// ✔️ Línea 511: (relation-field) cuenta_tipo ya coincide con 'cuentatipo'
+/// ✔️ Línea 512: (relation-field) moneda ya coincide con 'moneda'
+/// ✔️ Línea 564: (relation-field) pais ya coincide con 'pais'
+/// ✔️ Línea 587: (relation-field) provincia ya coincide con 'provincia'
+/// ✔️ Línea 588: (relation-field) region_natural ya coincide con 'regionnatural'
+/// ✔️ Línea 636: (relation-field) departamento_sede ya coincide con 'departamentosede'
+/// ✔️ Línea 637: (relation-field) distrito_sede ya coincide con 'distritosede'
+/// ✔️ Línea 638: (relation-field) pais_sede ya coincide con 'paissede'
+/// ✔️ Línea 639: (relation-field) provincia_sede ya coincide con 'provinciasede'
+/// ✔️ Línea 640: (relation-field) riesgo ya coincide con 'riesgo'
+/// ✔️ Línea 642: (plural) factoring_aceptantes ya está correcto | Relación: 'factoring_idaceptanteToempresa'
+/// ✔️ Línea 643: (plural) factoring_cedentes ya está correcto | Relación: 'factoring_idcedenteToempresa'
+/// ✔️ Línea 665: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
+/// ✔️ Línea 666: (relation-field) empresa ya coincide con 'empresa'
+/// ✔️ Línea 711: (relation-field) departamento_sede ya coincide con 'departamentosede'
+/// ✔️ Línea 712: (relation-field) distrito_sede ya coincide con 'distritosede'
+/// ✔️ Línea 713: (relation-field) pais_sede ya coincide con 'paissede'
+/// ✔️ Línea 714: (relation-field) provincia_sede ya coincide con 'provinciasede'
+/// ✔️ Línea 715: (relation-field) riesgo ya coincide con 'riesgo'
+/// ✔️ Línea 736: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
+/// ✔️ Línea 737: (relation-field) factor ya coincide con 'factor'
+/// ✔️ Línea 773: (singular) empresa_aceptante ya está correcto | Relación: 'factoring_idaceptanteToempresa'
+/// ✔️ Línea 774: (singular) empresa_cedente ya está correcto | Relación: 'factoring_idcedenteToempresa'
+/// ✔️ Línea 775: (relation-field) contacto_aceptante ya coincide con 'contactoaceptante'
+/// ✔️ Línea 776: (relation-field) contacto_cedente ya coincide con 'contactocedente'
+/// ✔️ Línea 777: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
+/// ✔️ Línea 778: (singular) factoring_ejecutado ya está correcto | Relación: 'factoring_idfactoringejecutadoTofactoring_ejecutado'
+/// ✔️ Línea 779: (relation-field) factoring_estado ya coincide con 'factoringestado'
+/// ✔️ Línea 780: (singular) factoring_propuesta_aceptada ya está correcto | Relación: 'factoring_idfactoringpropuestaaceptadaTofactoring_propuesta'
+/// ✔️ Línea 781: (relation-field) moneda ya coincide con 'moneda'
+/// ✔️ Línea 782: (plural) factoring_ejecutado_factoringes ya está correcto | Relación: 'factoring_ejecutado_idfactoringTofactoring'
+/// ✔️ Línea 786: (plural) factoring_propuesta_factoringes ya está correcto | Relación: 'factoring_propuesta_idfactoringTofactoring'
+/// ✔️ Línea 814: (relation-field) riesgo ya coincide con 'riesgo'
+/// ✔️ Línea 834: (relation-field) riesgo ya coincide con 'riesgo'
+/// ✔️ Línea 853: (relation-field) riesgo ya coincide con 'riesgo'
+/// ✔️ Línea 893: (plural) factoring_factoringejecutados ya está correcto | Relación: 'factoring_idfactoringejecutadoTofactoring_ejecutado'
+/// ✔️ Línea 894: (singular) factoring ya está correcto | Relación: 'factoring_ejecutado_idfactoringTofactoring'
+/// ✔️ Línea 895: (relation-field) factoring_ejecutado_estado ya coincide con 'factoringejecutadoestado'
+/// ✔️ Línea 957: (relation-field) factoring ya coincide con 'factoring'
+/// ✔️ Línea 958: (relation-field) factura ya coincide con 'factura'
+/// ✔️ Línea 978: (relation-field) factoring_estado ya coincide con 'factoringestado'
+/// ✔️ Línea 979: (relation-field) factoring ya coincide con 'factoring'
+/// ✔️ Línea 980: (relation-field) usuario_modifica ya coincide con 'usuariomodifica'
+/// ✔️ Línea 1019: (relation-field) empresa_cuenta_bancaria ya coincide con 'empresacuentabancaria'
+/// ✔️ Línea 1020: (relation-field) factor_cuenta_bancaria ya coincide con 'factorcuentabancaria'
+/// ✔️ Línea 1021: (relation-field) factoring ya coincide con 'factoring'
+/// ✔️ Línea 1077: (plural) factoring_factoringpropuestaaceptadas ya está correcto | Relación: 'factoring_idfactoringpropuestaaceptadaTofactoring_propuesta'
+/// ✔️ Línea 1078: (singular) factoring ya está correcto | Relación: 'factoring_propuesta_idfactoringTofactoring'
+/// ✔️ Línea 1079: (relation-field) factoring_estrategia ya coincide con 'factoringestrategia'
+/// ✔️ Línea 1080: (relation-field) factoring_propuesta_estado ya coincide con 'factoringpropuestaestado'
+/// ✔️ Línea 1081: (relation-field) factoring_tipo ya coincide con 'factoringtipo'
+/// ✔️ Línea 1082: (singular) riesgo_aceptante ya está correcto | Relación: 'factoring_propuesta_idriesgoaceptanteToriesgo'
+/// ✔️ Línea 1083: (singular) riesgo_cedente ya está correcto | Relación: 'factoring_propuesta_idriesgocedenteToriesgo'
+/// ✔️ Línea 1084: (singular) riesgo_operacion ya está correcto | Relación: 'factoring_propuesta_idriesgooperacionToriesgo'
+/// ✔️ Línea 1128: (relation-field) factoring_propuesta ya coincide con 'factoringpropuesta'
+/// ✔️ Línea 1129: (relation-field) financiero_concepto ya coincide con 'financieroconcepto'
+/// ✔️ Línea 1130: (relation-field) financiero_tipo ya coincide con 'financierotipo'
+/// ✔️ Línea 1198: (relation-field) usuario_upload ya coincide con 'usuarioupload'
+/// ✔️ Línea 1223: (relation-field) factura ya coincide con 'factura'
+/// ✔️ Línea 1252: (relation-field) factura ya coincide con 'factura'
+/// ✔️ Línea 1269: (relation-field) factura ya coincide con 'factura'
+/// ✔️ Línea 1285: (relation-field) factura ya coincide con 'factura'
+/// ✔️ Línea 1304: (relation-field) factura ya coincide con 'factura'
+/// ✔️ Línea 1361: (relation-field) persona ya coincide con 'persona'
+/// ✔️ Línea 1374: (relation-field) banco_cuenta ya coincide con 'bancocuenta'
+/// ✔️ Línea 1375: (relation-field) inversionista ya coincide con 'inversionista'
+/// ✔️ Línea 1392: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
+/// ✔️ Línea 1393: (relation-field) inversionista ya coincide con 'inversionista'
+/// ✔️ Línea 1420: (relation-field) banco_cuenta ya coincide con 'bancocuenta'
+/// ✔️ Línea 1421: (relation-field) factor_cuenta_bancaria ya coincide con 'factorcuentabancaria'
+/// ✔️ Línea 1422: (relation-field) inversionista_cuenta_bancaria ya coincide con 'inversionistacuentabancaria'
+/// ✔️ Línea 1448: (relation-field) banco_cuenta ya coincide con 'bancocuenta'
+/// ✔️ Línea 1449: (relation-field) factor_cuenta_bancaria ya coincide con 'factorcuentabancaria'
+/// ✔️ Línea 1450: (relation-field) inversionista_cuenta_bancaria ya coincide con 'inversionistacuentabancaria'
+/// ✔️ Línea 1491: (plural) persona_paisnacimientos ya está correcto | Relación: 'persona_idpaisnacimientoTopais'
+/// ✔️ Línea 1492: (plural) persona_paisnacionalidades ya está correcto | Relación: 'persona_idpaisnacionalidadTopais'
+/// ✔️ Línea 1493: (plural) persona_paisresidencias ya está correcto | Relación: 'persona_idpaisresidenciaTopais'
+/// ✔️ Línea 1539: (relation-field) departamento_residencia ya coincide con 'departamentoresidencia'
+/// ✔️ Línea 1540: (relation-field) distrito_residencia ya coincide con 'distritoresidencia'
+/// ✔️ Línea 1541: (relation-field) documento_tipo ya coincide con 'documentotipo'
+/// ✔️ Línea 1542: (relation-field) genero ya coincide con 'genero'
+/// ✔️ Línea 1543: (singular) pais_nacimiento ya está correcto | Relación: 'persona_idpaisnacimientoTopais'
+/// ✔️ Línea 1544: (singular) pais_nacionalidad ya está correcto | Relación: 'persona_idpaisnacionalidadTopais'
+/// ✔️ Línea 1545: (singular) pais_residencia ya está correcto | Relación: 'persona_idpaisresidenciaTopais'
+/// ✔️ Línea 1546: (relation-field) persona_verificacion_estado ya coincide con 'personaverificacionestado'
+/// ✔️ Línea 1547: (relation-field) provincia_residencia ya coincide con 'provinciaresidencia'
+/// ✔️ Línea 1548: (relation-field) usuario ya coincide con 'usuario'
+/// ✔️ Línea 1577: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
+/// ✔️ Línea 1578: (relation-field) persona ya coincide con 'persona'
+/// ✔️ Línea 1596: (relation-field) persona ya coincide con 'persona'
+/// ✔️ Línea 1617: (relation-field) persona ya coincide con 'persona'
+/// ✔️ Línea 1641: (relation-field) pep_vinculo ya coincide con 'pepvinculo'
+/// ✔️ Línea 1642: (relation-field) persona ya coincide con 'persona'
+/// ✔️ Línea 1661: (relation-field) persona ya coincide con 'persona'
+/// ✔️ Línea 1662: (relation-field) persona_verificacion_estado ya coincide con 'personaverificacionestado'
+/// ✔️ Línea 1663: (relation-field) usuario_verifica ya coincide con 'usuarioverifica'
+/// ✔️ Línea 1707: (relation-field) departamento ya coincide con 'departamento'
+/// ✔️ Línea 1745: (plural) factoring_propuesta_riesgoaceptantes ya está correcto | Relación: 'factoring_propuesta_idriesgoaceptanteToriesgo'
+/// ✔️ Línea 1746: (plural) factoring_propuesta_riesgocedentes ya está correcto | Relación: 'factoring_propuesta_idriesgocedenteToriesgo'
+/// ✔️ Línea 1747: (plural) factoring_propuesta_riesgooperaciones ya está correcto | Relación: 'factoring_propuesta_idriesgooperacionToriesgo'
+/// ✔️ Línea 1796: (relation-field) empresa ya coincide con 'empresa'
+/// ✔️ Línea 1797: (relation-field) servicio ya coincide con 'servicio'
+/// ✔️ Línea 1798: (relation-field) servicio_empresa_estado ya coincide con 'servicioempresaestado'
+/// ✔️ Línea 1799: (relation-field) usuario_suscriptor ya coincide con 'usuariosuscriptor'
+/// ✔️ Línea 1841: (relation-field) servicio_empresa ya coincide con 'servicioempresa'
+/// ✔️ Línea 1842: (relation-field) servicio_empresa_estado ya coincide con 'servicioempresaestado'
+/// ✔️ Línea 1843: (relation-field) usuario_verifica ya coincide con 'usuarioverifica'
+/// ✔️ Línea 1878: (relation-field) documento_tipo ya coincide con 'documentotipo'
+/// ✔️ Línea 1896: (relation-field) rol ya coincide con 'rol'
+/// ✔️ Línea 1897: (relation-field) usuario ya coincide con 'usuario'
+/// ✔️ Línea 1915: (relation-field) servicio ya coincide con 'servicio'
+/// ✔️ Línea 1916: (relation-field) usuario ya coincide con 'usuario'
+/// ✔️ Línea 1917: (relation-field) usuario_servicio_estado ya coincide con 'usuarioservicioestado'
+/// ✔️ Línea 1939: (relation-field) empresa ya coincide con 'empresa'
+/// ✔️ Línea 1940: (relation-field) servicio ya coincide con 'servicio'
+/// ✔️ Línea 1941: (relation-field) usuario ya coincide con 'usuario'
+/// ✔️ Línea 1942: (relation-field) usuario_servicio_empresa_estado ya coincide con 'usuarioservicioempresaestado'
+/// ✔️ Línea 1943: (relation-field) usuario_servicio_empresa_rol ya coincide con 'usuarioservicioempresarol'
+/// ✔️ Línea 2011: (relation-field) usuario_servicio ya coincide con 'usuarioservicio'
+/// ✔️ Línea 2012: (relation-field) usuario_servicio_estado ya coincide con 'usuarioservicioestado'
+/// ✔️ Línea 2013: (relation-field) usuario_verifica ya coincide con 'usuarioverifica'
+/// ✔️ Línea 2038: (relation-field) usuario ya coincide con 'usuario'
+/// ✔️ Línea 2039: (relation-field) validacion_tipo ya coincide con 'validaciontipo'
+/// ✔️ Línea 2067: (relation-field) usuario ya coincide con 'usuario'
 /// 📊 Resumen del script: renombrar-atributos-especiales.js
 /// 🔎 Total relaciones '@relation' detectadas: 168
 /// ✅ Atributos renombrados: 0

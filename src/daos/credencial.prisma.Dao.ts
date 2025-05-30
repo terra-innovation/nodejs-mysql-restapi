@@ -22,7 +22,7 @@ export const getCredencials = async (tx: TxClient, estados: number[]) => {
   }
 };
 
-export const getCredencialByIdusuario = async (tx: TxClient, idusuario: bigint) => {
+export const getCredencialByIdusuario = async (tx: TxClient, idusuario: number) => {
   try {
     const credencial = await tx.credencial.findFirst({
       where: {

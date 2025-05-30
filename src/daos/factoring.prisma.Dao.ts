@@ -40,8 +40,8 @@ export const getFactoringsByIdfactoringestado = async (tx: TxClient, idfactoring
   try {
     const factorings = await tx.factoring.findMany({
       include: {
-        colaborador: true,
-        contacto: true,
+        contacto_aceptante: true,
+        contacto_cedente: true,
         cuenta_bancaria: {
           include: {
             banco: true,
@@ -91,8 +91,8 @@ export const getFactoringsByIdcedentes = async (tx: TxClient, idcedentes: number
   try {
     const factorings = await tx.factoring.findMany({
       include: {
-        colaborador: true,
-        contacto: true,
+        contacto_aceptante: true,
+        contacto_cedente: true,
         cuenta_bancaria: {
           include: {
             banco: true,
@@ -177,8 +177,8 @@ export const getFactoringByFactoringidAndIdcontactocedente = async (tx: TxClient
   try {
     const factoring = await tx.factoring.findFirst({
       include: {
-        colaborador: true,
-        contacto: true,
+        contacto_aceptante: true,
+        contacto_cedente: true,
         cuenta_bancaria: true,
         empresa_aceptante: true,
         empresa_cedente: true,
@@ -212,8 +212,8 @@ export const getFactoringsCotizacionesByIdcontactocedente = async (tx: TxClient,
   try {
     const factorings = await tx.factoring.findMany({
       include: {
-        colaborador: true,
-        contacto: true,
+        contacto_aceptante: true,
+        contacto_cedente: true,
         cuenta_bancaria: true,
         empresa_aceptante: true,
         empresa_cedente: true,
@@ -246,8 +246,8 @@ export const getFactoringsByEstados = async (tx: TxClient, estados: number[]) =>
   try {
     const factorings = await tx.factoring.findMany({
       include: {
-        colaborador: true,
-        contacto: true,
+        contacto_aceptante: true,
+        contacto_cedente: true,
         cuenta_bancaria: {
           include: {
             banco: true,
@@ -294,8 +294,8 @@ export const getFactoringByIdfactoring = async (tx: TxClient, idfactoring: numbe
   try {
     const factoring = await tx.factoring.findUnique({
       include: {
-        colaborador: true,
-        contacto: true,
+        contacto_aceptante: true,
+        contacto_cedente: true,
         cuenta_bancaria: {
           include: {
             banco: true,
@@ -336,8 +336,8 @@ export const getFactoringByFactoringid = async (tx: TxClient, factoringid: strin
   try {
     const factoring = await tx.factoring.findFirst({
       include: {
-        colaborador: true,
-        contacto: true,
+        contacto_aceptante: true,
+        contacto_cedente: true,
         cuenta_bancaria: true,
         empresa_aceptante: true,
         empresa_cedente: true,

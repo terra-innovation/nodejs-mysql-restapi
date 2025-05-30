@@ -1,0 +1,2226 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../src/models/prisma/ft_factoring/"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("PRISMA_DATABASE_FACTORING_URL")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model archivo {
+  idarchivo                           Int                                  @id @default(autoincrement()) @map("_idarchivo")
+  archivoid                           String                               @unique(map: "UQ_archivoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  idarchivotipo                       Int                                  @default(0) @map("_idarchivotipo")
+  idarchivoestado                     Int                                  @default(0) @map("_idarchivoestado")
+  codigo                              String                               @default("0") @db.VarChar(50)
+  nombrereal                          String                               @db.VarChar(200)
+  nombrealmacenamiento                String                               @db.VarChar(200)
+  ruta                                String                               @db.VarChar(500)
+  tamanio                             BigInt                               @default(0)
+  mimetype                            String                               @db.VarChar(100)
+  encoding                            String                               @db.VarChar(50)
+  extension                           String                               @db.VarChar(20)
+  observacion                         String?                              @db.Text
+  fechavencimiento                    DateTime?                            @db.Date
+  idusuariocrea                       Int                                  @default(1)
+  fechacrea                           DateTime                             @default(now())
+  idusuariomod                        Int                                  @default(1)
+  fechamod                            DateTime                             @default(now())
+  estado                              Int                                  @default(1) @db.TinyInt
+  archivo_estado                      archivo_estado                       @relation(fields: [idarchivoestado], references: [idarchivoestado], onUpdate: Restrict, map: "FK_archivo_idarchivoestado")
+  archivo_tipo                        archivo_tipo                         @relation(fields: [idarchivotipo], references: [idarchivotipo], onUpdate: Restrict, map: "FK_archivo_idarchivotipo")
+  archivo_colaboradores               archivo_colaborador[]
+  archivo_cuenta_bancarias            archivo_cuenta_bancaria[]
+  archivo_empresas                    archivo_empresa[]
+  archivo_factoring_historial_estados archivo_factoring_historial_estado[]
+  archivo_facturas                    archivo_factura[]
+  archivo_inversionista_depositos     archivo_inversionista_deposito[]
+  archivo_inversionista_retiros       archivo_inversionista_retiro[]
+  archivo_personas                    archivo_persona[]
+
+  @@index([idarchivoestado], map: "FK_archivo_idarchivoestado")
+  @@index([idarchivotipo], map: "FK_archivo_idarchivotipo")
+}
+
+model archivo_colaborador {
+  idarchivo     Int         @map("_idarchivo")
+  idcolaborador Int         @map("_idcolaborador")
+  idusuariocrea Int         @default(1)
+  fechacrea     DateTime    @default(now())
+  idusuariomod  Int         @default(1)
+  fechamod      DateTime    @default(now())
+  estado        Int         @default(1) @db.TinyInt
+  archivo       archivo     @relation(fields: [idarchivo], references: [idarchivo], onUpdate: Restrict, map: "FK_archivo_colaborador_idarchivo")
+  colaborador   colaborador @relation(fields: [idcolaborador], references: [idcolaborador], onUpdate: Restrict, map: "FK_archivo_colaborador_idcolaborador")
+
+  @@id([idarchivo, idcolaborador])
+  @@index([idcolaborador], map: "FK_archivo_colaborador_idcolaborador")
+}
+
+model archivo_cuenta_bancaria {
+  idarchivo        Int             @map("_idarchivo")
+  idcuentabancaria Int             @map("_idcuentabancaria")
+  idusuariocrea    Int             @default(1)
+  fechacrea        DateTime        @default(now())
+  idusuariomod     Int             @default(1)
+  fechamod         DateTime        @default(now())
+  estado           Int             @default(1) @db.TinyInt
+  archivo          archivo         @relation(fields: [idarchivo], references: [idarchivo], onDelete: NoAction, onUpdate: NoAction, map: "FK_archivo_cuenta_bancaria_idarchivo")
+  cuenta_bancaria  cuenta_bancaria @relation(fields: [idcuentabancaria], references: [idcuentabancaria], onDelete: NoAction, onUpdate: NoAction, map: "FK_archivo_cuenta_bancaria_idcuentabancaria")
+
+  @@id([idarchivo, idcuentabancaria])
+  @@index([idcuentabancaria], map: "FK_archivo_cuenta_bancaria_idcuentabancaria")
+}
+
+model archivo_empresa {
+  idarchivo     Int      @map("_idarchivo")
+  idempresa     Int      @map("_idempresa")
+  idusuariocrea Int      @default(1)
+  fechacrea     DateTime @default(now())
+  idusuariomod  Int      @default(1)
+  fechamod      DateTime @default(now())
+  estado        Int      @default(1) @db.TinyInt
+  archivo       archivo  @relation(fields: [idarchivo], references: [idarchivo], onUpdate: Restrict, map: "FK_archivo_empresa_idarchivo")
+  empresa       empresa  @relation(fields: [idempresa], references: [idempresa], onUpdate: Restrict, map: "FK_archivo_empresa_idempresa")
+
+  @@id([idarchivo, idempresa])
+  @@index([idempresa], map: "FK_archivo_empresa_idempresa")
+}
+
+model archivo_estado {
+  idarchivoestado Int       @id @default(autoincrement()) @map("_idarchivoestado")
+  archivoestadoid String    @unique(map: "UQ_archivoestadoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  nombre          String    @db.VarChar(50)
+  idusuariocrea   Int       @default(1)
+  fechacrea       DateTime  @default(now())
+  idusuariomod    Int       @default(1)
+  fechamod        DateTime  @default(now())
+  estado          Int       @default(1) @db.TinyInt
+  archivos        archivo[]
+}
+
+model archivo_factoring_historial_estado {
+  idarchivo                  Int                        @map("_idarchivo")
+  idfactoringhistorialestado BigInt                     @map("_idfactoringhistorialestado")
+  idusuariocrea              Int                        @default(1)
+  fechacrea                  DateTime                   @default(now())
+  idusuariomod               Int                        @default(1)
+  fechamod                   DateTime                   @default(now())
+  estado                     Int                        @default(1) @db.TinyInt
+  archivo                    archivo                    @relation(fields: [idarchivo], references: [idarchivo], onUpdate: Restrict, map: "FK_archivo_factoring_historial_estado_idarchivo")
+  factoring_historial_estado factoring_historial_estado @relation(fields: [idfactoringhistorialestado], references: [idfactoringhistorialestado], onUpdate: Restrict, map: "FK_archivo_factoring_historial_estado_idfactoringhistorialestado")
+
+  @@id([idarchivo, idfactoringhistorialestado])
+  @@index([idfactoringhistorialestado], map: "FK_archivo_factoring_historial_estado_idfactoringhistorialestado")
+}
+
+model archivo_factura {
+  idarchivo     Int      @map("_idarchivo")
+  idfactura     BigInt   @map("_idfactura")
+  idusuariocrea Int      @default(1)
+  fechacrea     DateTime @default(now())
+  idusuariomod  Int      @default(1)
+  fechamod      DateTime @default(now())
+  estado        Int      @default(1) @db.TinyInt
+  archivo       archivo  @relation(fields: [idarchivo], references: [idarchivo], onUpdate: Restrict, map: "FK_archivo_factura_idarchivo")
+  factura       factura  @relation(fields: [idfactura], references: [idfactura], onUpdate: Restrict, map: "FK_archivo_factura_idfactura")
+
+  @@id([idarchivo, idfactura])
+  @@index([idfactura], map: "FK_archivo_factura_idfactura")
+}
+
+model archivo_inversionista_deposito {
+  idarchivo               Int                    @map("_idarchivo")
+  idinversionistadeposito BigInt                 @map("_idinversionistadeposito")
+  idusuariocrea           Int                    @default(1)
+  fechacrea               DateTime               @default(now())
+  idusuariomod            Int                    @default(1)
+  fechamod                DateTime               @default(now())
+  estado                  Int                    @default(1) @db.TinyInt
+  archivo                 archivo                @relation(fields: [idarchivo], references: [idarchivo], onUpdate: Restrict, map: "FK_archivoinversionistadeposito_idarchivo")
+  inversionista_deposito  inversionista_deposito @relation(fields: [idinversionistadeposito], references: [idinversionistadeposito], onUpdate: Restrict, map: "FK_archivoinversionistadeposito_idinversionistadeposito")
+
+  @@id([idarchivo, idinversionistadeposito])
+  @@index([idinversionistadeposito], map: "FK_archivobancodeposito_idbancodeposito")
+}
+
+model archivo_inversionista_retiro {
+  idarchivo             Int                  @map("_idarchivo")
+  idinversionistaretiro BigInt               @map("_idinversionistaretiro")
+  idusuariocrea         Int                  @default(1)
+  fechacrea             DateTime             @default(now())
+  idusuariomod          Int                  @default(1)
+  fechamod              DateTime             @default(now())
+  estado                Int                  @default(1) @db.TinyInt
+  archivo               archivo              @relation(fields: [idarchivo], references: [idarchivo], onUpdate: Restrict, map: "FK_archivoinversionistaretiro_idarchivo")
+  inversionista_retiro  inversionista_retiro @relation(fields: [idinversionistaretiro], references: [idinversionistaretiro], onUpdate: Restrict, map: "FK_archivoinversionistaretiro_idinversionistaretiro")
+
+  @@id([idarchivo, idinversionistaretiro])
+  @@index([idinversionistaretiro], map: "FK_archivoinversionistaretiro_idbancoretiro")
+}
+
+model archivo_persona {
+  idarchivo     Int      @map("_idarchivo")
+  idpersona     BigInt   @map("_idpersona")
+  idusuariocrea Int      @default(1)
+  fechacrea     DateTime @default(now())
+  idusuariomod  Int      @default(1)
+  fechamod      DateTime @default(now())
+  estado        Int      @default(1) @db.TinyInt
+  archivo       archivo  @relation(fields: [idarchivo], references: [idarchivo], onUpdate: Restrict, map: "FK_archivo_persona_idarchivo")
+  persona       persona  @relation(fields: [idpersona], references: [idpersona], onUpdate: Restrict, map: "FK_archivo_persona_idpersona")
+
+  @@id([idarchivo, idpersona])
+  @@index([idpersona], map: "FK_archivo_persona_idpersona")
+}
+
+model archivo_tipo {
+  idarchivotipo Int       @id @default(autoincrement()) @map("_idarchivotipo")
+  archivotipoid String    @unique(map: "UQ_archivotipoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code          String?   @db.VarChar(20)
+  nombre        String    @db.VarChar(50)
+  idusuariocrea Int       @default(1)
+  fechacrea     DateTime  @default(now())
+  idusuariomod  Int       @default(1)
+  fechamod      DateTime  @default(now())
+  estado        Int       @default(1) @db.TinyInt
+  archivos      archivo[]
+}
+
+model banco {
+  idbanco          Int               @id @default(autoincrement()) @map("_idbanco")
+  bancoid          String            @unique(map: "UQ_banco_bancoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  tipo             String            @db.VarChar(50)
+  nombre           String            @db.VarChar(100)
+  alias            String            @db.VarChar(100)
+  idusuariocrea    Int               @default(1)
+  fechacrea        DateTime          @default(now())
+  idusuariomod     Int               @default(1)
+  fechamod         DateTime          @default(now())
+  estado           Int               @default(1) @db.TinyInt
+  cuenta_bancarias cuenta_bancaria[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model banco_cuenta {
+  idbancocuenta               BigInt                       @id @default(autoincrement()) @map("_idbancocuenta")
+  bancocuentaid               String                       @unique(map: "UQ_bancocuenta_bancocuentaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                        String                       @unique(map: "UQ_bancocuenta_code") @db.VarChar(255)
+  idbancocuentatipo           Int                          @map("_idbancocuentatipo")
+  idmoneda                    Int                          @map("_idmoneda")
+  idbancocuentaestado         Int                          @map("_idbancocuentaestado")
+  numero                      String                       @default("0") @db.VarChar(20)
+  disponible_confirmado       Decimal                      @default(0.00) @db.Decimal(20, 2)
+  disponible_proceso          Decimal                      @default(0.00) @db.Decimal(20, 2)
+  reservado_subasta           Decimal                      @default(0.00) @db.Decimal(20, 2)
+  reservado_retiro            Decimal                      @default(0.00) @db.Decimal(20, 2)
+  invertido                   Decimal                      @default(0.00) @db.Decimal(20, 2)
+  idusuariocrea               Int                          @default(1)
+  fechacrea                   DateTime                     @default(now())
+  idusuariomod                Int                          @default(1)
+  fechamod                    DateTime                     @default(now())
+  estado                      Int                          @default(1) @db.TinyInt
+  banco_cuenta_estado         banco_cuenta_estado          @relation(fields: [idbancocuentaestado], references: [idbancocuentaestado], onUpdate: Restrict, map: "FK_bancocuenta_idbancocuentaestado")
+  banco_cuenta_tipo           banco_cuenta_tipo            @relation(fields: [idbancocuentatipo], references: [idbancocuentatipo], onUpdate: Restrict, map: "FK_bancocuenta_idbancocuentatipo")
+  moneda                      moneda                       @relation(fields: [idmoneda], references: [idmoneda], onUpdate: Restrict, map: "FK_bancocuenta_idmoneda")
+  banco_transacciones         banco_transaccion[]
+  inversionista_banco_cuentas inversionista_banco_cuenta[]
+  inversionista_depositos     inversionista_deposito[]
+  inversionista_retiros       inversionista_retiro[]
+
+  @@index([idbancocuentaestado], map: "FK_bancocuenta_idbancocuentaestado")
+  @@index([idbancocuentatipo], map: "FK_bancocuenta_idbancocuentatipo")
+  @@index([idmoneda], map: "FK_bancocuenta_idmoneda")
+}
+
+model banco_cuenta_estado {
+  idbancocuentaestado Int            @id @map("_idbancocuentaestado")
+  bancocuentaestadoid String         @unique(map: "UQ_bancocuentaestado_bancocuentaestadoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                String         @unique(map: "UQ_bancocuentaestado_code") @db.VarChar(20)
+  nombre              String         @db.VarChar(50)
+  idusuariocrea       Int            @default(1)
+  fechacrea           DateTime       @default(now())
+  idusuariomod        Int            @default(1)
+  fechamod            DateTime       @default(now())
+  estado              Int            @default(1) @db.TinyInt
+  banco_cuentas       banco_cuenta[]
+}
+
+model banco_cuenta_tipo {
+  idbancocuentatipo Int            @id @map("_idbancocuentatipo")
+  bancocuentatipoid String         @unique(map: "UQ_bancocuentatipo_bancocuentatipoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code              String         @unique(map: "UQ_bancocuentatipo_code") @db.VarChar(20)
+  nombre            String         @db.VarChar(50)
+  idusuariocrea     Int            @default(1)
+  fechacrea         DateTime       @default(now())
+  idusuariomod      Int            @default(1)
+  fechamod          DateTime       @default(now())
+  estado            Int            @default(1) @db.TinyInt
+  banco_cuentas     banco_cuenta[]
+}
+
+model banco_transaccion {
+  idbancotransaccion                                    BigInt                                     @id @default(autoincrement()) @map("_idbancotransaccion")
+  bancotransaccionid                                    String                                     @unique(map: "UQ_bancotransaccio_bancotransaccioid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                                                  String                                     @unique(map: "UQ_bancotransaccio_code") @db.VarChar(20)
+  idbancocuenta                                         BigInt                                     @map("_idbancocuenta")
+  idbancotransacciontipo                                Int                                        @map("_idbancotransacciontipo")
+  idbancotransaccionestado                              Int                                        @map("_idbancotransaccionestado")
+  idbancotransaccionestadohistorial                     BigInt?                                    @map("_idbancotransaccionestadohistorial")
+  fecha_solicitud                                       DateTime                                   @db.DateTime(0)
+  fecha_efectiva                                        DateTime?                                  @db.DateTime(0)
+  monto                                                 Decimal                                    @db.Decimal(20, 2)
+  idusuariocrea                                         Int                                        @default(1)
+  fechacrea                                             DateTime                                   @default(now())
+  idusuariomod                                          Int                                        @default(1)
+  fechamod                                              DateTime                                   @default(now())
+  estado                                                Int                                        @default(1) @db.TinyInt
+  banco_cuenta                                          banco_cuenta                               @relation(fields: [idbancocuenta], references: [idbancocuenta], onUpdate: Restrict, map: "FK_bancotransaccion_idbancocuenta")
+  banco_transaccion_estado                              banco_transaccion_estado                   @relation(fields: [idbancotransaccionestado], references: [idbancotransaccionestado], onUpdate: Restrict, map: "FK_bancotransaccion_idbancotransaccionestado")
+  banco_transaccion_estado_historial                    banco_transaccion_estado_historial?        @relation("banco_transaccion_idbancotransaccionestadohistorialTobanco_transaccion_estado_historial", fields: [idbancotransaccionestadohistorial], references: [idbancotransaccionestadohistorial], onDelete: Restrict, onUpdate: Restrict, map: "FK_bancotransaccion_idbancotransaccionestadohistorial")
+  banco_transaccion_tipo                                banco_transaccion_tipo                     @relation(fields: [idbancotransacciontipo], references: [idbancotransacciontipo], onDelete: NoAction, onUpdate: Restrict, map: "FK_bancotransaccion_idbancotransacciontipo")
+  banco_transaccion_estado_historial_bancotransacciones banco_transaccion_estado_historial[]       @relation("banco_transaccion_estado_historial_idbancotransaccionTobanco_transaccion")
+  banco_transaccion_factoring_inversiones               banco_transaccion_factoring_inversion[]
+  banco_transaccion_inversionista_depositos             banco_transaccion_inversionista_deposito[]
+  banco_transaccion_inversionista_retiros               banco_transaccion_inversionista_retiro[]
+
+  @@index([idbancocuenta], map: "FK_bancotransaccion_idbancocuenta")
+  @@index([idbancotransaccionestado], map: "FK_bancotransaccion_idbancotransaccionestado")
+  @@index([idbancotransaccionestadohistorial], map: "FK_bancotransaccion_idbancotransaccionestadohistorial")
+  @@index([idbancotransacciontipo], map: "FK_bancotransaccion_idbancotransacciontipo")
+}
+
+model banco_transaccion_estado {
+  idbancotransaccionestado             Int                                  @id @map("_idbancotransaccionestado")
+  bancotransaccionestadoid             String                               @unique(map: "UQ_bancotransaccionestado_bancotransaccionestadoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                                 String                               @unique(map: "UQ_bancotransaccionestado_code") @db.VarChar(20)
+  nombre                               String                               @db.VarChar(50)
+  idusuariocrea                        Int                                  @default(1)
+  fechacrea                            DateTime                             @default(now())
+  idusuariomod                         Int                                  @default(1)
+  fechamod                             DateTime                             @default(now())
+  estado                               Int                                  @default(1) @db.TinyInt
+  banco_transacciones                  banco_transaccion[]
+  banco_transaccion_estado_historiales banco_transaccion_estado_historial[]
+}
+
+model banco_transaccion_estado_historial {
+  idbancotransaccionestadohistorial                   BigInt                   @id @default(autoincrement()) @map("_idbancotransaccionestadohistorial")
+  bancotransaccionestadohistorialid                   String                   @unique(map: "UQ_bteh_bancotransaccionestadohistorialid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                                                String                   @unique(map: "UQ_bteh_code") @db.VarChar(255)
+  idbancotransaccion                                  BigInt                   @map("_idbancotransaccion")
+  idbancotransaccionestado                            Int                      @map("_idbancotransaccionestado")
+  idusuariomodifica                                   Int                      @map("_idusuariomodifica") @db.UnsignedInt
+  motivo                                              String?                  @db.Text
+  idusuariocrea                                       Int                      @default(1)
+  fechacrea                                           DateTime                 @default(now())
+  idusuariomod                                        Int                      @default(1)
+  fechamod                                            DateTime                 @default(now())
+  estado                                              Int                      @default(1) @db.TinyInt
+  banco_transaccion_bancotransaccionestadohistoriales banco_transaccion[]      @relation("banco_transaccion_idbancotransaccionestadohistorialTobanco_transaccion_estado_historial")
+  banco_transaccion                                   banco_transaccion        @relation("banco_transaccion_estado_historial_idbancotransaccionTobanco_transaccion", fields: [idbancotransaccion], references: [idbancotransaccion], onUpdate: Restrict, map: "FK_bteh_idbancotransaccion")
+  banco_transaccion_estado                            banco_transaccion_estado @relation(fields: [idbancotransaccionestado], references: [idbancotransaccionestado], onUpdate: Restrict, map: "FK_bteh_idbancotransaccionestado")
+  usuario_modifica                                    usuario                  @relation(fields: [idusuariomodifica], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_bteh_idusuariomodifica")
+
+  @@index([idbancotransaccionestado], map: "FK_bteh_idbancotransaccionestado")
+  @@index([idbancotransaccion], map: "FK_bteh_idtransaccion")
+  @@index([idusuariomodifica], map: "FK_bteh_idusuariomodifica")
+}
+
+model banco_transaccion_factoring_inversion {
+  idbancotransaccion   BigInt              @map("_idbancotransaccion")
+  idfactoringinversion BigInt              @map("_idfactoringinversion")
+  idusuariocrea        Int                 @default(1)
+  fechacrea            DateTime            @default(now())
+  idusuariomod         Int                 @default(1)
+  fechamod             DateTime            @default(now())
+  estado               Int                 @default(1) @db.TinyInt
+  banco_transaccion    banco_transaccion   @relation(fields: [idbancotransaccion], references: [idbancotransaccion], onUpdate: Restrict, map: "FK_bancotransaccionfactoringinversion_idbancotransaccion")
+  factoring_inversion  factoring_inversion @relation(fields: [idfactoringinversion], references: [idfactoringinversion], onUpdate: Restrict, map: "FK_bancotransaccionfactoringinversion_idfactoringinversion")
+
+  @@id([idbancotransaccion, idfactoringinversion])
+  @@index([idfactoringinversion], map: "_idbancodeposito")
+}
+
+model banco_transaccion_inversionista_deposito {
+  idbancotransaccion      BigInt                 @map("_idbancotransaccion")
+  idinversionistadeposito BigInt                 @map("_idinversionistadeposito")
+  idusuariocrea           Int                    @default(1)
+  fechacrea               DateTime               @default(now())
+  idusuariomod            Int                    @default(1)
+  fechamod                DateTime               @default(now())
+  estado                  Int                    @default(1) @db.TinyInt
+  banco_transaccion       banco_transaccion      @relation(fields: [idbancotransaccion], references: [idbancotransaccion], onUpdate: Restrict, map: "FK_btid_idbancotransaccion")
+  inversionista_deposito  inversionista_deposito @relation(fields: [idinversionistadeposito], references: [idinversionistadeposito], onUpdate: Restrict, map: "FK_btid_idinversionistadeposito")
+
+  @@id([idbancotransaccion, idinversionistadeposito])
+  @@index([idinversionistadeposito], map: "FK_bancotransacciondeposito_idbancodeposito")
+}
+
+model banco_transaccion_inversionista_retiro {
+  idbancotransaccion    BigInt               @map("_idbancotransaccion")
+  idinversionistaretiro BigInt               @map("_idinversionistaretiro")
+  idusuariocrea         Int                  @default(1)
+  fechacrea             DateTime             @default(now())
+  idusuariomod          Int                  @default(1)
+  fechamod              DateTime             @default(now())
+  estado                Int                  @default(1) @db.TinyInt
+  banco_transaccion     banco_transaccion    @relation(fields: [idbancotransaccion], references: [idbancotransaccion], onUpdate: Restrict, map: "FK_btir_idbancotransaccion")
+  inversionista_retiro  inversionista_retiro @relation(fields: [idinversionistaretiro], references: [idinversionistaretiro], onUpdate: Restrict, map: "FK_btir_idinversionistaretiro")
+
+  @@id([idbancotransaccion, idinversionistaretiro])
+  @@index([idinversionistaretiro], map: "FK_btir_idbancoretiro")
+}
+
+model banco_transaccion_tipo {
+  idbancotransacciontipo Int                 @id @map("_idbancotransacciontipo")
+  bancotransacciontipoid String              @unique(map: "UQ_bancotransacciontipo_bancotransacciontipoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                   String              @unique(map: "UQ_bancotransacciontipo_code") @db.VarChar(20)
+  nombre                 String              @db.VarChar(50)
+  idusuariocrea          Int                 @default(1)
+  fechacrea              DateTime            @default(now())
+  idusuariomod           Int                 @default(1)
+  fechamod               DateTime            @default(now())
+  estado                 Int                 @default(1) @db.TinyInt
+  banco_transacciones    banco_transaccion[]
+}
+
+model colaborador {
+  idcolaborador         Int                   @id @default(autoincrement()) @map("_idcolaborador")
+  colaboradorid         String                @unique(map: "UQ_colaborador_colaboradorid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                  String                @unique(map: "UQ_colaborador_code") @db.VarChar(20)
+  idempresa             Int?                  @map("_idempresa")
+  idpersona             BigInt?               @map("_idpersona")
+  idcolaboradortipo     Int?                  @map("_idcolaboradortipo")
+  iddocumentotipo       Int?                  @map("_iddocumentotipo")
+  documentonumero       String?               @db.VarChar(50)
+  nombrecolaborador     String                @db.VarChar(100)
+  apellidocolaborador   String                @db.VarChar(100)
+  cargo                 String                @db.VarChar(100)
+  email                 String                @db.VarChar(100)
+  telefono              String                @db.VarChar(20)
+  poderpartidanumero    String                @db.VarChar(20)
+  poderpartidaciudad    String                @db.VarChar(50)
+  idusuariocrea         Int                   @default(1)
+  fechacrea             DateTime              @default(now())
+  idusuariomod          Int                   @default(1)
+  fechamod              DateTime              @default(now())
+  estado                Int                   @default(1) @db.TinyInt
+  archivo_colaboradores archivo_colaborador[]
+  colaborador_tipo      colaborador_tipo?     @relation(fields: [idcolaboradortipo], references: [idcolaboradortipo], onDelete: Restrict, onUpdate: Restrict, map: "FK_colaborador_idcolaboradortipo")
+  documento_tipo        documento_tipo?       @relation(fields: [iddocumentotipo], references: [iddocumentotipo], onDelete: Restrict, onUpdate: Restrict, map: "FK_colaborador_iddocumentotipo")
+  empresa               empresa?              @relation(fields: [idempresa], references: [idempresa], onDelete: Restrict, onUpdate: Restrict, map: "FK_colaborador_idempresa")
+  persona               persona?              @relation(fields: [idpersona], references: [idpersona], onDelete: Restrict, onUpdate: Restrict, map: "FK_colaborador_idpersona")
+  factoringes           factoring[]
+
+  @@index([idcolaboradortipo], map: "FK_colaborador_idcolaboradortipo")
+  @@index([iddocumentotipo], map: "FK_colaborador_iddocumentotipo")
+  @@index([idempresa], map: "FK_colaborador_idempresa")
+  @@index([idpersona], map: "FK_colaborador_idpersona")
+}
+
+model colaborador_tipo {
+  idcolaboradortipo Int           @id @map("_idcolaboradortipo")
+  colaboradortipoid String        @unique(map: "UQ_colaboradortipo_colaboradortipoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code              String        @db.VarChar(50)
+  nombre            String        @db.VarChar(50)
+  alias             String        @db.VarChar(50)
+  idusuariocrea     Int           @default(1)
+  fechacrea         DateTime      @default(now())
+  idusuariomod      Int           @default(1)
+  fechamod          DateTime      @default(now())
+  estado            Int           @default(1) @db.TinyInt
+  colaboradores     colaborador[]
+}
+
+model configuracion_app {
+  idconfiguracionapp Int       @id @map("_idconfiguracionapp")
+  configuracionappid String    @unique(map: "UQ_consiguracion_app_consiguracionappid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code               String    @unique(map: "UQ_consiguracion_app_code") @db.VarChar(20)
+  variable           String    @db.VarChar(100)
+  valor              String    @db.VarChar(100)
+  unidad             String    @db.VarChar(100)
+  fecha_inicio       DateTime  @db.Timestamp(0)
+  fecha_fin          DateTime? @db.Timestamp(0)
+  idusuariocrea      Int       @default(1)
+  fechacrea          DateTime  @default(now())
+  idusuariomod       Int       @default(1)
+  fechamod           DateTime  @default(now())
+  estado             Int       @default(1) @db.TinyInt
+}
+
+model contacto {
+  idcontacto       Int         @id @default(autoincrement()) @map("_idcontacto")
+  contactoid       String      @unique(map: "UQ_contacto_contactoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code             String      @unique(map: "UQ_contacto_code") @db.VarChar(20)
+  idempresa        Int         @map("_idempresa")
+  nombrecontacto   String      @db.VarChar(100)
+  apellidocontacto String?     @db.VarChar(100)
+  cargo            String?     @db.VarChar(100)
+  email            String      @db.VarChar(100)
+  celular          String?     @db.VarChar(20)
+  telefono         String?     @db.VarChar(50)
+  idusuariocrea    Int         @default(1)
+  fechacrea        DateTime    @default(now())
+  idusuariomod     Int         @default(1)
+  fechamod         DateTime    @default(now())
+  estado           Int         @default(1) @db.TinyInt
+  empresa          empresa     @relation(fields: [idempresa], references: [idempresa], onUpdate: Restrict, map: "FK_contacto_idempresa")
+  factoringes      factoring[]
+
+  @@index([idempresa], map: "FK_contacto_idempresa")
+}
+
+model credencial {
+  idcredencial  BigInt   @id @default(autoincrement()) @map("_idcredencial")
+  credencialid  String   @unique(map: "UQ_credencial_credencialid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code          String   @unique(map: "UQ_credencial_code") @db.VarChar(20)
+  idusuario     Int      @unique(map: "UQ_credencual_idusuario") @map("_idusuario") @db.UnsignedInt
+  password      String   @db.VarChar(200)
+  idusuariocrea Int      @default(1)
+  fechacrea     DateTime @default(now())
+  idusuariomod  Int      @default(1)
+  fechamod      DateTime @default(now())
+  estado        Int      @default(1) @db.TinyInt
+  usuario       usuario  @relation(fields: [idusuario], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_credencial_idusuario")
+
+  @@index([idusuario], map: "FK_credencial_idusuario")
+}
+
+model cuenta_bancaria {
+  idcuentabancaria               Int                             @id @default(autoincrement()) @map("_idcuentabancaria")
+  cuentabancariaid               String                          @unique(map: "UQ_cuenta_bancaria_cuentabancariaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                           String                          @unique(map: "UQ_cuenta_bancaria_code") @db.VarChar(20)
+  idbanco                        Int                             @map("_idbanco")
+  idcuentatipo                   Int                             @map("_idcuentatipo")
+  idmoneda                       Int                             @map("_idmoneda")
+  idcuentabancariaestado         Int                             @map("_idcuentabancariaestado")
+  numero                         String                          @db.VarChar(20)
+  cci                            String                          @db.VarChar(20)
+  alias                          String                          @db.VarChar(50)
+  idusuariocrea                  Int                             @default(1)
+  fechacrea                      DateTime                        @default(now())
+  idusuariomod                   Int                             @default(1)
+  fechamod                       DateTime                        @default(now())
+  estado                         Int                             @default(1) @db.TinyInt
+  archivo_cuenta_bancarias       archivo_cuenta_bancaria[]
+  banco                          banco                           @relation(fields: [idbanco], references: [idbanco], onUpdate: Restrict, map: "FK_cuenta_bancaria_idbanco")
+  cuenta_bancaria_estado         cuenta_bancaria_estado          @relation(fields: [idcuentabancariaestado], references: [idcuentabancariaestado], onUpdate: Restrict, map: "FK_cuenta_bancaria_idcuentabancariaestado")
+  cuenta_tipo                    cuenta_tipo                     @relation(fields: [idcuentatipo], references: [idcuentatipo], onUpdate: Restrict, map: "FK_cuenta_bancaria_idcunetatipo")
+  moneda                         moneda                          @relation(fields: [idmoneda], references: [idmoneda], onUpdate: Restrict, map: "FK_cuenta_bancaria_idmoneda")
+  empresa_cuenta_bancarias       empresa_cuenta_bancaria[]
+  factor_cuenta_bancarias        factor_cuenta_bancaria[]
+  factoringes                    factoring[]
+  inversionista_cuenta_bancarias inversionista_cuenta_bancaria[]
+  persona_cuenta_bancarias       persona_cuenta_bancaria[]
+
+  @@index([idbanco], map: "FK_cuenta_bancaria_idbanco")
+  @@index([idcuentabancariaestado], map: "FK_cuenta_bancaria_idcuentabancariaestado")
+  @@index([idcuentatipo], map: "FK_cuenta_bancaria_idcuentatipo")
+  @@index([idmoneda], map: "FK_cuenta_bancaria_idmoneda")
+}
+
+model cuenta_bancaria_estado {
+  idcuentabancariaestado Int               @id @default(autoincrement()) @map("_idcuentabancariaestado")
+  cuentabancariaestadoid String            @unique(map: "UQ_bancoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  nombre                 String            @db.VarChar(50)
+  alias                  String            @db.VarChar(50)
+  color                  String?           @db.VarChar(50)
+  idusuariocrea          Int               @default(1)
+  fechacrea              DateTime          @default(now())
+  idusuariomod           Int               @default(1)
+  fechamod               DateTime          @default(now())
+  estado                 Int               @default(1) @db.TinyInt
+  cuenta_bancarias       cuenta_bancaria[]
+}
+
+model cuenta_tipo {
+  idcuentatipo     Int               @id @default(autoincrement()) @map("_idcuentatipo")
+  cuentatipoid     String            @unique(map: "UQ_cuentatipoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  nombre           String            @db.VarChar(50)
+  alias            String            @db.VarChar(50)
+  idusuariocrea    Int               @default(1)
+  fechacrea        DateTime          @default(now())
+  idusuariomod     Int               @default(1)
+  fechamod         DateTime          @default(now())
+  estado           Int               @default(1) @db.TinyInt
+  cuenta_bancarias cuenta_bancaria[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model departamento {
+  iddepartamento     Int         @id @map("_iddepartamento")
+  departamentoid     String      @unique(map: "UQ_departamentoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  idpais             Int         @map("_idpais")
+  codigodepartamento String      @db.VarChar(10)
+  nombredepartamento String      @db.VarChar(200)
+  idusuariocrea      Int         @default(1)
+  fechacrea          DateTime    @default(now())
+  idusuariomod       Int         @default(1)
+  fechamod           DateTime    @default(now())
+  estado             Int         @default(1) @db.TinyInt
+  pais               pais        @relation(fields: [idpais], references: [idpais], onUpdate: Restrict, map: "FK_departamento_idpais")
+  empresas           empresa[]
+  factores           factor[]
+  personas           persona[]
+  provincias         provincia[]
+
+  @@index([idpais], map: "FK_departamento_idpais")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model distrito {
+  iddistrito      Int            @id @map("_iddistrito")
+  distritoid      String         @unique(map: "UQ_distritoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  idprovincia     Int            @map("_idprovincia")
+  idregionnatural Int            @map("_idregionnatural")
+  codigodistrito  String         @db.VarChar(10)
+  nombredistrito  String         @db.VarChar(200)
+  capitallegal    String         @db.VarChar(200)
+  idusuariocrea   Int            @default(1)
+  fechacrea       DateTime       @default(now())
+  idusuariomod    Int            @default(1)
+  fechamod        DateTime       @default(now())
+  estado          Int            @default(1) @db.TinyInt
+  provincia       provincia      @relation(fields: [idprovincia], references: [idprovincia], onUpdate: Restrict, map: "FK_distrito_idprovincia")
+  region_natural  region_natural @relation(fields: [idregionnatural], references: [idregionnatural], onDelete: NoAction, onUpdate: NoAction, map: "FK_distrito_idregionnatural")
+  empresas        empresa[]
+  factores        factor[]
+  personas        persona[]
+
+  @@index([idprovincia], map: "FK_distrito_idprovincia")
+  @@index([idregionnatural], map: "FK_distrito_idregionnatural")
+}
+
+model documento_tipo {
+  iddocumentotipo Int           @id @default(autoincrement()) @map("_iddocumentotipo")
+  documentotipoid String        @unique(map: "UQ_documentotipoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  nombre          String        @db.VarChar(50)
+  alias           String        @db.VarChar(50)
+  idusuariocrea   Int           @default(1)
+  fechacrea       DateTime      @default(now())
+  idusuariomod    Int           @default(1)
+  fechamod        DateTime      @default(now())
+  estado          Int           @default(1) @db.TinyInt
+  colaboradores   colaborador[]
+  personas        persona[]
+  usuarios        usuario[]
+}
+
+model empresa {
+  idempresa                 Int                        @id @default(autoincrement()) @map("_idempresa")
+  empresaid                 String                     @unique(map: "UQ_empresaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                      String                     @unique(map: "UQ_code") @db.VarChar(20)
+  idpaissede                Int?                       @map("_idpaissede")
+  iddepartamentosede        Int?                       @map("_iddepartamentosede")
+  idprovinciasede           Int?                       @map("_idprovinciasede")
+  iddistritosede            Int?                       @map("_iddistritosede")
+  idriesgo                  Int?                       @map("_idriesgo")
+  ruc                       String                     @unique(map: "UQ_ruc") @db.VarChar(11)
+  razon_social              String                     @db.VarChar(200)
+  nombre_comercial          String?                    @db.VarChar(200)
+  fecha_inscripcion         DateTime?                  @db.Date
+  domicilio_fiscal          String?                    @db.VarChar(200)
+  direccion_sede            String?                    @db.VarChar(200)
+  direccion_sede_referencia String?                    @db.VarChar(200)
+  idusuariocrea             Int                        @default(1)
+  fechacrea                 DateTime                   @default(now()) @db.Timestamp(3)
+  idusuariomod              Int                        @default(1)
+  fechamod                  DateTime                   @default(now()) @db.Timestamp(3)
+  estado                    Int                        @default(1) @db.TinyInt
+  archivo_empresas          archivo_empresa[]
+  colaboradores             colaborador[]
+  contactos                 contacto[]
+  departamento_sede         departamento?              @relation(fields: [iddepartamentosede], references: [iddepartamento], onDelete: Restrict, onUpdate: Restrict, map: "FK_empresa_iddepartamentosede")
+  distrito_sede             distrito?                  @relation(fields: [iddistritosede], references: [iddistrito], onDelete: Restrict, onUpdate: Restrict, map: "FK_empresa_iddistritosede")
+  pais_sede                 pais?                      @relation(fields: [idpaissede], references: [idpais], onDelete: Restrict, onUpdate: Restrict, map: "FK_empresa_idpaissede")
+  provincia_sede            provincia?                 @relation(fields: [idprovinciasede], references: [idprovincia], onDelete: Restrict, onUpdate: Restrict, map: "FK_empresa_idprovinciasede")
+  riesgo                    riesgo?                    @relation(fields: [idriesgo], references: [idriesgo], onDelete: Restrict, onUpdate: Restrict, map: "FK_empresa_idriesgo")
+  empresa_cuenta_bancarias  empresa_cuenta_bancaria[]
+  factoring_aceptantes      factoring[]                @relation("factoring_idaceptanteToempresa")
+  factoring_cedentes        factoring[]                @relation("factoring_idcedenteToempresa")
+  servicio_empresas         servicio_empresa[]
+  usuario_servicio_empresas usuario_servicio_empresa[]
+
+  @@index([iddepartamentosede], map: "FK_empresa_iddepartamentosede")
+  @@index([iddistritosede], map: "FK_empresa_iddistritosede")
+  @@index([idpaissede], map: "FK_empresa_idpaissede")
+  @@index([idprovinciasede], map: "FK_empresa_idprovinciasede")
+  @@index([idriesgo], map: "FK_empresa_idriesgo")
+}
+
+model empresa_cuenta_bancaria {
+  idempresacuentabancaria Int              @id @default(autoincrement()) @map("_idempresacuentabancaria")
+  empresacuentabancariaid String           @unique(map: "UQ_empresacuentabancaria_empresacuentabancariaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                    String           @unique(map: "UQ_empresacuentabancaria_code") @db.VarChar(20)
+  idempresa               Int              @map("_idempresa")
+  idcuentabancaria        Int              @map("_idcuentabancaria")
+  idusuariocrea           Int              @default(1)
+  fechacrea               DateTime         @default(now())
+  idusuariomod            Int              @default(1)
+  fechamod                DateTime         @default(now())
+  estado                  Int              @default(1) @db.TinyInt
+  cuenta_bancaria         cuenta_bancaria  @relation(fields: [idcuentabancaria], references: [idcuentabancaria], onUpdate: Restrict, map: "FK_empresacuentabancaria_idcuentabancaria")
+  empresa                 empresa          @relation(fields: [idempresa], references: [idempresa], onUpdate: Restrict, map: "FK_empresacuentabancaria_idempresa")
+  factoring_pagos         factoring_pago[]
+
+  @@unique([idempresa, idcuentabancaria], map: "UQ_empresacuentabancaria_idempresa_idcuentabancaria")
+  @@index([idcuentabancaria], map: "FK_empresacuentabancaria_idcuentabancaria")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model empresa_declaracion {
+  idpersonadeclaracion BigInt   @map("_idpersonadeclaracion")
+  personadeclaracionid String   @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  idpersona            BigInt   @map("_idpersona")
+  espep                Int?     @db.TinyInt
+  tienevinculopep      Int?     @db.TinyInt
+  idusuariocrea        Int      @default(1)
+  fechacrea            DateTime @default(now())
+  idusuariomod         Int      @default(1)
+  fechamod             DateTime @default(now())
+  estado               Int      @default(1) @db.TinyInt
+
+  @@ignore
+}
+
+model factor {
+  idfactor                  Int                      @id @map("_idfactor")
+  factorid                  String                   @unique(map: "UQ_factor_factorid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                      String                   @unique(map: "UQ_factor_code") @db.VarChar(20)
+  idpaissede                Int?                     @map("_idpaissede")
+  iddepartamentosede        Int?                     @map("_iddepartamentosede")
+  idprovinciasede           Int?                     @map("_idprovinciasede")
+  iddistritosede            Int?                     @map("_iddistritosede")
+  idriesgo                  Int?                     @map("_idriesgo")
+  ruc                       String                   @db.VarChar(11)
+  razon_social              String                   @db.VarChar(200)
+  nombre_comercial          String?                  @db.VarChar(200)
+  fecha_inscripcion         DateTime?                @db.Date
+  domicilio_fiscal          String?                  @db.VarChar(200)
+  direccion_sede            String?                  @db.VarChar(200)
+  direccion_sede_referencia String?                  @db.VarChar(200)
+  idusuariocrea             Int                      @default(1)
+  fechacrea                 DateTime                 @default(now()) @db.Timestamp(3)
+  idusuariomod              Int                      @default(1)
+  fechamod                  DateTime                 @default(now()) @db.Timestamp(3)
+  estado                    Int                      @default(1) @db.TinyInt
+  departamento_sede         departamento?            @relation(fields: [iddepartamentosede], references: [iddepartamento], onDelete: Restrict, onUpdate: Restrict, map: "FK_factor_iddepartamentosede")
+  distrito_sede             distrito?                @relation(fields: [iddistritosede], references: [iddistrito], onDelete: Restrict, onUpdate: Restrict, map: "FK_factor_iddistritosede")
+  pais_sede                 pais?                    @relation(fields: [idpaissede], references: [idpais], onDelete: Restrict, onUpdate: Restrict, map: "FK_factor_idpaissede")
+  provincia_sede            provincia?               @relation(fields: [idprovinciasede], references: [idprovincia], onDelete: Restrict, onUpdate: Restrict, map: "FK_factor_idprovinciasede")
+  riesgo                    riesgo?                  @relation(fields: [idriesgo], references: [idriesgo], onDelete: Restrict, onUpdate: Restrict, map: "FK_factor_idriesgo")
+  factor_cuenta_bancarias   factor_cuenta_bancaria[]
+
+  @@index([iddepartamentosede], map: "FK_factor_iddepartamentosede")
+  @@index([iddistritosede], map: "FK_factor_iddistritosede")
+  @@index([idpaissede], map: "FK_factor_idpaissede")
+  @@index([idprovinciasede], map: "FK_factor_idprovinciasede")
+  @@index([idriesgo], map: "FK_factor_idriesgo")
+}
+
+model factor_cuenta_bancaria {
+  idfactorcuentabancaria  Int                      @id @map("_idfactorcuentabancaria")
+  factorcuentabancariaid  String                   @unique(map: "UQ_factorcuentabancaria_factorcuentabancariaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                    String                   @unique(map: "UQ_factorcuentabancaria_code") @db.VarChar(20)
+  idfactor                Int                      @map("_idfactor")
+  idcuentabancaria        Int                      @map("_idcuentabancaria")
+  idusuariocrea           Int                      @default(1)
+  fechacrea               DateTime                 @default(now())
+  idusuariomod            Int                      @default(1)
+  fechamod                DateTime                 @default(now())
+  estado                  Int                      @default(1) @db.TinyInt
+  cuenta_bancaria         cuenta_bancaria          @relation(fields: [idcuentabancaria], references: [idcuentabancaria], onUpdate: Restrict, map: "FK_factorcuentabancaria_idcuentabancaria")
+  factor                  factor                   @relation(fields: [idfactor], references: [idfactor], onUpdate: Restrict, map: "FK_factorcuentabancaria_idfactor")
+  factoring_pagos         factoring_pago[]
+  inversionista_depositos inversionista_deposito[]
+  inversionista_retiros   inversionista_retiro[]
+
+  @@index([idcuentabancaria], map: "FK_factorcuentabancaria_idcuentabancaria")
+  @@index([idfactor], map: "FK_factorcuentabancaria_idfactor")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model factoring {
+  idfactoring                     BigInt                       @id @default(autoincrement()) @map("_idfactoring")
+  factoringid                     String                       @unique(map: "UQ_factoring_factoringid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                            String                       @unique(map: "UQ_factoring_code") @db.VarChar(255)
+  idaceptante                     Int                          @map("_idaceptante")
+  idcedente                       Int                          @map("_idcedente")
+  idmoneda                        Int                          @map("_idmoneda")
+  idfactoringestado               Int                          @map("_idfactoringestado")
+  idcuentabancaria                Int?                         @map("_idcuentabancaria")
+  idcontactoaceptante             Int?                         @map("_idcontactoaceptante")
+  idcontactocedente               Int?                         @map("_idcontactocedente")
+  idfactoringejecutado            BigInt?                      @map("_idfactoringejecutado")
+  idfactoringpropuestaaceptada    BigInt?                      @map("_idfactoringpropuestaaceptada")
+  cantidad_facturas               Int
+  fecha_registro                  DateTime                     @db.DateTime(0)
+  fecha_emision                   DateTime                     @db.DateTime(0)
+  fecha_operacion                 DateTime?                    @db.DateTime(0)
+  fecha_pago_estimado             DateTime                     @db.DateTime(0)
+  monto_factura                   Decimal                      @db.Decimal(10, 2)
+  monto_detraccion                Decimal                      @db.Decimal(10, 2)
+  monto_neto                      Decimal                      @db.Decimal(10, 2)
+  idusuariocrea                   Int                          @default(1)
+  fechacrea                       DateTime                     @default(now())
+  idusuariomod                    Int                          @default(1)
+  fechamod                        DateTime                     @default(now())
+  estado                          Int                          @default(1) @db.TinyInt
+  empresa_aceptante               empresa                      @relation("factoring_idaceptanteToempresa", fields: [idaceptante], references: [idempresa], onUpdate: Restrict, map: "FK_factoring_idaceptante")
+  empresa_cedente                 empresa                      @relation("factoring_idcedenteToempresa", fields: [idcedente], references: [idempresa], onUpdate: Restrict, map: "FK_factoring_idcedente")
+  contacto_aceptante              contacto?                    @relation(fields: [idcontactoaceptante], references: [idcontacto], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_idcontactoaceptante")
+  contacto_cedente                colaborador?                 @relation(fields: [idcontactocedente], references: [idcolaborador], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_idcontactocedente")
+  cuenta_bancaria                 cuenta_bancaria?             @relation(fields: [idcuentabancaria], references: [idcuentabancaria], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_idcuentabancaria")
+  factoring_ejecutado             factoring_ejecutado?         @relation("factoring_idfactoringejecutadoTofactoring_ejecutado", fields: [idfactoringejecutado], references: [idfactoringejecutado], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_idfactoringejecutado")
+  factoring_estado                factoring_estado             @relation(fields: [idfactoringestado], references: [idfactoringestado], onUpdate: Restrict, map: "FK_factoring_idfactoringestado")
+  factoring_propuesta_aceptada    factoring_propuesta?         @relation("factoring_idfactoringpropuestaaceptadaTofactoring_propuesta", fields: [idfactoringpropuestaaceptada], references: [idfactoringpropuesta], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_idfactoringpropuestaaceptada")
+  moneda                          moneda                       @relation(fields: [idmoneda], references: [idmoneda], onUpdate: Restrict, map: "FK_factoring_idmoneda")
+  factoring_ejecutado_factoringes factoring_ejecutado[]        @relation("factoring_ejecutado_idfactoringTofactoring")
+  factoring_facturas              factoring_factura[]
+  factoring_historial_estados     factoring_historial_estado[]
+  factoring_pagos                 factoring_pago[]
+  factoring_propuesta_factoringes factoring_propuesta[]        @relation("factoring_propuesta_idfactoringTofactoring")
+
+  @@index([idaceptante], map: "FK_factoring_idaceptante")
+  @@index([idcedente], map: "FK_factoring_idcedente")
+  @@index([idcontactoaceptante], map: "FK_factoring_idcolaborador")
+  @@index([idcontactocedente], map: "FK_factoring_idcontactocedente")
+  @@index([idcuentabancaria], map: "FK_factoring_idcuentabancaria")
+  @@index([idfactoringejecutado], map: "FK_factoring_idfactoringejecutado")
+  @@index([idfactoringestado], map: "FK_factoring_idfactoringestado")
+  @@index([idfactoringpropuestaaceptada], map: "FK_factoring_idfactoringpropuestaaceptada")
+  @@index([idmoneda], map: "FK_factoring_idmoneda")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model factoring_config_comision {
+  idfactoringconfigcomision Int      @id @map("_idfactoringconfigcomision")
+  factoringconfigcomisionid String   @unique(map: "UQ_factoring_config_comision_factoringconfigcomisionid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                      String   @unique(map: "UQ_factoring_config_comision_code") @db.VarChar(20)
+  idriesgo                  Int      @map("_idriesgo")
+  version                   Float    @db.Float
+  factor1                   Decimal  @db.Decimal(20, 10)
+  factor2                   Decimal  @db.Decimal(20, 10)
+  factor3                   Decimal  @db.Decimal(10, 5)
+  idusuariocrea             Int      @default(1)
+  fechacrea                 DateTime @default(now())
+  idusuariomod              Int      @default(1)
+  fechamod                  DateTime @default(now())
+  estado                    Int      @default(1) @db.TinyInt
+  riesgo                    riesgo   @relation(fields: [idriesgo], references: [idriesgo], onUpdate: Restrict, map: "FK_factoring_config_comision_idriesgo")
+
+  @@index([idriesgo], map: "FK_factoring_config_comision_idriesgo")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model factoring_config_garantia {
+  idfactoringconfiggarantia      Int      @id @map("_idfactoringconfiggarantia")
+  factoringconfiggarantiaid      String   @unique(map: "UQ_factoring_config_garantia_v1_factoringconfiggarantiav1id") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                           String   @unique(map: "UQ_factoring_config_garantia_v1_code") @db.VarChar(20)
+  idriesgo                       Int      @map("_idriesgo")
+  version                        Float    @default(0.000) @db.Float
+  monto_neto_min                 Decimal  @db.Decimal(20, 2)
+  monto_neto_max                 Decimal  @db.Decimal(20, 2)
+  porcentaje_dias_cubre_garantia Decimal  @db.Decimal(10, 5)
+  idusuariocrea                  Int      @default(1)
+  fechacrea                      DateTime @default(now())
+  idusuariomod                   Int      @default(1)
+  fechamod                       DateTime @default(now())
+  estado                         Int      @default(1) @db.TinyInt
+  riesgo                         riesgo   @relation(fields: [idriesgo], references: [idriesgo], onUpdate: Restrict, map: "FK_factoring_config_garantia_idriesgo")
+
+  @@index([idriesgo], map: "FK_factoring_config_garantia_idriesgo")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model factoring_config_tasa_descuento {
+  idfactoringconfigtasadescuento Int      @id @map("_idfactoringconfigtasadescuento")
+  factoringconfigtasadescuentoid String   @unique(map: "UQ_factoring_config_tasa_factoringconfigtasadescuentoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                           String   @unique(map: "UQ_factoring_config_tasa_code") @db.VarChar(20)
+  idriesgo                       Int      @map("_idriesgo")
+  version                        Float    @db.Float
+  mensual_minimo                 Decimal  @db.Decimal(20, 10)
+  mensual_maximo                 Decimal  @db.Decimal(20, 10)
+  idusuariocrea                  Int      @default(1)
+  fechacrea                      DateTime @default(now())
+  idusuariomod                   Int      @default(1)
+  fechamod                       DateTime @default(now())
+  estado                         Int      @default(1) @db.TinyInt
+  riesgo                         riesgo   @relation(fields: [idriesgo], references: [idriesgo], onUpdate: Restrict, map: "FK_factoring_config_tasa_idriesgo")
+
+  @@index([idriesgo], map: "FK_factoring_config_tasa_idriesgo")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model factoring_ejecutado {
+  idfactoringejecutado          BigInt                     @id @default(autoincrement()) @map("_idfactoringejecutado")
+  factoringejecutadoid          String                     @unique(map: "UQ_factoring_ejecutado_factoringejecutadoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                          String                     @unique(map: "UQ_factoring_ejecutado_code") @db.VarChar(255)
+  idfactoring                   BigInt?                    @map("_idfactoring")
+  idfactoringejecutadoestado    Int                        @map("_idfactoringejecutadoestado")
+  fecha_propuesta               DateTime                   @db.DateTime(0)
+  fecha_pago_real               DateTime                   @db.Date
+  dias_pago_real                Int
+  dias_antiguedad_real          Int
+  dias_cobertura_garantia_real  Int?
+  dias_mora_real                Int?
+  monto_neto                    Decimal                    @db.Decimal(10, 2)
+  monto_garantia_real           Decimal?                   @db.Decimal(10, 2)
+  monto_efectivo_real           Decimal?                   @db.Decimal(10, 2)
+  monto_descuento_real          Decimal?                   @db.Decimal(10, 2)
+  monto_financiado_real         Decimal?                   @db.Decimal(10, 2)
+  monto_comision_real           Decimal?                   @db.Decimal(10, 2)
+  monto_comision_igv_real       Decimal?                   @db.Decimal(10, 2)
+  monto_adelanto_real           Decimal?                   @db.Decimal(10, 2)
+  monto_costo_real              Decimal?                   @db.Decimal(10, 2)
+  monto_dia_mora                Decimal?                   @db.Decimal(10, 2)
+  monto_dia_interes             Decimal?                   @db.Decimal(10, 2)
+  porcentaje_garantia_real      Decimal?                   @db.Decimal(10, 2)
+  porcentaje_efectivo_real      Decimal?                   @db.Decimal(10, 2)
+  porcentaje_descuento_real     Decimal?                   @db.Decimal(10, 2)
+  porcentaje_financiado_real    Decimal?                   @db.Decimal(10, 2)
+  porcentaje_comision_real      Decimal?                   @db.Decimal(10, 2)
+  porcentaje_adelanto_real      Decimal?                   @db.Decimal(10, 2)
+  idusuariocrea                 Int                        @default(1)
+  fechacrea                     DateTime                   @default(now())
+  idusuariomod                  Int                        @default(1)
+  fechamod                      DateTime                   @default(now())
+  estado                        Int                        @default(1) @db.TinyInt
+  factoring_factoringejecutados factoring[]                @relation("factoring_idfactoringejecutadoTofactoring_ejecutado")
+  factoring                     factoring?                 @relation("factoring_ejecutado_idfactoringTofactoring", fields: [idfactoring], references: [idfactoring], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_ejecutado_idfactoring")
+  factoring_ejecutado_estado    factoring_ejecutado_estado @relation(fields: [idfactoringejecutadoestado], references: [idfactoringejecutadoestado], onDelete: NoAction, onUpdate: Restrict, map: "FK_factoring_ejecutado_idfactoringejecutadoestado")
+
+  @@index([idfactoring], map: "FK_factoring_ejecutado_idfactoring")
+  @@index([idfactoringejecutadoestado], map: "FK_factoring_ejecutado_idfactoringejecutadoestado")
+}
+
+model factoring_ejecutado_estado {
+  idfactoringejecutadoestado Int                   @id @map("_idfactoringejecutadoestado")
+  factoringejecutadoestadoid String                @unique(map: "UQ_factoring_ejecutado_estado_factoringejecutadoestadoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                       String                @unique(map: "UQ_factoring_ejecutado_estado_code") @db.VarChar(20)
+  nombre                     String                @db.VarChar(50)
+  alias                      String                @db.VarChar(50)
+  color                      String                @db.VarChar(50)
+  idusuariocrea              Int                   @default(1)
+  fechacrea                  DateTime              @default(now())
+  idusuariomod               Int                   @default(1)
+  fechamod                   DateTime              @default(now())
+  estado                     Int                   @default(1) @db.TinyInt
+  factoring_ejecutados       factoring_ejecutado[]
+}
+
+model factoring_estado {
+  idfactoringestado           Int                          @id @default(autoincrement()) @map("_idfactoringestado")
+  factoringestadoid           String                       @unique(map: "UQ_factoring_estado_factoringestadoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  estado1                     String                       @db.VarChar(50)
+  estado2                     String                       @db.VarChar(50)
+  alias_estado1               String?                      @db.VarChar(50)
+  alias_estado2               String?                      @db.VarChar(50)
+  accion                      String?                      @db.VarChar(50)
+  orden                       Int?                         @db.SmallInt
+  idusuariocrea               Int                          @default(1)
+  fechacrea                   DateTime                     @default(now())
+  idusuariomod                Int                          @default(1)
+  fechamod                    DateTime                     @default(now())
+  estado                      Int                          @default(1) @db.TinyInt
+  factoringes                 factoring[]
+  factoring_historial_estados factoring_historial_estado[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model factoring_estrategia {
+  idfactoringestrategia Int                   @id @map("_idfactoringestrategia")
+  factoringestrategiaid String                @unique(map: "UQ_factoring_estrategia_factoringestrategiaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                  String                @unique(map: "UQ_factoring_estrategia_code") @db.VarChar(255)
+  nombre_estrategia     String?               @db.VarChar(100)
+  descripcion           String?               @db.Text
+  idusuariocrea         Int                   @default(1)
+  fechacrea             DateTime              @default(now())
+  idusuariomod          Int                   @default(1)
+  fechamod              DateTime              @default(now())
+  estado                Int                   @default(1) @db.TinyInt
+  factoring_propuestas  factoring_propuesta[]
+}
+
+model factoring_factura {
+  idfactoring   BigInt    @map("_idfactoring")
+  idfactura     BigInt    @map("_idfactura")
+  idusuariocrea Int       @default(1)
+  fechacrea     DateTime  @default(now())
+  idusuariomod  Int       @default(1)
+  fechamod      DateTime  @default(now())
+  estado        Int       @default(1) @db.TinyInt
+  factoring     factoring @relation(fields: [idfactoring], references: [idfactoring], onUpdate: Restrict, map: "FK_factoring_idfactoring")
+  factura       factura   @relation(fields: [idfactura], references: [idfactura], onUpdate: Restrict, map: "FK_factoring_idfactura")
+
+  @@id([idfactoring, idfactura])
+  @@index([idfactura], map: "FK_factoring_factura_idfactura")
+}
+
+model factoring_historial_estado {
+  idfactoringhistorialestado          BigInt                               @id @default(autoincrement()) @map("_idfactoringhistorialestado")
+  factoringhistorialestadoid          String                               @unique(map: "UQ_factoringhistorialestado_factoringhistorialestadoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                                String                               @unique(map: "UQ_factoringhistorialestado_code") @db.VarChar(20)
+  idfactoring                         BigInt                               @map("_idfactoring")
+  idfactoringestado                   Int                                  @map("_idfactoringestado")
+  idusuariomodifica                   Int                                  @map("_idusuariomodifica") @db.UnsignedInt
+  comentario                          String                               @db.Text
+  idusuariocrea                       Int                                  @default(1)
+  fechacrea                           DateTime                             @default(now())
+  idusuariomod                        Int                                  @default(1)
+  fechamod                            DateTime                             @default(now())
+  estado                              Int                                  @default(1) @db.TinyInt
+  archivo_factoring_historial_estados archivo_factoring_historial_estado[]
+  factoring_estado                    factoring_estado                     @relation(fields: [idfactoringestado], references: [idfactoringestado], onUpdate: Restrict, map: "FK_factoringhistorialestado_idfactoringestado")
+  factoring                           factoring                            @relation(fields: [idfactoring], references: [idfactoring], onUpdate: Restrict, map: "FK_factoringhistorialestado_idfactoting")
+  usuario_modifica                    usuario                              @relation(fields: [idusuariomodifica], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_factoringhistorialestado_idusuariomodifica")
+
+  @@index([idfactoringestado], map: "FK_factoringhistorialestado_idfactoringestado")
+  @@index([idfactoring], map: "FK_factoringhistorialestado_idfactoting")
+  @@index([idusuariomodifica], map: "FK_factoringhistorialestado_idusuariomodifica")
+}
+
+model factoring_inversion {
+  idfactoringinversion                    BigInt                                  @id @default(autoincrement()) @map("_idfactoringinversion")
+  factoringinversionid                    String                                  @unique(map: "UQ_factoringinversion_factoringinversionid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                                    String                                  @unique(map: "UQ_factoringinversion_code") @db.VarChar(20)
+  idfactoring                             BigInt                                  @map("_idfactoring")
+  idinversionista                         BigInt                                  @map("_idinversionista")
+  monto_invertido                         Decimal                                 @db.Decimal(20, 2)
+  fecha_inversion                         DateTime
+  porcentaje_participacion                Decimal                                 @db.Decimal(20, 6)
+  idusuariocrea                           Int                                     @default(1)
+  fechacrea                               DateTime                                @default(now())
+  idusuariomod                            Int                                     @default(1)
+  fechamod                                DateTime                                @default(now())
+  estado                                  Int                                     @default(1) @db.TinyInt
+  banco_transaccion_factoring_inversiones banco_transaccion_factoring_inversion[]
+}
+
+model factoring_pago {
+  idfactoringpago         BigInt                  @id @default(autoincrement()) @map("_idfactoringpago")
+  factoringpagoid         String                  @unique(map: "UQ_factoringpago_factoringpagoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                    String                  @unique(map: "UQ_factoringpago_code") @db.VarChar(255)
+  idfactoring             BigInt                  @map("_idfactoring")
+  idempresacuentabancaria Int                     @map("_idempresacuentabancaria")
+  idfactorcuentabancaria  Int                     @map("_idfactorcuentabancaria")
+  numero_operacion        String                  @db.VarChar(50)
+  fecha_pago              DateTime                @db.DateTime(0)
+  monto_pagado            Decimal                 @db.Decimal(10, 2)
+  idusuariocrea           Int                     @default(1)
+  fechacrea               DateTime                @default(now())
+  idusuariomod            Int                     @default(1)
+  fechamod                DateTime                @default(now())
+  estado                  Int                     @default(1) @db.TinyInt
+  empresa_cuenta_bancaria empresa_cuenta_bancaria @relation(fields: [idempresacuentabancaria], references: [idempresacuentabancaria], onUpdate: Restrict, map: "FK_factoring_pago_empresa_cuenta_bancaria")
+  factor_cuenta_bancaria  factor_cuenta_bancaria  @relation(fields: [idfactorcuentabancaria], references: [idfactorcuentabancaria], onUpdate: Restrict, map: "FK_factoring_pago_factor_cuenta_bancaria")
+  factoring               factoring               @relation(fields: [idfactoring], references: [idfactoring], onUpdate: Restrict, map: "FK_factoring_pago_factoring")
+
+  @@index([idfactoring], map: "_idaceptante")
+  @@index([idfactorcuentabancaria], map: "_idcedente")
+  @@index([idempresacuentabancaria], map: "_idmoneda")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model factoring_propuesta {
+  idfactoringpropuesta                  BigInt                           @id @default(autoincrement()) @map("_idfactoringpropuesta")
+  factoringpropuestaid                  String                           @unique(map: "UQ_factoring_propuesta_factoringpropuestaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                                  String                           @unique(map: "UQ_factoring_propuesta_code") @db.VarChar(255)
+  idfactoring                           BigInt?                          @map("_idfactoring")
+  idfactoringtipo                       Int?                             @map("_idfactoringtipo")
+  idfactoringpropuestaestado            Int                              @map("_idfactoringpropuestaestado")
+  idriesgooperacion                     Int?                             @map("_idriesgooperacion")
+  idriesgoaceptante                     Int?                             @map("_idriesgoaceptante")
+  idriesgocedente                       Int?                             @map("_idriesgocedente")
+  idfactoringestrategia                 Int?                             @map("_idfactoringestrategia")
+  tda                                   Decimal?                         @db.Decimal(10, 5)
+  tdm                                   Decimal?                         @db.Decimal(10, 5)
+  tdd                                   Decimal?                         @db.Decimal(10, 5)
+  tda_mora                              Decimal?                         @db.Decimal(10, 5)
+  tdm_mora                              Decimal?                         @db.Decimal(10, 5)
+  tdd_mora                              Decimal?                         @db.Decimal(10, 5)
+  fecha_propuesta                       DateTime                         @db.DateTime(0)
+  fecha_pago_estimado                   DateTime                         @db.DateTime(0)
+  dias_pago_estimado                    Int
+  dias_antiguedad_estimado              Int
+  dias_cobertura_garantia_estimado      Int?
+  monto_neto                            Decimal                          @db.Decimal(10, 2)
+  monto_garantia                        Decimal?                         @db.Decimal(10, 2)
+  monto_efectivo                        Decimal?                         @db.Decimal(10, 2)
+  monto_descuento                       Decimal?                         @db.Decimal(10, 2)
+  monto_financiado                      Decimal?                         @db.Decimal(10, 2)
+  monto_comision                        Decimal?                         @db.Decimal(10, 2)
+  monto_comision_igv                    Decimal?                         @db.Decimal(10, 2)
+  monto_costo_estimado                  Decimal?                         @db.Decimal(10, 2)
+  monto_costo_estimado_igv              Decimal?                         @db.Decimal(10, 2)
+  monto_gasto_estimado                  Decimal?                         @db.Decimal(10, 2)
+  monto_gasto_estimado_igv              Decimal?                         @db.Decimal(10, 2)
+  monto_total_igv                       Decimal?                         @db.Decimal(10, 2)
+  monto_adelanto                        Decimal?                         @db.Decimal(10, 2)
+  monto_dia_mora_estimado               Decimal?                         @db.Decimal(10, 2)
+  monto_dia_interes_estimado            Decimal?                         @db.Decimal(10, 2)
+  porcentaje_garantia_estimado          Decimal?                         @db.Decimal(10, 2)
+  porcentaje_efectivo_estimado          Decimal?                         @db.Decimal(10, 2)
+  porcentaje_descuento_estimado         Decimal?                         @db.Decimal(10, 2)
+  porcentaje_financiado_estimado        Decimal?                         @db.Decimal(10, 2)
+  porcentaje_adelanto_estimado          Decimal?                         @db.Decimal(10, 2)
+  porcentaje_comision_estimado          Decimal?                         @db.Decimal(10, 2)
+  idusuariocrea                         Int                              @default(1)
+  fechacrea                             DateTime                         @default(now())
+  idusuariomod                          Int                              @default(1)
+  fechamod                              DateTime                         @default(now())
+  estado                                Int                              @default(1) @db.TinyInt
+  factoring_factoringpropuestaaceptadas factoring[]                      @relation("factoring_idfactoringpropuestaaceptadaTofactoring_propuesta")
+  factoring                             factoring?                       @relation("factoring_propuesta_idfactoringTofactoring", fields: [idfactoring], references: [idfactoring], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_propuesta_idfactoring")
+  factoring_estrategia                  factoring_estrategia?            @relation(fields: [idfactoringestrategia], references: [idfactoringestrategia], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_propuesta_idfactoringestrategia")
+  factoring_propuesta_estado            factoring_propuesta_estado       @relation(fields: [idfactoringpropuestaestado], references: [idfactoringpropuestaestado], onUpdate: Restrict, map: "FK_factoring_propuesta_idfactoringpropuestaestado")
+  factoring_tipo                        factoring_tipo?                  @relation(fields: [idfactoringtipo], references: [idfactoringtipo], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_propuesta_idfactoringtipo")
+  riesgo_aceptante                      riesgo?                          @relation("factoring_propuesta_idriesgoaceptanteToriesgo", fields: [idriesgoaceptante], references: [idriesgo], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_propuesta_idriesgoaceptante")
+  riesgo_cedente                        riesgo?                          @relation("factoring_propuesta_idriesgocedenteToriesgo", fields: [idriesgocedente], references: [idriesgo], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_propuesta_idriesgocedente")
+  riesgo_operacion                      riesgo?                          @relation("factoring_propuesta_idriesgooperacionToriesgo", fields: [idriesgooperacion], references: [idriesgo], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_propuesta_idriesgooperacion")
+  factoring_propuesta_financieros       factoring_propuesta_financiero[]
+
+  @@index([idfactoring], map: "FK_factoring_propuesta_idfactoring")
+  @@index([idfactoringestrategia], map: "FK_factoring_propuesta_idfactoringestrategia")
+  @@index([idfactoringpropuestaestado], map: "FK_factoring_propuesta_idfactoringpropuestaestado")
+  @@index([idfactoringtipo], map: "FK_factoring_propuesta_idfactoringtipo")
+  @@index([idriesgoaceptante], map: "FK_factoring_propuesta_idriesgoaceptante")
+  @@index([idriesgocedente], map: "FK_factoring_propuesta_idriesgocedente")
+  @@index([idriesgooperacion], map: "FK_factoring_propuesta_idriesgooperacion")
+}
+
+model factoring_propuesta_estado {
+  idfactoringpropuestaestado Int                   @id @map("_idfactoringpropuestaestado")
+  factoringpropuestaestadoid String                @unique(map: "UQ_factoring_propuesta_estado_factoringpropuestaestadoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                       String                @unique(map: "UQ_factoring_propuesta_estado_code") @db.VarChar(20)
+  nombre                     String                @db.VarChar(50)
+  alias                      String                @db.VarChar(50)
+  color                      String                @db.VarChar(50)
+  idusuariocrea              Int                   @default(1)
+  fechacrea                  DateTime              @default(now())
+  idusuariomod               Int                   @default(1)
+  fechamod                   DateTime              @default(now())
+  estado                     Int                   @default(1) @db.TinyInt
+  factoring_propuestas       factoring_propuesta[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model factoring_propuesta_financiero {
+  idfactoringpropuestafinanciero Int                 @id @default(autoincrement()) @map("_idfactoringpropuestafinanciero")
+  factoringpropuestafinancieroid String              @unique(map: "UQ_factoring_propuesta_financiero_factoringpropuestafinancieroid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                           String              @unique(map: "UQ_factoring_propuesta_financiero_code") @db.VarChar(20)
+  idfactoringpropuesta           BigInt              @map("_idfactoringpropuesta")
+  idfinancierotipo               Int                 @map("_idfinancierotipo")
+  idfinancieroconcepto           Int                 @map("_idfinancieroconcepto")
+  descripcion                    String?             @db.VarChar(50)
+  monto                          Decimal             @default(0.00) @db.Decimal(10, 2)
+  igv                            Decimal             @default(0.00) @db.Decimal(10, 2)
+  total                          Decimal             @default(0.00) @db.Decimal(10, 2)
+  idusuariocrea                  Int                 @default(1)
+  fechacrea                      DateTime            @default(now())
+  idusuariomod                   Int                 @default(1)
+  fechamod                       DateTime            @default(now())
+  estado                         Int                 @default(1) @db.TinyInt
+  factoring_propuesta            factoring_propuesta @relation(fields: [idfactoringpropuesta], references: [idfactoringpropuesta], onUpdate: Restrict, map: "FK_factoring_propuesta_financiero_idfactoringpropuesta")
+  financiero_concepto            financiero_concepto @relation(fields: [idfinancieroconcepto], references: [idfinancieroconcepto], onUpdate: Restrict, map: "FK_factoring_propuesta_financiero_idfinancieroconcepto")
+  financiero_tipo                financiero_tipo     @relation(fields: [idfinancierotipo], references: [idfinancierotipo], onUpdate: Restrict, map: "FK_factoring_propuesta_financiero_idfinancierotipo")
+
+  @@index([idfactoringpropuesta], map: "FK_factoring_propuesta_financiero_idfactoringpropuesta")
+  @@index([idfinancieroconcepto], map: "FK_factoring_propuesta_financiero_idfinancieroconcepto")
+  @@index([idfinancierotipo], map: "FK_factoring_propuesta_financiero_idfinancierotipo")
+}
+
+model factoring_tipo {
+  idfactoringtipo      Int                   @id @default(autoincrement()) @map("_idfactoringtipo")
+  factoringtipoid      String                @unique(map: "UQ_factoring_tipo_factoringid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  nombre               String                @db.VarChar(50)
+  alias                String                @db.VarChar(50)
+  color                String                @db.VarChar(50)
+  idusuariocrea        Int                   @default(1)
+  fechacrea            DateTime              @default(now())
+  idusuariomod         Int                   @default(1)
+  fechamod             DateTime              @default(now())
+  estado               Int                   @default(1) @db.TinyInt
+  factoring_propuestas factoring_propuesta[]
+}
+
+model factura {
+  idfactura                                     BigInt                 @id @default(autoincrement()) @map("_idfactura")
+  facturaid                                     String                 @unique(map: "UQ_factura_facturaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                                          String                 @unique(map: "UQ_factura_code") @db.VarChar(20)
+  idusuarioupload                               Int                    @map("_idusuarioupload") @db.UnsignedInt
+  UBLVersionID                                  String?                @db.VarChar(10)
+  CustomizationID                               String?                @db.VarChar(10)
+  serie                                         String                 @db.VarChar(20)
+  numero_comprobante                            String                 @db.VarChar(20)
+  fecha_emision                                 DateTime?              @db.Date
+  hora_emision                                  DateTime?              @db.Time(0)
+  fecha_vencimiento                             DateTime?              @db.Date
+  codigo_tipo_documento                         String?                @db.VarChar(10)
+  codigo_tipo_moneda                            String                 @db.VarChar(10)
+  cantidad_items                                Int?
+  fecha_registro                                DateTime?              @db.Timestamp(0)
+  detraccion_cantidad                           Int?                   @db.TinyInt
+  detraccion_monto                              Decimal?               @db.Decimal(12, 2)
+  pago_cantidad_cuotas                          Int?                   @db.TinyInt
+  fecha_pago_mayor_estimado                     DateTime?              @db.Date
+  dias_desde_emision                            Int?
+  dias_estimados_para_pago                      Int?
+  importe_bruto                                 Decimal                @db.Decimal(12, 2)
+  importe_neto                                  Decimal                @db.Decimal(12, 2)
+  proveedor_ruc                                 String                 @db.VarChar(50)
+  proveedor_razon_social                        String                 @db.VarChar(500)
+  proveedor_direccion                           String?                @db.VarChar(500)
+  proveedor_codigo_pais                         String?                @db.VarChar(10)
+  proveedor_ubigeo                              String?                @db.VarChar(20)
+  proveedor_provincia                           String?                @db.VarChar(100)
+  proveedor_departamento                        String?                @db.VarChar(100)
+  proveedor_urbanizacion                        String?                @db.VarChar(100)
+  proveedor_distrito                            String?                @db.VarChar(100)
+  cliente_ruc                                   String                 @db.VarChar(50)
+  cliente_razon_social                          String                 @db.VarChar(500)
+  impuesto_monto                                Decimal?               @db.Decimal(12, 2)
+  impuesto_valor_venta_monto_venta              Decimal?               @db.Decimal(12, 2)
+  impuesto_valor_venta_monto_venta_mas_impuesto Decimal?               @db.Decimal(12, 2)
+  impuesto_valor_venta_monto_pago               Decimal?               @db.Decimal(12, 2)
+  codigo_archivo                                String?                @db.VarChar(20)
+  idusuariocrea                                 Int                    @default(1)
+  fechacrea                                     DateTime               @default(now())
+  idusuariomod                                  Int                    @default(1)
+  fechamod                                      DateTime               @default(now())
+  estado                                        Int                    @default(1) @db.TinyInt
+  archivo_facturas                              archivo_factura[]
+  factoring_facturas                            factoring_factura[]
+  usuario_upload                                usuario                @relation(fields: [idusuarioupload], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_factura_idusuarioupload")
+  factura_impuestos                             factura_impuesto[]
+  factura_itemes                                factura_item[]
+  factura_medio_pagos                           factura_medio_pago[]
+  factura_notas                                 factura_nota[]
+  factura_termino_pagos                         factura_termino_pago[]
+
+  @@index([idusuarioupload], map: "FK_factura_idusuarioupload")
+}
+
+model factura_impuesto {
+  idfacturaimpuesto BigInt   @id @default(autoincrement()) @map("_idfacturaimpuesto")
+  facturaimpuestoid String   @unique(map: "UQ_facrtura_impuesto_facturaimpuestoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  idfactura         BigInt   @map("_idfactura")
+  id                String?  @db.VarChar(200)
+  codigo_sunat      String?  @db.VarChar(100)
+  nombre            String?  @db.VarChar(100)
+  porcentaje        Decimal? @db.Decimal(12, 2)
+  base_imponible    Decimal? @db.Decimal(12, 2)
+  monto             Decimal? @db.Decimal(12, 2)
+  idusuariocrea     Int      @default(1)
+  fechacrea         DateTime @default(now())
+  idusuariomod      Int      @default(1)
+  fechamod          DateTime @default(now())
+  estado            Int      @default(1) @db.TinyInt
+  factura           factura  @relation(fields: [idfactura], references: [idfactura], onUpdate: Restrict, map: "FK_factura_impuesto_idfactura")
+
+  @@index([idfactura], map: "FK_factura_impuesto_idfactura")
+}
+
+model factura_item {
+  idfacturaitem                    BigInt   @id @default(autoincrement()) @map("_idfacturaitem")
+  facturaitemid                    String   @unique(map: "UQ_factura_item_facturaitemid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  idfactura                        BigInt   @map("_idfactura")
+  id                               String?  @db.VarChar(200)
+  codigo_producto_sunat            String?  @db.VarChar(100)
+  codigo_producto_vendedor         String?  @db.VarChar(100)
+  unidad_medida                    String?  @db.VarChar(100)
+  cantidad                         Decimal? @db.Decimal(12, 2)
+  descripcion                      String?  @db.Text
+  valor_unitario                   Decimal? @db.Decimal(12, 2)
+  precio_venta                     Decimal? @db.Decimal(12, 2)
+  impuesto_codigo_sunat            String?  @db.VarChar(50)
+  impuesto_nombre                  String?  @db.VarChar(100)
+  impuesto_porcentaje              Decimal? @db.Decimal(12, 2)
+  impuesto_codigo_afectacion_sunat String?  @db.VarChar(100)
+  impuesto_base_imponible          Decimal? @db.Decimal(12, 2)
+  impuesto_monto                   Decimal? @db.Decimal(12, 2)
+  moneda                           String?  @db.VarChar(50)
+  idusuariocrea                    Int      @default(1)
+  fechacrea                        DateTime @default(now())
+  idusuariomod                     Int      @default(1)
+  fechamod                         DateTime @default(now())
+  estado                           Int      @default(1) @db.TinyInt
+  factura                          factura  @relation(fields: [idfactura], references: [idfactura], onUpdate: Restrict, map: "FK_factura_item_idfactura")
+
+  @@index([idfactura], map: "FK_factura_item_idfactura")
+}
+
+model factura_medio_pago {
+  idfacturamediopago BigInt   @id @default(autoincrement()) @map("_idfacturamediopago")
+  facturamediopagoid String   @unique(map: "UQ_factura_medio_pago_facturamediopagoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  idfactura          BigInt   @map("_idfactura")
+  id                 String?  @db.VarChar(200)
+  medio_pago_codigo  String?  @db.VarChar(100)
+  cuenta_bancaria    String?  @db.VarChar(100)
+  idusuariocrea      Int      @default(1)
+  fechacrea          DateTime @default(now())
+  idusuariomod       Int      @default(1)
+  fechamod           DateTime @default(now())
+  estado             Int      @default(1) @db.TinyInt
+  factura            factura  @relation(fields: [idfactura], references: [idfactura], onUpdate: Restrict, map: "FK_factura_medio_pago_idfactura")
+
+  @@index([idfactura], map: "FK_factura_medio_pago_idfactura")
+}
+
+model factura_nota {
+  idfacturanota BigInt   @id @default(autoincrement()) @map("_idfacturanota")
+  facturanotaid String   @unique(map: "UQ_factura_item_facturanotaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  idfactura     BigInt   @map("_idfactura")
+  id            String?  @db.VarChar(20)
+  descripcion   String?  @db.Text
+  idusuariocrea Int      @default(1)
+  fechacrea     DateTime @default(now())
+  idusuariomod  Int      @default(1)
+  fechamod      DateTime @default(now())
+  estado        Int      @default(1) @db.TinyInt
+  factura       factura  @relation(fields: [idfactura], references: [idfactura], onUpdate: Restrict, map: "FK_factura_nota_idfactura")
+
+  @@index([idfactura], map: "FK_factura_item_idfactura")
+}
+
+model factura_termino_pago {
+  idfacturaterminopago BigInt    @id @default(autoincrement()) @map("_idfacturaterminopago")
+  facturaterminopagoid String    @unique(map: "UQ_factura_termino_pago_facturaterminopagoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  idfactura            BigInt    @map("_idfactura")
+  id                   String?   @db.VarChar(200)
+  forma_pago           String?   @db.VarChar(100)
+  monto                Decimal?  @db.Decimal(12, 2)
+  porcentaje           Decimal?  @db.Decimal(12, 2)
+  fecha_pago           DateTime? @db.Date
+  idusuariocrea        Int       @default(1)
+  fechacrea            DateTime  @default(now())
+  idusuariomod         Int       @default(1)
+  fechamod             DateTime  @default(now())
+  estado               Int       @default(1) @db.TinyInt
+  factura              factura   @relation(fields: [idfactura], references: [idfactura], onUpdate: Restrict, map: "FK_factura_termino_pago_idfactura")
+
+  @@index([idfactura], map: "FK_factura_termino_pago_idfactura")
+}
+
+model financiero_concepto {
+  idfinancieroconcepto            Int                              @id @map("_idfinancieroconcepto")
+  financieroconceptoid            String                           @unique(map: "UQ_financiero_concepto_financieroconceptoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                            String                           @unique(map: "UQ_financiero_concepto_code") @db.VarChar(20)
+  nombre                          String                           @db.VarChar(50)
+  alias                           String                           @db.VarChar(50)
+  color                           String                           @db.VarChar(50)
+  idusuariocrea                   Int                              @default(1)
+  fechacrea                       DateTime                         @default(now())
+  idusuariomod                    Int                              @default(1)
+  fechamod                        DateTime                         @default(now())
+  estado                          Int                              @default(1) @db.TinyInt
+  factoring_propuesta_financieros factoring_propuesta_financiero[]
+}
+
+model financiero_tipo {
+  idfinancierotipo                Int                              @id @map("_idfinancierotipo")
+  financierotipoid                String                           @unique(map: "UQ_financiero_tipo_financierotipoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                            String                           @unique(map: "UQ_financiero_tipo_code") @db.VarChar(20)
+  nombre                          String                           @db.VarChar(50)
+  alias                           String                           @db.VarChar(50)
+  color                           String                           @db.VarChar(50)
+  idusuariocrea                   Int                              @default(1)
+  fechacrea                       DateTime                         @default(now())
+  idusuariomod                    Int                              @default(1)
+  fechamod                        DateTime                         @default(now())
+  estado                          Int                              @default(1) @db.TinyInt
+  factoring_propuesta_financieros factoring_propuesta_financiero[]
+}
+
+model genero {
+  idgenero      Int       @id @map("_idgenero")
+  generoid      String    @unique(map: "UQ_generoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  nombregenero  String    @db.VarChar(50)
+  idusuariocrea Int       @default(1)
+  fechacrea     DateTime  @default(now())
+  idusuariomod  Int       @default(1)
+  fechamod      DateTime  @default(now())
+  estado        Int       @default(1) @db.TinyInt
+  personas      persona[]
+}
+
+model inversionista {
+  idinversionista                BigInt                          @id @default(autoincrement()) @map("_idinversionista")
+  inversionistaid                String                          @unique(map: "UQ_inversionista_inversionistaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                           String                          @unique(map: "UQ_inversionista_code") @db.VarChar(20)
+  idpersona                      BigInt                          @unique(map: "UQ_inversionista_idpersona") @map("_idpersona")
+  idusuariocrea                  Int                             @default(1)
+  fechacrea                      DateTime                        @default(now()) @db.Timestamp(3)
+  idusuariomod                   Int                             @default(1)
+  fechamod                       DateTime                        @default(now()) @db.Timestamp(3)
+  estado                         Int                             @default(1) @db.TinyInt
+  persona                        persona                         @relation(fields: [idpersona], references: [idpersona], onUpdate: Restrict, map: "FK_inversionista_idpersona")
+  inversionista_banco_cuentas    inversionista_banco_cuenta[]
+  inversionista_cuenta_bancarias inversionista_cuenta_bancaria[]
+}
+
+model inversionista_banco_cuenta {
+  idinversionista BigInt        @map("_idinversionista")
+  idbancocuenta   BigInt        @map("_idbancocuenta")
+  idusuariocrea   Int           @default(1)
+  fechacrea       DateTime      @default(now())
+  idusuariomod    Int           @default(1)
+  fechamod        DateTime      @default(now())
+  estado          Int           @default(1) @db.TinyInt
+  banco_cuenta    banco_cuenta  @relation(fields: [idbancocuenta], references: [idbancocuenta], onUpdate: Restrict, map: "FK_inversionistabancocuenta_idbancocuenta")
+  inversionista   inversionista @relation(fields: [idinversionista], references: [idinversionista], onUpdate: Restrict, map: "FK_inversionistabancocuenta_idinversionista")
+
+  @@id([idinversionista, idbancocuenta])
+  @@index([idbancocuenta], map: "FK_inversionistabancocuenta_idbancocuenta")
+}
+
+model inversionista_cuenta_bancaria {
+  idinversionistacuentabancaria Int                      @id @default(autoincrement()) @map("_idinversionistacuentabancaria")
+  inversionistacuentabancariaid String                   @unique(map: "UQ_inversionistacuentabancaria_inversionistacuentabancariaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                          String                   @unique(map: "UQ_inversionistacuentabancaria_code") @db.VarChar(20)
+  idinversionista               BigInt                   @map("_idinversionista")
+  idcuentabancaria              Int                      @map("_idcuentabancaria")
+  idusuariocrea                 Int                      @default(1)
+  fechacrea                     DateTime                 @default(now())
+  idusuariomod                  Int                      @default(1)
+  fechamod                      DateTime                 @default(now())
+  estado                        Int                      @default(1) @db.TinyInt
+  cuenta_bancaria               cuenta_bancaria          @relation(fields: [idcuentabancaria], references: [idcuentabancaria], onUpdate: Restrict, map: "FK_inversionistacuentabancaria_idcuentabancaria")
+  inversionista                 inversionista            @relation(fields: [idinversionista], references: [idinversionista], onUpdate: Restrict, map: "FK_inversionistacuentabancaria_idinversionista")
+  inversionista_depositos       inversionista_deposito[]
+  inversionista_retiros         inversionista_retiro[]
+
+  @@index([idcuentabancaria], map: "FK_inversionistacuentabancaria_idcuentabancaria")
+  @@index([idinversionista], map: "FK_inversionistacuentabancaria_idinversionista")
+}
+
+model inversionista_deposito {
+  idinversionistadeposito                   BigInt                                     @id @default(autoincrement()) @map("_idinversionistadeposito")
+  inversionistadepositoid                   String                                     @unique(map: "UQ_bancodeposito_bancodepositoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                                      String                                     @unique(map: "UQ_bancodeposito_code") @db.VarChar(255)
+  idbancocuenta                             BigInt                                     @map("_idbancocuenta")
+  idinversionistacuentabancaria             Int                                        @map("_idinversionistacuentabancaria")
+  idfactorcuentabancaria                    Int                                        @map("_idfactorcuentabancaria")
+  fecha_solicitud                           DateTime                                   @db.DateTime(0)
+  numero_operacion                          String                                     @db.VarChar(50)
+  monto_depositado                          Decimal                                    @db.Decimal(20, 2)
+  fecha_transferencia                       DateTime?                                  @db.DateTime(0)
+  comentario                                String?                                    @db.Text
+  idusuariocrea                             Int                                        @default(1)
+  fechacrea                                 DateTime                                   @default(now())
+  idusuariomod                              Int                                        @default(1)
+  fechamod                                  DateTime                                   @default(now())
+  estado                                    Int                                        @default(1) @db.TinyInt
+  archivo_inversionista_depositos           archivo_inversionista_deposito[]
+  banco_transaccion_inversionista_depositos banco_transaccion_inversionista_deposito[]
+  banco_cuenta                              banco_cuenta                               @relation(fields: [idbancocuenta], references: [idbancocuenta], onUpdate: Restrict, map: "FK_bancodeposito_idbancocuenta")
+  factor_cuenta_bancaria                    factor_cuenta_bancaria                     @relation(fields: [idfactorcuentabancaria], references: [idfactorcuentabancaria], onUpdate: Restrict, map: "FK_bancodeposito_idfactorcuentabancaria")
+  inversionista_cuenta_bancaria             inversionista_cuenta_bancaria              @relation(fields: [idinversionistacuentabancaria], references: [idinversionistacuentabancaria], onUpdate: Restrict, map: "FK_bancodeposito_idinversionistacuentabancaria")
+
+  @@index([idbancocuenta], map: "FK_bancodeposito_idbancocuenta")
+  @@index([idfactorcuentabancaria], map: "FK_bancodeposito_idfactorcuentabancaria")
+  @@index([idinversionistacuentabancaria], map: "FK_bancodeposito_idinversionistacuentabancaria")
+}
+
+model inversionista_retiro {
+  idinversionistaretiro                   BigInt                                   @id @default(autoincrement()) @map("_idinversionistaretiro")
+  inversionistaretiroid                   String                                   @unique(map: "UQ_bancoretiro_bancoretiroid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                                    String                                   @unique(map: "UQ_bancoretiro_code") @db.VarChar(255)
+  idbancocuenta                           BigInt                                   @map("_idbancocuenta")
+  idinversionistacuentabancaria           Int                                      @map("_idinversionistacuentabancaria")
+  idfactorcuentabancaria                  Int?                                     @map("_idfactorcuentabancaria")
+  fecha_solicitud                         DateTime                                 @db.DateTime(0)
+  monto_retirado                          Decimal                                  @db.Decimal(20, 2)
+  numero_operacion                        String?                                  @db.VarChar(50)
+  fecha_transferencia                     DateTime?                                @db.DateTime(0)
+  comentario                              String?                                  @db.Text
+  idusuariocrea                           Int                                      @default(1)
+  fechacrea                               DateTime                                 @default(now())
+  idusuariomod                            Int                                      @default(1)
+  fechamod                                DateTime                                 @default(now())
+  estado                                  Int                                      @default(1) @db.TinyInt
+  archivo_inversionista_retiros           archivo_inversionista_retiro[]
+  banco_transaccion_inversionista_retiros banco_transaccion_inversionista_retiro[]
+  banco_cuenta                            banco_cuenta                             @relation(fields: [idbancocuenta], references: [idbancocuenta], onUpdate: Restrict, map: "FK_bancoretiro_idbancocuenta")
+  factor_cuenta_bancaria                  factor_cuenta_bancaria?                  @relation(fields: [idfactorcuentabancaria], references: [idfactorcuentabancaria], onDelete: Restrict, onUpdate: Restrict, map: "FK_bancoretiro_idfactorcuentabancaria")
+  inversionista_cuenta_bancaria           inversionista_cuenta_bancaria            @relation(fields: [idinversionistacuentabancaria], references: [idinversionistacuentabancaria], onUpdate: Restrict, map: "FK_bancoretiro_idinversionistacuentabancaria")
+
+  @@index([idbancocuenta], map: "FK_bancoretiro_idbancocuenta")
+  @@index([idfactorcuentabancaria], map: "FK_bancoretiro_idfactorcuentabancaria")
+  @@index([idinversionistacuentabancaria], map: "FK_bancoretiro_idinversionistacuentabancaria")
+}
+
+model moneda {
+  idmoneda         Int               @id @default(autoincrement()) @map("_idmoneda")
+  monedaid         String            @unique(map: "UQ_moneda_bancoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code             String            @unique(map: "UQ_moneda_code") @db.VarChar(20)
+  nombre           String            @db.VarChar(50)
+  alias            String            @db.VarChar(50)
+  codigo           String            @db.VarChar(10)
+  simbolo          String            @db.VarChar(5)
+  color            String            @db.VarChar(20)
+  idusuariocrea    Int               @default(1)
+  fechacrea        DateTime          @default(now())
+  idusuariomod     Int               @default(1)
+  fechamod         DateTime          @default(now())
+  estado           Int               @default(1) @db.TinyInt
+  banco_cuentas    banco_cuenta[]
+  cuenta_bancarias cuenta_bancaria[]
+  factoringes      factoring[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pais {
+  idpais                     Int            @id @map("_idpais")
+  paisid                     String         @unique(map: "UQ_paisid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  codigopais                 String         @db.VarChar(10)
+  nombrepais                 String         @db.VarChar(200)
+  nacionalidad               String         @db.VarChar(200)
+  idusuariocrea              Int            @default(1)
+  fechacrea                  DateTime       @default(now())
+  idusuariomod               Int            @default(1)
+  fechamod                   DateTime       @default(now())
+  estado                     Int            @default(1) @db.TinyInt
+  departamentos              departamento[]
+  empresas                   empresa[]
+  factores                   factor[]
+  persona_paisnacimientos    persona[]      @relation("persona_idpaisnacimientoTopais")
+  persona_paisnacionalidades persona[]      @relation("persona_idpaisnacionalidadTopais")
+  persona_paisresidencias    persona[]      @relation("persona_idpaisresidenciaTopais")
+}
+
+model pep_vinculo {
+  idpepvinculo           Int                     @id @default(autoincrement()) @map("_idpepvinculo")
+  pepvinculoid           String                  @unique(map: "UQ_pepvinculoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  nombrepepvinculo       String                  @db.VarChar(200)
+  idusuariocrea          Int                     @default(1)
+  fechacrea              DateTime                @default(now())
+  idusuariomod           Int                     @default(1)
+  fechamod               DateTime                @default(now())
+  estado                 Int                     @default(1) @db.TinyInt
+  persona_pep_indirectos persona_pep_indirecto[]
+}
+
+model persona {
+  idpersona                   BigInt                      @id @default(autoincrement()) @map("_idpersona")
+  personaid                   String                      @unique(map: "UQ_personaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                        String                      @unique(map: "UQ_code") @db.VarChar(20)
+  idusuario                   Int                         @unique(map: "UQ_idusuario") @map("_idusuario") @db.UnsignedInt
+  idpersonaverificacionestado Int                         @map("_idpersonaverificacionestado")
+  iddocumentotipo             Int?                        @map("_iddocumentotipo")
+  idpaisnacionalidad          Int?                        @map("_idpaisnacionalidad")
+  idpaisnacimiento            Int?                        @map("_idpaisnacimiento")
+  idpaisresidencia            Int?                        @map("_idpaisresidencia")
+  iddepartamentoresidencia    Int?                        @map("_iddepartamentoresidencia")
+  idprovinciaresidencia       Int?                        @map("_idprovinciaresidencia")
+  iddistritoresidencia        Int?                        @map("_iddistritoresidencia")
+  idgenero                    Int?                        @map("_idgenero")
+  documentonumero             String                      @db.VarChar(50)
+  personanombres              String                      @db.VarChar(50)
+  apellidopaterno             String                      @db.VarChar(50)
+  apellidomaterno             String                      @db.VarChar(50)
+  email                       String                      @db.VarChar(50)
+  celular                     String                      @db.VarChar(20)
+  fechanacimiento             DateTime?                   @db.Date
+  direccion                   String?                     @db.VarChar(200)
+  direccionreferencia         String?                     @db.VarChar(200)
+  idusuariocrea               Int                         @default(1)
+  fechacrea                   DateTime                    @default(now())
+  idusuariomod                Int                         @default(1)
+  fechamod                    DateTime                    @default(now())
+  estado                      Int                         @default(1) @db.TinyInt
+  archivo_personas            archivo_persona[]
+  colaboradores               colaborador[]
+  inversionista               inversionista?
+  departamento_residencia     departamento?               @relation(fields: [iddepartamentoresidencia], references: [iddepartamento], onDelete: Restrict, onUpdate: Restrict, map: "FK_persona_iddepartamentoresidencia")
+  distrito_residencia         distrito?                   @relation(fields: [iddistritoresidencia], references: [iddistrito], onDelete: Restrict, onUpdate: Restrict, map: "FK_persona_iddistritoresidencia")
+  documento_tipo              documento_tipo?             @relation(fields: [iddocumentotipo], references: [iddocumentotipo], onDelete: Restrict, onUpdate: Restrict, map: "FK_persona_iddocumentotipo")
+  genero                      genero?                     @relation(fields: [idgenero], references: [idgenero], onDelete: Restrict, onUpdate: Restrict, map: "FK_persona_idgenero")
+  pais_nacimiento             pais?                       @relation("persona_idpaisnacimientoTopais", fields: [idpaisnacimiento], references: [idpais], onDelete: Restrict, onUpdate: Restrict, map: "FK_persona_idpaisnacimiento")
+  pais_nacionalidad           pais?                       @relation("persona_idpaisnacionalidadTopais", fields: [idpaisnacionalidad], references: [idpais], onDelete: Restrict, onUpdate: Restrict, map: "FK_persona_idpaisnacionalidad")
+  pais_residencia             pais?                       @relation("persona_idpaisresidenciaTopais", fields: [idpaisresidencia], references: [idpais], onDelete: Restrict, onUpdate: Restrict, map: "FK_persona_idpaisresidencia")
+  persona_verificacion_estado persona_verificacion_estado @relation(fields: [idpersonaverificacionestado], references: [idpersonaverificacionestado], onUpdate: Restrict, map: "FK_persona_idpersonaverificacionestado")
+  provincia_residencia        provincia?                  @relation(fields: [idprovinciaresidencia], references: [idprovincia], onDelete: Restrict, onUpdate: Restrict, map: "FK_persona_idprovinciaresidencia")
+  usuario                     usuario                     @relation(fields: [idusuario], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_persona_idusuario")
+  persona_cuenta_bancarias    persona_cuenta_bancaria[]
+  persona_declaraciones       persona_declaracion[]
+  persona_pep_directos        persona_pep_directo[]
+  persona_pep_indirectos      persona_pep_indirecto[]
+  persona_verificaciones      persona_verificacion[]
+
+  @@index([iddepartamentoresidencia], map: "FK_persona_iddepartamentoresidencia")
+  @@index([iddistritoresidencia], map: "FK_persona_iddistritoresidencia")
+  @@index([iddocumentotipo], map: "FK_persona_iddocumentotipo")
+  @@index([idgenero], map: "FK_persona_idgenero")
+  @@index([idpaisnacimiento], map: "FK_persona_idpaisnacimiento")
+  @@index([idpaisnacionalidad], map: "FK_persona_idpaisnacionalidad")
+  @@index([idpaisresidencia], map: "FK_persona_idpaisresidencia")
+  @@index([idpersonaverificacionestado], map: "FK_persona_idpersonaverificacionestado")
+  @@index([idprovinciaresidencia], map: "FK_persona_idprovinciaresidencia")
+}
+
+model persona_cuenta_bancaria {
+  idpersonacuentabancaria Int             @id @default(autoincrement()) @map("_idpersonacuentabancaria")
+  personacuentabancariaid String          @unique(map: "UQ_persona_cuenta_bancaria_personacuentabancariaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                    String          @unique(map: "UQ_persona_cuenta_bancaria_code") @db.VarChar(20)
+  idpersona               BigInt          @map("_idpersona")
+  idcuentabancaria        Int             @map("_idcuentabancaria")
+  idusuariocrea           Int             @default(1)
+  fechacrea               DateTime        @default(now())
+  idusuariomod            Int             @default(1)
+  fechamod                DateTime        @default(now())
+  estado                  Int             @default(1) @db.TinyInt
+  cuenta_bancaria         cuenta_bancaria @relation(fields: [idcuentabancaria], references: [idcuentabancaria], onUpdate: Restrict, map: "FK_persona_cuenta_bancaria_idcuentabancaria")
+  persona                 persona         @relation(fields: [idpersona], references: [idpersona], onUpdate: Restrict, map: "FK_persona_cuenta_bancaria_idpersona")
+
+  @@unique([idpersona, idcuentabancaria], map: "UQ_persona_cuenta_bancaria_idpersona__idcuentabancaria")
+  @@index([idcuentabancaria], map: "FK_persona_cuenta_bancaria_idcuentabancaria")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model persona_declaracion {
+  idpersonadeclaracion BigInt   @id @default(autoincrement()) @map("_idpersonadeclaracion")
+  personadeclaracionid String   @unique(map: "UQ_personadeclaracionid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  idpersona            BigInt   @map("_idpersona")
+  espep                Int?     @db.TinyInt
+  tienevinculopep      Int?     @db.TinyInt
+  idusuariocrea        Int      @default(1)
+  fechacrea            DateTime @default(now())
+  idusuariomod         Int      @default(1)
+  fechamod             DateTime @default(now())
+  estado               Int      @default(1) @db.TinyInt
+  persona              persona  @relation(fields: [idpersona], references: [idpersona], onUpdate: Restrict, map: "FK_persona_declaracion_idpersona")
+
+  @@index([idpersona], map: "FK_persona_declaracion_idpersona")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model persona_pep_directo {
+  idpersonapepdirecto Int       @id @default(autoincrement()) @map("_idpersonapepdirecto")
+  personapepdirectoid String    @unique(map: "UQ_personapepdirectoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  idpersona           BigInt?   @map("_idpersona")
+  rucentidad          String    @db.VarChar(11)
+  nombreentidad       String    @db.VarChar(200)
+  cargoentidad        String    @db.VarChar(200)
+  desde               DateTime  @db.Date
+  hasta               DateTime? @db.Date
+  actualmente         Int?      @db.TinyInt
+  idusuariocrea       Int       @default(1)
+  fechacrea           DateTime  @default(now())
+  idusuariomod        Int       @default(1)
+  fechamod            DateTime  @default(now())
+  estado              Int       @default(1) @db.TinyInt
+  persona             persona?  @relation(fields: [idpersona], references: [idpersona], onDelete: NoAction, onUpdate: NoAction, map: "FK_persona_pep_directo_idpersona")
+
+  @@index([idpersona], map: "FK_persona_pep_directo_idpersona")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model persona_pep_indirecto {
+  idpersonapepindirecto Int          @id @default(autoincrement()) @map("_idpersonapepindirecto")
+  personapepindirectoid String       @unique(map: "UQ_personapepdirectoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  idpersona             BigInt?      @map("_idpersona")
+  idpepvinculo          Int?         @map("_idpepvinculo")
+  identificacionpep     String       @db.VarChar(12)
+  nombrescompletospep   String       @db.VarChar(300)
+  rucentidad            String       @db.VarChar(11)
+  nombreentidad         String       @db.VarChar(200)
+  cargoentidad          String       @db.VarChar(200)
+  desde                 DateTime     @db.Date
+  hasta                 DateTime?    @db.Date
+  actualmente           Int?         @db.TinyInt
+  idusuariocrea         Int          @default(1)
+  fechacrea             DateTime     @default(now())
+  idusuariomod          Int          @default(1)
+  fechamod              DateTime     @default(now())
+  estado                Int          @default(1) @db.TinyInt
+  pep_vinculo           pep_vinculo? @relation(fields: [idpepvinculo], references: [idpepvinculo], onDelete: NoAction, onUpdate: Restrict, map: "FK_persona_pep_indirecto_idpepvinculo")
+  persona               persona?     @relation(fields: [idpersona], references: [idpersona], onDelete: NoAction, onUpdate: Restrict, map: "FK_persona_pep_indirecto_idpersona")
+
+  @@index([idpersona], map: "FK_persona_pep_directo_idpersona")
+  @@index([idpepvinculo], map: "FK_persona_pep_indirecto_idpepevinculo")
+}
+
+model persona_verificacion {
+  idpersonaverificacion       BigInt                      @id @default(autoincrement()) @map("_idpersonaverificacion")
+  personaverificacionid       String                      @unique(map: "UQ_personaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  idpersona                   BigInt                      @map("_idpersona")
+  idpersonaverificacionestado Int                         @map("_idpersonaverificacionestado")
+  idusuarioverifica           Int                         @map("_idusuarioverifica") @db.UnsignedInt
+  comentariousuario           String                      @db.Text
+  comentariointerno           String                      @db.Text
+  idusuariocrea               Int                         @default(1)
+  fechacrea                   DateTime                    @default(now())
+  idusuariomod                Int                         @default(1)
+  fechamod                    DateTime                    @default(now())
+  estado                      Int                         @default(1) @db.TinyInt
+  persona                     persona                     @relation(fields: [idpersona], references: [idpersona], onUpdate: Restrict, map: "FK_persona_verificacion_idpersona")
+  persona_verificacion_estado persona_verificacion_estado @relation(fields: [idpersonaverificacionestado], references: [idpersonaverificacionestado], onUpdate: Restrict, map: "FK_persona_verificacion_idpersonaverificacionestado")
+  usuario_verifica            usuario                     @relation(fields: [idusuarioverifica], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_persona_verificacion_idusuarioverifica")
+
+  @@index([idpersona], map: "FK_persona_verificacion_idpersona")
+  @@index([idpersonaverificacionestado], map: "FK_persona_verificacion_idpersonaverificacionestado")
+  @@index([idusuarioverifica], map: "FK_persona_verificacion_idusuarioverifica")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model persona_verificacion_estado {
+  idpersonaverificacionestado Int                    @id @map("_idpersonaverificacionestado")
+  personaverificacionestadoid String                 @unique(map: "UQ_personaverificacionestadoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                        String                 @db.VarChar(20)
+  nombre                      String                 @db.VarChar(50)
+  alias                       String                 @db.VarChar(50)
+  color                       String                 @db.VarChar(50)
+  ispersonavalidated          Boolean                @default(false)
+  isestadofinal               Boolean                @default(false)
+  isusuarioedit               Boolean                @default(false)
+  isenabledcomentariousuario  Boolean                @default(false)
+  idusuariocrea               Int                    @default(1)
+  fechacrea                   DateTime               @default(now())
+  idusuariomod                Int                    @default(1)
+  fechamod                    DateTime               @default(now())
+  estado                      Int                    @default(1) @db.TinyInt
+  personas                    persona[]
+  persona_verificaciones      persona_verificacion[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model provincia {
+  idprovincia     Int          @id @map("_idprovincia")
+  provinciaid     String       @unique(map: "UQ_provinciaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  iddepartamento  Int          @map("_iddepartamento")
+  codigoprovincia String       @db.VarChar(10)
+  nombreprovincia String       @db.VarChar(200)
+  idusuariocrea   Int          @default(1)
+  fechacrea       DateTime     @default(now())
+  idusuariomod    Int          @default(1)
+  fechamod        DateTime     @default(now())
+  estado          Int          @default(1) @db.TinyInt
+  distritos       distrito[]
+  empresas        empresa[]
+  factores        factor[]
+  personas        persona[]
+  departamento    departamento @relation(fields: [iddepartamento], references: [iddepartamento], onUpdate: Restrict, map: "FK_provincia_iddepartamento")
+
+  @@index([iddepartamento], map: "FK_provincia_iddepartamento")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model region_natural {
+  idregionnatural     Int        @id @map("_idregionnatural")
+  regionnaturalid     String     @unique(map: "UQ_distritoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  nombreregionnatural String     @db.VarChar(200)
+  idusuariocrea       Int        @default(1)
+  fechacrea           DateTime   @default(now())
+  idusuariomod        Int        @default(1)
+  fechamod            DateTime   @default(now())
+  estado              Int        @default(1) @db.TinyInt
+  distritos           distrito[]
+}
+
+model riesgo {
+  idriesgo                              Int                               @id @default(autoincrement()) @map("_idriesgo")
+  riesgoid                              String                            @unique(map: "UQ_riesgo_riesgoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                                  String                            @db.VarChar(20)
+  nombre                                String                            @db.VarChar(100)
+  alias                                 String                            @db.VarChar(100)
+  score                                 Decimal                           @db.Decimal(12, 2)
+  color                                 String                            @db.VarChar(50)
+  descripcion                           String?                           @db.VarChar(500)
+  porcentaje_comision_gestion           Decimal?                          @db.Decimal(12, 2)
+  idusuariocrea                         Int                               @default(1)
+  fechacrea                             DateTime                          @default(now())
+  idusuariomod                          Int                               @default(1) @db.UnsignedInt
+  fechamod                              DateTime                          @default(now())
+  estado                                Int                               @default(1) @db.TinyInt
+  empresas                              empresa[]
+  factores                              factor[]
+  factoring_config_comisiones           factoring_config_comision[]
+  factoring_config_garantias            factoring_config_garantia[]
+  factoring_config_tasa_descuentos      factoring_config_tasa_descuento[]
+  factoring_propuesta_riesgoaceptantes  factoring_propuesta[]             @relation("factoring_propuesta_idriesgoaceptanteToriesgo")
+  factoring_propuesta_riesgocedentes    factoring_propuesta[]             @relation("factoring_propuesta_idriesgocedenteToriesgo")
+  factoring_propuesta_riesgooperaciones factoring_propuesta[]             @relation("factoring_propuesta_idriesgooperacionToriesgo")
+}
+
+model rol {
+  idrol         Int           @id @default(autoincrement()) @map("_idrol")
+  rolid         String        @unique(map: "UQ_bancoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  nombre        String        @db.VarChar(50)
+  alias         String        @db.VarChar(50)
+  codigo        String        @db.VarChar(10)
+  idusuariocrea Int           @default(1)
+  fechacrea     DateTime      @default(now())
+  idusuariomod  Int           @default(1)
+  fechamod      DateTime      @default(now())
+  estado        Int           @default(1) @db.TinyInt
+  usuario_roles usuario_rol[]
+}
+
+model servicio {
+  idservicio                Int                        @id @default(autoincrement()) @map("_idservicio")
+  servicioid                String                     @unique(map: "UQ_servicio_servicioid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                      String                     @unique(map: "UQ_servicio_code") @db.VarChar(20)
+  nombre                    String                     @db.VarChar(50)
+  alias                     String                     @db.VarChar(50)
+  descripcion               String                     @db.VarChar(500)
+  urlcontrato               String                     @db.VarChar(500)
+  pathroute                 String                     @db.VarChar(100)
+  idusuariocrea             Int                        @default(1)
+  fechacrea                 DateTime                   @default(now())
+  idusuariomod              Int                        @default(1)
+  fechamod                  DateTime                   @default(now())
+  estado                    Int                        @default(1) @db.TinyInt
+  servicio_empresas         servicio_empresa[]
+  usuario_servicios         usuario_servicio[]
+  usuario_servicio_empresas usuario_servicio_empresa[]
+}
+
+model servicio_empresa {
+  idservicioempresa               Int                             @id @default(autoincrement()) @map("_idservicioempresa")
+  servicioempresaid               String                          @unique(map: "UQ_servicioempresa_servicioempresaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                            String                          @unique(map: "UQ_servicioempresa_code") @db.VarChar(20)
+  idservicio                      Int                             @map("_idservicio")
+  idempresa                       Int                             @map("_idempresa")
+  idusuariosuscriptor             Int                             @map("_idusuariosuscriptor") @db.UnsignedInt
+  idservicioempresaestado         Int                             @map("_idservicioempresaestado")
+  idusuariocrea                   Int                             @default(1)
+  fechacrea                       DateTime                        @default(now())
+  idusuariomod                    Int                             @default(1)
+  fechamod                        DateTime                        @default(now())
+  estado                          Int                             @default(1) @db.TinyInt
+  empresa                         empresa                         @relation(fields: [idempresa], references: [idempresa], onUpdate: Restrict, map: "FK_servicioempresa_idempresa")
+  servicio                        servicio                        @relation(fields: [idservicio], references: [idservicio], onUpdate: Restrict, map: "FK_servicioempresa_idservicio")
+  servicio_empresa_estado         servicio_empresa_estado         @relation(fields: [idservicioempresaestado], references: [idservicioempresaestado], onUpdate: Restrict, map: "FK_servicioempresa_idservicioempresaestado")
+  usuario_suscriptor              usuario                         @relation(fields: [idusuariosuscriptor], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_servicioempresa_idusuariosuscriptor")
+  servicio_empresa_verificaciones servicio_empresa_verificacion[]
+
+  @@unique([idservicio, idempresa], map: "UQ_servicioempresa_idservicio__idempresa")
+  @@index([idempresa], map: "FK_servicioempresa_idempresa")
+  @@index([idservicioempresaestado], map: "FK_servicioempresa_idservicioempresaestado")
+  @@index([idusuariosuscriptor], map: "FK_servicioempresa_idusuariosuscriptor")
+}
+
+model servicio_empresa_estado {
+  idservicioempresaestado         Int                             @id @map("_idservicioempresaestado")
+  servicioempresaestadoid         String                          @unique(map: "UQ_servicioempresaestado_servicioempresaestadoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                            String                          @unique(map: "UQ_servicioempresaestado_code") @db.VarChar(20)
+  nombre                          String                          @db.VarChar(50)
+  alias                           String                          @db.VarChar(50)
+  color                           String                          @db.VarChar(50)
+  issuccessfulvalidation          Int                             @default(0) @db.TinyInt
+  isestadofinal                   Int                             @default(0) @db.TinyInt
+  isusuarioedit                   Int                             @default(0) @db.TinyInt
+  isenabledcomentariousuario      Int                             @default(0) @db.TinyInt
+  idusuariocrea                   Int                             @default(1)
+  fechacrea                       DateTime                        @default(now())
+  idusuariomod                    Int                             @default(1)
+  fechamod                        DateTime                        @default(now())
+  estado                          Int                             @default(1) @db.TinyInt
+  servicio_empresas               servicio_empresa[]
+  servicio_empresa_verificaciones servicio_empresa_verificacion[]
+}
+
+model servicio_empresa_verificacion {
+  idservicioempresaverificacion Int                     @id @default(autoincrement()) @map("_idservicioempresaverificacion")
+  servicioempresaverificacionid String                  @unique(map: "UQ_servicioempresaverificacion_servicioempresaverificacionid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  idservicioempresa             Int                     @map("_idservicioempresa")
+  idservicioempresaestado       Int                     @map("_idservicioempresaestado")
+  idusuarioverifica             Int                     @map("_idusuarioverifica") @db.UnsignedInt
+  comentariousuario             String                  @db.Text
+  comentariointerno             String                  @db.Text
+  idusuariocrea                 Int                     @default(1)
+  fechacrea                     DateTime                @default(now())
+  idusuariomod                  Int                     @default(1)
+  fechamod                      DateTime                @default(now())
+  estado                        Int                     @default(1) @db.TinyInt
+  servicio_empresa              servicio_empresa        @relation(fields: [idservicioempresa], references: [idservicioempresa], onUpdate: Restrict, map: "FK_servicioempresaverificacion_idservicioempresa")
+  servicio_empresa_estado       servicio_empresa_estado @relation(fields: [idservicioempresaestado], references: [idservicioempresaestado], onUpdate: Restrict, map: "FK_servicioempresaverificacion_idservicioempresaestado")
+  usuario_verifica              usuario                 @relation(fields: [idusuarioverifica], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_servicioempresaverificacion_idusuarioverifica")
+
+  @@index([idservicioempresa], map: "FK_servicioempresaverificacion_idservicioempresa")
+  @@index([idservicioempresaestado], map: "FK_servicioempresaverificacion_idservicioempresaestado")
+  @@index([idusuarioverifica], map: "FK_servicioempresaverificacion_idusuarioverifica")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model usuario {
+  idusuario                            Int                                  @id @default(autoincrement()) @map("_idusuario") @db.UnsignedInt
+  usuarioid                            String                               @unique(map: "UQ_usuario_usuarioid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                                 String                               @unique(map: "UQ_usuario_code") @db.VarChar(20)
+  iddocumentotipo                      Int                                  @map("_iddocumentotipo")
+  documentonumero                      String                               @unique(map: "documentonumero") @db.VarChar(50)
+  usuarionombres                       String                               @db.VarChar(50)
+  apellidopaterno                      String                               @db.VarChar(50)
+  apellidomaterno                      String                               @db.VarChar(50)
+  email                                String                               @unique(map: "email") @db.VarChar(50)
+  celular                              String                               @db.VarChar(20)
+  isemailvalidated                     Boolean                              @default(false)
+  ispersonavalidated                   Boolean                              @default(false)
+  hash                                 String                               @unique(map: "hash") @db.VarChar(50)
+  idusuariocrea                        Int                                  @default(1)
+  fechacrea                            DateTime                             @default(now())
+  idusuariomod                         Int                                  @default(1)
+  fechamod                             DateTime                             @default(now())
+  estado                               Int                                  @default(1) @db.TinyInt
+  banco_transaccion_estado_historiales banco_transaccion_estado_historial[]
+  credencial                           credencial?
+  factoring_historial_estados          factoring_historial_estado[]
+  facturas                             factura[]
+  persona                              persona?
+  persona_verificaciones               persona_verificacion[]
+  servicio_empresas                    servicio_empresa[]
+  servicio_empresa_verificaciones      servicio_empresa_verificacion[]
+  documento_tipo                       documento_tipo                       @relation(fields: [iddocumentotipo], references: [iddocumentotipo], onUpdate: Restrict, map: "FK_usuario_iddocumentotipo")
+  usuario_roles                        usuario_rol[]
+  usuario_servicios                    usuario_servicio[]
+  usuario_servicio_empresas            usuario_servicio_empresa[]
+  usuario_servicio_verificaciones      usuario_servicio_verificacion[]
+  validaciones                         validacion[]
+
+  @@index([iddocumentotipo], map: "FK_usuario_iddocuemntotipo")
+}
+
+model usuario_rol {
+  idusuario     Int      @map("_idusuario") @db.UnsignedInt
+  idrol         Int      @map("_idrol")
+  idusuariocrea Int      @default(1)
+  fechacrea     DateTime @default(now())
+  idusuariomod  Int      @default(1)
+  fechamod      DateTime @default(now())
+  estado        Int      @default(1) @db.TinyInt
+  rol           rol      @relation(fields: [idrol], references: [idrol], onUpdate: Restrict, map: "FK_usuario_rol_idrol")
+  usuario       usuario  @relation(fields: [idusuario], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_usuario_rol_idusuario")
+
+  @@id([idusuario, idrol])
+  @@index([idrol], map: "FK_usuario_rol_idrol")
+}
+
+model usuario_servicio {
+  idusuarioservicio               Int                             @id @default(autoincrement()) @map("_idusuarioservicio")
+  usuarioservicioid               String                          @unique(map: "UQ_usuarioservicio_usuarioservicioid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                            String                          @unique(map: "UQ_usuarioservicio_code") @db.VarChar(20)
+  idusuario                       Int                             @map("_idusuario") @db.UnsignedInt
+  idservicio                      Int                             @map("_idservicio")
+  idusuarioservicioestado         Int                             @map("_idusuarioservicioestado")
+  idusuariocrea                   Int                             @default(1)
+  fechacrea                       DateTime                        @default(now())
+  idusuariomod                    Int                             @default(1)
+  fechamod                        DateTime                        @default(now())
+  estado                          Int                             @default(1) @db.TinyInt
+  servicio                        servicio                        @relation(fields: [idservicio], references: [idservicio], onUpdate: Restrict, map: "FK_usuarioservicio_idservicio")
+  usuario                         usuario                         @relation(fields: [idusuario], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_usuarioservicio_idusuario")
+  usuario_servicio_estado         usuario_servicio_estado         @relation(fields: [idusuarioservicioestado], references: [idusuarioservicioestado], onUpdate: Restrict, map: "FK_usuarioservicio_idusuarioservicioestado")
+  usuario_servicio_verificaciones usuario_servicio_verificacion[]
+
+  @@unique([idusuario, idservicio], map: "UQ_usuarioservicio_idusuario__idservicio")
+  @@index([idservicio], map: "FK_usuarioservicio_idservicio")
+  @@index([idusuarioservicioestado], map: "FK_usuarioservicio_idusuarioservicioestado")
+}
+
+model usuario_servicio_empresa {
+  idusuarioservicioempresa        Int                             @id @default(autoincrement()) @map("_idusuarioservicioempresa")
+  usuarioservicioempresaid        String                          @unique(map: "UQ_usuarioservicioempresa_usuarioempresaservicioid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                            String                          @unique(map: "UQ_usuarioservicioempresa_code") @db.VarChar(20)
+  idusuario                       Int                             @map("_idusuario") @db.UnsignedInt
+  idempresa                       Int                             @map("_idempresa")
+  idservicio                      Int                             @map("_idservicio")
+  idusuarioservicioempresaestado  Int                             @map("_idusuarioservicioempresaestado")
+  idusuarioservicioempresarol     Int                             @map("_idusuarioservicioempresarol")
+  idusuariocrea                   Int                             @default(1)
+  fechacrea                       DateTime                        @default(now())
+  idusuariomod                    Int                             @default(1)
+  fechamod                        DateTime                        @default(now())
+  estado                          Int                             @default(1) @db.TinyInt
+  empresa                         empresa                         @relation(fields: [idempresa], references: [idempresa], onUpdate: Restrict, map: "FK_usuarioservicioempresa_idempresa")
+  servicio                        servicio                        @relation(fields: [idservicio], references: [idservicio], onUpdate: Restrict, map: "FK_usuarioservicioempresa_idservicio")
+  usuario                         usuario                         @relation(fields: [idusuario], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_usuarioservicioempresa_idusuario")
+  usuario_servicio_empresa_estado usuario_servicio_empresa_estado @relation(fields: [idusuarioservicioempresaestado], references: [idusuarioservicioempresaestado], onUpdate: Restrict, map: "FK_usuarioservicioempresa_idusuarioservicioempresaestado")
+  usuario_servicio_empresa_rol    usuario_servicio_empresa_rol    @relation(fields: [idusuarioservicioempresarol], references: [idusuarioservicioempresarol], onUpdate: Restrict, map: "FK_usuarioservicioempresa_idusuarioservicioempresarol")
+
+  @@unique([idusuario, idempresa, idservicio], map: "UQ_usuarioservicioempresa_idusuario__idempresa__idservicio")
+  @@index([idempresa], map: "FK_usuarioservicioempresa_idempresa")
+  @@index([idservicio], map: "FK_usuarioservicioempresa_idservicio")
+  @@index([idusuarioservicioempresaestado], map: "FK_usuarioservicioempresa_idusuarioempresaservicioestado")
+  @@index([idusuarioservicioempresarol], map: "FK_usuarioservicioempresa_idusuarioservicioempresarol")
+}
+
+model usuario_servicio_empresa_estado {
+  idusuarioservicioempresaestado Int                        @id @map("_idusuarioservicioempresaestado")
+  usuarioservicioempresaestadoid String                     @unique(map: "UQ_usuarioservicioempresaestado_usuarioservicioempresaestadoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                           String                     @unique(map: "UQ_usuarioservicioempresaestado_code") @db.VarChar(20)
+  nombre                         String                     @db.VarChar(50)
+  alias                          String                     @db.VarChar(50)
+  color                          String                     @db.VarChar(50)
+  idusuariocrea                  Int                        @default(1)
+  fechacrea                      DateTime                   @default(now())
+  idusuariomod                   Int                        @default(1)
+  fechamod                       DateTime                   @default(now())
+  estado                         Int                        @default(1) @db.TinyInt
+  usuario_servicio_empresas      usuario_servicio_empresa[]
+}
+
+model usuario_servicio_empresa_rol {
+  idusuarioservicioempresarol Int                        @id @map("_idusuarioservicioempresarol")
+  usuarioservicioempresarolid String                     @unique(map: "UQ_usuarioservicioempresarol_usuarioempresaserviciorolid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                        String                     @unique(map: "UQ_usuarioservicioempresarol_code") @db.VarChar(20)
+  nombre                      String                     @db.VarChar(50)
+  alias                       String                     @db.VarChar(50)
+  color                       String                     @db.VarChar(50)
+  idusuariocrea               Int                        @default(1)
+  fechacrea                   DateTime                   @default(now())
+  idusuariomod                Int                        @default(1)
+  fechamod                    DateTime                   @default(now())
+  estado                      Int                        @default(1) @db.TinyInt
+  usuario_servicio_empresas   usuario_servicio_empresa[]
+}
+
+model usuario_servicio_estado {
+  idusuarioservicioestado         Int                             @id @map("_idusuarioservicioestado")
+  usuarioservicioestadoid         String                          @unique(map: "UQ_usuarioservicioestado_usuarioservicioestadoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                            String                          @unique(map: "UQ_usuarioservicioestado_code") @db.VarChar(20)
+  nombre                          String                          @db.VarChar(50)
+  alias                           String                          @db.VarChar(50)
+  color                           String                          @db.VarChar(50)
+  idusuariocrea                   Int                             @default(1)
+  fechacrea                       DateTime                        @default(now())
+  idusuariomod                    Int                             @default(1)
+  fechamod                        DateTime                        @default(now())
+  estado                          Int                             @default(1) @db.TinyInt
+  usuario_servicios               usuario_servicio[]
+  usuario_servicio_verificaciones usuario_servicio_verificacion[]
+}
+
+model usuario_servicio_verificacion {
+  idusuarioservicioverificacion Int                     @id @default(autoincrement()) @map("_idusuarioservicioverificacion")
+  usuarioservicioverificacionid String                  @unique(map: "UQ_usuarioservicioverificacion_usuarioservicioverificacionid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  idusuarioservicio             Int                     @map("_idusuarioservicio")
+  idusuarioservicioestado       Int                     @map("_idusuarioservicioestado")
+  idusuarioverifica             Int                     @map("_idusuarioverifica") @db.UnsignedInt
+  comentariousuario             String                  @db.Text
+  comentariointerno             String                  @db.Text
+  idusuariocrea                 Int                     @default(1)
+  fechacrea                     DateTime                @default(now())
+  idusuariomod                  Int                     @default(1)
+  fechamod                      DateTime                @default(now())
+  estado                        Int                     @default(1) @db.TinyInt
+  usuario_servicio              usuario_servicio        @relation(fields: [idusuarioservicio], references: [idusuarioservicio], onUpdate: Restrict, map: "FK_usuarioservicioverificacion_idusuarioservicio")
+  usuario_servicio_estado       usuario_servicio_estado @relation(fields: [idusuarioservicioestado], references: [idusuarioservicioestado], onUpdate: Restrict, map: "FK_usuarioservicioverificacion_idusuarioservicioestado")
+  usuario_verifica              usuario                 @relation(fields: [idusuarioverifica], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_usuarioservicioverificacion_idusuarioverifica")
+
+  @@index([idusuarioservicio], map: "FK_usuarioservicioverificacion_idusuarioservicio")
+  @@index([idusuarioservicioestado], map: "FK_usuarioservicioverificacion_idusuarioservicioestado")
+  @@index([idusuarioverifica], map: "FK_usuarioservicioverificacion_idusuarioverifica")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model validacion {
+  idvalidacion      Int             @id @default(autoincrement()) @map("_idvalidacion")
+  validacionid      String          @unique(map: "UQ_validacion_validacionid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  idusuario         Int             @map("_idusuario") @db.UnsignedInt
+  idvalidaciontipo  Int             @map("_idvalidaciontipo")
+  valor             String          @default("") @db.VarChar(250)
+  otp               String          @db.VarChar(20)
+  tiempo_marca      DateTime        @default(now()) @db.Timestamp(3)
+  tiempo_expiracion Int             @default(0) @db.MediumInt
+  verificado        Int             @default(0) @db.TinyInt
+  fecha_verificado  DateTime?       @db.Timestamp(3)
+  codigo            String          @db.VarChar(100)
+  idusuariocrea     Int             @default(1)
+  fechacrea         DateTime        @default(now()) @db.Timestamp(3)
+  idusuariomod      Int             @default(1)
+  fechamod          DateTime        @default(now()) @db.Timestamp(3)
+  estado            Int             @default(1) @db.TinyInt
+  usuario           usuario         @relation(fields: [idusuario], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_validacion_idusuario")
+  validacion_tipo   validacion_tipo @relation(fields: [idvalidaciontipo], references: [idvalidaciontipo], onUpdate: Restrict, map: "FK_validacion_idvalidaciontipo")
+
+  @@index([idusuario], map: "FK_validacion_idusuario")
+  @@index([idvalidaciontipo], map: "FK_validacion_idvalidaciontipo")
+}
+
+model validacion_tipo {
+  idvalidaciontipo Int          @id @default(autoincrement()) @map("_idvalidaciontipo")
+  validaciontipoid String       @unique(map: "UQ_validacion_tipo_validaciontipoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  nombre           String       @db.VarChar(50)
+  idusuariocrea    Int          @default(1)
+  fechacrea        DateTime     @default(now())
+  idusuariomod     Int          @default(1)
+  fechamod         DateTime     @default(now())
+  estado           Int          @default(1) @db.TinyInt
+  validaciones     validacion[]
+}
+
+model zlaboratorio_pedido {
+  idpedido      Int                  @id @default(autoincrement()) @map("_idpedido")
+  idusuario     Int                  @map("_idusuario")
+  code          String               @unique(map: "UQ_zlaboratorio_pedido_code") @default("") @db.VarChar(20)
+  nombre        String               @db.VarChar(100)
+  idusuariocrea Int                  @default(1)
+  fechacrea     DateTime             @default(now())
+  idusuariomod  Int                  @default(1)
+  fechamod      DateTime             @default(now())
+  estado        Int                  @default(1) @db.TinyInt
+  usuario       zlaboratorio_usuario @relation(fields: [idusuario], references: [idusuario], onUpdate: Restrict, map: "FK_zlaboratorio_pedido__idusuario")
+
+  @@index([idusuario], map: "FK_zlaboratorio_pedido_idusuario")
+}
+
+model zlaboratorio_usuario {
+  idusuario            Int                   @id @default(autoincrement()) @map("_idusuario")
+  nombre               String                @db.VarChar(100)
+  idusuariocrea        Int                   @default(1)
+  fechacrea            DateTime              @default(now())
+  idusuariomod         Int                   @default(1)
+  fechamod             DateTime              @default(now())
+  estado               Int                   @default(1) @db.TinyInt
+  zlaboratorio_pedidos zlaboratorio_pedido[]
+}
+
+/// --- INICIO LOG SCRIPT: pluralizar-schema.js ---
+/// Fecha de ejecución: 29/5/2025, 21:38:25
+/// Total líneas con relaciones tipo '[]': 137
+/// Modificaciones realizadas: 0
+/// Sin modificar (ya pluralizadas): 137
+/// --- Detalle de líneas evaluadas ---
+/// Línea 34: 'archivo_colaboradores' ya está pluralizado correctamente.
+/// Línea 35: 'archivo_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 36: 'archivo_empresas' ya está pluralizado correctamente.
+/// Línea 37: 'archivo_factoring_historial_estados' ya está pluralizado correctamente.
+/// Línea 38: 'archivo_facturas' ya está pluralizado correctamente.
+/// Línea 39: 'archivo_inversionista_depositos' ya está pluralizado correctamente.
+/// Línea 40: 'archivo_inversionista_retiros' ya está pluralizado correctamente.
+/// Línea 41: 'archivo_personas' ya está pluralizado correctamente.
+/// Línea 101: 'archivos' ya está pluralizado correctamente.
+/// Línea 189: 'archivos' ya está pluralizado correctamente.
+/// Línea 203: 'cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 228: 'banco_transacciones' ya está pluralizado correctamente.
+/// Línea 229: 'inversionista_banco_cuentas' ya está pluralizado correctamente.
+/// Línea 230: 'inversionista_depositos' ya está pluralizado correctamente.
+/// Línea 231: 'inversionista_retiros' ya está pluralizado correctamente.
+/// Línea 248: 'banco_cuentas' ya está pluralizado correctamente.
+/// Línea 261: 'banco_cuentas' ya está pluralizado correctamente.
+/// Línea 285: 'banco_transaccion_factoring_inversiones' ya está pluralizado correctamente.
+/// Línea 286: 'banco_transaccion_inversionista_depositos' ya está pluralizado correctamente.
+/// Línea 287: 'banco_transaccion_inversionista_retiros' ya está pluralizado correctamente.
+/// Línea 305: 'banco_transacciones' ya está pluralizado correctamente.
+/// Línea 306: 'banco_transaccion_estado_historiales' ya está pluralizado correctamente.
+/// Línea 387: 'banco_transacciones' ya está pluralizado correctamente.
+/// Línea 411: 'archivo_colaboradores' ya está pluralizado correctamente.
+/// Línea 416: 'factoringes' ya está pluralizado correctamente.
+/// Línea 435: 'colaboradores' ya está pluralizado correctamente.
+/// Línea 471: 'factoringes' ya está pluralizado correctamente.
+/// Línea 508: 'archivo_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 513: 'empresa_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 514: 'factor_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 515: 'factoringes' ya está pluralizado correctamente.
+/// Línea 516: 'inversionista_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 517: 'persona_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 536: 'cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 549: 'cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 565: 'empresas' ya está pluralizado correctamente.
+/// Línea 566: 'factores' ya está pluralizado correctamente.
+/// Línea 567: 'personas' ya está pluralizado correctamente.
+/// Línea 568: 'provincias' ya está pluralizado correctamente.
+/// Línea 589: 'empresas' ya está pluralizado correctamente.
+/// Línea 590: 'factores' ya está pluralizado correctamente.
+/// Línea 591: 'personas' ya está pluralizado correctamente.
+/// Línea 607: 'colaboradores' ya está pluralizado correctamente.
+/// Línea 608: 'personas' ya está pluralizado correctamente.
+/// Línea 609: 'usuarios' ya está pluralizado correctamente.
+/// Línea 633: 'archivo_empresas' ya está pluralizado correctamente.
+/// Línea 634: 'colaboradores' ya está pluralizado correctamente.
+/// Línea 635: 'contactos' ya está pluralizado correctamente.
+/// Línea 641: 'empresa_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 644: 'servicio_empresas' ya está pluralizado correctamente.
+/// Línea 645: 'usuario_servicio_empresas' ya está pluralizado correctamente.
+/// Línea 667: 'factoring_pagos' ya está pluralizado correctamente.
+/// Línea 716: 'factor_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 738: 'factoring_pagos' ya está pluralizado correctamente.
+/// Línea 739: 'inversionista_depositos' ya está pluralizado correctamente.
+/// Línea 740: 'inversionista_retiros' ya está pluralizado correctamente.
+/// Línea 783: 'factoring_facturas' ya está pluralizado correctamente.
+/// Línea 784: 'factoring_historial_estados' ya está pluralizado correctamente.
+/// Línea 785: 'factoring_pagos' ya está pluralizado correctamente.
+/// Línea 913: 'factoring_ejecutados' ya está pluralizado correctamente.
+/// Línea 930: 'factoringes' ya está pluralizado correctamente.
+/// Línea 931: 'factoring_historial_estados' ya está pluralizado correctamente.
+/// Línea 946: 'factoring_propuestas' ya está pluralizado correctamente.
+/// Línea 977: 'archivo_factoring_historial_estados' ya está pluralizado correctamente.
+/// Línea 1001: 'banco_transaccion_factoring_inversiones' ya está pluralizado correctamente.
+/// Línea 1085: 'factoring_propuesta_financieros' ya está pluralizado correctamente.
+/// Línea 1108: 'factoring_propuestas' ya está pluralizado correctamente.
+/// Línea 1148: 'factoring_propuestas' ya está pluralizado correctamente.
+/// Línea 1196: 'archivo_facturas' ya está pluralizado correctamente.
+/// Línea 1197: 'factoring_facturas' ya está pluralizado correctamente.
+/// Línea 1199: 'factura_impuestos' ya está pluralizado correctamente.
+/// Línea 1200: 'factura_itemes' ya está pluralizado correctamente.
+/// Línea 1201: 'factura_medio_pagos' ya está pluralizado correctamente.
+/// Línea 1202: 'factura_notas' ya está pluralizado correctamente.
+/// Línea 1203: 'factura_termino_pagos' ya está pluralizado correctamente.
+/// Línea 1321: 'factoring_propuesta_financieros' ya está pluralizado correctamente.
+/// Línea 1336: 'factoring_propuesta_financieros' ya está pluralizado correctamente.
+/// Línea 1348: 'personas' ya está pluralizado correctamente.
+/// Línea 1362: 'inversionista_banco_cuentas' ya está pluralizado correctamente.
+/// Línea 1363: 'inversionista_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 1394: 'inversionista_depositos' ya está pluralizado correctamente.
+/// Línea 1395: 'inversionista_retiros' ya está pluralizado correctamente.
+/// Línea 1418: 'archivo_inversionista_depositos' ya está pluralizado correctamente.
+/// Línea 1419: 'banco_transaccion_inversionista_depositos' ya está pluralizado correctamente.
+/// Línea 1446: 'archivo_inversionista_retiros' ya está pluralizado correctamente.
+/// Línea 1447: 'banco_transaccion_inversionista_retiros' ya está pluralizado correctamente.
+/// Línea 1471: 'banco_cuentas' ya está pluralizado correctamente.
+/// Línea 1472: 'cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 1473: 'factoringes' ya está pluralizado correctamente.
+/// Línea 1488: 'departamentos' ya está pluralizado correctamente.
+/// Línea 1489: 'empresas' ya está pluralizado correctamente.
+/// Línea 1490: 'factores' ya está pluralizado correctamente.
+/// Línea 1505: 'persona_pep_indirectos' ya está pluralizado correctamente.
+/// Línea 1536: 'archivo_personas' ya está pluralizado correctamente.
+/// Línea 1537: 'colaboradores' ya está pluralizado correctamente.
+/// Línea 1549: 'persona_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 1550: 'persona_declaraciones' ya está pluralizado correctamente.
+/// Línea 1551: 'persona_pep_directos' ya está pluralizado correctamente.
+/// Línea 1552: 'persona_pep_indirectos' ya está pluralizado correctamente.
+/// Línea 1553: 'persona_verificaciones' ya está pluralizado correctamente.
+/// Línea 1687: 'personas' ya está pluralizado correctamente.
+/// Línea 1688: 'persona_verificaciones' ya está pluralizado correctamente.
+/// Línea 1703: 'distritos' ya está pluralizado correctamente.
+/// Línea 1704: 'empresas' ya está pluralizado correctamente.
+/// Línea 1705: 'factores' ya está pluralizado correctamente.
+/// Línea 1706: 'personas' ya está pluralizado correctamente.
+/// Línea 1722: 'distritos' ya está pluralizado correctamente.
+/// Línea 1740: 'empresas' ya está pluralizado correctamente.
+/// Línea 1741: 'factores' ya está pluralizado correctamente.
+/// Línea 1742: 'factoring_config_comisiones' ya está pluralizado correctamente.
+/// Línea 1743: 'factoring_config_garantias' ya está pluralizado correctamente.
+/// Línea 1744: 'factoring_config_tasa_descuentos' ya está pluralizado correctamente.
+/// Línea 1761: 'usuario_roles' ya está pluralizado correctamente.
+/// Línea 1778: 'servicio_empresas' ya está pluralizado correctamente.
+/// Línea 1779: 'usuario_servicios' ya está pluralizado correctamente.
+/// Línea 1780: 'usuario_servicio_empresas' ya está pluralizado correctamente.
+/// Línea 1800: 'servicio_empresa_verificaciones' ya está pluralizado correctamente.
+/// Línea 1824: 'servicio_empresas' ya está pluralizado correctamente.
+/// Línea 1825: 'servicio_empresa_verificaciones' ya está pluralizado correctamente.
+/// Línea 1870: 'banco_transaccion_estado_historiales' ya está pluralizado correctamente.
+/// Línea 1872: 'factoring_historial_estados' ya está pluralizado correctamente.
+/// Línea 1873: 'facturas' ya está pluralizado correctamente.
+/// Línea 1875: 'persona_verificaciones' ya está pluralizado correctamente.
+/// Línea 1876: 'servicio_empresas' ya está pluralizado correctamente.
+/// Línea 1877: 'servicio_empresa_verificaciones' ya está pluralizado correctamente.
+/// Línea 1879: 'usuario_roles' ya está pluralizado correctamente.
+/// Línea 1880: 'usuario_servicios' ya está pluralizado correctamente.
+/// Línea 1881: 'usuario_servicio_empresas' ya está pluralizado correctamente.
+/// Línea 1882: 'usuario_servicio_verificaciones' ya está pluralizado correctamente.
+/// Línea 1883: 'validaciones' ya está pluralizado correctamente.
+/// Línea 1918: 'usuario_servicio_verificaciones' ya está pluralizado correctamente.
+/// Línea 1964: 'usuario_servicio_empresas' ya está pluralizado correctamente.
+/// Línea 1979: 'usuario_servicio_empresas' ya está pluralizado correctamente.
+/// Línea 1994: 'usuario_servicios' ya está pluralizado correctamente.
+/// Línea 1995: 'usuario_servicio_verificaciones' ya está pluralizado correctamente.
+/// Línea 2054: 'validaciones' ya está pluralizado correctamente.
+/// Línea 2080: 'zlaboratorio_pedidos' ya está pluralizado correctamente.
+/// --- FIN LOG SCRIPT

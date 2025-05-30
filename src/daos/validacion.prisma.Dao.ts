@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getValidacionByIdusuarioAndValor = async (tx: TxClient, idusuario: bigint, valor: string, estados: number[]) => {
+export const getValidacionByIdusuarioAndValor = async (tx: TxClient, idusuario: number, valor: string, estados: number[]) => {
   try {
     const validacions = await tx.validacion.findFirst({
       where: {
@@ -24,7 +24,7 @@ export const getValidacionByIdusuarioAndValor = async (tx: TxClient, idusuario: 
   }
 };
 
-export const getValidacionByIdusuarioAndIdvalidaciontipo = async (tx: TxClient, idusuario: bigint, idvalidaciontipo: number, estados: number[]) => {
+export const getValidacionByIdusuarioAndIdvalidaciontipo = async (tx: TxClient, idusuario: number, idvalidaciontipo: number, estados: number[]) => {
   try {
     const validacions = await tx.validacion.findFirst({
       where: {
@@ -43,7 +43,7 @@ export const getValidacionByIdusuarioAndIdvalidaciontipo = async (tx: TxClient, 
   }
 };
 
-export const getValidacionByIdusuarioAndCodigo = async (tx: TxClient, idusuario: bigint, codigo: string, estados: number[]) => {
+export const getValidacionByIdusuarioAndCodigo = async (tx: TxClient, idusuario: number, codigo: string, estados: number[]) => {
   try {
     const validacions = await tx.validacion.findFirst({
       where: {

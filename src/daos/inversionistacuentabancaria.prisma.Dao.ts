@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getInversionistacuentabancariaByIdinversionistaAndIdusuario = async (tx: TxClient, idinversionista: bigint, idusuario: bigint, estados: number[]) => {
+export const getInversionistacuentabancariaByIdinversionistaAndIdusuario = async (tx: TxClient, idinversionista: bigint, idusuario: number, estados: number[]) => {
   try {
     const empresacuentabancaria = await tx.inversionista_cuenta_bancaria.findFirst({
       include: {
@@ -43,7 +43,7 @@ export const getInversionistacuentabancariaByIdinversionistaAndIdusuario = async
   }
 };
 
-export const getInversionistacuentabancariasByIdusuario = async (tx: TxClient, idusuario: bigint, estados: number[]) => {
+export const getInversionistacuentabancariasByIdusuario = async (tx: TxClient, idusuario: number, estados: number[]) => {
   try {
     const empresacuentabancaria = await tx.inversionista_cuenta_bancaria.findMany({
       include: {

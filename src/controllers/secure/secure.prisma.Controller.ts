@@ -47,7 +47,7 @@ export const resetPassword = async (req: Request, res: Response) => {
         throw new ClientError("El código de verificación no es válido o ha expidado", 404);
       }
 
-      const validacion = await validacionDao.getValidacionByIdusuarioAndCodigo(tx, usuario._idusuario, validacionValidated.codigo, filter_estado);
+      const validacion = await validacionDao.getValidacionByIdusuarioAndCodigo(tx, usuario.idusuario, validacionValidated.codigo, filter_estado);
       if (!validacion) {
         log.warn(line(), "Validación no existe: ", validacionValidated);
         throw new ClientError("El código de verificación no es válido o ha expidado", 404);
@@ -72,9 +72,9 @@ export const resetPassword = async (req: Request, res: Response) => {
             const salt = bcrypt.genSaltSync(12); // 12 es el costo del salting
             const encryptedPassword = bcrypt.hashSync(validacionValidated.password, salt);
 
-            const credencial = await credencialDao.getCredencialByIdusuario(tx, usuario._idusuario);
+            const credencial = await credencialDao.getCredencialByIdusuario(tx, usuario.idusuario);
             if (!credencial) {
-              log.warn(line(), "Credencial no existe por idusuario: ", usuario._idusuario);
+              log.warn(line(), "Credencial no existe por idusuario: ", usuario.idusuario);
               throw new ClientError("El código de verificación no es válido o ha expidado", 404);
             }
 
@@ -139,7 +139,7 @@ export const validateRestorePassword = async (req: Request, res: Response) => {
         throw new ClientError("El código de verificación no es válido o ha expidado", 404);
       }
 
-      const validacion = await validacionDao.getValidacionByIdusuarioAndCodigo(tx, usuario._idusuario, validacionValidated.codigo, filter_estado);
+      const validacion = await validacionDao.getValidacionByIdusuarioAndCodigo(tx, usuario.idusuario, validacionValidated.codigo, filter_estado);
       if (!validacion) {
         log.warn(line(), "Validación no existe: ", validacionValidated);
         throw new ClientError("El código de verificación no es válido o ha expidado", 404);
@@ -198,28 +198,31 @@ export const sendTokenPassword = async (req: Request, res: Response) => {
       if (!usuario) {
         log.warn(line(), "Usuario no existe: ", validacionValidated);
       } else {
-        const _idvalidaciontipo = 3; // 1: Para recuperar contraseña
+        const idvalidaciontipo = 3; // 1: Para recuperar contraseña
         const resetpasswordvalidationcode = String(Math.floor(100000 + Math.random() * 900000)); // Código aleaatorio de 6 dígitos
-        const validacionPrev = await validacionDao.getValidacionByIdusuarioAndIdvalidaciontipo(tx, usuario._idusuario, _idvalidaciontipo, filter_estado);
+        const validacionPrev = await validacionDao.getValidacionByIdusuarioAndIdvalidaciontipo(tx, usuario.idusuario, idvalidaciontipo, filter_estado);
         if (!validacionPrev) {
           log.warn(line(), "Validación no existe: ", validacionValidated);
-          let validacionNew: Partial<validacion> = {};
-          validacionNew._idusuario = usuario._idusuario;
-          validacionNew.idvalidaciontipo = _idvalidaciontipo;
-          validacionNew.valor = validacionValidated.email;
-          validacionNew.otp = resetpasswordvalidationcode;
-          validacionNew.tiempo_marca = new Date();
-          validacionNew.tiempo_expiracion = 15; // En minutos
-          validacionNew.codigo = crypto.randomBytes(77).toString("hex").slice(0, 77);
-          validacionNew.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
-          validacionNew.fechacrea = new Date();
-          validacionNew.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
-          validacionNew.fechamod = new Date();
-          validacionNew.estado = 1;
 
-          const validacionCreated = await validacionDao.insertValidacion(tx, validacionNew);
+          const validacionToCreate: Prisma.validacionCreateInput = {
+            usuario: { connect: { idusuario: usuario.idusuario } },
+            validacion_tipo: { connect: { idvalidaciontipo: idvalidaciontipo } },
+
+            valor: validacionValidated.email,
+            otp: resetpasswordvalidationcode,
+            tiempo_marca: new Date(),
+            tiempo_expiracion: 15, // En minutos
+            codigo: crypto.randomBytes(77).toString("hex").slice(0, 77),
+            idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+            fechacrea: new Date(),
+            idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+            fechamod: new Date(),
+            estado: 1,
+          };
+
+          const validacionCreated = await validacionDao.insertValidacion(tx, validacionToCreate);
           if (!validacionCreated) {
-            log.warn(line(), "No fue posible insertar el objeto: ", validacionNew);
+            log.warn(line(), "No fue posible insertar el objeto: ", validacionToCreate);
           }
         } else {
           let validacionUpdate: Partial<validacion> = {};
@@ -237,7 +240,7 @@ export const sendTokenPassword = async (req: Request, res: Response) => {
             log.warn(line(), "No fue posible actualizar el objeto: ", validacionUpdate);
           }
         }
-        const validacionNext = await validacionDao.getValidacionByIdusuarioAndIdvalidaciontipo(tx, usuario._idusuario, _idvalidaciontipo, filter_estado);
+        const validacionNext = await validacionDao.getValidacionByIdusuarioAndIdvalidaciontipo(tx, usuario.idusuario, idvalidaciontipo, filter_estado);
         if (validacionNext) {
           //Enviar enlace para recuperar contraseña
           let otp_encriptado = cryptoUtils.encryptText(resetpasswordvalidationcode.toString(), env.TOKEN_KEY_OTP);
@@ -274,7 +277,7 @@ export const sendVerificactionCode = async (req: Request, res: Response) => {
         throw new ClientError("Información no válida", 404);
       }
 
-      const validacion = await validacionDao.getValidacionByIdusuarioAndCodigo(tx, usuario._idusuario, validacionValidated.codigo, filter_estado);
+      const validacion = await validacionDao.getValidacionByIdusuarioAndCodigo(tx, usuario.idusuario, validacionValidated.codigo, filter_estado);
       if (!validacion) {
         log.warn(line(), "Validación no existe: ", validacionValidated);
         throw new ClientError("Información no válida", 404);
@@ -409,71 +412,67 @@ export const registerUsuario = async (req: Request, res: Response) => {
 
       delete usuarioValidated.password;
 
-      let camposUsuarioFk: Partial<usuario> = {};
-      camposUsuarioFk.iddocumentotipo = documentotipo.iddocumentotipo;
+      const usuarioToCreate: Prisma.usuarioCreateInput = {
+        documento_tipo: { connect: { iddocumentotipo: documentotipo.iddocumentotipo } },
+        usuarioid: uuidv4(),
+        code: uuidv4().split("-")[0],
 
-      let camposUsuarioAdicionales: Partial<usuario> = {};
-      camposUsuarioAdicionales.usuarioid = uuidv4();
-      camposUsuarioAdicionales.code = uuidv4().split("-")[0];
-      camposUsuarioAdicionales.hash = hash;
-      camposUsuarioAdicionales.ispersonavalidated = personaverificacionestado.ispersonavalidated;
+        documentonumero: usuarioValidated.documentonumero,
+        usuarionombres: usuarioValidated.usuarionombres,
+        apellidopaterno: usuarioValidated.apellidopaterno,
+        apellidomaterno: usuarioValidated.apellidomaterno,
+        email: usuarioValidated.email,
+        celular: usuarioValidated.celular,
+        hash: hash,
+        ispersonavalidated: personaverificacionestado.ispersonavalidated,
+        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
 
-      let camposUsuarioAuditoria: Partial<usuario> = {};
-      camposUsuarioAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
-      camposUsuarioAuditoria.fechacrea = new Date();
-      camposUsuarioAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
-      camposUsuarioAuditoria.fechamod = new Date();
-      camposUsuarioAuditoria.estado = 1;
-
-      const usuarioCreated = await usuarioDao.insertUsuario(tx, {
-        ...camposUsuarioFk,
-        ...camposUsuarioAdicionales,
-        ...usuarioValidated,
-        ...camposUsuarioAuditoria,
-      });
+      const usuarioCreated = await usuarioDao.insertUsuario(tx, usuarioToCreate);
       log.debug(line(), "usuarioCreated", usuarioCreated);
 
-      let camposCredencialFk: Partial<credencial> = {};
-      camposCredencialFk._idusuario = usuarioCreated._idusuario;
+      const credencialToCreate: Prisma.credencialCreateInput = {
+        usuario: { connect: { idusuario: usuarioCreated.idusuario } },
+        credencialid: uuidv4(),
+        code: uuidv4().split("-")[0],
+        password: encryptedPassword,
+        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
 
-      let camposCredencialAdicionales: Partial<credencial> = {};
-      camposCredencialAdicionales.credencialid = uuidv4();
-      camposCredencialAdicionales.code = uuidv4().split("-")[0];
-      camposCredencialAdicionales.password = encryptedPassword;
-
-      let camposCredencialoAuditoria: Partial<credencial> = {};
-      camposCredencialoAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
-      camposCredencialoAuditoria.fechacrea = new Date();
-      camposCredencialoAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
-      camposCredencialoAuditoria.fechamod = new Date();
-      camposCredencialoAuditoria.estado = 1;
-
-      const credencialCreated = await credencialDao.insertCredencial(tx, {
-        ...camposCredencialFk,
-        ...camposCredencialAdicionales,
-        ...camposCredencialoAuditoria,
-      });
+      const credencialCreated = await credencialDao.insertCredencial(tx, credencialToCreate);
       log.debug(line(), "credencialCreated", credencialCreated);
 
       let validacion: Partial<validacion> = {};
-      validacion._idusuario = usuarioCreated._idusuario;
-      validacion.idvalidaciontipo = 1; // 1: Para Correo electrónico
-      validacion.valor = usuarioValidated.email;
-      validacion.otp = emailvalidationcode;
-      validacion.tiempo_marca = new Date();
-      validacion.tiempo_expiracion = 5; // En minutos
-      validacion.codigo = crypto.randomBytes(77).toString("hex").slice(0, 77);
-      validacion.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
-      validacion.fechacrea = new Date();
-      validacion.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
-      validacion.fechamod = new Date();
-      validacion.estado = 1;
 
-      const validacionCreated = await validacionDao.insertValidacion(tx, validacion);
+      const idvalidaciontipo = 1; // 1: Para Correo electrónico
+      const validacionToCreate: Prisma.validacionCreateInput = {
+        usuario: { connect: { idusuario: usuarioCreated.idusuario } },
+        validacion_tipo: { connect: { idvalidaciontipo: idvalidaciontipo } },
+        valor: usuarioValidated.email,
+        otp: emailvalidationcode,
+        tiempo_marca: new Date(),
+        tiempo_expiracion: 5, // En minutos
+        codigo: crypto.randomBytes(77).toString("hex").slice(0, 77),
+        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
+
+      const validacionCreated = await validacionDao.insertValidacion(tx, validacionToCreate);
       log.debug(line(), "validacionCreated", validacionCreated);
 
       const usuarioReturned: Record<string, any> = {};
-      usuarioReturned.hash = camposUsuarioAdicionales.hash;
+      usuarioReturned.hash = usuarioToCreate.hash;
       usuarioReturned.email = usuarioValidated.email;
       usuarioReturned.codigo = validacion.codigo;
 
@@ -505,7 +504,7 @@ export const validateEmail = async (req: Request, res: Response) => {
         throw new ClientError("El código de verificación no es válido o ha expidado", 404);
       }
 
-      const validacion = await validacionDao.getValidacionByIdusuarioAndCodigo(tx, usuario._idusuario, validacionValidated.codigo, filter_estado);
+      const validacion = await validacionDao.getValidacionByIdusuarioAndCodigo(tx, usuario.idusuario, validacionValidated.codigo, filter_estado);
       if (!validacion) {
         log.warn(line(), "Validación no existe: ", validacionValidated);
         throw new ClientError("El código de verificación no es válido o ha expidado", 404);
@@ -531,7 +530,7 @@ export const validateEmail = async (req: Request, res: Response) => {
 
             var usuarioUpdate: Partial<usuario> = {};
             usuarioUpdate.usuarioid = usuario.usuarioid;
-            usuarioUpdate.isemailvalidated = 1; // true
+            usuarioUpdate.isemailvalidated = true; // true
             const usuarioUpdated = await usuarioDao.updateUsuario(tx, usuarioUpdate);
           } else {
             log.warn(line(), "El código de verificación ha expirado: ", validacionValidated);

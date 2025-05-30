@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getInversionistaByIdusuario = async (tx: TxClient, idusuario: bigint, estados: number[]) => {
+export const getInversionistaByIdusuario = async (tx: TxClient, idusuario: number, estados: number[]) => {
   try {
     const inversionista = await tx.inversionista.findFirst({
       include: {

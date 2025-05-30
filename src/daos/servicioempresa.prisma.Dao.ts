@@ -10,7 +10,7 @@ export const getFactoringempresasByVerificacion = async (tx: TxClient, estadolog
     const personas = await tx.servicio_empresa.findMany({
       include: {
         servicio: true,
-        usuario: true,
+        usuario_suscriptor: true,
         servicio_empresa_estado: true,
         empresa: {
           include: {
@@ -49,7 +49,7 @@ export const getFactoringempresasByVerificacion = async (tx: TxClient, estadolog
         servicio_empresa_verificaciones: {
           include: {
             servicio_empresa_estado: true,
-            usuario: true,
+            usuario_verifica: true,
           },
         },
       },

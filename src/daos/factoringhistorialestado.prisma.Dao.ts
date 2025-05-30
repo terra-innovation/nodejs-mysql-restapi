@@ -21,7 +21,7 @@ export const getFactoringhistorialestadosByIdfactoring = async (tx: TxClient, id
         },
         factoring: true,
         factoring_estado: true,
-        usuario: true,
+        usuario_modifica: true,
       },
       where: {
         idfactoring: idfactoring,

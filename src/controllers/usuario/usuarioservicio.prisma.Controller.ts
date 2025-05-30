@@ -43,16 +43,16 @@ import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
-import { cuenta_bancaria } from "#root/src/models/ft_factoring/CuentaBancaria";
-import { inversionista_cuenta_bancaria } from "#root/src/models/ft_factoring/InversionistaCuentaBancaria";
-import { usuario_servicio_verificacion } from "#root/src/models/ft_factoring/UsuarioServicioVerificacion";
-import { usuario_servicio } from "#root/src/models/ft_factoring/UsuarioServicio";
-import { empresa } from "#root/src/models/ft_factoring/Empresa";
-import { colaborador } from "#root/src/models/ft_factoring/Colaborador";
-import { EmpresaCuentaBancaria, empresa_cuenta_bancaria } from "#root/src/models/ft_factoring/EmpresaCuentaBancaria";
-import { servicio_empresa } from "#root/src/models/ft_factoring/ServicioEmpresa";
-import { usuario_servicio_empresa } from "#root/src/models/ft_factoring/UsuarioServicioEmpresa";
-import { servicio_empresa_verificacion } from "#root/src/models/ft_factoring/ServicioEmpresaVerificacion";
+import { cuenta_bancaria } from "#src/models/prisma/ft_factoring/client";
+import { inversionista_cuenta_bancaria } from "#src/models/prisma/ft_factoring/client";
+import { usuario_servicio_verificacion } from "#src/models/prisma/ft_factoring/client";
+import { usuario_servicio } from "#src/models/prisma/ft_factoring/client";
+import { empresa } from "#src/models/prisma/ft_factoring/client";
+import { colaborador } from "#src/models/prisma/ft_factoring/client";
+import { empresa_cuenta_bancaria } from "#src/models/prisma/ft_factoring/client";
+import { servicio_empresa } from "#src/models/prisma/ft_factoring/client";
+import { usuario_servicio_empresa } from "#src/models/prisma/ft_factoring/client";
+import { servicio_empresa_verificacion } from "#src/models/prisma/ft_factoring/client";
 
 export const suscribirUsuarioServicioFactoringInversionista = async (req: Request, res: Response) => {
   log.debug(line(), "controller::suscribirUsuarioServicioFactoringInversionista");
@@ -143,10 +143,9 @@ export const suscribirUsuarioServicioFactoringInversionista = async (req: Reques
       }
 
       /* Creamos al Inversionista */
-
-      let inversionistaNuevo = {
-        _idpersona: persona.idpersona,
-        cuentabancariaid: uuidv4(),
+      const inversionistaToCreate: Prisma.inversionistaCreateInput = {
+        persona: { connect: { idpersona: persona.idpersona } },
+        inversionistaid: uuidv4(),
         code: uuidv4().split("-")[0],
         idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
         fechacrea: new Date(),
@@ -155,88 +154,72 @@ export const suscribirUsuarioServicioFactoringInversionista = async (req: Reques
         estado: 1,
       };
 
-      const inversionistaCreated = await inversionistaDao.insertInversionista(tx, inversionistaNuevo);
-
+      const inversionistaCreated = await inversionistaDao.insertInversionista(tx, inversionistaToCreate);
       log.debug(line(), "inversionistaCreated:", inversionistaCreated);
 
       /* Creamos la Cuenta Bancaria asociada al Inversionista */
 
-      let camposCuentabancariaNuevo: Partial<cuenta_bancaria> = {};
-      camposCuentabancariaNuevo.numero = usuarioservicioValidated.numero;
-      camposCuentabancariaNuevo.cci = usuarioservicioValidated.cci;
-      camposCuentabancariaNuevo.alias = usuarioservicioValidated.alias;
+      const cuentabancariaToCreate: Prisma.cuenta_bancariaCreateInput = {
+        banco: { connect: { idbanco: banco.idbanco } },
+        cuenta_tipo: { connect: { idcuentatipo: cuentatipo.idcuentatipo } },
+        moneda: { connect: { idmoneda: moneda.idmoneda } },
+        cuenta_bancaria_estado: { connect: { idcuentabancariaestado: cuentabancariaestado.idcuentabancariaestado } },
+        cuentabancariaid: uuidv4(),
+        code: uuidv4().split("-")[0],
+        numero: usuarioservicioValidated.numero,
+        cci: usuarioservicioValidated.cci,
+        alias: usuarioservicioValidated.alias,
+        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
 
-      let camposCuentabancariaNuevoFk: Partial<cuenta_bancaria> = {};
-      camposCuentabancariaNuevoFk.idbanco = banco.idbanco;
-      camposCuentabancariaNuevoFk.idcuentatipo = cuentatipo.idcuentatipo;
-      camposCuentabancariaNuevoFk.idmoneda = moneda.idmoneda;
-      camposCuentabancariaNuevoFk.idcuentabancariaestado = cuentabancariaestado.idcuentabancariaestado;
-
-      let camposCuentabancariaNuevoAdicionales: Partial<cuenta_bancaria> = {};
-      camposCuentabancariaNuevoAdicionales.cuentabancariaid = uuidv4();
-      camposCuentabancariaNuevoAdicionales.code = uuidv4().split("-")[0];
-
-      let camposCuentabancariaNuevoAuditoria: Partial<cuenta_bancaria> = {};
-      camposCuentabancariaNuevoAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
-      camposCuentabancariaNuevoAuditoria.fechacrea = new Date();
-      camposCuentabancariaNuevoAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
-      camposCuentabancariaNuevoAuditoria.fechamod = new Date();
-      camposCuentabancariaNuevoAuditoria.estado = 1;
-
-      const cuentabancariaCreated = await cuentabancariaDao.insertCuentabancaria(tx, {
-        ...camposCuentabancariaNuevo,
-        ...camposCuentabancariaNuevoFk,
-        ...camposCuentabancariaNuevoAdicionales,
-        ...camposCuentabancariaNuevoAuditoria,
-      });
+      const cuentabancariaCreated = await cuentabancariaDao.insertCuentabancaria(tx, cuentabancariaToCreate);
 
       log.debug(line(), "cuentabancariaCreated:", cuentabancariaCreated);
 
-      let camposInversionistacuentabancariaNuevoFk: Partial<inversionista_cuenta_bancaria> = {};
-      camposInversionistacuentabancariaNuevoFk.idinversionista = inversionistaCreated.idinversionista;
-      camposInversionistacuentabancariaNuevoFk.idcuentabancaria = cuentabancariaCreated.idcuentabancaria;
+      const inversionistacuentabancariaToCreate: Prisma.inversionista_cuenta_bancariaCreateInput = {
+        inversionista: { connect: { idinversionista: inversionistaCreated.idinversionista } },
+        cuenta_bancaria: { connect: { idcuentabancaria: cuentabancariaCreated.idcuentabancaria } },
 
-      let camposInversionistacuentabancariaNuevoAdicionales: Partial<inversionista_cuenta_bancaria> = {};
-      camposInversionistacuentabancariaNuevoAdicionales.inversionistacuentabancariaid = uuidv4();
-      camposInversionistacuentabancariaNuevoAdicionales.code = uuidv4().split("-")[0];
-
-      let camposInversionistacuentabancariaNuevoAuditoria: Partial<inversionista_cuenta_bancaria> = {};
-      camposInversionistacuentabancariaNuevoAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
-      camposInversionistacuentabancariaNuevoAuditoria.fechacrea = new Date();
-      camposInversionistacuentabancariaNuevoAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
-      camposInversionistacuentabancariaNuevoAuditoria.fechamod = new Date();
-      camposInversionistacuentabancariaNuevoAuditoria.estado = 1;
-
-      const imversionistacuentabancariaCreated = await inversionistacuentabancariaDao.insertInversionistacuentabancaria(tx, {
-        ...camposInversionistacuentabancariaNuevoFk,
-        ...camposInversionistacuentabancariaNuevoAdicionales,
-        ...camposInversionistacuentabancariaNuevoAuditoria,
-      });
+        inversionistacuentabancariaid: uuidv4(),
+        code: uuidv4().split("-")[0],
+        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
+      const imversionistacuentabancariaCreated = await inversionistacuentabancariaDao.insertInversionistacuentabancaria(tx, inversionistacuentabancariaToCreate);
 
       log.debug(line(), "imversionistacuentabancariaCreated:", imversionistacuentabancariaCreated);
 
       /* Registramos para la verificación del usuario_servicio en la tabla usuario_servicio_verificacion */
-      const camposUsuarioservicioverificacionCreate: Partial<usuario_servicio_verificacion> = {};
-      camposUsuarioservicioverificacionCreate.usuarioservicioverificacionid = uuidv4();
-      camposUsuarioservicioverificacionCreate._idusuarioservicio = usuarioservicio._idusuarioservicio;
-      camposUsuarioservicioverificacionCreate._idusuarioservicioestado = usuarioservicioestado._idusuarioservicioestado;
-      camposUsuarioservicioverificacionCreate._idusuarioverifica = req.session_user?.usuario?._idusuario;
-      camposUsuarioservicioverificacionCreate.comentariousuario = "";
-      camposUsuarioservicioverificacionCreate.comentariointerno = "";
-      camposUsuarioservicioverificacionCreate.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
-      camposUsuarioservicioverificacionCreate.fechacrea = new Date();
-      camposUsuarioservicioverificacionCreate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
-      camposUsuarioservicioverificacionCreate.fechamod = new Date();
-      camposUsuarioservicioverificacionCreate.estado = 1;
 
-      const usuarioservicioverificacionCreated = await usuarioservicioverificacionDao.insertUsuarioservicioverificacion(tx, camposUsuarioservicioverificacionCreate);
+      const usuarioservicioverificacionToCreate: Prisma.usuario_servicio_verificacionCreateInput = {
+        usuario_servicio: { connect: { idusuarioservicio: usuarioservicio.idusuarioservicio } },
+        usuario_servicio_estado: { connect: { idusuarioservicioestado: usuarioservicioestado.idusuarioservicioestado } },
+        usuario_verifica: { connect: { idusuario: req.session_user?.usuario?._idusuario } },
+        usuarioservicioverificacionid: uuidv4(),
+        comentariousuario: "",
+        comentariointerno: "",
+        idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
+
+      const usuarioservicioverificacionCreated = await usuarioservicioverificacionDao.insertUsuarioservicioverificacion(tx, usuarioservicioverificacionToCreate);
       log.debug(line(), "usuarioservicioverificacionCreated:", usuarioservicioverificacionCreated);
 
       /* Actualizamos el estado del usuario_servicio*/
       const camposUsuarioservicioUpdate: Partial<usuario_servicio> = {};
-      camposUsuarioservicioUpdate._idusuarioservicio = usuarioservicio._idusuarioservicio;
+      camposUsuarioservicioUpdate.idusuarioservicio = usuarioservicio.idusuarioservicio;
       camposUsuarioservicioUpdate.usuarioservicioid = usuarioservicio.usuarioservicioid;
-      camposUsuarioservicioUpdate._idusuarioservicioestado = usuarioservicioestado._idusuarioservicioestado;
+      camposUsuarioservicioUpdate.idusuarioservicioestado = usuarioservicioestado.idusuarioservicioestado;
       camposUsuarioservicioUpdate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
       camposUsuarioservicioUpdate.fechamod = new Date();
 
@@ -415,35 +398,25 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       /* Creamos la Empresa */
       const provinciaResidencia = await provinciaDao.getProvinciaByIdprovincia(tx, distritoSede.idprovincia);
 
-      let camposEmpresaNuevo: Partial<empresa> = {};
-      camposEmpresaNuevo.ruc = usuarioservicioValidated.ruc;
-      camposEmpresaNuevo.razon_social = usuarioservicioValidated.razon_social;
-      camposEmpresaNuevo.direccion_sede = usuarioservicioValidated.direccion_sede;
-      camposEmpresaNuevo.direccion_sede_referencia = usuarioservicioValidated.direccion_sede_referencia;
+      const empresaToCreate: Prisma.empresaCreateInput = {
+        pais_sede: { connect: { idpais: paisSede.idpais } },
+        departamento_sede: { connect: { iddepartamento: provinciaResidencia.iddepartamento } },
+        provincia_sede: { connect: { idprovincia: distritoSede.idprovincia } },
+        distrito_sede: { connect: { iddistrito: distritoSede.iddistrito } },
+        ruc: usuarioservicioValidated.ruc,
+        razon_social: usuarioservicioValidated.razon_social,
+        direccion_sede: usuarioservicioValidated.direccion_sede,
+        direccion_sede_referencia: usuarioservicioValidated.direccion_sede_referencia,
+        empresaid: uuidv4(),
+        code: uuidv4().split("-")[0],
+        idusuariocrea: req.session_user?.usuario?._idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user?.usuario?._idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
 
-      let camposEmpresaNuevoFk: Partial<empresa> = {};
-      camposEmpresaNuevoFk.idpaissede = paisSede.idpais;
-      camposEmpresaNuevoFk.iddepartamentosede = provinciaResidencia.iddepartamento;
-      camposEmpresaNuevoFk.idprovinciasede = distritoSede.idprovincia;
-      camposEmpresaNuevoFk.iddistritosede = distritoSede.iddistrito;
-
-      let camposEmpresaNuevoAdicionales: Partial<empresa> = {};
-      camposEmpresaNuevoAdicionales.empresaid = uuidv4();
-      camposEmpresaNuevoAdicionales.code = uuidv4().split("-")[0];
-
-      let camposEmpresaNuevoAuditoria: Partial<empresa> = {};
-      camposEmpresaNuevoAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
-      camposEmpresaNuevoAuditoria.fechacrea = new Date();
-      camposEmpresaNuevoAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
-      camposEmpresaNuevoAuditoria.fechamod = new Date();
-      camposEmpresaNuevoAuditoria.estado = 1;
-
-      const empresaCreated = await empresaDao.insertEmpresa(tx, {
-        ...camposEmpresaNuevo,
-        ...camposEmpresaNuevoFk,
-        ...camposEmpresaNuevoAdicionales,
-        ...camposEmpresaNuevoAuditoria,
-      });
+      const empresaCreated = await empresaDao.insertEmpresa(tx, empresaToCreate);
 
       log.debug(line(), "empresaCreated:", empresaCreated);
 
@@ -451,149 +424,106 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       const usuarioConected = await usuarioDao.getUsuarioByIdusuario(tx, usuarioservicioValidated._idusuario);
       const personaConected = await personaDao.getPersonaByIdusuario(tx, usuarioservicioValidated._idusuario);
 
-      let camposColaboradorNuevo: Partial<colaborador> = {};
-      camposColaboradorNuevo.documentonumero = personaConected.documentonumero;
-      camposColaboradorNuevo.nombrecolaborador = personaConected.personanombres;
-      camposColaboradorNuevo.apellidocolaborador = personaConected.apellidopaterno + " " + personaConected.apellidomaterno;
-      camposColaboradorNuevo.cargo = usuarioservicioValidated.cargo;
-      camposColaboradorNuevo.email = personaConected.email;
-      camposColaboradorNuevo.telefono = personaConected.celular;
-      camposColaboradorNuevo.poderpartidanumero = usuarioservicioValidated.poderpartidanumero;
-      camposColaboradorNuevo.poderpartidaciudad = usuarioservicioValidated.poderpartidaciudad;
+      const colaboradorToCreate: Prisma.colaboradorCreateInput = {
+        empresa: { connect: { idempresa: empresaCreated.idempresa } },
+        persona: { connect: { idpersona: personaConected.idpersona } },
+        colaborador_tipo: { connect: { idcolaboradortipo: colaboradorttipo.idcolaboradortipo } },
+        documento_tipo: { connect: { iddocumentotipo: personaConected.iddocumentotipo } },
+        colaboradorid: uuidv4(),
+        code: uuidv4().split("-")[0],
+        documentonumero: personaConected.documentonumero,
+        nombrecolaborador: personaConected.personanombres,
+        apellidocolaborador: personaConected.apellidopaterno + " " + personaConected.apellidomaterno,
+        cargo: usuarioservicioValidated.cargo,
+        email: personaConected.email,
+        telefono: personaConected.celular,
+        poderpartidanumero: usuarioservicioValidated.poderpartidanumero,
+        poderpartidaciudad: usuarioservicioValidated.poderpartidaciudad,
+        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
 
-      let camposColaboradorNuevoFk: Partial<colaborador> = {};
-      camposColaboradorNuevoFk.idempresa = empresaCreated.idempresa;
-      camposColaboradorNuevoFk.idpersona = personaConected.idpersona;
-      camposColaboradorNuevoFk.idcolaboradortipo = colaboradorttipo.idcolaboradortipo;
-      camposColaboradorNuevoFk.iddocumentotipo = personaConected.iddocumentotipo;
-
-      let camposColaboradorNuevoAdicionales: Partial<colaborador> = {};
-      camposColaboradorNuevoAdicionales.colaboradorid = uuidv4();
-
-      let camposColaboradorNuevoAuditoria: Partial<colaborador> = {};
-      camposColaboradorNuevoAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
-      camposColaboradorNuevoAuditoria.fechacrea = new Date();
-      camposColaboradorNuevoAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
-      camposColaboradorNuevoAuditoria.fechamod = new Date();
-      camposColaboradorNuevoAuditoria.estado = 1;
-
-      const colaboradorCreated = await colaboradorDao.insertColaborador(tx, {
-        ...camposColaboradorNuevo,
-        ...camposColaboradorNuevoFk,
-        ...camposColaboradorNuevoAdicionales,
-        ...camposColaboradorNuevoAuditoria,
-      });
+      const colaboradorCreated = await colaboradorDao.insertColaborador(tx, colaboradorToCreate);
 
       log.debug(line(), "colaboradorCreated:", colaboradorCreated);
 
       /* Creamos la Cuenta Bancaria asociada a la Empresa */
+      const cuentabancariaToCreate: Prisma.cuenta_bancariaCreateInput = {
+        banco: { connect: { idbanco: banco.idbanco } },
+        cuenta_tipo: { connect: { idcuentatipo: cuentatipo.idcuentatipo } },
+        moneda: { connect: { idmoneda: moneda.idmoneda } },
+        cuenta_bancaria_estado: { connect: { idcuentabancariaestado: cuentabancariaestado.idcuentabancariaestado } },
+        cuentabancariaid: uuidv4(),
+        code: uuidv4().split("-")[0],
+        numero: usuarioservicioValidated.numero,
+        cci: usuarioservicioValidated.cci,
+        alias: usuarioservicioValidated.alias,
+        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
 
-      let camposCuentabancariaNuevo: Partial<cuenta_bancaria> = {};
-      camposCuentabancariaNuevo.numero = usuarioservicioValidated.numero;
-      camposCuentabancariaNuevo.cci = usuarioservicioValidated.cci;
-      camposCuentabancariaNuevo.alias = usuarioservicioValidated.alias;
-
-      let camposCuentabancariaNuevoFk: Partial<cuenta_bancaria> = {};
-      camposCuentabancariaNuevoFk.idbanco = banco.idbanco;
-      camposCuentabancariaNuevoFk.idcuentatipo = cuentatipo.idcuentatipo;
-      camposCuentabancariaNuevoFk.idmoneda = moneda.idmoneda;
-      camposCuentabancariaNuevoFk.idcuentabancariaestado = cuentabancariaestado.idcuentabancariaestado;
-
-      let camposCuentabancariaNuevoAdicionales: Partial<cuenta_bancaria> = {};
-      camposCuentabancariaNuevoAdicionales.cuentabancariaid = uuidv4();
-      camposCuentabancariaNuevoAdicionales.code = uuidv4().split("-")[0];
-
-      let camposCuentabancariaNuevoAuditoria: Partial<cuenta_bancaria> = {};
-      camposCuentabancariaNuevoAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
-      camposCuentabancariaNuevoAuditoria.fechacrea = new Date();
-      camposCuentabancariaNuevoAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
-      camposCuentabancariaNuevoAuditoria.fechamod = new Date();
-      camposCuentabancariaNuevoAuditoria.estado = 1;
-
-      const cuentabancariaCreated = await cuentabancariaDao.insertCuentabancaria(tx, {
-        ...camposCuentabancariaNuevo,
-        ...camposCuentabancariaNuevoFk,
-        ...camposCuentabancariaNuevoAdicionales,
-        ...camposCuentabancariaNuevoAuditoria,
-      });
-
+      const cuentabancariaCreated = await cuentabancariaDao.insertCuentabancaria(tx, cuentabancariaToCreate);
       log.debug(line(), "cuentabancariaCreated:", cuentabancariaCreated);
 
-      let camposEmpresacuentabancariaNuevoFk: Partial<empresa_cuenta_bancaria> = {};
-      camposEmpresacuentabancariaNuevoFk.idempresa = empresaCreated.idempresa;
-      camposEmpresacuentabancariaNuevoFk.idcuentabancaria = cuentabancariaCreated.idcuentabancaria;
+      const empresacuentabancariaToCreate: Prisma.empresa_cuenta_bancariaCreateInput = {
+        empresa: { connect: { idempresa: empresa.idempresa } },
+        cuenta_bancaria: { connect: { idcuentabancaria: cuentabancariaCreated.idcuentabancaria } },
+        empresacuentabancariaid: uuidv4(),
+        code: uuidv4().split("-")[0],
+        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
 
-      let camposEmpresacuentabancariaNuevoAdicionales: Partial<empresa_cuenta_bancaria> = {};
-      camposEmpresacuentabancariaNuevoAdicionales.empresacuentabancariaid = uuidv4();
-      camposEmpresacuentabancariaNuevoAdicionales.code = uuidv4().split("-")[0];
-
-      let camposEmpresacuentabancariaNuevoAuditoria: Partial<empresa_cuenta_bancaria> = {};
-      camposEmpresacuentabancariaNuevoAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
-      camposEmpresacuentabancariaNuevoAuditoria.fechacrea = new Date();
-      camposEmpresacuentabancariaNuevoAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
-      camposEmpresacuentabancariaNuevoAuditoria.fechamod = new Date();
-      camposEmpresacuentabancariaNuevoAuditoria.estado = 1;
-
-      const empresacuentabancariaCreated = await empresacuentabancariaDao.insertEmpresacuentabancaria(tx, {
-        ...camposEmpresacuentabancariaNuevoFk,
-        ...camposEmpresacuentabancariaNuevoAdicionales,
-        ...camposEmpresacuentabancariaNuevoAuditoria,
-      });
+      const empresacuentabancariaCreated = await empresacuentabancariaDao.insertEmpresacuentabancaria(tx, empresacuentabancariaToCreate);
 
       log.debug(line(), "empresacuentabancariaCreated:", empresacuentabancariaCreated);
 
       /* Registramos el Servicio para la Empresa en la tabla servicio_empresa */
+      const servicioempresaToCreate: Prisma.servicio_empresaCreateInput = {
+        servicio: { connect: { idservicio: 1 } },
+        empresa: { connect: { idempresa: empresaCreated.idempresa } },
+        usuario_suscriptor: { connect: { idusuario: usuarioConected.idusuario } },
+        servicio_empresa_estado: { connect: { idservicioempresaestado: servicioempresaestado.idservicioempresaestado } },
 
-      let camposServicioempresaNuevoFk: Partial<servicio_empresa> = {};
-      camposServicioempresaNuevoFk.idservicio = 1;
-      camposServicioempresaNuevoFk.idempresa = empresaCreated.idempresa;
-      camposServicioempresaNuevoFk._idusuariosuscriptor = usuarioConected._idusuario;
-      camposServicioempresaNuevoFk.idservicioempresaestado = servicioempresaestado.idservicioempresaestado;
+        servicioempresaid: uuidv4(),
+        code: uuidv4().split("-")[0],
+        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
 
-      let camposServicioempresaNuevoAdicionales: Partial<servicio_empresa> = {};
-      camposServicioempresaNuevoAdicionales.servicioempresaid = uuidv4();
-      camposServicioempresaNuevoAdicionales.code = uuidv4().split("-")[0];
-
-      let camposServicioempresaNuevoAuditoria: Partial<servicio_empresa> = {};
-      camposServicioempresaNuevoAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
-      camposServicioempresaNuevoAuditoria.fechacrea = new Date();
-      camposServicioempresaNuevoAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
-      camposServicioempresaNuevoAuditoria.fechamod = new Date();
-      camposServicioempresaNuevoAuditoria.estado = 1;
-
-      const servicioempresaCreated = await servicioempresaDao.insertServicioempresa(tx, {
-        ...camposServicioempresaNuevoFk,
-        ...camposServicioempresaNuevoAdicionales,
-        ...camposServicioempresaNuevoAuditoria,
-      });
+      const servicioempresaCreated = await servicioempresaDao.insertServicioempresa(tx, servicioempresaToCreate);
 
       log.debug(line(), "servicioempresaCreated:", servicioempresaCreated);
 
       /* Registramos el acceso del usuario a la Empresa en la tabla usuario_servicio_empresa */
+      const usuarioservicioempresaToCreate: Prisma.usuario_servicio_empresaCreateInput = {
+        usuario: { connect: { idusuario: usuarioConected.idusuario } },
+        servicio: { connect: { idservicio: 1 } },
+        empresa: { connect: { idempresa: empresaCreated.idempresa } },
+        usuario_servicio_empresa_estado: { connect: { idusuarioservicioempresaestado: usuarioservicioempresaestado.idusuarioservicioempresaestado } },
+        usuario_servicio_empresa_rol: { connect: { idusuarioservicioempresarol: usuarioservicioempresarol.idusuarioservicioempresarol } },
+        usuarioservicioempresaid: uuidv4(),
+        code: uuidv4().split("-")[0],
+        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
 
-      let camposUsuarioservicioempresaNuevoFk: Partial<usuario_servicio_empresa> = {};
-      camposUsuarioservicioempresaNuevoFk._idusuario = usuarioConected._idusuario;
-      camposUsuarioservicioempresaNuevoFk.idservicio = 1;
-      camposUsuarioservicioempresaNuevoFk.idempresa = empresaCreated.idempresa;
-      camposUsuarioservicioempresaNuevoFk._idusuarioservicioempresaestado = usuarioservicioempresaestado._idusuarioservicioempresaestado;
-      camposUsuarioservicioempresaNuevoFk._idusuarioservicioempresarol = usuarioservicioempresarol._idusuarioservicioempresarol;
-
-      let camposUsuarioservicioempresaNuevoAdicionales: Partial<usuario_servicio_empresa> = {};
-      camposUsuarioservicioempresaNuevoAdicionales.usuarioservicioempresaid = uuidv4();
-      camposUsuarioservicioempresaNuevoAdicionales.code = uuidv4().split("-")[0];
-
-      let camposUsuarioservicioempresaNuevoAuditoria: Partial<usuario_servicio_empresa> = {};
-      camposUsuarioservicioempresaNuevoAuditoria.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
-      camposUsuarioservicioempresaNuevoAuditoria.fechacrea = new Date();
-      camposUsuarioservicioempresaNuevoAuditoria.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
-      camposUsuarioservicioempresaNuevoAuditoria.fechamod = new Date();
-      camposUsuarioservicioempresaNuevoAuditoria.estado = 1;
-
-      const usuarioservicioempresaCreated = await usuarioservicioempresaDao.insertUsuarioservicioempresa(tx, {
-        ...camposUsuarioservicioempresaNuevoFk,
-        ...camposUsuarioservicioempresaNuevoAdicionales,
-        ...camposUsuarioservicioempresaNuevoAuditoria,
-      });
+      const usuarioservicioempresaCreated = await usuarioservicioempresaDao.insertUsuarioservicioempresa(tx, usuarioservicioempresaToCreate);
 
       log.debug(line(), "usuarioservicioempresaCreated:", usuarioservicioempresaCreated);
 
@@ -610,44 +540,46 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       log.debug(line(), "encabezadocuentabancariaCreated:", encabezadocuentabancariaCreated);
 
       /* Registramos para la verificación del servicio_empresa en la tabla servicio_empresa_verificacion */
-      const camposServicioempresaverificacionCreate: Partial<servicio_empresa_verificacion> = {};
-      camposServicioempresaverificacionCreate.servicioempresaverificacionid = uuidv4();
-      camposServicioempresaverificacionCreate.idservicioempresa = servicioempresaCreated.idservicioempresa;
-      camposServicioempresaverificacionCreate.idservicioempresaestado = servicioempresaestado.idservicioempresaestado;
-      camposServicioempresaverificacionCreate._idusuarioverifica = req.session_user?.usuario?._idusuario;
-      camposServicioempresaverificacionCreate.comentariousuario = "";
-      camposServicioempresaverificacionCreate.comentariointerno = "";
-      camposServicioempresaverificacionCreate.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
-      camposServicioempresaverificacionCreate.fechacrea = new Date();
-      camposServicioempresaverificacionCreate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
-      camposServicioempresaverificacionCreate.fechamod = new Date();
-      camposServicioempresaverificacionCreate.estado = 1;
+      const servicioempresaverificacionToCreate: Prisma.servicio_empresa_verificacionCreateInput = {
+        servicio_empresa: { connect: { idservicioempresa: servicioempresaCreated.idservicioempresa } },
+        servicio_empresa_estado: { connect: { idservicioempresaestado: servicioempresaestado.idservicioempresaestado } },
+        usuario_verifica: { connect: { idusuario: req.session_user.usuario.idusuario } },
+        comentariointerno: "",
+        comentariousuario: "",
+        servicioempresaverificacionid: uuidv4(),
+        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
 
-      const servicioempresaverificacionCreated = await servicioempresaverificacionDao.insertServicioempresaverificacion(tx, camposServicioempresaverificacionCreate);
+      const servicioempresaverificacionCreated = await servicioempresaverificacionDao.insertServicioempresaverificacion(tx, servicioempresaverificacionToCreate);
       log.debug(line(), "servicioempresaverificacionCreated:", servicioempresaverificacionCreated);
 
       /* Registramos para la verificación del usuario_servicio en la tabla usuario_servicio_verificacion */
-      const camposUsuarioservicioverificacionCreate: Partial<usuario_servicio_verificacion> = {};
-      camposUsuarioservicioverificacionCreate.usuarioservicioverificacionid = uuidv4();
-      camposUsuarioservicioverificacionCreate._idusuarioservicio = usuarioservicio._idusuarioservicio;
-      camposUsuarioservicioverificacionCreate._idusuarioservicioestado = usuarioservicioestado._idusuarioservicioestado;
-      camposUsuarioservicioverificacionCreate._idusuarioverifica = req.session_user?.usuario?._idusuario;
-      camposUsuarioservicioverificacionCreate.comentariousuario = "";
-      camposUsuarioservicioverificacionCreate.comentariointerno = "";
-      camposUsuarioservicioverificacionCreate.idusuariocrea = req.session_user?.usuario?._idusuario ?? 1;
-      camposUsuarioservicioverificacionCreate.fechacrea = new Date();
-      camposUsuarioservicioverificacionCreate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
-      camposUsuarioservicioverificacionCreate.fechamod = new Date();
-      camposUsuarioservicioverificacionCreate.estado = 1;
+      const usuarioservicioverificacionToCreate: Prisma.usuario_servicio_verificacionCreateInput = {
+        usuario_servicio: { connect: { idusuarioservicio: usuarioservicio.idusuarioservicio } },
+        usuario_servicio_estado: { connect: { idusuarioservicioestado: usuarioservicioestado.idusuarioservicioestado } },
+        usuario_verifica: { connect: { idusuario: req.session_user.usuario._idusuario } },
+        usuarioservicioverificacionid: uuidv4(),
+        comentariousuario: "",
+        comentariointerno: "",
+        idusuariocrea: req.session_user.usuario._idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user.usuario._idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
 
-      const usuarioservicioverificacionCreated = await usuarioservicioverificacionDao.insertUsuarioservicioverificacion(tx, camposUsuarioservicioverificacionCreate);
+      const usuarioservicioverificacionCreated = await usuarioservicioverificacionDao.insertUsuarioservicioverificacion(tx, usuarioservicioverificacionToCreate);
       log.debug(line(), "usuarioservicioverificacionCreated:", usuarioservicioverificacionCreated);
 
       /* Actualizamos el estado del usuario_servicio*/
       const camposUsuarioservicioUpdate: Partial<usuario_servicio> = {};
-      camposUsuarioservicioUpdate._idusuarioservicio = usuarioservicio._idusuarioservicio;
+      camposUsuarioservicioUpdate.idusuarioservicio = usuarioservicio.idusuarioservicio;
       camposUsuarioservicioUpdate.usuarioservicioid = usuarioservicio.usuarioservicioid;
-      camposUsuarioservicioUpdate._idusuarioservicioestado = usuarioservicioestado._idusuarioservicioestado;
+      camposUsuarioservicioUpdate.idusuarioservicioestado = usuarioservicioestado.idusuarioservicioestado;
       camposUsuarioservicioUpdate.idusuariomod = req.session_user?.usuario?._idusuario ?? 1;
       camposUsuarioservicioUpdate.fechamod = new Date();
 

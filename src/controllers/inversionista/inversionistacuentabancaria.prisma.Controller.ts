@@ -89,20 +89,18 @@ export const createInversionistacuentabancaria = async (req: Request, res: Respo
         throw new ClientError("El alias [" + inversionistacuentabancariaValidated.alias + "] se encuentra registrado. Ingrese un alias diferente.", 404);
       }
 
-      var camposCuentaBancariaFk = {
-        _idinversionista: inversionista.idinversionista,
-        _idbanco: banco.idbanco,
-        _idcuentatipo: cuentatipo.idcuentatipo,
-        _idmoneda: moneda.idmoneda,
-        _idcuentabancariaestado: 1, // Por defecto
-      };
+      const idcuentabancariaestado = 1; // Por defecto
 
-      var camposCuentaBancariaAdicionales = {
+      const cuentabancariaToCreate: Prisma.cuenta_bancariaCreateInput = {
+        banco: { connect: { idbanco: banco.idbanco } },
+        cuenta_tipo: { connect: { idcuentatipo: cuentatipo.idcuentatipo } },
+        moneda: { connect: { idmoneda: moneda.idmoneda } },
+        cuenta_bancaria_estado: { connect: { idcuentabancariaestado: idcuentabancariaestado } },
         cuentabancariaid: uuidv4(),
         code: uuidv4().split("-")[0],
-      };
-
-      var camposCuentaBancariaAuditoria = {
+        numero: inversionistacuentabancariaValidated.numero,
+        cci: inversionistacuentabancariaValidated.cci,
+        alias: inversionistacuentabancariaValidated.alias,
         idusuariocrea: req.session_user.usuario._idusuario ?? 1,
         fechacrea: new Date(),
         idusuariomod: req.session_user.usuario._idusuario ?? 1,
@@ -110,17 +108,13 @@ export const createInversionistacuentabancaria = async (req: Request, res: Respo
         estado: 1,
       };
 
-      const cuentabancariaCreated = await cuentabancariaDao.insertCuentabancaria(tx, {
-        ...camposCuentaBancariaFk,
-        ...camposCuentaBancariaAdicionales,
-        ...inversionistacuentabancariaValidated,
-        ...camposCuentaBancariaAuditoria,
-      });
+      const cuentabancariaCreated = await cuentabancariaDao.insertCuentabancaria(tx, cuentabancariaToCreate);
       log.debug(line(), "cuentabancariaCreated:", cuentabancariaCreated);
 
-      var camposEmpresaCuentaBancariaCreate = {
-        _idinversionista: inversionista.idinversionista,
-        _idcuentabancaria: cuentabancariaCreated.idcuentabancaria,
+      const inversionistacuentabancariaToCreate: Prisma.inversionista_cuenta_bancariaCreateInput = {
+        inversionista: { connect: { idinversionista: inversionista.idinversionista } },
+        cuenta_bancaria: { connect: { idcuentabancaria: cuentabancariaCreated.idcuentabancaria } },
+
         inversionistacuentabancariaid: uuidv4(),
         code: uuidv4().split("-")[0],
         idusuariocrea: req.session_user.usuario._idusuario ?? 1,
@@ -130,10 +124,10 @@ export const createInversionistacuentabancaria = async (req: Request, res: Respo
         estado: 1,
       };
 
-      const inversionistacuentabancariaCreated = await inversionistacuentabancariaDao.insertInversionistacuentabancaria(tx, camposEmpresaCuentaBancariaCreate);
+      const inversionistacuentabancariaCreated = await inversionistacuentabancariaDao.insertInversionistacuentabancaria(tx, inversionistacuentabancariaToCreate);
       log.debug(line(), "inversionistacuentabancariaCreated:", inversionistacuentabancariaCreated);
 
-      const inversionistacuentabancariaFiltered = jsonUtils.removeAttributesPrivates(camposEmpresaCuentaBancariaCreate);
+      const inversionistacuentabancariaFiltered = jsonUtils.removeAttributesPrivates(inversionistacuentabancariaToCreate);
 
       return inversionistacuentabancariaFiltered;
     },

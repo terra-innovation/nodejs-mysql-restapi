@@ -392,6 +392,7 @@ exports.Prisma.Banco_transaccion_tipoScalarFieldEnum = {
 exports.Prisma.ColaboradorScalarFieldEnum = {
   idcolaborador: 'idcolaborador',
   colaboradorid: 'colaboradorid',
+  code: 'code',
   idempresa: 'idempresa',
   idpersona: 'idpersona',
   idcolaboradortipo: 'idcolaboradortipo',
@@ -1715,6 +1716,7 @@ exports.Prisma.banco_transaccion_tipoOrderByRelevanceFieldEnum = {
 
 exports.Prisma.colaboradorOrderByRelevanceFieldEnum = {
   colaboradorid: 'colaboradorid',
+  code: 'code',
   documentonumero: 'documentonumero',
   nombrecolaborador: 'nombrecolaborador',
   apellidocolaborador: 'apellidocolaborador',

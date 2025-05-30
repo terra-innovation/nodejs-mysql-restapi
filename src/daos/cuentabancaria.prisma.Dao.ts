@@ -61,7 +61,7 @@ export const getCuentasbancariasByIdbancoAndNumero = async (tx: TxClient, idbanc
   }
 };
 
-export const getCuentasbancariasByIdusuarioAndAlias = async (tx: TxClient, idusuario: bigint, alias: string, estado: number[]) => {
+export const getCuentasbancariasByIdusuarioAndAlias = async (tx: TxClient, idusuario: number, alias: string, estado: number[]) => {
   try {
     const cuentasbancarias = await tx.cuenta_bancaria.findMany({
       include: {
@@ -105,7 +105,7 @@ export const getCuentasbancariasByIdusuarioAndAlias = async (tx: TxClient, idusu
   }
 };
 
-export const getCuentasbancariasByIdusuario = async (tx: TxClient, idusuario: bigint, estado: number[]) => {
+export const getCuentasbancariasByIdusuario = async (tx: TxClient, idusuario: number, estado: number[]) => {
   try {
     const cuentasbancarias = await tx.cuenta_bancaria.findMany({
       include: {
