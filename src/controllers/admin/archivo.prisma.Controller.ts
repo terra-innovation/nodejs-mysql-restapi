@@ -21,7 +21,6 @@ import { unlink } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 
-import { Sequelize, Op } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 

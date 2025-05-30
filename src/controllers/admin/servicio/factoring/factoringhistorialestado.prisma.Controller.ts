@@ -22,7 +22,6 @@ import type { factoring_historial_estado } from "#src/models/prisma/ft_factoring
 import * as luxon from "luxon";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-import { Sequelize, Op } from "sequelize";
 
 export const updateFactoringhistorialestado = async (req: Request, res: Response) => {
   log.debug(line(), "controller::updateFactoringhistorialestado");

@@ -17,7 +17,6 @@ import type { empresa_cuenta_bancaria } from "#src/models/prisma/ft_factoring/cl
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-import { Sequelize, Op } from "sequelize";
 
 export const activateEmpresacuentabancaria = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activateEmpresacuentabancaria");

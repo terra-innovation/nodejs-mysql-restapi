@@ -19,7 +19,7 @@ import * as validacionesYup from "#src/utils/validacionesYup.js";
 
 import * as fs from "fs";
 import path from "path";
-import { Sequelize, Op } from "sequelize";
+
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import * as storageUtils from "#src/utils/storageUtils.js";

@@ -25,7 +25,7 @@ import { log, line } from "#src/utils/logger.pino.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-import { Sequelize, Op } from "sequelize";
+
 import EmailSender from "#src/utils/email/emailSender.js";
 import TemplateManager from "#src/utils/email/TemplateManager.js";
 

@@ -19,7 +19,7 @@ import { Simulacion } from "#src/types/Simulacion.types.js";
 import * as luxon from "luxon";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-import { Sequelize, Op } from "sequelize";
+
 import { simulateFactoringLogicV2 } from "#src/logics/factoringLogic.js";
 
 import { unlink } from "fs/promises";

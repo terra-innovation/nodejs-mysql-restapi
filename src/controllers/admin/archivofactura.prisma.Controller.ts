@@ -12,7 +12,6 @@ import { log, line } from "#src/utils/logger.pino.js";
 
 import type { archivo_factura } from "#src/models/prisma/ft_factoring/client";
 
-import { Sequelize, Op } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 

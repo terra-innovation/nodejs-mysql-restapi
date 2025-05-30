@@ -11,7 +11,6 @@ import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-import { Sequelize, Op } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import type { contacto } from "#src/models/prisma/ft_factoring/client";

@@ -16,7 +16,7 @@ import { log, line } from "#src/utils/logger.pino.js";
 import type { factoring } from "#src/models/prisma/ft_factoring/client";
 
 import * as luxon from "luxon";
-import { Sequelize, Op } from "sequelize";
+
 import * as yup from "yup";
 
 export const activateFactoring = async (req: Request, res: Response) => {

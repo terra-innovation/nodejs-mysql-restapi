@@ -18,7 +18,7 @@ import { log, line } from "#src/utils/logger.pino.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-import { Sequelize, Op } from "sequelize";
+
 import type { persona } from "#src/models/prisma/ft_factoring/client";
 
 export const activatePersona = async (req: Request, res: Response) => {

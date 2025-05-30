@@ -25,7 +25,7 @@ import path from "path";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-import { Sequelize, Op } from "sequelize";
+
 import { persona } from "#root/src/models/ft_factoring/Persona";
 import { persona_declaracion } from "#root/src/models/ft_factoring/PersonaDeclaracion";
 import { persona_verificacion } from "#root/src/models/ft_factoring/PersonaVerificacion";

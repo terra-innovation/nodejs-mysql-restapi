@@ -42,7 +42,7 @@ import path from "path";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-import { Sequelize, Op } from "sequelize";
+
 import { cuenta_bancaria } from "#root/src/models/ft_factoring/CuentaBancaria";
 import { inversionista_cuenta_bancaria } from "#root/src/models/ft_factoring/InversionistaCuentaBancaria";
 import { usuario_servicio_verificacion } from "#root/src/models/ft_factoring/UsuarioServicioVerificacion";

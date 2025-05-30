@@ -14,7 +14,6 @@ import type { factura } from "#src/models/prisma/ft_factoring/client";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-import { Sequelize, Op } from "sequelize";
 
 export const getFacturasByFactoringid = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFacturasByFactoringid");

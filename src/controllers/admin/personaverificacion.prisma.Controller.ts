@@ -16,7 +16,7 @@ import TemplateManager from "#src/utils/email/TemplateManager.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-import { Sequelize, Op } from "sequelize";
+
 import type { persona_verificacion } from "#src/models/prisma/ft_factoring/client";
 import type { persona } from "#src/models/prisma/ft_factoring/client";
 import type { usuario } from "#src/models/prisma/ft_factoring/client";

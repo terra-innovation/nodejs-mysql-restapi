@@ -17,7 +17,7 @@ import { log, line } from "#src/utils/logger.pino.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-import { Sequelize, Op } from "sequelize";
+
 import type { cuenta_bancaria } from "#src/models/prisma/ft_factoring/client";
 import type { inversionista_cuenta_bancaria } from "#src/models/prisma/ft_factoring/client";
 

@@ -1,17 +1,38 @@
+import type { Prisma } from "#src/models/prisma/ft_factoring/client";
 import * as luxon from "luxon";
 import { v4 as uuidv4 } from "uuid";
 import { parseStringPromise } from "xml2js";
 import * as fs from "fs";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
-import { Sequelize, Op } from "sequelize";
-import { FacturaXML } from "../types/FacturaXML.types";
+import type { FacturaXML } from "../types/FacturaXML.types";
 
-export const buildFacturaJson = (result, codigo_archivo, _idusuario) => {
-  const facturaJson = getFactura(result);
-  facturaJson.codigo_archivo = codigo_archivo;
-  const factura = {
-    _idusuarioupload: _idusuario,
+export const getFacturaToCreate = (facturaJson: Partial<FacturaXML>, idusuario: number) => {
+  const facturaToCreate: Prisma.facturaCreateInput = {
+    usuario_upload: { connect: { idusuario: idusuario } },
+    facturaid: facturaJson.facturaid,
+    code: facturaJson.code,
+    serie: facturaJson.serie,
+    numero_comprobante: facturaJson.numero_comprobante,
+    fecha_emision: facturaJson.fecha_emision,
+    hora_emision: facturaJson.hora_emision,
+    fecha_vencimiento: facturaJson.fecha_vencimiento,
+    codigo_tipo_documento: facturaJson.codigo_tipo_documento,
+    UBLVersionID: facturaJson.UBLVersionID,
+    CustomizationID: facturaJson.CustomizationID,
+    codigo_tipo_moneda: facturaJson.codigo_tipo_moneda,
+    cantidad_items: Number(facturaJson.cantidad_items),
+
+    fecha_registro: facturaJson.fecha_registro,
+    detraccion_cantidad: facturaJson.detraccion_cantidad,
+    detraccion_monto: facturaJson.detraccion_monto,
+    pago_cantidad_cuotas: facturaJson.pago_cantidad_cuotas,
+    fecha_pago_mayor_estimado: facturaJson.fecha_pago_mayor_estimado,
+    dias_desde_emision: facturaJson.dias_desde_emision,
+    dias_estimados_para_pago: facturaJson.dias_estimados_para_pago,
+    importe_bruto: facturaJson.importe_bruto,
+    importe_neto: facturaJson.importe_neto,
+
     proveedor_ruc: facturaJson.proveedor.ruc,
     proveedor_razon_social: facturaJson.proveedor.razon_social,
     proveedor_direccion: facturaJson.proveedor.direccion,
@@ -23,18 +44,134 @@ export const buildFacturaJson = (result, codigo_archivo, _idusuario) => {
     proveedor_distrito: facturaJson.proveedor.distrito,
     cliente_ruc: facturaJson.cliente.ruc,
     cliente_razon_social: facturaJson.cliente.razon_social,
-    impuestos_monto: facturaJson.impuesto.monto,
-    impuestos_valor_venta_monto_venta: facturaJson.impuesto.valor_venta.monto_venta,
-    impuestos_valor_venta_monto_venta_mas_impuesto: facturaJson.impuesto.valor_venta.monto_venta_mas_impuesto,
-    impuestos_valor_venta_monto_pago: facturaJson.impuesto.valor_venta.monto_pago,
-    idusuariocrea: _idusuario,
-    fechacrea: Sequelize.fn("now", 3),
-    idusuariomod: _idusuario,
-    fechamod: Sequelize.fn("now", 3),
+    impuesto_monto: facturaJson.impuesto.monto,
+    impuesto_valor_venta_monto_venta: facturaJson.impuesto.valor_venta.monto_venta,
+    impuesto_valor_venta_monto_venta_mas_impuesto: facturaJson.impuesto.valor_venta.monto_venta_mas_impuesto,
+    impuesto_valor_venta_monto_pago: facturaJson.impuesto.valor_venta.monto_pago,
+    idusuariocrea: idusuario,
+    fechacrea: new Date(),
+    idusuariomod: idusuario,
+    fechamod: new Date(),
     estado: 1,
-    ...facturaJson,
   };
-  return factura;
+  return facturaToCreate;
+};
+
+export const getNotasToCreate = (facturaJson: Partial<FacturaXML>, idfactura: bigint, idusuario: number) => {
+  const notasToCreate: Prisma.factura_notaCreateInput[] = facturaJson.notas.map(function (item) {
+    const nota: Prisma.factura_notaCreateInput = {
+      factura: { connect: { idfactura: idfactura } },
+      facturanotaid: item.facturanotaid,
+      id: item.id,
+      descripcion: item.descripcion,
+      idusuariocrea: idusuario,
+      fechacrea: new Date(),
+      idusuariomod: idusuario,
+      fechamod: new Date(),
+      estado: 1,
+    };
+    return nota;
+  });
+  return notasToCreate;
+};
+
+export const getMediosdepagoToCreate = (facturaJson: Partial<FacturaXML>, idfactura: bigint, idusuario: number) => {
+  const mediosdepagoToCreate: Prisma.factura_medio_pagoCreateInput[] = facturaJson.medios_pago.map(function (item) {
+    const medio_pago: Prisma.factura_medio_pagoCreateInput = {
+      factura: { connect: { idfactura: idfactura } },
+      facturamediopagoid: item.facturamediopagoid,
+      id: item.id,
+      medio_pago_codigo: item.medio_pago_codigo,
+      cuenta_bancaria: item.cuenta_bancaria,
+      idusuariocrea: idusuario,
+      fechacrea: new Date(),
+      idusuariomod: idusuario,
+      fechamod: new Date(),
+      estado: 1,
+    };
+    return medio_pago;
+  });
+  return mediosdepagoToCreate;
+};
+
+export const getItemsToCreate = (facturaJson: Partial<FacturaXML>, idfactura: bigint, idusuario: number) => {
+  const itemsToCreate: Prisma.factura_itemCreateInput[] = facturaJson.items.map(function (item) {
+    const factura_item: Prisma.factura_itemCreateInput = {
+      factura: { connect: { idfactura: idfactura } },
+      facturaitemid: item.facturaitemid,
+      id: item.id,
+      codigo_producto_sunat: item.codigo_producto_sunat,
+      codigo_producto_vendedor: item.codigo_producto_vendedor,
+      unidad_medida: item.unidad_medida,
+      cantidad: item.cantidad,
+      descripcion: item.descripcion,
+      valor_unitario: item.valor_unitario,
+      precio_venta: item.precio_venta,
+      impuesto_codigo_sunat: item.impuesto_codigo_sunat,
+      impuesto_nombre: item.impuesto_nombre,
+      impuesto_porcentaje: item.impuesto_porcentaje,
+      impuesto_codigo_afectacion_sunat: item.impuesto_codigo_afectacion_sunat,
+      impuesto_base_imponible: item.impuesto_base_imponible,
+      impuesto_monto: item.impuesto_monto,
+      moneda: item.cantidad,
+      idusuariocrea: idusuario,
+      fechacrea: new Date(),
+      idusuariomod: idusuario,
+      fechamod: new Date(),
+      estado: 1,
+    };
+    return factura_item;
+  });
+  return itemsToCreate;
+};
+
+export const getTerminosdepagoToCreate = (facturaJson: Partial<FacturaXML>, idfactura: bigint, idusuario: number) => {
+  const terminosdepagoToCreate: Prisma.factura_termino_pagoCreateInput[] = facturaJson.terminos_pago.map(function (item) {
+    const termino_pago: Prisma.factura_termino_pagoCreateInput = {
+      factura: { connect: { idfactura: idfactura } },
+      facturaterminopagoid: item.facturaterminopagoid,
+      id: item.id,
+      forma_pago: item.forma_pago,
+      monto: item.monto,
+      porcentaje: item.porcentaje,
+      fecha_pago: item.fecha_pago,
+      idusuariocrea: idusuario,
+      fechacrea: new Date(),
+      idusuariomod: idusuario,
+      fechamod: new Date(),
+      estado: 1,
+    };
+    return termino_pago;
+  });
+  return terminosdepagoToCreate;
+};
+
+export const getImpuestosToCreate = (facturaJson: Partial<FacturaXML>, idfactura: bigint, idusuario: number) => {
+  const impuestosToCreate: Prisma.factura_impuestoCreateInput[] = facturaJson.impuesto.impuestos.map(function (item) {
+    const impuesto: Prisma.factura_impuestoCreateInput = {
+      factura: { connect: { idfactura: idfactura } },
+      facturaimpuestoid: item.facturaimpuestoid,
+      id: item.id,
+      codigo_sunat: item.codigo_sunat,
+      nombre: item.nombre,
+      porcentaje: item.porcentaje,
+      base_imponible: item.base_imponible,
+      monto: item.monto,
+      idusuariocrea: idusuario,
+      fechacrea: new Date(),
+      idusuariomod: idusuario,
+      fechamod: new Date(),
+      estado: 1,
+    };
+    return impuesto;
+  });
+  return impuestosToCreate;
+};
+
+export const buildFacturaJson = (result, codigo_archivo, idusuario: number) => {
+  const facturaJson: Partial<FacturaXML> = getFactura(result);
+  facturaJson.codigo_archivo = codigo_archivo;
+  return facturaJson;
 };
 
 export const getInvoiceTypeCode = (invoice) => {
@@ -80,6 +217,7 @@ export const getFactura = (json) => {
     CustomizationID: json.Invoice.CustomizationID?.[0]._ ?? json.Invoice.CustomizationID?.[0] ?? null,
     codigo_tipo_moneda: json.Invoice.DocumentCurrencyCode?.[0]._ ?? null,
     cantidad_items: json.Invoice.LineCountNumeric?.[0] ?? null,
+
     proveedor: {
       ruc: json.Invoice.AccountingSupplierParty[0].Party[0].PartyIdentification?.[0].ID[0]._ ?? null,
       razon_social: json.Invoice.AccountingSupplierParty[0].Party[0].PartyLegalEntity?.[0].RegistrationName[0] ?? null,
@@ -91,10 +229,12 @@ export const getFactura = (json) => {
       urbanizacion: json.Invoice.AccountingSupplierParty[0].Party[0].PartyLegalEntity?.[0].RegistrationAddress?.[0].CitySubdivisionName?.[0] ?? null,
       distrito: json.Invoice.AccountingSupplierParty[0].Party[0].PartyLegalEntity?.[0].RegistrationAddress?.[0].District?.[0] ?? null,
     },
+
     cliente: {
       ruc: json.Invoice.AccountingCustomerParty[0].Party[0].PartyIdentification?.[0].ID[0]._ ?? null,
       razon_social: json.Invoice.AccountingCustomerParty[0].Party[0].PartyLegalEntity?.[0].RegistrationName[0] ?? null,
     },
+
     notas: (json.Invoice.Note || []).map(function (item) {
       let descripcion = "";
       let id = null;
@@ -113,6 +253,7 @@ export const getFactura = (json) => {
       };
       return nota;
     }),
+
     medios_pago: (json.Invoice.PaymentMeans || []).map(function (item) {
       var medio_pago = {
         //item: item,
@@ -124,6 +265,7 @@ export const getFactura = (json) => {
 
       return medio_pago;
     }),
+
     terminos_pago: (json.Invoice.PaymentTerms || []).map(function (item) {
       var termino_pago = {
         //item: item,
@@ -161,6 +303,7 @@ export const getFactura = (json) => {
       };
       return item_invoice;
     }),
+
     impuesto: {
       monto: json.Invoice.TaxTotal[0].TaxAmount[0]._ ?? null,
       impuestos: (json.Invoice.TaxTotal[0].TaxSubtotal || []).map(function (taxsubtotal) {

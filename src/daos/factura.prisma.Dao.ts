@@ -42,7 +42,7 @@ export const getFacturasByIdfactoring = async (tx: TxClient, idfactoring: bigint
         factura_medio_pagos: true,
         factura_notas: true,
         factura_termino_pagos: true,
-        usuario: true,
+        usuario_upload: true,
       },
       where: {
         estado: {
