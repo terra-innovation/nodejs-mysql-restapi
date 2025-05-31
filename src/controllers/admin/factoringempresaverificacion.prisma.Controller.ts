@@ -201,7 +201,7 @@ const enviarCorreoSegunCorrespondeNuevoEstadoDeServicioEmpresa = async (servicio
       // Email de más información
       const dataEmail = {
         codigo_servicio_empresa: servicioempresa.code,
-        nombres: personasuscriptor.usuario_usuario.usuarionombres,
+        nombres: personasuscriptor.usuario.usuarionombres,
         fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
         empresa_razon_social: empresa.razon_social,
         empresa_ruc: empresa.ruc,
@@ -210,7 +210,7 @@ const enviarCorreoSegunCorrespondeNuevoEstadoDeServicioEmpresa = async (servicio
       const emailTemplate = await templateManager.templateFactoringEmpresaVerificacionMasInformacion(dataEmail);
 
       const mailOptions = {
-        to: personasuscriptor.usuario_usuario.email,
+        to: personasuscriptor.usuario.email,
         subject: emailTemplate.subject,
         text: emailTemplate.text,
         html: emailTemplate.html,
@@ -224,7 +224,7 @@ const enviarCorreoSegunCorrespondeNuevoEstadoDeServicioEmpresa = async (servicio
     // Email de aprobado
     const dataEmail = {
       codigo_servicio_empresa: servicioempresa.code,
-      nombres: personasuscriptor.usuario_usuario.usuarionombres,
+      nombres: personasuscriptor.usuario.usuarionombres,
       fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
       empresa_razon_social: empresa.razon_social,
       empresa_ruc: empresa.ruc,
@@ -232,7 +232,7 @@ const enviarCorreoSegunCorrespondeNuevoEstadoDeServicioEmpresa = async (servicio
     const emailTemplate = await templateManager.templateFactoringEmpresaVerificacionAprobado(dataEmail);
 
     const mailOptions = {
-      to: personasuscriptor.usuario_usuario.email,
+      to: personasuscriptor.usuario.email,
       subject: emailTemplate.subject,
       text: emailTemplate.text,
       html: emailTemplate.html,
@@ -242,7 +242,7 @@ const enviarCorreoSegunCorrespondeNuevoEstadoDeServicioEmpresa = async (servicio
     // Email de rechazado
     const dataEmail = {
       codigo_servicio_empresa: servicioempresa.code,
-      nombres: personasuscriptor.usuario_usuario.usuarionombres,
+      nombres: personasuscriptor.usuario.usuarionombres,
       fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
       empresa_razon_social: empresa.razon_social,
       empresa_ruc: empresa.ruc,
@@ -250,7 +250,7 @@ const enviarCorreoSegunCorrespondeNuevoEstadoDeServicioEmpresa = async (servicio
     const emailTemplate = await templateManager.templateFactoringEmpresaVerificacionRechazado(dataEmail);
 
     const mailOptions = {
-      to: personasuscriptor.usuario_usuario.email,
+      to: personasuscriptor.usuario.email,
       subject: emailTemplate.subject,
       text: emailTemplate.text,
       html: emailTemplate.html,

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { catchedAsync } from "#src/utils/catchedAsync.js";
-import * as cuentabancariaestadoController from "#src/controllers/admin/cuentabancariaestadoController.js";
-import { verifyToken, checkRole } from "#src/middlewares/authMiddleware.js";
+import * as cuentabancariaestadoController from "#src/controllers/admin/cuentabancariaestado.prisma.Controller.js";
+import { verifyToken, checkRole } from "#src/middlewares/auth.prisma.Middleware.js";
 
 const router = Router();
 

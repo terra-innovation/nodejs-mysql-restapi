@@ -31,7 +31,7 @@ export const activateFactoring = async (req: Request, res: Response) => {
   const factoringValidated = factoringSchema.validateSync({ factoringid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "factoringValidated:", factoringValidated);
 
-  const resultado = await prismaFT.client.$transaction(
+  const factoringActivated = await prismaFT.client.$transaction(
     async (tx) => {
       var camposAuditoria: Partial<factoring> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
@@ -43,7 +43,7 @@ export const activateFactoring = async (req: Request, res: Response) => {
         throw new ClientError("Factoring no existe", 404);
       }
       log.debug(line(), "factoringActivated:", factoringActivated);
-      return {};
+      return factoringActivated;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -62,7 +62,7 @@ export const deleteFactoring = async (req: Request, res: Response) => {
   const factoringValidated = factoringSchema.validateSync({ factoringid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "factoringValidated:", factoringValidated);
 
-  const resultado = await prismaFT.client.$transaction(
+  const factoringDeleted = await prismaFT.client.$transaction(
     async (tx) => {
       var camposAuditoria: Partial<factoring> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
@@ -74,7 +74,7 @@ export const deleteFactoring = async (req: Request, res: Response) => {
         throw new ClientError("Factoringpropuesta no existe", 404);
       }
       log.debug(line(), "factoringDeleted:", factoringDeleted);
-      return {};
+      return factoringDeleted;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -117,27 +117,18 @@ export const updateFactoring = async (req: Request, res: Response) => {
         }
       }
 
-      var camposFactoringFk: Partial<factoring> = {};
-      camposFactoringFk.idfactoringestado = factoringestado.idfactoringestado;
-      if (factoringValidated.factoringpropuestaaceptadaid) {
-        camposFactoringFk.idfactoringpropuestaaceptada = factoringpropuesta.idfactoringpropuesta;
-      } else {
-        camposFactoringFk.idfactoringpropuestaaceptada = null;
-      }
+      const factoringToUpdate: Prisma.factoringUpdateInput = {
+        factoring_estado: { connect: { idfactoringestado: factoringestado.idfactoringestado } },
+        factoring_propuesta_aceptada: factoringValidated.factoringpropuestaaceptadaid
+          ? {
+              connect: { idfactoringpropuesta: factoringpropuesta.idfactoringpropuesta },
+            }
+          : { disconnect: true },
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+      };
 
-      var camposFactoringAdicionales: Partial<factoring> = {};
-      camposFactoringAdicionales.factoringid = factoring.factoringid;
-
-      var camposFactoringAuditoria: Partial<factoring> = {};
-      camposFactoringAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
-      camposFactoringAuditoria.fechamod = new Date();
-
-      const factoringUpdated = await factoringDao.updateFactoring(tx, {
-        ...camposFactoringFk,
-        ...camposFactoringAdicionales,
-        ...factoringValidated,
-        ...camposFactoringAuditoria,
-      });
+      const factoringUpdated = await factoringDao.updateFactoring(tx, factoring.factoringid, factoringToUpdate);
       log.debug(line(), "factoringUpdated", factoringUpdated);
 
       return {};
@@ -163,7 +154,7 @@ export const simulateFactoring = async (req: Request, res: Response) => {
   var factoringValidated = factoringSimulateSchema.validateSync({ factoringid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
   //log.debug(line(),"factoringValidated:", factoringValidated);
 
-  const resultado = await prismaFT.client.$transaction(
+  const simulacion = await prismaFT.client.$transaction(
     async (tx) => {
       const session_idusuario = req.session_user.usuario.idusuario;
       const filter_estados = [1];
@@ -188,11 +179,11 @@ export const simulateFactoring = async (req: Request, res: Response) => {
 
       var dias_pago_estimado = luxon.DateTime.fromISO(factoring.fecha_pago_estimado).startOf("day").diff(luxon.DateTime.local().startOf("day"), "days").days; // Actualizamos la cantidad de dias para el pago
       var simulacion = {};
-      simulacion = await simulateFactoringLogicV1(riesgooperacion.idriesgo, factoring.cuentabancaria_cuenta_bancarium.idbanco, factoring.cantidad_facturas, factoring.monto_neto, dias_pago_estimado, factoringValidated.porcentaje_adelanto, factoringValidated.tnm);
+      simulacion = await simulateFactoringLogicV1(riesgooperacion.idriesgo, factoring.cuenta_bancaria.idbanco, factoring.cantidad_facturas, factoring.monto_neto, dias_pago_estimado, factoringValidated.porcentaje_adelanto, factoringValidated.tnm);
 
       log.info(line(), "simulacion: ", simulacion);
 
-      return {};
+      return simulacion;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -204,7 +195,7 @@ export const getFactoringMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFactoringsMaster");
   const filter_estados = [1];
 
-  const resultado = await prismaFT.client.$transaction(
+  const factoringsMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const factoringtipos = await factoringtipoDao.getFactoringtipos(tx, filter_estados);
       const factoringestados = await factoringestadoDao.getFactoringestados(tx, filter_estados);
@@ -221,7 +212,7 @@ export const getFactoringMaster = async (req: Request, res: Response) => {
       //jsonUtils.prettyPrint(factoringsMasterObfuscated);
       var factoringsMasterFiltered = jsonUtils.removeAttributesPrivates(factoringsMasterObfuscated);
       //jsonUtils.prettyPrint(factoringsMasterFiltered);
-      return {};
+      return factoringsMasterFiltered;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -230,11 +221,11 @@ export const getFactoringMaster = async (req: Request, res: Response) => {
 
 export const getFactorings = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFactorings");
-  const resultado = await prismaFT.client.$transaction(
+  const factorings = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estados = [1, 2];
       const factorings = await factoringDao.getFactoringsByEstados(tx, filter_estados);
-      return {};
+      return factorings;
     },
     { timeout: prismaFT.transactionTimeout }
   );

@@ -1,18 +1,18 @@
 import { Router } from "express";
 
 import admin_archivoRoutes from "#src/routes/admin/archivo.prisma.routes.js";
-import admin_archivofacturaRoutes from "#src/routes/admin/archivofactura.routes.js";
-import admin_cuentabancariaestadoRoutes from "#src/routes/admin/cuentabancariaestado.routes.js";
-import admin_empresaRoutes from "#src/routes/admin/empresa.routes.js";
-import admin_empresacuentabancariaRoutes from "#src/routes/admin/empresacuentabancaria.routes.js";
-import admin_factorigempresaverificacionRoutes from "#src/routes/admin/factoringempresaverificacion.routes.js";
-import admin_facturaRoutes from "#src/routes/admin/factura.routes.js";
-import admin_inversionistacuentabancariaRoutes from "#src/routes/admin/inversionistacuentabancaria.routes.js";
-import admin_personaRoutes from "#src/routes/admin/persona.routes.js";
-import admin_personaverificacionRoutes from "#src/routes/admin/personaverificacion.routes.js";
-import admin_servicio_factoring_factoringRoutes from "#src/routes/admin/servicio/factoring/factoring.routes.js";
-import admin_servicio_factoring_factoringhistorialestadoRoutes from "#src/routes/admin/servicio/factoring/factoringhistorialestado.routes.js";
-import admin_servicio_factoring_factoringpropuestaRoutes from "#src/routes/admin/servicio/factoring/factoringpropuesta.routes.js";
+import admin_archivofacturaRoutes from "#src/routes/admin/archivofactura.prisma.routes.js";
+import admin_cuentabancariaestadoRoutes from "#src/routes/admin/cuentabancariaestado.prisma.routes.js";
+import admin_empresaRoutes from "#src/routes/admin/empresa.prisma.routes.js";
+import admin_empresacuentabancariaRoutes from "#src/routes/admin/empresacuentabancaria.prisma.routes.js";
+import admin_factorigempresaverificacionRoutes from "#src/routes/admin/factoringempresaverificacion.prisma.routes.js";
+import admin_facturaRoutes from "#src/routes/admin/factura.prisma.routes.js";
+import admin_inversionistacuentabancariaRoutes from "#src/routes/admin/inversionistacuentabancaria.prisma.routes.js";
+import admin_personaRoutes from "#src/routes/admin/persona.prisma.routes.js";
+import admin_personaverificacionRoutes from "#src/routes/admin/personaverificacion.prisma.routes.js";
+import admin_servicio_factoring_factoringRoutes from "#src/routes/admin/servicio/factoring/factoring.prisma.routes.js";
+import admin_servicio_factoring_factoringhistorialestadoRoutes from "#src/routes/admin/servicio/factoring/factoringhistorialestado.prisma.routes.js";
+import admin_servicio_factoring_factoringpropuestaRoutes from "#src/routes/admin/servicio/factoring/factoringpropuesta.prisma.routes.js";
 import admin_zlaboratorioRoutes from "#src/routes/admin/zlaboratorio.prisma.routes.js";
 
 const router = Router();

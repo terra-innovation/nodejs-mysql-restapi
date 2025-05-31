@@ -389,12 +389,12 @@ export const insertFactoring = async (tx: TxClient, factoring: Prisma.factoringC
   }
 };
 
-export const updateFactoring = async (tx: TxClient, factoring: Partial<factoring>) => {
+export const updateFactoring = async (tx: TxClient, factoringid: string, factoring: Prisma.factoringUpdateInput) => {
   try {
     const result = await tx.factoring.update({
       data: factoring,
       where: {
-        factoringid: factoring.factoringid,
+        factoringid: factoringid,
       },
     });
     return result;

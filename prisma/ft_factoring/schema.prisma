@@ -10,15 +10,15 @@ datasource db {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model archivo {
-  idarchivo                           Int                                  @id @default(autoincrement()) @map("_idarchivo")
+  idarchivo                           Int                                  @id @default(autoincrement()) @map("_idarchivo") @db.UnsignedInt
   archivoid                           String                               @unique(map: "UQ_archivoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
-  idarchivotipo                       Int                                  @default(0) @map("_idarchivotipo")
-  idarchivoestado                     Int                                  @default(0) @map("_idarchivoestado")
+  idarchivotipo                       Int                                  @map("_idarchivotipo") @db.UnsignedInt
+  idarchivoestado                     Int                                  @map("_idarchivoestado") @db.UnsignedInt
   codigo                              String                               @default("0") @db.VarChar(50)
   nombrereal                          String                               @db.VarChar(200)
   nombrealmacenamiento                String                               @db.VarChar(200)
   ruta                                String                               @db.VarChar(500)
-  tamanio                             BigInt                               @default(0)
+  tamanio                             Int                                  @default(0) @db.UnsignedInt
   mimetype                            String                               @db.VarChar(100)
   encoding                            String                               @db.VarChar(50)
   extension                           String                               @db.VarChar(20)
@@ -45,8 +45,8 @@ model archivo {
 }
 
 model archivo_colaborador {
-  idarchivo     Int         @map("_idarchivo")
-  idcolaborador Int         @map("_idcolaborador")
+  idarchivo     Int         @map("_idarchivo") @db.UnsignedInt
+  idcolaborador Int         @map("_idcolaborador") @db.UnsignedInt
   idusuariocrea Int         @default(1)
   fechacrea     DateTime    @default(now())
   idusuariomod  Int         @default(1)
@@ -60,8 +60,8 @@ model archivo_colaborador {
 }
 
 model archivo_cuenta_bancaria {
-  idarchivo        Int             @map("_idarchivo")
-  idcuentabancaria Int             @map("_idcuentabancaria")
+  idarchivo        Int             @map("_idarchivo") @db.UnsignedInt
+  idcuentabancaria Int             @map("_idcuentabancaria") @db.UnsignedInt
   idusuariocrea    Int             @default(1)
   fechacrea        DateTime        @default(now())
   idusuariomod     Int             @default(1)
@@ -75,8 +75,8 @@ model archivo_cuenta_bancaria {
 }
 
 model archivo_empresa {
-  idarchivo     Int      @map("_idarchivo")
-  idempresa     Int      @map("_idempresa")
+  idarchivo     Int      @map("_idarchivo") @db.UnsignedInt
+  idempresa     Int      @map("_idempresa") @db.UnsignedInt
   idusuariocrea Int      @default(1)
   fechacrea     DateTime @default(now())
   idusuariomod  Int      @default(1)
@@ -90,7 +90,7 @@ model archivo_empresa {
 }
 
 model archivo_estado {
-  idarchivoestado Int       @id @default(autoincrement()) @map("_idarchivoestado")
+  idarchivoestado Int       @id @default(autoincrement()) @map("_idarchivoestado") @db.UnsignedInt
   archivoestadoid String    @unique(map: "UQ_archivoestadoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   nombre          String    @db.VarChar(50)
   idusuariocrea   Int       @default(1)
@@ -102,8 +102,8 @@ model archivo_estado {
 }
 
 model archivo_factoring_historial_estado {
-  idarchivo                  Int                        @map("_idarchivo")
-  idfactoringhistorialestado BigInt                     @map("_idfactoringhistorialestado")
+  idarchivo                  Int                        @map("_idarchivo") @db.UnsignedInt
+  idfactoringhistorialestado Int                        @map("_idfactoringhistorialestado") @db.UnsignedInt
   idusuariocrea              Int                        @default(1)
   fechacrea                  DateTime                   @default(now())
   idusuariomod               Int                        @default(1)
@@ -117,8 +117,8 @@ model archivo_factoring_historial_estado {
 }
 
 model archivo_factura {
-  idarchivo     Int      @map("_idarchivo")
-  idfactura     BigInt   @map("_idfactura")
+  idarchivo     Int      @map("_idarchivo") @db.UnsignedInt
+  idfactura     Int      @map("_idfactura") @db.UnsignedInt
   idusuariocrea Int      @default(1)
   fechacrea     DateTime @default(now())
   idusuariomod  Int      @default(1)
@@ -132,8 +132,8 @@ model archivo_factura {
 }
 
 model archivo_inversionista_deposito {
-  idarchivo               Int                    @map("_idarchivo")
-  idinversionistadeposito BigInt                 @map("_idinversionistadeposito")
+  idarchivo               Int                    @map("_idarchivo") @db.UnsignedInt
+  idinversionistadeposito Int                    @map("_idinversionistadeposito") @db.UnsignedInt
   idusuariocrea           Int                    @default(1)
   fechacrea               DateTime               @default(now())
   idusuariomod            Int                    @default(1)
@@ -147,8 +147,8 @@ model archivo_inversionista_deposito {
 }
 
 model archivo_inversionista_retiro {
-  idarchivo             Int                  @map("_idarchivo")
-  idinversionistaretiro BigInt               @map("_idinversionistaretiro")
+  idarchivo             Int                  @map("_idarchivo") @db.UnsignedInt
+  idinversionistaretiro Int                  @map("_idinversionistaretiro") @db.UnsignedInt
   idusuariocrea         Int                  @default(1)
   fechacrea             DateTime             @default(now())
   idusuariomod          Int                  @default(1)
@@ -162,8 +162,8 @@ model archivo_inversionista_retiro {
 }
 
 model archivo_persona {
-  idarchivo     Int      @map("_idarchivo")
-  idpersona     BigInt   @map("_idpersona")
+  idarchivo     Int      @map("_idarchivo") @db.UnsignedInt
+  idpersona     Int      @map("_idpersona") @db.UnsignedInt
   idusuariocrea Int      @default(1)
   fechacrea     DateTime @default(now())
   idusuariomod  Int      @default(1)
@@ -177,7 +177,7 @@ model archivo_persona {
 }
 
 model archivo_tipo {
-  idarchivotipo Int       @id @default(autoincrement()) @map("_idarchivotipo")
+  idarchivotipo Int       @id @default(autoincrement()) @map("_idarchivotipo") @db.UnsignedInt
   archivotipoid String    @unique(map: "UQ_archivotipoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code          String?   @db.VarChar(20)
   nombre        String    @db.VarChar(50)
@@ -190,7 +190,7 @@ model archivo_tipo {
 }
 
 model banco {
-  idbanco          Int               @id @default(autoincrement()) @map("_idbanco")
+  idbanco          Int               @id @default(autoincrement()) @map("_idbanco") @db.UnsignedInt
   bancoid          String            @unique(map: "UQ_banco_bancoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   tipo             String            @db.VarChar(50)
   nombre           String            @db.VarChar(100)
@@ -205,12 +205,12 @@ model banco {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model banco_cuenta {
-  idbancocuenta               BigInt                       @id @default(autoincrement()) @map("_idbancocuenta")
+  idbancocuenta               Int                          @id @default(autoincrement()) @map("_idbancocuenta") @db.UnsignedInt
   bancocuentaid               String                       @unique(map: "UQ_bancocuenta_bancocuentaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                        String                       @unique(map: "UQ_bancocuenta_code") @db.VarChar(255)
-  idbancocuentatipo           Int                          @map("_idbancocuentatipo")
-  idmoneda                    Int                          @map("_idmoneda")
-  idbancocuentaestado         Int                          @map("_idbancocuentaestado")
+  idbancocuentatipo           Int                          @map("_idbancocuentatipo") @db.UnsignedInt
+  idmoneda                    Int                          @map("_idmoneda") @db.UnsignedInt
+  idbancocuentaestado         Int                          @map("_idbancocuentaestado") @db.UnsignedInt
   numero                      String                       @default("0") @db.VarChar(20)
   disponible_confirmado       Decimal                      @default(0.00) @db.Decimal(20, 2)
   disponible_proceso          Decimal                      @default(0.00) @db.Decimal(20, 2)
@@ -236,7 +236,7 @@ model banco_cuenta {
 }
 
 model banco_cuenta_estado {
-  idbancocuentaestado Int            @id @map("_idbancocuentaestado")
+  idbancocuentaestado Int            @id @map("_idbancocuentaestado") @db.UnsignedInt
   bancocuentaestadoid String         @unique(map: "UQ_bancocuentaestado_bancocuentaestadoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                String         @unique(map: "UQ_bancocuentaestado_code") @db.VarChar(20)
   nombre              String         @db.VarChar(50)
@@ -249,7 +249,7 @@ model banco_cuenta_estado {
 }
 
 model banco_cuenta_tipo {
-  idbancocuentatipo Int            @id @map("_idbancocuentatipo")
+  idbancocuentatipo Int            @id @map("_idbancocuentatipo") @db.UnsignedInt
   bancocuentatipoid String         @unique(map: "UQ_bancocuentatipo_bancocuentatipoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code              String         @unique(map: "UQ_bancocuentatipo_code") @db.VarChar(20)
   nombre            String         @db.VarChar(50)
@@ -262,13 +262,13 @@ model banco_cuenta_tipo {
 }
 
 model banco_transaccion {
-  idbancotransaccion                                    BigInt                                     @id @default(autoincrement()) @map("_idbancotransaccion")
+  idbancotransaccion                                    Int                                        @id @default(autoincrement()) @map("_idbancotransaccion") @db.UnsignedInt
   bancotransaccionid                                    String                                     @unique(map: "UQ_bancotransaccio_bancotransaccioid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                                                  String                                     @unique(map: "UQ_bancotransaccio_code") @db.VarChar(20)
-  idbancocuenta                                         BigInt                                     @map("_idbancocuenta")
-  idbancotransacciontipo                                Int                                        @map("_idbancotransacciontipo")
-  idbancotransaccionestado                              Int                                        @map("_idbancotransaccionestado")
-  idbancotransaccionestadohistorial                     BigInt?                                    @map("_idbancotransaccionestadohistorial")
+  idbancocuenta                                         Int                                        @map("_idbancocuenta") @db.UnsignedInt
+  idbancotransacciontipo                                Int                                        @map("_idbancotransacciontipo") @db.UnsignedInt
+  idbancotransaccionestado                              Int                                        @map("_idbancotransaccionestado") @db.UnsignedInt
+  idbancotransaccionestadohistorial                     Int?                                       @map("_idbancotransaccionestadohistorial") @db.UnsignedInt
   fecha_solicitud                                       DateTime                                   @db.DateTime(0)
   fecha_efectiva                                        DateTime?                                  @db.DateTime(0)
   monto                                                 Decimal                                    @db.Decimal(20, 2)
@@ -293,7 +293,7 @@ model banco_transaccion {
 }
 
 model banco_transaccion_estado {
-  idbancotransaccionestado             Int                                  @id @map("_idbancotransaccionestado")
+  idbancotransaccionestado             Int                                  @id @map("_idbancotransaccionestado") @db.UnsignedInt
   bancotransaccionestadoid             String                               @unique(map: "UQ_bancotransaccionestado_bancotransaccionestadoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                                 String                               @unique(map: "UQ_bancotransaccionestado_code") @db.VarChar(20)
   nombre                               String                               @db.VarChar(50)
@@ -307,11 +307,11 @@ model banco_transaccion_estado {
 }
 
 model banco_transaccion_estado_historial {
-  idbancotransaccionestadohistorial                   BigInt                   @id @default(autoincrement()) @map("_idbancotransaccionestadohistorial")
+  idbancotransaccionestadohistorial                   Int                      @id @default(autoincrement()) @map("_idbancotransaccionestadohistorial") @db.UnsignedInt
   bancotransaccionestadohistorialid                   String                   @unique(map: "UQ_bteh_bancotransaccionestadohistorialid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                                                String                   @unique(map: "UQ_bteh_code") @db.VarChar(255)
-  idbancotransaccion                                  BigInt                   @map("_idbancotransaccion")
-  idbancotransaccionestado                            Int                      @map("_idbancotransaccionestado")
+  idbancotransaccion                                  Int                      @map("_idbancotransaccion") @db.UnsignedInt
+  idbancotransaccionestado                            Int                      @map("_idbancotransaccionestado") @db.UnsignedInt
   idusuariomodifica                                   Int                      @map("_idusuariomodifica") @db.UnsignedInt
   motivo                                              String?                  @db.Text
   idusuariocrea                                       Int                      @default(1)
@@ -330,8 +330,8 @@ model banco_transaccion_estado_historial {
 }
 
 model banco_transaccion_factoring_inversion {
-  idbancotransaccion   BigInt              @map("_idbancotransaccion")
-  idfactoringinversion BigInt              @map("_idfactoringinversion")
+  idbancotransaccion   Int                 @map("_idbancotransaccion") @db.UnsignedInt
+  idfactoringinversion Int                 @map("_idfactoringinversion") @db.UnsignedInt
   idusuariocrea        Int                 @default(1)
   fechacrea            DateTime            @default(now())
   idusuariomod         Int                 @default(1)
@@ -345,8 +345,8 @@ model banco_transaccion_factoring_inversion {
 }
 
 model banco_transaccion_inversionista_deposito {
-  idbancotransaccion      BigInt                 @map("_idbancotransaccion")
-  idinversionistadeposito BigInt                 @map("_idinversionistadeposito")
+  idbancotransaccion      Int                    @map("_idbancotransaccion") @db.UnsignedInt
+  idinversionistadeposito Int                    @map("_idinversionistadeposito") @db.UnsignedInt
   idusuariocrea           Int                    @default(1)
   fechacrea               DateTime               @default(now())
   idusuariomod            Int                    @default(1)
@@ -360,8 +360,8 @@ model banco_transaccion_inversionista_deposito {
 }
 
 model banco_transaccion_inversionista_retiro {
-  idbancotransaccion    BigInt               @map("_idbancotransaccion")
-  idinversionistaretiro BigInt               @map("_idinversionistaretiro")
+  idbancotransaccion    Int                  @map("_idbancotransaccion") @db.UnsignedInt
+  idinversionistaretiro Int                  @map("_idinversionistaretiro") @db.UnsignedInt
   idusuariocrea         Int                  @default(1)
   fechacrea             DateTime             @default(now())
   idusuariomod          Int                  @default(1)
@@ -375,7 +375,7 @@ model banco_transaccion_inversionista_retiro {
 }
 
 model banco_transaccion_tipo {
-  idbancotransacciontipo Int                 @id @map("_idbancotransacciontipo")
+  idbancotransacciontipo Int                 @id @map("_idbancotransacciontipo") @db.UnsignedInt
   bancotransacciontipoid String              @unique(map: "UQ_bancotransacciontipo_bancotransacciontipoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                   String              @unique(map: "UQ_bancotransacciontipo_code") @db.VarChar(20)
   nombre                 String              @db.VarChar(50)
@@ -388,13 +388,13 @@ model banco_transaccion_tipo {
 }
 
 model colaborador {
-  idcolaborador         Int                   @id @default(autoincrement()) @map("_idcolaborador")
+  idcolaborador         Int                   @id @default(autoincrement()) @map("_idcolaborador") @db.UnsignedInt
   colaboradorid         String                @unique(map: "UQ_colaborador_colaboradorid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                  String                @unique(map: "UQ_colaborador_code") @db.VarChar(20)
-  idempresa             Int?                  @map("_idempresa")
-  idpersona             BigInt?               @map("_idpersona")
-  idcolaboradortipo     Int?                  @map("_idcolaboradortipo")
-  iddocumentotipo       Int?                  @map("_iddocumentotipo")
+  idempresa             Int?                  @map("_idempresa") @db.UnsignedInt
+  idpersona             Int?                  @map("_idpersona") @db.UnsignedInt
+  idcolaboradortipo     Int?                  @map("_idcolaboradortipo") @db.UnsignedInt
+  iddocumentotipo       Int?                  @map("_iddocumentotipo") @db.UnsignedInt
   documentonumero       String?               @db.VarChar(50)
   nombrecolaborador     String                @db.VarChar(100)
   apellidocolaborador   String                @db.VarChar(100)
@@ -422,7 +422,7 @@ model colaborador {
 }
 
 model colaborador_tipo {
-  idcolaboradortipo Int           @id @map("_idcolaboradortipo")
+  idcolaboradortipo Int           @id @map("_idcolaboradortipo") @db.UnsignedInt
   colaboradortipoid String        @unique(map: "UQ_colaboradortipo_colaboradortipoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code              String        @db.VarChar(50)
   nombre            String        @db.VarChar(50)
@@ -436,7 +436,7 @@ model colaborador_tipo {
 }
 
 model configuracion_app {
-  idconfiguracionapp Int       @id @map("_idconfiguracionapp")
+  idconfiguracionapp Int       @id @map("_idconfiguracionapp") @db.UnsignedInt
   configuracionappid String    @unique(map: "UQ_consiguracion_app_consiguracionappid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code               String    @unique(map: "UQ_consiguracion_app_code") @db.VarChar(20)
   variable           String    @db.VarChar(100)
@@ -452,10 +452,10 @@ model configuracion_app {
 }
 
 model contacto {
-  idcontacto       Int         @id @default(autoincrement()) @map("_idcontacto")
+  idcontacto       Int         @id @default(autoincrement()) @map("_idcontacto") @db.UnsignedInt
   contactoid       String      @unique(map: "UQ_contacto_contactoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code             String      @unique(map: "UQ_contacto_code") @db.VarChar(20)
-  idempresa        Int         @map("_idempresa")
+  idempresa        Int         @map("_idempresa") @db.UnsignedInt
   nombrecontacto   String      @db.VarChar(100)
   apellidocontacto String?     @db.VarChar(100)
   cargo            String?     @db.VarChar(100)
@@ -474,7 +474,7 @@ model contacto {
 }
 
 model credencial {
-  idcredencial  BigInt   @id @default(autoincrement()) @map("_idcredencial")
+  idcredencial  Int      @id @default(autoincrement()) @map("_idcredencial") @db.UnsignedInt
   credencialid  String   @unique(map: "UQ_credencial_credencialid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code          String   @unique(map: "UQ_credencial_code") @db.VarChar(20)
   idusuario     Int      @unique(map: "UQ_credencual_idusuario") @map("_idusuario") @db.UnsignedInt
@@ -490,13 +490,13 @@ model credencial {
 }
 
 model cuenta_bancaria {
-  idcuentabancaria               Int                             @id @default(autoincrement()) @map("_idcuentabancaria")
+  idcuentabancaria               Int                             @id @default(autoincrement()) @map("_idcuentabancaria") @db.UnsignedInt
   cuentabancariaid               String                          @unique(map: "UQ_cuenta_bancaria_cuentabancariaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                           String                          @unique(map: "UQ_cuenta_bancaria_code") @db.VarChar(20)
-  idbanco                        Int                             @map("_idbanco")
-  idcuentatipo                   Int                             @map("_idcuentatipo")
-  idmoneda                       Int                             @map("_idmoneda")
-  idcuentabancariaestado         Int                             @map("_idcuentabancariaestado")
+  idbanco                        Int                             @map("_idbanco") @db.UnsignedInt
+  idcuentatipo                   Int                             @map("_idcuentatipo") @db.UnsignedInt
+  idmoneda                       Int                             @map("_idmoneda") @db.UnsignedInt
+  idcuentabancariaestado         Int                             @map("_idcuentabancariaestado") @db.UnsignedInt
   numero                         String                          @db.VarChar(20)
   cci                            String                          @db.VarChar(20)
   alias                          String                          @db.VarChar(50)
@@ -523,7 +523,7 @@ model cuenta_bancaria {
 }
 
 model cuenta_bancaria_estado {
-  idcuentabancariaestado Int               @id @default(autoincrement()) @map("_idcuentabancariaestado")
+  idcuentabancariaestado Int               @id @default(autoincrement()) @map("_idcuentabancariaestado") @db.UnsignedInt
   cuentabancariaestadoid String            @unique(map: "UQ_bancoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   nombre                 String            @db.VarChar(50)
   alias                  String            @db.VarChar(50)
@@ -537,7 +537,7 @@ model cuenta_bancaria_estado {
 }
 
 model cuenta_tipo {
-  idcuentatipo     Int               @id @default(autoincrement()) @map("_idcuentatipo")
+  idcuentatipo     Int               @id @default(autoincrement()) @map("_idcuentatipo") @db.UnsignedInt
   cuentatipoid     String            @unique(map: "UQ_cuentatipoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   nombre           String            @db.VarChar(50)
   alias            String            @db.VarChar(50)
@@ -551,9 +551,9 @@ model cuenta_tipo {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model departamento {
-  iddepartamento     Int         @id @map("_iddepartamento")
+  iddepartamento     Int         @id @map("_iddepartamento") @db.UnsignedInt
   departamentoid     String      @unique(map: "UQ_departamentoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
-  idpais             Int         @map("_idpais")
+  idpais             Int         @map("_idpais") @db.UnsignedInt
   codigodepartamento String      @db.VarChar(10)
   nombredepartamento String      @db.VarChar(200)
   idusuariocrea      Int         @default(1)
@@ -572,10 +572,10 @@ model departamento {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model distrito {
-  iddistrito      Int            @id @map("_iddistrito")
+  iddistrito      Int            @id @map("_iddistrito") @db.UnsignedInt
   distritoid      String         @unique(map: "UQ_distritoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
-  idprovincia     Int            @map("_idprovincia")
-  idregionnatural Int            @map("_idregionnatural")
+  idprovincia     Int            @map("_idprovincia") @db.UnsignedInt
+  idregionnatural Int            @map("_idregionnatural") @db.UnsignedInt
   codigodistrito  String         @db.VarChar(10)
   nombredistrito  String         @db.VarChar(200)
   capitallegal    String         @db.VarChar(200)
@@ -595,7 +595,7 @@ model distrito {
 }
 
 model documento_tipo {
-  iddocumentotipo Int           @id @default(autoincrement()) @map("_iddocumentotipo")
+  iddocumentotipo Int           @id @default(autoincrement()) @map("_iddocumentotipo") @db.UnsignedInt
   documentotipoid String        @unique(map: "UQ_documentotipoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   nombre          String        @db.VarChar(50)
   alias           String        @db.VarChar(50)
@@ -610,14 +610,14 @@ model documento_tipo {
 }
 
 model empresa {
-  idempresa                 Int                        @id @default(autoincrement()) @map("_idempresa")
+  idempresa                 Int                        @id @default(autoincrement()) @map("_idempresa") @db.UnsignedInt
   empresaid                 String                     @unique(map: "UQ_empresaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                      String                     @unique(map: "UQ_code") @db.VarChar(20)
-  idpaissede                Int?                       @map("_idpaissede")
-  iddepartamentosede        Int?                       @map("_iddepartamentosede")
-  idprovinciasede           Int?                       @map("_idprovinciasede")
-  iddistritosede            Int?                       @map("_iddistritosede")
-  idriesgo                  Int?                       @map("_idriesgo")
+  idpaissede                Int?                       @map("_idpaissede") @db.UnsignedInt
+  iddepartamentosede        Int?                       @map("_iddepartamentosede") @db.UnsignedInt
+  idprovinciasede           Int?                       @map("_idprovinciasede") @db.UnsignedInt
+  iddistritosede            Int?                       @map("_iddistritosede") @db.UnsignedInt
+  idriesgo                  Int?                       @map("_idriesgo") @db.UnsignedInt
   ruc                       String                     @unique(map: "UQ_ruc") @db.VarChar(11)
   razon_social              String                     @db.VarChar(200)
   nombre_comercial          String?                    @db.VarChar(200)
@@ -652,11 +652,11 @@ model empresa {
 }
 
 model empresa_cuenta_bancaria {
-  idempresacuentabancaria Int              @id @default(autoincrement()) @map("_idempresacuentabancaria")
+  idempresacuentabancaria Int              @id @default(autoincrement()) @map("_idempresacuentabancaria") @db.UnsignedInt
   empresacuentabancariaid String           @unique(map: "UQ_empresacuentabancaria_empresacuentabancariaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                    String           @unique(map: "UQ_empresacuentabancaria_code") @db.VarChar(20)
-  idempresa               Int              @map("_idempresa")
-  idcuentabancaria        Int              @map("_idcuentabancaria")
+  idempresa               Int              @map("_idempresa") @db.UnsignedInt
+  idcuentabancaria        Int              @map("_idcuentabancaria") @db.UnsignedInt
   idusuariocrea           Int              @default(1)
   fechacrea               DateTime         @default(now())
   idusuariomod            Int              @default(1)
@@ -673,9 +673,9 @@ model empresa_cuenta_bancaria {
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model empresa_declaracion {
-  idpersonadeclaracion BigInt   @map("_idpersonadeclaracion")
+  idpersonadeclaracion Int      @map("_idpersonadeclaracion") @db.UnsignedInt
   personadeclaracionid String   @default(dbgenerated("(uuid())")) @db.VarChar(50)
-  idpersona            BigInt   @map("_idpersona")
+  idpersona            Int      @map("_idpersona") @db.UnsignedInt
   espep                Int?     @db.TinyInt
   tienevinculopep      Int?     @db.TinyInt
   idusuariocrea        Int      @default(1)
@@ -688,14 +688,14 @@ model empresa_declaracion {
 }
 
 model factor {
-  idfactor                  Int                      @id @map("_idfactor")
+  idfactor                  Int                      @id @map("_idfactor") @db.UnsignedInt
   factorid                  String                   @unique(map: "UQ_factor_factorid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                      String                   @unique(map: "UQ_factor_code") @db.VarChar(20)
-  idpaissede                Int?                     @map("_idpaissede")
-  iddepartamentosede        Int?                     @map("_iddepartamentosede")
-  idprovinciasede           Int?                     @map("_idprovinciasede")
-  iddistritosede            Int?                     @map("_iddistritosede")
-  idriesgo                  Int?                     @map("_idriesgo")
+  idpaissede                Int?                     @map("_idpaissede") @db.UnsignedInt
+  iddepartamentosede        Int?                     @map("_iddepartamentosede") @db.UnsignedInt
+  idprovinciasede           Int?                     @map("_idprovinciasede") @db.UnsignedInt
+  iddistritosede            Int?                     @map("_iddistritosede") @db.UnsignedInt
+  idriesgo                  Int?                     @map("_idriesgo") @db.UnsignedInt
   ruc                       String                   @db.VarChar(11)
   razon_social              String                   @db.VarChar(200)
   nombre_comercial          String?                  @db.VarChar(200)
@@ -723,11 +723,11 @@ model factor {
 }
 
 model factor_cuenta_bancaria {
-  idfactorcuentabancaria  Int                      @id @map("_idfactorcuentabancaria")
+  idfactorcuentabancaria  Int                      @id @map("_idfactorcuentabancaria") @db.UnsignedInt
   factorcuentabancariaid  String                   @unique(map: "UQ_factorcuentabancaria_factorcuentabancariaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                    String                   @unique(map: "UQ_factorcuentabancaria_code") @db.VarChar(20)
-  idfactor                Int                      @map("_idfactor")
-  idcuentabancaria        Int                      @map("_idcuentabancaria")
+  idfactor                Int                      @map("_idfactor") @db.UnsignedInt
+  idcuentabancaria        Int                      @map("_idcuentabancaria") @db.UnsignedInt
   idusuariocrea           Int                      @default(1)
   fechacrea               DateTime                 @default(now())
   idusuariomod            Int                      @default(1)
@@ -745,18 +745,18 @@ model factor_cuenta_bancaria {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model factoring {
-  idfactoring                     BigInt                       @id @default(autoincrement()) @map("_idfactoring")
+  idfactoring                     Int                          @id @default(autoincrement()) @map("_idfactoring") @db.UnsignedInt
   factoringid                     String                       @unique(map: "UQ_factoring_factoringid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                            String                       @unique(map: "UQ_factoring_code") @db.VarChar(255)
-  idaceptante                     Int                          @map("_idaceptante")
-  idcedente                       Int                          @map("_idcedente")
-  idmoneda                        Int                          @map("_idmoneda")
-  idfactoringestado               Int                          @map("_idfactoringestado")
-  idcuentabancaria                Int?                         @map("_idcuentabancaria")
-  idcontactoaceptante             Int?                         @map("_idcontactoaceptante")
-  idcontactocedente               Int?                         @map("_idcontactocedente")
-  idfactoringejecutado            BigInt?                      @map("_idfactoringejecutado")
-  idfactoringpropuestaaceptada    BigInt?                      @map("_idfactoringpropuestaaceptada")
+  idaceptante                     Int                          @map("_idaceptante") @db.UnsignedInt
+  idcedente                       Int                          @map("_idcedente") @db.UnsignedInt
+  idmoneda                        Int                          @map("_idmoneda") @db.UnsignedInt
+  idfactoringestado               Int                          @map("_idfactoringestado") @db.UnsignedInt
+  idcuentabancaria                Int?                         @map("_idcuentabancaria") @db.UnsignedInt
+  idcontactoaceptante             Int?                         @map("_idcontactoaceptante") @db.UnsignedInt
+  idcontactocedente               Int?                         @map("_idcontactocedente") @db.UnsignedInt
+  idfactoringejecutado            Int?                         @map("_idfactoringejecutado") @db.UnsignedInt
+  idfactoringpropuestaaceptada    Int?                         @map("_idfactoringpropuestaaceptada") @db.UnsignedInt
   cantidad_facturas               Int
   fecha_registro                  DateTime                     @db.DateTime(0)
   fecha_emision                   DateTime                     @db.DateTime(0)
@@ -798,10 +798,10 @@ model factoring {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model factoring_config_comision {
-  idfactoringconfigcomision Int      @id @map("_idfactoringconfigcomision")
+  idfactoringconfigcomision Int      @id @map("_idfactoringconfigcomision") @db.UnsignedInt
   factoringconfigcomisionid String   @unique(map: "UQ_factoring_config_comision_factoringconfigcomisionid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                      String   @unique(map: "UQ_factoring_config_comision_code") @db.VarChar(20)
-  idriesgo                  Int      @map("_idriesgo")
+  idriesgo                  Int      @map("_idriesgo") @db.UnsignedInt
   version                   Float    @db.Float
   factor1                   Decimal  @db.Decimal(20, 10)
   factor2                   Decimal  @db.Decimal(20, 10)
@@ -818,10 +818,10 @@ model factoring_config_comision {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model factoring_config_garantia {
-  idfactoringconfiggarantia      Int      @id @map("_idfactoringconfiggarantia")
+  idfactoringconfiggarantia      Int      @id @map("_idfactoringconfiggarantia") @db.UnsignedInt
   factoringconfiggarantiaid      String   @unique(map: "UQ_factoring_config_garantia_v1_factoringconfiggarantiav1id") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                           String   @unique(map: "UQ_factoring_config_garantia_v1_code") @db.VarChar(20)
-  idriesgo                       Int      @map("_idriesgo")
+  idriesgo                       Int      @map("_idriesgo") @db.UnsignedInt
   version                        Float    @default(0.000) @db.Float
   monto_neto_min                 Decimal  @db.Decimal(20, 2)
   monto_neto_max                 Decimal  @db.Decimal(20, 2)
@@ -838,10 +838,10 @@ model factoring_config_garantia {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model factoring_config_tasa_descuento {
-  idfactoringconfigtasadescuento Int      @id @map("_idfactoringconfigtasadescuento")
+  idfactoringconfigtasadescuento Int      @id @map("_idfactoringconfigtasadescuento") @db.UnsignedInt
   factoringconfigtasadescuentoid String   @unique(map: "UQ_factoring_config_tasa_factoringconfigtasadescuentoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                           String   @unique(map: "UQ_factoring_config_tasa_code") @db.VarChar(20)
-  idriesgo                       Int      @map("_idriesgo")
+  idriesgo                       Int      @map("_idriesgo") @db.UnsignedInt
   version                        Float    @db.Float
   mensual_minimo                 Decimal  @db.Decimal(20, 10)
   mensual_maximo                 Decimal  @db.Decimal(20, 10)
@@ -857,11 +857,11 @@ model factoring_config_tasa_descuento {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model factoring_ejecutado {
-  idfactoringejecutado          BigInt                     @id @default(autoincrement()) @map("_idfactoringejecutado")
+  idfactoringejecutado          Int                        @id @default(autoincrement()) @map("_idfactoringejecutado") @db.UnsignedInt
   factoringejecutadoid          String                     @unique(map: "UQ_factoring_ejecutado_factoringejecutadoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                          String                     @unique(map: "UQ_factoring_ejecutado_code") @db.VarChar(255)
-  idfactoring                   BigInt?                    @map("_idfactoring")
-  idfactoringejecutadoestado    Int                        @map("_idfactoringejecutadoestado")
+  idfactoring                   Int?                       @map("_idfactoring") @db.UnsignedInt
+  idfactoringejecutadoestado    Int                        @map("_idfactoringejecutadoestado") @db.UnsignedInt
   fecha_propuesta               DateTime                   @db.DateTime(0)
   fecha_pago_real               DateTime                   @db.Date
   dias_pago_real                Int
@@ -899,7 +899,7 @@ model factoring_ejecutado {
 }
 
 model factoring_ejecutado_estado {
-  idfactoringejecutadoestado Int                   @id @map("_idfactoringejecutadoestado")
+  idfactoringejecutadoestado Int                   @id @map("_idfactoringejecutadoestado") @db.UnsignedInt
   factoringejecutadoestadoid String                @unique(map: "UQ_factoring_ejecutado_estado_factoringejecutadoestadoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                       String                @unique(map: "UQ_factoring_ejecutado_estado_code") @db.VarChar(20)
   nombre                     String                @db.VarChar(50)
@@ -914,7 +914,7 @@ model factoring_ejecutado_estado {
 }
 
 model factoring_estado {
-  idfactoringestado           Int                          @id @default(autoincrement()) @map("_idfactoringestado")
+  idfactoringestado           Int                          @id @default(autoincrement()) @map("_idfactoringestado") @db.UnsignedInt
   factoringestadoid           String                       @unique(map: "UQ_factoring_estado_factoringestadoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   estado1                     String                       @db.VarChar(50)
   estado2                     String                       @db.VarChar(50)
@@ -933,7 +933,7 @@ model factoring_estado {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model factoring_estrategia {
-  idfactoringestrategia Int                   @id @map("_idfactoringestrategia")
+  idfactoringestrategia Int                   @id @map("_idfactoringestrategia") @db.UnsignedInt
   factoringestrategiaid String                @unique(map: "UQ_factoring_estrategia_factoringestrategiaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                  String                @unique(map: "UQ_factoring_estrategia_code") @db.VarChar(255)
   nombre_estrategia     String?               @db.VarChar(100)
@@ -947,8 +947,8 @@ model factoring_estrategia {
 }
 
 model factoring_factura {
-  idfactoring   BigInt    @map("_idfactoring")
-  idfactura     BigInt    @map("_idfactura")
+  idfactoring   Int       @map("_idfactoring") @db.UnsignedInt
+  idfactura     Int       @map("_idfactura") @db.UnsignedInt
   idusuariocrea Int       @default(1)
   fechacrea     DateTime  @default(now())
   idusuariomod  Int       @default(1)
@@ -962,11 +962,11 @@ model factoring_factura {
 }
 
 model factoring_historial_estado {
-  idfactoringhistorialestado          BigInt                               @id @default(autoincrement()) @map("_idfactoringhistorialestado")
+  idfactoringhistorialestado          Int                                  @id @default(autoincrement()) @map("_idfactoringhistorialestado") @db.UnsignedInt
   factoringhistorialestadoid          String                               @unique(map: "UQ_factoringhistorialestado_factoringhistorialestadoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                                String                               @unique(map: "UQ_factoringhistorialestado_code") @db.VarChar(20)
-  idfactoring                         BigInt                               @map("_idfactoring")
-  idfactoringestado                   Int                                  @map("_idfactoringestado")
+  idfactoring                         Int                                  @map("_idfactoring") @db.UnsignedInt
+  idfactoringestado                   Int                                  @map("_idfactoringestado") @db.UnsignedInt
   idusuariomodifica                   Int                                  @map("_idusuariomodifica") @db.UnsignedInt
   comentario                          String                               @db.Text
   idusuariocrea                       Int                                  @default(1)
@@ -985,11 +985,11 @@ model factoring_historial_estado {
 }
 
 model factoring_inversion {
-  idfactoringinversion                    BigInt                                  @id @default(autoincrement()) @map("_idfactoringinversion")
+  idfactoringinversion                    Int                                     @id @default(autoincrement()) @map("_idfactoringinversion") @db.UnsignedInt
   factoringinversionid                    String                                  @unique(map: "UQ_factoringinversion_factoringinversionid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                                    String                                  @unique(map: "UQ_factoringinversion_code") @db.VarChar(20)
-  idfactoring                             BigInt                                  @map("_idfactoring")
-  idinversionista                         BigInt                                  @map("_idinversionista")
+  idfactoring                             Int                                     @map("_idfactoring") @db.UnsignedInt
+  idinversionista                         Int                                     @map("_idinversionista") @db.UnsignedInt
   monto_invertido                         Decimal                                 @db.Decimal(20, 2)
   fecha_inversion                         DateTime
   porcentaje_participacion                Decimal                                 @db.Decimal(20, 6)
@@ -1002,12 +1002,12 @@ model factoring_inversion {
 }
 
 model factoring_pago {
-  idfactoringpago         BigInt                  @id @default(autoincrement()) @map("_idfactoringpago")
+  idfactoringpago         Int                     @id @default(autoincrement()) @map("_idfactoringpago") @db.UnsignedInt
   factoringpagoid         String                  @unique(map: "UQ_factoringpago_factoringpagoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                    String                  @unique(map: "UQ_factoringpago_code") @db.VarChar(255)
-  idfactoring             BigInt                  @map("_idfactoring")
-  idempresacuentabancaria Int                     @map("_idempresacuentabancaria")
-  idfactorcuentabancaria  Int                     @map("_idfactorcuentabancaria")
+  idfactoring             Int                     @map("_idfactoring") @db.UnsignedInt
+  idempresacuentabancaria Int                     @map("_idempresacuentabancaria") @db.UnsignedInt
+  idfactorcuentabancaria  Int                     @map("_idfactorcuentabancaria") @db.UnsignedInt
   numero_operacion        String                  @db.VarChar(50)
   fecha_pago              DateTime                @db.DateTime(0)
   monto_pagado            Decimal                 @db.Decimal(10, 2)
@@ -1027,16 +1027,16 @@ model factoring_pago {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model factoring_propuesta {
-  idfactoringpropuesta                  BigInt                           @id @default(autoincrement()) @map("_idfactoringpropuesta")
+  idfactoringpropuesta                  Int                              @id @default(autoincrement()) @map("_idfactoringpropuesta") @db.UnsignedInt
   factoringpropuestaid                  String                           @unique(map: "UQ_factoring_propuesta_factoringpropuestaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                                  String                           @unique(map: "UQ_factoring_propuesta_code") @db.VarChar(255)
-  idfactoring                           BigInt?                          @map("_idfactoring")
-  idfactoringtipo                       Int?                             @map("_idfactoringtipo")
-  idfactoringpropuestaestado            Int                              @map("_idfactoringpropuestaestado")
-  idriesgooperacion                     Int?                             @map("_idriesgooperacion")
-  idriesgoaceptante                     Int?                             @map("_idriesgoaceptante")
-  idriesgocedente                       Int?                             @map("_idriesgocedente")
-  idfactoringestrategia                 Int?                             @map("_idfactoringestrategia")
+  idfactoring                           Int?                             @map("_idfactoring") @db.UnsignedInt
+  idfactoringtipo                       Int?                             @map("_idfactoringtipo") @db.UnsignedInt
+  idfactoringpropuestaestado            Int                              @map("_idfactoringpropuestaestado") @db.UnsignedInt
+  idriesgooperacion                     Int?                             @map("_idriesgooperacion") @db.UnsignedInt
+  idriesgoaceptante                     Int?                             @map("_idriesgoaceptante") @db.UnsignedInt
+  idriesgocedente                       Int?                             @map("_idriesgocedente") @db.UnsignedInt
+  idfactoringestrategia                 Int?                             @map("_idfactoringestrategia") @db.UnsignedInt
   tda                                   Decimal?                         @db.Decimal(10, 5)
   tdm                                   Decimal?                         @db.Decimal(10, 5)
   tdd                                   Decimal?                         @db.Decimal(10, 5)
@@ -1094,7 +1094,7 @@ model factoring_propuesta {
 }
 
 model factoring_propuesta_estado {
-  idfactoringpropuestaestado Int                   @id @map("_idfactoringpropuestaestado")
+  idfactoringpropuestaestado Int                   @id @map("_idfactoringpropuestaestado") @db.UnsignedInt
   factoringpropuestaestadoid String                @unique(map: "UQ_factoring_propuesta_estado_factoringpropuestaestadoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                       String                @unique(map: "UQ_factoring_propuesta_estado_code") @db.VarChar(20)
   nombre                     String                @db.VarChar(50)
@@ -1110,12 +1110,12 @@ model factoring_propuesta_estado {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model factoring_propuesta_financiero {
-  idfactoringpropuestafinanciero Int                 @id @default(autoincrement()) @map("_idfactoringpropuestafinanciero")
+  idfactoringpropuestafinanciero Int                 @id @default(autoincrement()) @map("_idfactoringpropuestafinanciero") @db.UnsignedInt
   factoringpropuestafinancieroid String              @unique(map: "UQ_factoring_propuesta_financiero_factoringpropuestafinancieroid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                           String              @unique(map: "UQ_factoring_propuesta_financiero_code") @db.VarChar(20)
-  idfactoringpropuesta           BigInt              @map("_idfactoringpropuesta")
-  idfinancierotipo               Int                 @map("_idfinancierotipo")
-  idfinancieroconcepto           Int                 @map("_idfinancieroconcepto")
+  idfactoringpropuesta           Int                 @map("_idfactoringpropuesta") @db.UnsignedInt
+  idfinancierotipo               Int                 @map("_idfinancierotipo") @db.UnsignedInt
+  idfinancieroconcepto           Int                 @map("_idfinancieroconcepto") @db.UnsignedInt
   descripcion                    String?             @db.VarChar(50)
   monto                          Decimal             @default(0.00) @db.Decimal(10, 2)
   igv                            Decimal             @default(0.00) @db.Decimal(10, 2)
@@ -1135,7 +1135,7 @@ model factoring_propuesta_financiero {
 }
 
 model factoring_tipo {
-  idfactoringtipo      Int                   @id @default(autoincrement()) @map("_idfactoringtipo")
+  idfactoringtipo      Int                   @id @default(autoincrement()) @map("_idfactoringtipo") @db.UnsignedInt
   factoringtipoid      String                @unique(map: "UQ_factoring_tipo_factoringid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   nombre               String                @db.VarChar(50)
   alias                String                @db.VarChar(50)
@@ -1149,7 +1149,7 @@ model factoring_tipo {
 }
 
 model factura {
-  idfactura                                     BigInt                 @id @default(autoincrement()) @map("_idfactura")
+  idfactura                                     Int                    @id @default(autoincrement()) @map("_idfactura") @db.UnsignedInt
   facturaid                                     String                 @unique(map: "UQ_factura_facturaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                                          String                 @unique(map: "UQ_factura_code") @db.VarChar(20)
   idusuarioupload                               Int                    @map("_idusuarioupload") @db.UnsignedInt
@@ -1206,9 +1206,9 @@ model factura {
 }
 
 model factura_impuesto {
-  idfacturaimpuesto BigInt   @id @default(autoincrement()) @map("_idfacturaimpuesto")
+  idfacturaimpuesto Int      @id @default(autoincrement()) @map("_idfacturaimpuesto") @db.UnsignedInt
   facturaimpuestoid String   @unique(map: "UQ_facrtura_impuesto_facturaimpuestoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
-  idfactura         BigInt   @map("_idfactura")
+  idfactura         Int      @map("_idfactura") @db.UnsignedInt
   id                String?  @db.VarChar(200)
   codigo_sunat      String?  @db.VarChar(100)
   nombre            String?  @db.VarChar(100)
@@ -1226,9 +1226,9 @@ model factura_impuesto {
 }
 
 model factura_item {
-  idfacturaitem                    BigInt   @id @default(autoincrement()) @map("_idfacturaitem")
+  idfacturaitem                    Int      @id @default(autoincrement()) @map("_idfacturaitem") @db.UnsignedInt
   facturaitemid                    String   @unique(map: "UQ_factura_item_facturaitemid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
-  idfactura                        BigInt   @map("_idfactura")
+  idfactura                        Int      @map("_idfactura") @db.UnsignedInt
   id                               String?  @db.VarChar(200)
   codigo_producto_sunat            String?  @db.VarChar(100)
   codigo_producto_vendedor         String?  @db.VarChar(100)
@@ -1255,9 +1255,9 @@ model factura_item {
 }
 
 model factura_medio_pago {
-  idfacturamediopago BigInt   @id @default(autoincrement()) @map("_idfacturamediopago")
+  idfacturamediopago Int      @id @default(autoincrement()) @map("_idfacturamediopago") @db.UnsignedInt
   facturamediopagoid String   @unique(map: "UQ_factura_medio_pago_facturamediopagoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
-  idfactura          BigInt   @map("_idfactura")
+  idfactura          Int      @map("_idfactura") @db.UnsignedInt
   id                 String?  @db.VarChar(200)
   medio_pago_codigo  String?  @db.VarChar(100)
   cuenta_bancaria    String?  @db.VarChar(100)
@@ -1272,9 +1272,9 @@ model factura_medio_pago {
 }
 
 model factura_nota {
-  idfacturanota BigInt   @id @default(autoincrement()) @map("_idfacturanota")
+  idfacturanota Int      @id @default(autoincrement()) @map("_idfacturanota") @db.UnsignedInt
   facturanotaid String   @unique(map: "UQ_factura_item_facturanotaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
-  idfactura     BigInt   @map("_idfactura")
+  idfactura     Int      @map("_idfactura") @db.UnsignedInt
   id            String?  @db.VarChar(20)
   descripcion   String?  @db.Text
   idusuariocrea Int      @default(1)
@@ -1288,9 +1288,9 @@ model factura_nota {
 }
 
 model factura_termino_pago {
-  idfacturaterminopago BigInt    @id @default(autoincrement()) @map("_idfacturaterminopago")
+  idfacturaterminopago Int       @id @default(autoincrement()) @map("_idfacturaterminopago") @db.UnsignedInt
   facturaterminopagoid String    @unique(map: "UQ_factura_termino_pago_facturaterminopagoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
-  idfactura            BigInt    @map("_idfactura")
+  idfactura            Int       @map("_idfactura") @db.UnsignedInt
   id                   String?   @db.VarChar(200)
   forma_pago           String?   @db.VarChar(100)
   monto                Decimal?  @db.Decimal(12, 2)
@@ -1307,7 +1307,7 @@ model factura_termino_pago {
 }
 
 model financiero_concepto {
-  idfinancieroconcepto            Int                              @id @map("_idfinancieroconcepto")
+  idfinancieroconcepto            Int                              @id @map("_idfinancieroconcepto") @db.UnsignedInt
   financieroconceptoid            String                           @unique(map: "UQ_financiero_concepto_financieroconceptoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                            String                           @unique(map: "UQ_financiero_concepto_code") @db.VarChar(20)
   nombre                          String                           @db.VarChar(50)
@@ -1322,7 +1322,7 @@ model financiero_concepto {
 }
 
 model financiero_tipo {
-  idfinancierotipo                Int                              @id @map("_idfinancierotipo")
+  idfinancierotipo                Int                              @id @map("_idfinancierotipo") @db.UnsignedInt
   financierotipoid                String                           @unique(map: "UQ_financiero_tipo_financierotipoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                            String                           @unique(map: "UQ_financiero_tipo_code") @db.VarChar(20)
   nombre                          String                           @db.VarChar(50)
@@ -1337,7 +1337,7 @@ model financiero_tipo {
 }
 
 model genero {
-  idgenero      Int       @id @map("_idgenero")
+  idgenero      Int       @id @map("_idgenero") @db.UnsignedInt
   generoid      String    @unique(map: "UQ_generoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   nombregenero  String    @db.VarChar(50)
   idusuariocrea Int       @default(1)
@@ -1349,10 +1349,10 @@ model genero {
 }
 
 model inversionista {
-  idinversionista                BigInt                          @id @default(autoincrement()) @map("_idinversionista")
+  idinversionista                Int                             @id @default(autoincrement()) @map("_idinversionista") @db.UnsignedInt
   inversionistaid                String                          @unique(map: "UQ_inversionista_inversionistaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                           String                          @unique(map: "UQ_inversionista_code") @db.VarChar(20)
-  idpersona                      BigInt                          @unique(map: "UQ_inversionista_idpersona") @map("_idpersona")
+  idpersona                      Int                             @unique(map: "UQ_inversionista_idpersona") @map("_idpersona") @db.UnsignedInt
   idusuariocrea                  Int                             @default(1)
   fechacrea                      DateTime                        @default(now()) @db.Timestamp(3)
   idusuariomod                   Int                             @default(1)
@@ -1364,8 +1364,8 @@ model inversionista {
 }
 
 model inversionista_banco_cuenta {
-  idinversionista BigInt        @map("_idinversionista")
-  idbancocuenta   BigInt        @map("_idbancocuenta")
+  idinversionista Int           @map("_idinversionista") @db.UnsignedInt
+  idbancocuenta   Int           @map("_idbancocuenta") @db.UnsignedInt
   idusuariocrea   Int           @default(1)
   fechacrea       DateTime      @default(now())
   idusuariomod    Int           @default(1)
@@ -1379,11 +1379,11 @@ model inversionista_banco_cuenta {
 }
 
 model inversionista_cuenta_bancaria {
-  idinversionistacuentabancaria Int                      @id @default(autoincrement()) @map("_idinversionistacuentabancaria")
+  idinversionistacuentabancaria Int                      @id @default(autoincrement()) @map("_idinversionistacuentabancaria") @db.UnsignedInt
   inversionistacuentabancariaid String                   @unique(map: "UQ_inversionistacuentabancaria_inversionistacuentabancariaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                          String                   @unique(map: "UQ_inversionistacuentabancaria_code") @db.VarChar(20)
-  idinversionista               BigInt                   @map("_idinversionista")
-  idcuentabancaria              Int                      @map("_idcuentabancaria")
+  idinversionista               Int                      @map("_idinversionista") @db.UnsignedInt
+  idcuentabancaria              Int                      @map("_idcuentabancaria") @db.UnsignedInt
   idusuariocrea                 Int                      @default(1)
   fechacrea                     DateTime                 @default(now())
   idusuariomod                  Int                      @default(1)
@@ -1399,12 +1399,12 @@ model inversionista_cuenta_bancaria {
 }
 
 model inversionista_deposito {
-  idinversionistadeposito                   BigInt                                     @id @default(autoincrement()) @map("_idinversionistadeposito")
+  idinversionistadeposito                   Int                                        @id @default(autoincrement()) @map("_idinversionistadeposito") @db.UnsignedInt
   inversionistadepositoid                   String                                     @unique(map: "UQ_bancodeposito_bancodepositoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                                      String                                     @unique(map: "UQ_bancodeposito_code") @db.VarChar(255)
-  idbancocuenta                             BigInt                                     @map("_idbancocuenta")
-  idinversionistacuentabancaria             Int                                        @map("_idinversionistacuentabancaria")
-  idfactorcuentabancaria                    Int                                        @map("_idfactorcuentabancaria")
+  idbancocuenta                             Int                                        @map("_idbancocuenta") @db.UnsignedInt
+  idinversionistacuentabancaria             Int                                        @map("_idinversionistacuentabancaria") @db.UnsignedInt
+  idfactorcuentabancaria                    Int                                        @map("_idfactorcuentabancaria") @db.UnsignedInt
   fecha_solicitud                           DateTime                                   @db.DateTime(0)
   numero_operacion                          String                                     @db.VarChar(50)
   monto_depositado                          Decimal                                    @db.Decimal(20, 2)
@@ -1427,12 +1427,12 @@ model inversionista_deposito {
 }
 
 model inversionista_retiro {
-  idinversionistaretiro                   BigInt                                   @id @default(autoincrement()) @map("_idinversionistaretiro")
+  idinversionistaretiro                   Int                                      @id @default(autoincrement()) @map("_idinversionistaretiro") @db.UnsignedInt
   inversionistaretiroid                   String                                   @unique(map: "UQ_bancoretiro_bancoretiroid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                                    String                                   @unique(map: "UQ_bancoretiro_code") @db.VarChar(255)
-  idbancocuenta                           BigInt                                   @map("_idbancocuenta")
-  idinversionistacuentabancaria           Int                                      @map("_idinversionistacuentabancaria")
-  idfactorcuentabancaria                  Int?                                     @map("_idfactorcuentabancaria")
+  idbancocuenta                           Int                                      @map("_idbancocuenta") @db.UnsignedInt
+  idinversionistacuentabancaria           Int                                      @map("_idinversionistacuentabancaria") @db.UnsignedInt
+  idfactorcuentabancaria                  Int?                                     @map("_idfactorcuentabancaria") @db.UnsignedInt
   fecha_solicitud                         DateTime                                 @db.DateTime(0)
   monto_retirado                          Decimal                                  @db.Decimal(20, 2)
   numero_operacion                        String?                                  @db.VarChar(50)
@@ -1455,7 +1455,7 @@ model inversionista_retiro {
 }
 
 model moneda {
-  idmoneda         Int               @id @default(autoincrement()) @map("_idmoneda")
+  idmoneda         Int               @id @default(autoincrement()) @map("_idmoneda") @db.UnsignedInt
   monedaid         String            @unique(map: "UQ_moneda_bancoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code             String            @unique(map: "UQ_moneda_code") @db.VarChar(20)
   nombre           String            @db.VarChar(50)
@@ -1475,7 +1475,7 @@ model moneda {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model pais {
-  idpais                     Int            @id @map("_idpais")
+  idpais                     Int            @id @map("_idpais") @db.UnsignedInt
   paisid                     String         @unique(map: "UQ_paisid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   codigopais                 String         @db.VarChar(10)
   nombrepais                 String         @db.VarChar(200)
@@ -1494,7 +1494,7 @@ model pais {
 }
 
 model pep_vinculo {
-  idpepvinculo           Int                     @id @default(autoincrement()) @map("_idpepvinculo")
+  idpepvinculo           Int                     @id @default(autoincrement()) @map("_idpepvinculo") @db.UnsignedInt
   pepvinculoid           String                  @unique(map: "UQ_pepvinculoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   nombrepepvinculo       String                  @db.VarChar(200)
   idusuariocrea          Int                     @default(1)
@@ -1506,19 +1506,19 @@ model pep_vinculo {
 }
 
 model persona {
-  idpersona                   BigInt                      @id @default(autoincrement()) @map("_idpersona")
+  idpersona                   Int                         @id @default(autoincrement()) @map("_idpersona") @db.UnsignedInt
   personaid                   String                      @unique(map: "UQ_personaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                        String                      @unique(map: "UQ_code") @db.VarChar(20)
   idusuario                   Int                         @unique(map: "UQ_idusuario") @map("_idusuario") @db.UnsignedInt
-  idpersonaverificacionestado Int                         @map("_idpersonaverificacionestado")
-  iddocumentotipo             Int?                        @map("_iddocumentotipo")
-  idpaisnacionalidad          Int?                        @map("_idpaisnacionalidad")
-  idpaisnacimiento            Int?                        @map("_idpaisnacimiento")
-  idpaisresidencia            Int?                        @map("_idpaisresidencia")
-  iddepartamentoresidencia    Int?                        @map("_iddepartamentoresidencia")
-  idprovinciaresidencia       Int?                        @map("_idprovinciaresidencia")
-  iddistritoresidencia        Int?                        @map("_iddistritoresidencia")
-  idgenero                    Int?                        @map("_idgenero")
+  idpersonaverificacionestado Int                         @map("_idpersonaverificacionestado") @db.UnsignedInt
+  iddocumentotipo             Int?                        @map("_iddocumentotipo") @db.UnsignedInt
+  idpaisnacionalidad          Int?                        @map("_idpaisnacionalidad") @db.UnsignedInt
+  idpaisnacimiento            Int?                        @map("_idpaisnacimiento") @db.UnsignedInt
+  idpaisresidencia            Int?                        @map("_idpaisresidencia") @db.UnsignedInt
+  iddepartamentoresidencia    Int?                        @map("_iddepartamentoresidencia") @db.UnsignedInt
+  idprovinciaresidencia       Int?                        @map("_idprovinciaresidencia") @db.UnsignedInt
+  iddistritoresidencia        Int?                        @map("_iddistritoresidencia") @db.UnsignedInt
+  idgenero                    Int?                        @map("_idgenero") @db.UnsignedInt
   documentonumero             String                      @db.VarChar(50)
   personanombres              String                      @db.VarChar(50)
   apellidopaterno             String                      @db.VarChar(50)
@@ -1564,11 +1564,11 @@ model persona {
 }
 
 model persona_cuenta_bancaria {
-  idpersonacuentabancaria Int             @id @default(autoincrement()) @map("_idpersonacuentabancaria")
+  idpersonacuentabancaria Int             @id @default(autoincrement()) @map("_idpersonacuentabancaria") @db.UnsignedInt
   personacuentabancariaid String          @unique(map: "UQ_persona_cuenta_bancaria_personacuentabancariaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                    String          @unique(map: "UQ_persona_cuenta_bancaria_code") @db.VarChar(20)
-  idpersona               BigInt          @map("_idpersona")
-  idcuentabancaria        Int             @map("_idcuentabancaria")
+  idpersona               Int             @map("_idpersona") @db.UnsignedInt
+  idcuentabancaria        Int             @map("_idcuentabancaria") @db.UnsignedInt
   idusuariocrea           Int             @default(1)
   fechacrea               DateTime        @default(now())
   idusuariomod            Int             @default(1)
@@ -1583,9 +1583,9 @@ model persona_cuenta_bancaria {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model persona_declaracion {
-  idpersonadeclaracion BigInt   @id @default(autoincrement()) @map("_idpersonadeclaracion")
+  idpersonadeclaracion Int      @id @default(autoincrement()) @map("_idpersonadeclaracion") @db.UnsignedInt
   personadeclaracionid String   @unique(map: "UQ_personadeclaracionid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
-  idpersona            BigInt   @map("_idpersona")
+  idpersona            Int      @map("_idpersona") @db.UnsignedInt
   espep                Int?     @db.TinyInt
   tienevinculopep      Int?     @db.TinyInt
   idusuariocrea        Int      @default(1)
@@ -1600,9 +1600,9 @@ model persona_declaracion {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model persona_pep_directo {
-  idpersonapepdirecto Int       @id @default(autoincrement()) @map("_idpersonapepdirecto")
+  idpersonapepdirecto Int       @id @default(autoincrement()) @map("_idpersonapepdirecto") @db.UnsignedInt
   personapepdirectoid String    @unique(map: "UQ_personapepdirectoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
-  idpersona           BigInt?   @map("_idpersona")
+  idpersona           Int?      @map("_idpersona") @db.UnsignedInt
   rucentidad          String    @db.VarChar(11)
   nombreentidad       String    @db.VarChar(200)
   cargoentidad        String    @db.VarChar(200)
@@ -1621,10 +1621,10 @@ model persona_pep_directo {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model persona_pep_indirecto {
-  idpersonapepindirecto Int          @id @default(autoincrement()) @map("_idpersonapepindirecto")
+  idpersonapepindirecto Int          @id @default(autoincrement()) @map("_idpersonapepindirecto") @db.UnsignedInt
   personapepindirectoid String       @unique(map: "UQ_personapepdirectoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
-  idpersona             BigInt?      @map("_idpersona")
-  idpepvinculo          Int?         @map("_idpepvinculo")
+  idpersona             Int?         @map("_idpersona") @db.UnsignedInt
+  idpepvinculo          Int?         @map("_idpepvinculo") @db.UnsignedInt
   identificacionpep     String       @db.VarChar(12)
   nombrescompletospep   String       @db.VarChar(300)
   rucentidad            String       @db.VarChar(11)
@@ -1646,10 +1646,10 @@ model persona_pep_indirecto {
 }
 
 model persona_verificacion {
-  idpersonaverificacion       BigInt                      @id @default(autoincrement()) @map("_idpersonaverificacion")
+  idpersonaverificacion       Int                         @id @default(autoincrement()) @map("_idpersonaverificacion") @db.UnsignedInt
   personaverificacionid       String                      @unique(map: "UQ_personaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
-  idpersona                   BigInt                      @map("_idpersona")
-  idpersonaverificacionestado Int                         @map("_idpersonaverificacionestado")
+  idpersona                   Int                         @map("_idpersona") @db.UnsignedInt
+  idpersonaverificacionestado Int                         @map("_idpersonaverificacionestado") @db.UnsignedInt
   idusuarioverifica           Int                         @map("_idusuarioverifica") @db.UnsignedInt
   comentariousuario           String                      @db.Text
   comentariointerno           String                      @db.Text
@@ -1669,7 +1669,7 @@ model persona_verificacion {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model persona_verificacion_estado {
-  idpersonaverificacionestado Int                    @id @map("_idpersonaverificacionestado")
+  idpersonaverificacionestado Int                    @id @map("_idpersonaverificacionestado") @db.UnsignedInt
   personaverificacionestadoid String                 @unique(map: "UQ_personaverificacionestadoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                        String                 @db.VarChar(20)
   nombre                      String                 @db.VarChar(50)
@@ -1690,9 +1690,9 @@ model persona_verificacion_estado {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model provincia {
-  idprovincia     Int          @id @map("_idprovincia")
+  idprovincia     Int          @id @map("_idprovincia") @db.UnsignedInt
   provinciaid     String       @unique(map: "UQ_provinciaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
-  iddepartamento  Int          @map("_iddepartamento")
+  iddepartamento  Int          @map("_iddepartamento") @db.UnsignedInt
   codigoprovincia String       @db.VarChar(10)
   nombreprovincia String       @db.VarChar(200)
   idusuariocrea   Int          @default(1)
@@ -1711,7 +1711,7 @@ model provincia {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model region_natural {
-  idregionnatural     Int        @id @map("_idregionnatural")
+  idregionnatural     Int        @id @map("_idregionnatural") @db.UnsignedInt
   regionnaturalid     String     @unique(map: "UQ_distritoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   nombreregionnatural String     @db.VarChar(200)
   idusuariocrea       Int        @default(1)
@@ -1723,7 +1723,7 @@ model region_natural {
 }
 
 model riesgo {
-  idriesgo                              Int                               @id @default(autoincrement()) @map("_idriesgo")
+  idriesgo                              Int                               @id @default(autoincrement()) @map("_idriesgo") @db.UnsignedInt
   riesgoid                              String                            @unique(map: "UQ_riesgo_riesgoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                                  String                            @db.VarChar(20)
   nombre                                String                            @db.VarChar(100)
@@ -1748,7 +1748,7 @@ model riesgo {
 }
 
 model rol {
-  idrol         Int           @id @default(autoincrement()) @map("_idrol")
+  idrol         Int           @id @default(autoincrement()) @map("_idrol") @db.UnsignedInt
   rolid         String        @unique(map: "UQ_bancoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   nombre        String        @db.VarChar(50)
   alias         String        @db.VarChar(50)
@@ -1762,7 +1762,7 @@ model rol {
 }
 
 model servicio {
-  idservicio                Int                        @id @default(autoincrement()) @map("_idservicio")
+  idservicio                Int                        @id @default(autoincrement()) @map("_idservicio") @db.UnsignedInt
   servicioid                String                     @unique(map: "UQ_servicio_servicioid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                      String                     @unique(map: "UQ_servicio_code") @db.VarChar(20)
   nombre                    String                     @db.VarChar(50)
@@ -1781,13 +1781,13 @@ model servicio {
 }
 
 model servicio_empresa {
-  idservicioempresa               Int                             @id @default(autoincrement()) @map("_idservicioempresa")
+  idservicioempresa               Int                             @id @default(autoincrement()) @map("_idservicioempresa") @db.UnsignedInt
   servicioempresaid               String                          @unique(map: "UQ_servicioempresa_servicioempresaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                            String                          @unique(map: "UQ_servicioempresa_code") @db.VarChar(20)
-  idservicio                      Int                             @map("_idservicio")
-  idempresa                       Int                             @map("_idempresa")
+  idservicio                      Int                             @map("_idservicio") @db.UnsignedInt
+  idempresa                       Int                             @map("_idempresa") @db.UnsignedInt
   idusuariosuscriptor             Int                             @map("_idusuariosuscriptor") @db.UnsignedInt
-  idservicioempresaestado         Int                             @map("_idservicioempresaestado")
+  idservicioempresaestado         Int                             @map("_idservicioempresaestado") @db.UnsignedInt
   idusuariocrea                   Int                             @default(1)
   fechacrea                       DateTime                        @default(now())
   idusuariomod                    Int                             @default(1)
@@ -1806,7 +1806,7 @@ model servicio_empresa {
 }
 
 model servicio_empresa_estado {
-  idservicioempresaestado         Int                             @id @map("_idservicioempresaestado")
+  idservicioempresaestado         Int                             @id @map("_idservicioempresaestado") @db.UnsignedInt
   servicioempresaestadoid         String                          @unique(map: "UQ_servicioempresaestado_servicioempresaestadoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                            String                          @unique(map: "UQ_servicioempresaestado_code") @db.VarChar(20)
   nombre                          String                          @db.VarChar(50)
@@ -1826,10 +1826,10 @@ model servicio_empresa_estado {
 }
 
 model servicio_empresa_verificacion {
-  idservicioempresaverificacion Int                     @id @default(autoincrement()) @map("_idservicioempresaverificacion")
+  idservicioempresaverificacion Int                     @id @default(autoincrement()) @map("_idservicioempresaverificacion") @db.UnsignedInt
   servicioempresaverificacionid String                  @unique(map: "UQ_servicioempresaverificacion_servicioempresaverificacionid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
-  idservicioempresa             Int                     @map("_idservicioempresa")
-  idservicioempresaestado       Int                     @map("_idservicioempresaestado")
+  idservicioempresa             Int                     @map("_idservicioempresa") @db.UnsignedInt
+  idservicioempresaestado       Int                     @map("_idservicioempresaestado") @db.UnsignedInt
   idusuarioverifica             Int                     @map("_idusuarioverifica") @db.UnsignedInt
   comentariousuario             String                  @db.Text
   comentariointerno             String                  @db.Text
@@ -1852,7 +1852,7 @@ model usuario {
   idusuario                            Int                                  @id @default(autoincrement()) @map("_idusuario") @db.UnsignedInt
   usuarioid                            String                               @unique(map: "UQ_usuario_usuarioid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                                 String                               @unique(map: "UQ_usuario_code") @db.VarChar(20)
-  iddocumentotipo                      Int                                  @map("_iddocumentotipo")
+  iddocumentotipo                      Int                                  @map("_iddocumentotipo") @db.UnsignedInt
   documentonumero                      String                               @unique(map: "documentonumero") @db.VarChar(50)
   usuarionombres                       String                               @db.VarChar(50)
   apellidopaterno                      String                               @db.VarChar(50)
@@ -1887,7 +1887,7 @@ model usuario {
 
 model usuario_rol {
   idusuario     Int      @map("_idusuario") @db.UnsignedInt
-  idrol         Int      @map("_idrol")
+  idrol         Int      @map("_idrol") @db.UnsignedInt
   idusuariocrea Int      @default(1)
   fechacrea     DateTime @default(now())
   idusuariomod  Int      @default(1)
@@ -1901,12 +1901,12 @@ model usuario_rol {
 }
 
 model usuario_servicio {
-  idusuarioservicio               Int                             @id @default(autoincrement()) @map("_idusuarioservicio")
+  idusuarioservicio               Int                             @id @default(autoincrement()) @map("_idusuarioservicio") @db.UnsignedInt
   usuarioservicioid               String                          @unique(map: "UQ_usuarioservicio_usuarioservicioid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                            String                          @unique(map: "UQ_usuarioservicio_code") @db.VarChar(20)
   idusuario                       Int                             @map("_idusuario") @db.UnsignedInt
-  idservicio                      Int                             @map("_idservicio")
-  idusuarioservicioestado         Int                             @map("_idusuarioservicioestado")
+  idservicio                      Int                             @map("_idservicio") @db.UnsignedInt
+  idusuarioservicioestado         Int                             @map("_idusuarioservicioestado") @db.UnsignedInt
   idusuariocrea                   Int                             @default(1)
   fechacrea                       DateTime                        @default(now())
   idusuariomod                    Int                             @default(1)
@@ -1923,14 +1923,14 @@ model usuario_servicio {
 }
 
 model usuario_servicio_empresa {
-  idusuarioservicioempresa        Int                             @id @default(autoincrement()) @map("_idusuarioservicioempresa")
+  idusuarioservicioempresa        Int                             @id @default(autoincrement()) @map("_idusuarioservicioempresa") @db.UnsignedInt
   usuarioservicioempresaid        String                          @unique(map: "UQ_usuarioservicioempresa_usuarioempresaservicioid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                            String                          @unique(map: "UQ_usuarioservicioempresa_code") @db.VarChar(20)
   idusuario                       Int                             @map("_idusuario") @db.UnsignedInt
-  idempresa                       Int                             @map("_idempresa")
-  idservicio                      Int                             @map("_idservicio")
-  idusuarioservicioempresaestado  Int                             @map("_idusuarioservicioempresaestado")
-  idusuarioservicioempresarol     Int                             @map("_idusuarioservicioempresarol")
+  idempresa                       Int                             @map("_idempresa") @db.UnsignedInt
+  idservicio                      Int                             @map("_idservicio") @db.UnsignedInt
+  idusuarioservicioempresaestado  Int                             @map("_idusuarioservicioempresaestado") @db.UnsignedInt
+  idusuarioservicioempresarol     Int                             @map("_idusuarioservicioempresarol") @db.UnsignedInt
   idusuariocrea                   Int                             @default(1)
   fechacrea                       DateTime                        @default(now())
   idusuariomod                    Int                             @default(1)
@@ -1950,7 +1950,7 @@ model usuario_servicio_empresa {
 }
 
 model usuario_servicio_empresa_estado {
-  idusuarioservicioempresaestado Int                        @id @map("_idusuarioservicioempresaestado")
+  idusuarioservicioempresaestado Int                        @id @map("_idusuarioservicioempresaestado") @db.UnsignedInt
   usuarioservicioempresaestadoid String                     @unique(map: "UQ_usuarioservicioempresaestado_usuarioservicioempresaestadoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                           String                     @unique(map: "UQ_usuarioservicioempresaestado_code") @db.VarChar(20)
   nombre                         String                     @db.VarChar(50)
@@ -1965,7 +1965,7 @@ model usuario_servicio_empresa_estado {
 }
 
 model usuario_servicio_empresa_rol {
-  idusuarioservicioempresarol Int                        @id @map("_idusuarioservicioempresarol")
+  idusuarioservicioempresarol Int                        @id @map("_idusuarioservicioempresarol") @db.UnsignedInt
   usuarioservicioempresarolid String                     @unique(map: "UQ_usuarioservicioempresarol_usuarioempresaserviciorolid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                        String                     @unique(map: "UQ_usuarioservicioempresarol_code") @db.VarChar(20)
   nombre                      String                     @db.VarChar(50)
@@ -1980,7 +1980,7 @@ model usuario_servicio_empresa_rol {
 }
 
 model usuario_servicio_estado {
-  idusuarioservicioestado         Int                             @id @map("_idusuarioservicioestado")
+  idusuarioservicioestado         Int                             @id @map("_idusuarioservicioestado") @db.UnsignedInt
   usuarioservicioestadoid         String                          @unique(map: "UQ_usuarioservicioestado_usuarioservicioestadoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                            String                          @unique(map: "UQ_usuarioservicioestado_code") @db.VarChar(20)
   nombre                          String                          @db.VarChar(50)
@@ -1996,10 +1996,10 @@ model usuario_servicio_estado {
 }
 
 model usuario_servicio_verificacion {
-  idusuarioservicioverificacion Int                     @id @default(autoincrement()) @map("_idusuarioservicioverificacion")
+  idusuarioservicioverificacion Int                     @id @default(autoincrement()) @map("_idusuarioservicioverificacion") @db.UnsignedInt
   usuarioservicioverificacionid String                  @unique(map: "UQ_usuarioservicioverificacion_usuarioservicioverificacionid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
-  idusuarioservicio             Int                     @map("_idusuarioservicio")
-  idusuarioservicioestado       Int                     @map("_idusuarioservicioestado")
+  idusuarioservicio             Int                     @map("_idusuarioservicio") @db.UnsignedInt
+  idusuarioservicioestado       Int                     @map("_idusuarioservicioestado") @db.UnsignedInt
   idusuarioverifica             Int                     @map("_idusuarioverifica") @db.UnsignedInt
   comentariousuario             String                  @db.Text
   comentariointerno             String                  @db.Text
@@ -2019,10 +2019,10 @@ model usuario_servicio_verificacion {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model validacion {
-  idvalidacion      Int             @id @default(autoincrement()) @map("_idvalidacion")
+  idvalidacion      Int             @id @default(autoincrement()) @map("_idvalidacion") @db.UnsignedInt
   validacionid      String          @unique(map: "UQ_validacion_validacionid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   idusuario         Int             @map("_idusuario") @db.UnsignedInt
-  idvalidaciontipo  Int             @map("_idvalidaciontipo")
+  idvalidaciontipo  Int             @map("_idvalidaciontipo") @db.UnsignedInt
   valor             String          @default("") @db.VarChar(250)
   otp               String          @db.VarChar(20)
   tiempo_marca      DateTime        @default(now()) @db.Timestamp(3)
@@ -2043,7 +2043,7 @@ model validacion {
 }
 
 model validacion_tipo {
-  idvalidaciontipo Int          @id @default(autoincrement()) @map("_idvalidaciontipo")
+  idvalidaciontipo Int          @id @default(autoincrement()) @map("_idvalidaciontipo") @db.UnsignedInt
   validaciontipoid String       @unique(map: "UQ_validacion_tipo_validaciontipoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   nombre           String       @db.VarChar(50)
   idusuariocrea    Int          @default(1)
@@ -2055,8 +2055,8 @@ model validacion_tipo {
 }
 
 model zlaboratorio_pedido {
-  idpedido      Int                  @id @default(autoincrement()) @map("_idpedido")
-  idusuario     Int                  @map("_idusuario")
+  idpedido      Int                  @id @default(autoincrement()) @map("_idpedido") @db.UnsignedInt
+  idusuario     Int                  @map("_idusuario") @db.UnsignedInt
   code          String               @unique(map: "UQ_zlaboratorio_pedido_code") @default("") @db.VarChar(20)
   nombre        String               @db.VarChar(100)
   idusuariocrea Int                  @default(1)
@@ -2070,7 +2070,7 @@ model zlaboratorio_pedido {
 }
 
 model zlaboratorio_usuario {
-  idusuario            Int                   @id @default(autoincrement()) @map("_idusuario")
+  idusuario            Int                   @id @default(autoincrement()) @map("_idusuario") @db.UnsignedInt
   nombre               String                @db.VarChar(100)
   idusuariocrea        Int                   @default(1)
   fechacrea            DateTime              @default(now())
@@ -2081,7 +2081,7 @@ model zlaboratorio_usuario {
 }
 
 /// --- INICIO LOG SCRIPT: pluralizar-schema.js ---
-/// Fecha de ejecución: 29/5/2025, 21:38:25
+/// Fecha de ejecución: 30/5/2025, 23:06:18
 /// Total líneas con relaciones tipo '[]': 137
 /// Modificaciones realizadas: 0
 /// Sin modificar (ya pluralizadas): 137
@@ -2227,7 +2227,7 @@ model zlaboratorio_usuario {
 
 
 /// --- INICIO LOG DE SCRIPT: renombrar-atributos-especiales.js ---
-/// Fecha de ejecución: 29/5/2025, 21:38:25
+/// Fecha de ejecución: 30/5/2025, 23:06:18
 /// ✔️ Línea 32: (relation-field) archivo_estado ya coincide con 'archivoestado'
 /// ✔️ Línea 33: (relation-field) archivo_tipo ya coincide con 'archivotipo'
 /// ✔️ Línea 55: (relation-field) archivo ya coincide con 'archivo'

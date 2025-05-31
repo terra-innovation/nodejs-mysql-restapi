@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { catchedAsync } from "#src/utils/catchedAsync.js";
-import * as archivofacturaController from "#src/controllers/admin/archivofacturaController.js";
-import { verifyToken, checkRole } from "#src/middlewares/authMiddleware.js";
+import * as archivofacturaController from "#src/controllers/admin/archivofactura.prisma.Controller.js";
+import { verifyToken, checkRole } from "#src/middlewares/auth.prisma.Middleware.js";
 
 const router = Router();
 

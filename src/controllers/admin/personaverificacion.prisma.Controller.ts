@@ -287,15 +287,15 @@ const enviarCorreoSegunCorrespondeNuevoEstadoDePersona = async (personaverificac
   if (personaverificacionestado.isenabledcomentariousuario) {
     if (personaverificacionValidated.comentariousuario) {
       const dataEmail = {
-        codigo_usuario: persona.usuario_usuario.code,
-        nombres: persona.usuario_usuario.usuarionombres,
+        codigo_usuario: persona.usuario.code,
+        nombres: persona.usuario.usuarionombres,
         razon_no_aceptada: personaverificacionValidated.comentariousuario,
         fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
       };
       const emailTemplate = await templateManager.templateCuentaUsarioVerificadaMasInformacion(dataEmail);
 
       const mailOptions = {
-        to: persona.usuario_usuario.email,
+        to: persona.usuario.email,
         subject: emailTemplate.subject,
         text: emailTemplate.text,
         html: emailTemplate.html,
@@ -308,14 +308,14 @@ const enviarCorreoSegunCorrespondeNuevoEstadoDePersona = async (personaverificac
   /* Si la verificación tiene código 4 que es aprobado, se le envía un correo de éxito */
   if (personaverificacionestado.idpersonaverificacionestado == 4) {
     const dataEmail = {
-      codigo_usuario: persona.usuario_usuario.code,
-      nombres: persona.usuario_usuario.usuarionombres,
+      codigo_usuario: persona.usuario.code,
+      nombres: persona.usuario.usuarionombres,
       fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
     };
     const emailTemplate = await templateManager.templateCuentaUsarioVerificadaExito(dataEmail);
 
     const mailOptions = {
-      to: persona.usuario_usuario.email,
+      to: persona.usuario.email,
       subject: emailTemplate.subject,
       text: emailTemplate.text,
       html: emailTemplate.html,

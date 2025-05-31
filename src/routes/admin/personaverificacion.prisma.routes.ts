@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { catchedAsync } from "#src/utils/catchedAsync.js";
-import * as personaverificacionController from "#src/controllers/admin/personaverificacionController.js";
-import { verifyToken, checkRole } from "#src/middlewares/authMiddleware.js";
+import * as personaverificacionController from "#src/controllers/admin/personaverificacion.prisma.Controller.js";
+import { verifyToken, checkRole } from "#src/middlewares/auth.prisma.Middleware.js";
 
 const router = Router();
 

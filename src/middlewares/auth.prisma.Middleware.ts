@@ -10,13 +10,15 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
   const authHeader = req.body.token || req.query.token || req.params.token || req.headers["authorization"];
 
   if (!authHeader) {
-    return res.status(403).json({ error: true, message: "Se requiere un token para la autenticación" });
+    res.status(403).json({ error: true, message: "Se requiere un token para la autenticación" });
+    return;
   }
 
   // Verificamos si el token está en el formato correcto
   const tokenParts = authHeader.split(" ");
   if (tokenParts.length !== 2 || tokenParts[0] !== "Bearer") {
-    return res.status(401).json({ error: true, message: "Formato de token inválido" });
+    res.status(401).json({ error: true, message: "Formato de token inválido" });
+    return;
   }
 
   const token = tokenParts[1];
@@ -26,7 +28,8 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
 
     // Verificación segura: asegurarse de que decoded sea del tipo esperado
     if (typeof decoded !== "object" || !decoded || !("usuario" in decoded)) {
-      return res.status(401).json({ error: true, message: "Token malformado" });
+      res.status(401).json({ error: true, message: "Token malformado" });
+      return;
     }
 
     const payload = decoded as UsuarioSession;
@@ -35,9 +38,9 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
     req.session_user = payload;
 
     updateContext({ userId: decoded.usuario.idusuario });
-    return next();
+    next();
   } catch (err) {
-    return res.status(401).json({ error: true, message: "Token inválido" });
+    res.status(401).json({ error: true, message: "Token inválido" });
   }
 };
 
