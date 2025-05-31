@@ -6,7 +6,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getColaboradorByIdEmpresaAndIdpersona = async (tx: TxClient, idempresa: number, idpersona: bigint) => {
+export const getColaboradorByIdEmpresaAndIdpersona = async (tx: TxClient, idempresa: number, idpersona: number) => {
   try {
     const colaborador = await tx.colaborador.findFirst({
       where: {
@@ -124,12 +124,12 @@ export const insertColaborador = async (tx: TxClient, colaborador: Prisma.colabo
   }
 };
 
-export const updateColaborador = async (tx: TxClient, colaborador: Partial<colaborador>) => {
+export const updateColaborador = async (tx: TxClient, colaboradorid: string, colaborador: Prisma.colaboradorUpdateInput) => {
   try {
     const result = await tx.colaborador.update({
       data: colaborador,
       where: {
-        colaboradorid: colaborador.colaboradorid,
+        colaboradorid: colaboradorid,
       },
     });
     return result;
@@ -139,12 +139,12 @@ export const updateColaborador = async (tx: TxClient, colaborador: Partial<colab
   }
 };
 
-export const deleteColaborador = async (tx: TxClient, colaborador: Partial<colaborador>) => {
+export const deleteColaborador = async (tx: TxClient, colaboradorid: string, colaborador: Prisma.colaboradorUpdateInput) => {
   try {
     const result = await tx.colaborador.update({
       data: colaborador,
       where: {
-        colaboradorid: colaborador.colaboradorid,
+        colaboradorid: colaboradorid,
       },
     });
     return result;

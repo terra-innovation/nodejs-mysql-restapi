@@ -404,12 +404,12 @@ export const updateFactoring = async (tx: TxClient, factoringid: string, factori
   }
 };
 
-export const deleteFactoring = async (tx: TxClient, factoring: Partial<factoring>) => {
+export const deleteFactoring = async (tx: TxClient, factoringid: string, factoring: Prisma.factoringUpdateInput) => {
   try {
     const result = await tx.factoring.update({
       data: factoring,
       where: {
-        factoringid: factoring.factoringid,
+        factoringid: factoringid,
       },
     });
     return result;
@@ -419,12 +419,12 @@ export const deleteFactoring = async (tx: TxClient, factoring: Partial<factoring
   }
 };
 
-export const activateFactoring = async (tx: TxClient, factoring: Partial<factoring>) => {
+export const activateFactoring = async (tx: TxClient, factoringid: string, factoring: Prisma.factoringUpdateInput) => {
   try {
     const result = await tx.factoring.update({
       data: factoring,
       where: {
-        factoringid: factoring.factoringid,
+        factoringid: factoringid,
       },
     });
     return result;

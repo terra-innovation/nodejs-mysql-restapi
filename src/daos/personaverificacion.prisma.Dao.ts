@@ -77,12 +77,12 @@ export const insertPersonaverificacion = async (tx: TxClient, personaverificacio
   }
 };
 
-export const updatePersonaverificacion = async (tx: TxClient, personaverificacion: Partial<persona_verificacion>) => {
+export const updatePersonaverificacion = async (tx: TxClient, personaverificacionid: string, personaverificacion: Prisma.persona_verificacionUpdateInput) => {
   try {
     const result = await tx.persona_verificacion.update({
       data: personaverificacion,
       where: {
-        personaverificacionid: personaverificacion.personaverificacionid,
+        personaverificacionid: personaverificacionid,
       },
     });
     return result;
@@ -92,12 +92,12 @@ export const updatePersonaverificacion = async (tx: TxClient, personaverificacio
   }
 };
 
-export const deletePersonaverificacion = async (tx: TxClient, personaverificacion: Partial<persona_verificacion>) => {
+export const deletePersonaverificacion = async (tx: TxClient, personaverificacionid: string, personaverificacion: Prisma.persona_verificacionUpdateInput) => {
   try {
     const result = await tx.persona_verificacion.update({
       data: personaverificacion,
       where: {
-        personaverificacionid: personaverificacion.personaverificacionid,
+        personaverificacionid: personaverificacionid,
       },
     });
     return result;
@@ -107,12 +107,12 @@ export const deletePersonaverificacion = async (tx: TxClient, personaverificacio
   }
 };
 
-export const activatePersonaverificacion = async (tx: TxClient, personaverificacion: Partial<persona_verificacion>) => {
+export const activatePersonaverificacion = async (tx: TxClient, personaverificacionid: string, personaverificacion: Prisma.persona_verificacionUpdateInput) => {
   try {
     const result = await tx.persona_verificacion.update({
       data: personaverificacion,
       where: {
-        personaverificacionid: personaverificacion.personaverificacionid,
+        personaverificacionid: personaverificacionid,
       },
     });
     return result;

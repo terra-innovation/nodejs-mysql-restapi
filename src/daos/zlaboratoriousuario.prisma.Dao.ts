@@ -93,11 +93,11 @@ export const insertZlaboratorioUsuario = async (tx: TxClient, zlaboratoriousuari
   }
 };
 
-export const updateZlaboratorioUsuario = async (tx: TxClient, zlaboratoriousuario: Partial<zlaboratorio_usuario>) => {
+export const updateZlaboratorioUsuario = async (tx: TxClient, idusuario: number, zlaboratoriousuario: Prisma.zlaboratorio_usuarioUpdateInput) => {
   try {
     const result = await tx.zlaboratorio_usuario.update({
       where: {
-        idusuario: zlaboratoriousuario.idusuario,
+        idusuario: idusuario,
       },
       data: zlaboratoriousuario,
     });
@@ -108,11 +108,11 @@ export const updateZlaboratorioUsuario = async (tx: TxClient, zlaboratoriousuari
   }
 };
 
-export const deleteZlaboratorioUsuario = async (tx: TxClient, zlaboratoriousuario: Partial<zlaboratorio_usuario>) => {
+export const deleteZlaboratorioUsuario = async (tx: TxClient, idusuario: number, zlaboratoriousuario: Prisma.zlaboratorio_usuarioUpdateInput) => {
   try {
     const result = await tx.zlaboratorio_usuario.delete({
       where: {
-        idusuario: zlaboratoriousuario.idusuario,
+        idusuario: idusuario,
       },
     });
     return result;

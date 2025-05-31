@@ -86,12 +86,12 @@ export const insertDistrito = async (tx: TxClient, distrito: Prisma.distritoCrea
   }
 };
 
-export const updateDistrito = async (tx: TxClient, distrito: Partial<distrito>) => {
+export const updateDistrito = async (tx: TxClient, distritoid: string, distrito: Prisma.distritoUpdateInput) => {
   try {
     const result = await tx.distrito.update({
       data: distrito,
       where: {
-        distritoid: distrito.distritoid,
+        distritoid: distritoid,
       },
     });
     return result;
@@ -101,12 +101,12 @@ export const updateDistrito = async (tx: TxClient, distrito: Partial<distrito>) 
   }
 };
 
-export const deleteDistrito = async (tx: TxClient, distrito: Partial<distrito>) => {
+export const deleteDistrito = async (tx: TxClient, distritoid: string, distrito: Prisma.distritoUpdateInput) => {
   try {
     const result = await tx.distrito.update({
       data: distrito,
       where: {
-        distritoid: distrito.distritoid,
+        distritoid: distritoid,
       },
     });
     return result;

@@ -44,14 +44,14 @@ export const insertArchivoColaborador = async (tx: TxClient, archivocolaborador:
   }
 };
 
-export const updateArchivoColaborador = async (tx: TxClient, archivocolaborador: Partial<archivo_colaborador>) => {
+export const updateArchivoColaborador = async (tx: TxClient, idarchivo: number, idcolaborador: number, archivocolaborador: Prisma.archivo_colaboradorUpdateInput) => {
   try {
     const result = await tx.archivo_colaborador.update({
       data: archivocolaborador,
       where: {
         idarchivo_idcolaborador: {
-          idarchivo: archivocolaborador.idarchivo,
-          idcolaborador: archivocolaborador.idcolaborador,
+          idarchivo: idarchivo,
+          idcolaborador: idcolaborador,
         },
       },
     });
@@ -62,14 +62,14 @@ export const updateArchivoColaborador = async (tx: TxClient, archivocolaborador:
   }
 };
 
-export const deleteArchivoColaborador = async (tx: TxClient, archivocolaborador: Partial<archivo_colaborador>) => {
+export const deleteArchivoColaborador = async (tx: TxClient, idarchivo: number, idcolaborador: number, archivocolaborador: Prisma.archivo_colaboradorUpdateInput) => {
   try {
     const result = await tx.archivo_colaborador.update({
       data: archivocolaborador,
       where: {
         idarchivo_idcolaborador: {
-          idarchivo: archivocolaborador.idarchivo,
-          idcolaborador: archivocolaborador.idcolaborador,
+          idarchivo: idarchivo,
+          idcolaborador: idcolaborador,
         },
       },
     });
@@ -80,14 +80,14 @@ export const deleteArchivoColaborador = async (tx: TxClient, archivocolaborador:
   }
 };
 
-export const activateArchivoColaborador = async (tx: TxClient, archivocolaborador: Partial<archivo_colaborador>) => {
+export const activateArchivoColaborador = async (tx: TxClient, idarchivo: number, idcolaborador: number, archivocolaborador: Prisma.archivo_colaboradorUpdateInput) => {
   try {
     const result = await tx.archivo_colaborador.update({
       data: archivocolaborador,
       where: {
         idarchivo_idcolaborador: {
-          idarchivo: archivocolaborador.idarchivo,
-          idcolaborador: archivocolaborador.idcolaborador,
+          idarchivo: idarchivo,
+          idcolaborador: idcolaborador,
         },
       },
     });

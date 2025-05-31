@@ -95,12 +95,12 @@ export const insertFactoringconfigcomision = async (tx: TxClient, factoringconfi
   }
 };
 
-export const updateFactoringconfigcomision = async (tx: TxClient, factoringconfigcomision: Partial<factoring_config_comision>) => {
+export const updateFactoringconfigcomision = async (tx: TxClient, factoringconfigcomisionid: string, factoringconfigcomision: Prisma.factoring_config_comisionUpdateInput) => {
   try {
     const result = await tx.factoring_config_comision.update({
       data: factoringconfigcomision,
       where: {
-        factoringconfigcomisionid: factoringconfigcomision.factoringconfigcomisionid,
+        factoringconfigcomisionid: factoringconfigcomisionid,
       },
     });
     return result;
@@ -110,12 +110,12 @@ export const updateFactoringconfigcomision = async (tx: TxClient, factoringconfi
   }
 };
 
-export const deleteFactoringconfigcomision = async (tx: TxClient, factoringconfigcomision: Partial<factoring_config_comision>) => {
+export const deleteFactoringconfigcomision = async (tx: TxClient, factoringconfigcomisionid: string, factoringconfigcomision: Prisma.factoring_config_comisionUpdateInput) => {
   try {
     const result = await tx.factoring_config_comision.update({
       data: factoringconfigcomision,
       where: {
-        factoringconfigcomisionid: factoringconfigcomision.factoringconfigcomisionid,
+        factoringconfigcomisionid: factoringconfigcomisionid,
       },
     });
     return result;

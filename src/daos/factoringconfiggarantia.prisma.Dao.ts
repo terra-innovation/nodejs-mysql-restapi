@@ -77,12 +77,12 @@ export const insertFactoringconfiggarantia = async (tx: TxClient, factoringconfi
   }
 };
 
-export const updateFactoringconfiggarantia = async (tx: TxClient, factoringconfiggarantia: Partial<factoring_config_garantia>) => {
+export const updateFactoringconfiggarantia = async (tx: TxClient, factoringconfiggarantiaid: string, factoringconfiggarantia: Prisma.factoring_config_garantiaUpdateInput) => {
   try {
     const result = await tx.factoring_config_garantia.update({
       data: factoringconfiggarantia,
       where: {
-        factoringconfiggarantiaid: factoringconfiggarantia.factoringconfiggarantiaid,
+        factoringconfiggarantiaid: factoringconfiggarantiaid,
       },
     });
     return result;
@@ -92,12 +92,12 @@ export const updateFactoringconfiggarantia = async (tx: TxClient, factoringconfi
   }
 };
 
-export const deleteFactoringconfiggarantia = async (tx: TxClient, factoringconfiggarantia: Partial<factoring_config_garantia>) => {
+export const deleteFactoringconfiggarantia = async (tx: TxClient, factoringconfiggarantiaid: string, factoringconfiggarantia: Prisma.factoring_config_garantiaUpdateInput) => {
   try {
     const result = await tx.factoring_config_garantia.update({
       data: factoringconfiggarantia,
       where: {
-        factoringconfiggarantiaid: factoringconfiggarantia.factoringconfiggarantiaid,
+        factoringconfiggarantiaid: factoringconfiggarantiaid,
       },
     });
     return result;

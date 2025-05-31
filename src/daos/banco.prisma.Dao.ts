@@ -74,12 +74,12 @@ export const insertBanco = async (tx: TxClient, banco: Prisma.bancoCreateInput) 
   }
 };
 
-export const updateBanco = async (tx: TxClient, banco: Partial<banco>) => {
+export const updateBanco = async (tx: TxClient, bancoid: string, banco: Prisma.bancoUpdateInput) => {
   try {
     const result = await tx.banco.update({
       data: banco,
       where: {
-        bancoid: banco.bancoid,
+        bancoid: bancoid,
       },
     });
     return result;
@@ -89,12 +89,12 @@ export const updateBanco = async (tx: TxClient, banco: Partial<banco>) => {
   }
 };
 
-export const deleteBanco = async (tx: TxClient, banco: Partial<banco>) => {
+export const deleteBanco = async (tx: TxClient, bancoid: string, banco: Prisma.bancoUpdateInput) => {
   try {
     const result = await tx.banco.update({
       data: banco,
       where: {
-        bancoid: banco.bancoid,
+        bancoid: bancoid,
       },
     });
     return result;
@@ -104,12 +104,12 @@ export const deleteBanco = async (tx: TxClient, banco: Partial<banco>) => {
   }
 };
 
-export const activateBanco = async (tx: TxClient, banco: Partial<banco>) => {
+export const activateBanco = async (tx: TxClient, bancoid: string, banco: Prisma.bancoUpdateInput) => {
   try {
     const result = await tx.banco.update({
       data: banco,
       where: {
-        bancoid: banco.bancoid,
+        bancoid: bancoid,
       },
     });
     return result;

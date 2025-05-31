@@ -77,12 +77,12 @@ export const insertDepartamento = async (tx: TxClient, departamento: Prisma.depa
   }
 };
 
-export const updateDepartamento = async (tx: TxClient, departamento: Partial<departamento>) => {
+export const updateDepartamento = async (tx: TxClient, departamentoid: string, departamento: Prisma.departamentoUpdateInput) => {
   try {
     const result = await tx.departamento.update({
       data: departamento,
       where: {
-        departamentoid: departamento.departamentoid,
+        departamentoid: departamentoid,
       },
     });
     return result;
@@ -92,12 +92,12 @@ export const updateDepartamento = async (tx: TxClient, departamento: Partial<dep
   }
 };
 
-export const deleteDepartamento = async (tx: TxClient, departamento: Partial<departamento>) => {
+export const deleteDepartamento = async (tx: TxClient, departamentoid: string, departamento: Prisma.departamentoUpdateInput) => {
   try {
     const result = await tx.departamento.update({
       data: departamento,
       where: {
-        departamentoid: departamento.departamentoid,
+        departamentoid: departamentoid,
       },
     });
     return result;

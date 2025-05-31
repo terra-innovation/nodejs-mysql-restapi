@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getInversionistacuentabancariaByIdinversionistaAndIdusuario = async (tx: TxClient, idinversionista: bigint, idusuario: number, estados: number[]) => {
+export const getInversionistacuentabancariaByIdinversionistaAndIdusuario = async (tx: TxClient, idinversionista: number, idusuario: number, estados: number[]) => {
   try {
     const empresacuentabancaria = await tx.inversionista_cuenta_bancaria.findFirst({
       include: {
@@ -80,7 +80,7 @@ export const getInversionistacuentabancariasByIdusuario = async (tx: TxClient, i
   }
 };
 
-export const getInversionistacuentabancariasByIdinversionistaAndAlias = async (tx: TxClient, idinversionista: bigint, alias: string, estados: number[]) => {
+export const getInversionistacuentabancariasByIdinversionistaAndAlias = async (tx: TxClient, idinversionista: number, alias: string, estados: number[]) => {
   try {
     const empresacuentabancaria = await tx.inversionista_cuenta_bancaria.findMany({
       include: {
@@ -214,12 +214,12 @@ export const insertInversionistacuentabancaria = async (tx: TxClient, inversioni
   }
 };
 
-export const updateInversionistacuentabancaria = async (tx: TxClient, inversionistacuentabancaria: Partial<inversionista_cuenta_bancaria>) => {
+export const updateInversionistacuentabancaria = async (tx: TxClient, inversionistacuentabancariaid: string, inversionistacuentabancaria: Prisma.inversionista_cuenta_bancariaUpdateInput) => {
   try {
     const result = await tx.inversionista_cuenta_bancaria.update({
       data: inversionistacuentabancaria,
       where: {
-        inversionistacuentabancariaid: inversionistacuentabancaria.inversionistacuentabancariaid,
+        inversionistacuentabancariaid: inversionistacuentabancariaid,
       },
     });
     return result;
@@ -229,12 +229,12 @@ export const updateInversionistacuentabancaria = async (tx: TxClient, inversioni
   }
 };
 
-export const deleteInversionistacuentabancaria = async (tx: TxClient, inversionistacuentabancaria: Partial<inversionista_cuenta_bancaria>) => {
+export const deleteInversionistacuentabancaria = async (tx: TxClient, inversionistacuentabancariaid: string, inversionistacuentabancaria: Prisma.inversionista_cuenta_bancariaUpdateInput) => {
   try {
     const result = await tx.inversionista_cuenta_bancaria.update({
       data: inversionistacuentabancaria,
       where: {
-        inversionistacuentabancariaid: inversionistacuentabancaria.inversionistacuentabancariaid,
+        inversionistacuentabancariaid: inversionistacuentabancariaid,
       },
     });
     return result;
@@ -244,12 +244,12 @@ export const deleteInversionistacuentabancaria = async (tx: TxClient, inversioni
   }
 };
 
-export const activateInversionistacuentabancaria = async (tx: TxClient, inversionistacuentabancaria: Partial<inversionista_cuenta_bancaria>) => {
+export const activateInversionistacuentabancaria = async (tx: TxClient, inversionistacuentabancariaid: string, inversionistacuentabancaria: Prisma.inversionista_cuenta_bancariaUpdateInput) => {
   try {
     const result = await tx.inversionista_cuenta_bancaria.update({
       data: inversionistacuentabancaria,
       where: {
-        inversionistacuentabancariaid: inversionistacuentabancaria.inversionistacuentabancariaid,
+        inversionistacuentabancariaid: inversionistacuentabancariaid,
       },
     });
     return result;

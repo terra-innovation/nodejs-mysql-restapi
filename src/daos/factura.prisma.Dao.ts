@@ -22,7 +22,7 @@ export const getFacturas = async (tx: TxClient, estados: number[]) => {
   }
 };
 
-export const getFacturasByIdfactoring = async (tx: TxClient, idfactoring: bigint, estados: number[]) => {
+export const getFacturasByIdfactoring = async (tx: TxClient, idfactoring: number, estados: number[]) => {
   try {
     const facturas = await tx.factura.findMany({
       include: {
@@ -148,12 +148,12 @@ export const insertFactura = async (tx: TxClient, factura: Prisma.facturaCreateI
   }
 };
 
-export const updateFactura = async (tx: TxClient, factura: Partial<factura>) => {
+export const updateFactura = async (tx: TxClient, facturaid: string, factura: Prisma.facturaUpdateInput) => {
   try {
     const result = await tx.factura.update({
       data: factura,
       where: {
-        facturaid: factura.facturaid,
+        facturaid: facturaid,
       },
     });
     return result;
@@ -163,12 +163,12 @@ export const updateFactura = async (tx: TxClient, factura: Partial<factura>) => 
   }
 };
 
-export const deleteFactura = async (tx: TxClient, factura: Partial<factura>) => {
+export const deleteFactura = async (tx: TxClient, facturaid: string, factura: Prisma.facturaUpdateInput) => {
   try {
     const result = await tx.factura.update({
       data: factura,
       where: {
-        facturaid: factura.facturaid,
+        facturaid: facturaid,
       },
     });
     return result;
@@ -178,12 +178,12 @@ export const deleteFactura = async (tx: TxClient, factura: Partial<factura>) => 
   }
 };
 
-export const activateFactura = async (tx: TxClient, factura: Partial<factura>) => {
+export const activateFactura = async (tx: TxClient, facturaid: string, factura: Prisma.facturaUpdateInput) => {
   try {
     const result = await tx.factura.update({
       data: factura,
       where: {
-        facturaid: factura.facturaid,
+        facturaid: facturaid,
       },
     });
     return result;

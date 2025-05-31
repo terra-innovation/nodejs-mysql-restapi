@@ -136,12 +136,12 @@ export const insertValidacion = async (tx: TxClient, validacion: Prisma.validaci
   }
 };
 
-export const updateValidacion = async (tx: TxClient, validacion: Partial<validacion>) => {
+export const updateValidacion = async (tx: TxClient, validacionid: string, validacion: Prisma.validacionUpdateInput) => {
   try {
     const result = await tx.validacion.update({
       data: validacion,
       where: {
-        validacionid: validacion.validacionid,
+        validacionid: validacionid,
       },
     });
     return result;
@@ -151,12 +151,12 @@ export const updateValidacion = async (tx: TxClient, validacion: Partial<validac
   }
 };
 
-export const deleteValidacion = async (tx: TxClient, validacion: Partial<validacion>) => {
+export const deleteValidacion = async (tx: TxClient, validacionid: string, validacion: Prisma.validacionUpdateInput) => {
   try {
     const result = await tx.validacion.update({
       data: validacion,
       where: {
-        validacionid: validacion.validacionid,
+        validacionid: validacionid,
       },
     });
     return result;
@@ -166,12 +166,12 @@ export const deleteValidacion = async (tx: TxClient, validacion: Partial<validac
   }
 };
 
-export const activateValidacion = async (tx: TxClient, validacion: Partial<validacion>) => {
+export const activateValidacion = async (tx: TxClient, validacionid: string, validacion: Prisma.validacionUpdateInput) => {
   try {
     const result = await tx.validacion.update({
       data: validacion,
       where: {
-        validacionid: validacion.validacionid,
+        validacionid: validacionid,
       },
     });
     return result;

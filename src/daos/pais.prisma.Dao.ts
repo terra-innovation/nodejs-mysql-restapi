@@ -77,12 +77,12 @@ export const insertPais = async (tx: TxClient, pais: Prisma.paisCreateInput) => 
   }
 };
 
-export const updatePais = async (tx: TxClient, pais: Partial<pais>) => {
+export const updatePais = async (tx: TxClient, paisid: string, pais: Prisma.paisUpdateInput) => {
   try {
     const result = await tx.pais.update({
       data: pais,
       where: {
-        paisid: pais.paisid,
+        paisid: paisid,
       },
     });
     return result;
@@ -92,12 +92,12 @@ export const updatePais = async (tx: TxClient, pais: Partial<pais>) => {
   }
 };
 
-export const deletePais = async (tx: TxClient, pais: Partial<pais>) => {
+export const deletePais = async (tx: TxClient, paisid: string, pais: Prisma.paisUpdateInput) => {
   try {
     const result = await tx.pais.update({
       data: pais,
       where: {
-        paisid: pais.paisid,
+        paisid: paisid,
       },
     });
     return result;

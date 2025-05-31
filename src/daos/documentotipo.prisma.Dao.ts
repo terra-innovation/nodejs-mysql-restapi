@@ -86,12 +86,12 @@ export const insertDocumentotipo = async (tx: TxClient, documentotipo: Prisma.do
   }
 };
 
-export const updateDocumentotipo = async (tx: TxClient, documentotipo: Partial<documento_tipo>) => {
+export const updateDocumentotipo = async (tx: TxClient, documentotipoid: string, documentotipo: Prisma.documento_tipoUpdateInput) => {
   try {
     const result = await tx.documento_tipo.update({
       data: documentotipo,
       where: {
-        documentotipoid: documentotipo.documentotipoid,
+        documentotipoid: documentotipoid,
       },
     });
     return result;
@@ -101,12 +101,12 @@ export const updateDocumentotipo = async (tx: TxClient, documentotipo: Partial<d
   }
 };
 
-export const deleteDocumentotipo = async (tx: TxClient, documentotipo: Partial<documento_tipo>) => {
+export const deleteDocumentotipo = async (tx: TxClient, documentotipoid: string, documentotipo: Prisma.documento_tipoUpdateInput) => {
   try {
     const result = await tx.documento_tipo.update({
       data: documentotipo,
       where: {
-        documentotipoid: documentotipo.documentotipoid,
+        documentotipoid: documentotipoid,
       },
     });
     return result;
@@ -116,12 +116,12 @@ export const deleteDocumentotipo = async (tx: TxClient, documentotipo: Partial<d
   }
 };
 
-export const activateDocumentotipo = async (tx: TxClient, documentotipo: Partial<documento_tipo>) => {
+export const activateDocumentotipo = async (tx: TxClient, documentotipoid: string, documentotipo: Prisma.documento_tipoUpdateInput) => {
   try {
     const result = await tx.documento_tipo.update({
       data: documentotipo,
       where: {
-        documentotipoid: documentotipo.documentotipoid,
+        documentotipoid: documentotipoid,
       },
     });
     return result;

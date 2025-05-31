@@ -75,12 +75,12 @@ export const insertArchivo = async (tx: TxClient, archivo: Prisma.archivoCreateI
   }
 };
 
-export const updateArchivo = async (tx: TxClient, archivo: Partial<archivo>) => {
+export const updateArchivo = async (tx: TxClient, archivoid: string, archivo: Prisma.archivoUpdateInput) => {
   try {
     const result = await tx.archivo.update({
       data: archivo,
       where: {
-        archivoid: archivo.archivoid,
+        archivoid: archivoid,
       },
     });
     return result;
@@ -90,12 +90,12 @@ export const updateArchivo = async (tx: TxClient, archivo: Partial<archivo>) => 
   }
 };
 
-export const deleteArchivo = async (tx: TxClient, archivo: Partial<archivo>) => {
+export const deleteArchivo = async (tx: TxClient, archivoid: string, archivo: Prisma.archivoUpdateInput) => {
   try {
     const result = await tx.archivo.update({
       data: archivo,
       where: {
-        archivoid: archivo.archivoid,
+        archivoid: archivoid,
       },
     });
     return result;
@@ -105,12 +105,12 @@ export const deleteArchivo = async (tx: TxClient, archivo: Partial<archivo>) => 
   }
 };
 
-export const activateArchivo = async (tx: TxClient, archivo: Partial<archivo>) => {
+export const activateArchivo = async (tx: TxClient, archivoid: string, archivo: Prisma.archivoUpdateInput) => {
   try {
     const result = await tx.archivo.update({
       data: archivo,
       where: {
-        archivoid: archivo.archivoid,
+        archivoid: archivoid,
       },
     });
     return result;

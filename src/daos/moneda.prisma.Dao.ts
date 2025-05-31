@@ -92,12 +92,12 @@ export const insertMoneda = async (tx: TxClient, moneda: Prisma.monedaCreateInpu
   }
 };
 
-export const updateMoneda = async (tx: TxClient, moneda: Partial<moneda>) => {
+export const updateMoneda = async (tx: TxClient, monedaid: string, moneda: Prisma.monedaUpdateInput) => {
   try {
     const result = await tx.moneda.update({
       data: moneda,
       where: {
-        monedaid: moneda.monedaid,
+        monedaid: monedaid,
       },
     });
     return result;
@@ -107,12 +107,12 @@ export const updateMoneda = async (tx: TxClient, moneda: Partial<moneda>) => {
   }
 };
 
-export const deleteMoneda = async (tx: TxClient, moneda: Partial<moneda>) => {
+export const deleteMoneda = async (tx: TxClient, monedaid: string, moneda: Prisma.monedaUpdateInput) => {
   try {
     const result = await tx.moneda.update({
       data: moneda,
       where: {
-        monedaid: moneda.monedaid,
+        monedaid: monedaid,
       },
     });
     return result;

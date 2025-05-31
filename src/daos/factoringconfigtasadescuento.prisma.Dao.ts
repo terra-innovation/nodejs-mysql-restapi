@@ -77,12 +77,12 @@ export const insertFactoringconfigtasadescuento = async (tx: TxClient, factoring
   }
 };
 
-export const updateFactoringconfigtasadescuento = async (tx: TxClient, factoringconfigtasadescuento: Partial<factoring_config_tasa_descuento>) => {
+export const updateFactoringconfigtasadescuento = async (tx: TxClient, factoringconfigtasadescuentoid: string, factoringconfigtasadescuento: Prisma.factoring_config_tasa_descuentoUpdateInput) => {
   try {
     const result = await tx.factoring_config_tasa_descuento.update({
       data: factoringconfigtasadescuento,
       where: {
-        factoringconfigtasadescuentoid: factoringconfigtasadescuento.factoringconfigtasadescuentoid,
+        factoringconfigtasadescuentoid: factoringconfigtasadescuentoid,
       },
     });
     return result;
@@ -92,12 +92,12 @@ export const updateFactoringconfigtasadescuento = async (tx: TxClient, factoring
   }
 };
 
-export const deleteFactoringconfigtasadescuento = async (tx: TxClient, factoringconfigtasadescuento: Partial<factoring_config_tasa_descuento>) => {
+export const deleteFactoringconfigtasadescuento = async (tx: TxClient, factoringconfigtasadescuentoid: string, factoringconfigtasadescuento: Prisma.factoring_config_tasa_descuentoUpdateInput) => {
   try {
     const result = await tx.factoring_config_tasa_descuento.update({
       data: factoringconfigtasadescuento,
       where: {
-        factoringconfigtasadescuentoid: factoringconfigtasadescuento.factoringconfigtasadescuentoid,
+        factoringconfigtasadescuentoid: factoringconfigtasadescuentoid,
       },
     });
     return result;

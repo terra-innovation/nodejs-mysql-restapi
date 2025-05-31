@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getArchivofacturasByIdfactoring = async (tx: TxClient, idfactoring: bigint, estados: number[]) => {
+export const getArchivofacturasByIdfactoring = async (tx: TxClient, idfactoring: number, estados: number[]) => {
   try {
     const archivofacturas = await tx.archivo_factura.findMany({
       include: {
@@ -104,14 +104,14 @@ export const insertArchivoFactura = async (tx: TxClient, archivofactura: Prisma.
   }
 };
 
-export const updateArchivoFactura = async (tx: TxClient, archivofactura: Partial<archivo_factura>) => {
+export const updateArchivoFactura = async (tx: TxClient, idarchivo: number, idfactura: number, archivofactura: Prisma.archivo_facturaUpdateInput) => {
   try {
     const result = await tx.archivo_factura.update({
       data: archivofactura,
       where: {
         idarchivo_idfactura: {
-          idarchivo: archivofactura.idarchivo,
-          idfactura: archivofactura.idfactura,
+          idarchivo: idarchivo,
+          idfactura: idfactura,
         },
       },
     });
@@ -122,14 +122,14 @@ export const updateArchivoFactura = async (tx: TxClient, archivofactura: Partial
   }
 };
 
-export const deleteArchivoFactura = async (tx: TxClient, archivofactura: Partial<archivo_factura>) => {
+export const deleteArchivoFactura = async (tx: TxClient, idarchivo: number, idfactura: number, archivofactura: Prisma.archivo_facturaUpdateInput) => {
   try {
     const result = await tx.archivo_factura.update({
       data: archivofactura,
       where: {
         idarchivo_idfactura: {
-          idarchivo: archivofactura.idarchivo,
-          idfactura: archivofactura.idfactura,
+          idarchivo: idarchivo,
+          idfactura: idfactura,
         },
       },
     });
@@ -140,14 +140,14 @@ export const deleteArchivoFactura = async (tx: TxClient, archivofactura: Partial
   }
 };
 
-export const activateArchivoFactura = async (tx: TxClient, archivofactura: Partial<archivo_factura>) => {
+export const activateArchivoFactura = async (tx: TxClient, idarchivo: number, idfactura: number, archivofactura: Prisma.archivo_facturaUpdateInput) => {
   try {
     const result = await tx.archivo_factura.update({
       data: archivofactura,
       where: {
         idarchivo_idfactura: {
-          idarchivo: archivofactura.idarchivo,
-          idfactura: archivofactura.idfactura,
+          idarchivo: idarchivo,
+          idfactura: idfactura,
         },
       },
     });

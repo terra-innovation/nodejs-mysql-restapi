@@ -77,12 +77,12 @@ export const insertFactoringestrategia = async (tx: TxClient, factoringestrategi
   }
 };
 
-export const updateFactoringestrategia = async (tx: TxClient, factoringestrategia: Partial<factoring_estrategia>) => {
+export const updateFactoringestrategia = async (tx: TxClient, factoringestrategiaid: string, factoringestrategia: Prisma.factoring_estrategiaUpdateInput) => {
   try {
     const result = await tx.factoring_estrategia.update({
       data: factoringestrategia,
       where: {
-        factoringestrategiaid: factoringestrategia.factoringestrategiaid,
+        factoringestrategiaid: factoringestrategiaid,
       },
     });
     return result;
@@ -92,12 +92,12 @@ export const updateFactoringestrategia = async (tx: TxClient, factoringestrategi
   }
 };
 
-export const deleteFactoringestrategia = async (tx: TxClient, factoringestrategia: Partial<factoring_estrategia>) => {
+export const deleteFactoringestrategia = async (tx: TxClient, factoringestrategiaid: string, factoringestrategia: Prisma.factoring_estrategiaUpdateInput) => {
   try {
     const result = await tx.factoring_estrategia.update({
       data: factoringestrategia,
       where: {
-        factoringestrategiaid: factoringestrategia.factoringestrategiaid,
+        factoringestrategiaid: factoringestrategiaid,
       },
     });
     return result;

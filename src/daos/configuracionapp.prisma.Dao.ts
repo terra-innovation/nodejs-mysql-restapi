@@ -89,12 +89,12 @@ export const insertConfiguracionapp = async (tx: TxClient, configuracionapp: Pri
   }
 };
 
-export const updateConfiguracionapp = async (tx: TxClient, configuracionapp: Partial<configuracion_app>) => {
+export const updateConfiguracionapp = async (tx: TxClient, configuracionappid: string, configuracionapp: Prisma.configuracion_appUpdateInput) => {
   try {
     const result = await tx.configuracion_app.update({
       data: configuracionapp,
       where: {
-        configuracionappid: configuracionapp.configuracionappid,
+        configuracionappid: configuracionappid,
       },
     });
     return result;
@@ -104,12 +104,12 @@ export const updateConfiguracionapp = async (tx: TxClient, configuracionapp: Par
   }
 };
 
-export const deleteConfiguracionapp = async (tx: TxClient, configuracionapp: Partial<configuracion_app>) => {
+export const deleteConfiguracionapp = async (tx: TxClient, configuracionappid: string, configuracionapp: Prisma.configuracion_appUpdateInput) => {
   try {
     const result = await tx.configuracion_app.update({
       data: configuracionapp,
       where: {
-        configuracionappid: configuracionapp.configuracionappid,
+        configuracionappid: configuracionappid,
       },
     });
     return result;

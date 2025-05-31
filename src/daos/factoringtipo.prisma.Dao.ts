@@ -79,12 +79,12 @@ export const insertFactoringtipo = async (tx: TxClient, factoringtipo: Prisma.fa
   }
 };
 
-export const updateFactoringtipo = async (tx: TxClient, factoringtipo: Partial<factoring_tipo>) => {
+export const updateFactoringtipo = async (tx: TxClient, factoringtipoid: string, factoringtipo: Prisma.factoring_tipoUpdateInput) => {
   try {
     const result = await tx.factoring_tipo.update({
       data: factoringtipo,
       where: {
-        factoringtipoid: factoringtipo.factoringtipoid,
+        factoringtipoid: factoringtipoid,
       },
     });
     return result;
@@ -94,12 +94,12 @@ export const updateFactoringtipo = async (tx: TxClient, factoringtipo: Partial<f
   }
 };
 
-export const deleteFactoringtipo = async (tx: TxClient, factoringtipo: Partial<factoring_tipo>) => {
+export const deleteFactoringtipo = async (tx: TxClient, factoringtipoid: string, factoringtipo: Prisma.factoring_tipoUpdateInput) => {
   try {
     const result = await tx.factoring_tipo.update({
       data: factoringtipo,
       where: {
-        factoringtipoid: factoringtipo.factoringtipoid,
+        factoringtipoid: factoringtipoid,
       },
     });
     return result;

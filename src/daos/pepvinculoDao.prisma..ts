@@ -79,12 +79,12 @@ export const insertPepvinculo = async (tx: TxClient, pepvinculo: Prisma.pep_vinc
   }
 };
 
-export const updatePepvinculo = async (tx: TxClient, pepvinculo: Partial<pep_vinculo>) => {
+export const updatePepvinculo = async (tx: TxClient, pepvinculoid: string, pepvinculo: Prisma.pep_vinculoUpdateInput) => {
   try {
     const result = await tx.pep_vinculo.update({
       data: pepvinculo,
       where: {
-        pepvinculoid: pepvinculo.pepvinculoid,
+        pepvinculoid: pepvinculoid,
       },
     });
     return result;
@@ -94,12 +94,12 @@ export const updatePepvinculo = async (tx: TxClient, pepvinculo: Partial<pep_vin
   }
 };
 
-export const deletePepvinculo = async (tx: TxClient, pepvinculo: Partial<pep_vinculo>) => {
+export const deletePepvinculo = async (tx: TxClient, pepvinculoid: string, pepvinculo: Prisma.pep_vinculoUpdateInput) => {
   try {
     const result = await tx.pep_vinculo.update({
       data: pepvinculo,
       where: {
-        pepvinculoid: pepvinculo.pepvinculoid,
+        pepvinculoid: pepvinculoid,
       },
     });
     return result;

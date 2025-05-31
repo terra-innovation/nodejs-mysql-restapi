@@ -75,12 +75,12 @@ export const insertProvincia = async (tx: TxClient, provincia: Prisma.provinciaC
   }
 };
 
-export const updateProvincia = async (tx: TxClient, provincia: Partial<provincia>) => {
+export const updateProvincia = async (tx: TxClient, provinciaid: string, provincia: Prisma.provinciaUpdateInput) => {
   try {
     const result = await tx.provincia.update({
       data: provincia,
       where: {
-        provinciaid: provincia.provinciaid,
+        provinciaid: provinciaid,
       },
     });
     return result;
@@ -90,12 +90,12 @@ export const updateProvincia = async (tx: TxClient, provincia: Partial<provincia
   }
 };
 
-export const deleteProvincia = async (tx: TxClient, provincia: Partial<provincia>) => {
+export const deleteProvincia = async (tx: TxClient, provinciaid: string, provincia: Prisma.provinciaUpdateInput) => {
   try {
     const result = await tx.provincia.update({
       data: provincia,
       where: {
-        provinciaid: provincia.provinciaid,
+        provinciaid: provinciaid,
       },
     });
     return result;

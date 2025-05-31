@@ -51,14 +51,14 @@ export const insertArchivoEmpresa = async (tx: TxClient, archivoempresa: Prisma.
   }
 };
 
-export const updateArchivoEmpresa = async (tx: TxClient, archivoempresa: Partial<archivo_empresa>) => {
+export const updateArchivoEmpresa = async (tx: TxClient, idarchivo: number, idempresa: number, archivoempresa: Prisma.archivo_empresaUpdateInput) => {
   try {
     const result = await tx.archivo_empresa.update({
       data: archivoempresa,
       where: {
         idarchivo_idempresa: {
-          idarchivo: archivoempresa.idarchivo,
-          idempresa: archivoempresa.idempresa,
+          idarchivo: idarchivo,
+          idempresa: idempresa,
         },
       },
     });
@@ -69,14 +69,14 @@ export const updateArchivoEmpresa = async (tx: TxClient, archivoempresa: Partial
   }
 };
 
-export const deleteArchivoEmpresa = async (tx: TxClient, archivoempresa: Partial<archivo_empresa>) => {
+export const deleteArchivoEmpresa = async (tx: TxClient, idarchivo: number, idempresa: number, archivoempresa: Prisma.archivo_empresaUpdateInput) => {
   try {
     const result = await tx.archivo_empresa.update({
       data: archivoempresa,
       where: {
         idarchivo_idempresa: {
-          idarchivo: archivoempresa.idarchivo,
-          idempresa: archivoempresa.idempresa,
+          idarchivo: idarchivo,
+          idempresa: idempresa,
         },
       },
     });
@@ -87,14 +87,14 @@ export const deleteArchivoEmpresa = async (tx: TxClient, archivoempresa: Partial
   }
 };
 
-export const activateArchivoEmpresa = async (tx: TxClient, archivoempresa: Partial<archivo_empresa>) => {
+export const activateArchivoEmpresa = async (tx: TxClient, idarchivo: number, idempresa: number, archivoempresa: Prisma.archivo_empresaUpdateInput) => {
   try {
     const result = await tx.archivo_empresa.update({
       data: archivoempresa,
       where: {
         idarchivo_idempresa: {
-          idarchivo: archivoempresa.idarchivo,
-          idempresa: archivoempresa.idempresa,
+          idarchivo: idarchivo,
+          idempresa: idempresa,
         },
       },
     });

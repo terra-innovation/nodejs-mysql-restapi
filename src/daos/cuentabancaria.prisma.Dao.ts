@@ -318,7 +318,7 @@ export const insertCuentabancaria = async (tx: TxClient, cuentabancaria: Prisma.
   }
 };
 
-export const updateCuentabancariaOnlyAliasByCuentabancariaid = async (tx: TxClient, cuentabancaria: Partial<cuenta_bancaria>) => {
+export const updateCuentabancariaOnlyAliasByCuentabancariaid = async (tx: TxClient, cuentabancariaid: string, cuentabancaria: Prisma.cuenta_bancariaUpdateInput) => {
   try {
     const result = await tx.cuenta_bancaria.update({
       data: {
@@ -327,7 +327,7 @@ export const updateCuentabancariaOnlyAliasByCuentabancariaid = async (tx: TxClie
         fechamod: cuentabancaria.fechamod,
       },
       where: {
-        cuentabancariaid: cuentabancaria.cuentabancariaid,
+        cuentabancariaid: cuentabancariaid,
       },
     });
     return result;
@@ -337,12 +337,12 @@ export const updateCuentabancariaOnlyAliasByCuentabancariaid = async (tx: TxClie
   }
 };
 
-export const updateCuentabancaria = async (tx: TxClient, cuentabancaria: Partial<cuenta_bancaria>) => {
+export const updateCuentabancaria = async (tx: TxClient, cuentabancariaid: string, cuentabancaria: Prisma.cuenta_bancariaUpdateInput) => {
   try {
     const result = await tx.cuenta_bancaria.update({
       data: cuentabancaria,
       where: {
-        cuentabancariaid: cuentabancaria.cuentabancariaid,
+        cuentabancariaid: cuentabancariaid,
       },
     });
     return result;
@@ -352,12 +352,12 @@ export const updateCuentabancaria = async (tx: TxClient, cuentabancaria: Partial
   }
 };
 
-export const deleteCuentabancaria = async (tx: TxClient, cuentabancaria: Partial<cuenta_bancaria>) => {
+export const deleteCuentabancaria = async (tx: TxClient, cuentabancariaid: string, cuentabancaria: Prisma.cuenta_bancariaUpdateInput) => {
   try {
     const result = await tx.cuenta_bancaria.update({
       data: cuentabancaria,
       where: {
-        cuentabancariaid: cuentabancaria.cuentabancariaid,
+        cuentabancariaid: cuentabancariaid,
       },
     });
     return result;
@@ -367,12 +367,12 @@ export const deleteCuentabancaria = async (tx: TxClient, cuentabancaria: Partial
   }
 };
 
-export const activateCuentabancaria = async (tx: TxClient, cuentabancaria: Partial<cuenta_bancaria>) => {
+export const activateCuentabancaria = async (tx: TxClient, cuentabancariaid: string, cuentabancaria: Prisma.cuenta_bancariaUpdateInput) => {
   try {
     const result = await tx.cuenta_bancaria.update({
       data: cuentabancaria,
       where: {
-        cuentabancariaid: cuentabancaria.cuentabancariaid,
+        cuentabancariaid: cuentabancariaid,
       },
     });
     return result;

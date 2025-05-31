@@ -89,12 +89,12 @@ export const insertFinancieroconcepto = async (tx: TxClient, financieroconcepto:
   }
 };
 
-export const updateFinancieroconcepto = async (tx: TxClient, financieroconcepto: Partial<financiero_concepto>) => {
+export const updateFinancieroconcepto = async (tx: TxClient, financieroconceptoid: string, financieroconcepto: Prisma.financiero_conceptoUpdateInput) => {
   try {
     const result = await tx.financiero_concepto.update({
       data: financieroconcepto,
       where: {
-        financieroconceptoid: financieroconcepto.financieroconceptoid,
+        financieroconceptoid: financieroconceptoid,
       },
     });
     return result;
@@ -104,12 +104,12 @@ export const updateFinancieroconcepto = async (tx: TxClient, financieroconcepto:
   }
 };
 
-export const deleteFinancieroconcepto = async (tx: TxClient, financieroconcepto: Partial<financiero_concepto>) => {
+export const deleteFinancieroconcepto = async (tx: TxClient, financieroconceptoid: string, financieroconcepto: Prisma.financiero_conceptoUpdateInput) => {
   try {
     const result = await tx.financiero_concepto.update({
       data: financieroconcepto,
       where: {
-        financieroconceptoid: financieroconcepto.financieroconceptoid,
+        financieroconceptoid: financieroconceptoid,
       },
     });
     return result;

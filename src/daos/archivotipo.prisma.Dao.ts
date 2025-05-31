@@ -90,12 +90,12 @@ export const insertArchivotipo = async (tx: TxClient, archivotipo: Prisma.archiv
   }
 };
 
-export const updateArchivotipo = async (tx: TxClient, archivotipo: Partial<archivo_tipo>) => {
+export const updateArchivotipo = async (tx: TxClient, archivotipoid: string, archivotipo: Prisma.archivo_tipoUpdateInput) => {
   try {
     const result = await tx.archivo_tipo.update({
       data: archivotipo,
       where: {
-        archivotipoid: archivotipo.archivotipoid,
+        archivotipoid: archivotipoid,
       },
     });
     return result;
@@ -105,12 +105,12 @@ export const updateArchivotipo = async (tx: TxClient, archivotipo: Partial<archi
   }
 };
 
-export const deleteArchivotipo = async (tx: TxClient, archivotipo: Partial<archivo_tipo>) => {
+export const deleteArchivotipo = async (tx: TxClient, archivotipoid: string, archivotipo: Prisma.archivo_tipoUpdateInput) => {
   try {
     const result = await tx.archivo_tipo.update({
       data: archivotipo,
       where: {
-        archivotipoid: archivotipo.archivotipoid,
+        archivotipoid: archivotipoid,
       },
     });
     return result;

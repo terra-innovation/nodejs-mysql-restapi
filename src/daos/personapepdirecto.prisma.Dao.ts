@@ -77,12 +77,12 @@ export const insertPersonaPepDirecto = async (tx: TxClient, personapepdirecto: P
   }
 };
 
-export const updatePersonaPepDirecto = async (tx: TxClient, personapepdirecto: Partial<persona_pep_directo>) => {
+export const updatePersonaPepDirecto = async (tx: TxClient, personapepdirectoid: string, personapepdirecto: Prisma.persona_pep_directoUpdateInput) => {
   try {
     const result = await tx.persona_pep_directo.update({
       data: personapepdirecto,
       where: {
-        personapepdirectoid: personapepdirecto.personapepdirectoid,
+        personapepdirectoid: personapepdirectoid,
       },
     });
     return result;
@@ -92,12 +92,12 @@ export const updatePersonaPepDirecto = async (tx: TxClient, personapepdirecto: P
   }
 };
 
-export const deletePersonaPepDirecto = async (tx: TxClient, personapepdirecto: Partial<persona_pep_directo>) => {
+export const deletePersonaPepDirecto = async (tx: TxClient, personapepdirectoid: string, personapepdirecto: Prisma.persona_pep_directoUpdateInput) => {
   try {
     const result = await tx.persona_pep_directo.update({
       data: personapepdirecto,
       where: {
-        personapepdirectoid: personapepdirecto.personapepdirectoid,
+        personapepdirectoid: personapepdirectoid,
       },
     });
     return result;

@@ -79,12 +79,12 @@ export const insertFactoringpropuestafinanciero = async (tx: TxClient, factoring
   }
 };
 
-export const updateFactoringpropuestafinanciero = async (tx: TxClient, factoringpropuestafinanciero: Partial<factoring_propuesta_financiero>) => {
+export const updateFactoringpropuestafinanciero = async (tx: TxClient, factoringpropuestafinancieroid: string, factoringpropuestafinanciero: Prisma.factoring_propuesta_financieroUpdateInput) => {
   try {
     const result = await tx.factoring_propuesta_financiero.update({
       data: factoringpropuestafinanciero,
       where: {
-        factoringpropuestafinancieroid: factoringpropuestafinanciero.factoringpropuestafinancieroid,
+        factoringpropuestafinancieroid: factoringpropuestafinancieroid,
       },
     });
     return result;
@@ -94,12 +94,12 @@ export const updateFactoringpropuestafinanciero = async (tx: TxClient, factoring
   }
 };
 
-export const deleteFactoringpropuestafinanciero = async (tx: TxClient, factoringpropuestafinanciero: Partial<factoring_propuesta_financiero>) => {
+export const deleteFactoringpropuestafinanciero = async (tx: TxClient, factoringpropuestafinancieroid: string, factoringpropuestafinanciero: Prisma.factoring_propuesta_financieroUpdateInput) => {
   try {
     const result = await tx.factoring_propuesta_financiero.update({
       data: factoringpropuestafinanciero,
       where: {
-        factoringpropuestafinancieroid: factoringpropuestafinanciero.factoringpropuestafinancieroid,
+        factoringpropuestafinancieroid: factoringpropuestafinancieroid,
       },
     });
     return result;

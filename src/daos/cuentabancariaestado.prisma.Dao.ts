@@ -77,12 +77,12 @@ export const insertCuentabancariaestado = async (tx: TxClient, cuentabancariaest
   }
 };
 
-export const updateCuentabancariaestado = async (tx: TxClient, cuentabancariaestado: Partial<cuenta_bancaria_estado>) => {
+export const updateCuentabancariaestado = async (tx: TxClient, cuentabancariaestadoid: string, cuentabancariaestado: Prisma.cuenta_bancaria_estadoUpdateInput) => {
   try {
     const result = await tx.cuenta_bancaria_estado.update({
       data: cuentabancariaestado,
       where: {
-        cuentabancariaestadoid: cuentabancariaestado.cuentabancariaestadoid,
+        cuentabancariaestadoid: cuentabancariaestadoid,
       },
     });
     return result;
@@ -92,12 +92,12 @@ export const updateCuentabancariaestado = async (tx: TxClient, cuentabancariaest
   }
 };
 
-export const deleteCuentabancariaestado = async (tx: TxClient, cuentabancariaestado: Partial<cuenta_bancaria_estado>) => {
+export const deleteCuentabancariaestado = async (tx: TxClient, cuentabancariaestadoid: string, cuentabancariaestado: Prisma.cuenta_bancaria_estadoUpdateInput) => {
   try {
     const result = await tx.cuenta_bancaria_estado.update({
       data: cuentabancariaestado,
       where: {
-        cuentabancariaestadoid: cuentabancariaestado.cuentabancariaestadoid,
+        cuentabancariaestadoid: cuentabancariaestadoid,
       },
     });
     return result;
@@ -107,12 +107,12 @@ export const deleteCuentabancariaestado = async (tx: TxClient, cuentabancariaest
   }
 };
 
-export const activateCuentabancariaestado = async (tx: TxClient, cuentabancariaestado: Partial<cuenta_bancaria_estado>) => {
+export const activateCuentabancariaestado = async (tx: TxClient, cuentabancariaestadoid: string, cuentabancariaestado: Prisma.cuenta_bancaria_estadoUpdateInput) => {
   try {
     const result = await tx.cuenta_bancaria_estado.update({
       data: cuentabancariaestado,
       where: {
-        cuentabancariaestadoid: cuentabancariaestado.cuentabancariaestadoid,
+        cuentabancariaestadoid: cuentabancariaestadoid,
       },
     });
     return result;

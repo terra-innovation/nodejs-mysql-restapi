@@ -128,12 +128,12 @@ export const insertContacto = async (tx: TxClient, contacto: Prisma.contactoCrea
   }
 };
 
-export const updateContacto = async (tx: TxClient, contacto: Partial<contacto>) => {
+export const updateContacto = async (tx: TxClient, contactoid: string, contacto: Prisma.contactoUpdateInput) => {
   try {
     const result = await tx.contacto.update({
       data: contacto,
       where: {
-        contactoid: contacto.contactoid,
+        contactoid: contactoid,
       },
     });
     return result;
@@ -143,12 +143,12 @@ export const updateContacto = async (tx: TxClient, contacto: Partial<contacto>) 
   }
 };
 
-export const deleteContacto = async (tx: TxClient, contacto: Partial<contacto>) => {
+export const deleteContacto = async (tx: TxClient, contactoid: string, contacto: Prisma.contactoUpdateInput) => {
   try {
     const result = await tx.contacto.update({
       data: contacto,
       where: {
-        contactoid: contacto.contactoid,
+        contactoid: contactoid,
       },
     });
     return result;

@@ -196,12 +196,12 @@ export const insertUsuario = async (tx: TxClient, usuario: Prisma.usuarioCreateI
   }
 };
 
-export const updateUsuario = async (tx: TxClient, usuario: Partial<usuario>) => {
+export const updateUsuario = async (tx: TxClient, usuarioid: string, usuario: Prisma.usuarioUpdateInput) => {
   try {
     const result = await tx.usuario.update({
       data: usuario,
       where: {
-        usuarioid: usuario.usuarioid,
+        usuarioid: usuarioid,
       },
     });
     return result;
@@ -211,12 +211,12 @@ export const updateUsuario = async (tx: TxClient, usuario: Partial<usuario>) => 
   }
 };
 
-export const deleteUsuario = async (tx: TxClient, usuario: Partial<usuario>) => {
+export const deleteUsuario = async (tx: TxClient, usuarioid: string, usuario: Prisma.usuarioUpdateInput) => {
   try {
     const result = await tx.usuario.update({
       data: usuario,
       where: {
-        usuarioid: usuario.usuarioid,
+        usuarioid: usuarioid,
       },
     });
     return result;

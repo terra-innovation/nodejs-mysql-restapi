@@ -77,12 +77,12 @@ export const insertCuentatipo = async (tx: TxClient, cuentatipo: Prisma.cuenta_t
   }
 };
 
-export const updateCuentatipo = async (tx: TxClient, cuentatipo: Partial<cuenta_tipo>) => {
+export const updateCuentatipo = async (tx: TxClient, cuentatipoid: string, cuentatipo: Prisma.cuenta_tipoUpdateInput) => {
   try {
     const result = await tx.cuenta_tipo.update({
       data: cuentatipo,
       where: {
-        cuentatipoid: cuentatipo.cuentatipoid,
+        cuentatipoid: cuentatipoid,
       },
     });
     return result;
@@ -92,12 +92,12 @@ export const updateCuentatipo = async (tx: TxClient, cuentatipo: Partial<cuenta_
   }
 };
 
-export const deleteCuentatipo = async (tx: TxClient, cuentatipo: Partial<cuenta_tipo>) => {
+export const deleteCuentatipo = async (tx: TxClient, cuentatipoid: string, cuentatipo: Prisma.cuenta_tipoUpdateInput) => {
   try {
     const result = await tx.cuenta_tipo.update({
       data: cuentatipo,
       where: {
-        cuentatipoid: cuentatipo.cuentatipoid,
+        cuentatipoid: cuentatipoid,
       },
     });
     return result;

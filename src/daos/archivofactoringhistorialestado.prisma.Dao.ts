@@ -51,14 +51,14 @@ export const insertArchivofactoringhistorialestado = async (tx: TxClient, archiv
   }
 };
 
-export const updateArchivofactoringhistorialestado = async (tx: TxClient, archivofactoringhistorialestado: Partial<archivo_factoring_historial_estado>) => {
+export const updateArchivofactoringhistorialestado = async (tx: TxClient, idarchivo: number, idfactoringhistorialestado: number, archivofactoringhistorialestado: Prisma.archivo_factoring_historial_estadoUpdateInput) => {
   try {
     const result = await tx.archivo_factoring_historial_estado.update({
       data: archivofactoringhistorialestado,
       where: {
         idarchivo_idfactoringhistorialestado: {
-          idarchivo: archivofactoringhistorialestado.idarchivo,
-          idfactoringhistorialestado: archivofactoringhistorialestado.idfactoringhistorialestado,
+          idarchivo: idarchivo,
+          idfactoringhistorialestado: idfactoringhistorialestado,
         },
       },
     });
@@ -69,14 +69,14 @@ export const updateArchivofactoringhistorialestado = async (tx: TxClient, archiv
   }
 };
 
-export const deleteArchivofactoringhistorialestado = async (tx: TxClient, archivofactoringhistorialestado: Partial<archivo_factoring_historial_estado>) => {
+export const deleteArchivofactoringhistorialestado = async (tx: TxClient, idarchivo: number, idfactoringhistorialestado: number, archivofactoringhistorialestado: Prisma.archivo_factoring_historial_estadoUpdateInput) => {
   try {
     const result = await tx.archivo_factoring_historial_estado.update({
       data: archivofactoringhistorialestado,
       where: {
         idarchivo_idfactoringhistorialestado: {
-          idarchivo: archivofactoringhistorialestado.idarchivo,
-          idfactoringhistorialestado: archivofactoringhistorialestado.idfactoringhistorialestado,
+          idarchivo: idarchivo,
+          idfactoringhistorialestado: idfactoringhistorialestado,
         },
       },
     });

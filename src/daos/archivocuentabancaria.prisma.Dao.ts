@@ -51,14 +51,14 @@ export const insertArchivoCuentaBancaria = async (tx: TxClient, archivocuentaban
   }
 };
 
-export const updateArchivoCuentaBancaria = async (tx: TxClient, archivocuentabancaria: Partial<archivo_cuenta_bancaria>) => {
+export const updateArchivoCuentaBancaria = async (tx: TxClient, idarchivo: number, idcuentabancaria: number, archivocuentabancaria: Prisma.archivo_cuenta_bancariaUpdateInput) => {
   try {
     const result = await tx.archivo_cuenta_bancaria.update({
       data: archivocuentabancaria,
       where: {
         idarchivo_idcuentabancaria: {
-          idarchivo: archivocuentabancaria.idarchivo,
-          idcuentabancaria: archivocuentabancaria.idcuentabancaria,
+          idarchivo: idarchivo,
+          idcuentabancaria: idcuentabancaria,
         },
       },
     });
@@ -69,14 +69,14 @@ export const updateArchivoCuentaBancaria = async (tx: TxClient, archivocuentaban
   }
 };
 
-export const deleteArchivoCuentaBancaria = async (tx: TxClient, archivocuentabancaria: Partial<archivo_cuenta_bancaria>) => {
+export const deleteArchivoCuentaBancaria = async (tx: TxClient, idarchivo: number, idcuentabancaria: number, archivocuentabancaria: Prisma.archivo_cuenta_bancariaUpdateInput) => {
   try {
     const result = await tx.archivo_cuenta_bancaria.update({
       data: archivocuentabancaria,
       where: {
         idarchivo_idcuentabancaria: {
-          idarchivo: archivocuentabancaria.idarchivo,
-          idcuentabancaria: archivocuentabancaria.idcuentabancaria,
+          idarchivo: idarchivo,
+          idcuentabancaria: idcuentabancaria,
         },
       },
     });
@@ -87,14 +87,14 @@ export const deleteArchivoCuentaBancaria = async (tx: TxClient, archivocuentaban
   }
 };
 
-export const activateArchivoCuentaBancaria = async (tx: TxClient, archivocuentabancaria: Partial<archivo_cuenta_bancaria>) => {
+export const activateArchivoCuentaBancaria = async (tx: TxClient, idarchivo: number, idcuentabancaria: number, archivocuentabancaria: Prisma.archivo_cuenta_bancariaUpdateInput) => {
   try {
     const result = await tx.archivo_cuenta_bancaria.update({
       data: archivocuentabancaria,
       where: {
         idarchivo_idcuentabancaria: {
-          idarchivo: archivocuentabancaria.idarchivo,
-          idcuentabancaria: archivocuentabancaria.idcuentabancaria,
+          idarchivo: idarchivo,
+          idcuentabancaria: idcuentabancaria,
         },
       },
     });

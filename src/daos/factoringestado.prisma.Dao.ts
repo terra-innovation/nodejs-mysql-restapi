@@ -80,12 +80,12 @@ export const insertFactoringestado = async (tx: TxClient, factoringestado: Prism
   }
 };
 
-export const updateFactoringestado = async (tx: TxClient, factoringestado: Partial<factoring_estado>) => {
+export const updateFactoringestado = async (tx: TxClient, factoringestadoid: string, factoringestado: Prisma.factoring_estadoUpdateInput) => {
   try {
     const result = await tx.factoring_estado.update({
       data: factoringestado,
       where: {
-        factoringestadoid: factoringestado.factoringestadoid,
+        factoringestadoid: factoringestadoid,
       },
     });
     return result;
@@ -95,12 +95,12 @@ export const updateFactoringestado = async (tx: TxClient, factoringestado: Parti
   }
 };
 
-export const deleteFactoringestado = async (tx: TxClient, factoringestado: Partial<factoring_estado>) => {
+export const deleteFactoringestado = async (tx: TxClient, factoringestadoid: string, factoringestado: Prisma.factoring_estadoUpdateInput) => {
   try {
     const result = await tx.factoring_estado.update({
       data: factoringestado,
       where: {
-        factoringestadoid: factoringestado.factoringestadoid,
+        factoringestadoid: factoringestadoid,
       },
     });
     return result;

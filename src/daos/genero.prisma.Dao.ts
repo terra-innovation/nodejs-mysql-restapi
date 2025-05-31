@@ -77,12 +77,12 @@ export const insertGenero = async (tx: TxClient, genero: Prisma.generoCreateInpu
   }
 };
 
-export const updateGenero = async (tx: TxClient, genero: Partial<genero>) => {
+export const updateGenero = async (tx: TxClient, generoid: string, genero: Prisma.generoUpdateInput) => {
   try {
     const result = await tx.genero.update({
       data: genero,
       where: {
-        generoid: genero.generoid,
+        generoid: generoid,
       },
     });
     return result;
@@ -92,12 +92,12 @@ export const updateGenero = async (tx: TxClient, genero: Partial<genero>) => {
   }
 };
 
-export const deleteGenero = async (tx: TxClient, genero: Partial<genero>) => {
+export const deleteGenero = async (tx: TxClient, generoid: string, genero: Prisma.generoUpdateInput) => {
   try {
     const result = await tx.genero.update({
       data: genero,
       where: {
-        generoid: genero.generoid,
+        generoid: generoid,
       },
     });
     return result;

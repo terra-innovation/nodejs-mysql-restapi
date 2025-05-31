@@ -91,12 +91,12 @@ export const insertCredencial = async (tx: TxClient, credencial: Prisma.credenci
   }
 };
 
-export const updateCredencial = async (tx: TxClient, credencial: Partial<credencial>) => {
+export const updateCredencial = async (tx: TxClient, credencialid: string, credencial: Prisma.credencialUpdateInput) => {
   try {
     const result = await tx.credencial.update({
       data: credencial,
       where: {
-        credencialid: credencial.credencialid,
+        credencialid: credencialid,
       },
     });
     return result;
@@ -106,12 +106,12 @@ export const updateCredencial = async (tx: TxClient, credencial: Partial<credenc
   }
 };
 
-export const deleteCredencial = async (tx: TxClient, credencial: Partial<credencial>) => {
+export const deleteCredencial = async (tx: TxClient, credencialid: string, credencial: Prisma.credencialUpdateInput) => {
   try {
     const result = await tx.credencial.update({
       data: credencial,
       where: {
-        credencialid: credencial.credencialid,
+        credencialid: credencialid,
       },
     });
     return result;

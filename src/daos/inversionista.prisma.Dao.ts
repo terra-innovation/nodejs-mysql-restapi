@@ -101,12 +101,12 @@ export const insertInversionista = async (tx: TxClient, inversionista: Prisma.in
   }
 };
 
-export const updateInversionista = async (tx: TxClient, inversionista: Partial<inversionista>) => {
+export const updateInversionista = async (tx: TxClient, inversionistaid: string, inversionista: Prisma.inversionistaUpdateInput) => {
   try {
     const result = await tx.inversionista.update({
       data: inversionista,
       where: {
-        inversionistaid: inversionista.inversionistaid,
+        inversionistaid: inversionistaid,
       },
     });
     return result;
@@ -116,12 +116,12 @@ export const updateInversionista = async (tx: TxClient, inversionista: Partial<i
   }
 };
 
-export const deleteInversionista = async (tx: TxClient, inversionista: Partial<inversionista>) => {
+export const deleteInversionista = async (tx: TxClient, inversionistaid: string, inversionista: Prisma.inversionistaUpdateInput) => {
   try {
     const result = await tx.inversionista.update({
       data: inversionista,
       where: {
-        inversionistaid: inversionista.inversionistaid,
+        inversionistaid: inversionistaid,
       },
     });
     return result;
@@ -131,12 +131,12 @@ export const deleteInversionista = async (tx: TxClient, inversionista: Partial<i
   }
 };
 
-export const activateInversionista = async (tx: TxClient, inversionista: Partial<inversionista>) => {
+export const activateInversionista = async (tx: TxClient, inversionistaid: string, inversionista: Prisma.inversionistaUpdateInput) => {
   try {
     const result = await tx.inversionista.update({
       data: inversionista,
       where: {
-        inversionistaid: inversionista.inversionistaid,
+        inversionistaid: inversionistaid,
       },
     });
     return result;

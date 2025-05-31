@@ -77,12 +77,12 @@ export const insertFacturaitem = async (tx: TxClient, facturaitem: Prisma.factur
   }
 };
 
-export const updateFacturaitem = async (tx: TxClient, facturaitem: Partial<factura_item>) => {
+export const updateFacturaitem = async (tx: TxClient, facturaitemid: string, facturaitem: Prisma.factura_itemUpdateInput) => {
   try {
     const result = await tx.factura_item.update({
       data: facturaitem,
       where: {
-        facturaitemid: facturaitem.facturaitemid,
+        facturaitemid: facturaitemid,
       },
     });
     return result;
@@ -92,12 +92,12 @@ export const updateFacturaitem = async (tx: TxClient, facturaitem: Partial<factu
   }
 };
 
-export const deleteFacturaitem = async (tx: TxClient, facturaitem: Partial<factura_item>) => {
+export const deleteFacturaitem = async (tx: TxClient, facturaitemid: string, facturaitem: Prisma.factura_itemUpdateInput) => {
   try {
     const result = await tx.factura_item.update({
       data: facturaitem,
       where: {
-        facturaitemid: facturaitem.facturaitemid,
+        facturaitemid: facturaitemid,
       },
     });
     return result;

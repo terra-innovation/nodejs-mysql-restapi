@@ -96,12 +96,12 @@ export const insertUsuarioservicioempresa = async (tx: TxClient, usuarioservicio
   }
 };
 
-export const updateUsuarioservicioempresa = async (tx: TxClient, usuarioservicioempresa: Partial<usuario_servicio_empresa>) => {
+export const updateUsuarioservicioempresa = async (tx: TxClient, usuarioservicioempresaid: string, usuarioservicioempresa: Prisma.usuario_servicio_empresaUpdateInput) => {
   try {
     const result = await tx.usuario_servicio_empresa.update({
       data: usuarioservicioempresa,
       where: {
-        usuarioservicioempresaid: usuarioservicioempresa.usuarioservicioempresaid,
+        usuarioservicioempresaid: usuarioservicioempresaid,
       },
     });
     return result;
@@ -111,12 +111,12 @@ export const updateUsuarioservicioempresa = async (tx: TxClient, usuarioservicio
   }
 };
 
-export const deleteUsuarioservicioempresa = async (tx: TxClient, usuarioservicioempresa: Partial<usuario_servicio_empresa>) => {
+export const deleteUsuarioservicioempresa = async (tx: TxClient, usuarioservicioempresaid: string, usuarioservicioempresa: Prisma.usuario_servicio_empresaUpdateInput) => {
   try {
     const result = await tx.usuario_servicio_empresa.update({
       data: usuarioservicioempresa,
       where: {
-        usuarioservicioempresaid: usuarioservicioempresa.usuarioservicioempresaid,
+        usuarioservicioempresaid: usuarioservicioempresaid,
       },
     });
     return result;

@@ -75,12 +75,12 @@ export const insertRiesgo = async (tx: TxClient, riesgo: Prisma.riesgoCreateInpu
   }
 };
 
-export const updateRiesgo = async (tx: TxClient, riesgo: Partial<riesgo>) => {
+export const updateRiesgo = async (tx: TxClient, riesgoid: string, riesgo: Prisma.riesgoUpdateInput) => {
   try {
     const result = await tx.riesgo.update({
       data: riesgo,
       where: {
-        riesgoid: riesgo.riesgoid,
+        riesgoid: riesgoid,
       },
     });
     return result;
@@ -90,12 +90,12 @@ export const updateRiesgo = async (tx: TxClient, riesgo: Partial<riesgo>) => {
   }
 };
 
-export const deleteRiesgo = async (tx: TxClient, riesgo: Partial<riesgo>) => {
+export const deleteRiesgo = async (tx: TxClient, riesgoid: string, riesgo: Prisma.riesgoUpdateInput) => {
   try {
     const result = await tx.riesgo.update({
       data: riesgo,
       where: {
-        riesgoid: riesgo.riesgoid,
+        riesgoid: riesgoid,
       },
     });
     return result;

@@ -24,7 +24,7 @@ export const getFactoringsfacturasEmpresasActivas = async (tx: TxClient) => {
   }
 };
 
-export const getFactoringfacturaByIdfactoringfactura = async (tx: TxClient, idfactoring: bigint, idfactura: bigint) => {
+export const getFactoringfacturaByIdfactoringfactura = async (tx: TxClient, idfactoring: number, idfactura: number) => {
   try {
     const factoringfactura = await tx.factoring_factura.findUnique({
       where: {
@@ -86,14 +86,14 @@ export const insertFactoringfactura = async (tx: TxClient, factoringfactura: Pri
   }
 };
 
-export const updateFactoringfactura = async (tx: TxClient, factoringfactura: Partial<factoring_factura>) => {
+export const updateFactoringfactura = async (tx: TxClient, idfactoring: number, idfactura: number, factoringfactura: Prisma.factoring_facturaUpdateInput) => {
   try {
     const result = await tx.factoring_factura.update({
       data: factoringfactura,
       where: {
         idfactoring_idfactura: {
-          idfactoring: factoringfactura.idfactoring,
-          idfactura: factoringfactura.idfactura,
+          idfactoring: idfactoring,
+          idfactura: idfactura,
         },
       },
     });
@@ -104,14 +104,14 @@ export const updateFactoringfactura = async (tx: TxClient, factoringfactura: Par
   }
 };
 
-export const deleteFactoringfactura = async (tx: TxClient, factoringfactura: Partial<factoring_factura>) => {
+export const deleteFactoringfactura = async (tx: TxClient, idfactoring: number, idfactura: number, factoringfactura: Prisma.factoring_facturaUpdateInput) => {
   try {
     const result = await tx.factoring_factura.update({
       data: factoringfactura,
       where: {
         idfactoring_idfactura: {
-          idfactoring: factoringfactura.idfactoring,
-          idfactura: factoringfactura.idfactura,
+          idfactoring: idfactoring,
+          idfactura: idfactura,
         },
       },
     });

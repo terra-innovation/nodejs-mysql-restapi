@@ -78,12 +78,12 @@ export const insertColaboradortipo = async (tx: TxClient, colaboradortipo: Prism
   }
 };
 
-export const updateColaboradortipo = async (tx: TxClient, colaboradortipo: Partial<colaborador_tipo>) => {
+export const updateColaboradortipo = async (tx: TxClient, colaboradortipoid: string, colaboradortipo: Prisma.colaborador_tipoUpdateInput) => {
   try {
     const result = await tx.colaborador_tipo.update({
       data: colaboradortipo,
       where: {
-        colaboradortipoid: colaboradortipo.colaboradortipoid,
+        colaboradortipoid: colaboradortipoid,
       },
     });
     return result;
@@ -93,12 +93,12 @@ export const updateColaboradortipo = async (tx: TxClient, colaboradortipo: Parti
   }
 };
 
-export const deleteColaboradortipo = async (tx: TxClient, colaboradortipo: Partial<colaborador_tipo>) => {
+export const deleteColaboradortipo = async (tx: TxClient, colaboradortipoid: string, colaboradortipo: Prisma.colaborador_tipoUpdateInput) => {
   try {
     const result = await tx.colaborador_tipo.update({
       data: colaboradortipo,
       where: {
-        colaboradortipoid: colaboradortipo.colaboradortipoid,
+        colaboradortipoid: colaboradortipoid,
       },
     });
     return result;

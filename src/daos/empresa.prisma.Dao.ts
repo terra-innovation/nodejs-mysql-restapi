@@ -217,12 +217,12 @@ export const insertEmpresa = async (tx: TxClient, empresa: Prisma.empresaCreateI
   }
 };
 
-export const updateEmpresa = async (tx: TxClient, empresa: Partial<empresa>) => {
+export const updateEmpresa = async (tx: TxClient, empresaid: string, empresa: Prisma.empresaUpdateInput) => {
   try {
     const result = await tx.empresa.update({
       data: empresa,
       where: {
-        empresaid: empresa.empresaid,
+        empresaid: empresaid,
       },
     });
     return result;
@@ -232,12 +232,12 @@ export const updateEmpresa = async (tx: TxClient, empresa: Partial<empresa>) => 
   }
 };
 
-export const deleteEmpresa = async (tx: TxClient, empresa: Partial<empresa>) => {
+export const deleteEmpresa = async (tx: TxClient, empresaid: string, empresa: Prisma.empresaUpdateInput) => {
   try {
     const result = await tx.empresa.update({
       data: empresa,
       where: {
-        empresaid: empresa.empresaid,
+        empresaid: empresaid,
       },
     });
     return result;
@@ -247,12 +247,12 @@ export const deleteEmpresa = async (tx: TxClient, empresa: Partial<empresa>) => 
   }
 };
 
-export const activateEmpresa = async (tx: TxClient, empresa: Partial<empresa>) => {
+export const activateEmpresa = async (tx: TxClient, empresaid: string, empresa: Prisma.empresaUpdateInput) => {
   try {
     const result = await tx.empresa.update({
       data: empresa,
       where: {
-        empresaid: empresa.empresaid,
+        empresaid: empresaid,
       },
     });
     return result;

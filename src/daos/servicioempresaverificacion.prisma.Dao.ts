@@ -79,12 +79,12 @@ export const insertServicioempresaverificacion = async (tx: TxClient, servicioem
   }
 };
 
-export const updateServicioempresaverificacion = async (tx: TxClient, servicioempresaverificacion: Partial<servicio_empresa_verificacion>) => {
+export const updateServicioempresaverificacion = async (tx: TxClient, servicioempresaverificacionid: string, servicioempresaverificacion: Prisma.servicio_empresa_verificacionUpdateInput) => {
   try {
     const result = await tx.servicio_empresa_verificacion.update({
       data: servicioempresaverificacion,
       where: {
-        servicioempresaverificacionid: servicioempresaverificacion.servicioempresaverificacionid,
+        servicioempresaverificacionid: servicioempresaverificacionid,
       },
     });
     return result;
@@ -94,12 +94,12 @@ export const updateServicioempresaverificacion = async (tx: TxClient, servicioem
   }
 };
 
-export const deleteServicioempresaverificacion = async (tx: TxClient, servicioempresaverificacion: Partial<servicio_empresa_verificacion>) => {
+export const deleteServicioempresaverificacion = async (tx: TxClient, servicioempresaverificacionid: string, servicioempresaverificacion: Prisma.servicio_empresa_verificacionUpdateInput) => {
   try {
     const result = await tx.servicio_empresa_verificacion.update({
       data: servicioempresaverificacion,
       where: {
-        servicioempresaverificacionid: servicioempresaverificacion.servicioempresaverificacionid,
+        servicioempresaverificacionid: servicioempresaverificacionid,
       },
     });
     return result;

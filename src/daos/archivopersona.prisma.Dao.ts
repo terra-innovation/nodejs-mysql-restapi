@@ -51,14 +51,14 @@ export const insertArchivoPersona = async (tx: TxClient, archivopersona: Prisma.
   }
 };
 
-export const updateArchivoPersona = async (tx: TxClient, archivopersona: Partial<archivo_persona>) => {
+export const updateArchivoPersona = async (tx: TxClient, idarchivo: number, idpersona: number, archivopersona: Prisma.archivo_personaUpdateInput) => {
   try {
     const result = await tx.archivo_persona.update({
       data: archivopersona,
       where: {
         idarchivo_idpersona: {
-          idarchivo: archivopersona.idarchivo,
-          idpersona: archivopersona.idpersona,
+          idarchivo: idarchivo,
+          idpersona: idpersona,
         },
       },
     });
@@ -69,14 +69,14 @@ export const updateArchivoPersona = async (tx: TxClient, archivopersona: Partial
   }
 };
 
-export const deleteArchivoPersona = async (tx: TxClient, archivopersona: Partial<archivo_persona>) => {
+export const deleteArchivoPersona = async (tx: TxClient, idarchivo: number, idpersona: number, archivopersona: Prisma.archivo_personaUpdateInput) => {
   try {
     const result = await tx.archivo_persona.update({
       data: archivopersona,
       where: {
         idarchivo_idpersona: {
-          idarchivo: archivopersona.idarchivo,
-          idpersona: archivopersona.idpersona,
+          idarchivo: idarchivo,
+          idpersona: idpersona,
         },
       },
     });
@@ -87,14 +87,14 @@ export const deleteArchivoPersona = async (tx: TxClient, archivopersona: Partial
   }
 };
 
-export const activateArchivoPersona = async (tx: TxClient, archivopersona: Partial<archivo_persona>) => {
+export const activateArchivoPersona = async (tx: TxClient, idarchivo: number, idpersona: number, archivopersona: Prisma.archivo_personaUpdateInput) => {
   try {
     const result = await tx.archivo_persona.update({
       data: archivopersona,
       where: {
         idarchivo_idpersona: {
-          idarchivo: archivopersona.idarchivo,
-          idpersona: archivopersona.idpersona,
+          idarchivo: idarchivo,
+          idpersona: idpersona,
         },
       },
     });

@@ -77,12 +77,12 @@ export const insertFacturanota = async (tx: TxClient, facturanota: Prisma.factur
   }
 };
 
-export const updateFacturanota = async (tx: TxClient, facturanota: Partial<factura_nota>) => {
+export const updateFacturanota = async (tx: TxClient, facturanotaid: string, facturanota: Prisma.factura_notaUpdateInput) => {
   try {
     const result = await tx.factura_nota.update({
       data: facturanota,
       where: {
-        facturanotaid: facturanota.facturanotaid,
+        facturanotaid: facturanotaid,
       },
     });
     return result;
@@ -92,12 +92,12 @@ export const updateFacturanota = async (tx: TxClient, facturanota: Partial<factu
   }
 };
 
-export const deleteFacturanota = async (tx: TxClient, facturanota: Partial<factura_nota>) => {
+export const deleteFacturanota = async (tx: TxClient, facturanotaid: string, facturanota: Prisma.factura_notaUpdateInput) => {
   try {
     const result = await tx.factura_nota.update({
       data: facturanota,
       where: {
-        facturanotaid: facturanota.facturanotaid,
+        facturanotaid: facturanotaid,
       },
     });
     return result;

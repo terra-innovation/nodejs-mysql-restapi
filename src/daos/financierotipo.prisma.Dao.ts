@@ -89,12 +89,12 @@ export const insertFinancierotipo = async (tx: TxClient, financierotipo: Prisma.
   }
 };
 
-export const updateFinancierotipo = async (tx: TxClient, financierotipo: Partial<financiero_tipo>) => {
+export const updateFinancierotipo = async (tx: TxClient, financierotipoid: string, financierotipo: Prisma.financiero_tipoUpdateInput) => {
   try {
     const result = await tx.financiero_tipo.update({
       data: financierotipo,
       where: {
-        financierotipoid: financierotipo.financierotipoid,
+        financierotipoid: financierotipoid,
       },
     });
     return result;
@@ -104,12 +104,12 @@ export const updateFinancierotipo = async (tx: TxClient, financierotipo: Partial
   }
 };
 
-export const deleteFinancierotipo = async (tx: TxClient, financierotipo: Partial<financiero_tipo>) => {
+export const deleteFinancierotipo = async (tx: TxClient, financierotipoid: string, financierotipo: Prisma.financiero_tipoUpdateInput) => {
   try {
     const result = await tx.financiero_tipo.update({
       data: financierotipo,
       where: {
-        financierotipoid: financierotipo.financierotipoid,
+        financierotipoid: financierotipoid,
       },
     });
     return result;

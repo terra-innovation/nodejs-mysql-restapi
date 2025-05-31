@@ -248,12 +248,12 @@ export const insertEmpresacuentabancaria = async (tx: TxClient, empresacuentaban
   }
 };
 
-export const updateEmpresacuentabancaria = async (tx: TxClient, empresacuentabancaria: Partial<empresa_cuenta_bancaria>) => {
+export const updateEmpresacuentabancaria = async (tx: TxClient, empresacuentabancariaid: string, empresacuentabancaria: Prisma.empresa_cuenta_bancariaUpdateInput) => {
   try {
     const result = await tx.empresa_cuenta_bancaria.update({
       data: empresacuentabancaria,
       where: {
-        empresacuentabancariaid: empresacuentabancaria.empresacuentabancariaid,
+        empresacuentabancariaid: empresacuentabancariaid,
       },
     });
     return result;
@@ -263,12 +263,12 @@ export const updateEmpresacuentabancaria = async (tx: TxClient, empresacuentaban
   }
 };
 
-export const deleteEmpresacuentabancaria = async (tx: TxClient, empresacuentabancaria: Partial<empresa_cuenta_bancaria>) => {
+export const deleteEmpresacuentabancaria = async (tx: TxClient, empresacuentabancariaid: string, empresacuentabancaria: Prisma.empresa_cuenta_bancariaUpdateInput) => {
   try {
     const result = await tx.empresa_cuenta_bancaria.update({
       data: empresacuentabancaria,
       where: {
-        empresacuentabancariaid: empresacuentabancaria.empresacuentabancariaid,
+        empresacuentabancariaid: empresacuentabancariaid,
       },
     });
     return result;

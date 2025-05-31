@@ -77,12 +77,12 @@ export const insertPersonadeclaracion = async (tx: TxClient, personadeclaracion:
   }
 };
 
-export const updatePersonadeclaracion = async (tx: TxClient, personadeclaracion: Partial<persona_declaracion>) => {
+export const updatePersonadeclaracion = async (tx: TxClient, personadeclaracionid: string, personadeclaracion: Prisma.persona_declaracionUpdateInput) => {
   try {
     const result = await tx.persona_declaracion.update({
       data: personadeclaracion,
       where: {
-        personadeclaracionid: personadeclaracion.personadeclaracionid,
+        personadeclaracionid: personadeclaracionid,
       },
     });
     return result;
@@ -92,12 +92,12 @@ export const updatePersonadeclaracion = async (tx: TxClient, personadeclaracion:
   }
 };
 
-export const deletePersonadeclaracion = async (tx: TxClient, personadeclaracion: Partial<persona_declaracion>) => {
+export const deletePersonadeclaracion = async (tx: TxClient, personadeclaracionid: string, personadeclaracion: Prisma.persona_declaracionUpdateInput) => {
   try {
     const result = await tx.persona_declaracion.update({
       data: personadeclaracion,
       where: {
-        personadeclaracionid: personadeclaracion.personadeclaracionid,
+        personadeclaracionid: personadeclaracionid,
       },
     });
     return result;

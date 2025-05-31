@@ -94,7 +94,7 @@ export const getPersonaByIdusuario = async (tx: TxClient, idusuario: number) => 
   }
 };
 
-export const getPersonaByIdpersona = async (tx: TxClient, idpersona: bigint) => {
+export const getPersonaByIdpersona = async (tx: TxClient, idpersona: number) => {
   try {
     const persona = await tx.persona.findUnique({
       include: {
@@ -221,12 +221,12 @@ export const insertPersona = async (tx: TxClient, persona: Prisma.personaCreateI
   }
 };
 
-export const updatePersona = async (tx: TxClient, persona: Partial<persona>) => {
+export const updatePersona = async (tx: TxClient, personaid: string, persona: Prisma.personaUpdateInput) => {
   try {
     const result = await tx.persona.update({
       data: persona,
       where: {
-        personaid: persona.personaid,
+        personaid: personaid,
       },
     });
     return result;
@@ -236,12 +236,12 @@ export const updatePersona = async (tx: TxClient, persona: Partial<persona>) => 
   }
 };
 
-export const deletePersona = async (tx: TxClient, persona: Partial<persona>) => {
+export const deletePersona = async (tx: TxClient, personaid: string, persona: Prisma.personaUpdateInput) => {
   try {
     const result = await tx.persona.update({
       data: persona,
       where: {
-        personaid: persona.personaid,
+        personaid: personaid,
       },
     });
     return result;
@@ -251,12 +251,12 @@ export const deletePersona = async (tx: TxClient, persona: Partial<persona>) => 
   }
 };
 
-export const activatePersona = async (tx: TxClient, persona: Partial<persona>) => {
+export const activatePersona = async (tx: TxClient, personaid: string, persona: Prisma.personaUpdateInput) => {
   try {
     const result = await tx.persona.update({
       data: persona,
       where: {
-        personaid: persona.personaid,
+        personaid: personaid,
       },
     });
     return result;

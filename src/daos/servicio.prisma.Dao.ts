@@ -77,12 +77,12 @@ export const insertServicio = async (tx: TxClient, servicio: Prisma.servicioCrea
   }
 };
 
-export const updateServicio = async (tx: TxClient, servicio: Partial<servicio>) => {
+export const updateServicio = async (tx: TxClient, servicioid: string, servicio: Prisma.servicioUpdateInput) => {
   try {
     const result = await tx.servicio.update({
       data: servicio,
       where: {
-        servicioid: servicio.servicioid,
+        servicioid: servicioid,
       },
     });
     return result;
@@ -92,12 +92,12 @@ export const updateServicio = async (tx: TxClient, servicio: Partial<servicio>) 
   }
 };
 
-export const deleteServicio = async (tx: TxClient, servicio: Partial<servicio>) => {
+export const deleteServicio = async (tx: TxClient, servicioid: string, servicio: Prisma.servicioUpdateInput) => {
   try {
     const result = await tx.servicio.update({
       data: servicio,
       where: {
-        servicioid: servicio.servicioid,
+        servicioid: servicioid,
       },
     });
     return result;

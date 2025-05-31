@@ -5,7 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-export const getFactoringpropuestasByIdfactoring = async (tx: TxClient, idfactoring: bigint, estados: number[]) => {
+export const getFactoringpropuestasByIdfactoring = async (tx: TxClient, idfactoring: number, estados: number[]) => {
   try {
     const facturas = await tx.factoring_propuesta.findMany({
       include: {
@@ -43,7 +43,7 @@ export const getFactoringpropuestas = async (tx: TxClient, estados: number[]) =>
   }
 };
 
-export const getFactoringpropuestaByIdfactoringpropuesta = async (tx: TxClient, idfactoringpropuesta: bigint) => {
+export const getFactoringpropuestaByIdfactoringpropuesta = async (tx: TxClient, idfactoringpropuesta: number) => {
   try {
     const factoringpropuesta = await tx.factoring_propuesta.findUnique({
       where: {
@@ -118,12 +118,12 @@ export const insertFactoringpropuesta = async (tx: TxClient, factoringpropuesta:
   }
 };
 
-export const updateFactoringpropuesta = async (tx: TxClient, factoringpropuesta: Partial<factoring_propuesta>) => {
+export const updateFactoringpropuesta = async (tx: TxClient, factoringpropuestaid: string, factoringpropuesta: Prisma.factoring_propuestaUpdateInput) => {
   try {
     const result = await tx.factoring_propuesta.update({
       data: factoringpropuesta,
       where: {
-        factoringpropuestaid: factoringpropuesta.factoringpropuestaid,
+        factoringpropuestaid: factoringpropuestaid,
       },
     });
     return result;
@@ -133,12 +133,12 @@ export const updateFactoringpropuesta = async (tx: TxClient, factoringpropuesta:
   }
 };
 
-export const deleteFactoringpropuesta = async (tx: TxClient, factoringpropuesta: Partial<factoring_propuesta>) => {
+export const deleteFactoringpropuesta = async (tx: TxClient, factoringpropuestaid: string, factoringpropuesta: Prisma.factoring_propuestaUpdateInput) => {
   try {
     const result = await tx.factoring_propuesta.update({
       data: factoringpropuesta,
       where: {
-        factoringpropuestaid: factoringpropuesta.factoringpropuestaid,
+        factoringpropuestaid: factoringpropuestaid,
       },
     });
     return result;
@@ -148,12 +148,12 @@ export const deleteFactoringpropuesta = async (tx: TxClient, factoringpropuesta:
   }
 };
 
-export const activateFactoringpropuesta = async (tx: TxClient, factoringpropuesta: Partial<factoring_propuesta>) => {
+export const activateFactoringpropuesta = async (tx: TxClient, factoringpropuestaid: string, factoringpropuesta: Prisma.factoring_propuestaUpdateInput) => {
   try {
     const result = await tx.factoring_propuesta.update({
       data: factoringpropuesta,
       where: {
-        factoringpropuestaid: factoringpropuesta.factoringpropuestaid,
+        factoringpropuestaid: factoringpropuestaid,
       },
     });
     return result;
