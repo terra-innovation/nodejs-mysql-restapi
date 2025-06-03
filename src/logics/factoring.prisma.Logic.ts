@@ -45,20 +45,34 @@ export const simulateFactoringLogicV2 = async (
 
       simulacion.dias_pago_estimado = dias_pago_estimado;
       simulacion.dias_antiguedad_estimado = dias_antiguedad_estimado;
+
+      //simulacion.tda = Number((Math.pow(1 + tdm, 12) - 1).toFixed(10));
       simulacion.tda = new Decimal(1).add(tdm).pow(12).minus(1).toDecimalPlaces(10);
+
+      //simulacion.tdm = Number(tdm.toFixed(5));
       simulacion.tdm = tdm.toDecimalPlaces(5);
+
+      //simulacion.tdd = Number((Math.pow(1 + tdm, 1 / 30) - 1).toFixed(10));
       simulacion.tdd = new Decimal(1).add(tdm).pow(new Decimal(1).div(30)).minus(1).toDecimalPlaces(10);
       simulacion.tdm_mora = new Decimal(0);
       simulacion.tda_mora = new Decimal(0);
       simulacion.tdd_mora = new Decimal(0);
       simulacion.monto_neto = monto_neto;
+
+      //simulacion.monto_garantia = Number((monto_neto * (1 - porcentaje_financiado)).toFixed(2));
       simulacion.monto_garantia = monto_neto.mul(new Decimal(1).minus(porcentaje_financiado)).toDecimalPlaces(2);
+
+      //simulacion.monto_efectivo = Number((monto_neto * porcentaje_financiado).toFixed(2));
       simulacion.monto_efectivo = monto_neto.mul(porcentaje_financiado).toDecimalPlaces(2);
+
       simulacion.monto_financiado = simulacion.monto_efectivo;
+
+      //simulacion.monto_descuento = Number((simulacion.monto_financiado * (Math.pow(1 + simulacion.tdd, simulacion.dias_pago_estimado) - 1)).toFixed(2));
       simulacion.monto_descuento = simulacion.monto_financiado.mul(new Decimal(1).add(simulacion.tdd!).pow(simulacion.dias_pago_estimado).minus(1)).toDecimalPlaces(2);
 
       var comisiones = [];
 
+      //let comisionft_porcentaje = Number((cofigcomision.factor1 * Math.exp(cofigcomision.factor2 / simulacion.monto_neto) * cofigcomision.factor3).toFixed(5));
       const comisionft_porcentaje = cofigcomision.factor1
         .mul(Decimal.exp(cofigcomision.factor2.div(simulacion.monto_neto)))
         .mul(cofigcomision.factor3)
@@ -95,7 +109,7 @@ export const simulateFactoringLogicV2 = async (
         monto: new Decimal(constante_costo_cavali.valor),
         //igv: Number((Number(constante_costo_cavali.valor) * Number(constante_igv.valor)).toFixed(3)),
         igv: new Decimal(constante_costo_cavali.valor).mul(new Decimal(constante_igv.valor)).toDecimalPlaces(3),
-        //financierotipo: financiero_tipo_costo,
+        financierotipo: financiero_tipo_costo,
         financieroconcepto: financiero_concepto_cavali,
         total: new Decimal(0),
       };

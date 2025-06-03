@@ -4,6 +4,7 @@ import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import type { archivo } from "#src/models/prisma/ft_factoring/client";
 import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
 import * as archivotipoDao from "#src/daos/archivotipo.prisma.Dao.js";
+import * as archivoestadoDao from "#src/daos/archivoestado.prisma.Dao.js";
 import * as distritoDao from "#src/daos/distrito.prisma.Dao.js";
 import * as documentotipoDao from "#src/daos/documentotipo.prisma.Dao.js";
 import * as generoDao from "#src/daos/genero.prisma.Dao.js";
@@ -153,23 +154,24 @@ export const activateArchivo = async (req: Request, res: Response) => {
   const archivoValidated = archivoSchema.validateSync({ archivoid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "archivoValidated:", archivoValidated);
 
-  const archivoDeleted = await prismaFT.client.$transaction(
+  const archivoActivated = await prismaFT.client.$transaction(
     async (tx) => {
-      var camposAuditoria: Partial<archivo> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
-      camposAuditoria.fechamod = new Date();
-      camposAuditoria.estado = 1;
+      const archivoToActive: Prisma.archivoUpdateInput = {
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
 
-      const archivoDeleted = await archivoDao.activateArchivo(tx, { ...archivoValidated, ...camposAuditoria });
-      if (archivoDeleted[0] === 0) {
+      const archivoActivated = await archivoDao.activateArchivo(tx, archivoValidated.archivoid, archivoToActive);
+      if (archivoActivated[0] === 0) {
         throw new ClientError("Archivo no existe", 404);
       }
-      log.debug(line(), "archivoActivated:", archivoDeleted);
-      return archivoDeleted;
+      log.debug(line(), "archivoActivated:", archivoActivated);
+      return archivoActivated;
     },
     { timeout: prismaFT.transactionTimeout }
   );
-  response(res, 204, archivoDeleted);
+  response(res, 204, {});
 };
 
 export const deleteArchivo = async (req: Request, res: Response) => {
@@ -192,12 +194,13 @@ export const deleteArchivo = async (req: Request, res: Response) => {
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var camposAuditoria: Partial<archivo> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
-      camposAuditoria.fechamod = new Date();
-      camposAuditoria.estado = 2;
+      const archivoToDelete: Prisma.archivoUpdateInput = {
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 2,
+      };
 
-      const archivoDeleted = await archivoDao.deleteArchivo(tx, { ...archivoValidated, ...camposAuditoria });
+      const archivoDeleted = await archivoDao.deleteArchivo(tx, archivoValidated.archivoid, archivoToDelete);
       log.debug(line(), "archivoDeleted:", archivoDeleted);
 
       return {};
@@ -245,17 +248,8 @@ export const updateArchivo = async (req: Request, res: Response) => {
     .object()
     .shape({
       archivoid: yup.string().trim().required().min(36).max(36),
-      archivonombres: yup.string().trim().required().matches(NAME_REGX, "Debe ser un nombre válido").min(2).max(100),
-      apellidopaterno: yup.string().trim().required().matches(NAME_REGX, "Debe ser un apellido válido").min(2).max(50),
-      apellidomaterno: yup.string().trim().required().matches(NAME_REGX, "Debe ser un apellido válido").min(2).max(50),
-      paisnacionalidadid: yup.string().trim().required().min(36).max(36),
-      paisnacimientoid: yup.string().trim().required().min(36).max(36),
-      paisresidenciaid: yup.string().trim().required().min(36).max(36),
-      distritoresidenciaid: yup.string().trim().required().min(36).max(36),
-      generoid: yup.string().trim().required().min(36).max(36),
-      fechanacimiento: yup.date().required(),
-      direccion: yup.string().trim().required().max(200),
-      direccionreferencia: yup.string().trim().required().max(200),
+      archivotipoid: yup.string().trim().required().min(36).max(36),
+      archivoestadoid: yup.string().trim().required().min(36).max(36),
     })
     .required();
   const archivoValidated = archivoUpdateSchema.validateSync({ archivoid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
@@ -263,21 +257,32 @@ export const updateArchivo = async (req: Request, res: Response) => {
 
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
-      var camposFk = {};
+      const archivo = await archivoDao.getArchivoByArchivoid(tx, archivoValidated.archivoid);
+      if (!archivo) {
+        log.warn(line(), "Archivo no existe: [" + archivoValidated.archivoid + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
 
-      var camposAdicionales: Partial<archivo> = {};
-      camposAdicionales.archivoid = archivoValidated.archivoid;
+      const archivotipo = await archivotipoDao.getArchivotipoByArchivotipoid(tx, archivoValidated.archivotipoid);
+      if (!archivo) {
+        log.warn(line(), "Archivotipo no existe: [" + archivoValidated.archivotipoid + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
 
-      var camposAuditoria: Partial<archivo> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
-      camposAuditoria.fechamod = new Date();
+      const archivoestado = await archivoestadoDao.getArchivoestadoByArchivoestadoid(tx, archivoValidated.archivoestadoid);
+      if (!archivo) {
+        log.warn(line(), "Archivoestado no existe: [" + archivoValidated.archivoestadoid + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
 
-      const result = await archivoDao.updateArchivo(tx, {
-        ...camposFk,
-        ...camposAdicionales,
-        ...archivoValidated,
-        ...camposAuditoria,
-      });
+      const archivoToUpdate: Prisma.archivoUpdateInput = {
+        archivo_tipo: { connect: { idarchivotipo: archivotipo.idarchivotipo } },
+        archivo_estado: { connect: { idarchivoestado: archivoestado.idarchivoestado } },
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+      };
+
+      const result = await archivoDao.updateArchivo(tx, archivoValidated.archivoid, archivoToUpdate);
       if (result[0] === 0) {
         throw new ClientError("Archivo no existe", 404);
       }

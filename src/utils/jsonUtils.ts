@@ -1,6 +1,26 @@
 import util from "util";
 import { log, line } from "#src/utils/logger.pino.js";
 
+export function omitNullAndUndefined<T extends Record<string, unknown>>(obj: T): T {
+  return Object.fromEntries(Object.entries(obj).filter(([, value]) => value !== undefined && value !== null)) as T;
+}
+
+export function deepOmitNullAndUndefined<T>(input: T): T {
+  if (Array.isArray(input)) {
+    return input.map(deepOmitNullAndUndefined).filter((v) => v !== undefined && v !== null) as T;
+  }
+
+  if (input !== null && typeof input === "object") {
+    return Object.fromEntries(
+      Object.entries(input)
+        .filter(([, v]) => v !== undefined && v !== null)
+        .map(([k, v]) => [k, deepOmitNullAndUndefined(v)])
+    ) as T;
+  }
+
+  return input;
+}
+
 // Función para filtrar campos en un JSON
 export function filterFields(json, fields) {
   if (Array.isArray(json)) {

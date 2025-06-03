@@ -27,23 +27,29 @@ export const activateEmpresa = async (req: Request, res: Response) => {
   const empresaValidated = empresaSchema.validateSync({ empresaid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "empresaValidated:", empresaValidated);
 
-  const empresaDeleted = await prismaFT.client.$transaction(
+  const empresaToActivated = await prismaFT.client.$transaction(
     async (tx) => {
       var camposAuditoria: Partial<empresa> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 1;
 
-      const empresaDeleted = await empresaDao.activateEmpresa(tx, { ...empresaValidated, ...camposAuditoria });
-      if (empresaDeleted[0] === 0) {
+      const empresaToActivate: Prisma.empresaUpdateInput = {
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 2,
+      };
+
+      const empresaToActivated = await empresaDao.activateEmpresa(tx, empresaValidated.empresaid, empresaToActivate);
+      if (empresaToActivated[0] === 0) {
         throw new ClientError("Empresa no existe", 404);
       }
-      log.debug(line(), "empresaActivated:", empresaDeleted);
-      return empresaDeleted;
+      log.debug(line(), "empresaActivated:", empresaToActivated);
+      return empresaToActivated;
     },
     { timeout: prismaFT.transactionTimeout }
   );
-  response(res, 204, empresaDeleted);
+  response(res, 204, empresaToActivated);
 };
 
 export const deleteEmpresa = async (req: Request, res: Response) => {
@@ -60,12 +66,13 @@ export const deleteEmpresa = async (req: Request, res: Response) => {
 
   const empresaDeleted = await prismaFT.client.$transaction(
     async (tx) => {
-      var camposAuditoria: Partial<empresa> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
-      camposAuditoria.fechamod = new Date();
-      camposAuditoria.estado = 2;
+      const empresaToDelete: Prisma.empresaUpdateInput = {
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 2,
+      };
 
-      const empresaDeleted = await empresaDao.deleteEmpresa(tx, { ...empresaValidated, ...camposAuditoria });
+      const empresaDeleted = await empresaDao.deleteEmpresa(tx, empresaValidated.empresaid, empresaToDelete);
       if (empresaDeleted[0] === 0) {
         throw new ClientError("Empresa no existe", 404);
       }
@@ -128,22 +135,16 @@ export const updateEmpresa = async (req: Request, res: Response) => {
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var camposFk: Partial<empresa> = {};
-      camposFk.idriesgo = riesgo.idriesgo;
+      const empresaToUpdate: Prisma.empresaUpdateInput = {
+        riesgo: { connect: { idriesgo: riesgo.idriesgo } },
+        razon_social: empresaValidated.razon_social,
+        nombre_comercial: empresaValidated.nombre_comercial,
+        domicilio_fiscal: empresaValidated.domicilio_fiscal,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+      };
 
-      var camposAdicionales: Partial<empresa> = {};
-      camposAdicionales.empresaid = id;
-
-      var camposAuditoria: Partial<empresa> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
-      camposAuditoria.fechamod = new Date();
-
-      const empresaUpdated = await empresaDao.updateEmpresa(tx, {
-        ...camposFk,
-        ...camposAdicionales,
-        ...empresaValidated,
-        ...camposAuditoria,
-      });
+      const empresaUpdated = await empresaDao.updateEmpresa(tx, empresaValidated.empresaid, empresaToUpdate);
       log.debug(line(), "empresaUpdated:", empresaUpdated);
 
       return {};

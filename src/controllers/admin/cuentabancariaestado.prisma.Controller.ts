@@ -25,23 +25,25 @@ export const activateCuentabancariaestado = async (req: Request, res: Response) 
   const cuentabancariaestadoValidated = cuentabancariaestadoSchema.validateSync({ cuentabancariaestadoid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "cuentabancariaestadoValidated:", cuentabancariaestadoValidated);
 
-  const cuentabancariaestadoDeleted = await prismaFT.client.$transaction(
+  const cuentabancariaestadoActivated = await prismaFT.client.$transaction(
     async (tx) => {
-      var camposAuditoria: Partial<cuenta_bancaria_estado> = {};
-      camposAuditoria.idusuariomod = session_idusuario ?? 1;
-      camposAuditoria.fechamod = new Date();
-      camposAuditoria.estado = 1;
+      const cuentabancariaestadoToActivate: Prisma.cuenta_bancaria_estadoUpdateInput = {
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
 
-      const cuentabancariaestadoDeleted = await cuentabancariaestadoDao.activateCuentabancariaestado(tx, { ...cuentabancariaestadoValidated, ...camposAuditoria });
-      if (cuentabancariaestadoDeleted[0] === 0) {
+      const cuentabancariaestadoActivated = await cuentabancariaestadoDao.activateCuentabancariaestado(tx, cuentabancariaestadoValidated.cuentabancariaestadoid, cuentabancariaestadoToActivate);
+      if (cuentabancariaestadoActivated[0] === 0) {
         throw new ClientError("Cuentabancariaestado no existe", 404);
       }
-      log.debug(line(), "cuentabancariaestadoActivated:", cuentabancariaestadoDeleted);
-      return cuentabancariaestadoDeleted;
+
+      log.debug(line(), "cuentabancariaestadoActivated:", cuentabancariaestadoActivated);
+      return cuentabancariaestadoActivated;
     },
     { timeout: prismaFT.transactionTimeout }
   );
-  response(res, 204, cuentabancariaestadoDeleted);
+  response(res, 204, cuentabancariaestadoActivated);
 };
 
 export const deleteCuentabancariaestado = async (req: Request, res: Response) => {
@@ -59,12 +61,13 @@ export const deleteCuentabancariaestado = async (req: Request, res: Response) =>
 
   const cuentabancariaestadoDeleted = await prismaFT.client.$transaction(
     async (tx) => {
-      var camposAuditoria: Partial<cuenta_bancaria_estado> = {};
-      camposAuditoria.idusuariomod = session_idusuario ?? 1;
-      camposAuditoria.fechamod = new Date();
-      camposAuditoria.estado = 2;
+      const cuentabancariaestadoToDetele: Prisma.cuenta_bancaria_estadoUpdateInput = {
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 2,
+      };
 
-      const cuentabancariaestadoDeleted = await cuentabancariaestadoDao.deleteCuentabancariaestado(tx, { ...cuentabancariaestadoValidated, ...camposAuditoria });
+      const cuentabancariaestadoDeleted = await cuentabancariaestadoDao.deleteCuentabancariaestado(tx, cuentabancariaestadoValidated.cuentabancariaestadoid, cuentabancariaestadoToDetele);
       if (cuentabancariaestadoDeleted[0] === 0) {
         throw new ClientError("Cuentabancariaestado no existe", 404);
       }
@@ -94,22 +97,20 @@ export const updateCuentabancariaestado = async (req: Request, res: Response) =>
 
   const cuentabancariaestadoFiltered = await prismaFT.client.$transaction(
     async (tx) => {
-      var camposAdicionales: Partial<cuenta_bancaria_estado> = {};
-      camposAdicionales.cuentabancariaestadoid = id;
+      const cuentabancariaestadoToUpdate: Prisma.cuenta_bancaria_estadoUpdateInput = {
+        nombre: cuentabancariaestadoValidated.nombre,
+        alias: cuentabancariaestadoValidated.alias,
+        color: cuentabancariaestadoValidated.color,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+      };
 
-      var camposAuditoria: Partial<cuenta_bancaria_estado> = {};
-      camposAuditoria.idusuariomod = session_idusuario ?? 1;
-      camposAuditoria.fechamod = new Date();
-
-      const result = await cuentabancariaestadoDao.updateCuentabancariaestado(tx, {
-        ...camposAdicionales,
-        ...cuentabancariaestadoValidated,
-        ...camposAuditoria,
-      });
+      const result = await cuentabancariaestadoDao.updateCuentabancariaestado(tx, cuentabancariaestadoValidated.cuentabancariaestadoid, cuentabancariaestadoToUpdate);
       if (result[0] === 0) {
         throw new ClientError("Cuentabancariaestado no existe", 404);
       }
       log.info(line(), id);
+
       const cuentabancariaestadoUpdated = await cuentabancariaestadoDao.getCuentabancariaestadoByCuentabancariaestadoid(tx, id);
       if (!cuentabancariaestadoUpdated) {
         throw new ClientError("Cuentabancariaestado no existe", 404);
