@@ -44,18 +44,13 @@ export const updateFactoringhistorialestado = async (req: Request, res: Response
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var camposFk: Partial<factoring_historial_estado> = {};
-      camposFk.idfactoringhistorialestado = factoringhistorialestado.idfactoringhistorialestado;
+      const factoringhistorialestadoToUpdate: Prisma.factoring_historial_estadoUpdateInput = {
+        comentario: factoringhistorialestadoValidated.comentario,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+      };
 
-      var camposAuditoria: Partial<factoring_historial_estado> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
-      camposAuditoria.fechamod = new Date();
-
-      const factoringhistorialestadoUpdated = await factoringhistorialestadoDao.updateFactoringhistorialestado(tx, {
-        ...camposFk,
-        ...factoringhistorialestadoValidated,
-        ...camposAuditoria,
-      });
+      const factoringhistorialestadoUpdated = await factoringhistorialestadoDao.updateFactoringhistorialestado(tx, factoringhistorialestadoValidated.factoringhistorialestadoid, factoringhistorialestadoToUpdate);
       log.debug(line(), "factoringhistorialestadoUpdated:", factoringhistorialestadoUpdated);
 
       return {};
@@ -78,7 +73,7 @@ export const getFactoringhistorialestadosByFactoringid = async (req: Request, re
   var factoringhistorialestadoValidated = factoringhistorialestadoSchema.validateSync({ factoringid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "factoringhistorialestadoValidated:", factoringhistorialestadoValidated);
 
-  const resultado = await prismaFT.client.$transaction(
+  const factoringhistorialestadosJson = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estado = [1, 2];
 
@@ -94,7 +89,7 @@ export const getFactoringhistorialestadosByFactoringid = async (req: Request, re
 
       //var factoringpropuestasFiltered = jsonUtils.removeAttributes(factoringpropuestasJson, ["score"]);
       //factoringpropuestasFiltered = jsonUtils.removeAttributesPrivates(factoringpropuestasFiltered);
-      return {};
+      return factoringhistorialestadosJson;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -103,7 +98,7 @@ export const getFactoringhistorialestadosByFactoringid = async (req: Request, re
 
 export const getFactoringhistorialestadoMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFactoringhistorialestadoMaster");
-  const resultado = await prismaFT.client.$transaction(
+  const factoringhistorialestadosMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estados = [1];
       const factoringestados = await factoringestadoDao.getFactoringestados(tx, filter_estados);
@@ -117,7 +112,7 @@ export const getFactoringhistorialestadoMaster = async (req: Request, res: Respo
       //jsonUtils.prettyPrint(factoringhistorialestadosMasterObfuscated);
       var factoringhistorialestadosMasterFiltered = jsonUtils.removeAttributesPrivates(factoringhistorialestadosMasterObfuscated);
       //jsonUtils.prettyPrint(factoringhistorialestadosMaster);
-      return {};
+      return factoringhistorialestadosMasterFiltered;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -168,45 +163,38 @@ export const createFactoringhistorialestado = async (req: Request, res: Response
         }
       }
 
-      var camposFk: Partial<factoring_historial_estado> = {};
-      camposFk.idfactoring = factoring.idfactoring;
-      camposFk.idfactoringestado = factoringestado.idfactoringestado;
-      camposFk._idusuariomodifica = req.session_user.usuario.idusuario;
+      const factoringhistorialestadoToCreate: Prisma.factoring_historial_estadoCreateInput = {
+        factoring: { connect: { idfactoring: factoring.idfactoring } },
+        factoring_estado: { connect: { idfactoringestado: factoringestado.idfactoringestado } },
+        usuario_modifica: { connect: { idusuario: req.session_user.usuario.idusuario } },
 
-      var camposAdicionales: Partial<factoring_historial_estado> = {};
-      camposAdicionales.factoringhistorialestadoid = uuidv4();
-      camposAdicionales.code = uuidv4().split("-")[0];
+        factoringhistorialestadoid: uuidv4(),
+        code: uuidv4().split("-")[0],
+        comentario: factoringhistorialestadoValidated.comentario,
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
 
-      var camposAuditoria: Partial<factoring_historial_estado> = {};
-      camposAuditoria.idusuariocrea = req.session_user.usuario.idusuario ?? 1;
-      camposAuditoria.fechacrea = new Date();
-      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
-      camposAuditoria.fechamod = new Date();
-      camposAuditoria.estado = 1;
-
-      const factoringhistorialestadoCreated = await factoringhistorialestadoDao.insertFactoringhistorialestado(tx, {
-        ...camposFk,
-        ...camposAdicionales,
-        ...factoringhistorialestadoValidated,
-        ...camposAuditoria,
-      });
+      const factoringhistorialestadoCreated = await factoringhistorialestadoDao.insertFactoringhistorialestado(tx, factoringhistorialestadoToCreate);
 
       log.debug(line(), "factoringhistorialestadoCreated:", factoringhistorialestadoCreated);
-      const factoringUpdate = {
-        factoringid: factoringhistorialestadoValidated.factoringid,
-        _idfactoringestado: factoringestado.idfactoringestado,
+      const factoringToUpdate: Prisma.factoringUpdateInput = {
+        factoring_estado: { connect: { idfactoringestado: factoringestado.idfactoringestado } },
         idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
       };
 
-      const factoringUpdated = await factoringDao.updateFactoring(tx, factoringUpdate);
+      const factoringUpdated = await factoringDao.updateFactoring(tx, factoringhistorialestadoValidated.factoringid, factoringToUpdate);
 
       log.debug(line(), "factoringUpdated:", factoringUpdated);
 
       for (const archivo of archivos) {
-        const archivofactoringhistorialestadoCreate = {
-          _idarchivo: archivo.idarchivo,
-          _idfactoringhistorialestado: factoringhistorialestadoCreated.idfactoringhistorialestado,
+        const archivofactoringhistorialestadoToCreate: Prisma.archivo_factoring_historial_estadoCreateInput = {
+          archivo: { connect: { idarchivo: archivo.idarchivo } },
+          factoring_historial_estado: { connect: { idfactoringhistorialestado: factoringhistorialestadoCreated.idfactoringhistorialestado } },
           idusuariocrea: req.session_user.usuario.idusuario ?? 1,
           fechacrea: new Date(),
           idusuariomod: req.session_user.usuario.idusuario ?? 1,
@@ -214,9 +202,7 @@ export const createFactoringhistorialestado = async (req: Request, res: Response
           estado: 1,
         };
 
-        const archivofactoringhistorialestadoCreated = await archivofactoringhistorialestadoDao.insertArchivofactoringhistorialestado(tx, {
-          ...archivofactoringhistorialestadoCreate,
-        });
+        const archivofactoringhistorialestadoCreated = await archivofactoringhistorialestadoDao.insertArchivofactoringhistorialestado(tx, archivofactoringhistorialestadoToCreate);
 
         log.debug(line(), "archivofactoringhistorialestadoCreated:", archivofactoringhistorialestadoCreated);
       }
@@ -241,7 +227,7 @@ export const activateFactoringhistorialestado = async (req: Request, res: Respon
   const factoringhistorialestadoValidated = factoringhistorialestadoSchema.validateSync({ factoringhistorialestadoid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "factoringhistorialestadoValidated:", factoringhistorialestadoValidated);
 
-  const resultado = await prismaFT.client.$transaction(
+  const factoringhistorialestadoActivated = await prismaFT.client.$transaction(
     async (tx) => {
       var factoringhistorialestado = await factoringhistorialestadoDao.getFactoringhistorialestadoByFactoringhistorialestadoid(tx, factoringhistorialestadoValidated.factoringhistorialestadoid);
       if (!factoringhistorialestado) {
@@ -249,15 +235,16 @@ export const activateFactoringhistorialestado = async (req: Request, res: Respon
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var camposAuditoria: Partial<factoring_historial_estado> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
-      camposAuditoria.fechamod = new Date();
-      camposAuditoria.estado = 1;
+      const factoringhistorialestadoToActivate: Prisma.factoring_historial_estadoUpdateInput = {
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
 
-      const factoringhistorialestadoActivated = await factoringhistorialestadoDao.activateFactoringhistorialestado(tx, { ...factoringhistorialestadoValidated, ...camposAuditoria });
+      const factoringhistorialestadoActivated = await factoringhistorialestadoDao.activateFactoringhistorialestado(tx, factoringhistorialestadoValidated.factoringhistorialestadoid, factoringhistorialestadoToActivate);
       log.debug(line(), "factoringhistorialestadoActivated:", factoringhistorialestadoActivated);
 
-      return {};
+      return factoringhistorialestadoActivated;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -276,7 +263,7 @@ export const deleteFactoringhistorialestado = async (req: Request, res: Response
   const factoringhistorialestadoValidated = factoringhistorialestadoSchema.validateSync({ factoringhistorialestadoid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "factoringhistorialestadoValidated:", factoringhistorialestadoValidated);
 
-  const resultado = await prismaFT.client.$transaction(
+  const factoringhistorialestadoDeleted = await prismaFT.client.$transaction(
     async (tx) => {
       var factoringhistorialestado = await factoringhistorialestadoDao.getFactoringhistorialestadoByFactoringhistorialestadoid(tx, factoringhistorialestadoValidated.factoringhistorialestadoid);
       if (!factoringhistorialestado) {
@@ -289,10 +276,16 @@ export const deleteFactoringhistorialestado = async (req: Request, res: Response
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 2;
 
-      const factoringhistorialestadoDeleted = await factoringhistorialestadoDao.deleteFactoringhistorialestado(tx, { ...factoringhistorialestadoValidated, ...camposAuditoria });
+      const factoringhistorialestadoToDelete: Prisma.factoring_historial_estadoUpdateInput = {
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 2,
+      };
+
+      const factoringhistorialestadoDeleted = await factoringhistorialestadoDao.deleteFactoringhistorialestado(tx, factoringhistorialestadoValidated.factoringhistorialestadoid, factoringhistorialestadoToDelete);
       log.debug(line(), "factoringhistorialestadoDeleted:", factoringhistorialestadoDeleted);
 
-      return {};
+      return factoringhistorialestadoDeleted;
     },
     { timeout: prismaFT.transactionTimeout }
   );
@@ -303,7 +296,7 @@ export const getFactoringhistorialestados = async (req: Request, res: Response) 
   log.debug(line(), "controller::getFactoringhistorialestados");
   //log.info(line(),req.session_user.usuario.idusuario);
 
-  const resultado = await prismaFT.client.$transaction(
+  const factoringhistorialestadosJson = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estado = [1, 2];
       const factoringhistorialestados = await factoringhistorialestadoDao.getFactoringhistorialestados(tx, filter_estado);
@@ -312,7 +305,7 @@ export const getFactoringhistorialestados = async (req: Request, res: Response) 
 
       //var factoringhistorialestadosFiltered = jsonUtils.removeAttributes(factoringhistorialestadosJson, ["score"]);
       //factoringhistorialestadosFiltered = jsonUtils.removeAttributesPrivates(factoringhistorialestadosFiltered);
-      return {};
+      return factoringhistorialestadosJson;
     },
     { timeout: prismaFT.transactionTimeout }
   );

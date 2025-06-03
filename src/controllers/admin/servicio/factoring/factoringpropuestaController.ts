@@ -27,113 +27,6 @@ import * as storageUtils from "#src/utils/storageUtils.js";
 import { sendFileAsync, setDownloadHeaders } from "#src/utils/httpUtils.js";
 import * as fs from "fs";
 
-export const downloadFactoringpropuestaPDF = async (req, res) => {
-  log.debug(line(), "controller::downloadFactoringpropuestaPDF");
-  const { id } = req.params;
-  const factoringpropuestaUpdateSchema = yup
-    .object()
-    .shape({
-      factoringpropuestaid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
-  const factoringpropuestaValidated = factoringpropuestaUpdateSchema.validateSync({ factoringpropuestaid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
-  log.debug(line(), "factoringpropuestaValidated:", factoringpropuestaValidated);
-
-  const transaction = await sequelizeFT.transaction();
-  try {
-    var factoringpropuesta = await factoringpropuestaDao.getFactoringpropuestaByFactoringpropuestaid(transaction, factoringpropuestaValidated.factoringpropuestaid);
-    if (!factoringpropuesta) {
-      log.warn(line(), "Factoringpropuesta no existe: [" + factoringpropuestaValidated.factoringpropuestaid + "]");
-      throw new ClientError("Datos no válidos", 404);
-    }
-    //log.debug(line(), "factoringpropuesta:", jsonUtils.sequelizeToJSON(factoringpropuesta));
-
-    var factoring = await factoringDao.getFactoringByIdfactoring(transaction, factoringpropuesta._idfactoring);
-    if (!factoring) {
-      log.warn(line(), "Factoring no existe: [" + factoringpropuesta._idfactoring + "]");
-      throw new ClientError("Datos no válidos", 404);
-    }
-    //log.debug(line(), "factoringpropuesta:", jsonUtils.sequelizeToJSON(factoring));
-
-    // Generar el PDF
-    const formattedDate = luxon.DateTime.now().toFormat("yyyyMMdd_HHmm");
-    const filename = formattedDate + "_factoring_propuesta_" + factoring.cedente_empresa.ruc + "_" + factoringpropuesta.code + ".pdf";
-    const dirPath = path.join(storageUtils.pathApp(), storageUtils.STORAGE_PATH_PROCESAR, storageUtils.pathDate(new Date()));
-    const filePath = path.join(dirPath, filename);
-    if (!fs.existsSync(dirPath)) {
-      fs.mkdirSync(dirPath, { recursive: true });
-    }
-
-    const pdfGenerator = new PDFGenerator(filePath);
-    await pdfGenerator.generateFactoringQuote(factoring, factoringpropuesta);
-
-    let filenameDownload = "Factoring_Propuesta_" + factoring.cedente_empresa.ruc + "_" + factoringpropuesta.code + "_" + formattedDate + ".pdf";
-
-    // res.setHeader("Content-Disposition", 'attachment; filename="' + filenameDownload + '"');
-
-    setDownloadHeaders(res, filenameDownload);
-    await sendFileAsync(req, res, filePath);
-    await unlink(filePath);
-    await transaction.commit();
-  } catch (error) {
-    await safeRollback(transaction);
-    throw error;
-  }
-};
-
-export const updateFactoringpropuesta = async (req, res) => {
-  log.debug(line(), "controller::updateFactoringpropuesta");
-  const { id } = req.params;
-  const factoringpropuestaUpdateSchema = yup
-    .object()
-    .shape({
-      factoringpropuestaid: yup.string().trim().required().min(36).max(36),
-      factoringpropuestaestadoid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
-  const factoringpropuestaValidated = factoringpropuestaUpdateSchema.validateSync({ factoringpropuestaid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
-  log.debug(line(), "factoringpropuestaValidated:", factoringpropuestaValidated);
-
-  const transaction = await sequelizeFT.transaction();
-  try {
-    var factoringpropuesta = await factoringpropuestaDao.getFactoringpropuestaByFactoringpropuestaid(transaction, factoringpropuestaValidated.factoringpropuestaid);
-    if (!factoringpropuesta) {
-      log.warn(line(), "Factoringpropuesta no existe: [" + factoringpropuestaValidated.factoringpropuestaid + "]");
-      throw new ClientError("Datos no válidos", 404);
-    }
-
-    var factoringpropuestaestado = await factoringpropuestaestadoDao.getFactoringpropuestaestadoByFactoringpropuestaestadoid(transaction, factoringpropuestaValidated.factoringpropuestaestadoid);
-    if (!factoringpropuestaestado) {
-      log.warn(line(), "Factoringpropuestaestado no existe: [" + factoringpropuestaValidated.factoringpropuestaestadoid + "]");
-      throw new ClientError("Datos no válidos", 404);
-    }
-
-    var camposFk: Partial<FactoringPropuestaAttributes> = {};
-    camposFk._idfactoringpropuestaestado = factoringpropuestaestado._idfactoringpropuestaestado;
-
-    var camposAdicionales: Partial<FactoringPropuestaAttributes> = {};
-    camposAdicionales.factoringpropuestaid = factoringpropuestaValidated.factoringpropuestaid;
-
-    var camposAuditoria: Partial<FactoringPropuestaAttributes> = {};
-    camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
-    camposAuditoria.fechamod = Sequelize.fn("now", 3);
-
-    const factoringpropuestaUpdated = await factoringpropuestaDao.updateFactoringpropuesta(transaction, {
-      ...camposFk,
-      ...camposAdicionales,
-      ...factoringpropuestaValidated,
-      ...camposAuditoria,
-    });
-    log.debug(line(), "factoringpropuestaUpdated:", factoringpropuestaUpdated);
-
-    await transaction.commit();
-    response(res, 200, { ...factoringpropuestaValidated });
-  } catch (error) {
-    await safeRollback(transaction);
-    throw error;
-  }
-};
-
 export const createFactoringpropuesta = async (req, res) => {
   log.debug(line(), "controller::createFactoringpropuesta");
   const session_idusuario = req.session_user.usuario._idusuario;
@@ -365,6 +258,113 @@ export const simulateFactoringpropuesta = async (req, res) => {
     await transaction.commit();
 
     response(res, 201, { factoring: { ...factoringValidated }, ...simulacion });
+  } catch (error) {
+    await safeRollback(transaction);
+    throw error;
+  }
+};
+
+export const downloadFactoringpropuestaPDF = async (req, res) => {
+  log.debug(line(), "controller::downloadFactoringpropuestaPDF");
+  const { id } = req.params;
+  const factoringpropuestaUpdateSchema = yup
+    .object()
+    .shape({
+      factoringpropuestaid: yup.string().trim().required().min(36).max(36),
+    })
+    .required();
+  const factoringpropuestaValidated = factoringpropuestaUpdateSchema.validateSync({ factoringpropuestaid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
+  log.debug(line(), "factoringpropuestaValidated:", factoringpropuestaValidated);
+
+  const transaction = await sequelizeFT.transaction();
+  try {
+    var factoringpropuesta = await factoringpropuestaDao.getFactoringpropuestaByFactoringpropuestaid(transaction, factoringpropuestaValidated.factoringpropuestaid);
+    if (!factoringpropuesta) {
+      log.warn(line(), "Factoringpropuesta no existe: [" + factoringpropuestaValidated.factoringpropuestaid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+    //log.debug(line(), "factoringpropuesta:", jsonUtils.sequelizeToJSON(factoringpropuesta));
+
+    var factoring = await factoringDao.getFactoringByIdfactoring(transaction, factoringpropuesta._idfactoring);
+    if (!factoring) {
+      log.warn(line(), "Factoring no existe: [" + factoringpropuesta._idfactoring + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+    //log.debug(line(), "factoringpropuesta:", jsonUtils.sequelizeToJSON(factoring));
+
+    // Generar el PDF
+    const formattedDate = luxon.DateTime.now().toFormat("yyyyMMdd_HHmm");
+    const filename = formattedDate + "_factoring_propuesta_" + factoring.cedente_empresa.ruc + "_" + factoringpropuesta.code + ".pdf";
+    const dirPath = path.join(storageUtils.pathApp(), storageUtils.STORAGE_PATH_PROCESAR, storageUtils.pathDate(new Date()));
+    const filePath = path.join(dirPath, filename);
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath, { recursive: true });
+    }
+
+    const pdfGenerator = new PDFGenerator(filePath);
+    await pdfGenerator.generateFactoringQuote(factoring, factoringpropuesta);
+
+    let filenameDownload = "Factoring_Propuesta_" + factoring.cedente_empresa.ruc + "_" + factoringpropuesta.code + "_" + formattedDate + ".pdf";
+
+    // res.setHeader("Content-Disposition", 'attachment; filename="' + filenameDownload + '"');
+
+    setDownloadHeaders(res, filenameDownload);
+    await sendFileAsync(req, res, filePath);
+    await unlink(filePath);
+    await transaction.commit();
+  } catch (error) {
+    await safeRollback(transaction);
+    throw error;
+  }
+};
+
+export const updateFactoringpropuesta = async (req, res) => {
+  log.debug(line(), "controller::updateFactoringpropuesta");
+  const { id } = req.params;
+  const factoringpropuestaUpdateSchema = yup
+    .object()
+    .shape({
+      factoringpropuestaid: yup.string().trim().required().min(36).max(36),
+      factoringpropuestaestadoid: yup.string().trim().required().min(36).max(36),
+    })
+    .required();
+  const factoringpropuestaValidated = factoringpropuestaUpdateSchema.validateSync({ factoringpropuestaid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
+  log.debug(line(), "factoringpropuestaValidated:", factoringpropuestaValidated);
+
+  const transaction = await sequelizeFT.transaction();
+  try {
+    var factoringpropuesta = await factoringpropuestaDao.getFactoringpropuestaByFactoringpropuestaid(transaction, factoringpropuestaValidated.factoringpropuestaid);
+    if (!factoringpropuesta) {
+      log.warn(line(), "Factoringpropuesta no existe: [" + factoringpropuestaValidated.factoringpropuestaid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    var factoringpropuestaestado = await factoringpropuestaestadoDao.getFactoringpropuestaestadoByFactoringpropuestaestadoid(transaction, factoringpropuestaValidated.factoringpropuestaestadoid);
+    if (!factoringpropuestaestado) {
+      log.warn(line(), "Factoringpropuestaestado no existe: [" + factoringpropuestaValidated.factoringpropuestaestadoid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    var camposFk: Partial<FactoringPropuestaAttributes> = {};
+    camposFk._idfactoringpropuestaestado = factoringpropuestaestado._idfactoringpropuestaestado;
+
+    var camposAdicionales: Partial<FactoringPropuestaAttributes> = {};
+    camposAdicionales.factoringpropuestaid = factoringpropuestaValidated.factoringpropuestaid;
+
+    var camposAuditoria: Partial<FactoringPropuestaAttributes> = {};
+    camposAuditoria.idusuariomod = req.session_user.usuario._idusuario ?? 1;
+    camposAuditoria.fechamod = Sequelize.fn("now", 3);
+
+    const factoringpropuestaUpdated = await factoringpropuestaDao.updateFactoringpropuesta(transaction, {
+      ...camposFk,
+      ...camposAdicionales,
+      ...factoringpropuestaValidated,
+      ...camposAuditoria,
+    });
+    log.debug(line(), "factoringpropuestaUpdated:", factoringpropuestaUpdated);
+
+    await transaction.commit();
+    response(res, 200, { ...factoringpropuestaValidated });
   } catch (error) {
     await safeRollback(transaction);
     throw error;

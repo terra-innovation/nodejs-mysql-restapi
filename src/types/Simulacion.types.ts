@@ -1,6 +1,7 @@
 import { FinancieroTipoCreationAttributes } from "#src/models/ft_factoring/FinancieroTipo.js";
 import { FinancieroConceptoCreationAttributes } from "#src/models/ft_factoring/FinancieroConcepto.js";
 import { FactoringPropuestaCreationAttributes } from "#src/models/ft_factoring/FactoringPropuesta.js";
+import type { Prisma } from "#src/models/prisma/ft_factoring/client";
 
 export interface Comision {
   comisionft_porcentaje: number;
@@ -28,7 +29,7 @@ export interface Gasto {
   igv?: number;
 }
 
-export interface Simulacion extends Partial<FactoringPropuestaCreationAttributes> {
+export interface Simulacion extends Partial<Prisma.factoring_propuestaCreateInput> {
   comisiones?: Comision[];
   costos?: Costo[];
   gastos?: Gasto[];
