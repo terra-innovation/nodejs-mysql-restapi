@@ -158,7 +158,7 @@ export const createFactoring = async (req: Request, res: Response) => {
         contacto_cedente: { connect: { idcolaborador: colaborador.idcolaborador } },
         factoring_estado: { connect: { idfactoringestado: idfactoringestado } },
 
-        fecha_pago_estimado: factoringValidated.fecha_pago_estimado,
+        fecha_pago_estimado: factoringValidated.fecha_pago_estimado ? new Date(factoringValidated.fecha_pago_estimado) : null,
 
         factoringid: uuidv4(),
         code: uuidv4().split("-")[0],

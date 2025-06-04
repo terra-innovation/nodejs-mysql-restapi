@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { index, ping } from "#src/controllers/index.rotes.js";
+import { index, ping } from "#root/src/controllers/index.prisma.Controller.js";
 
 const router = Router();
 

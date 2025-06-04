@@ -6,12 +6,12 @@ import { corsMiddleware } from "#src/middlewares/corsMiddleware";
 import { errorHandlerMiddleware } from "#src/middlewares/errorHandlerMiddleware";
 import { notFoundHandlerMiddleware } from "#src/middlewares/notFoundHandlerMiddleware";
 
-import indexRoutes from "#src/routes/index.routes.js";
+import indexRoutes from "#src/routes/index.prisma.routes.js";
 import adminRoutes from "#src/routes/admin/index.prisma.js";
 import empresarioRoutes from "#src/routes/empresario/index.prisma.js";
-import inversionistaRoutes from "#src/routes/empresario/index.js";
-import usuarioRoutes from "#src/routes/empresario/index.js";
-import secureRoutes from "#src/routes/secure/index.js";
+import inversionistaRoutes from "#src/routes/inversionista/index.prisma.js";
+import usuarioRoutes from "#src/routes/usuario/index.prisma.js";
+import secureRoutes from "#src/routes/secure/index.prisma.js";
 
 import { sequelizeFT } from "#src/config/bd/sequelize_db_factoring.js";
 
