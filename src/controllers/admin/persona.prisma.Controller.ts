@@ -33,23 +33,18 @@ export const activatePersona = async (req: Request, res: Response) => {
   const personaValidated = personaSchema.validateSync({ personaid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "personaValidated:", personaValidated);
 
-  const personaDeleted = await prismaFT.client.$transaction(
+  const personaActivated = await prismaFT.client.$transaction(
     async (tx) => {
-      var camposAuditoria: Partial<persona> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
-      camposAuditoria.fechamod = new Date();
-      camposAuditoria.estado = 1;
-
-      const personaDeleted = await personaDao.activatePersona(tx, { ...personaValidated, ...camposAuditoria });
-      if (personaDeleted[0] === 0) {
+      const personaActivated = await personaDao.activatePersona(tx, personaValidated.personaid, req.session_user.usuario.idusuario);
+      if (personaActivated[0] === 0) {
         throw new ClientError("Persona no existe", 404);
       }
-      log.debug(line(), "personaActivated:", personaDeleted);
-      return personaDeleted;
+      log.debug(line(), "personaActivated:", personaActivated);
+      return personaActivated;
     },
     { timeout: prismaFT.transactionTimeout }
   );
-  response(res, 204, personaDeleted);
+  response(res, 204, personaActivated);
 };
 
 export const deletePersona = async (req: Request, res: Response) => {
@@ -71,7 +66,7 @@ export const deletePersona = async (req: Request, res: Response) => {
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 2;
 
-      const personaDeleted = await personaDao.deletePersona(tx, { ...personaValidated, ...camposAuditoria });
+      const personaDeleted = await personaDao.deletePersona(tx, personaValidated.personaid, req.session_user.usuario.idusuario);
       if (personaDeleted[0] === 0) {
         throw new ClientError("Persona no existe", 404);
       }
@@ -141,19 +136,19 @@ export const updatePersona = async (req: Request, res: Response) => {
     async (tx) => {
       var camposFk = {};
 
-      var camposAdicionales: Partial<persona> = {};
-      camposAdicionales.personaid = personaValidated.personaid;
+      const personaToUpdate: Prisma.personaUpdateInput = {
+        personanombres: personaValidated.personanombres,
+        apellidopaterno: personaValidated.apellidopaterno,
+        apellidomaterno: personaValidated.apellidomaterno,
 
-      var camposAuditoria: Partial<persona> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
-      camposAuditoria.fechamod = new Date();
+        fechanacimiento: personaValidated.fechanacimiento,
+        direccion: personaValidated.direccion,
+        direccionreferencia: personaValidated.direccionreferencia,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+      };
 
-      const result = await personaDao.updatePersona(tx, {
-        ...camposFk,
-        ...camposAdicionales,
-        ...personaValidated,
-        ...camposAuditoria,
-      });
+      const result = await personaDao.updatePersona(tx, personaValidated.personaid, personaToUpdate);
       if (result[0] === 0) {
         throw new ClientError("Persona no existe", 404);
       }

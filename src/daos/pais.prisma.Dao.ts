@@ -4,6 +4,7 @@ import type { Prisma, pais } from "#src/models/prisma/ft_factoring/client";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getPaises = async (tx: TxClient, estados: number[]) => {
   try {
@@ -92,10 +93,10 @@ export const updatePais = async (tx: TxClient, paisid: string, pais: Prisma.pais
   }
 };
 
-export const deletePais = async (tx: TxClient, paisid: string, pais: Prisma.paisUpdateInput) => {
+export const deletePais = async (tx: TxClient, paisid: string, idusuariomod: number) => {
   try {
     const result = await tx.pais.update({
-      data: pais,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         paisid: paisid,
       },

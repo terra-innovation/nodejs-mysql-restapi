@@ -53,18 +53,18 @@ export const updateContacto = async (req: Request, res: Response) => {
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var camposContactoAdicionales: Partial<contacto> = {};
-      camposContactoAdicionales.contactoid = contacto.contactoid;
+      const contactoToUpdate: Prisma.contactoUpdateInput = {
+        nombrecontacto: contactoValidated.nombrecontacto,
+        apellidocontacto: contactoValidated.apellidocontacto,
+        cargo: contactoValidated.cargo,
+        email: contactoValidated.email,
+        celular: contactoValidated.celular,
+        telefono: contactoValidated.telefono,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+      };
 
-      var camposContactoAuditoria: Partial<contacto> = {};
-      camposContactoAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
-      camposContactoAuditoria.fechamod = new Date();
-
-      const contactoUpdated = await contactoDao.updateContacto(tx, {
-        ...camposContactoAdicionales,
-        ...contactoValidated,
-        ...camposContactoAuditoria,
-      });
+      const contactoUpdated = await contactoDao.updateContacto(tx, contacto.contactoid, contactoToUpdate);
       log.debug(line(), "contactoUpdated", contactoUpdated);
 
       return {};

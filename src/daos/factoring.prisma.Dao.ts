@@ -4,6 +4,7 @@ import type { Prisma, factoring } from "#src/models/prisma/ft_factoring/client";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getFactoringsOportunidades = async (tx: TxClient, idfactoringestados, estados: number[]) => {
   try {
@@ -404,10 +405,10 @@ export const updateFactoring = async (tx: TxClient, factoringid: string, factori
   }
 };
 
-export const deleteFactoring = async (tx: TxClient, factoringid: string, factoring: Prisma.factoringUpdateInput) => {
+export const deleteFactoring = async (tx: TxClient, factoringid: string, idusuariomod: number) => {
   try {
     const result = await tx.factoring.update({
-      data: factoring,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         factoringid: factoringid,
       },
@@ -419,10 +420,10 @@ export const deleteFactoring = async (tx: TxClient, factoringid: string, factori
   }
 };
 
-export const activateFactoring = async (tx: TxClient, factoringid: string, factoring: Prisma.factoringUpdateInput) => {
+export const activateFactoring = async (tx: TxClient, factoringid: string, idusuariomod: number) => {
   try {
     const result = await tx.factoring.update({
-      data: factoring,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ACTIVO },
       where: {
         factoringid: factoringid,
       },

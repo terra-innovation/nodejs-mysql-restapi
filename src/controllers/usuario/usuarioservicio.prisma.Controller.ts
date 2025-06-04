@@ -216,14 +216,13 @@ export const suscribirUsuarioServicioFactoringInversionista = async (req: Reques
       log.debug(line(), "usuarioservicioverificacionCreated:", usuarioservicioverificacionCreated);
 
       /* Actualizamos el estado del usuario_servicio*/
-      const camposUsuarioservicioUpdate: Partial<usuario_servicio> = {};
-      camposUsuarioservicioUpdate.idusuarioservicio = usuarioservicio.idusuarioservicio;
-      camposUsuarioservicioUpdate.usuarioservicioid = usuarioservicio.usuarioservicioid;
-      camposUsuarioservicioUpdate.idusuarioservicioestado = usuarioservicioestado.idusuarioservicioestado;
-      camposUsuarioservicioUpdate.idusuariomod = req.session_user?.usuario?.idusuario ?? 1;
-      camposUsuarioservicioUpdate.fechamod = new Date();
+      const usuarioservicioToUpdate: Prisma.usuario_servicioUpdateInput = {
+        usuario_servicio_estado: { connect: { idusuarioservicioestado: usuarioservicioestado.idusuarioservicioestado } },
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+      };
 
-      const usuarioservicioUpdated = await usuarioservicioDao.updateUsuarioservicio(tx, camposUsuarioservicioUpdate);
+      const usuarioservicioUpdated = await usuarioservicioDao.updateUsuarioservicio(tx, usuarioservicio.usuarioservicioid, usuarioservicioToUpdate);
       log.debug(line(), "usuarioservicioUpdated:", usuarioservicioUpdated);
 
       return {};
@@ -576,14 +575,14 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       log.debug(line(), "usuarioservicioverificacionCreated:", usuarioservicioverificacionCreated);
 
       /* Actualizamos el estado del usuario_servicio*/
-      const camposUsuarioservicioUpdate: Partial<usuario_servicio> = {};
-      camposUsuarioservicioUpdate.idusuarioservicio = usuarioservicio.idusuarioservicio;
-      camposUsuarioservicioUpdate.usuarioservicioid = usuarioservicio.usuarioservicioid;
-      camposUsuarioservicioUpdate.idusuarioservicioestado = usuarioservicioestado.idusuarioservicioestado;
-      camposUsuarioservicioUpdate.idusuariomod = req.session_user?.usuario?.idusuario ?? 1;
-      camposUsuarioservicioUpdate.fechamod = new Date();
 
-      const usuarioservicioUpdated = await usuarioservicioDao.updateUsuarioservicio(tx, camposUsuarioservicioUpdate);
+      const usuarioservicioToUpdate: Prisma.usuario_servicioUpdateInput = {
+        usuario_servicio_estado: { connect: { idusuarioservicioestado: usuarioservicioestado.idusuarioservicioestado } },
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+      };
+
+      const usuarioservicioUpdated = await usuarioservicioDao.updateUsuarioservicio(tx, usuarioservicio.usuarioservicioid, usuarioservicioToUpdate);
       log.debug(line(), "usuarioservicioUpdated:", usuarioservicioUpdated);
 
       return {};

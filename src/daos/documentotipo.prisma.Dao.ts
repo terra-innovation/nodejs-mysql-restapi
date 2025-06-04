@@ -3,6 +3,7 @@ import type { Prisma, documento_tipo } from "#src/models/prisma/ft_factoring/cli
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getDocumentotipos = async (tx: TxClient, estados: number[]) => {
   try {
@@ -101,10 +102,10 @@ export const updateDocumentotipo = async (tx: TxClient, documentotipoid: string,
   }
 };
 
-export const deleteDocumentotipo = async (tx: TxClient, documentotipoid: string, documentotipo: Prisma.documento_tipoUpdateInput) => {
+export const deleteDocumentotipo = async (tx: TxClient, documentotipoid: string, idusuariomod: number) => {
   try {
     const result = await tx.documento_tipo.update({
-      data: documentotipo,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         documentotipoid: documentotipoid,
       },
@@ -116,10 +117,10 @@ export const deleteDocumentotipo = async (tx: TxClient, documentotipoid: string,
   }
 };
 
-export const activateDocumentotipo = async (tx: TxClient, documentotipoid: string, documentotipo: Prisma.documento_tipoUpdateInput) => {
+export const activateDocumentotipo = async (tx: TxClient, documentotipoid: string, idusuariomod: number) => {
   try {
     const result = await tx.documento_tipo.update({
-      data: documentotipo,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ACTIVO },
       where: {
         documentotipoid: documentotipoid,
       },

@@ -90,14 +90,13 @@ export const createFactoringempresaverificacion = async (req: Request, res: Resp
       log.debug(line(), "servicioempresaverificacionCreated", servicioempresaverificacionCreated);
 
       // Actualiza la tabla servicioempresa con el nuevo estado
-      const servicioempresaUpdate: Partial<servicio_empresa> = {};
-      servicioempresaUpdate.servicioempresaid = servicioempresaverificacionValidated.servicioempresaid;
-      servicioempresaUpdate.idservicioempresaestado = servicioempresaestado.idservicioempresaestado;
-      servicioempresaUpdate.idusuariomod = req.session_user.usuario.idusuario ?? 1;
-      servicioempresaUpdate.fechamod = new Date();
-
-      await servicioempresaDao.updateServicioempresa(tx, servicioempresaUpdate);
-      log.debug(line(), "servicioempresaUpdate", servicioempresaUpdate);
+      const servicioempresaToUpdate: Prisma.servicio_empresaUpdateInput = {
+        servicio_empresa_estado: { connect: { idservicioempresaestado: servicioempresaestado.idservicioempresaestado } },
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+      };
+      const servicioempresaUpdated = await servicioempresaDao.updateServicioempresa(tx, servicioempresaverificacionValidated.servicioempresaid, servicioempresaToUpdate);
+      log.debug(line(), "servicioempresaUpdated", servicioempresaUpdated);
 
       // Si el estado es estado 3 (Suscrito)
       if (servicioempresaestado.idservicioempresaestado == 3) {
@@ -136,14 +135,14 @@ const darAccesoAlUsuarioServicioEmpresa = async (req, tx, servicioempresa, perso
   }
 
   // Actualiza la tabla usuarioservicioempresa con el nuevo estado
-  const usuarioservicioempresaUpdate: Partial<usuario_servicio_empresa> = {};
-  usuarioservicioempresaUpdate.usuarioservicioempresaid = usuarioservicioempresa.usuarioservicioempresaid;
-  usuarioservicioempresaUpdate.idusuarioservicioempresaestado = usuarioservicioempresaestado.idusuarioservicioempresaestado;
-  usuarioservicioempresaUpdate.idusuarioservicioempresarol = usuarioservicioempresarol.idusuarioservicioempresarol;
-  usuarioservicioempresaUpdate.idusuariomod = req.session_user.usuario.idusuario ?? 1;
-  usuarioservicioempresaUpdate.fechamod = new Date();
+  const usuarioservicioempresaToUpdate: Prisma.usuario_servicio_empresaUpdateInput = {
+    usuario_servicio_empresa_estado: { connect: { idusuarioservicioempresaestado: usuarioservicioempresaestado.idusuarioservicioempresaestado } },
+    usuario_servicio_empresa_rol: { connect: { idusuarioservicioempresarol: usuarioservicioempresarol.idusuarioservicioempresarol } },
+    idusuariomod: req.session_user.usuario.idusuario ?? 1,
+    fechamod: new Date(),
+  };
 
-  const usuarioservicioempresaUpdated = await usuarioservicioempresaDao.updateUsuarioservicioempresa(tx, usuarioservicioempresaUpdate);
+  const usuarioservicioempresaUpdated = await usuarioservicioempresaDao.updateUsuarioservicioempresa(tx, usuarioservicioempresa.usuarioservicioempresaid, usuarioservicioempresaToUpdate);
   log.debug(line(), "usuarioservicioempresaUpdated", usuarioservicioempresaUpdated);
 };
 
@@ -181,13 +180,12 @@ const darAccesoAlUsuarioServicio = async (req, tx, servicioempresaverificacionVa
   log.debug(line(), "usuarioservicioverificacionCreated", usuarioservicioverificacionCreated);
 
   // Actualiza la tabla usuarioservicio con el nuevo estado
-  const usuarioservicioUpdate: Partial<usuario_servicio> = {};
-  usuarioservicioUpdate.usuarioservicioid = usuarioservicio.usuarioservicioid;
-  usuarioservicioUpdate.idusuarioservicioestado = usuarioservicioestado.idusuarioservicioestado;
-  usuarioservicioUpdate.idusuariomod = req.session_user.usuario.idusuario ?? 1;
-  usuarioservicioUpdate.fechamod = new Date();
-
-  const usuarioservicioUpdated = await usuarioservicioDao.updateUsuarioservicio(tx, usuarioservicioUpdate);
+  const usuarioservicioToUpdate: Prisma.usuario_servicioUpdateInput = {
+    usuario_servicio_estado: { connect: { idusuarioservicioestado: usuarioservicioestado.idusuarioservicioestado } },
+    idusuariomod: req.session_user.usuario.idusuario ?? 1,
+    fechamod: new Date(),
+  };
+  const usuarioservicioUpdated = await usuarioservicioDao.updateUsuarioservicio(tx, usuarioservicio.usuarioservicioid, usuarioservicioToUpdate);
   log.debug(line(), "usuarioservicioUpdated", usuarioservicioUpdated);
 };
 

@@ -4,6 +4,7 @@ import type { Prisma, usuario_servicio, servicio } from "#src/models/prisma/ft_f
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 import { v4 as uuidv4 } from "uuid";
 import { now } from "sequelize/lib/utils";
@@ -174,10 +175,10 @@ export const updateUsuarioservicio = async (tx: TxClient, usuarioservicioid: str
   }
 };
 
-export const deleteUsuarioservicio = async (tx: TxClient, usuarioservicioid: string, usuarioservicio: Prisma.usuario_servicioUpdateInput) => {
+export const deleteUsuarioservicio = async (tx: TxClient, usuarioservicioid: string, idusuariomod: number) => {
   try {
     const result = await tx.usuario_servicio.update({
-      data: usuarioservicio,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         usuarioservicioid: usuarioservicioid,
       },

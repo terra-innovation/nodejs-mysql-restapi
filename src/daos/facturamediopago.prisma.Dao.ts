@@ -4,6 +4,7 @@ import type { Prisma, factura_medio_pago } from "#src/models/prisma/ft_factoring
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getFacturamediopagos = async (tx: TxClient, estados: number[]) => {
   try {
@@ -92,10 +93,10 @@ export const updateFacturamediopago = async (tx: TxClient, facturamediopagoid: s
   }
 };
 
-export const deleteFacturamediopago = async (tx: TxClient, facturamediopagoid: string, facturamediopago: Prisma.factura_medio_pagoUpdateInput) => {
+export const deleteFacturamediopago = async (tx: TxClient, facturamediopagoid: string, idusuariomod: number) => {
   try {
     const result = await tx.factura_medio_pago.update({
-      data: facturamediopago,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         facturamediopagoid: facturamediopagoid,
       },

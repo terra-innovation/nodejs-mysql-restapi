@@ -4,6 +4,7 @@ import type { Prisma, credencial } from "#src/models/prisma/ft_factoring/client"
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getCredencials = async (tx: TxClient, estados: number[]) => {
   try {
@@ -106,10 +107,10 @@ export const updateCredencial = async (tx: TxClient, credencialid: string, crede
   }
 };
 
-export const deleteCredencial = async (tx: TxClient, credencialid: string, credencial: Prisma.credencialUpdateInput) => {
+export const deleteCredencial = async (tx: TxClient, credencialid: string, idusuariomod: number) => {
   try {
     const result = await tx.credencial.update({
-      data: credencial,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         credencialid: credencialid,
       },

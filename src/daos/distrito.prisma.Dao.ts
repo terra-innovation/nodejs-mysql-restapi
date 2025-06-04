@@ -4,6 +4,7 @@ import type { Prisma, distrito } from "#src/models/prisma/ft_factoring/client";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getDistritos = async (tx: TxClient, estados: number[]) => {
   try {
@@ -101,10 +102,10 @@ export const updateDistrito = async (tx: TxClient, distritoid: string, distrito:
   }
 };
 
-export const deleteDistrito = async (tx: TxClient, distritoid: string, distrito: Prisma.distritoUpdateInput) => {
+export const deleteDistrito = async (tx: TxClient, distritoid: string, idusuariomod: number) => {
   try {
     const result = await tx.distrito.update({
-      data: distrito,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         distritoid: distritoid,
       },

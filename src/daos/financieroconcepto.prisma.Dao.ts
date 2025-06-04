@@ -4,6 +4,7 @@ import type { Prisma, financiero_concepto } from "#src/models/prisma/ft_factorin
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getComisionFinanzaTech = async (tx: TxClient) => {
   return await getFinancieroconceptoByIdfinancieroconcepto(tx, 1);
@@ -104,10 +105,10 @@ export const updateFinancieroconcepto = async (tx: TxClient, financieroconceptoi
   }
 };
 
-export const deleteFinancieroconcepto = async (tx: TxClient, financieroconceptoid: string, financieroconcepto: Prisma.financiero_conceptoUpdateInput) => {
+export const deleteFinancieroconcepto = async (tx: TxClient, financieroconceptoid: string, idusuariomod: number) => {
   try {
     const result = await tx.financiero_concepto.update({
-      data: financieroconcepto,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         financieroconceptoid: financieroconceptoid,
       },

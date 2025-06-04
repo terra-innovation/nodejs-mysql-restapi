@@ -33,18 +33,7 @@ export const activateFactoring = async (req: Request, res: Response) => {
 
   const factoringActivated = await prismaFT.client.$transaction(
     async (tx) => {
-      var camposAuditoria: Partial<factoring> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
-      camposAuditoria.fechamod = new Date();
-      camposAuditoria.estado = 1;
-
-      const factoringToActivate: Prisma.factoringUpdateInput = {
-        idusuariomod: req.session_user.usuario.idusuario ?? 1,
-        fechamod: new Date(),
-        estado: 1,
-      };
-
-      const factoringActivated = await factoringDao.activateFactoring(tx, factoringValidated.factoringid, factoringToActivate);
+      const factoringActivated = await factoringDao.activateFactoring(tx, factoringValidated.factoringid, req.session_user.usuario.idusuario);
       if (factoringActivated[0] === 0) {
         throw new ClientError("Factoring no existe", 404);
       }
@@ -70,13 +59,7 @@ export const deleteFactoring = async (req: Request, res: Response) => {
 
   const factoringDeleted = await prismaFT.client.$transaction(
     async (tx) => {
-      const factoringToDelete: Prisma.factoringUpdateInput = {
-        idusuariomod: req.session_user.usuario.idusuario ?? 1,
-        fechamod: new Date(),
-        estado: 2,
-      };
-
-      const factoringDeleted = await factoringDao.deleteFactoring(tx, factoringValidated.factoringid, factoringToDelete);
+      const factoringDeleted = await factoringDao.deleteFactoring(tx, factoringValidated.factoringid, req.session_user.usuario.idusuario);
       if (factoringDeleted[0] === 0) {
         throw new ClientError("Factoringpropuesta no existe", 404);
       }

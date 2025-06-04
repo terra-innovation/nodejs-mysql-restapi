@@ -4,6 +4,7 @@ import type { Prisma, archivo_tipo } from "#src/models/prisma/ft_factoring/clien
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getArchivotipos = async (tx: TxClient, estados: number[]) => {
   try {
@@ -105,10 +106,10 @@ export const updateArchivotipo = async (tx: TxClient, archivotipoid: string, arc
   }
 };
 
-export const deleteArchivotipo = async (tx: TxClient, archivotipoid: string, archivotipo: Prisma.archivo_tipoUpdateInput) => {
+export const deleteArchivotipo = async (tx: TxClient, archivotipoid: string, idusuariomod: number) => {
   try {
     const result = await tx.archivo_tipo.update({
-      data: archivotipo,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         archivotipoid: archivotipoid,
       },

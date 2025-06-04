@@ -4,6 +4,7 @@ import type { Prisma, persona_verificacion_estado } from "#src/models/prisma/ft_
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getPersonaverificacionestados = async (tx: TxClient, estados: number[]) => {
   try {
@@ -92,10 +93,10 @@ export const updatePersonaverificacionestado = async (tx: TxClient, personaverif
   }
 };
 
-export const deletePersonaverificacionestado = async (tx: TxClient, personaverificacionestadoid: string, personaverificacionestado: Prisma.persona_verificacion_estadoUpdateInput) => {
+export const deletePersonaverificacionestado = async (tx: TxClient, personaverificacionestadoid: string, idusuariomod: number) => {
   try {
     const result = await tx.persona_verificacion_estado.update({
-      data: personaverificacionestado,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         personaverificacionestadoid: personaverificacionestadoid,
       },

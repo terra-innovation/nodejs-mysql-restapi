@@ -4,6 +4,7 @@ import type { Prisma, cuenta_tipo } from "#src/models/prisma/ft_factoring/client
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getCuentatipos = async (tx: TxClient, estados: number[]) => {
   try {
@@ -92,10 +93,10 @@ export const updateCuentatipo = async (tx: TxClient, cuentatipoid: string, cuent
   }
 };
 
-export const deleteCuentatipo = async (tx: TxClient, cuentatipoid: string, cuentatipo: Prisma.cuenta_tipoUpdateInput) => {
+export const deleteCuentatipo = async (tx: TxClient, cuentatipoid: string, idusuariomod: number) => {
   try {
     const result = await tx.cuenta_tipo.update({
-      data: cuentatipo,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         cuentatipoid: cuentatipoid,
       },

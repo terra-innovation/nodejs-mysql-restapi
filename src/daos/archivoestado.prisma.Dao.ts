@@ -4,6 +4,7 @@ import type { Prisma, archivo_estado } from "#src/models/prisma/ft_factoring/cli
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getArchivoestados = async (tx: TxClient, estados: number[]) => {
   try {
@@ -89,10 +90,10 @@ export const updateArchivoestado = async (tx: TxClient, archivoestadoid: string,
   }
 };
 
-export const deleteArchivoestado = async (tx: TxClient, archivoestadoid: string, archivoestado: Prisma.archivo_estadoUpdateInput) => {
+export const deleteArchivoestado = async (tx: TxClient, archivoestadoid: string, idusuariomod: number) => {
   try {
     const result = await tx.archivo_estado.update({
-      data: archivoestado,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         archivoestadoid: archivoestadoid,
       },
@@ -104,10 +105,10 @@ export const deleteArchivoestado = async (tx: TxClient, archivoestadoid: string,
   }
 };
 
-export const activateArchivoestado = async (tx: TxClient, archivoestadoid: string, archivoestado: Prisma.archivo_estadoUpdateInput) => {
+export const activateArchivoestado = async (tx: TxClient, archivoestadoid: string, idusuariomod: number) => {
   try {
     const result = await tx.archivo_estado.update({
-      data: archivoestado,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ACTIVO },
       where: {
         archivoestadoid: archivoestadoid,
       },

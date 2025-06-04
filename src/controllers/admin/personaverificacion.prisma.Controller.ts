@@ -33,23 +33,23 @@ export const activatePersonaverificacion = async (req: Request, res: Response) =
   const personaverificacionValidated = personaverificacionSchema.validateSync({ personaverificacionid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "personaverificacionValidated:", personaverificacionValidated);
 
-  const personaverificacionDeleted = await prismaFT.client.$transaction(
+  const personaverificacionActivated = await prismaFT.client.$transaction(
     async (tx) => {
       var camposAuditoria: Partial<persona_verificacion> = {};
       camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 1;
 
-      const personaverificacionDeleted = await personaverificacionDao.activatePersonaverificacion(tx, { ...personaverificacionValidated, ...camposAuditoria });
-      if (personaverificacionDeleted[0] === 0) {
+      const personaverificacionActivated = await personaverificacionDao.activatePersonaverificacion(tx, personaverificacionValidated.personaverificacionid, req.session_user.usuario.idusuario);
+      if (personaverificacionActivated[0] === 0) {
         throw new ClientError("Personaverificacion no existe", 404);
       }
-      log.debug(line(), "personaverificacionActivated:", personaverificacionDeleted);
-      return personaverificacionDeleted;
+      log.debug(line(), "personaverificacionActivated:", personaverificacionActivated);
+      return personaverificacionActivated;
     },
     { timeout: prismaFT.transactionTimeout }
   );
-  response(res, 204, personaverificacionDeleted);
+  response(res, 204, personaverificacionActivated);
 };
 
 export const deletePersonaverificacion = async (req: Request, res: Response) => {
@@ -66,12 +66,7 @@ export const deletePersonaverificacion = async (req: Request, res: Response) => 
 
   const personaverificacionDeleted = await prismaFT.client.$transaction(
     async (tx) => {
-      var camposAuditoria: Partial<persona_verificacion> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
-      camposAuditoria.fechamod = new Date();
-      camposAuditoria.estado = 2;
-
-      const personaverificacionDeleted = await personaverificacionDao.deletePersonaverificacion(tx, { ...personaverificacionValidated, ...camposAuditoria });
+      const personaverificacionDeleted = await personaverificacionDao.deletePersonaverificacion(tx, personaverificacionValidated.personaverificacionid, req.session_user.usuario.idusuario);
       if (personaverificacionDeleted[0] === 0) {
         throw new ClientError("Personaverificacion no existe", 404);
       }
@@ -115,17 +110,9 @@ export const updatePersonaverificacion = async (req: Request, res: Response) => 
     .object()
     .shape({
       personaverificacionid: yup.string().trim().required().min(36).max(36),
-      personaverificacionnombres: yup.string().trim().required().matches(NAME_REGX, "Debe ser un nombre válido").min(2).max(100),
-      apellidopaterno: yup.string().trim().required().matches(NAME_REGX, "Debe ser un apellido válido").min(2).max(50),
-      apellidomaterno: yup.string().trim().required().matches(NAME_REGX, "Debe ser un apellido válido").min(2).max(50),
-      paisnacionalidadid: yup.string().trim().required().min(36).max(36),
-      paisnacimientoid: yup.string().trim().required().min(36).max(36),
-      paisresidenciaid: yup.string().trim().required().min(36).max(36),
-      distritoresidenciaid: yup.string().trim().required().min(36).max(36),
-      generoid: yup.string().trim().required().min(36).max(36),
-      fechanacimiento: yup.date().required(),
-      direccion: yup.string().trim().required().max(200),
-      direccionreferencia: yup.string().trim().required().max(200),
+      personaverificacionestadoid: yup.string().min(36).max(36).required(),
+      comentariousuario: yup.string().trim().max(1000),
+      comentariointerno: yup.string().trim().max(1000).required(),
     })
     .required();
   const personaverificacionValidated = personaverificacionUpdateSchema.validateSync({ personaverificacionid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
@@ -133,21 +120,27 @@ export const updatePersonaverificacion = async (req: Request, res: Response) => 
 
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
-      var camposFk = {};
+      const personaverificacion = await personaverificacionDao.getPersonaverificacionByPersonaverificacionid(tx, personaverificacionValidated.personaverificacionid);
+      if (!personaverificacion) {
+        log.warn(line(), "Persona verificación no existe: [" + personaverificacionValidated.personaverificacionid + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
 
-      var camposAdicionales: Partial<persona_verificacion> = {};
-      camposAdicionales.personaverificacionid = personaverificacionValidated.personaverificacionid;
+      const personaverificacionestado = await personaverificacionestadoDao.getPersonaverificacionestadoByPersonaverificacionestadoid(tx, personaverificacionValidated.personaverificacionestadoid);
+      if (!personaverificacionestado) {
+        log.warn(line(), "Persona verificación estado no existe: [" + personaverificacionValidated.personaverificacionestadoid + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
 
-      var camposAuditoria: Partial<persona_verificacion> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
-      camposAuditoria.fechamod = new Date();
+      const personaverificacionToUpdate: Prisma.persona_verificacionUpdateInput = {
+        persona_verificacion_estado: { connect: { idpersonaverificacionestado: personaverificacionestado.idpersonaverificacionestado } },
+        comentariousuario: personaverificacionValidated.comentariousuario,
+        comentariointerno: personaverificacionValidated.comentariointerno,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+      };
 
-      const result = await personaverificacionDao.updatePersonaverificacion(tx, {
-        ...camposFk,
-        ...camposAdicionales,
-        ...personaverificacionValidated,
-        ...camposAuditoria,
-      });
+      const result = await personaverificacionDao.updatePersonaverificacion(tx, personaverificacion.personaverificacionid, personaverificacionToUpdate);
       if (result[0] === 0) {
         throw new ClientError("Personaverificacion no existe", 404);
       }
@@ -241,26 +234,24 @@ export const createPersonaverificacion = async (req: Request, res: Response) => 
       const personaverificacionCreated = await personaverificacionDao.insertPersonaverificacion(tx, personaverificacionToCreate);
       log.debug(line(), "personaverificacionCreated", personaverificacionCreated);
 
-      const personaToUpdate: Partial<persona> = {
-        personaid: persona.personaid,
-        idpersonaverificacionestado: personaverificacionestado.idpersonaverificacionestado,
+      const personaToUpdate: Prisma.personaUpdateInput = {
+        persona_verificacion_estado: { connect: { idpersonaverificacionestado: personaverificacionestado.idpersonaverificacionestado } },
         idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
       };
 
-      const personaUpdated = await personaDao.updatePersona(tx, personaToUpdate);
+      const personaUpdated = await personaDao.updatePersona(tx, persona.personaid, personaToUpdate);
       log.debug(line(), "personaUpdated", personaUpdated);
 
       // Actualizamos el usuario solo si la validación de la persona es aprobado
       if (personaverificacionestado.ispersonavalidated) {
-        const usuarioToUpdate: Partial<usuario> = {
-          usuarioid: persona.usuario.usuarioid,
+        const usuarioToUpdate: Prisma.usuarioUpdateInput = {
           ispersonavalidated: personaverificacionestado.ispersonavalidated,
           idusuariomod: req.session_user.usuario.idusuario ?? 1,
           fechamod: new Date(),
         };
 
-        const usuarioUpdated = await usuarioDao.updateUsuario(tx, usuarioToUpdate);
+        const usuarioUpdated = await usuarioDao.updateUsuario(tx, persona.usuario.usuarioid, usuarioToUpdate);
         log.debug(line(), "usuarioUpdated", usuarioUpdated);
       }
 

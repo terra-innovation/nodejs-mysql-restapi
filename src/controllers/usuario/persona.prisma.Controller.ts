@@ -246,14 +246,14 @@ export const verifyPersona = async (req: Request, res: Response) => {
       };
       await personaverificacionDao.insertPersonaverificacion(tx, personaverificacionToCreate);
 
-      const usuarioUpdate: Partial<usuario> = {};
-      usuarioUpdate.usuarioid = usuarioConected.usuarioid;
-      usuarioUpdate.ispersonavalidated = personaverificacionestado.ispersonavalidated;
-      usuarioUpdate.idusuariomod = req.session_user?.usuario?.idusuario ?? 1;
-      usuarioUpdate.fechamod = new Date();
-      usuarioUpdate.estado = 1;
+      const usuarioToUpdate: Prisma.usuarioUpdateInput = {
+        ispersonavalidated: personaverificacionestado.ispersonavalidated,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
 
-      await usuarioDao.updateUsuario(tx, usuarioUpdate);
+      await usuarioDao.updateUsuario(tx, usuarioConected.usuarioid, usuarioToUpdate);
 
       return {};
     },

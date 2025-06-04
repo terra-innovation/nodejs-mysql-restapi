@@ -63,23 +63,18 @@ export const activateFactura = async (req: Request, res: Response) => {
   const facturaValidated = facturaSchema.validateSync({ facturaid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "facturaValidated:", facturaValidated);
 
-  const facturaDeleted = await prismaFT.client.$transaction(
+  const facturaActivated = await prismaFT.client.$transaction(
     async (tx) => {
-      var camposAuditoria: Partial<factura> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
-      camposAuditoria.fechamod = new Date();
-      camposAuditoria.estado = 1;
-
-      const facturaDeleted = await facturaDao.activateFactura(tx, { ...facturaValidated, ...camposAuditoria });
-      if (facturaDeleted[0] === 0) {
+      const facturaActivated = await facturaDao.activateFactura(tx, facturaValidated.facturaid, req.session_user.usuario.idusuario);
+      if (facturaActivated[0] === 0) {
         throw new ClientError("Factura no existe", 404);
       }
-      log.debug(line(), "facturaActivated:", facturaDeleted);
-      return facturaDeleted;
+      log.debug(line(), "facturaActivated:", facturaActivated);
+      return facturaActivated;
     },
     { timeout: prismaFT.transactionTimeout }
   );
-  response(res, 204, facturaDeleted);
+  response(res, 204, facturaActivated);
 };
 
 export const deleteFactura = async (req: Request, res: Response) => {
@@ -101,7 +96,7 @@ export const deleteFactura = async (req: Request, res: Response) => {
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 2;
 
-      const facturaDeleted = await facturaDao.deleteFactura(tx, { ...facturaValidated, ...camposAuditoria });
+      const facturaDeleted = await facturaDao.deleteFactura(tx, facturaValidated.facturaid, req.session_user.usuario.idusuario);
       if (facturaDeleted[0] === 0) {
         throw new ClientError("Factura no existe", 404);
       }

@@ -4,6 +4,7 @@ import type { Prisma, configuracion_app } from "#src/models/prisma/ft_factoring/
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getIGV = async (tx: TxClient) => {
   return await getConfiguracionappByIdconfiguracionapp(tx, 1);
@@ -104,10 +105,10 @@ export const updateConfiguracionapp = async (tx: TxClient, configuracionappid: s
   }
 };
 
-export const deleteConfiguracionapp = async (tx: TxClient, configuracionappid: string, configuracionapp: Prisma.configuracion_appUpdateInput) => {
+export const deleteConfiguracionapp = async (tx: TxClient, configuracionappid: string, idusuariomod: number) => {
   try {
     const result = await tx.configuracion_app.update({
-      data: configuracionapp,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         configuracionappid: configuracionappid,
       },

@@ -4,6 +4,7 @@ import type { Prisma, factoring_config_tasa_descuento } from "#src/models/prisma
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getFactoringconfigtasadescuentos = async (tx: TxClient, estados: number[]) => {
   try {
@@ -92,10 +93,10 @@ export const updateFactoringconfigtasadescuento = async (tx: TxClient, factoring
   }
 };
 
-export const deleteFactoringconfigtasadescuento = async (tx: TxClient, factoringconfigtasadescuentoid: string, factoringconfigtasadescuento: Prisma.factoring_config_tasa_descuentoUpdateInput) => {
+export const deleteFactoringconfigtasadescuento = async (tx: TxClient, factoringconfigtasadescuentoid: string, idusuariomod: number) => {
   try {
     const result = await tx.factoring_config_tasa_descuento.update({
-      data: factoringconfigtasadescuento,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         factoringconfigtasadescuentoid: factoringconfigtasadescuentoid,
       },

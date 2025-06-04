@@ -4,6 +4,7 @@ import type { Prisma, genero } from "#src/models/prisma/ft_factoring/client";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getGeneros = async (tx: TxClient, estados: number[]) => {
   try {
@@ -92,10 +93,10 @@ export const updateGenero = async (tx: TxClient, generoid: string, genero: Prism
   }
 };
 
-export const deleteGenero = async (tx: TxClient, generoid: string, genero: Prisma.generoUpdateInput) => {
+export const deleteGenero = async (tx: TxClient, generoid: string, idusuariomod: number) => {
   try {
     const result = await tx.genero.update({
-      data: genero,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         generoid: generoid,
       },

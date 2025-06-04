@@ -4,6 +4,7 @@ import type { Prisma, archivo_factoring_historial_estado } from "#src/models/pri
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getArchivofactoringhistorialestados = async (tx: TxClient, estados: number[]) => {
   try {
@@ -69,10 +70,10 @@ export const updateArchivofactoringhistorialestado = async (tx: TxClient, idarch
   }
 };
 
-export const deleteArchivofactoringhistorialestado = async (tx: TxClient, idarchivo: number, idfactoringhistorialestado: number, archivofactoringhistorialestado: Prisma.archivo_factoring_historial_estadoUpdateInput) => {
+export const deleteArchivofactoringhistorialestado = async (tx: TxClient, idarchivo: number, idfactoringhistorialestado: number, idusuariomod: number) => {
   try {
     const result = await tx.archivo_factoring_historial_estado.update({
-      data: archivofactoringhistorialestado,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         idarchivo_idfactoringhistorialestado: {
           idarchivo: idarchivo,

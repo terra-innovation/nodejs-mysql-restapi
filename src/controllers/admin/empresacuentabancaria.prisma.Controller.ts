@@ -44,14 +44,8 @@ export const activateEmpresacuentabancaria = async (req: Request, res: Response)
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var camposCuentaBancariaActivate: Partial<cuenta_bancaria> = {};
-      camposCuentaBancariaActivate.cuentabancariaid = cuentabancaria.cuentabancariaid;
-      camposCuentaBancariaActivate.idusuariomod = req.session_user.usuario.idusuario ?? 1;
-      camposCuentaBancariaActivate.fechamod = new Date();
-      camposCuentaBancariaActivate.estado = 1;
-
-      const camposCuentaBancariaActivated = await cuentabancariaDao.deleteCuentabancaria(tx, { ...camposCuentaBancariaActivate });
-      log.debug(line(), "camposCuentaBancariaActivated:", camposCuentaBancariaActivated);
+      const cuentabancariaActivated = await cuentabancariaDao.activateCuentabancaria(tx, cuentabancaria.cuentabancariaid, req.session_user.usuario.idusuario);
+      log.debug(line(), "cuentabancariaActivated:", cuentabancariaActivated);
 
       return {};
     },
@@ -86,13 +80,7 @@ export const deleteEmpresacuentabancaria = async (req: Request, res: Response) =
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var camposCuentaBancariaDelete: Partial<cuenta_bancaria> = {};
-      camposCuentaBancariaDelete.cuentabancariaid = cuentabancaria.cuentabancariaid;
-      camposCuentaBancariaDelete.idusuariomod = req.session_user.usuario.idusuario ?? 1;
-      camposCuentaBancariaDelete.fechamod = new Date();
-      camposCuentaBancariaDelete.estado = 2;
-
-      const cuentabancariaDeleted = await cuentabancariaDao.deleteCuentabancaria(tx, { ...camposCuentaBancariaDelete });
+      const cuentabancariaDeleted = await cuentabancariaDao.deleteCuentabancaria(tx, cuentabancaria.cuentabancariaid, req.session_user.usuario.idusuario);
       log.debug(line(), "cuentabancariaDeleted:", cuentabancariaDeleted);
 
       return {};
@@ -168,22 +156,14 @@ export const updateEmpresacuentabancariaOnlyAliasAndCuentaBancariaEstado = async
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var camposCuentabancariaFk: Partial<cuenta_bancaria> = {};
-      camposCuentabancariaFk.idcuentabancariaestado = empresacuentabancariaestado.idcuentabancariaestado;
+      const cuentabancariaToUpdate: Prisma.cuenta_bancariaUpdateInput = {
+        cuenta_bancaria_estado: { connect: { idcuentabancariaestado: empresacuentabancariaestado.idcuentabancariaestado } },
+        alias: empresacuentabancariaValidated.alias,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+      };
 
-      var camposCuentabancariaAdicionales: Partial<cuenta_bancaria> = {};
-      camposCuentabancariaAdicionales.cuentabancariaid = cuentabancaria.cuentabancariaid;
-
-      var camposCuentabancariaAuditoria: Partial<cuenta_bancaria> = {};
-      camposCuentabancariaAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
-      camposCuentabancariaAuditoria.fechamod = new Date();
-
-      const cuentabancariaUpdated = await cuentabancariaDao.updateCuentabancaria(tx, {
-        ...camposCuentabancariaFk,
-        ...camposCuentabancariaAdicionales,
-        ...empresacuentabancariaValidated,
-        ...camposCuentabancariaAuditoria,
-      });
+      const cuentabancariaUpdated = await cuentabancariaDao.updateCuentabancaria(tx, cuentabancaria.cuentabancariaid, cuentabancariaToUpdate);
       log.debug(line(), "cuentabancariaUpdated", cuentabancariaUpdated);
 
       return {};

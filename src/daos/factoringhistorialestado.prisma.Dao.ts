@@ -4,6 +4,7 @@ import type { Prisma, factoring_historial_estado } from "#src/models/prisma/ft_f
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getFactoringhistorialestadosByIdfactoring = async (tx: TxClient, idfactoring: number, estados: number[]) => {
   try {
@@ -125,10 +126,10 @@ export const updateFactoringhistorialestado = async (tx: TxClient, factoringhist
   }
 };
 
-export const deleteFactoringhistorialestado = async (tx: TxClient, factoringhistorialestadoid: string, factoringhistorialestado: Prisma.factoring_historial_estadoUpdateInput) => {
+export const deleteFactoringhistorialestado = async (tx: TxClient, factoringhistorialestadoid: string, idusuariomod: number) => {
   try {
     const result = await tx.factoring_historial_estado.update({
-      data: factoringhistorialestado,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         factoringhistorialestadoid: factoringhistorialestadoid,
       },
@@ -140,10 +141,10 @@ export const deleteFactoringhistorialestado = async (tx: TxClient, factoringhist
   }
 };
 
-export const activateFactoringhistorialestado = async (tx: TxClient, factoringhistorialestadoid: string, factoringhistorialestado: Prisma.factoring_historial_estadoUpdateInput) => {
+export const activateFactoringhistorialestado = async (tx: TxClient, factoringhistorialestadoid: string, idusuariomod: number) => {
   try {
     const result = await tx.factoring_historial_estado.update({
-      data: factoringhistorialestado,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ACTIVO },
       where: {
         factoringhistorialestadoid: factoringhistorialestadoid,
       },

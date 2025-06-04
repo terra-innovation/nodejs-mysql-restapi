@@ -34,13 +34,7 @@ export const activateEmpresa = async (req: Request, res: Response) => {
       camposAuditoria.fechamod = new Date();
       camposAuditoria.estado = 1;
 
-      const empresaToActivate: Prisma.empresaUpdateInput = {
-        idusuariomod: req.session_user.usuario.idusuario ?? 1,
-        fechamod: new Date(),
-        estado: 2,
-      };
-
-      const empresaToActivated = await empresaDao.activateEmpresa(tx, empresaValidated.empresaid, empresaToActivate);
+      const $Activated = await empresaDao.activateEmpresa(tx, empresaValidated.empresaid, req.session_user.usuario.idusuario);
       if (empresaToActivated[0] === 0) {
         throw new ClientError("Empresa no existe", 404);
       }
@@ -66,13 +60,7 @@ export const deleteEmpresa = async (req: Request, res: Response) => {
 
   const empresaDeleted = await prismaFT.client.$transaction(
     async (tx) => {
-      const empresaToDelete: Prisma.empresaUpdateInput = {
-        idusuariomod: req.session_user.usuario.idusuario ?? 1,
-        fechamod: new Date(),
-        estado: 2,
-      };
-
-      const empresaDeleted = await empresaDao.deleteEmpresa(tx, empresaValidated.empresaid, empresaToDelete);
+      const empresaDeleted = await empresaDao.deleteEmpresa(tx, empresaValidated.empresaid, req.session_user.usuario.idusuario);
       if (empresaDeleted[0] === 0) {
         throw new ClientError("Empresa no existe", 404);
       }

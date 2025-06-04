@@ -4,6 +4,7 @@ import type { Prisma, validacion } from "#src/models/prisma/ft_factoring/client"
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getValidacionByIdusuarioAndValor = async (tx: TxClient, idusuario: number, valor: string, estados: number[]) => {
   try {
@@ -151,10 +152,10 @@ export const updateValidacion = async (tx: TxClient, validacionid: string, valid
   }
 };
 
-export const deleteValidacion = async (tx: TxClient, validacionid: string, validacion: Prisma.validacionUpdateInput) => {
+export const deleteValidacion = async (tx: TxClient, validacionid: string, idusuariomod: number) => {
   try {
     const result = await tx.validacion.update({
-      data: validacion,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         validacionid: validacionid,
       },
@@ -166,10 +167,10 @@ export const deleteValidacion = async (tx: TxClient, validacionid: string, valid
   }
 };
 
-export const activateValidacion = async (tx: TxClient, validacionid: string, validacion: Prisma.validacionUpdateInput) => {
+export const activateValidacion = async (tx: TxClient, validacionid: string, idusuariomod: number) => {
   try {
     const result = await tx.validacion.update({
-      data: validacion,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ACTIVO },
       where: {
         validacionid: validacionid,
       },

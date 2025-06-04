@@ -4,6 +4,7 @@ import type { Prisma, servicio } from "#src/models/prisma/ft_factoring/client";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getServicios = async (tx: TxClient, estados: number[]) => {
   try {
@@ -92,10 +93,10 @@ export const updateServicio = async (tx: TxClient, servicioid: string, servicio:
   }
 };
 
-export const deleteServicio = async (tx: TxClient, servicioid: string, servicio: Prisma.servicioUpdateInput) => {
+export const deleteServicio = async (tx: TxClient, servicioid: string, idusuariomod: number) => {
   try {
     const result = await tx.servicio.update({
-      data: servicio,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         servicioid: servicioid,
       },

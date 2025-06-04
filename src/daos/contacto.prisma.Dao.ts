@@ -4,6 +4,7 @@ import type { Prisma, contacto } from "#src/models/prisma/ft_factoring/client";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getContactosByIdempresaAndEmail = async (tx: TxClient, idempresa, email, estados: number[]) => {
   try {
@@ -143,10 +144,10 @@ export const updateContacto = async (tx: TxClient, contactoid: string, contacto:
   }
 };
 
-export const deleteContacto = async (tx: TxClient, contactoid: string, contacto: Prisma.contactoUpdateInput) => {
+export const deleteContacto = async (tx: TxClient, contactoid: string, idusuariomod: number) => {
   try {
     const result = await tx.contacto.update({
-      data: contacto,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         contactoid: contactoid,
       },

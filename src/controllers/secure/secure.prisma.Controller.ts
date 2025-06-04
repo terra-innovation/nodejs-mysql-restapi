@@ -122,26 +122,27 @@ export const resetPassword = async (req: Request, res: Response) => {
               throw new ClientError("El código de verificación no es válido o ha expidado", 404);
             }
 
-            let credencialUpdate: Partial<credencial> = {};
-            credencialUpdate.credencialid = credencial.credencialid;
-            credencialUpdate.password = encryptedPassword;
-            credencialUpdate.idusuariomod = req.session_user?.usuario?.idusuario ?? 1;
-            credencialUpdate.fechamod = new Date();
+            const credencialToUpdate: Prisma.credencialUpdateInput = {
+              password: encryptedPassword,
+              idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
+              fechamod: new Date(),
+            };
 
-            const credencialUpdated = await credencialDao.updateCredencial(tx, credencialUpdate);
+            const credencialUpdated = await credencialDao.updateCredencial(tx, credencial.credencialid, credencialToUpdate);
             if (credencialUpdated[0] == 0) {
               log.warn(line(), "No fue posible actualizar el usuario: ", credencialUpdated);
               throw new ClientError("El código de verificación no es válido o ha expidado", 404);
             }
 
             // Actualizamos el validate
-            var validacionUpdate: Partial<validacion> = {};
-            validacionUpdate.validacionid = validacion.validacionid;
-            validacionUpdate.verificado = 1;
-            validacionUpdate.fecha_verificado = new Date();
-            validacionUpdate.idusuariomod = req.session_user?.usuario?.idusuario ?? 1;
-            validacionUpdate.fechamod = new Date();
-            const validacionUpdated = await validacionDao.updateValidacion(tx, validacionUpdate);
+
+            const validacionToUpdate: Prisma.validacionUpdateInput = {
+              verificado: 1,
+              fecha_verificado: new Date(),
+              idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
+              fechamod: new Date(),
+            };
+            const validacionUpdated = await validacionDao.updateValidacion(tx, validacion.validacionid, validacionToUpdate);
           } else {
             log.warn(line(), "El código de verificación ha expirado: ", validacionValidated);
             throw new ClientError("El código de verificación no es válido o ha expidado", 404);
@@ -269,19 +270,19 @@ export const sendTokenPassword = async (req: Request, res: Response) => {
             log.warn(line(), "No fue posible insertar el objeto: ", validacionToCreate);
           }
         } else {
-          let validacionUpdate: Partial<validacion> = {};
-          validacionUpdate.validacionid = validacionPrev.validacionid;
-          validacionUpdate.otp = resetpasswordvalidationcode;
-          validacionUpdate.tiempo_marca = new Date();
-          validacionUpdate.tiempo_expiracion = 15; // En minutos
-          validacionUpdate.verificado = 0;
-          validacionUpdate.fecha_verificado = null;
-          validacionUpdate.idusuariomod = req.session_user?.usuario?.idusuario ?? 1;
-          validacionUpdate.fechamod = new Date();
+          const validacionToUpdate: Prisma.validacionUpdateInput = {
+            otp: resetpasswordvalidationcode,
+            tiempo_marca: new Date(),
+            tiempo_expiracion: 15, // En minutos
+            verificado: 0,
+            fecha_verificado: null,
+            idusuariomod: req.session_user.usuario.idusuario ?? 1,
+            fechamod: new Date(),
+          };
 
-          const validacionUpdated = await validacionDao.updateValidacion(tx, validacionUpdate);
+          const validacionUpdated = await validacionDao.updateValidacion(tx, validacionPrev.validacionid, validacionToUpdate);
           if (!validacionUpdated) {
-            log.warn(line(), "No fue posible actualizar el objeto: ", validacionUpdate);
+            log.warn(line(), "No fue posible actualizar el objeto: ", validacionToUpdate);
           }
         }
         const validacionNext = await validacionDao.getValidacionByIdusuarioAndIdvalidaciontipo(tx, usuario.idusuario, idvalidaciontipo, filter_estado);
@@ -334,15 +335,15 @@ export const sendVerificactionCode = async (req: Request, res: Response) => {
 
       const emailvalidationcode = String(Math.floor(100000 + Math.random() * 900000)); // Código aleaatorio de 6 dígitos
 
-      let validacionUpdate: Partial<validacion> = {};
-      validacionUpdate.validacionid = validacion.validacionid;
-      validacionUpdate.otp = emailvalidationcode;
-      validacionUpdate.tiempo_marca = new Date();
-      validacionUpdate.tiempo_expiracion = 5; // En minutos
-      validacionUpdate.idusuariomod = req.session_user?.usuario?.idusuario ?? 1;
-      validacionUpdate.fechamod = new Date();
+      const validacionToUpdate: Prisma.validacionUpdateInput = {
+        otp: emailvalidationcode,
+        tiempo_marca: new Date(),
+        tiempo_expiracion: 5, // En minutos
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+      };
 
-      const validacionUpdated = await validacionDao.updateValidacion(tx, validacionUpdate);
+      const validacionUpdated = await validacionDao.updateValidacion(tx, validacion.validacionid, validacionToUpdate);
 
       let validacionReturned = {};
 
@@ -521,18 +522,19 @@ export const validateEmail = async (req: Request, res: Response) => {
           // Obtener la fecha actual
           const fechaActual = new Date();
           if (fechaActual <= fechaConAjustes) {
-            var validacionUpdate: Partial<validacion> = {};
-            validacionUpdate.validacionid = validacion.validacionid;
-            validacionUpdate.verificado = 1;
-            validacionUpdate.fecha_verificado = new Date();
-            validacionUpdate.idusuariomod = req.session_user?.usuario?.idusuario ?? 1;
-            validacionUpdate.fechamod = new Date();
-            const validacionUpdated = await validacionDao.updateValidacion(tx, validacionUpdate);
+            const validacionToUpdate: Prisma.validacionUpdateInput = {
+              verificado: 1,
+              fecha_verificado: new Date(),
+              idusuariomod: req.session_user.usuario.idusuario ?? 1,
+              fechamod: new Date(),
+            };
+            const validacionUpdated = await validacionDao.updateValidacion(tx, validacion.validacionid, validacionToUpdate);
 
-            var usuarioUpdate: Partial<usuario> = {};
-            usuarioUpdate.usuarioid = usuario.usuarioid;
-            usuarioUpdate.isemailvalidated = true; // true
-            const usuarioUpdated = await usuarioDao.updateUsuario(tx, usuarioUpdate);
+            const usuarioToUpdate: Prisma.usuarioUpdateInput = {
+              isemailvalidated: true,
+            };
+
+            const usuarioUpdated = await usuarioDao.updateUsuario(tx, usuario.usuarioid, usuarioToUpdate);
           } else {
             log.warn(line(), "El código de verificación ha expirado: ", validacionValidated);
             throw new ClientError("El código de verificación no es válido o ha expidado", 404);

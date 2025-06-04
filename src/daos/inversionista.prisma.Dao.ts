@@ -4,6 +4,7 @@ import type { Prisma, inversionista } from "#src/models/prisma/ft_factoring/clie
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getInversionistaByIdusuario = async (tx: TxClient, idusuario: number, estados: number[]) => {
   try {
@@ -116,10 +117,10 @@ export const updateInversionista = async (tx: TxClient, inversionistaid: string,
   }
 };
 
-export const deleteInversionista = async (tx: TxClient, inversionistaid: string, inversionista: Prisma.inversionistaUpdateInput) => {
+export const deleteInversionista = async (tx: TxClient, inversionistaid: string, idusuariomod: number) => {
   try {
     const result = await tx.inversionista.update({
-      data: inversionista,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         inversionistaid: inversionistaid,
       },
@@ -131,10 +132,10 @@ export const deleteInversionista = async (tx: TxClient, inversionistaid: string,
   }
 };
 
-export const activateInversionista = async (tx: TxClient, inversionistaid: string, inversionista: Prisma.inversionistaUpdateInput) => {
+export const activateInversionista = async (tx: TxClient, inversionistaid: string, idusuariomod: number) => {
   try {
     const result = await tx.inversionista.update({
-      data: inversionista,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ACTIVO },
       where: {
         inversionistaid: inversionistaid,
       },

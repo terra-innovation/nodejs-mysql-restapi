@@ -235,13 +235,7 @@ export const activateFactoringhistorialestado = async (req: Request, res: Respon
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const factoringhistorialestadoToActivate: Prisma.factoring_historial_estadoUpdateInput = {
-        idusuariomod: req.session_user.usuario.idusuario ?? 1,
-        fechamod: new Date(),
-        estado: 1,
-      };
-
-      const factoringhistorialestadoActivated = await factoringhistorialestadoDao.activateFactoringhistorialestado(tx, factoringhistorialestadoValidated.factoringhistorialestadoid, factoringhistorialestadoToActivate);
+      const factoringhistorialestadoActivated = await factoringhistorialestadoDao.activateFactoringhistorialestado(tx, factoringhistorialestadoValidated.factoringhistorialestadoid, req.session_user.usuario.idusuario);
       log.debug(line(), "factoringhistorialestadoActivated:", factoringhistorialestadoActivated);
 
       return factoringhistorialestadoActivated;
@@ -271,18 +265,7 @@ export const deleteFactoringhistorialestado = async (req: Request, res: Response
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var camposAuditoria: Partial<factoring_historial_estado> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
-      camposAuditoria.fechamod = new Date();
-      camposAuditoria.estado = 2;
-
-      const factoringhistorialestadoToDelete: Prisma.factoring_historial_estadoUpdateInput = {
-        idusuariomod: req.session_user.usuario.idusuario ?? 1,
-        fechamod: new Date(),
-        estado: 2,
-      };
-
-      const factoringhistorialestadoDeleted = await factoringhistorialestadoDao.deleteFactoringhistorialestado(tx, factoringhistorialestadoValidated.factoringhistorialestadoid, factoringhistorialestadoToDelete);
+      const factoringhistorialestadoDeleted = await factoringhistorialestadoDao.deleteFactoringhistorialestado(tx, factoringhistorialestadoValidated.factoringhistorialestadoid, req.session_user.usuario.idusuario);
       log.debug(line(), "factoringhistorialestadoDeleted:", factoringhistorialestadoDeleted);
 
       return factoringhistorialestadoDeleted;

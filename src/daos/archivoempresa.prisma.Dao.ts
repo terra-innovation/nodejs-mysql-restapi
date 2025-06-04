@@ -4,6 +4,7 @@ import type { Prisma, archivo_empresa } from "#src/models/prisma/ft_factoring/cl
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getArchivoempresas = async (tx: TxClient, estados: number[]) => {
   try {
@@ -69,10 +70,10 @@ export const updateArchivoEmpresa = async (tx: TxClient, idarchivo: number, idem
   }
 };
 
-export const deleteArchivoEmpresa = async (tx: TxClient, idarchivo: number, idempresa: number, archivoempresa: Prisma.archivo_empresaUpdateInput) => {
+export const deleteArchivoEmpresa = async (tx: TxClient, idarchivo: number, idempresa: number, idusuariomod: number) => {
   try {
     const result = await tx.archivo_empresa.update({
-      data: archivoempresa,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         idarchivo_idempresa: {
           idarchivo: idarchivo,
@@ -87,10 +88,10 @@ export const deleteArchivoEmpresa = async (tx: TxClient, idarchivo: number, idem
   }
 };
 
-export const activateArchivoEmpresa = async (tx: TxClient, idarchivo: number, idempresa: number, archivoempresa: Prisma.archivo_empresaUpdateInput) => {
+export const activateArchivoEmpresa = async (tx: TxClient, idarchivo: number, idempresa: number, idusuariomod: number) => {
   try {
     const result = await tx.archivo_empresa.update({
-      data: archivoempresa,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ACTIVO },
       where: {
         idarchivo_idempresa: {
           idarchivo: idarchivo,

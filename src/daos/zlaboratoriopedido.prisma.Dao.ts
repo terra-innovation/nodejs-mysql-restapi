@@ -2,6 +2,7 @@ import type { Prisma, zlaboratorio_pedido } from "#src/models/prisma/ft_factorin
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { TxClient } from "#src/types/Prisma.types.js";
 
 export const getZlaboratorioPedidos = async (tx: TxClient, estados: number[]) => {
@@ -96,7 +97,7 @@ export const updateZlaboratorioPedido = async (tx: TxClient, idpedido: number, z
   }
 };
 
-export const deleteZlaboratorioPedido = async (tx: TxClient, idpedido: number, zlaboratoriopedido: Prisma.zlaboratorio_pedidoUpdateInput) => {
+export const deleteZlaboratorioPedido = async (tx: TxClient, idpedido: number, idusuariomod: number) => {
   try {
     const result = await tx.zlaboratorio_pedido.delete({
       where: {

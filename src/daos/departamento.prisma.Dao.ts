@@ -4,6 +4,7 @@ import type { Prisma, departamento } from "#src/models/prisma/ft_factoring/clien
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getDepartamentos = async (tx: TxClient, estados: number[]) => {
   try {
@@ -92,10 +93,10 @@ export const updateDepartamento = async (tx: TxClient, departamentoid: string, d
   }
 };
 
-export const deleteDepartamento = async (tx: TxClient, departamentoid: string, departamento: Prisma.departamentoUpdateInput) => {
+export const deleteDepartamento = async (tx: TxClient, departamentoid: string, idusuariomod: number) => {
   try {
     const result = await tx.departamento.update({
-      data: departamento,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         departamentoid: departamentoid,
       },

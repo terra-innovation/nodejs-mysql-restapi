@@ -4,6 +4,7 @@ import type { Prisma, pep_vinculo } from "#src/models/prisma/ft_factoring/client
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getPepvinculos = async (tx: TxClient, estados: number[]) => {
   try {
@@ -94,10 +95,10 @@ export const updatePepvinculo = async (tx: TxClient, pepvinculoid: string, pepvi
   }
 };
 
-export const deletePepvinculo = async (tx: TxClient, pepvinculoid: string, pepvinculo: Prisma.pep_vinculoUpdateInput) => {
+export const deletePepvinculo = async (tx: TxClient, pepvinculoid: string, idusuariomod: number) => {
   try {
     const result = await tx.pep_vinculo.update({
-      data: pepvinculo,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         pepvinculoid: pepvinculoid,
       },

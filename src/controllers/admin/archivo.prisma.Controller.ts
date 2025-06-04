@@ -156,13 +156,7 @@ export const activateArchivo = async (req: Request, res: Response) => {
 
   const archivoActivated = await prismaFT.client.$transaction(
     async (tx) => {
-      const archivoToActive: Prisma.archivoUpdateInput = {
-        idusuariomod: req.session_user.usuario.idusuario ?? 1,
-        fechamod: new Date(),
-        estado: 1,
-      };
-
-      const archivoActivated = await archivoDao.activateArchivo(tx, archivoValidated.archivoid, archivoToActive);
+      const archivoActivated = await archivoDao.activateArchivo(tx, archivoValidated.archivoid, req.session_user.usuario.idusuario);
       if (archivoActivated[0] === 0) {
         throw new ClientError("Archivo no existe", 404);
       }
@@ -194,13 +188,7 @@ export const deleteArchivo = async (req: Request, res: Response) => {
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const archivoToDelete: Prisma.archivoUpdateInput = {
-        idusuariomod: req.session_user.usuario.idusuario ?? 1,
-        fechamod: new Date(),
-        estado: 2,
-      };
-
-      const archivoDeleted = await archivoDao.deleteArchivo(tx, archivoValidated.archivoid, archivoToDelete);
+      const archivoDeleted = await archivoDao.deleteArchivo(tx, archivoValidated.archivoid, req.session_user.usuario.idusuario);
       log.debug(line(), "archivoDeleted:", archivoDeleted);
 
       return {};

@@ -4,6 +4,7 @@ import type { Prisma, factoring_estado } from "#src/models/prisma/ft_factoring/c
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getFactoringestados = async (tx: TxClient, estados: number[]) => {
   try {
@@ -95,10 +96,10 @@ export const updateFactoringestado = async (tx: TxClient, factoringestadoid: str
   }
 };
 
-export const deleteFactoringestado = async (tx: TxClient, factoringestadoid: string, factoringestado: Prisma.factoring_estadoUpdateInput) => {
+export const deleteFactoringestado = async (tx: TxClient, factoringestadoid: string, idusuariomod: number) => {
   try {
     const result = await tx.factoring_estado.update({
-      data: factoringestado,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         factoringestadoid: factoringestadoid,
       },

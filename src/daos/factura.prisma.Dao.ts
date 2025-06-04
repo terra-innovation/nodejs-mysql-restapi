@@ -4,6 +4,7 @@ import type { Prisma, factura } from "#src/models/prisma/ft_factoring/client";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getFacturas = async (tx: TxClient, estados: number[]) => {
   try {
@@ -163,10 +164,10 @@ export const updateFactura = async (tx: TxClient, facturaid: string, factura: Pr
   }
 };
 
-export const deleteFactura = async (tx: TxClient, facturaid: string, factura: Prisma.facturaUpdateInput) => {
+export const deleteFactura = async (tx: TxClient, facturaid: string, idusuariomod: number) => {
   try {
     const result = await tx.factura.update({
-      data: factura,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         facturaid: facturaid,
       },
@@ -178,10 +179,10 @@ export const deleteFactura = async (tx: TxClient, facturaid: string, factura: Pr
   }
 };
 
-export const activateFactura = async (tx: TxClient, facturaid: string, factura: Prisma.facturaUpdateInput) => {
+export const activateFactura = async (tx: TxClient, facturaid: string, idusuariomod: number) => {
   try {
     const result = await tx.factura.update({
-      data: factura,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ACTIVO },
       where: {
         facturaid: facturaid,
       },

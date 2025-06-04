@@ -4,6 +4,7 @@ import type { Prisma, archivo_colaborador } from "#src/models/prisma/ft_factorin
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getArchivocolaboradors = async (tx: TxClient, estados: number[]) => {
   try {
@@ -62,10 +63,10 @@ export const updateArchivoColaborador = async (tx: TxClient, idarchivo: number, 
   }
 };
 
-export const deleteArchivoColaborador = async (tx: TxClient, idarchivo: number, idcolaborador: number, archivocolaborador: Prisma.archivo_colaboradorUpdateInput) => {
+export const deleteArchivoColaborador = async (tx: TxClient, idarchivo: number, idcolaborador: number, idusuariomod: number) => {
   try {
     const result = await tx.archivo_colaborador.update({
-      data: archivocolaborador,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         idarchivo_idcolaborador: {
           idarchivo: idarchivo,
@@ -80,10 +81,10 @@ export const deleteArchivoColaborador = async (tx: TxClient, idarchivo: number, 
   }
 };
 
-export const activateArchivoColaborador = async (tx: TxClient, idarchivo: number, idcolaborador: number, archivocolaborador: Prisma.archivo_colaboradorUpdateInput) => {
+export const activateArchivoColaborador = async (tx: TxClient, idarchivo: number, idcolaborador: number, idusuariomod: number) => {
   try {
     const result = await tx.archivo_colaborador.update({
-      data: archivocolaborador,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ACTIVO },
       where: {
         idarchivo_idcolaborador: {
           idarchivo: idarchivo,

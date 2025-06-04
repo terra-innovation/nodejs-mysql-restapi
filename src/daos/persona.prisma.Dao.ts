@@ -3,6 +3,7 @@ import type { Prisma, persona } from "#src/models/prisma/ft_factoring/client";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getPersonasByVerificacion = async (tx: TxClient, estado: number[], idarchivotipo: number[]) => {
   try {
@@ -236,10 +237,10 @@ export const updatePersona = async (tx: TxClient, personaid: string, persona: Pr
   }
 };
 
-export const deletePersona = async (tx: TxClient, personaid: string, persona: Prisma.personaUpdateInput) => {
+export const deletePersona = async (tx: TxClient, personaid: string, idusuariomod: number) => {
   try {
     const result = await tx.persona.update({
-      data: persona,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         personaid: personaid,
       },
@@ -251,10 +252,10 @@ export const deletePersona = async (tx: TxClient, personaid: string, persona: Pr
   }
 };
 
-export const activatePersona = async (tx: TxClient, personaid: string, persona: Prisma.personaUpdateInput) => {
+export const activatePersona = async (tx: TxClient, personaid: string, idusuariomod: number) => {
   try {
     const result = await tx.persona.update({
-      data: persona,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ACTIVO },
       where: {
         personaid: personaid,
       },

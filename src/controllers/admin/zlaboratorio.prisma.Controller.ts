@@ -69,9 +69,9 @@ export const validateTransaction = async (req: Request, res: Response) => {
 
       const findZlaboratorioUsuarioPk = await zlaboratoriousuarioDao.findZlaboratorioUsuarioPk(tx, 105);
 
-      const updateZlaboratorioUsuario = await zlaboratoriousuarioDao.updateZlaboratorioUsuario(tx, usuarioCreated);
+      const updateZlaboratorioUsuario = await zlaboratoriousuarioDao.updateZlaboratorioUsuario(tx, usuarioCreated.idusuario, usuarioCreated);
 
-      const deleteZlaboratorioUsuario = await zlaboratoriopedidoDao.deleteZlaboratorioPedido(tx, pedidoCreated);
+      const deleteZlaboratorioUsuario = await zlaboratoriopedidoDao.deleteZlaboratorioPedido(tx, pedidoCreated.idpedido, pedidoCreated.idusuario);
 
       const pedidoToUpdate = {
         idpedido: 3,
@@ -79,7 +79,7 @@ export const validateTransaction = async (req: Request, res: Response) => {
         fechamod: new Date(),
       };
 
-      const updateZlaboratorioPedido = await zlaboratoriopedidoDao.updateZlaboratorioPedido(tx, pedidoToUpdate);
+      const updateZlaboratorioPedido = await zlaboratoriopedidoDao.updateZlaboratorioPedido(tx, pedidoToUpdate.idpedido, pedidoToUpdate);
 
       const pedidoEncontrado = await zlaboratoriopedidoDao.findZlaboratorioPedidoPk(tx, "c019c569pppp");
       log.debug(line(), "pedidoEncontrado", pedidoEncontrado);

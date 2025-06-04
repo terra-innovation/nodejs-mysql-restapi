@@ -4,6 +4,7 @@ import type { Prisma, empresa_cuenta_bancaria } from "#src/models/prisma/ft_fact
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getEmpresacuentabancariasForFactoring = async (tx: TxClient, idempresa: number, idmoneda: number, idcuentabancariaestado: number[], estados: number[]) => {
   try {
@@ -263,10 +264,10 @@ export const updateEmpresacuentabancaria = async (tx: TxClient, empresacuentaban
   }
 };
 
-export const deleteEmpresacuentabancaria = async (tx: TxClient, empresacuentabancariaid: string, empresacuentabancaria: Prisma.empresa_cuenta_bancariaUpdateInput) => {
+export const deleteEmpresacuentabancaria = async (tx: TxClient, empresacuentabancariaid: string, idusuariomod: number) => {
   try {
     const result = await tx.empresa_cuenta_bancaria.update({
-      data: empresacuentabancaria,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         empresacuentabancariaid: empresacuentabancariaid,
       },

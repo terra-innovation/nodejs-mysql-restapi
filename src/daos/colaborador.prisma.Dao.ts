@@ -5,6 +5,7 @@ import { Empresa } from "#src/models/ft_factoring/Empresa.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getColaboradorByIdEmpresaAndIdpersona = async (tx: TxClient, idempresa: number, idpersona: number) => {
   try {
@@ -139,10 +140,10 @@ export const updateColaborador = async (tx: TxClient, colaboradorid: string, col
   }
 };
 
-export const deleteColaborador = async (tx: TxClient, colaboradorid: string, colaborador: Prisma.colaboradorUpdateInput) => {
+export const deleteColaborador = async (tx: TxClient, colaboradorid: string, idusuariomod: number) => {
   try {
     const result = await tx.colaborador.update({
-      data: colaborador,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         colaboradorid: colaboradorid,
       },

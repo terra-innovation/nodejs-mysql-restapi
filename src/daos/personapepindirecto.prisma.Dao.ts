@@ -4,6 +4,7 @@ import type { Prisma, persona_pep_indirecto } from "#src/models/prisma/ft_factor
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getPersonapepindirectos = async (tx: TxClient, estados: number[]) => {
   try {
@@ -92,10 +93,10 @@ export const updatePersonaPepIndirecto = async (tx: TxClient, personapepindirect
   }
 };
 
-export const deletePersonaPepIndirecto = async (tx: TxClient, personapepindirectoid: string, personapepindirecto: Prisma.persona_pep_indirectoUpdateInput) => {
+export const deletePersonaPepIndirecto = async (tx: TxClient, personapepindirectoid: string, idusuariomod: number) => {
   try {
     const result = await tx.persona_pep_indirecto.update({
-      data: personapepindirecto,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         personapepindirectoid: personapepindirectoid,
       },

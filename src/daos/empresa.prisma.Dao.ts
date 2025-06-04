@@ -4,6 +4,7 @@ import type { Prisma, empresa } from "#src/models/prisma/ft_factoring/client";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getEmpresasByIdempresas = async (tx: TxClient, idempresas: number[], estados: number[]) => {
   try {
@@ -232,10 +233,10 @@ export const updateEmpresa = async (tx: TxClient, empresaid: string, empresa: Pr
   }
 };
 
-export const deleteEmpresa = async (tx: TxClient, empresaid: string, empresa: Prisma.empresaUpdateInput) => {
+export const deleteEmpresa = async (tx: TxClient, empresaid: string, idusuariomod: number) => {
   try {
     const result = await tx.empresa.update({
-      data: empresa,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         empresaid: empresaid,
       },
@@ -247,10 +248,10 @@ export const deleteEmpresa = async (tx: TxClient, empresaid: string, empresa: Pr
   }
 };
 
-export const activateEmpresa = async (tx: TxClient, empresaid: string, empresa: Prisma.empresaUpdateInput) => {
+export const activateEmpresa = async (tx: TxClient, empresaid: string, idusuariomod: number) => {
   try {
     const result = await tx.empresa.update({
-      data: empresa,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ACTIVO },
       where: {
         empresaid: empresaid,
       },

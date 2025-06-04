@@ -4,6 +4,7 @@ import type { Prisma, factoring_config_garantia } from "#src/models/prisma/ft_fa
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getFactoringconfiggarantias = async (tx: TxClient, estados: number[]) => {
   try {
@@ -92,10 +93,10 @@ export const updateFactoringconfiggarantia = async (tx: TxClient, factoringconfi
   }
 };
 
-export const deleteFactoringconfiggarantia = async (tx: TxClient, factoringconfiggarantiaid: string, factoringconfiggarantia: Prisma.factoring_config_garantiaUpdateInput) => {
+export const deleteFactoringconfiggarantia = async (tx: TxClient, factoringconfiggarantiaid: string, idusuariomod: number) => {
   try {
     const result = await tx.factoring_config_garantia.update({
-      data: factoringconfiggarantia,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         factoringconfiggarantiaid: factoringconfiggarantiaid,
       },

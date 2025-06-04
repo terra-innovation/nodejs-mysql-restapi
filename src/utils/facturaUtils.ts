@@ -57,7 +57,7 @@ export const getFacturaToCreate = (facturaJson: Partial<FacturaXML>, idusuario: 
   return facturaToCreate;
 };
 
-export const getNotasToCreate = (facturaJson: Partial<FacturaXML>, idfactura: bigint, idusuario: number) => {
+export const getNotasToCreate = (facturaJson: Partial<FacturaXML>, idfactura: number, idusuario: number) => {
   const notasToCreate: Prisma.factura_notaCreateInput[] = facturaJson.notas.map(function (item) {
     const nota: Prisma.factura_notaCreateInput = {
       factura: { connect: { idfactura: idfactura } },
@@ -75,7 +75,7 @@ export const getNotasToCreate = (facturaJson: Partial<FacturaXML>, idfactura: bi
   return notasToCreate;
 };
 
-export const getMediosdepagoToCreate = (facturaJson: Partial<FacturaXML>, idfactura: bigint, idusuario: number) => {
+export const getMediosdepagoToCreate = (facturaJson: Partial<FacturaXML>, idfactura: number, idusuario: number) => {
   const mediosdepagoToCreate: Prisma.factura_medio_pagoCreateInput[] = facturaJson.medios_pago.map(function (item) {
     const medio_pago: Prisma.factura_medio_pagoCreateInput = {
       factura: { connect: { idfactura: idfactura } },
@@ -94,7 +94,7 @@ export const getMediosdepagoToCreate = (facturaJson: Partial<FacturaXML>, idfact
   return mediosdepagoToCreate;
 };
 
-export const getItemsToCreate = (facturaJson: Partial<FacturaXML>, idfactura: bigint, idusuario: number) => {
+export const getItemsToCreate = (facturaJson: Partial<FacturaXML>, idfactura: number, idusuario: number) => {
   const itemsToCreate: Prisma.factura_itemCreateInput[] = facturaJson.items.map(function (item) {
     const factura_item: Prisma.factura_itemCreateInput = {
       factura: { connect: { idfactura: idfactura } },
@@ -125,7 +125,7 @@ export const getItemsToCreate = (facturaJson: Partial<FacturaXML>, idfactura: bi
   return itemsToCreate;
 };
 
-export const getTerminosdepagoToCreate = (facturaJson: Partial<FacturaXML>, idfactura: bigint, idusuario: number) => {
+export const getTerminosdepagoToCreate = (facturaJson: Partial<FacturaXML>, idfactura: number, idusuario: number) => {
   const terminosdepagoToCreate: Prisma.factura_termino_pagoCreateInput[] = facturaJson.terminos_pago.map(function (item) {
     const termino_pago: Prisma.factura_termino_pagoCreateInput = {
       factura: { connect: { idfactura: idfactura } },
@@ -146,7 +146,7 @@ export const getTerminosdepagoToCreate = (facturaJson: Partial<FacturaXML>, idfa
   return terminosdepagoToCreate;
 };
 
-export const getImpuestosToCreate = (facturaJson: Partial<FacturaXML>, idfactura: bigint, idusuario: number) => {
+export const getImpuestosToCreate = (facturaJson: Partial<FacturaXML>, idfactura: number, idusuario: number) => {
   const impuestosToCreate: Prisma.factura_impuestoCreateInput[] = facturaJson.impuesto.impuestos.map(function (item) {
     const impuesto: Prisma.factura_impuestoCreateInput = {
       factura: { connect: { idfactura: idfactura } },

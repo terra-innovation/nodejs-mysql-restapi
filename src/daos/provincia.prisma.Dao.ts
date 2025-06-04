@@ -4,6 +4,7 @@ import type { Prisma, provincia } from "#src/models/prisma/ft_factoring/client";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getProvincias = async (tx: TxClient, estados: number[]) => {
   try {
@@ -90,10 +91,10 @@ export const updateProvincia = async (tx: TxClient, provinciaid: string, provinc
   }
 };
 
-export const deleteProvincia = async (tx: TxClient, provinciaid: string, provincia: Prisma.provinciaUpdateInput) => {
+export const deleteProvincia = async (tx: TxClient, provinciaid: string, idusuariomod: number) => {
   try {
     const result = await tx.provincia.update({
-      data: provincia,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         provinciaid: provinciaid,
       },

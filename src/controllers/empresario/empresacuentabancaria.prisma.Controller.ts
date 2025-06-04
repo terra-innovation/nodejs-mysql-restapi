@@ -206,18 +206,13 @@ export const updateEmpresacuentabancariaOnlyAlias = async (req: Request, res: Re
 
       const cuentabancaria = await cuentabancariaDao.getCuentabancariaByIdcuentabancaria(tx, empresacuentabancaria.idcuentabancaria);
 
-      var camposCuentaBancariaAdicionales: Partial<cuenta_bancaria> = {};
-      camposCuentaBancariaAdicionales.cuentabancariaid = cuentabancaria.cuentabancariaid;
+      const cuentabancariaToUpdate: Prisma.cuenta_bancariaUpdateInput = {
+        alias: empresacuentabancariaValidated.alias,
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+      };
 
-      var camposCuentaBancariaAuditoria: Partial<cuenta_bancaria> = {};
-      camposCuentaBancariaAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
-      camposCuentaBancariaAuditoria.fechamod = new Date();
-
-      const cuentabancariaUpdated = await cuentabancariaDao.updateCuentabancaria(tx, {
-        ...camposCuentaBancariaAdicionales,
-        ...empresacuentabancariaValidated,
-        ...camposCuentaBancariaAuditoria,
-      });
+      const cuentabancariaUpdated = await cuentabancariaDao.updateCuentabancaria(tx, cuentabancaria.cuentabancariaid, cuentabancariaToUpdate);
       log.debug(line(), "cuentabancariaUpdated", cuentabancariaUpdated);
 
       return {};

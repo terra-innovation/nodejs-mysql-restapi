@@ -4,6 +4,7 @@ import type { Prisma, inversionista_cuenta_bancaria } from "#src/models/prisma/f
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getInversionistacuentabancariaByIdinversionistaAndIdusuario = async (tx: TxClient, idinversionista: number, idusuario: number, estados: number[]) => {
   try {
@@ -229,10 +230,10 @@ export const updateInversionistacuentabancaria = async (tx: TxClient, inversioni
   }
 };
 
-export const deleteInversionistacuentabancaria = async (tx: TxClient, inversionistacuentabancariaid: string, inversionistacuentabancaria: Prisma.inversionista_cuenta_bancariaUpdateInput) => {
+export const deleteInversionistacuentabancaria = async (tx: TxClient, inversionistacuentabancariaid: string, idusuariomod: number) => {
   try {
     const result = await tx.inversionista_cuenta_bancaria.update({
-      data: inversionistacuentabancaria,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         inversionistacuentabancariaid: inversionistacuentabancariaid,
       },
@@ -244,10 +245,10 @@ export const deleteInversionistacuentabancaria = async (tx: TxClient, inversioni
   }
 };
 
-export const activateInversionistacuentabancaria = async (tx: TxClient, inversionistacuentabancariaid: string, inversionistacuentabancaria: Prisma.inversionista_cuenta_bancariaUpdateInput) => {
+export const activateInversionistacuentabancaria = async (tx: TxClient, inversionistacuentabancariaid: string, idusuariomod: number) => {
   try {
     const result = await tx.inversionista_cuenta_bancaria.update({
-      data: inversionistacuentabancaria,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ACTIVO },
       where: {
         inversionistacuentabancariaid: inversionistacuentabancariaid,
       },

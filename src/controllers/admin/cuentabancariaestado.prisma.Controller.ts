@@ -27,13 +27,7 @@ export const activateCuentabancariaestado = async (req: Request, res: Response) 
 
   const cuentabancariaestadoActivated = await prismaFT.client.$transaction(
     async (tx) => {
-      const cuentabancariaestadoToActivate: Prisma.cuenta_bancaria_estadoUpdateInput = {
-        idusuariomod: req.session_user.usuario.idusuario ?? 1,
-        fechamod: new Date(),
-        estado: 1,
-      };
-
-      const cuentabancariaestadoActivated = await cuentabancariaestadoDao.activateCuentabancariaestado(tx, cuentabancariaestadoValidated.cuentabancariaestadoid, cuentabancariaestadoToActivate);
+      const $Activated = await cuentabancariaestadoDao.activateCuentabancariaestado(tx, cuentabancariaestadoValidated.cuentabancariaestadoid, req.session_user.usuario.idusuario);
       if (cuentabancariaestadoActivated[0] === 0) {
         throw new ClientError("Cuentabancariaestado no existe", 404);
       }
@@ -61,13 +55,7 @@ export const deleteCuentabancariaestado = async (req: Request, res: Response) =>
 
   const cuentabancariaestadoDeleted = await prismaFT.client.$transaction(
     async (tx) => {
-      const cuentabancariaestadoToDetele: Prisma.cuenta_bancaria_estadoUpdateInput = {
-        idusuariomod: req.session_user.usuario.idusuario ?? 1,
-        fechamod: new Date(),
-        estado: 2,
-      };
-
-      const cuentabancariaestadoDeleted = await cuentabancariaestadoDao.deleteCuentabancariaestado(tx, cuentabancariaestadoValidated.cuentabancariaestadoid, cuentabancariaestadoToDetele);
+      const cuentabancariaestadoDeleted = await cuentabancariaestadoDao.deleteCuentabancariaestado(tx, cuentabancariaestadoValidated.cuentabancariaestadoid, req.session_user.usuario.idusuario);
       if (cuentabancariaestadoDeleted[0] === 0) {
         throw new ClientError("Cuentabancariaestado no existe", 404);
       }

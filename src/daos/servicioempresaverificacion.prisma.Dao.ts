@@ -4,6 +4,7 @@ import type { Prisma, servicio_empresa_verificacion } from "#src/models/prisma/f
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getServicioempresaverificacions = async (tx: TxClient, estados: number[]) => {
   try {
@@ -94,10 +95,10 @@ export const updateServicioempresaverificacion = async (tx: TxClient, servicioem
   }
 };
 
-export const deleteServicioempresaverificacion = async (tx: TxClient, servicioempresaverificacionid: string, servicioempresaverificacion: Prisma.servicio_empresa_verificacionUpdateInput) => {
+export const deleteServicioempresaverificacion = async (tx: TxClient, servicioempresaverificacionid: string, idusuariomod: number) => {
   try {
     const result = await tx.servicio_empresa_verificacion.update({
-      data: servicioempresaverificacion,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         servicioempresaverificacionid: servicioempresaverificacionid,
       },

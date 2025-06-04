@@ -4,6 +4,7 @@ import type { Prisma, cuenta_bancaria } from "#src/models/prisma/ft_factoring/cl
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getCuentasbancariasByIdempresaAndAlias = async (tx: TxClient, idempresa: number, alias: string, estado: number[]) => {
   try {
@@ -352,10 +353,10 @@ export const updateCuentabancaria = async (tx: TxClient, cuentabancariaid: strin
   }
 };
 
-export const deleteCuentabancaria = async (tx: TxClient, cuentabancariaid: string, cuentabancaria: Prisma.cuenta_bancariaUpdateInput) => {
+export const deleteCuentabancaria = async (tx: TxClient, cuentabancariaid: string, idusuariomod: number) => {
   try {
     const result = await tx.cuenta_bancaria.update({
-      data: cuentabancaria,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         cuentabancariaid: cuentabancariaid,
       },
@@ -367,10 +368,10 @@ export const deleteCuentabancaria = async (tx: TxClient, cuentabancariaid: strin
   }
 };
 
-export const activateCuentabancaria = async (tx: TxClient, cuentabancariaid: string, cuentabancaria: Prisma.cuenta_bancariaUpdateInput) => {
+export const activateCuentabancaria = async (tx: TxClient, cuentabancariaid: string, idusuariomod: number) => {
   try {
     const result = await tx.cuenta_bancaria.update({
-      data: cuentabancaria,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ACTIVO },
       where: {
         cuentabancariaid: cuentabancariaid,
       },

@@ -4,6 +4,7 @@ import type { Prisma, factoring_propuesta_financiero } from "#src/models/prisma/
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getFactoringpropuestafinancieros = async (tx: TxClient, estados: number[]) => {
   try {
@@ -94,10 +95,10 @@ export const updateFactoringpropuestafinanciero = async (tx: TxClient, factoring
   }
 };
 
-export const deleteFactoringpropuestafinanciero = async (tx: TxClient, factoringpropuestafinancieroid: string, factoringpropuestafinanciero: Prisma.factoring_propuesta_financieroUpdateInput) => {
+export const deleteFactoringpropuestafinanciero = async (tx: TxClient, factoringpropuestafinancieroid: string, idusuariomod: number) => {
   try {
     const result = await tx.factoring_propuesta_financiero.update({
-      data: factoringpropuestafinanciero,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         factoringpropuestafinancieroid: factoringpropuestafinancieroid,
       },

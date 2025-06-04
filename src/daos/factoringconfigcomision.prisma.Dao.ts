@@ -4,6 +4,7 @@ import type { Prisma, factoring_config_comision } from "#src/models/prisma/ft_fa
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getFactoringconfigcomisionByIdriesgo = async (tx: TxClient, idriesgo, estados: number[]) => {
   try {
@@ -110,10 +111,10 @@ export const updateFactoringconfigcomision = async (tx: TxClient, factoringconfi
   }
 };
 
-export const deleteFactoringconfigcomision = async (tx: TxClient, factoringconfigcomisionid: string, factoringconfigcomision: Prisma.factoring_config_comisionUpdateInput) => {
+export const deleteFactoringconfigcomision = async (tx: TxClient, factoringconfigcomisionid: string, idusuariomod: number) => {
   try {
     const result = await tx.factoring_config_comision.update({
-      data: factoringconfigcomision,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         factoringconfigcomisionid: factoringconfigcomisionid,
       },

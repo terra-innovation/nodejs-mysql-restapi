@@ -4,6 +4,7 @@ import type { Prisma, factoring_factura } from "#src/models/prisma/ft_factoring/
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getFactoringsfacturasEmpresasActivas = async (tx: TxClient) => {
   try {
@@ -104,10 +105,10 @@ export const updateFactoringfactura = async (tx: TxClient, idfactoring: number, 
   }
 };
 
-export const deleteFactoringfactura = async (tx: TxClient, idfactoring: number, idfactura: number, factoringfactura: Prisma.factoring_facturaUpdateInput) => {
+export const deleteFactoringfactura = async (tx: TxClient, idfactoring: number, idfactura: number, idusuariomod: number) => {
   try {
     const result = await tx.factoring_factura.update({
-      data: factoringfactura,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         idfactoring_idfactura: {
           idfactoring: idfactoring,

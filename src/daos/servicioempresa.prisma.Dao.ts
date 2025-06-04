@@ -4,6 +4,7 @@ import type { Prisma, servicio_empresa } from "#src/models/prisma/ft_factoring/c
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getFactoringempresasByVerificacion = async (tx: TxClient, estadologico: number[], idservicio: number[], idarchivotipos: number[]) => {
   try {
@@ -183,10 +184,10 @@ export const updateServicioempresa = async (tx: TxClient, servicioempresaid: str
   }
 };
 
-export const deleteServicioempresa = async (tx: TxClient, servicioempresaid: string, servicioempresa: Prisma.servicio_empresaUpdateInput) => {
+export const deleteServicioempresa = async (tx: TxClient, servicioempresaid: string, idusuariomod: number) => {
   try {
     const result = await tx.servicio_empresa.update({
-      data: servicioempresa,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         servicioempresaid: servicioempresaid,
       },

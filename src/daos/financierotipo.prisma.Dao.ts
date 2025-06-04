@@ -4,6 +4,7 @@ import type { Prisma, financiero_tipo } from "#src/models/prisma/ft_factoring/cl
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getComision = async (tx: TxClient) => {
   return await getFinancierotipoByIdfinancierotipo(tx, 1);
@@ -104,10 +105,10 @@ export const updateFinancierotipo = async (tx: TxClient, financierotipoid: strin
   }
 };
 
-export const deleteFinancierotipo = async (tx: TxClient, financierotipoid: string, financierotipo: Prisma.financiero_tipoUpdateInput) => {
+export const deleteFinancierotipo = async (tx: TxClient, financierotipoid: string, idusuariomod: number) => {
   try {
     const result = await tx.financiero_tipo.update({
-      data: financierotipo,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         financierotipoid: financierotipoid,
       },

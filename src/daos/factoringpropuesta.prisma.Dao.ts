@@ -4,6 +4,7 @@ import type { Prisma, factoring_propuesta } from "#src/models/prisma/ft_factorin
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getFactoringpropuestasByIdfactoring = async (tx: TxClient, idfactoring: number, estados: number[]) => {
   try {
@@ -133,10 +134,10 @@ export const updateFactoringpropuesta = async (tx: TxClient, factoringpropuestai
   }
 };
 
-export const deleteFactoringpropuesta = async (tx: TxClient, factoringpropuestaid: string, factoringpropuesta: Prisma.factoring_propuestaUpdateInput) => {
+export const deleteFactoringpropuesta = async (tx: TxClient, factoringpropuestaid: string, idusuariomod: number) => {
   try {
     const result = await tx.factoring_propuesta.update({
-      data: factoringpropuesta,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         factoringpropuestaid: factoringpropuestaid,
       },
@@ -148,10 +149,10 @@ export const deleteFactoringpropuesta = async (tx: TxClient, factoringpropuestai
   }
 };
 
-export const activateFactoringpropuesta = async (tx: TxClient, factoringpropuestaid: string, factoringpropuesta: Prisma.factoring_propuestaUpdateInput) => {
+export const activateFactoringpropuesta = async (tx: TxClient, factoringpropuestaid: string, idusuariomod: number) => {
   try {
     const result = await tx.factoring_propuesta.update({
-      data: factoringpropuesta,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ACTIVO },
       where: {
         factoringpropuestaid: factoringpropuestaid,
       },

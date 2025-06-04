@@ -4,6 +4,7 @@ import type { Prisma, usuario_servicio_verificacion } from "#src/models/prisma/f
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getUsuarioservicioverificacions = async (tx: TxClient, estados: number[]) => {
   try {
@@ -94,10 +95,10 @@ export const updateUsuarioservicioverificacion = async (tx: TxClient, usuarioser
   }
 };
 
-export const deleteUsuarioservicioverificacion = async (tx: TxClient, usuarioservicioverificacionid: string, usuarioservicioverificacion: Prisma.usuario_servicio_verificacionUpdateInput) => {
+export const deleteUsuarioservicioverificacion = async (tx: TxClient, usuarioservicioverificacionid: string, idusuariomod: number) => {
   try {
     const result = await tx.usuario_servicio_verificacion.update({
-      data: usuarioservicioverificacion,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         usuarioservicioverificacionid: usuarioservicioverificacionid,
       },

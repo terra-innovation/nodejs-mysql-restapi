@@ -4,6 +4,7 @@ import type { Prisma, archivo_factura } from "#src/models/prisma/ft_factoring/cl
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getArchivofacturasByIdfactoring = async (tx: TxClient, idfactoring: number, estados: number[]) => {
   try {
@@ -122,10 +123,10 @@ export const updateArchivoFactura = async (tx: TxClient, idarchivo: number, idfa
   }
 };
 
-export const deleteArchivoFactura = async (tx: TxClient, idarchivo: number, idfactura: number, archivofactura: Prisma.archivo_facturaUpdateInput) => {
+export const deleteArchivoFactura = async (tx: TxClient, idarchivo: number, idfactura: number, idusuariomod: number) => {
   try {
     const result = await tx.archivo_factura.update({
-      data: archivofactura,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         idarchivo_idfactura: {
           idarchivo: idarchivo,
@@ -140,10 +141,10 @@ export const deleteArchivoFactura = async (tx: TxClient, idarchivo: number, idfa
   }
 };
 
-export const activateArchivoFactura = async (tx: TxClient, idarchivo: number, idfactura: number, archivofactura: Prisma.archivo_facturaUpdateInput) => {
+export const activateArchivoFactura = async (tx: TxClient, idarchivo: number, idfactura: number, idusuariomod: number) => {
   try {
     const result = await tx.archivo_factura.update({
-      data: archivofactura,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ACTIVO },
       where: {
         idarchivo_idfactura: {
           idarchivo: idarchivo,

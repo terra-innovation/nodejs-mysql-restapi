@@ -4,6 +4,7 @@ import type { Prisma, usuario_servicio_empresa } from "#src/models/prisma/ft_fac
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { formatError } from "#src/utils/errorUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getUsuarioservicioempresaByIdusuarioIdServicioIdempresa = async (tx: TxClient, idusuario: number, idservicio: number, idempresa: number) => {
   try {
@@ -111,10 +112,10 @@ export const updateUsuarioservicioempresa = async (tx: TxClient, usuarioservicio
   }
 };
 
-export const deleteUsuarioservicioempresa = async (tx: TxClient, usuarioservicioempresaid: string, usuarioservicioempresa: Prisma.usuario_servicio_empresaUpdateInput) => {
+export const deleteUsuarioservicioempresa = async (tx: TxClient, usuarioservicioempresaid: string, idusuariomod: number) => {
   try {
     const result = await tx.usuario_servicio_empresa.update({
-      data: usuarioservicioempresa,
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
       where: {
         usuarioservicioempresaid: usuarioservicioempresaid,
       },
