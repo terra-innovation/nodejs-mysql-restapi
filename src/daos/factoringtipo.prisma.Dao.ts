@@ -2,7 +2,7 @@ import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma, factoring_tipo } from "#src/models/prisma/ft_factoring/client";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { formatError } from "#src/utils/errorUtils.js";
+
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
@@ -18,7 +18,7 @@ export const getFactoringtipos = async (tx: TxClient, estados: number[]) => {
 
     return factoringtipos;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -33,7 +33,7 @@ export const getFactoringtipoByIdfactoringtipo = async (tx: TxClient, idfactorin
 
     return factoringtipo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -48,7 +48,7 @@ export const getFactoringtipoByFactoringtipoid = async (tx: TxClient, factoringt
 
     return factoringtipo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -64,7 +64,7 @@ export const findFactoringtipoPk = async (tx: TxClient, factoringtipoid: string)
 
     return factoringtipo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -75,7 +75,7 @@ export const insertFactoringtipo = async (tx: TxClient, factoringtipo: Prisma.fa
 
     return nuevo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -90,7 +90,7 @@ export const updateFactoringtipo = async (tx: TxClient, factoringtipoid: string,
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -105,7 +105,7 @@ export const deleteFactoringtipo = async (tx: TxClient, factoringtipoid: string,
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

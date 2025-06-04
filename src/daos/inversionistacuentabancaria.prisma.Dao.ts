@@ -2,7 +2,7 @@ import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma, inversionista_cuenta_bancaria } from "#src/models/prisma/ft_factoring/client";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { formatError } from "#src/utils/errorUtils.js";
+
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
@@ -39,7 +39,7 @@ export const getInversionistacuentabancariaByIdinversionistaAndIdusuario = async
 
     return empresacuentabancaria;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -76,7 +76,7 @@ export const getInversionistacuentabancariasByIdusuario = async (tx: TxClient, i
 
     return empresacuentabancaria;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -112,7 +112,7 @@ export const getInversionistacuentabancariasByIdinversionistaAndAlias = async (t
     });
     return empresacuentabancaria;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -153,7 +153,7 @@ export const getInversionistacuentabancarias = async (tx: TxClient, estados: num
 
     return inversionistacuentabancarias;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -168,7 +168,7 @@ export const getInversionistacuentabancariaByIdinversionistacuentabancaria = asy
 
     return inversionistacuentabancaria;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -183,7 +183,7 @@ export const getInversionistacuentabancariaByInversionistacuentabancariaid = asy
 
     return inversionistacuentabancaria;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -199,7 +199,7 @@ export const findInversionistacuentabancariaPk = async (tx: TxClient, inversioni
 
     return inversionistacuentabancaria;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -210,7 +210,7 @@ export const insertInversionistacuentabancaria = async (tx: TxClient, inversioni
 
     return nuevo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -225,7 +225,7 @@ export const updateInversionistacuentabancaria = async (tx: TxClient, inversioni
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -240,7 +240,7 @@ export const deleteInversionistacuentabancaria = async (tx: TxClient, inversioni
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -255,7 +255,7 @@ export const activateInversionistacuentabancaria = async (tx: TxClient, inversio
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

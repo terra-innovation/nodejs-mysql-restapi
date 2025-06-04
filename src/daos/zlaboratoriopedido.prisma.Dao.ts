@@ -1,6 +1,6 @@
 import type { Prisma, zlaboratorio_pedido } from "#src/models/prisma/ft_factoring/client";
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { formatError } from "#src/utils/errorUtils.js";
+
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { TxClient } from "#src/types/Prisma.types.js";
@@ -48,7 +48,7 @@ export const findZlaboratorioPedidoPk = async (tx: TxClient, code: string) => {
 
     return archivo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

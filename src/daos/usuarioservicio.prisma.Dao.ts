@@ -2,7 +2,7 @@ import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma, usuario_servicio, servicio } from "#src/models/prisma/ft_factoring/client";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { formatError } from "#src/utils/errorUtils.js";
+
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
@@ -27,7 +27,7 @@ export const getUsuarioserviciosByIdusuario = async (tx: TxClient, idusuario, es
 
     return usuarioservicios;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -57,7 +57,7 @@ export const habilitarServiciosParaUsuario = async (tx: TxClient, idusuario: num
       skipDuplicates: true, // Prisma ignora los duplicados
     });
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -74,7 +74,7 @@ export const getUsuarioservicios = async (tx: TxClient, estados: number[]) => {
 
     return usuarioservicios;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -95,7 +95,7 @@ export const getUsuarioservicioByIdusuarioIdservicio = async (tx: TxClient, idus
 
     return usuarioservicio;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -108,7 +108,7 @@ export const getUsuarioservicioByIdusuarioservicio = async (tx: TxClient, idusua
 
     return usuarioservicio;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -128,7 +128,7 @@ export const getUsuarioservicioByUsuarioservicioid = async (tx: TxClient, usuari
 
     return usuarioservicio;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -144,7 +144,7 @@ export const findUsuarioservicioPk = async (tx: TxClient, usuarioservicioid: str
 
     return usuarioservicio;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -155,7 +155,7 @@ export const insertUsuarioservicio = async (tx: TxClient, usuarioservicio: Prism
 
     return nuevo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -170,7 +170,7 @@ export const updateUsuarioservicio = async (tx: TxClient, usuarioservicioid: str
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -185,7 +185,7 @@ export const deleteUsuarioservicio = async (tx: TxClient, usuarioservicioid: str
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

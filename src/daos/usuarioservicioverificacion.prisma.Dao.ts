@@ -2,7 +2,7 @@ import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma, usuario_servicio_verificacion } from "#src/models/prisma/ft_factoring/client";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { formatError } from "#src/utils/errorUtils.js";
+
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
@@ -18,7 +18,7 @@ export const getUsuarioservicioverificacions = async (tx: TxClient, estados: num
 
     return usuarioservicioverificacions;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -33,7 +33,7 @@ export const getUsuarioservicioverificacionByIdusuarioservicioverificacion = asy
 
     return usuarioservicioverificacion;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -48,7 +48,7 @@ export const getUsuarioservicioverificacionByUsuarioservicioverificacionid = asy
 
     return usuarioservicioverificacion;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -64,7 +64,7 @@ export const findUsuarioservicioverificacionPk = async (tx: TxClient, usuarioser
 
     return usuarioservicioverificacion;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -75,7 +75,7 @@ export const insertUsuarioservicioverificacion = async (tx: TxClient, usuarioser
 
     return nuevo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -90,7 +90,7 @@ export const updateUsuarioservicioverificacion = async (tx: TxClient, usuarioser
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -105,7 +105,7 @@ export const deleteUsuarioservicioverificacion = async (tx: TxClient, usuarioser
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

@@ -2,7 +2,7 @@ import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma, archivo_factoring_historial_estado } from "#src/models/prisma/ft_factoring/client";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { formatError } from "#src/utils/errorUtils.js";
+
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
@@ -18,7 +18,7 @@ export const getArchivofactoringhistorialestados = async (tx: TxClient, estados:
 
     return archivofactoringhistorialestados;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -36,7 +36,7 @@ export const getArchivofactoringhistorialestadoByIdarchivofactoringhistorialesta
 
     return archivofactoringhistorialestado;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -47,7 +47,7 @@ export const insertArchivofactoringhistorialestado = async (tx: TxClient, archiv
 
     return nuevo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -65,7 +65,7 @@ export const updateArchivofactoringhistorialestado = async (tx: TxClient, idarch
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -83,7 +83,7 @@ export const deleteArchivofactoringhistorialestado = async (tx: TxClient, idarch
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

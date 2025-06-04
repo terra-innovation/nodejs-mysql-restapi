@@ -1,12 +1,12 @@
 import { Router } from "express";
 
-import empresario_contactoRoutes from "#src/routes/empresario/contacto.routes.js";
-import empresario_empresacuentabancariaRoutes from "#src/routes/empresario/empresacuentabancaria.routes.js";
-import empresario_factoring_contactoRoutes from "#src/routes/empresario/factoring/contacto.routes.js";
-import empresario_factoring_empresacuentabancariaRoutes from "#src/routes/empresario/factoring/empresacuentabancaria.routes.js";
-import empresario_factoring_factoringRoutes from "#src/routes/empresario/factoring/factoring.routes.js";
-import empresario_factoring_facturaRoutes from "#src/routes/empresario/factoring/factura.routes.js";
-import empresario_factoring_usuarioRoutes from "#src/routes/empresario/factoring/usuario.routes.js";
+import empresario_contactoRoutes from "#src/routes/empresario/contacto.prisma.routes.js";
+import empresario_empresacuentabancariaRoutes from "#src/routes/empresario/empresacuentabancaria.prisma.routes.js";
+import empresario_factoring_contactoRoutes from "#src/routes/empresario/factoring/contacto.prisma.routes.js";
+import empresario_factoring_empresacuentabancariaRoutes from "#src/routes/empresario/factoring/empresacuentabancaria.prisma.routes.js";
+import empresario_factoring_factoringRoutes from "#src/routes/empresario/factoring/factoring.prisma.routes.js";
+import empresario_factoring_facturaRoutes from "#src/routes/empresario/factoring/factura.prisma.routes.js";
+import empresario_factoring_usuarioRoutes from "#src/routes/empresario/factoring/usuario.prisma.routes.js";
 
 const router = Router();
 

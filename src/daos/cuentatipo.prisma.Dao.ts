@@ -2,7 +2,7 @@ import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma, cuenta_tipo } from "#src/models/prisma/ft_factoring/client";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { formatError } from "#src/utils/errorUtils.js";
+
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
@@ -18,7 +18,7 @@ export const getCuentatipos = async (tx: TxClient, estados: number[]) => {
 
     return cuentatipos;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -31,7 +31,7 @@ export const getCuentatipoByIdcuentatipo = async (tx: TxClient, idcuentatipo: nu
 
     return cuentatipo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -46,7 +46,7 @@ export const getCuentatipoByCuentatipoid = async (tx: TxClient, cuentatipoid: st
 
     return cuentatipo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -62,7 +62,7 @@ export const findCuentatipoPk = async (tx: TxClient, cuentatipoid: string) => {
 
     return cuentatipo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -73,7 +73,7 @@ export const insertCuentatipo = async (tx: TxClient, cuentatipo: Prisma.cuenta_t
 
     return nuevo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -88,7 +88,7 @@ export const updateCuentatipo = async (tx: TxClient, cuentatipoid: string, cuent
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -103,7 +103,7 @@ export const deleteCuentatipo = async (tx: TxClient, cuentatipoid: string, idusu
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

@@ -2,7 +2,7 @@ import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma, factoring_config_garantia } from "#src/models/prisma/ft_factoring/client";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { formatError } from "#src/utils/errorUtils.js";
+
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
@@ -18,7 +18,7 @@ export const getFactoringconfiggarantias = async (tx: TxClient, estados: number[
 
     return factoringconfiggarantias;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -31,7 +31,7 @@ export const getFactoringconfiggarantiaByIdfactoringconfiggarantia = async (tx: 
 
     return factoringconfiggarantia;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -46,7 +46,7 @@ export const getFactoringconfiggarantiaByFactoringconfiggarantiaid = async (tx: 
 
     return factoringconfiggarantia;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -62,7 +62,7 @@ export const findFactoringconfiggarantiaPk = async (tx: TxClient, factoringconfi
 
     return factoringconfiggarantia;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -73,7 +73,7 @@ export const insertFactoringconfiggarantia = async (tx: TxClient, factoringconfi
 
     return nuevo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -88,7 +88,7 @@ export const updateFactoringconfiggarantia = async (tx: TxClient, factoringconfi
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -103,7 +103,7 @@ export const deleteFactoringconfiggarantia = async (tx: TxClient, factoringconfi
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

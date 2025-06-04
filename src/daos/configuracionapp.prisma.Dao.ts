@@ -2,7 +2,7 @@ import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma, configuracion_app } from "#src/models/prisma/ft_factoring/client";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { formatError } from "#src/utils/errorUtils.js";
+
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
@@ -30,7 +30,7 @@ export const getConfiguracionapps = async (tx: TxClient, estados: number[]) => {
 
     return configuracionapps;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -43,7 +43,7 @@ export const getConfiguracionappByIdconfiguracionapp = async (tx: TxClient, idco
 
     return configuracionapp;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -58,7 +58,7 @@ export const getConfiguracionappByConfiguracionappid = async (tx: TxClient, conf
 
     return configuracionapp;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -74,7 +74,7 @@ export const findConfiguracionappPk = async (tx: TxClient, configuracionappid: s
 
     return configuracionapp;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -85,7 +85,7 @@ export const insertConfiguracionapp = async (tx: TxClient, configuracionapp: Pri
 
     return nuevo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -100,7 +100,7 @@ export const updateConfiguracionapp = async (tx: TxClient, configuracionappid: s
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -115,7 +115,7 @@ export const deleteConfiguracionapp = async (tx: TxClient, configuracionappid: s
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

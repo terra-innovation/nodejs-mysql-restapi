@@ -2,7 +2,7 @@ import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma, archivo_estado } from "#src/models/prisma/ft_factoring/client";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { formatError } from "#src/utils/errorUtils.js";
+
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
@@ -18,7 +18,7 @@ export const getArchivoestados = async (tx: TxClient, estados: number[]) => {
 
     return archivoestados;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -28,7 +28,7 @@ export const getArchivoestadoByIdarchivoestado = async (tx: TxClient, idarchivoe
     const archivoestado = await tx.archivo_estado.findUnique({ where: { idarchivoestado: idarchivoestado } });
     return archivoestado;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -43,7 +43,7 @@ export const getArchivoestadoByArchivoestadoid = async (tx: TxClient, archivoest
 
     return archivoestado;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -59,7 +59,7 @@ export const findArchivoestadoPk = async (tx: TxClient, archivoestadoid: string)
 
     return archivoestado;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -70,7 +70,7 @@ export const insertArchivoestado = async (tx: TxClient, archivoestado: Prisma.ar
 
     return nuevo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -85,7 +85,7 @@ export const updateArchivoestado = async (tx: TxClient, archivoestadoid: string,
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -100,7 +100,7 @@ export const deleteArchivoestado = async (tx: TxClient, archivoestadoid: string,
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -115,7 +115,7 @@ export const activateArchivoestado = async (tx: TxClient, archivoestadoid: strin
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

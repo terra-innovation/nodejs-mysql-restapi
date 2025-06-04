@@ -2,7 +2,7 @@ import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma, usuario_servicio_empresa } from "#src/models/prisma/ft_factoring/client";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { formatError } from "#src/utils/errorUtils.js";
+
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
@@ -18,7 +18,7 @@ export const getUsuarioservicioempresaByIdusuarioIdServicioIdempresa = async (tx
 
     return usuarioservicioempresa;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -35,7 +35,7 @@ export const getUsuarioservicioempresas = async (tx: TxClient, estados: number[]
 
     return usuarioservicioempresas;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -50,7 +50,7 @@ export const getUsuarioservicioempresaByIdusuarioservicioempresa = async (tx: Tx
 
     return usuarioservicioempresa;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -65,7 +65,7 @@ export const getUsuarioservicioempresaByUsuarioservicioempresaid = async (tx: Tx
 
     return usuarioservicioempresa;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -81,7 +81,7 @@ export const findUsuarioservicioempresaPk = async (tx: TxClient, usuarioservicio
 
     return usuarioservicioempresa;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -92,7 +92,7 @@ export const insertUsuarioservicioempresa = async (tx: TxClient, usuarioservicio
 
     return nuevo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -107,7 +107,7 @@ export const updateUsuarioservicioempresa = async (tx: TxClient, usuarioservicio
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -122,7 +122,7 @@ export const deleteUsuarioservicioempresa = async (tx: TxClient, usuarioservicio
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

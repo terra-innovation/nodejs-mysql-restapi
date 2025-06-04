@@ -2,7 +2,7 @@ import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma, factura_medio_pago } from "#src/models/prisma/ft_factoring/client";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { formatError } from "#src/utils/errorUtils.js";
+
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
@@ -18,7 +18,7 @@ export const getFacturamediopagos = async (tx: TxClient, estados: number[]) => {
 
     return facturamediopagos;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -31,7 +31,7 @@ export const getFacturamediopagoByIdfacturamediopago = async (tx: TxClient, idfa
 
     return facturamediopago;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -46,7 +46,7 @@ export const getFacturamediopagoByFacturamediopagoid = async (tx: TxClient, fact
 
     return facturamediopago;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -62,7 +62,7 @@ export const findFacturamediopagoPk = async (tx: TxClient, facturamediopagoid: s
 
     return facturamediopago;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -73,7 +73,7 @@ export const insertFacturamediopago = async (tx: TxClient, facturamediopago: Pri
 
     return nuevo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -88,7 +88,7 @@ export const updateFacturamediopago = async (tx: TxClient, facturamediopagoid: s
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -103,7 +103,7 @@ export const deleteFacturamediopago = async (tx: TxClient, facturamediopagoid: s
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

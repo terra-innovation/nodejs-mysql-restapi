@@ -2,7 +2,7 @@ import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma, archivo_factura } from "#src/models/prisma/ft_factoring/client";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { formatError } from "#src/utils/errorUtils.js";
+
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
@@ -37,7 +37,7 @@ export const getArchivofacturasByIdfactoring = async (tx: TxClient, idfactoring:
 
     return archivofacturas;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -54,7 +54,7 @@ export const getArchivofacturas = async (tx: TxClient, estados: number[]) => {
 
     return archivofacturas;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -72,7 +72,7 @@ export const getArchivoFacturaByIdarchivoIdfactura = async (tx: TxClient, idarch
 
     return archivofactura;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -89,7 +89,7 @@ export const findArchivoFacturaPk = async (tx: TxClient, archivofactura: Partial
 
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -100,7 +100,7 @@ export const insertArchivoFactura = async (tx: TxClient, archivofactura: Prisma.
 
     return nuevo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -118,7 +118,7 @@ export const updateArchivoFactura = async (tx: TxClient, idarchivo: number, idfa
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -136,7 +136,7 @@ export const deleteArchivoFactura = async (tx: TxClient, idarchivo: number, idfa
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -154,7 +154,7 @@ export const activateArchivoFactura = async (tx: TxClient, idarchivo: number, id
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

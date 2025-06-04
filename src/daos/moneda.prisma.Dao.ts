@@ -2,7 +2,7 @@ import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma, moneda } from "#src/models/prisma/ft_factoring/client";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { formatError } from "#src/utils/errorUtils.js";
+
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
@@ -18,7 +18,7 @@ export const getMonedas = async (tx: TxClient, estados: number[]) => {
 
     return monedas;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -31,7 +31,7 @@ export const getMonedaByIdmoneda = async (tx: TxClient, idmoneda: number) => {
 
     return moneda;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -46,7 +46,7 @@ export const getMonedaByCodigo = async (tx: TxClient, codigo) => {
 
     return moneda;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -61,7 +61,7 @@ export const getMonedaByMonedaid = async (tx: TxClient, monedaid: string) => {
 
     return moneda;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -77,7 +77,7 @@ export const findMonedaPk = async (tx: TxClient, monedaid: string) => {
 
     return moneda;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -88,7 +88,7 @@ export const insertMoneda = async (tx: TxClient, moneda: Prisma.monedaCreateInpu
 
     return nuevo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -103,7 +103,7 @@ export const updateMoneda = async (tx: TxClient, monedaid: string, moneda: Prism
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -118,7 +118,7 @@ export const deleteMoneda = async (tx: TxClient, monedaid: string, idusuariomod:
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

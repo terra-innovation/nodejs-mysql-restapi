@@ -2,7 +2,7 @@ import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma, factoring_propuesta } from "#src/models/prisma/ft_factoring/client";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { formatError } from "#src/utils/errorUtils.js";
+
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
@@ -21,7 +21,7 @@ export const getFactoringpropuestasByIdfactoring = async (tx: TxClient, idfactor
     });
     return facturas;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -39,7 +39,7 @@ export const getFactoringpropuestas = async (tx: TxClient, estados: number[]) =>
     return factoringpropuestas;
   } catch (error) {
     log.error(line(), error.original.code);
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -54,7 +54,7 @@ export const getFactoringpropuestaByIdfactoringpropuesta = async (tx: TxClient, 
 
     return factoringpropuesta;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -85,7 +85,7 @@ export const getFactoringpropuestaByFactoringpropuestaid = async (tx: TxClient, 
 
     return factoringpropuesta;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -101,7 +101,7 @@ export const findFactoringpropuestaPk = async (tx: TxClient, factoringpropuestai
 
     return factoringpropuesta;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -114,7 +114,7 @@ export const insertFactoringpropuesta = async (tx: TxClient, factoringpropuesta:
 
     return nuevo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -129,7 +129,7 @@ export const updateFactoringpropuesta = async (tx: TxClient, factoringpropuestai
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -144,7 +144,7 @@ export const deleteFactoringpropuesta = async (tx: TxClient, factoringpropuestai
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -159,7 +159,7 @@ export const activateFactoringpropuesta = async (tx: TxClient, factoringpropuest
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

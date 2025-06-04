@@ -2,7 +2,7 @@ import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma, cuenta_bancaria } from "#src/models/prisma/ft_factoring/client";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { formatError } from "#src/utils/errorUtils.js";
+
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
@@ -32,7 +32,7 @@ export const getCuentasbancariasByIdempresaAndAlias = async (tx: TxClient, idemp
 
     return cuentasbancarias;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -57,7 +57,7 @@ export const getCuentasbancariasByIdbancoAndNumero = async (tx: TxClient, idbanc
 
     return cuentasbancarias;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -101,7 +101,7 @@ export const getCuentasbancariasByIdusuarioAndAlias = async (tx: TxClient, idusu
 
     return cuentasbancarias;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -144,7 +144,7 @@ export const getCuentasbancariasByIdusuario = async (tx: TxClient, idusuario: nu
 
     return cuentasbancarias;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -155,7 +155,7 @@ export const getCuentabancariaByIdcuentabancaria = async (tx: TxClient, idcuenta
 
     return cuentabancaria;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -196,7 +196,7 @@ export const getCuentasbancariasByEmpresaidAndMoneda = async (tx: TxClient, empr
 
     return cuentasbancarias;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -234,7 +234,7 @@ export const getCuentabancariaByIdcuentabancariaIdempresaIdusuario = async (tx: 
     //log.debug(line(), cuentabancaria);
     return cuentabancaria;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -259,7 +259,7 @@ export const getCuentabancariaByCuentabancariaid = async (tx: TxClient, cuentaba
     });
     return cuentabancaria;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -275,7 +275,7 @@ export const findCuentabancariaPk = async (tx: TxClient, cuentabancariaid: strin
 
     return cuentabancaria;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -303,7 +303,7 @@ export const getCuentasbancarias = async (tx: TxClient, estado) => {
 
     return cuentasbancarias;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -314,7 +314,7 @@ export const insertCuentabancaria = async (tx: TxClient, cuentabancaria: Prisma.
 
     return nuevo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -333,7 +333,7 @@ export const updateCuentabancariaOnlyAliasByCuentabancariaid = async (tx: TxClie
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -348,7 +348,7 @@ export const updateCuentabancaria = async (tx: TxClient, cuentabancariaid: strin
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -363,7 +363,7 @@ export const deleteCuentabancaria = async (tx: TxClient, cuentabancariaid: strin
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -378,7 +378,7 @@ export const activateCuentabancaria = async (tx: TxClient, cuentabancariaid: str
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

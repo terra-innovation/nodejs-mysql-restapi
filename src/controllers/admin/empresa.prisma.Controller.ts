@@ -27,23 +27,18 @@ export const activateEmpresa = async (req: Request, res: Response) => {
   const empresaValidated = empresaSchema.validateSync({ empresaid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "empresaValidated:", empresaValidated);
 
-  const empresaToActivated = await prismaFT.client.$transaction(
+  const empresaActivated = await prismaFT.client.$transaction(
     async (tx) => {
-      var camposAuditoria: Partial<empresa> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
-      camposAuditoria.fechamod = new Date();
-      camposAuditoria.estado = 1;
+      const empresaActivated = await empresaDao.activateEmpresa(tx, empresaValidated.empresaid, req.session_user.usuario.idusuario);
 
-      const $Activated = await empresaDao.activateEmpresa(tx, empresaValidated.empresaid, req.session_user.usuario.idusuario);
-      if (empresaToActivated[0] === 0) {
-        throw new ClientError("Empresa no existe", 404);
-      }
-      log.debug(line(), "empresaActivated:", empresaToActivated);
-      return empresaToActivated;
+      log.debug(line(), "empresaActivated:", empresaActivated);
+      return empresaActivated;
     },
     { timeout: prismaFT.transactionTimeout }
   );
-  response(res, 204, empresaToActivated);
+  {
+    response(res, 204, {});
+  }
 };
 
 export const deleteEmpresa = async (req: Request, res: Response) => {

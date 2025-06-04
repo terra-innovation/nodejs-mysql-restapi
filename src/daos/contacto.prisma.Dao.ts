@@ -2,7 +2,7 @@ import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma, contacto } from "#src/models/prisma/ft_factoring/client";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { formatError } from "#src/utils/errorUtils.js";
+
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
@@ -26,7 +26,7 @@ export const getContactosByIdempresaAndEmail = async (tx: TxClient, idempresa, e
 
     return contactos;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -54,7 +54,7 @@ export const getContactosByIdempresas = async (tx: TxClient, idempresas: number[
 
     return contactos;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -71,7 +71,7 @@ export const getContactos = async (tx: TxClient, estados: number[]) => {
 
     return contactos;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -82,7 +82,7 @@ export const getContactoByIdcontacto = async (tx: TxClient, idcontacto: number) 
 
     return contacto;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -97,7 +97,7 @@ export const getContactoByContactoid = async (tx: TxClient, contactoid: string) 
 
     return contacto;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -113,7 +113,7 @@ export const findContactoPk = async (tx: TxClient, contactoid: string) => {
 
     return contacto;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -124,7 +124,7 @@ export const insertContacto = async (tx: TxClient, contacto: Prisma.contactoCrea
 
     return nuevo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -139,7 +139,7 @@ export const updateContacto = async (tx: TxClient, contactoid: string, contacto:
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -154,7 +154,7 @@ export const deleteContacto = async (tx: TxClient, contactoid: string, idusuario
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

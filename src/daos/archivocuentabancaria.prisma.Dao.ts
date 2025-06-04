@@ -2,7 +2,7 @@ import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma, archivo_cuenta_bancaria } from "#src/models/prisma/ft_factoring/client";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { formatError } from "#src/utils/errorUtils.js";
+
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
@@ -18,7 +18,7 @@ export const getArchivocuentabancarias = async (tx: TxClient, estados: number[])
 
     return archivocuentabancarias;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -36,7 +36,7 @@ export const getArchivoCuentaBancariaByIdarchivoIdcuentabancaria = async (tx: Tx
 
     return archivocuentabancaria;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -47,7 +47,7 @@ export const insertArchivoCuentaBancaria = async (tx: TxClient, archivocuentaban
 
     return nuevo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -65,7 +65,7 @@ export const updateArchivoCuentaBancaria = async (tx: TxClient, idarchivo: numbe
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -83,7 +83,7 @@ export const deleteArchivoCuentaBancaria = async (tx: TxClient, idarchivo: numbe
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -101,7 +101,7 @@ export const activateArchivoCuentaBancaria = async (tx: TxClient, idarchivo: num
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

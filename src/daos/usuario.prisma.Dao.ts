@@ -2,7 +2,7 @@ import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma, usuario } from "#src/models/prisma/ft_factoring/client";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { formatError } from "#src/utils/errorUtils.js";
+
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
@@ -26,7 +26,7 @@ export const getUsuarioDatosContactoByIdusuario = async (tx: TxClient, idusuario
 
     return usuario;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -41,7 +41,7 @@ export const getUsuariosActivos = async (tx: TxClient) => {
 
     return usuarios;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -59,7 +59,7 @@ export const getUsuarioByIdusuario = async (tx: TxClient, idusuario: number) => 
 
     return usuario;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -84,7 +84,7 @@ export const autenticarUsuario = async (tx: TxClient, email: string) => {
 
     return usuario;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -106,7 +106,7 @@ export const getUsuarioAndRolesByEmail = async (tx: TxClient, email: string) => 
 
     return usuario;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -120,7 +120,7 @@ export const getUsuarioByUsuarioid = async (tx: TxClient, usuarioid: string) => 
     });
     return usuario;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -135,7 +135,7 @@ export const getUsuarioByEmail = async (tx: TxClient, email: string) => {
 
     return usuario;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -165,7 +165,7 @@ export const getUsuarioByNumerodocumento = async (tx: TxClient, documentonumero)
 
     return usuario;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -181,7 +181,7 @@ export const findUsuarioPk = async (tx: TxClient, usuarioid: string) => {
 
     return usuario;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -207,7 +207,7 @@ export const updateUsuario = async (tx: TxClient, usuarioid: string, usuario: Pr
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -222,7 +222,7 @@ export const deleteUsuario = async (tx: TxClient, usuarioid: string, idusuariomo
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

@@ -2,7 +2,7 @@ import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma, pep_vinculo } from "#src/models/prisma/ft_factoring/client";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { formatError } from "#src/utils/errorUtils.js";
+
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
@@ -18,7 +18,7 @@ export const getPepvinculos = async (tx: TxClient, estados: number[]) => {
 
     return pepvinculos;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -33,7 +33,7 @@ export const getPepvinculoByIdpepvinculo = async (tx: TxClient, idpepvinculo: nu
 
     return pepvinculo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -48,7 +48,7 @@ export const getPepvinculoByPepvinculoid = async (tx: TxClient, pepvinculoid: st
 
     return pepvinculo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -64,7 +64,7 @@ export const findPepvinculoPk = async (tx: TxClient, pepvinculoid: string) => {
 
     return pepvinculo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -75,7 +75,7 @@ export const insertPepvinculo = async (tx: TxClient, pepvinculo: Prisma.pep_vinc
 
     return nuevo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -90,7 +90,7 @@ export const updatePepvinculo = async (tx: TxClient, pepvinculoid: string, pepvi
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -105,7 +105,7 @@ export const deletePepvinculo = async (tx: TxClient, pepvinculoid: string, idusu
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

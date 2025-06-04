@@ -3,7 +3,7 @@ import type { Prisma, colaborador } from "#src/models/prisma/ft_factoring/client
 
 import { Empresa } from "#src/models/ft_factoring/Empresa.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { formatError } from "#src/utils/errorUtils.js";
+
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
@@ -17,7 +17,7 @@ export const getColaboradorByIdEmpresaAndIdpersona = async (tx: TxClient, idempr
     });
     return colaborador;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -64,7 +64,7 @@ export const getColaboradoresActivas = async (tx: TxClient) => {
 
     return colaboradores;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -77,7 +77,7 @@ export const getColaboradorByIdcolaborador = async (tx: TxClient, idcolaborador:
 
     return colaborador;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -93,7 +93,7 @@ export const getColaboradorByColaboradorid = async (tx: TxClient, colaboradorid:
 
     return colaborador;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -109,7 +109,7 @@ export const findColaboradorPk = async (tx: TxClient, colaboradorid: string) => 
 
     return colaborador;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -120,7 +120,7 @@ export const insertColaborador = async (tx: TxClient, colaborador: Prisma.colabo
 
     return nuevo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -135,7 +135,7 @@ export const updateColaborador = async (tx: TxClient, colaboradorid: string, col
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -150,7 +150,7 @@ export const deleteColaborador = async (tx: TxClient, colaboradorid: string, idu
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

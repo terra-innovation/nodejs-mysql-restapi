@@ -1,7 +1,7 @@
 import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma, persona } from "#src/models/prisma/ft_factoring/client";
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { formatError } from "#src/utils/errorUtils.js";
+
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
@@ -59,7 +59,7 @@ export const getPersonasByVerificacion = async (tx: TxClient, estado: number[], 
 
     return personas;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -90,7 +90,7 @@ export const getPersonaByIdusuario = async (tx: TxClient, idusuario: number) => 
     });
     return persona;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -122,7 +122,7 @@ export const getPersonaByIdpersona = async (tx: TxClient, idpersona: number) => 
 
     return persona;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -153,7 +153,7 @@ export const getPersonaByPersonaid = async (tx: TxClient, personaid: string) => 
     });
     return persona;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -171,7 +171,7 @@ export const findPersonaPk = async (tx: TxClient, personaid: string) => {
 
     return persona;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -206,7 +206,7 @@ export const getPersonas = async (tx: TxClient, estado: number[]) => {
 
     return personas;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -217,7 +217,7 @@ export const insertPersona = async (tx: TxClient, persona: Prisma.personaCreateI
 
     return nuevo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -232,7 +232,7 @@ export const updatePersona = async (tx: TxClient, personaid: string, persona: Pr
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -247,7 +247,7 @@ export const deletePersona = async (tx: TxClient, personaid: string, idusuariomo
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -262,7 +262,7 @@ export const activatePersona = async (tx: TxClient, personaid: string, idusuario
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

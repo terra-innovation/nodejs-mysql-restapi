@@ -2,7 +2,7 @@ import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma, empresa } from "#src/models/prisma/ft_factoring/client";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { formatError } from "#src/utils/errorUtils.js";
+
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
@@ -21,7 +21,7 @@ export const getEmpresasByIdempresas = async (tx: TxClient, idempresas: number[]
 
     return empresas;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -49,7 +49,7 @@ export const getEmpresasByIdusuario = async (tx: TxClient, idusuario: number, es
 
     return empresas;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -78,7 +78,7 @@ export const getEmpresaByIdusuarioAndRuc = async (tx: TxClient, idusuario: numbe
 
     return empresas;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -103,7 +103,7 @@ export const getEmpresaByIdusuarioAndEmpresaid = async (tx: TxClient, idusuario:
 
     return empresas;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -133,7 +133,7 @@ export const getEmpresas = async (tx: TxClient, estados: number[]) => {
 
     return empresas;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -153,7 +153,7 @@ export const getEmpresaByIdempresa = async (tx: TxClient, idempresa: number) => 
 
     return empresa;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -171,7 +171,7 @@ export const getEmpresaByEmpresaid = async (tx: TxClient, empresaid: string) => 
 
     return empresa;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -186,7 +186,7 @@ export const getEmpresaByRuc = async (tx: TxClient, ruc) => {
 
     return empresa;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -202,7 +202,7 @@ export const findEmpresaPk = async (tx: TxClient, empresaid: string) => {
 
     return empresa;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -213,7 +213,7 @@ export const insertEmpresa = async (tx: TxClient, empresa: Prisma.empresaCreateI
 
     return nuevo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -228,7 +228,7 @@ export const updateEmpresa = async (tx: TxClient, empresaid: string, empresa: Pr
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -243,7 +243,7 @@ export const deleteEmpresa = async (tx: TxClient, empresaid: string, idusuariomo
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -258,7 +258,7 @@ export const activateEmpresa = async (tx: TxClient, empresaid: string, idusuario
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

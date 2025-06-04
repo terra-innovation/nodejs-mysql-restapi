@@ -2,7 +2,7 @@ import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma, financiero_concepto } from "#src/models/prisma/ft_factoring/client";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { formatError } from "#src/utils/errorUtils.js";
+
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
@@ -30,7 +30,7 @@ export const getFinancieroconceptos = async (tx: TxClient, estados: number[]) =>
 
     return financieroconceptos;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -43,7 +43,7 @@ export const getFinancieroconceptoByIdfinancieroconcepto = async (tx: TxClient, 
 
     return financieroconcepto;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -58,7 +58,7 @@ export const getFinancieroconceptoByFinancieroconceptoid = async (tx: TxClient, 
 
     return financieroconcepto;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -74,7 +74,7 @@ export const findFinancieroconceptoPk = async (tx: TxClient, financieroconceptoi
 
     return financieroconcepto;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -85,7 +85,7 @@ export const insertFinancieroconcepto = async (tx: TxClient, financieroconcepto:
 
     return nuevo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -100,7 +100,7 @@ export const updateFinancieroconcepto = async (tx: TxClient, financieroconceptoi
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -115,7 +115,7 @@ export const deleteFinancieroconcepto = async (tx: TxClient, financieroconceptoi
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

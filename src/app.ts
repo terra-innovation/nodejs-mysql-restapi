@@ -8,7 +8,7 @@ import { notFoundHandlerMiddleware } from "#src/middlewares/notFoundHandlerMiddl
 
 import indexRoutes from "#src/routes/index.routes.js";
 import adminRoutes from "#src/routes/admin/index.prisma.js";
-import empresarioRoutes from "#src/routes/empresario/index.js";
+import empresarioRoutes from "#src/routes/empresario/index.prisma.js";
 import inversionistaRoutes from "#src/routes/empresario/index.js";
 import usuarioRoutes from "#src/routes/empresario/index.js";
 import secureRoutes from "#src/routes/secure/index.js";

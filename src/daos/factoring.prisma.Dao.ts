@@ -2,7 +2,7 @@ import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma, factoring } from "#src/models/prisma/ft_factoring/client";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { formatError } from "#src/utils/errorUtils.js";
+
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
@@ -32,7 +32,7 @@ export const getFactoringsOportunidades = async (tx: TxClient, idfactoringestado
 
     return factorings;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -83,7 +83,7 @@ export const getFactoringsByIdfactoringestado = async (tx: TxClient, idfactoring
 
     return factorings;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -134,7 +134,7 @@ export const getFactoringsByIdcedentes = async (tx: TxClient, idcedentes: number
 
     return factorings;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -169,7 +169,7 @@ export const getFactoringByRucCedenteAndCodigoFactura = async (tx: TxClient, ruc
     });
     return factoring;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -204,7 +204,7 @@ export const getFactoringByFactoringidAndIdcontactocedente = async (tx: TxClient
     //log.debug(line(),"factoring: ", factoring);
     return factoring;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -238,7 +238,7 @@ export const getFactoringsCotizacionesByIdcontactocedente = async (tx: TxClient,
 
     return factorings;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -286,7 +286,7 @@ export const getFactoringsByEstados = async (tx: TxClient, estados: number[]) =>
 
     return factorings;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -310,7 +310,7 @@ export const getFactoringByIdfactoring = async (tx: TxClient, idfactoring: numbe
         factoring_ejecutado: true,
         factoring_ejecutado_factoringes: true,
         factoring_estado: true,
-        factoring_facturas: true,
+        factoring_facturas: { include: { factura: true } },
         factoring_historial_estados: true,
         factoring_pagos: true,
         factoring_propuesta_aceptada: true,
@@ -328,7 +328,7 @@ export const getFactoringByIdfactoring = async (tx: TxClient, idfactoring: numbe
 
     return factoring;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -358,7 +358,7 @@ export const getFactoringByFactoringid = async (tx: TxClient, factoringid: strin
     });
     return factoring;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -374,7 +374,7 @@ export const findFactoringPk = async (tx: TxClient, factoringid: string) => {
 
     return factoring;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -385,7 +385,7 @@ export const insertFactoring = async (tx: TxClient, factoring: Prisma.factoringC
 
     return nuevo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -400,7 +400,7 @@ export const updateFactoring = async (tx: TxClient, factoringid: string, factori
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -415,7 +415,7 @@ export const deleteFactoring = async (tx: TxClient, factoringid: string, idusuar
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -430,7 +430,7 @@ export const activateFactoring = async (tx: TxClient, factoringid: string, idusu
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

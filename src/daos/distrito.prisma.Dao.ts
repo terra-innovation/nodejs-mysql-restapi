@@ -2,7 +2,7 @@ import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma, distrito } from "#src/models/prisma/ft_factoring/client";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { formatError } from "#src/utils/errorUtils.js";
+
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
@@ -25,7 +25,7 @@ export const getDistritos = async (tx: TxClient, estados: number[]) => {
 
     return distritos;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -40,7 +40,7 @@ export const getDistritoByIddistrito = async (tx: TxClient, iddistrito: number) 
 
     return distrito;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -55,7 +55,7 @@ export const getDistritoByDistritoid = async (tx: TxClient, distritoid: string) 
 
     return distrito;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -71,7 +71,7 @@ export const findDistritoPk = async (tx: TxClient, distritoid: string) => {
 
     return distrito;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -82,7 +82,7 @@ export const insertDistrito = async (tx: TxClient, distrito: Prisma.distritoCrea
 
     return nuevo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -97,7 +97,7 @@ export const updateDistrito = async (tx: TxClient, distritoid: string, distrito:
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -112,7 +112,7 @@ export const deleteDistrito = async (tx: TxClient, distritoid: string, idusuario
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

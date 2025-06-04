@@ -2,7 +2,7 @@ import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma, provincia } from "#src/models/prisma/ft_factoring/client";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { formatError } from "#src/utils/errorUtils.js";
+
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
@@ -18,7 +18,7 @@ export const getProvincias = async (tx: TxClient, estados: number[]) => {
 
     return provincias;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -29,7 +29,7 @@ export const getProvinciaByIdprovincia = async (tx: TxClient, idprovincia: numbe
 
     return provincia;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -44,7 +44,7 @@ export const getProvinciaByProvinciaid = async (tx: TxClient, provinciaid: strin
 
     return provincia;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -60,7 +60,7 @@ export const findProvinciaPk = async (tx: TxClient, provinciaid: string) => {
 
     return provincia;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -71,7 +71,7 @@ export const insertProvincia = async (tx: TxClient, provincia: Prisma.provinciaC
 
     return nuevo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -86,7 +86,7 @@ export const updateProvincia = async (tx: TxClient, provinciaid: string, provinc
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -101,7 +101,7 @@ export const deleteProvincia = async (tx: TxClient, provinciaid: string, idusuar
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

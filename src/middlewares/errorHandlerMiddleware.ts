@@ -18,7 +18,7 @@ export function errorHandlerMiddleware(err: any, req: Request, res: Response, ne
       path: dato.path,
     }));
 
-    log.error(line(), "ValidationError:", util.inspect(mensajeError, { colors: true, depth: null }));
+    log.error(line(), "ValidationError:", mensajeError);
   }
 
   if (statusCode === undefined) {

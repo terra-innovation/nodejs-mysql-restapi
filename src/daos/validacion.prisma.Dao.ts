@@ -2,7 +2,7 @@ import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma, validacion } from "#src/models/prisma/ft_factoring/client";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { formatError } from "#src/utils/errorUtils.js";
+
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
@@ -20,7 +20,7 @@ export const getValidacionByIdusuarioAndValor = async (tx: TxClient, idusuario: 
 
     return validacions;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -39,7 +39,7 @@ export const getValidacionByIdusuarioAndIdvalidaciontipo = async (tx: TxClient, 
 
     return validacions;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -58,7 +58,7 @@ export const getValidacionByIdusuarioAndCodigo = async (tx: TxClient, idusuario:
 
     return validacions;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -75,7 +75,7 @@ export const getValidacions = async (tx: TxClient, estados: number[]) => {
 
     return validacions;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -90,7 +90,7 @@ export const getValidacionByIdvalidacion = async (tx: TxClient, idvalidacion: nu
 
     return validacion;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -105,7 +105,7 @@ export const getValidacionByValidacionid = async (tx: TxClient, validacionid: st
 
     return validacion;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -121,7 +121,7 @@ export const findValidacionPk = async (tx: TxClient, validacionid: string) => {
 
     return validacion;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -132,7 +132,7 @@ export const insertValidacion = async (tx: TxClient, validacion: Prisma.validaci
 
     return nuevo;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -147,7 +147,7 @@ export const updateValidacion = async (tx: TxClient, validacionid: string, valid
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -162,7 +162,7 @@ export const deleteValidacion = async (tx: TxClient, validacionid: string, idusu
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };
@@ -177,7 +177,7 @@ export const activateValidacion = async (tx: TxClient, validacionid: string, idu
     });
     return result;
   } catch (error) {
-    log.error(line(), "", formatError(error));
+    log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
   }
 };

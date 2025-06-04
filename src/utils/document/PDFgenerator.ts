@@ -1,3 +1,4 @@
+import { FactoringPDF, FactoringpropuestaPDF } from "#src/types/Prisma.types.js";
 import PDFDocument from "pdfkit-table";
 import { createWriteStream } from "fs";
 
@@ -14,7 +15,7 @@ class PDFGenerator {
     this.filePath = filePath; // Ruta donde se guardará el PDF
   }
 
-  generateFactoringQuote(factoring, factoringpropuesta) {
+  generateFactoringQuote(factoring: FactoringPDF, factoringpropuesta: FactoringpropuestaPDF) {
     return new Promise((resolve, reject) => {
       const doc = new PDFDocument({ size: "A4", margin: 50 });
 
@@ -41,14 +42,14 @@ class PDFGenerator {
       addText(11, "Helvetica", `Fecha: ${formatDate2(factoringpropuesta.fecha_propuesta)}`, 50);
       addText(11, "Helvetica", `Código de propuesta: ${factoringpropuesta.code}`, 17);
       addText(5, "Helvetica", ``, 5);
-      addText(11, "Helvetica", `Cliente: ${factoring.cedente_empresa.razon_social}`, 17);
-      addText(11, "Helvetica", `RUC: ${factoring.cedente_empresa.ruc}`, 17);
+      addText(11, "Helvetica", `Cliente: ${factoring.empresa_cedente.razon_social}`, 17);
+      addText(11, "Helvetica", `RUC: ${factoring.empresa_cedente.ruc}`, 17);
       addText(5, "Helvetica", ``, 5);
-      addText(11, "Helvetica", `Pagador: ${factoring.aceptante_empresa.razon_social}`, 17);
-      addText(11, "Helvetica", `RUC: ${factoring.aceptante_empresa.ruc}`, 17);
+      addText(11, "Helvetica", `Pagador: ${factoring.empresa_aceptante.razon_social}`, 17);
+      addText(11, "Helvetica", `RUC: ${factoring.empresa_aceptante.ruc}`, 17);
       addText(5, "Helvetica", ``, 5);
 
-      const facturas = factoring.factura_factura_factoring_facturas.map((obj) => `${obj.serie}-${obj.numero_comprobante}`).join(", ");
+      const facturas = factoring.factoring_facturas.map((obj) => `${obj.factura.serie}-${obj.factura.numero_comprobante}`).join(", ");
 
       // Detalle de la cotización (tabla)
 
@@ -61,13 +62,13 @@ class PDFGenerator {
         datas: [
           { concepto: "Factura", descripcion: facturas },
           { concepto: "Valor neto", descripcion: formatNumber(factoringpropuesta.monto_neto, 2) },
-          { concepto: "Moneda", descripcion: factoring.moneda_moneda.codigo + " (" + factoring.moneda_moneda.nombre + ")" },
+          { concepto: "Moneda", descripcion: factoring.moneda.codigo + " (" + factoring.moneda.nombre + ")" },
           { concepto: "Fecha de pago (estimado)", descripcion: formatDate1(factoringpropuesta.fecha_pago_estimado) },
 
           { concepto: "Días (estimado)", descripcion: factoringpropuesta.dias_pago_estimado },
           { concepto: "Tasa mensual", descripcion: formatPercentage(factoringpropuesta.tdm, 2) },
           { concepto: "Financiamiento", descripcion: formatPercentage(factoringpropuesta.porcentaje_financiado_estimado, 2) },
-          { concepto: "Tipo factoring", descripcion: factoringpropuesta.factoringtipo_factoring_tipo.nombre },
+          { concepto: "Tipo factoring", descripcion: factoringpropuesta.factoring_tipo.nombre },
 
           { concepto: "Valor garantía", descripcion: formatNumber(factoringpropuesta.monto_garantia, 2) },
           { concepto: "Valor financiado", descripcion: formatNumber(factoringpropuesta.monto_financiado, 2) },
