@@ -27,11 +27,7 @@ export const activateCuentabancariaestado = async (req: Request, res: Response) 
 
   const cuentabancariaestadoActivated = await prismaFT.client.$transaction(
     async (tx) => {
-      const $Activated = await cuentabancariaestadoDao.activateCuentabancariaestado(tx, cuentabancariaestadoValidated.cuentabancariaestadoid, req.session_user.usuario.idusuario);
-      if (cuentabancariaestadoActivated[0] === 0) {
-        throw new ClientError("Cuentabancariaestado no existe", 404);
-      }
-
+      const cuentabancariaestadoActivated = await cuentabancariaestadoDao.activateCuentabancariaestado(tx, cuentabancariaestadoValidated.cuentabancariaestadoid, req.session_user.usuario.idusuario);
       log.debug(line(), "cuentabancariaestadoActivated:", cuentabancariaestadoActivated);
       return cuentabancariaestadoActivated;
     },
@@ -56,9 +52,7 @@ export const deleteCuentabancariaestado = async (req: Request, res: Response) =>
   const cuentabancariaestadoDeleted = await prismaFT.client.$transaction(
     async (tx) => {
       const cuentabancariaestadoDeleted = await cuentabancariaestadoDao.deleteCuentabancariaestado(tx, cuentabancariaestadoValidated.cuentabancariaestadoid, req.session_user.usuario.idusuario);
-      if (cuentabancariaestadoDeleted[0] === 0) {
-        throw new ClientError("Cuentabancariaestado no existe", 404);
-      }
+
       log.debug(line(), "cuentabancariaestadoDeleted:", cuentabancariaestadoDeleted);
       return cuentabancariaestadoDeleted;
     },
@@ -99,7 +93,7 @@ export const updateCuentabancariaestado = async (req: Request, res: Response) =>
       }
       log.info(line(), id);
 
-      const cuentabancariaestadoUpdated = await cuentabancariaestadoDao.getCuentabancariaestadoByCuentabancariaestadoid(tx, id);
+      const cuentabancariaestadoUpdated = await cuentabancariaestadoDao.getCuentabancariaestadoByCuentabancariaestadoid(tx, cuentabancariaestadoValidated.cuentabancariaestadoid);
       if (!cuentabancariaestadoUpdated) {
         throw new ClientError("Cuentabancariaestado no existe", 404);
       }
@@ -151,7 +145,7 @@ export const createCuentabancariaestado = async (req: Request, res: Response) =>
 
   const cuentabancariaestadoCreated = await prismaFT.client.$transaction(
     async (tx) => {
-      const cuentabancariaestadoCreate: Prisma.cuenta_bancaria_estadoCreateInput = {
+      const cuentabancariaestadoToCreate: Prisma.cuenta_bancaria_estadoCreateInput = {
         cuentabancariaestadoid: uuidv4(),
         nombre: cuentabancariaestadoValidated.nombre,
         alias: cuentabancariaestadoValidated.alias,
@@ -163,7 +157,7 @@ export const createCuentabancariaestado = async (req: Request, res: Response) =>
         estado: 1,
       };
 
-      const cuentabancariaestadoCreated = await cuentabancariaestadoDao.insertCuentabancariaestado(tx, cuentabancariaestadoCreate);
+      const cuentabancariaestadoCreated = await cuentabancariaestadoDao.insertCuentabancariaestado(tx, cuentabancariaestadoToCreate);
 
       return cuentabancariaestadoCreated;
     },
