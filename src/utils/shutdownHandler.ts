@@ -15,7 +15,7 @@ async function gracefulShutdown(signal: string) {
     log.info(line(), "Graceful shutdown complete.");
     process.exit(0);
   } catch (err) {
-    log.error(line(), "Error during shutdown:");
+    log.error(line(), "Error during shutdown:", err);
     process.exit(1);
   }
 }

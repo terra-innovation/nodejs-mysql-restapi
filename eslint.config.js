@@ -31,14 +31,17 @@ export default [
     },
     settings: {
       "import/resolver": {
-        node: {
-          extensions: [".js", ".jsx", ".ts", ".tsx"],
+        typescript: {
+          project: "./tsconfig.json",
         },
         alias: {
           map: [
             ["#root", resolve("")],
             ["#src", resolve("src")],
           ],
+          extensions: [".js", ".jsx", ".ts", ".tsx"],
+        },
+        node: {
           extensions: [".js", ".jsx", ".ts", ".tsx"],
         },
       },
@@ -51,12 +54,14 @@ export default [
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-inferrable-types": "warn",
       "@typescript-eslint/no-unused-vars": "warn",
+      "no-unused-vars": "off", // Desactiva la regla JS nativa para no duplicar con @typescript-eslint/no-unused-vars
 
-      // Tus reglas personalizadas
-      semi: "error",
+      // Plugin de imports
       "import/no-unresolved": "error",
       "import/no-duplicates": "warn",
-      "no-unused-vars": "warn",
+
+      // Tus reglas personalizadas
+      semi: "error", // exige punto y coma al final de cada sentencia,
     },
   },
 ];

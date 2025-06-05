@@ -4,6 +4,9 @@ import { env } from "#src/config.js";
 import { log, line } from "#src/utils/logger.pino.js";
 import { prismaFT } from "#src/models/prisma/db-factoring.js";
 import { shutdownHandler } from "#src/utils/shutdownHandler.js";
+import { performance } from "node:perf_hooks";
+
+const start = performance.now();
 
 async function startServer(): Promise<void> {
   try {
@@ -14,7 +17,9 @@ async function startServer(): Promise<void> {
     });
 
     app.listen(env.PORT, () => {
+      const duration = (performance.now() - start).toFixed(2);
       log.info(line(), `Server running at ${env.WEB_SITE}:${env.PORT}`);
+      log.info(line(), `Startup time: ${duration}ms`);
     });
 
     shutdownHandler.registerShutdownHooks();

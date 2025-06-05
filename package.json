@@ -17,7 +17,8 @@
     "fix-ids": "node scripts/fix-ids.js",
     "add-fn-to-date": "node scripts/add-fn-to-date.js",
     "generate-models": "node scripts/generate-models/index.js",
-    "prisma-sync": "node scripts/prisma/generate-models.js"
+    "prisma-sync": "node scripts/prisma/generate-models.js",
+    "list-unused-exports": "powershell -Command \"npx ts-prune | Select-String -NotMatch 'used in module' | Select-String '\\\\src\\\\controllers\\\\'\""
   },
   "imports": {
     "#root/*": "./*",
@@ -72,7 +73,8 @@
     "eslint": "^9.27.0",
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-import-resolver-node": "^0.3.9",
-    "eslint-plugin-import": "^2.29.1",
+    "eslint-import-resolver-typescript": "^4.4.2",
+    "eslint-plugin-import": "^2.31.0",
     "globals": "^15.8.0",
     "jest": "^29.0.3",
     "morgan": "^1.10.0",
@@ -83,6 +85,8 @@
     "ts-jest": "^29.3.2",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
+    "ts-prune": "^0.10.3",
+    "ts-unused-exports": "^11.0.1",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3"
