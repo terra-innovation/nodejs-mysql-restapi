@@ -56,7 +56,7 @@ export const loginUser = async (req: Request, res: Response) => {
         const token = jwt.sign(jwtPayload, env.TOKEN_KEY_JWT, {
           expiresIn: "200000h",
         });
-        return token;
+        return { token, usuarioid: usuario_login.usuarioid };
       } else {
         log.warn(line(), "Credenciales no válidas: [" + loginUserValidated.email + "]");
         throw new ClientError("Usuario y/o contraseña no válida", 404);
@@ -64,7 +64,7 @@ export const loginUser = async (req: Request, res: Response) => {
     },
     { timeout: prismaFT.transactionTimeout }
   );
-  response(res, 201, { token });
+  response(res, 201, token);
 };
 
 export const resetPassword = async (req: Request, res: Response) => {
