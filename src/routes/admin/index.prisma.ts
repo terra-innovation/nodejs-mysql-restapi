@@ -15,8 +15,11 @@ import admin_servicio_factoring_factoringhistorialestadoRoutes from "#src/routes
 import admin_servicio_factoring_factoringpropuestaRoutes from "#src/routes/admin/servicio/factoring/factoringpropuesta.prisma.routes.js";
 import admin_zlaboratorioRoutes from "#src/routes/admin/zlaboratorio.prisma.routes.js";
 
+import admin_administracionRoutes from "#root/src/routes/admin/administracion.prisma.routes.js";
+
 const router = Router();
 
+router.use(admin_administracionRoutes);
 router.use(admin_zlaboratorioRoutes);
 router.use(admin_empresacuentabancariaRoutes);
 router.use(admin_inversionistacuentabancariaRoutes);

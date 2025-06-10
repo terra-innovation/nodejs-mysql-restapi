@@ -25,9 +25,9 @@ model archivo {
   observacion                         String?                              @db.Text
   fechavencimiento                    DateTime?                            @db.Date
   idusuariocrea                       Int                                  @default(1)
-  fechacrea                           DateTime                             @default(now()) @db.Timestamp(3)
+  fechacrea                           DateTime                             @default(now())
   idusuariomod                        Int                                  @default(1)
-  fechamod                            DateTime                             @default(now()) @db.Timestamp(3)
+  fechamod                            DateTime                             @default(now())
   estado                              Int                                  @default(1) @db.TinyInt
   archivo_estado                      archivo_estado                       @relation(fields: [idarchivoestado], references: [idarchivoestado], onUpdate: Restrict, map: "FK_archivo_idarchivoestado")
   archivo_tipo                        archivo_tipo                         @relation(fields: [idarchivotipo], references: [idarchivotipo], onUpdate: Restrict, map: "FK_archivo_idarchivotipo")
@@ -48,9 +48,9 @@ model archivo_colaborador {
   idarchivo     Int         @map("_idarchivo") @db.UnsignedInt
   idcolaborador Int         @map("_idcolaborador") @db.UnsignedInt
   idusuariocrea Int         @default(1)
-  fechacrea     DateTime    @default(now()) @db.Timestamp(3)
+  fechacrea     DateTime    @default(now())
   idusuariomod  Int         @default(1)
-  fechamod      DateTime    @default(now()) @db.Timestamp(3)
+  fechamod      DateTime    @default(now())
   estado        Int         @default(1) @db.TinyInt
   archivo       archivo     @relation(fields: [idarchivo], references: [idarchivo], onUpdate: Restrict, map: "FK_archivo_colaborador_idarchivo")
   colaborador   colaborador @relation(fields: [idcolaborador], references: [idcolaborador], onUpdate: Restrict, map: "FK_archivo_colaborador_idcolaborador")
@@ -63,9 +63,9 @@ model archivo_cuenta_bancaria {
   idarchivo        Int             @map("_idarchivo") @db.UnsignedInt
   idcuentabancaria Int             @map("_idcuentabancaria") @db.UnsignedInt
   idusuariocrea    Int             @default(1)
-  fechacrea        DateTime        @default(now()) @db.Timestamp(3)
+  fechacrea        DateTime        @default(now())
   idusuariomod     Int             @default(1)
-  fechamod         DateTime        @default(now()) @db.Timestamp(3)
+  fechamod         DateTime        @default(now())
   estado           Int             @default(1) @db.TinyInt
   archivo          archivo         @relation(fields: [idarchivo], references: [idarchivo], onDelete: NoAction, onUpdate: NoAction, map: "FK_archivo_cuenta_bancaria_idarchivo")
   cuenta_bancaria  cuenta_bancaria @relation(fields: [idcuentabancaria], references: [idcuentabancaria], onDelete: NoAction, onUpdate: NoAction, map: "FK_archivo_cuenta_bancaria_idcuentabancaria")
@@ -78,9 +78,9 @@ model archivo_empresa {
   idarchivo     Int      @map("_idarchivo") @db.UnsignedInt
   idempresa     Int      @map("_idempresa") @db.UnsignedInt
   idusuariocrea Int      @default(1)
-  fechacrea     DateTime @default(now()) @db.Timestamp(3)
+  fechacrea     DateTime @default(now())
   idusuariomod  Int      @default(1)
-  fechamod      DateTime @default(now()) @db.Timestamp(3)
+  fechamod      DateTime @default(now())
   estado        Int      @default(1) @db.TinyInt
   archivo       archivo  @relation(fields: [idarchivo], references: [idarchivo], onUpdate: Restrict, map: "FK_archivo_empresa_idarchivo")
   empresa       empresa  @relation(fields: [idempresa], references: [idempresa], onUpdate: Restrict, map: "FK_archivo_empresa_idempresa")
@@ -94,9 +94,9 @@ model archivo_estado {
   archivoestadoid String    @unique(map: "UQ_archivoestadoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   nombre          String    @db.VarChar(50)
   idusuariocrea   Int       @default(1)
-  fechacrea       DateTime  @default(now()) @db.Timestamp(3)
+  fechacrea       DateTime  @default(now())
   idusuariomod    Int       @default(1)
-  fechamod        DateTime  @default(now()) @db.Timestamp(3)
+  fechamod        DateTime  @default(now())
   estado          Int       @default(1) @db.TinyInt
   archivos        archivo[]
 }
@@ -105,9 +105,9 @@ model archivo_factoring_historial_estado {
   idarchivo                  Int                        @map("_idarchivo") @db.UnsignedInt
   idfactoringhistorialestado Int                        @map("_idfactoringhistorialestado") @db.UnsignedInt
   idusuariocrea              Int                        @default(1)
-  fechacrea                  DateTime                   @default(now()) @db.Timestamp(3)
+  fechacrea                  DateTime                   @default(now())
   idusuariomod               Int                        @default(1)
-  fechamod                   DateTime                   @default(now()) @db.Timestamp(3)
+  fechamod                   DateTime                   @default(now())
   estado                     Int                        @default(1) @db.TinyInt
   archivo                    archivo                    @relation(fields: [idarchivo], references: [idarchivo], onUpdate: Restrict, map: "FK_archivo_factoring_historial_estado_idarchivo")
   factoring_historial_estado factoring_historial_estado @relation(fields: [idfactoringhistorialestado], references: [idfactoringhistorialestado], onUpdate: Restrict, map: "FK_archivo_factoring_historial_estado_idfactoringhistorialestado")
@@ -120,9 +120,9 @@ model archivo_factura {
   idarchivo     Int      @map("_idarchivo") @db.UnsignedInt
   idfactura     Int      @map("_idfactura") @db.UnsignedInt
   idusuariocrea Int      @default(1)
-  fechacrea     DateTime @default(now()) @db.Timestamp(3)
+  fechacrea     DateTime @default(now())
   idusuariomod  Int      @default(1)
-  fechamod      DateTime @default(now()) @db.Timestamp(3)
+  fechamod      DateTime @default(now())
   estado        Int      @default(1) @db.TinyInt
   archivo       archivo  @relation(fields: [idarchivo], references: [idarchivo], onUpdate: Restrict, map: "FK_archivo_factura_idarchivo")
   factura       factura  @relation(fields: [idfactura], references: [idfactura], onUpdate: Restrict, map: "FK_archivo_factura_idfactura")
@@ -135,9 +135,9 @@ model archivo_inversionista_deposito {
   idarchivo               Int                    @map("_idarchivo") @db.UnsignedInt
   idinversionistadeposito Int                    @map("_idinversionistadeposito") @db.UnsignedInt
   idusuariocrea           Int                    @default(1)
-  fechacrea               DateTime               @default(now()) @db.Timestamp(3)
+  fechacrea               DateTime               @default(now())
   idusuariomod            Int                    @default(1)
-  fechamod                DateTime               @default(now()) @db.Timestamp(3)
+  fechamod                DateTime               @default(now())
   estado                  Int                    @default(1) @db.TinyInt
   archivo                 archivo                @relation(fields: [idarchivo], references: [idarchivo], onUpdate: Restrict, map: "FK_archivoinversionistadeposito_idarchivo")
   inversionista_deposito  inversionista_deposito @relation(fields: [idinversionistadeposito], references: [idinversionistadeposito], onUpdate: Restrict, map: "FK_archivoinversionistadeposito_idinversionistadeposito")
@@ -150,9 +150,9 @@ model archivo_inversionista_retiro {
   idarchivo             Int                  @map("_idarchivo") @db.UnsignedInt
   idinversionistaretiro Int                  @map("_idinversionistaretiro") @db.UnsignedInt
   idusuariocrea         Int                  @default(1)
-  fechacrea             DateTime             @default(now()) @db.Timestamp(3)
+  fechacrea             DateTime             @default(now())
   idusuariomod          Int                  @default(1)
-  fechamod              DateTime             @default(now()) @db.Timestamp(3)
+  fechamod              DateTime             @default(now())
   estado                Int                  @default(1) @db.TinyInt
   archivo               archivo              @relation(fields: [idarchivo], references: [idarchivo], onUpdate: Restrict, map: "FK_archivoinversionistaretiro_idarchivo")
   inversionista_retiro  inversionista_retiro @relation(fields: [idinversionistaretiro], references: [idinversionistaretiro], onUpdate: Restrict, map: "FK_archivoinversionistaretiro_idinversionistaretiro")
@@ -165,9 +165,9 @@ model archivo_persona {
   idarchivo     Int      @map("_idarchivo") @db.UnsignedInt
   idpersona     Int      @map("_idpersona") @db.UnsignedInt
   idusuariocrea Int      @default(1)
-  fechacrea     DateTime @default(now()) @db.Timestamp(3)
+  fechacrea     DateTime @default(now())
   idusuariomod  Int      @default(1)
-  fechamod      DateTime @default(now()) @db.Timestamp(3)
+  fechamod      DateTime @default(now())
   estado        Int      @default(1) @db.TinyInt
   archivo       archivo  @relation(fields: [idarchivo], references: [idarchivo], onUpdate: Restrict, map: "FK_archivo_persona_idarchivo")
   persona       persona  @relation(fields: [idpersona], references: [idpersona], onUpdate: Restrict, map: "FK_archivo_persona_idpersona")
@@ -182,9 +182,9 @@ model archivo_tipo {
   code          String?   @db.VarChar(20)
   nombre        String    @db.VarChar(50)
   idusuariocrea Int       @default(1)
-  fechacrea     DateTime  @default(now()) @db.Timestamp(3)
+  fechacrea     DateTime  @default(now())
   idusuariomod  Int       @default(1)
-  fechamod      DateTime  @default(now()) @db.Timestamp(3)
+  fechamod      DateTime  @default(now())
   estado        Int       @default(1) @db.TinyInt
   archivos      archivo[]
 }
@@ -196,9 +196,9 @@ model banco {
   nombre           String            @db.VarChar(100)
   alias            String            @db.VarChar(100)
   idusuariocrea    Int               @default(1)
-  fechacrea        DateTime          @default(now()) @db.Timestamp(3)
+  fechacrea        DateTime          @default(now())
   idusuariomod     Int               @default(1)
-  fechamod         DateTime          @default(now()) @db.Timestamp(3)
+  fechamod         DateTime          @default(now())
   estado           Int               @default(1) @db.TinyInt
   cuenta_bancarias cuenta_bancaria[]
 }
@@ -218,9 +218,9 @@ model banco_cuenta {
   reservado_retiro            Decimal                      @default(0.00) @db.Decimal(20, 2)
   invertido                   Decimal                      @default(0.00) @db.Decimal(20, 2)
   idusuariocrea               Int                          @default(1)
-  fechacrea                   DateTime                     @default(now()) @db.Timestamp(3)
+  fechacrea                   DateTime                     @default(now())
   idusuariomod                Int                          @default(1)
-  fechamod                    DateTime                     @default(now()) @db.Timestamp(3)
+  fechamod                    DateTime                     @default(now())
   estado                      Int                          @default(1) @db.TinyInt
   banco_cuenta_estado         banco_cuenta_estado          @relation(fields: [idbancocuentaestado], references: [idbancocuentaestado], onUpdate: Restrict, map: "FK_bancocuenta_idbancocuentaestado")
   banco_cuenta_tipo           banco_cuenta_tipo            @relation(fields: [idbancocuentatipo], references: [idbancocuentatipo], onUpdate: Restrict, map: "FK_bancocuenta_idbancocuentatipo")
@@ -241,9 +241,9 @@ model banco_cuenta_estado {
   code                String         @unique(map: "UQ_bancocuentaestado_code") @db.VarChar(20)
   nombre              String         @db.VarChar(50)
   idusuariocrea       Int            @default(1)
-  fechacrea           DateTime       @default(now()) @db.Timestamp(3)
+  fechacrea           DateTime       @default(now())
   idusuariomod        Int            @default(1)
-  fechamod            DateTime       @default(now()) @db.Timestamp(3)
+  fechamod            DateTime       @default(now())
   estado              Int            @default(1) @db.TinyInt
   banco_cuentas       banco_cuenta[]
 }
@@ -254,9 +254,9 @@ model banco_cuenta_tipo {
   code              String         @unique(map: "UQ_bancocuentatipo_code") @db.VarChar(20)
   nombre            String         @db.VarChar(50)
   idusuariocrea     Int            @default(1)
-  fechacrea         DateTime       @default(now()) @db.Timestamp(3)
+  fechacrea         DateTime       @default(now())
   idusuariomod      Int            @default(1)
-  fechamod          DateTime       @default(now()) @db.Timestamp(3)
+  fechamod          DateTime       @default(now())
   estado            Int            @default(1) @db.TinyInt
   banco_cuentas     banco_cuenta[]
 }
@@ -269,13 +269,13 @@ model banco_transaccion {
   idbancotransacciontipo                                Int                                        @map("_idbancotransacciontipo") @db.UnsignedInt
   idbancotransaccionestado                              Int                                        @map("_idbancotransaccionestado") @db.UnsignedInt
   idbancotransaccionestadohistorial                     Int?                                       @map("_idbancotransaccionestadohistorial") @db.UnsignedInt
-  fecha_solicitud                                       DateTime                                   @db.Timestamp(0)
-  fecha_efectiva                                        DateTime?                                  @db.Timestamp(0)
+  fecha_solicitud                                       DateTime                                   @db.DateTime(0)
+  fecha_efectiva                                        DateTime?                                  @db.DateTime(0)
   monto                                                 Decimal                                    @db.Decimal(20, 2)
   idusuariocrea                                         Int                                        @default(1)
-  fechacrea                                             DateTime                                   @default(now()) @db.Timestamp(3)
+  fechacrea                                             DateTime                                   @default(now())
   idusuariomod                                          Int                                        @default(1)
-  fechamod                                              DateTime                                   @default(now()) @db.Timestamp(3)
+  fechamod                                              DateTime                                   @default(now())
   estado                                                Int                                        @default(1) @db.TinyInt
   banco_cuenta                                          banco_cuenta                               @relation(fields: [idbancocuenta], references: [idbancocuenta], onUpdate: Restrict, map: "FK_bancotransaccion_idbancocuenta")
   banco_transaccion_estado                              banco_transaccion_estado                   @relation(fields: [idbancotransaccionestado], references: [idbancotransaccionestado], onUpdate: Restrict, map: "FK_bancotransaccion_idbancotransaccionestado")
@@ -298,9 +298,9 @@ model banco_transaccion_estado {
   code                                 String                               @unique(map: "UQ_bancotransaccionestado_code") @db.VarChar(20)
   nombre                               String                               @db.VarChar(50)
   idusuariocrea                        Int                                  @default(1)
-  fechacrea                            DateTime                             @default(now()) @db.Timestamp(3)
+  fechacrea                            DateTime                             @default(now())
   idusuariomod                         Int                                  @default(1)
-  fechamod                             DateTime                             @default(now()) @db.Timestamp(3)
+  fechamod                             DateTime                             @default(now())
   estado                               Int                                  @default(1) @db.TinyInt
   banco_transacciones                  banco_transaccion[]
   banco_transaccion_estado_historiales banco_transaccion_estado_historial[]
@@ -315,9 +315,9 @@ model banco_transaccion_estado_historial {
   idusuariomodifica                                   Int                      @map("_idusuariomodifica") @db.UnsignedInt
   motivo                                              String?                  @db.Text
   idusuariocrea                                       Int                      @default(1)
-  fechacrea                                           DateTime                 @default(now()) @db.Timestamp(3)
+  fechacrea                                           DateTime                 @default(now())
   idusuariomod                                        Int                      @default(1)
-  fechamod                                            DateTime                 @default(now()) @db.Timestamp(3)
+  fechamod                                            DateTime                 @default(now())
   estado                                              Int                      @default(1) @db.TinyInt
   banco_transaccion_bancotransaccionestadohistoriales banco_transaccion[]      @relation("banco_transaccion_idbancotransaccionestadohistorialTobanco_transaccion_estado_historial")
   banco_transaccion                                   banco_transaccion        @relation("banco_transaccion_estado_historial_idbancotransaccionTobanco_transaccion", fields: [idbancotransaccion], references: [idbancotransaccion], onUpdate: Restrict, map: "FK_bteh_idbancotransaccion")
@@ -333,9 +333,9 @@ model banco_transaccion_factoring_inversion {
   idbancotransaccion   Int                 @map("_idbancotransaccion") @db.UnsignedInt
   idfactoringinversion Int                 @map("_idfactoringinversion") @db.UnsignedInt
   idusuariocrea        Int                 @default(1)
-  fechacrea            DateTime            @default(now()) @db.Timestamp(3)
+  fechacrea            DateTime            @default(now())
   idusuariomod         Int                 @default(1)
-  fechamod             DateTime            @default(now()) @db.Timestamp(3)
+  fechamod             DateTime            @default(now())
   estado               Int                 @default(1) @db.TinyInt
   banco_transaccion    banco_transaccion   @relation(fields: [idbancotransaccion], references: [idbancotransaccion], onUpdate: Restrict, map: "FK_bancotransaccionfactoringinversion_idbancotransaccion")
   factoring_inversion  factoring_inversion @relation(fields: [idfactoringinversion], references: [idfactoringinversion], onUpdate: Restrict, map: "FK_bancotransaccionfactoringinversion_idfactoringinversion")
@@ -348,9 +348,9 @@ model banco_transaccion_inversionista_deposito {
   idbancotransaccion      Int                    @map("_idbancotransaccion") @db.UnsignedInt
   idinversionistadeposito Int                    @map("_idinversionistadeposito") @db.UnsignedInt
   idusuariocrea           Int                    @default(1)
-  fechacrea               DateTime               @default(now()) @db.Timestamp(3)
+  fechacrea               DateTime               @default(now())
   idusuariomod            Int                    @default(1)
-  fechamod                DateTime               @default(now()) @db.Timestamp(3)
+  fechamod                DateTime               @default(now())
   estado                  Int                    @default(1) @db.TinyInt
   banco_transaccion       banco_transaccion      @relation(fields: [idbancotransaccion], references: [idbancotransaccion], onUpdate: Restrict, map: "FK_btid_idbancotransaccion")
   inversionista_deposito  inversionista_deposito @relation(fields: [idinversionistadeposito], references: [idinversionistadeposito], onUpdate: Restrict, map: "FK_btid_idinversionistadeposito")
@@ -363,9 +363,9 @@ model banco_transaccion_inversionista_retiro {
   idbancotransaccion    Int                  @map("_idbancotransaccion") @db.UnsignedInt
   idinversionistaretiro Int                  @map("_idinversionistaretiro") @db.UnsignedInt
   idusuariocrea         Int                  @default(1)
-  fechacrea             DateTime             @default(now()) @db.Timestamp(3)
+  fechacrea             DateTime             @default(now())
   idusuariomod          Int                  @default(1)
-  fechamod              DateTime             @default(now()) @db.Timestamp(3)
+  fechamod              DateTime             @default(now())
   estado                Int                  @default(1) @db.TinyInt
   banco_transaccion     banco_transaccion    @relation(fields: [idbancotransaccion], references: [idbancotransaccion], onUpdate: Restrict, map: "FK_btir_idbancotransaccion")
   inversionista_retiro  inversionista_retiro @relation(fields: [idinversionistaretiro], references: [idinversionistaretiro], onUpdate: Restrict, map: "FK_btir_idinversionistaretiro")
@@ -380,9 +380,9 @@ model banco_transaccion_tipo {
   code                   String              @unique(map: "UQ_bancotransacciontipo_code") @db.VarChar(20)
   nombre                 String              @db.VarChar(50)
   idusuariocrea          Int                 @default(1)
-  fechacrea              DateTime            @default(now()) @db.Timestamp(3)
+  fechacrea              DateTime            @default(now())
   idusuariomod           Int                 @default(1)
-  fechamod               DateTime            @default(now()) @db.Timestamp(3)
+  fechamod               DateTime            @default(now())
   estado                 Int                 @default(1) @db.TinyInt
   banco_transacciones    banco_transaccion[]
 }
@@ -404,9 +404,9 @@ model colaborador {
   poderpartidanumero    String                @db.VarChar(20)
   poderpartidaciudad    String                @db.VarChar(50)
   idusuariocrea         Int                   @default(1)
-  fechacrea             DateTime              @default(now()) @db.Timestamp(3)
+  fechacrea             DateTime              @default(now())
   idusuariomod          Int                   @default(1)
-  fechamod              DateTime              @default(now()) @db.Timestamp(3)
+  fechamod              DateTime              @default(now())
   estado                Int                   @default(1) @db.TinyInt
   archivo_colaboradores archivo_colaborador[]
   colaborador_tipo      colaborador_tipo?     @relation(fields: [idcolaboradortipo], references: [idcolaboradortipo], onDelete: Restrict, onUpdate: Restrict, map: "FK_colaborador_idcolaboradortipo")
@@ -428,9 +428,9 @@ model colaborador_tipo {
   nombre            String        @db.VarChar(50)
   alias             String        @db.VarChar(50)
   idusuariocrea     Int           @default(1)
-  fechacrea         DateTime      @default(now()) @db.Timestamp(3)
+  fechacrea         DateTime      @default(now())
   idusuariomod      Int           @default(1)
-  fechamod          DateTime      @default(now()) @db.Timestamp(3)
+  fechamod          DateTime      @default(now())
   estado            Int           @default(1) @db.TinyInt
   colaboradores     colaborador[]
 }
@@ -445,9 +445,9 @@ model configuracion_app {
   fecha_inicio       DateTime  @db.Timestamp(0)
   fecha_fin          DateTime? @db.Timestamp(0)
   idusuariocrea      Int       @default(1)
-  fechacrea          DateTime  @default(now()) @db.Timestamp(3)
+  fechacrea          DateTime  @default(now())
   idusuariomod       Int       @default(1)
-  fechamod           DateTime  @default(now()) @db.Timestamp(3)
+  fechamod           DateTime  @default(now())
   estado             Int       @default(1) @db.TinyInt
 }
 
@@ -463,9 +463,9 @@ model contacto {
   celular          String?     @db.VarChar(20)
   telefono         String?     @db.VarChar(50)
   idusuariocrea    Int         @default(1)
-  fechacrea        DateTime    @default(now()) @db.Timestamp(3)
+  fechacrea        DateTime    @default(now())
   idusuariomod     Int         @default(1)
-  fechamod         DateTime    @default(now()) @db.Timestamp(3)
+  fechamod         DateTime    @default(now())
   estado           Int         @default(1) @db.TinyInt
   empresa          empresa     @relation(fields: [idempresa], references: [idempresa], onUpdate: Restrict, map: "FK_contacto_idempresa")
   factoringes      factoring[]
@@ -480,9 +480,9 @@ model credencial {
   idusuario     Int      @unique(map: "UQ_credencual_idusuario") @map("_idusuario") @db.UnsignedInt
   password      String   @db.VarChar(200)
   idusuariocrea Int      @default(1)
-  fechacrea     DateTime @default(now()) @db.Timestamp(3)
+  fechacrea     DateTime @default(now())
   idusuariomod  Int      @default(1)
-  fechamod      DateTime @default(now()) @db.Timestamp(3)
+  fechamod      DateTime @default(now())
   estado        Int      @default(1) @db.TinyInt
   usuario       usuario  @relation(fields: [idusuario], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_credencial_idusuario")
 
@@ -501,9 +501,9 @@ model cuenta_bancaria {
   cci                            String                          @db.VarChar(20)
   alias                          String                          @db.VarChar(50)
   idusuariocrea                  Int                             @default(1)
-  fechacrea                      DateTime                        @default(now()) @db.Timestamp(3)
+  fechacrea                      DateTime                        @default(now())
   idusuariomod                   Int                             @default(1)
-  fechamod                       DateTime                        @default(now()) @db.Timestamp(3)
+  fechamod                       DateTime                        @default(now())
   estado                         Int                             @default(1) @db.TinyInt
   archivo_cuenta_bancarias       archivo_cuenta_bancaria[]
   banco                          banco                           @relation(fields: [idbanco], references: [idbanco], onUpdate: Restrict, map: "FK_cuenta_bancaria_idbanco")
@@ -529,9 +529,9 @@ model cuenta_bancaria_estado {
   alias                  String            @db.VarChar(50)
   color                  String?           @db.VarChar(50)
   idusuariocrea          Int               @default(1)
-  fechacrea              DateTime          @default(now()) @db.Timestamp(3)
+  fechacrea              DateTime          @default(now())
   idusuariomod           Int               @default(1)
-  fechamod               DateTime          @default(now()) @db.Timestamp(3)
+  fechamod               DateTime          @default(now())
   estado                 Int               @default(1) @db.TinyInt
   cuenta_bancarias       cuenta_bancaria[]
 }
@@ -542,9 +542,9 @@ model cuenta_tipo {
   nombre           String            @db.VarChar(50)
   alias            String            @db.VarChar(50)
   idusuariocrea    Int               @default(1)
-  fechacrea        DateTime          @default(now()) @db.Timestamp(3)
+  fechacrea        DateTime          @default(now())
   idusuariomod     Int               @default(1)
-  fechamod         DateTime          @default(now()) @db.Timestamp(3)
+  fechamod         DateTime          @default(now())
   estado           Int               @default(1) @db.TinyInt
   cuenta_bancarias cuenta_bancaria[]
 }
@@ -557,9 +557,9 @@ model departamento {
   codigodepartamento String      @db.VarChar(10)
   nombredepartamento String      @db.VarChar(200)
   idusuariocrea      Int         @default(1)
-  fechacrea          DateTime    @default(now()) @db.Timestamp(3)
+  fechacrea          DateTime    @default(now())
   idusuariomod       Int         @default(1)
-  fechamod           DateTime    @default(now()) @db.Timestamp(3)
+  fechamod           DateTime    @default(now())
   estado             Int         @default(1) @db.TinyInt
   pais               pais        @relation(fields: [idpais], references: [idpais], onUpdate: Restrict, map: "FK_departamento_idpais")
   empresas           empresa[]
@@ -580,9 +580,9 @@ model distrito {
   nombredistrito  String         @db.VarChar(200)
   capitallegal    String         @db.VarChar(200)
   idusuariocrea   Int            @default(1)
-  fechacrea       DateTime       @default(now()) @db.Timestamp(3)
+  fechacrea       DateTime       @default(now())
   idusuariomod    Int            @default(1)
-  fechamod        DateTime       @default(now()) @db.Timestamp(3)
+  fechamod        DateTime       @default(now())
   estado          Int            @default(1) @db.TinyInt
   provincia       provincia      @relation(fields: [idprovincia], references: [idprovincia], onUpdate: Restrict, map: "FK_distrito_idprovincia")
   region_natural  region_natural @relation(fields: [idregionnatural], references: [idregionnatural], onDelete: NoAction, onUpdate: NoAction, map: "FK_distrito_idregionnatural")
@@ -600,9 +600,9 @@ model documento_tipo {
   nombre          String        @db.VarChar(50)
   alias           String        @db.VarChar(50)
   idusuariocrea   Int           @default(1)
-  fechacrea       DateTime      @default(now()) @db.Timestamp(3)
+  fechacrea       DateTime      @default(now())
   idusuariomod    Int           @default(1)
-  fechamod        DateTime      @default(now()) @db.Timestamp(3)
+  fechamod        DateTime      @default(now())
   estado          Int           @default(1) @db.TinyInt
   colaboradores   colaborador[]
   personas        persona[]
@@ -658,9 +658,9 @@ model empresa_cuenta_bancaria {
   idempresa               Int              @map("_idempresa") @db.UnsignedInt
   idcuentabancaria        Int              @map("_idcuentabancaria") @db.UnsignedInt
   idusuariocrea           Int              @default(1)
-  fechacrea               DateTime         @default(now()) @db.Timestamp(3)
+  fechacrea               DateTime         @default(now())
   idusuariomod            Int              @default(1)
-  fechamod                DateTime         @default(now()) @db.Timestamp(3)
+  fechamod                DateTime         @default(now())
   estado                  Int              @default(1) @db.TinyInt
   cuenta_bancaria         cuenta_bancaria  @relation(fields: [idcuentabancaria], references: [idcuentabancaria], onUpdate: Restrict, map: "FK_empresacuentabancaria_idcuentabancaria")
   empresa                 empresa          @relation(fields: [idempresa], references: [idempresa], onUpdate: Restrict, map: "FK_empresacuentabancaria_idempresa")
@@ -679,9 +679,9 @@ model empresa_declaracion {
   espep                Int?     @db.TinyInt
   tienevinculopep      Int?     @db.TinyInt
   idusuariocrea        Int      @default(1)
-  fechacrea            DateTime @default(now()) @db.Timestamp(3)
+  fechacrea            DateTime @default(now())
   idusuariomod         Int      @default(1)
-  fechamod             DateTime @default(now()) @db.Timestamp(3)
+  fechamod             DateTime @default(now())
   estado               Int      @default(1) @db.TinyInt
 
   @@ignore
@@ -729,9 +729,9 @@ model factor_cuenta_bancaria {
   idfactor                Int                      @map("_idfactor") @db.UnsignedInt
   idcuentabancaria        Int                      @map("_idcuentabancaria") @db.UnsignedInt
   idusuariocrea           Int                      @default(1)
-  fechacrea               DateTime                 @default(now()) @db.Timestamp(3)
+  fechacrea               DateTime                 @default(now())
   idusuariomod            Int                      @default(1)
-  fechamod                DateTime                 @default(now()) @db.Timestamp(3)
+  fechamod                DateTime                 @default(now())
   estado                  Int                      @default(1) @db.TinyInt
   cuenta_bancaria         cuenta_bancaria          @relation(fields: [idcuentabancaria], references: [idcuentabancaria], onUpdate: Restrict, map: "FK_factorcuentabancaria_idcuentabancaria")
   factor                  factor                   @relation(fields: [idfactor], references: [idfactor], onUpdate: Restrict, map: "FK_factorcuentabancaria_idfactor")
@@ -758,17 +758,17 @@ model factoring {
   idfactoringejecutado            Int?                         @map("_idfactoringejecutado") @db.UnsignedInt
   idfactoringpropuestaaceptada    Int?                         @map("_idfactoringpropuestaaceptada") @db.UnsignedInt
   cantidad_facturas               Int
-  fecha_registro                  DateTime                     @db.Timestamp(0)
-  fecha_emision                   DateTime                     @db.Timestamp(0)
-  fecha_operacion                 DateTime?                    @db.Timestamp(0)
-  fecha_pago_estimado             DateTime                     @db.Timestamp(0)
+  fecha_registro                  DateTime                     @db.DateTime(0)
+  fecha_emision                   DateTime                     @db.DateTime(0)
+  fecha_operacion                 DateTime?                    @db.DateTime(0)
+  fecha_pago_estimado             DateTime                     @db.DateTime(0)
   monto_factura                   Decimal                      @db.Decimal(10, 2)
   monto_detraccion                Decimal                      @db.Decimal(10, 2)
   monto_neto                      Decimal                      @db.Decimal(10, 2)
   idusuariocrea                   Int                          @default(1)
-  fechacrea                       DateTime                     @default(now()) @db.Timestamp(3)
+  fechacrea                       DateTime                     @default(now())
   idusuariomod                    Int                          @default(1)
-  fechamod                        DateTime                     @default(now()) @db.Timestamp(3)
+  fechamod                        DateTime                     @default(now())
   estado                          Int                          @default(1) @db.TinyInt
   empresa_aceptante               empresa                      @relation("factoring_idaceptanteToempresa", fields: [idaceptante], references: [idempresa], onUpdate: Restrict, map: "FK_factoring_idaceptante")
   empresa_cedente                 empresa                      @relation("factoring_idcedenteToempresa", fields: [idcedente], references: [idempresa], onUpdate: Restrict, map: "FK_factoring_idcedente")
@@ -807,9 +807,9 @@ model factoring_config_comision {
   factor2                   Decimal  @db.Decimal(20, 10)
   factor3                   Decimal  @db.Decimal(10, 5)
   idusuariocrea             Int      @default(1)
-  fechacrea                 DateTime @default(now()) @db.Timestamp(3)
+  fechacrea                 DateTime @default(now())
   idusuariomod              Int      @default(1)
-  fechamod                  DateTime @default(now()) @db.Timestamp(3)
+  fechamod                  DateTime @default(now())
   estado                    Int      @default(1) @db.TinyInt
   riesgo                    riesgo   @relation(fields: [idriesgo], references: [idriesgo], onUpdate: Restrict, map: "FK_factoring_config_comision_idriesgo")
 
@@ -827,9 +827,9 @@ model factoring_config_garantia {
   monto_neto_max                 Decimal  @db.Decimal(20, 2)
   porcentaje_dias_cubre_garantia Decimal  @db.Decimal(10, 5)
   idusuariocrea                  Int      @default(1)
-  fechacrea                      DateTime @default(now()) @db.Timestamp(3)
+  fechacrea                      DateTime @default(now())
   idusuariomod                   Int      @default(1)
-  fechamod                       DateTime @default(now()) @db.Timestamp(3)
+  fechamod                       DateTime @default(now())
   estado                         Int      @default(1) @db.TinyInt
   riesgo                         riesgo   @relation(fields: [idriesgo], references: [idriesgo], onUpdate: Restrict, map: "FK_factoring_config_garantia_idriesgo")
 
@@ -846,9 +846,9 @@ model factoring_config_tasa_descuento {
   mensual_minimo                 Decimal  @db.Decimal(20, 10)
   mensual_maximo                 Decimal  @db.Decimal(20, 10)
   idusuariocrea                  Int      @default(1)
-  fechacrea                      DateTime @default(now()) @db.Timestamp(3)
+  fechacrea                      DateTime @default(now())
   idusuariomod                   Int      @default(1)
-  fechamod                       DateTime @default(now()) @db.Timestamp(3)
+  fechamod                       DateTime @default(now())
   estado                         Int      @default(1) @db.TinyInt
   riesgo                         riesgo   @relation(fields: [idriesgo], references: [idriesgo], onUpdate: Restrict, map: "FK_factoring_config_tasa_idriesgo")
 
@@ -862,7 +862,7 @@ model factoring_ejecutado {
   code                          String                     @unique(map: "UQ_factoring_ejecutado_code") @db.VarChar(255)
   idfactoring                   Int?                       @map("_idfactoring") @db.UnsignedInt
   idfactoringejecutadoestado    Int                        @map("_idfactoringejecutadoestado") @db.UnsignedInt
-  fecha_propuesta               DateTime                   @db.Timestamp(0)
+  fecha_propuesta               DateTime                   @db.DateTime(0)
   fecha_pago_real               DateTime                   @db.Date
   dias_pago_real                Int
   dias_antiguedad_real          Int
@@ -886,9 +886,9 @@ model factoring_ejecutado {
   porcentaje_comision_real      Decimal?                   @db.Decimal(10, 2)
   porcentaje_adelanto_real      Decimal?                   @db.Decimal(10, 2)
   idusuariocrea                 Int                        @default(1)
-  fechacrea                     DateTime                   @default(now()) @db.Timestamp(3)
+  fechacrea                     DateTime                   @default(now())
   idusuariomod                  Int                        @default(1)
-  fechamod                      DateTime                   @default(now()) @db.Timestamp(3)
+  fechamod                      DateTime                   @default(now())
   estado                        Int                        @default(1) @db.TinyInt
   factoring_factoringejecutados factoring[]                @relation("factoring_idfactoringejecutadoTofactoring_ejecutado")
   factoring                     factoring?                 @relation("factoring_ejecutado_idfactoringTofactoring", fields: [idfactoring], references: [idfactoring], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_ejecutado_idfactoring")
@@ -906,9 +906,9 @@ model factoring_ejecutado_estado {
   alias                      String                @db.VarChar(50)
   color                      String                @db.VarChar(50)
   idusuariocrea              Int                   @default(1)
-  fechacrea                  DateTime              @default(now()) @db.Timestamp(3)
+  fechacrea                  DateTime              @default(now())
   idusuariomod               Int                   @default(1)
-  fechamod                   DateTime              @default(now()) @db.Timestamp(3)
+  fechamod                   DateTime              @default(now())
   estado                     Int                   @default(1) @db.TinyInt
   factoring_ejecutados       factoring_ejecutado[]
 }
@@ -923,9 +923,9 @@ model factoring_estado {
   accion                      String?                      @db.VarChar(50)
   orden                       Int?                         @db.SmallInt
   idusuariocrea               Int                          @default(1)
-  fechacrea                   DateTime                     @default(now()) @db.Timestamp(3)
+  fechacrea                   DateTime                     @default(now())
   idusuariomod                Int                          @default(1)
-  fechamod                    DateTime                     @default(now()) @db.Timestamp(3)
+  fechamod                    DateTime                     @default(now())
   estado                      Int                          @default(1) @db.TinyInt
   factoringes                 factoring[]
   factoring_historial_estados factoring_historial_estado[]
@@ -939,9 +939,9 @@ model factoring_estrategia {
   nombre_estrategia     String?               @db.VarChar(100)
   descripcion           String?               @db.Text
   idusuariocrea         Int                   @default(1)
-  fechacrea             DateTime              @default(now()) @db.Timestamp(3)
+  fechacrea             DateTime              @default(now())
   idusuariomod          Int                   @default(1)
-  fechamod              DateTime              @default(now()) @db.Timestamp(3)
+  fechamod              DateTime              @default(now())
   estado                Int                   @default(1) @db.TinyInt
   factoring_propuestas  factoring_propuesta[]
 }
@@ -950,9 +950,9 @@ model factoring_factura {
   idfactoring   Int       @map("_idfactoring") @db.UnsignedInt
   idfactura     Int       @map("_idfactura") @db.UnsignedInt
   idusuariocrea Int       @default(1)
-  fechacrea     DateTime  @default(now()) @db.Timestamp(3)
+  fechacrea     DateTime  @default(now())
   idusuariomod  Int       @default(1)
-  fechamod      DateTime  @default(now()) @db.Timestamp(3)
+  fechamod      DateTime  @default(now())
   estado        Int       @default(1) @db.TinyInt
   factoring     factoring @relation(fields: [idfactoring], references: [idfactoring], onUpdate: Restrict, map: "FK_factoring_idfactoring")
   factura       factura   @relation(fields: [idfactura], references: [idfactura], onUpdate: Restrict, map: "FK_factoring_idfactura")
@@ -970,9 +970,9 @@ model factoring_historial_estado {
   idusuariomodifica                   Int                                  @map("_idusuariomodifica") @db.UnsignedInt
   comentario                          String                               @db.Text
   idusuariocrea                       Int                                  @default(1)
-  fechacrea                           DateTime                             @default(now()) @db.Timestamp(3)
+  fechacrea                           DateTime                             @default(now())
   idusuariomod                        Int                                  @default(1)
-  fechamod                            DateTime                             @default(now()) @db.Timestamp(3)
+  fechamod                            DateTime                             @default(now())
   estado                              Int                                  @default(1) @db.TinyInt
   archivo_factoring_historial_estados archivo_factoring_historial_estado[]
   factoring_estado                    factoring_estado                     @relation(fields: [idfactoringestado], references: [idfactoringestado], onUpdate: Restrict, map: "FK_factoringhistorialestado_idfactoringestado")
@@ -991,12 +991,12 @@ model factoring_inversion {
   idfactoring                             Int                                     @map("_idfactoring") @db.UnsignedInt
   idinversionista                         Int                                     @map("_idinversionista") @db.UnsignedInt
   monto_invertido                         Decimal                                 @db.Decimal(20, 2)
-  fecha_inversion                         DateTime                                @db.Timestamp(3)
+  fecha_inversion                         DateTime
   porcentaje_participacion                Decimal                                 @db.Decimal(20, 6)
   idusuariocrea                           Int                                     @default(1)
-  fechacrea                               DateTime                                @default(now()) @db.Timestamp(3)
+  fechacrea                               DateTime                                @default(now())
   idusuariomod                            Int                                     @default(1)
-  fechamod                                DateTime                                @default(now()) @db.Timestamp(3)
+  fechamod                                DateTime                                @default(now())
   estado                                  Int                                     @default(1) @db.TinyInt
   banco_transaccion_factoring_inversiones banco_transaccion_factoring_inversion[]
 }
@@ -1009,12 +1009,12 @@ model factoring_pago {
   idempresacuentabancaria Int                     @map("_idempresacuentabancaria") @db.UnsignedInt
   idfactorcuentabancaria  Int                     @map("_idfactorcuentabancaria") @db.UnsignedInt
   numero_operacion        String                  @db.VarChar(50)
-  fecha_pago              DateTime                @db.Timestamp(0)
+  fecha_pago              DateTime                @db.DateTime(0)
   monto_pagado            Decimal                 @db.Decimal(10, 2)
   idusuariocrea           Int                     @default(1)
-  fechacrea               DateTime                @default(now()) @db.Timestamp(3)
+  fechacrea               DateTime                @default(now())
   idusuariomod            Int                     @default(1)
-  fechamod                DateTime                @default(now()) @db.Timestamp(3)
+  fechamod                DateTime                @default(now())
   estado                  Int                     @default(1) @db.TinyInt
   empresa_cuenta_bancaria empresa_cuenta_bancaria @relation(fields: [idempresacuentabancaria], references: [idempresacuentabancaria], onUpdate: Restrict, map: "FK_factoring_pago_empresa_cuenta_bancaria")
   factor_cuenta_bancaria  factor_cuenta_bancaria  @relation(fields: [idfactorcuentabancaria], references: [idfactorcuentabancaria], onUpdate: Restrict, map: "FK_factoring_pago_factor_cuenta_bancaria")
@@ -1043,8 +1043,8 @@ model factoring_propuesta {
   tda_mora                              Decimal?                         @db.Decimal(10, 5)
   tdm_mora                              Decimal?                         @db.Decimal(10, 5)
   tdd_mora                              Decimal?                         @db.Decimal(10, 5)
-  fecha_propuesta                       DateTime                         @db.Timestamp(0)
-  fecha_pago_estimado                   DateTime                         @db.Timestamp(0)
+  fecha_propuesta                       DateTime                         @db.DateTime(0)
+  fecha_pago_estimado                   DateTime                         @db.DateTime(0)
   dias_pago_estimado                    Int
   dias_antiguedad_estimado              Int
   dias_cobertura_garantia_estimado      Int?
@@ -1070,9 +1070,9 @@ model factoring_propuesta {
   porcentaje_adelanto_estimado          Decimal?                         @db.Decimal(10, 2)
   porcentaje_comision_estimado          Decimal?                         @db.Decimal(10, 2)
   idusuariocrea                         Int                              @default(1)
-  fechacrea                             DateTime                         @default(now()) @db.Timestamp(3)
+  fechacrea                             DateTime                         @default(now())
   idusuariomod                          Int                              @default(1)
-  fechamod                              DateTime                         @default(now()) @db.Timestamp(3)
+  fechamod                              DateTime                         @default(now())
   estado                                Int                              @default(1) @db.TinyInt
   factoring_factoringpropuestaaceptadas factoring[]                      @relation("factoring_idfactoringpropuestaaceptadaTofactoring_propuesta")
   factoring                             factoring?                       @relation("factoring_propuesta_idfactoringTofactoring", fields: [idfactoring], references: [idfactoring], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_propuesta_idfactoring")
@@ -1101,9 +1101,9 @@ model factoring_propuesta_estado {
   alias                      String                @db.VarChar(50)
   color                      String                @db.VarChar(50)
   idusuariocrea              Int                   @default(1)
-  fechacrea                  DateTime              @default(now()) @db.Timestamp(3)
+  fechacrea                  DateTime              @default(now())
   idusuariomod               Int                   @default(1)
-  fechamod                   DateTime              @default(now()) @db.Timestamp(3)
+  fechamod                   DateTime              @default(now())
   estado                     Int                   @default(1) @db.TinyInt
   factoring_propuestas       factoring_propuesta[]
 }
@@ -1121,9 +1121,9 @@ model factoring_propuesta_financiero {
   igv                            Decimal             @default(0.00) @db.Decimal(10, 2)
   total                          Decimal             @default(0.00) @db.Decimal(10, 2)
   idusuariocrea                  Int                 @default(1)
-  fechacrea                      DateTime            @default(now()) @db.Timestamp(3)
+  fechacrea                      DateTime            @default(now())
   idusuariomod                   Int                 @default(1)
-  fechamod                       DateTime            @default(now()) @db.Timestamp(3)
+  fechamod                       DateTime            @default(now())
   estado                         Int                 @default(1) @db.TinyInt
   factoring_propuesta            factoring_propuesta @relation(fields: [idfactoringpropuesta], references: [idfactoringpropuesta], onUpdate: Restrict, map: "FK_factoring_propuesta_financiero_idfactoringpropuesta")
   financiero_concepto            financiero_concepto @relation(fields: [idfinancieroconcepto], references: [idfinancieroconcepto], onUpdate: Restrict, map: "FK_factoring_propuesta_financiero_idfinancieroconcepto")
@@ -1141,9 +1141,9 @@ model factoring_tipo {
   alias                String                @db.VarChar(50)
   color                String                @db.VarChar(50)
   idusuariocrea        Int                   @default(1)
-  fechacrea            DateTime              @default(now()) @db.Timestamp(3)
+  fechacrea            DateTime              @default(now())
   idusuariomod         Int                   @default(1)
-  fechamod             DateTime              @default(now()) @db.Timestamp(3)
+  fechamod             DateTime              @default(now())
   estado               Int                   @default(1) @db.TinyInt
   factoring_propuestas factoring_propuesta[]
 }
@@ -1189,9 +1189,9 @@ model factura {
   impuesto_valor_venta_monto_pago               Decimal?               @db.Decimal(12, 2)
   codigo_archivo                                String?                @db.VarChar(20)
   idusuariocrea                                 Int                    @default(1)
-  fechacrea                                     DateTime               @default(now()) @db.Timestamp(3)
+  fechacrea                                     DateTime               @default(now())
   idusuariomod                                  Int                    @default(1)
-  fechamod                                      DateTime               @default(now()) @db.Timestamp(3)
+  fechamod                                      DateTime               @default(now())
   estado                                        Int                    @default(1) @db.TinyInt
   archivo_facturas                              archivo_factura[]
   factoring_facturas                            factoring_factura[]
@@ -1216,9 +1216,9 @@ model factura_impuesto {
   base_imponible    Decimal? @db.Decimal(12, 2)
   monto             Decimal? @db.Decimal(12, 2)
   idusuariocrea     Int      @default(1)
-  fechacrea         DateTime @default(now()) @db.Timestamp(3)
+  fechacrea         DateTime @default(now())
   idusuariomod      Int      @default(1)
-  fechamod          DateTime @default(now()) @db.Timestamp(3)
+  fechamod          DateTime @default(now())
   estado            Int      @default(1) @db.TinyInt
   factura           factura  @relation(fields: [idfactura], references: [idfactura], onUpdate: Restrict, map: "FK_factura_impuesto_idfactura")
 
@@ -1245,9 +1245,9 @@ model factura_item {
   impuesto_monto                   Decimal? @db.Decimal(12, 2)
   moneda                           String?  @db.VarChar(50)
   idusuariocrea                    Int      @default(1)
-  fechacrea                        DateTime @default(now()) @db.Timestamp(3)
+  fechacrea                        DateTime @default(now())
   idusuariomod                     Int      @default(1)
-  fechamod                         DateTime @default(now()) @db.Timestamp(3)
+  fechamod                         DateTime @default(now())
   estado                           Int      @default(1) @db.TinyInt
   factura                          factura  @relation(fields: [idfactura], references: [idfactura], onUpdate: Restrict, map: "FK_factura_item_idfactura")
 
@@ -1262,9 +1262,9 @@ model factura_medio_pago {
   medio_pago_codigo  String?  @db.VarChar(100)
   cuenta_bancaria    String?  @db.VarChar(100)
   idusuariocrea      Int      @default(1)
-  fechacrea          DateTime @default(now()) @db.Timestamp(3)
+  fechacrea          DateTime @default(now())
   idusuariomod       Int      @default(1)
-  fechamod           DateTime @default(now()) @db.Timestamp(3)
+  fechamod           DateTime @default(now())
   estado             Int      @default(1) @db.TinyInt
   factura            factura  @relation(fields: [idfactura], references: [idfactura], onUpdate: Restrict, map: "FK_factura_medio_pago_idfactura")
 
@@ -1278,9 +1278,9 @@ model factura_nota {
   id            String?  @db.VarChar(20)
   descripcion   String?  @db.Text
   idusuariocrea Int      @default(1)
-  fechacrea     DateTime @default(now()) @db.Timestamp(3)
+  fechacrea     DateTime @default(now())
   idusuariomod  Int      @default(1)
-  fechamod      DateTime @default(now()) @db.Timestamp(3)
+  fechamod      DateTime @default(now())
   estado        Int      @default(1) @db.TinyInt
   factura       factura  @relation(fields: [idfactura], references: [idfactura], onUpdate: Restrict, map: "FK_factura_nota_idfactura")
 
@@ -1297,9 +1297,9 @@ model factura_termino_pago {
   porcentaje           Decimal?  @db.Decimal(12, 2)
   fecha_pago           DateTime? @db.Date
   idusuariocrea        Int       @default(1)
-  fechacrea            DateTime  @default(now()) @db.Timestamp(3)
+  fechacrea            DateTime  @default(now())
   idusuariomod         Int       @default(1)
-  fechamod             DateTime  @default(now()) @db.Timestamp(3)
+  fechamod             DateTime  @default(now())
   estado               Int       @default(1) @db.TinyInt
   factura              factura   @relation(fields: [idfactura], references: [idfactura], onUpdate: Restrict, map: "FK_factura_termino_pago_idfactura")
 
@@ -1314,9 +1314,9 @@ model financiero_concepto {
   alias                           String                           @db.VarChar(50)
   color                           String                           @db.VarChar(50)
   idusuariocrea                   Int                              @default(1)
-  fechacrea                       DateTime                         @default(now()) @db.Timestamp(3)
+  fechacrea                       DateTime                         @default(now())
   idusuariomod                    Int                              @default(1)
-  fechamod                        DateTime                         @default(now()) @db.Timestamp(3)
+  fechamod                        DateTime                         @default(now())
   estado                          Int                              @default(1) @db.TinyInt
   factoring_propuesta_financieros factoring_propuesta_financiero[]
 }
@@ -1329,9 +1329,9 @@ model financiero_tipo {
   alias                           String                           @db.VarChar(50)
   color                           String                           @db.VarChar(50)
   idusuariocrea                   Int                              @default(1)
-  fechacrea                       DateTime                         @default(now()) @db.Timestamp(3)
+  fechacrea                       DateTime                         @default(now())
   idusuariomod                    Int                              @default(1)
-  fechamod                        DateTime                         @default(now()) @db.Timestamp(3)
+  fechamod                        DateTime                         @default(now())
   estado                          Int                              @default(1) @db.TinyInt
   factoring_propuesta_financieros factoring_propuesta_financiero[]
 }
@@ -1341,9 +1341,9 @@ model genero {
   generoid      String    @unique(map: "UQ_generoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   nombregenero  String    @db.VarChar(50)
   idusuariocrea Int       @default(1)
-  fechacrea     DateTime  @default(now()) @db.Timestamp(3)
+  fechacrea     DateTime  @default(now())
   idusuariomod  Int       @default(1)
-  fechamod      DateTime  @default(now()) @db.Timestamp(3)
+  fechamod      DateTime  @default(now())
   estado        Int       @default(1) @db.TinyInt
   personas      persona[]
 }
@@ -1367,9 +1367,9 @@ model inversionista_banco_cuenta {
   idinversionista Int           @map("_idinversionista") @db.UnsignedInt
   idbancocuenta   Int           @map("_idbancocuenta") @db.UnsignedInt
   idusuariocrea   Int           @default(1)
-  fechacrea       DateTime      @default(now()) @db.Timestamp(3)
+  fechacrea       DateTime      @default(now())
   idusuariomod    Int           @default(1)
-  fechamod        DateTime      @default(now()) @db.Timestamp(3)
+  fechamod        DateTime      @default(now())
   estado          Int           @default(1) @db.TinyInt
   banco_cuenta    banco_cuenta  @relation(fields: [idbancocuenta], references: [idbancocuenta], onUpdate: Restrict, map: "FK_inversionistabancocuenta_idbancocuenta")
   inversionista   inversionista @relation(fields: [idinversionista], references: [idinversionista], onUpdate: Restrict, map: "FK_inversionistabancocuenta_idinversionista")
@@ -1385,9 +1385,9 @@ model inversionista_cuenta_bancaria {
   idinversionista               Int                      @map("_idinversionista") @db.UnsignedInt
   idcuentabancaria              Int                      @map("_idcuentabancaria") @db.UnsignedInt
   idusuariocrea                 Int                      @default(1)
-  fechacrea                     DateTime                 @default(now()) @db.Timestamp(3)
+  fechacrea                     DateTime                 @default(now())
   idusuariomod                  Int                      @default(1)
-  fechamod                      DateTime                 @default(now()) @db.Timestamp(3)
+  fechamod                      DateTime                 @default(now())
   estado                        Int                      @default(1) @db.TinyInt
   cuenta_bancaria               cuenta_bancaria          @relation(fields: [idcuentabancaria], references: [idcuentabancaria], onUpdate: Restrict, map: "FK_inversionistacuentabancaria_idcuentabancaria")
   inversionista                 inversionista            @relation(fields: [idinversionista], references: [idinversionista], onUpdate: Restrict, map: "FK_inversionistacuentabancaria_idinversionista")
@@ -1405,15 +1405,15 @@ model inversionista_deposito {
   idbancocuenta                             Int                                        @map("_idbancocuenta") @db.UnsignedInt
   idinversionistacuentabancaria             Int                                        @map("_idinversionistacuentabancaria") @db.UnsignedInt
   idfactorcuentabancaria                    Int                                        @map("_idfactorcuentabancaria") @db.UnsignedInt
-  fecha_solicitud                           DateTime                                   @db.Timestamp(0)
+  fecha_solicitud                           DateTime                                   @db.DateTime(0)
   numero_operacion                          String                                     @db.VarChar(50)
   monto_depositado                          Decimal                                    @db.Decimal(20, 2)
-  fecha_transferencia                       DateTime?                                  @db.Timestamp(0)
+  fecha_transferencia                       DateTime?                                  @db.DateTime(0)
   comentario                                String?                                    @db.Text
   idusuariocrea                             Int                                        @default(1)
-  fechacrea                                 DateTime                                   @default(now()) @db.Timestamp(3)
+  fechacrea                                 DateTime                                   @default(now())
   idusuariomod                              Int                                        @default(1)
-  fechamod                                  DateTime                                   @default(now()) @db.Timestamp(3)
+  fechamod                                  DateTime                                   @default(now())
   estado                                    Int                                        @default(1) @db.TinyInt
   archivo_inversionista_depositos           archivo_inversionista_deposito[]
   banco_transaccion_inversionista_depositos banco_transaccion_inversionista_deposito[]
@@ -1433,15 +1433,15 @@ model inversionista_retiro {
   idbancocuenta                           Int                                      @map("_idbancocuenta") @db.UnsignedInt
   idinversionistacuentabancaria           Int                                      @map("_idinversionistacuentabancaria") @db.UnsignedInt
   idfactorcuentabancaria                  Int?                                     @map("_idfactorcuentabancaria") @db.UnsignedInt
-  fecha_solicitud                         DateTime                                 @db.Timestamp(0)
+  fecha_solicitud                         DateTime                                 @db.DateTime(0)
   monto_retirado                          Decimal                                  @db.Decimal(20, 2)
   numero_operacion                        String?                                  @db.VarChar(50)
-  fecha_transferencia                     DateTime?                                @db.Timestamp(0)
+  fecha_transferencia                     DateTime?                                @db.DateTime(0)
   comentario                              String?                                  @db.Text
   idusuariocrea                           Int                                      @default(1)
-  fechacrea                               DateTime                                 @default(now()) @db.Timestamp(3)
+  fechacrea                               DateTime                                 @default(now())
   idusuariomod                            Int                                      @default(1)
-  fechamod                                DateTime                                 @default(now()) @db.Timestamp(3)
+  fechamod                                DateTime                                 @default(now())
   estado                                  Int                                      @default(1) @db.TinyInt
   archivo_inversionista_retiros           archivo_inversionista_retiro[]
   banco_transaccion_inversionista_retiros banco_transaccion_inversionista_retiro[]
@@ -1464,9 +1464,9 @@ model moneda {
   simbolo          String            @db.VarChar(5)
   color            String            @db.VarChar(20)
   idusuariocrea    Int               @default(1)
-  fechacrea        DateTime          @default(now()) @db.Timestamp(3)
+  fechacrea        DateTime          @default(now())
   idusuariomod     Int               @default(1)
-  fechamod         DateTime          @default(now()) @db.Timestamp(3)
+  fechamod         DateTime          @default(now())
   estado           Int               @default(1) @db.TinyInt
   banco_cuentas    banco_cuenta[]
   cuenta_bancarias cuenta_bancaria[]
@@ -1481,9 +1481,9 @@ model pais {
   nombrepais                 String         @db.VarChar(200)
   nacionalidad               String         @db.VarChar(200)
   idusuariocrea              Int            @default(1)
-  fechacrea                  DateTime       @default(now()) @db.Timestamp(3)
+  fechacrea                  DateTime       @default(now())
   idusuariomod               Int            @default(1)
-  fechamod                   DateTime       @default(now()) @db.Timestamp(3)
+  fechamod                   DateTime       @default(now())
   estado                     Int            @default(1) @db.TinyInt
   departamentos              departamento[]
   empresas                   empresa[]
@@ -1498,9 +1498,9 @@ model pep_vinculo {
   pepvinculoid           String                  @unique(map: "UQ_pepvinculoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   nombrepepvinculo       String                  @db.VarChar(200)
   idusuariocrea          Int                     @default(1)
-  fechacrea              DateTime                @default(now()) @db.Timestamp(3)
+  fechacrea              DateTime                @default(now())
   idusuariomod           Int                     @default(1)
-  fechamod               DateTime                @default(now()) @db.Timestamp(3)
+  fechamod               DateTime                @default(now())
   estado                 Int                     @default(1) @db.TinyInt
   persona_pep_indirectos persona_pep_indirecto[]
 }
@@ -1529,9 +1529,9 @@ model persona {
   direccion                   String?                     @db.VarChar(200)
   direccionreferencia         String?                     @db.VarChar(200)
   idusuariocrea               Int                         @default(1)
-  fechacrea                   DateTime                    @default(now()) @db.Timestamp(3)
+  fechacrea                   DateTime                    @default(now())
   idusuariomod                Int                         @default(1)
-  fechamod                    DateTime                    @default(now()) @db.Timestamp(3)
+  fechamod                    DateTime                    @default(now())
   estado                      Int                         @default(1) @db.TinyInt
   archivo_personas            archivo_persona[]
   colaboradores               colaborador[]
@@ -1570,9 +1570,9 @@ model persona_cuenta_bancaria {
   idpersona               Int             @map("_idpersona") @db.UnsignedInt
   idcuentabancaria        Int             @map("_idcuentabancaria") @db.UnsignedInt
   idusuariocrea           Int             @default(1)
-  fechacrea               DateTime        @default(now()) @db.Timestamp(3)
+  fechacrea               DateTime        @default(now())
   idusuariomod            Int             @default(1)
-  fechamod                DateTime        @default(now()) @db.Timestamp(3)
+  fechamod                DateTime        @default(now())
   estado                  Int             @default(1) @db.TinyInt
   cuenta_bancaria         cuenta_bancaria @relation(fields: [idcuentabancaria], references: [idcuentabancaria], onUpdate: Restrict, map: "FK_persona_cuenta_bancaria_idcuentabancaria")
   persona                 persona         @relation(fields: [idpersona], references: [idpersona], onUpdate: Restrict, map: "FK_persona_cuenta_bancaria_idpersona")
@@ -1589,9 +1589,9 @@ model persona_declaracion {
   espep                Int?     @db.TinyInt
   tienevinculopep      Int?     @db.TinyInt
   idusuariocrea        Int      @default(1)
-  fechacrea            DateTime @default(now()) @db.Timestamp(3)
+  fechacrea            DateTime @default(now())
   idusuariomod         Int      @default(1)
-  fechamod             DateTime @default(now()) @db.Timestamp(3)
+  fechamod             DateTime @default(now())
   estado               Int      @default(1) @db.TinyInt
   persona              persona  @relation(fields: [idpersona], references: [idpersona], onUpdate: Restrict, map: "FK_persona_declaracion_idpersona")
 
@@ -1610,9 +1610,9 @@ model persona_pep_directo {
   hasta               DateTime? @db.Date
   actualmente         Int?      @db.TinyInt
   idusuariocrea       Int       @default(1)
-  fechacrea           DateTime  @default(now()) @db.Timestamp(3)
+  fechacrea           DateTime  @default(now())
   idusuariomod        Int       @default(1)
-  fechamod            DateTime  @default(now()) @db.Timestamp(3)
+  fechamod            DateTime  @default(now())
   estado              Int       @default(1) @db.TinyInt
   persona             persona?  @relation(fields: [idpersona], references: [idpersona], onDelete: NoAction, onUpdate: NoAction, map: "FK_persona_pep_directo_idpersona")
 
@@ -1634,9 +1634,9 @@ model persona_pep_indirecto {
   hasta                 DateTime?    @db.Date
   actualmente           Int?         @db.TinyInt
   idusuariocrea         Int          @default(1)
-  fechacrea             DateTime     @default(now()) @db.Timestamp(3)
+  fechacrea             DateTime     @default(now())
   idusuariomod          Int          @default(1)
-  fechamod              DateTime     @default(now()) @db.Timestamp(3)
+  fechamod              DateTime     @default(now())
   estado                Int          @default(1) @db.TinyInt
   pep_vinculo           pep_vinculo? @relation(fields: [idpepvinculo], references: [idpepvinculo], onDelete: NoAction, onUpdate: Restrict, map: "FK_persona_pep_indirecto_idpepvinculo")
   persona               persona?     @relation(fields: [idpersona], references: [idpersona], onDelete: NoAction, onUpdate: Restrict, map: "FK_persona_pep_indirecto_idpersona")
@@ -1654,9 +1654,9 @@ model persona_verificacion {
   comentariousuario           String                      @db.Text
   comentariointerno           String                      @db.Text
   idusuariocrea               Int                         @default(1)
-  fechacrea                   DateTime                    @default(now()) @db.Timestamp(3)
+  fechacrea                   DateTime                    @default(now())
   idusuariomod                Int                         @default(1)
-  fechamod                    DateTime                    @default(now()) @db.Timestamp(3)
+  fechamod                    DateTime                    @default(now())
   estado                      Int                         @default(1) @db.TinyInt
   persona                     persona                     @relation(fields: [idpersona], references: [idpersona], onUpdate: Restrict, map: "FK_persona_verificacion_idpersona")
   persona_verificacion_estado persona_verificacion_estado @relation(fields: [idpersonaverificacionestado], references: [idpersonaverificacionestado], onUpdate: Restrict, map: "FK_persona_verificacion_idpersonaverificacionestado")
@@ -1680,9 +1680,9 @@ model persona_verificacion_estado {
   isusuarioedit               Boolean                @default(false)
   isenabledcomentariousuario  Boolean                @default(false)
   idusuariocrea               Int                    @default(1)
-  fechacrea                   DateTime               @default(now()) @db.Timestamp(3)
+  fechacrea                   DateTime               @default(now())
   idusuariomod                Int                    @default(1)
-  fechamod                    DateTime               @default(now()) @db.Timestamp(3)
+  fechamod                    DateTime               @default(now())
   estado                      Int                    @default(1) @db.TinyInt
   personas                    persona[]
   persona_verificaciones      persona_verificacion[]
@@ -1696,9 +1696,9 @@ model provincia {
   codigoprovincia String       @db.VarChar(10)
   nombreprovincia String       @db.VarChar(200)
   idusuariocrea   Int          @default(1)
-  fechacrea       DateTime     @default(now()) @db.Timestamp(3)
+  fechacrea       DateTime     @default(now())
   idusuariomod    Int          @default(1)
-  fechamod        DateTime     @default(now()) @db.Timestamp(3)
+  fechamod        DateTime     @default(now())
   estado          Int          @default(1) @db.TinyInt
   distritos       distrito[]
   empresas        empresa[]
@@ -1715,9 +1715,9 @@ model region_natural {
   regionnaturalid     String     @unique(map: "UQ_distritoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   nombreregionnatural String     @db.VarChar(200)
   idusuariocrea       Int        @default(1)
-  fechacrea           DateTime   @default(now()) @db.Timestamp(3)
+  fechacrea           DateTime   @default(now())
   idusuariomod        Int        @default(1)
-  fechamod            DateTime   @default(now()) @db.Timestamp(3)
+  fechamod            DateTime   @default(now())
   estado              Int        @default(1) @db.TinyInt
   distritos           distrito[]
 }
@@ -1733,9 +1733,9 @@ model riesgo {
   descripcion                           String?                           @db.VarChar(500)
   porcentaje_comision_gestion           Decimal?                          @db.Decimal(12, 2)
   idusuariocrea                         Int                               @default(1)
-  fechacrea                             DateTime                          @default(now()) @db.Timestamp(3)
+  fechacrea                             DateTime                          @default(now())
   idusuariomod                          Int                               @default(1) @db.UnsignedInt
-  fechamod                              DateTime                          @default(now()) @db.Timestamp(3)
+  fechamod                              DateTime                          @default(now())
   estado                                Int                               @default(1) @db.TinyInt
   empresas                              empresa[]
   factores                              factor[]
@@ -1754,9 +1754,9 @@ model rol {
   alias         String        @db.VarChar(50)
   codigo        String        @db.VarChar(10)
   idusuariocrea Int           @default(1)
-  fechacrea     DateTime      @default(now()) @db.Timestamp(3)
+  fechacrea     DateTime      @default(now())
   idusuariomod  Int           @default(1)
-  fechamod      DateTime      @default(now()) @db.Timestamp(3)
+  fechamod      DateTime      @default(now())
   estado        Int           @default(1) @db.TinyInt
   usuario_roles usuario_rol[]
 }
@@ -1771,9 +1771,9 @@ model servicio {
   urlcontrato               String                     @db.VarChar(500)
   pathroute                 String                     @db.VarChar(100)
   idusuariocrea             Int                        @default(1)
-  fechacrea                 DateTime                   @default(now()) @db.Timestamp(3)
+  fechacrea                 DateTime                   @default(now())
   idusuariomod              Int                        @default(1)
-  fechamod                  DateTime                   @default(now()) @db.Timestamp(3)
+  fechamod                  DateTime                   @default(now())
   estado                    Int                        @default(1) @db.TinyInt
   servicio_empresas         servicio_empresa[]
   usuario_servicios         usuario_servicio[]
@@ -1789,9 +1789,9 @@ model servicio_empresa {
   idusuariosuscriptor             Int                             @map("_idusuariosuscriptor") @db.UnsignedInt
   idservicioempresaestado         Int                             @map("_idservicioempresaestado") @db.UnsignedInt
   idusuariocrea                   Int                             @default(1)
-  fechacrea                       DateTime                        @default(now()) @db.Timestamp(3)
+  fechacrea                       DateTime                        @default(now())
   idusuariomod                    Int                             @default(1)
-  fechamod                        DateTime                        @default(now()) @db.Timestamp(3)
+  fechamod                        DateTime                        @default(now())
   estado                          Int                             @default(1) @db.TinyInt
   empresa                         empresa                         @relation(fields: [idempresa], references: [idempresa], onUpdate: Restrict, map: "FK_servicioempresa_idempresa")
   servicio                        servicio                        @relation(fields: [idservicio], references: [idservicio], onUpdate: Restrict, map: "FK_servicioempresa_idservicio")
@@ -1817,9 +1817,9 @@ model servicio_empresa_estado {
   isusuarioedit                   Int                             @default(0) @db.TinyInt
   isenabledcomentariousuario      Int                             @default(0) @db.TinyInt
   idusuariocrea                   Int                             @default(1)
-  fechacrea                       DateTime                        @default(now()) @db.Timestamp(3)
+  fechacrea                       DateTime                        @default(now())
   idusuariomod                    Int                             @default(1)
-  fechamod                        DateTime                        @default(now()) @db.Timestamp(3)
+  fechamod                        DateTime                        @default(now())
   estado                          Int                             @default(1) @db.TinyInt
   servicio_empresas               servicio_empresa[]
   servicio_empresa_verificaciones servicio_empresa_verificacion[]
@@ -1834,9 +1834,9 @@ model servicio_empresa_verificacion {
   comentariousuario             String                  @db.Text
   comentariointerno             String                  @db.Text
   idusuariocrea                 Int                     @default(1)
-  fechacrea                     DateTime                @default(now()) @db.Timestamp(3)
+  fechacrea                     DateTime                @default(now())
   idusuariomod                  Int                     @default(1)
-  fechamod                      DateTime                @default(now()) @db.Timestamp(3)
+  fechamod                      DateTime                @default(now())
   estado                        Int                     @default(1) @db.TinyInt
   servicio_empresa              servicio_empresa        @relation(fields: [idservicioempresa], references: [idservicioempresa], onUpdate: Restrict, map: "FK_servicioempresaverificacion_idservicioempresa")
   servicio_empresa_estado       servicio_empresa_estado @relation(fields: [idservicioempresaestado], references: [idservicioempresaestado], onUpdate: Restrict, map: "FK_servicioempresaverificacion_idservicioempresaestado")
@@ -1863,9 +1863,9 @@ model usuario {
   ispersonavalidated                   Boolean                              @default(false)
   hash                                 String                               @unique(map: "hash") @db.VarChar(50)
   idusuariocrea                        Int                                  @default(1)
-  fechacrea                            DateTime                             @default(now()) @db.Timestamp(3)
+  fechacrea                            DateTime                             @default(now())
   idusuariomod                         Int                                  @default(1)
-  fechamod                             DateTime                             @default(now()) @db.Timestamp(3)
+  fechamod                             DateTime                             @default(now())
   estado                               Int                                  @default(1) @db.TinyInt
   banco_transaccion_estado_historiales banco_transaccion_estado_historial[]
   credencial                           credencial?
@@ -1889,9 +1889,9 @@ model usuario_rol {
   idusuario     Int      @map("_idusuario") @db.UnsignedInt
   idrol         Int      @map("_idrol") @db.UnsignedInt
   idusuariocrea Int      @default(1)
-  fechacrea     DateTime @default(now()) @db.Timestamp(3)
+  fechacrea     DateTime @default(now())
   idusuariomod  Int      @default(1)
-  fechamod      DateTime @default(now()) @db.Timestamp(3)
+  fechamod      DateTime @default(now())
   estado        Int      @default(1) @db.TinyInt
   rol           rol      @relation(fields: [idrol], references: [idrol], onUpdate: Restrict, map: "FK_usuario_rol_idrol")
   usuario       usuario  @relation(fields: [idusuario], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_usuario_rol_idusuario")
@@ -1908,9 +1908,9 @@ model usuario_servicio {
   idservicio                      Int                             @map("_idservicio") @db.UnsignedInt
   idusuarioservicioestado         Int                             @map("_idusuarioservicioestado") @db.UnsignedInt
   idusuariocrea                   Int                             @default(1)
-  fechacrea                       DateTime                        @default(now()) @db.Timestamp(3)
+  fechacrea                       DateTime                        @default(now())
   idusuariomod                    Int                             @default(1)
-  fechamod                        DateTime                        @default(now()) @db.Timestamp(3)
+  fechamod                        DateTime                        @default(now())
   estado                          Int                             @default(1) @db.TinyInt
   servicio                        servicio                        @relation(fields: [idservicio], references: [idservicio], onUpdate: Restrict, map: "FK_usuarioservicio_idservicio")
   usuario                         usuario                         @relation(fields: [idusuario], references: [idusuario], onDelete: NoAction, onUpdate: Restrict, map: "FK_usuarioservicio_idusuario")
@@ -1932,9 +1932,9 @@ model usuario_servicio_empresa {
   idusuarioservicioempresaestado  Int                             @map("_idusuarioservicioempresaestado") @db.UnsignedInt
   idusuarioservicioempresarol     Int                             @map("_idusuarioservicioempresarol") @db.UnsignedInt
   idusuariocrea                   Int                             @default(1)
-  fechacrea                       DateTime                        @default(now()) @db.Timestamp(3)
+  fechacrea                       DateTime                        @default(now())
   idusuariomod                    Int                             @default(1)
-  fechamod                        DateTime                        @default(now()) @db.Timestamp(3)
+  fechamod                        DateTime                        @default(now())
   estado                          Int                             @default(1) @db.TinyInt
   empresa                         empresa                         @relation(fields: [idempresa], references: [idempresa], onUpdate: Restrict, map: "FK_usuarioservicioempresa_idempresa")
   servicio                        servicio                        @relation(fields: [idservicio], references: [idservicio], onUpdate: Restrict, map: "FK_usuarioservicioempresa_idservicio")
@@ -1957,9 +1957,9 @@ model usuario_servicio_empresa_estado {
   alias                          String                     @db.VarChar(50)
   color                          String                     @db.VarChar(50)
   idusuariocrea                  Int                        @default(1)
-  fechacrea                      DateTime                   @default(now()) @db.Timestamp(3)
+  fechacrea                      DateTime                   @default(now())
   idusuariomod                   Int                        @default(1)
-  fechamod                       DateTime                   @default(now()) @db.Timestamp(3)
+  fechamod                       DateTime                   @default(now())
   estado                         Int                        @default(1) @db.TinyInt
   usuario_servicio_empresas      usuario_servicio_empresa[]
 }
@@ -1972,9 +1972,9 @@ model usuario_servicio_empresa_rol {
   alias                       String                     @db.VarChar(50)
   color                       String                     @db.VarChar(50)
   idusuariocrea               Int                        @default(1)
-  fechacrea                   DateTime                   @default(now()) @db.Timestamp(3)
+  fechacrea                   DateTime                   @default(now())
   idusuariomod                Int                        @default(1)
-  fechamod                    DateTime                   @default(now()) @db.Timestamp(3)
+  fechamod                    DateTime                   @default(now())
   estado                      Int                        @default(1) @db.TinyInt
   usuario_servicio_empresas   usuario_servicio_empresa[]
 }
@@ -1987,9 +1987,9 @@ model usuario_servicio_estado {
   alias                           String                          @db.VarChar(50)
   color                           String                          @db.VarChar(50)
   idusuariocrea                   Int                             @default(1)
-  fechacrea                       DateTime                        @default(now()) @db.Timestamp(3)
+  fechacrea                       DateTime                        @default(now())
   idusuariomod                    Int                             @default(1)
-  fechamod                        DateTime                        @default(now()) @db.Timestamp(3)
+  fechamod                        DateTime                        @default(now())
   estado                          Int                             @default(1) @db.TinyInt
   usuario_servicios               usuario_servicio[]
   usuario_servicio_verificaciones usuario_servicio_verificacion[]
@@ -2004,9 +2004,9 @@ model usuario_servicio_verificacion {
   comentariousuario             String                  @db.Text
   comentariointerno             String                  @db.Text
   idusuariocrea                 Int                     @default(1)
-  fechacrea                     DateTime                @default(now()) @db.Timestamp(3)
+  fechacrea                     DateTime                @default(now())
   idusuariomod                  Int                     @default(1)
-  fechamod                      DateTime                @default(now()) @db.Timestamp(3)
+  fechamod                      DateTime                @default(now())
   estado                        Int                     @default(1) @db.TinyInt
   usuario_servicio              usuario_servicio        @relation(fields: [idusuarioservicio], references: [idusuarioservicio], onUpdate: Restrict, map: "FK_usuarioservicioverificacion_idusuarioservicio")
   usuario_servicio_estado       usuario_servicio_estado @relation(fields: [idusuarioservicioestado], references: [idusuarioservicioestado], onUpdate: Restrict, map: "FK_usuarioservicioverificacion_idusuarioservicioestado")
@@ -2047,9 +2047,9 @@ model validacion_tipo {
   validaciontipoid String       @unique(map: "UQ_validacion_tipo_validaciontipoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   nombre           String       @db.VarChar(50)
   idusuariocrea    Int          @default(1)
-  fechacrea        DateTime     @default(now()) @db.Timestamp(3)
+  fechacrea        DateTime     @default(now())
   idusuariomod     Int          @default(1)
-  fechamod         DateTime     @default(now()) @db.Timestamp(3)
+  fechamod         DateTime     @default(now())
   estado           Int          @default(1) @db.TinyInt
   validaciones     validacion[]
 }
@@ -2060,9 +2060,9 @@ model zlaboratorio_pedido {
   code          String               @unique(map: "UQ_zlaboratorio_pedido_code") @default("") @db.VarChar(20)
   nombre        String               @db.VarChar(100)
   idusuariocrea Int                  @default(1)
-  fechacrea     DateTime             @default(now()) @db.Timestamp(3)
+  fechacrea     DateTime             @default(now())
   idusuariomod  Int                  @default(1)
-  fechamod      DateTime             @default(now()) @db.Timestamp(3)
+  fechamod      DateTime             @default(now())
   estado        Int                  @default(1) @db.TinyInt
   usuario       zlaboratorio_usuario @relation(fields: [idusuario], references: [idusuario], onUpdate: Restrict, map: "FK_zlaboratorio_pedido__idusuario")
 
@@ -2073,7 +2073,7 @@ model zlaboratorio_usuario {
   idusuario            Int                   @id @default(autoincrement()) @map("_idusuario") @db.UnsignedInt
   nombre               String                @db.VarChar(100)
   idusuariocrea        Int                   @default(1)
-  fechacrea            DateTime              @default(now()) @db.Timestamp(3)
+  fechacrea            DateTime              @default(now())
   idusuariomod         Int                   @default(1)
   fechamod             DateTime              @default(now()) @db.Timestamp(3)
   estado               Int                   @default(1) @db.TinyInt
@@ -2081,7 +2081,7 @@ model zlaboratorio_usuario {
 }
 
 /// --- INICIO LOG SCRIPT: pluralizar-schema.js ---
-/// Fecha de ejecución: 9/6/2025, 20:22:50
+/// Fecha de ejecución: 9/6/2025, 12:17:56
 /// Total líneas con relaciones tipo '[]': 137
 /// Modificaciones realizadas: 0
 /// Sin modificar (ya pluralizadas): 137
@@ -2224,180 +2224,3 @@ model zlaboratorio_usuario {
 /// Línea 2054: 'validaciones' ya está pluralizado correctamente.
 /// Línea 2080: 'zlaboratorio_pedidos' ya está pluralizado correctamente.
 /// --- FIN LOG SCRIPT
-
-
-/// --- INICIO LOG DE SCRIPT: renombrar-atributos-especiales.js ---
-/// Fecha de ejecución: 9/6/2025, 20:22:50
-/// ✔️ Línea 32: (relation-field) archivo_estado ya coincide con 'archivoestado'
-/// ✔️ Línea 33: (relation-field) archivo_tipo ya coincide con 'archivotipo'
-/// ✔️ Línea 55: (relation-field) archivo ya coincide con 'archivo'
-/// ✔️ Línea 56: (relation-field) colaborador ya coincide con 'colaborador'
-/// ✔️ Línea 70: (relation-field) archivo ya coincide con 'archivo'
-/// ✔️ Línea 71: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
-/// ✔️ Línea 85: (relation-field) archivo ya coincide con 'archivo'
-/// ✔️ Línea 86: (relation-field) empresa ya coincide con 'empresa'
-/// ✔️ Línea 112: (relation-field) archivo ya coincide con 'archivo'
-/// ✔️ Línea 113: (relation-field) factoring_historial_estado ya coincide con 'factoringhistorialestado'
-/// ✔️ Línea 127: (relation-field) archivo ya coincide con 'archivo'
-/// ✔️ Línea 128: (relation-field) factura ya coincide con 'factura'
-/// ✔️ Línea 142: (relation-field) archivo ya coincide con 'archivo'
-/// ✔️ Línea 143: (relation-field) inversionista_deposito ya coincide con 'inversionistadeposito'
-/// ✔️ Línea 157: (relation-field) archivo ya coincide con 'archivo'
-/// ✔️ Línea 158: (relation-field) inversionista_retiro ya coincide con 'inversionistaretiro'
-/// ✔️ Línea 172: (relation-field) archivo ya coincide con 'archivo'
-/// ✔️ Línea 173: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 225: (relation-field) banco_cuenta_estado ya coincide con 'bancocuentaestado'
-/// ✔️ Línea 226: (relation-field) banco_cuenta_tipo ya coincide con 'bancocuentatipo'
-/// ✔️ Línea 227: (relation-field) moneda ya coincide con 'moneda'
-/// ✔️ Línea 280: (relation-field) banco_cuenta ya coincide con 'bancocuenta'
-/// ✔️ Línea 281: (relation-field) banco_transaccion_estado ya coincide con 'bancotransaccionestado'
-/// ✔️ Línea 282: (singular) banco_transaccion_estado_historial ya está correcto | Relación: 'banco_transaccion_idbancotransaccionestadohistorialTobanco_transaccion_estado_historial'
-/// ✔️ Línea 283: (relation-field) banco_transaccion_tipo ya coincide con 'bancotransacciontipo'
-/// ✔️ Línea 284: (plural) banco_transaccion_estado_historial_bancotransacciones ya está correcto | Relación: 'banco_transaccion_estado_historial_idbancotransaccionTobanco_transaccion'
-/// ✔️ Línea 322: (plural) banco_transaccion_bancotransaccionestadohistoriales ya está correcto | Relación: 'banco_transaccion_idbancotransaccionestadohistorialTobanco_transaccion_estado_historial'
-/// ✔️ Línea 323: (singular) banco_transaccion ya está correcto | Relación: 'banco_transaccion_estado_historial_idbancotransaccionTobanco_transaccion'
-/// ✔️ Línea 324: (relation-field) banco_transaccion_estado ya coincide con 'bancotransaccionestado'
-/// ✔️ Línea 325: (relation-field) usuario_modifica ya coincide con 'usuariomodifica'
-/// ✔️ Línea 340: (relation-field) banco_transaccion ya coincide con 'bancotransaccion'
-/// ✔️ Línea 341: (relation-field) factoring_inversion ya coincide con 'factoringinversion'
-/// ✔️ Línea 355: (relation-field) banco_transaccion ya coincide con 'bancotransaccion'
-/// ✔️ Línea 356: (relation-field) inversionista_deposito ya coincide con 'inversionistadeposito'
-/// ✔️ Línea 370: (relation-field) banco_transaccion ya coincide con 'bancotransaccion'
-/// ✔️ Línea 371: (relation-field) inversionista_retiro ya coincide con 'inversionistaretiro'
-/// ✔️ Línea 412: (relation-field) colaborador_tipo ya coincide con 'colaboradortipo'
-/// ✔️ Línea 413: (relation-field) documento_tipo ya coincide con 'documentotipo'
-/// ✔️ Línea 414: (relation-field) empresa ya coincide con 'empresa'
-/// ✔️ Línea 415: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 470: (relation-field) empresa ya coincide con 'empresa'
-/// ✔️ Línea 487: (relation-field) usuario ya coincide con 'usuario'
-/// ✔️ Línea 509: (relation-field) banco ya coincide con 'banco'
-/// ✔️ Línea 510: (relation-field) cuenta_bancaria_estado ya coincide con 'cuentabancariaestado'
-/// ✔️ Línea 511: (relation-field) cuenta_tipo ya coincide con 'cuentatipo'
-/// ✔️ Línea 512: (relation-field) moneda ya coincide con 'moneda'
-/// ✔️ Línea 564: (relation-field) pais ya coincide con 'pais'
-/// ✔️ Línea 587: (relation-field) provincia ya coincide con 'provincia'
-/// ✔️ Línea 588: (relation-field) region_natural ya coincide con 'regionnatural'
-/// ✔️ Línea 636: (relation-field) departamento_sede ya coincide con 'departamentosede'
-/// ✔️ Línea 637: (relation-field) distrito_sede ya coincide con 'distritosede'
-/// ✔️ Línea 638: (relation-field) pais_sede ya coincide con 'paissede'
-/// ✔️ Línea 639: (relation-field) provincia_sede ya coincide con 'provinciasede'
-/// ✔️ Línea 640: (relation-field) riesgo ya coincide con 'riesgo'
-/// ✔️ Línea 642: (plural) factoring_aceptantes ya está correcto | Relación: 'factoring_idaceptanteToempresa'
-/// ✔️ Línea 643: (plural) factoring_cedentes ya está correcto | Relación: 'factoring_idcedenteToempresa'
-/// ✔️ Línea 665: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
-/// ✔️ Línea 666: (relation-field) empresa ya coincide con 'empresa'
-/// ✔️ Línea 711: (relation-field) departamento_sede ya coincide con 'departamentosede'
-/// ✔️ Línea 712: (relation-field) distrito_sede ya coincide con 'distritosede'
-/// ✔️ Línea 713: (relation-field) pais_sede ya coincide con 'paissede'
-/// ✔️ Línea 714: (relation-field) provincia_sede ya coincide con 'provinciasede'
-/// ✔️ Línea 715: (relation-field) riesgo ya coincide con 'riesgo'
-/// ✔️ Línea 736: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
-/// ✔️ Línea 737: (relation-field) factor ya coincide con 'factor'
-/// ✔️ Línea 773: (singular) empresa_aceptante ya está correcto | Relación: 'factoring_idaceptanteToempresa'
-/// ✔️ Línea 774: (singular) empresa_cedente ya está correcto | Relación: 'factoring_idcedenteToempresa'
-/// ✔️ Línea 775: (relation-field) contacto_aceptante ya coincide con 'contactoaceptante'
-/// ✔️ Línea 776: (relation-field) contacto_cedente ya coincide con 'contactocedente'
-/// ✔️ Línea 777: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
-/// ✔️ Línea 778: (singular) factoring_ejecutado ya está correcto | Relación: 'factoring_idfactoringejecutadoTofactoring_ejecutado'
-/// ✔️ Línea 779: (relation-field) factoring_estado ya coincide con 'factoringestado'
-/// ✔️ Línea 780: (singular) factoring_propuesta_aceptada ya está correcto | Relación: 'factoring_idfactoringpropuestaaceptadaTofactoring_propuesta'
-/// ✔️ Línea 781: (relation-field) moneda ya coincide con 'moneda'
-/// ✔️ Línea 782: (plural) factoring_ejecutado_factoringes ya está correcto | Relación: 'factoring_ejecutado_idfactoringTofactoring'
-/// ✔️ Línea 786: (plural) factoring_propuesta_factoringes ya está correcto | Relación: 'factoring_propuesta_idfactoringTofactoring'
-/// ✔️ Línea 814: (relation-field) riesgo ya coincide con 'riesgo'
-/// ✔️ Línea 834: (relation-field) riesgo ya coincide con 'riesgo'
-/// ✔️ Línea 853: (relation-field) riesgo ya coincide con 'riesgo'
-/// ✔️ Línea 893: (plural) factoring_factoringejecutados ya está correcto | Relación: 'factoring_idfactoringejecutadoTofactoring_ejecutado'
-/// ✔️ Línea 894: (singular) factoring ya está correcto | Relación: 'factoring_ejecutado_idfactoringTofactoring'
-/// ✔️ Línea 895: (relation-field) factoring_ejecutado_estado ya coincide con 'factoringejecutadoestado'
-/// ✔️ Línea 957: (relation-field) factoring ya coincide con 'factoring'
-/// ✔️ Línea 958: (relation-field) factura ya coincide con 'factura'
-/// ✔️ Línea 978: (relation-field) factoring_estado ya coincide con 'factoringestado'
-/// ✔️ Línea 979: (relation-field) factoring ya coincide con 'factoring'
-/// ✔️ Línea 980: (relation-field) usuario_modifica ya coincide con 'usuariomodifica'
-/// ✔️ Línea 1019: (relation-field) empresa_cuenta_bancaria ya coincide con 'empresacuentabancaria'
-/// ✔️ Línea 1020: (relation-field) factor_cuenta_bancaria ya coincide con 'factorcuentabancaria'
-/// ✔️ Línea 1021: (relation-field) factoring ya coincide con 'factoring'
-/// ✔️ Línea 1077: (plural) factoring_factoringpropuestaaceptadas ya está correcto | Relación: 'factoring_idfactoringpropuestaaceptadaTofactoring_propuesta'
-/// ✔️ Línea 1078: (singular) factoring ya está correcto | Relación: 'factoring_propuesta_idfactoringTofactoring'
-/// ✔️ Línea 1079: (relation-field) factoring_estrategia ya coincide con 'factoringestrategia'
-/// ✔️ Línea 1080: (relation-field) factoring_propuesta_estado ya coincide con 'factoringpropuestaestado'
-/// ✔️ Línea 1081: (relation-field) factoring_tipo ya coincide con 'factoringtipo'
-/// ✔️ Línea 1082: (singular) riesgo_aceptante ya está correcto | Relación: 'factoring_propuesta_idriesgoaceptanteToriesgo'
-/// ✔️ Línea 1083: (singular) riesgo_cedente ya está correcto | Relación: 'factoring_propuesta_idriesgocedenteToriesgo'
-/// ✔️ Línea 1084: (singular) riesgo_operacion ya está correcto | Relación: 'factoring_propuesta_idriesgooperacionToriesgo'
-/// ✔️ Línea 1128: (relation-field) factoring_propuesta ya coincide con 'factoringpropuesta'
-/// ✔️ Línea 1129: (relation-field) financiero_concepto ya coincide con 'financieroconcepto'
-/// ✔️ Línea 1130: (relation-field) financiero_tipo ya coincide con 'financierotipo'
-/// ✔️ Línea 1198: (relation-field) usuario_upload ya coincide con 'usuarioupload'
-/// ✔️ Línea 1223: (relation-field) factura ya coincide con 'factura'
-/// ✔️ Línea 1252: (relation-field) factura ya coincide con 'factura'
-/// ✔️ Línea 1269: (relation-field) factura ya coincide con 'factura'
-/// ✔️ Línea 1285: (relation-field) factura ya coincide con 'factura'
-/// ✔️ Línea 1304: (relation-field) factura ya coincide con 'factura'
-/// ✔️ Línea 1361: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 1374: (relation-field) banco_cuenta ya coincide con 'bancocuenta'
-/// ✔️ Línea 1375: (relation-field) inversionista ya coincide con 'inversionista'
-/// ✔️ Línea 1392: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
-/// ✔️ Línea 1393: (relation-field) inversionista ya coincide con 'inversionista'
-/// ✔️ Línea 1420: (relation-field) banco_cuenta ya coincide con 'bancocuenta'
-/// ✔️ Línea 1421: (relation-field) factor_cuenta_bancaria ya coincide con 'factorcuentabancaria'
-/// ✔️ Línea 1422: (relation-field) inversionista_cuenta_bancaria ya coincide con 'inversionistacuentabancaria'
-/// ✔️ Línea 1448: (relation-field) banco_cuenta ya coincide con 'bancocuenta'
-/// ✔️ Línea 1449: (relation-field) factor_cuenta_bancaria ya coincide con 'factorcuentabancaria'
-/// ✔️ Línea 1450: (relation-field) inversionista_cuenta_bancaria ya coincide con 'inversionistacuentabancaria'
-/// ✔️ Línea 1491: (plural) persona_paisnacimientos ya está correcto | Relación: 'persona_idpaisnacimientoTopais'
-/// ✔️ Línea 1492: (plural) persona_paisnacionalidades ya está correcto | Relación: 'persona_idpaisnacionalidadTopais'
-/// ✔️ Línea 1493: (plural) persona_paisresidencias ya está correcto | Relación: 'persona_idpaisresidenciaTopais'
-/// ✔️ Línea 1539: (relation-field) departamento_residencia ya coincide con 'departamentoresidencia'
-/// ✔️ Línea 1540: (relation-field) distrito_residencia ya coincide con 'distritoresidencia'
-/// ✔️ Línea 1541: (relation-field) documento_tipo ya coincide con 'documentotipo'
-/// ✔️ Línea 1542: (relation-field) genero ya coincide con 'genero'
-/// ✔️ Línea 1543: (singular) pais_nacimiento ya está correcto | Relación: 'persona_idpaisnacimientoTopais'
-/// ✔️ Línea 1544: (singular) pais_nacionalidad ya está correcto | Relación: 'persona_idpaisnacionalidadTopais'
-/// ✔️ Línea 1545: (singular) pais_residencia ya está correcto | Relación: 'persona_idpaisresidenciaTopais'
-/// ✔️ Línea 1546: (relation-field) persona_verificacion_estado ya coincide con 'personaverificacionestado'
-/// ✔️ Línea 1547: (relation-field) provincia_residencia ya coincide con 'provinciaresidencia'
-/// ✔️ Línea 1548: (relation-field) usuario ya coincide con 'usuario'
-/// ✔️ Línea 1577: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
-/// ✔️ Línea 1578: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 1596: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 1617: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 1641: (relation-field) pep_vinculo ya coincide con 'pepvinculo'
-/// ✔️ Línea 1642: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 1661: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 1662: (relation-field) persona_verificacion_estado ya coincide con 'personaverificacionestado'
-/// ✔️ Línea 1663: (relation-field) usuario_verifica ya coincide con 'usuarioverifica'
-/// ✔️ Línea 1707: (relation-field) departamento ya coincide con 'departamento'
-/// ✔️ Línea 1745: (plural) factoring_propuesta_riesgoaceptantes ya está correcto | Relación: 'factoring_propuesta_idriesgoaceptanteToriesgo'
-/// ✔️ Línea 1746: (plural) factoring_propuesta_riesgocedentes ya está correcto | Relación: 'factoring_propuesta_idriesgocedenteToriesgo'
-/// ✔️ Línea 1747: (plural) factoring_propuesta_riesgooperaciones ya está correcto | Relación: 'factoring_propuesta_idriesgooperacionToriesgo'
-/// ✔️ Línea 1796: (relation-field) empresa ya coincide con 'empresa'
-/// ✔️ Línea 1797: (relation-field) servicio ya coincide con 'servicio'
-/// ✔️ Línea 1798: (relation-field) servicio_empresa_estado ya coincide con 'servicioempresaestado'
-/// ✔️ Línea 1799: (relation-field) usuario_suscriptor ya coincide con 'usuariosuscriptor'
-/// ✔️ Línea 1841: (relation-field) servicio_empresa ya coincide con 'servicioempresa'
-/// ✔️ Línea 1842: (relation-field) servicio_empresa_estado ya coincide con 'servicioempresaestado'
-/// ✔️ Línea 1843: (relation-field) usuario_verifica ya coincide con 'usuarioverifica'
-/// ✔️ Línea 1878: (relation-field) documento_tipo ya coincide con 'documentotipo'
-/// ✔️ Línea 1896: (relation-field) rol ya coincide con 'rol'
-/// ✔️ Línea 1897: (relation-field) usuario ya coincide con 'usuario'
-/// ✔️ Línea 1915: (relation-field) servicio ya coincide con 'servicio'
-/// ✔️ Línea 1916: (relation-field) usuario ya coincide con 'usuario'
-/// ✔️ Línea 1917: (relation-field) usuario_servicio_estado ya coincide con 'usuarioservicioestado'
-/// ✔️ Línea 1939: (relation-field) empresa ya coincide con 'empresa'
-/// ✔️ Línea 1940: (relation-field) servicio ya coincide con 'servicio'
-/// ✔️ Línea 1941: (relation-field) usuario ya coincide con 'usuario'
-/// ✔️ Línea 1942: (relation-field) usuario_servicio_empresa_estado ya coincide con 'usuarioservicioempresaestado'
-/// ✔️ Línea 1943: (relation-field) usuario_servicio_empresa_rol ya coincide con 'usuarioservicioempresarol'
-/// ✔️ Línea 2011: (relation-field) usuario_servicio ya coincide con 'usuarioservicio'
-/// ✔️ Línea 2012: (relation-field) usuario_servicio_estado ya coincide con 'usuarioservicioestado'
-/// ✔️ Línea 2013: (relation-field) usuario_verifica ya coincide con 'usuarioverifica'
-/// ✔️ Línea 2038: (relation-field) usuario ya coincide con 'usuario'
-/// ✔️ Línea 2039: (relation-field) validacion_tipo ya coincide con 'validaciontipo'
-/// ✔️ Línea 2067: (relation-field) usuario ya coincide con 'usuario'
-/// 📊 Resumen del script: renombrar-atributos-especiales.js
-/// 🔎 Total relaciones '@relation' detectadas: 168
-/// ✅ Atributos renombrados: 0
-/// ⚠️ Ya estaban correctos: 168
-/// --- FIN LOG DE SCRIPT ---

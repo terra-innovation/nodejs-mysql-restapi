@@ -276,7 +276,7 @@ export const sendTokenPassword = async (req: Request, res: Response) => {
             tiempo_expiracion: 15, // En minutos
             verificado: 0,
             fecha_verificado: null,
-            idusuariomod: req.session_user.usuario.idusuario ?? 1,
+            idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
             fechamod: new Date(),
           };
 
@@ -339,7 +339,7 @@ export const sendVerificactionCode = async (req: Request, res: Response) => {
         otp: emailvalidationcode,
         tiempo_marca: new Date(),
         tiempo_expiracion: 5, // En minutos
-        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
         fechamod: new Date(),
       };
 
@@ -452,8 +452,6 @@ export const registerUsuario = async (req: Request, res: Response) => {
       const credencialCreated = await credencialDao.insertCredencial(tx, credencialToCreate);
       log.debug(line(), "credencialCreated", credencialCreated);
 
-      let validacion: Partial<validacion> = {};
-
       const idvalidaciontipo = 1; // 1: Para Correo electrónico
       const validacionToCreate: Prisma.validacionCreateInput = {
         usuario: { connect: { idusuario: usuarioCreated.idusuario } },
@@ -476,7 +474,7 @@ export const registerUsuario = async (req: Request, res: Response) => {
       const usuarioReturned: Record<string, any> = {};
       usuarioReturned.hash = usuarioToCreate.hash;
       usuarioReturned.email = usuarioValidated.email;
-      usuarioReturned.codigo = validacion.codigo;
+      usuarioReturned.codigo = validacionToCreate.codigo;
 
       var usuarioObfuscated = jsonUtils.ofuscarAtributos(usuarioReturned, ["email"], jsonUtils.PATRON_OFUSCAR_EMAIL);
 
@@ -525,7 +523,7 @@ export const validateEmail = async (req: Request, res: Response) => {
             const validacionToUpdate: Prisma.validacionUpdateInput = {
               verificado: 1,
               fecha_verificado: new Date(),
-              idusuariomod: req.session_user.usuario.idusuario ?? 1,
+              idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
               fechamod: new Date(),
             };
             const validacionUpdated = await validacionDao.updateValidacion(tx, validacion.validacionid, validacionToUpdate);

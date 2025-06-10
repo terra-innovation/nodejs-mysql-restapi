@@ -10,7 +10,18 @@ export const getFactoringpropuestasByIdfactoring = async (tx: TxClient, idfactor
   try {
     const facturas = await tx.factoring_propuesta.findMany({
       include: {
+        factoring_tipo: true,
+        factoring_propuesta_estado: true,
+        riesgo_aceptante: true,
+        riesgo_cedente: true,
+        riesgo_operacion: true,
         factoring_estrategia: true,
+        factoring_propuesta_financieros: {
+          include: {
+            financiero_concepto: true,
+            financiero_tipo: true,
+          },
+        },
       },
       where: {
         idfactoring: idfactoring,

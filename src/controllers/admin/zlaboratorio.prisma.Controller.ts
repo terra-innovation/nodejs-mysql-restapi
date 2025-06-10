@@ -79,11 +79,11 @@ export const validateTransaction = async (req: Request, res: Response) => {
         fechamod: new Date(),
       };
 
-      const updateZlaboratorioPedido = await zlaboratoriopedidoDao.updateZlaboratorioPedido(tx, pedidoToUpdate.idpedido, pedidoToUpdate);
+      /*const updateZlaboratorioPedido = await zlaboratoriopedidoDao.updateZlaboratorioPedido(tx, pedidoToUpdate.idpedido, pedidoToUpdate);
 
       const pedidoEncontrado = await zlaboratoriopedidoDao.findZlaboratorioPedidoPk(tx, "c019c569pppp");
       log.debug(line(), "pedidoEncontrado", pedidoEncontrado);
-
+*/
       return usuarioCreated;
     },
     { timeout: prismaFT.transactionTimeout }
