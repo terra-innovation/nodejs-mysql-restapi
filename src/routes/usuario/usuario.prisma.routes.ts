@@ -6,10 +6,10 @@ import { verifyToken, checkRole } from "#src/middlewares/auth.prisma.Middleware.
 const router = Router();
 
 //Usuario
-//router.get("/usuario/usuario/listar", verifyToken, checkRole([2]), catchedAsync(usuarioController.getPersonas));
-//router.post("/usuario/usuario/crear", verifyToken, checkRole([2]), catchedAsync(usuarioController.createPersona));
-//router.patch("/usuario/usuario/actualizar/:id", verifyToken, checkRole([2]), catchedAsync(usuarioController.updatePersonaOnlyAlias));
-//router.get("/usuario/usuario/master", verifyToken, checkRole([2]), catchedAsync(usuarioController.getPersonaMaster));
+//router.get("/usuario/usuario/listar", verifyToken, checkRole([5]), catchedAsync(usuarioController.getPersonas));
+//router.post("/usuario/usuario/crear", verifyToken, checkRole([5]), catchedAsync(usuarioController.createPersona));
+//router.patch("/usuario/usuario/actualizar/:id", verifyToken, checkRole([5]), catchedAsync(usuarioController.updatePersonaOnlyAlias));
+//router.get("/usuario/usuario/master", verifyToken, checkRole([5]), catchedAsync(usuarioController.getPersonaMaster));
 
-router.get("/usuario/usuario/yo/:id", verifyToken, checkRole([2]), catchedAsync(usuarioController.yoUsuario));
+router.get("/usuario/usuario/yo/:id", verifyToken, checkRole([5]), catchedAsync(usuarioController.yoUsuario));
 export default router;

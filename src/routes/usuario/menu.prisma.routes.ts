@@ -6,6 +6,6 @@ import { verifyToken, checkRole } from "#src/middlewares/auth.prisma.Middleware.
 const router = Router();
 
 //Usuario
-router.get("/usuario/menu/listar", verifyToken, checkRole([2]), catchedAsync(menuController.getMenu));
+router.get("/usuario/menu/listar", verifyToken, checkRole([5]), catchedAsync(menuController.getMenu));
 
 export default router;

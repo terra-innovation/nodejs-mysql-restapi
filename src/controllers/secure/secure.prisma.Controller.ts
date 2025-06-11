@@ -2,6 +2,7 @@ import type { Prisma } from "#src/models/prisma/ft_factoring/client";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
+import * as usuariorolDao from "#src/daos/usuariorol.prisma.Dao.js";
 import * as documentotipoDao from "#src/daos/documentotipo.prisma.Dao.js";
 import * as validacionDao from "#src/daos/validacion.prisma.Dao.js";
 import * as credencialDao from "#src/daos/credencial.prisma.Dao.js";
@@ -487,16 +488,17 @@ export const registerUsuario = async (req: Request, res: Response) => {
 
 export const validateEmail = async (req: Request, res: Response) => {
   log.debug(line(), "controller::validateEmail");
+  const filter_estado = [1];
+  const validateRestorePasswordSchema = Yup.object({
+    hash: Yup.string().trim().required().max(50),
+    codigo: Yup.string().trim().required().max(100),
+    otp: Yup.string().trim().required().max(6),
+  }).required();
+  const validacionValidated = validateRestorePasswordSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
+
   const validacionReturned = await prismaFT.client.$transaction(
     async (tx) => {
       //log.info(line(),req);
-      const filter_estado = [1];
-      const validateRestorePasswordSchema = Yup.object({
-        hash: Yup.string().trim().required().max(50),
-        codigo: Yup.string().trim().required().max(100),
-        otp: Yup.string().trim().required().max(6),
-      }).required();
-      const validacionValidated = validateRestorePasswordSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
 
       const usuario = await usuarioDao.getUsuarioByHash(tx, validacionValidated.hash);
       if (!usuario) {
@@ -531,8 +533,21 @@ export const validateEmail = async (req: Request, res: Response) => {
             const usuarioToUpdate: Prisma.usuarioUpdateInput = {
               isemailvalidated: true,
             };
-
             const usuarioUpdated = await usuarioDao.updateUsuario(tx, usuario.usuarioid, usuarioToUpdate);
+
+            const idrol_usuariogeneral = 5;
+
+            const usuariorolToCreate: Prisma.usuario_rolCreateInput = {
+              usuario: { connect: { idusuario: usuario.idusuario } },
+              rol: { connect: { idrol: idrol_usuariogeneral } },
+              idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
+              fechacrea: new Date(),
+              idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
+              fechamod: new Date(),
+              estado: 1,
+            };
+
+            const usuariorolCreated = usuariorolDao.insertUsuariorol(tx, usuariorolToCreate);
           } else {
             log.warn(line(), "El código de verificación ha expirado: ", validacionValidated);
             throw new ClientError("El código de verificación no es válido o ha expidado", 404);
