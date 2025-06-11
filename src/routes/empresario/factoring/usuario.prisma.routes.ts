@@ -6,10 +6,10 @@ import { verifyToken, checkRole } from "#src/middlewares/auth.prisma.Middleware.
 const router = Router();
 
 //Empresario
-router.get("/empresario/factoring/usuario/detalle", verifyToken, checkRole([2]), catchedAsync(usuarioController.getUsuario));
-//router.get("/empresario/factoring/usuario/listar", verifyToken, checkRole([2]), catchedAsync(usuarioController.getEmpresacuentabancarias));
-//router.post("/empresario/factoring/usuario/crear", verifyToken, checkRole([2]), catchedAsync(usuarioController.createEmpresacuentabancaria));
-//router.patch("/empresario/factoring/usuario/actualizar/:id", verifyToken, checkRole([2]), catchedAsync(usuarioController.updateEmpresacuentabancariaOnlyAlias));
-//router.get("/empresario/factoring/usuario/master", verifyToken, checkRole([2]), catchedAsync(usuarioController.getEmpresacuentabancariaMaster));
+router.get("/empresario/factoring/usuario/detalle", verifyToken, checkRole([3]), catchedAsync(usuarioController.getUsuario));
+//router.get("/empresario/factoring/usuario/listar", verifyToken, checkRole([3]), catchedAsync(usuarioController.getEmpresacuentabancarias));
+//router.post("/empresario/factoring/usuario/crear", verifyToken, checkRole([3]), catchedAsync(usuarioController.createEmpresacuentabancaria));
+//router.patch("/empresario/factoring/usuario/actualizar/:id", verifyToken, checkRole([3]), catchedAsync(usuarioController.updateEmpresacuentabancariaOnlyAlias));
+//router.get("/empresario/factoring/usuario/master", verifyToken, checkRole([3]), catchedAsync(usuarioController.getEmpresacuentabancariaMaster));
 
 export default router;

@@ -297,7 +297,7 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
         throw new ClientError("Datos no válidos", 404);
       }
       const empresa = await empresaDao.getEmpresaByRuc(tx, usuarioservicioValidated.ruc);
-      if (!empresa) {
+      if (empresa) {
         log.warn(line(), "La empresa con RUC [" + usuarioservicioValidated.ruc + "] ya se encuentra registrada.");
         throw new ClientError("La empresa con RUC [" + usuarioservicioValidated.ruc + "] se encuentra registrada.", 404);
       }
@@ -471,7 +471,7 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       log.debug(line(), "cuentabancariaCreated:", cuentabancariaCreated);
 
       const empresacuentabancariaToCreate: Prisma.empresa_cuenta_bancariaCreateInput = {
-        empresa: { connect: { idempresa: empresa.idempresa } },
+        empresa: { connect: { idempresa: empresaCreated.idempresa } },
         cuenta_bancaria: { connect: { idcuentabancaria: cuentabancariaCreated.idcuentabancaria } },
         empresacuentabancariaid: uuidv4(),
         code: uuidv4().split("-")[0],

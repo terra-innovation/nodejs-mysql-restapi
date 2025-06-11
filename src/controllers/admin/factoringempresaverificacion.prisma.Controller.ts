@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as servicioempresaDao from "#src/daos/servicioempresa.prisma.Dao.js";
 import * as personaDao from "#src/daos/persona.prisma.Dao.js";
+import * as usuariorolDao from "#src/daos/usuariorol.prisma.Dao.js";
 import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
 import * as servicioempresaestadoDao from "#src/daos/servicioempresaestado.prisma.Dao.js";
 import * as servicioempresaverificacionDao from "#src/daos/servicioempresaverificacion.prisma.Dao.js";
@@ -77,7 +78,7 @@ export const createFactoringempresaverificacion = async (req: Request, res: Resp
         servicio_empresa_estado: { connect: { idservicioempresaestado: servicioempresaestado.idservicioempresaestado } },
         usuario_verifica: { connect: { idusuario: req.session_user.usuario.idusuario } },
         comentariointerno: servicioempresaverificacionValidated.comentariointerno,
-        comentariousuario: servicioempresaverificacionValidated.comentariointerno,
+        comentariousuario: servicioempresaverificacionValidated.comentariousuario,
         servicioempresaverificacionid: uuidv4(),
         idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
@@ -102,6 +103,20 @@ export const createFactoringempresaverificacion = async (req: Request, res: Resp
       if (servicioempresaestado.idservicioempresaestado == 3) {
         await darAccesoAlUsuarioServicioEmpresa(req, tx, servicioempresa, personasuscriptor);
         await darAccesoAlUsuarioServicio(req, tx, servicioempresaverificacionValidated, servicioempresa, empresa, personasuscriptor);
+        /* Damos acceso al usuario como Empresario */
+        const idrol_empresario = 3;
+
+        const usuariorolToCreate: Prisma.usuario_rolCreateInput = {
+          usuario: { connect: { idusuario: servicioempresa.idusuariosuscriptor } },
+          rol: { connect: { idrol: idrol_empresario } },
+          idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
+          fechacrea: new Date(),
+          idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
+          fechamod: new Date(),
+          estado: 1,
+        };
+
+        const usuariorolCreated = await usuariorolDao.insertUsuariorol(tx, usuariorolToCreate);
       }
 
       await enviarCorreoSegunCorrespondeNuevoEstadoDeServicioEmpresa(servicioempresaverificacionValidated, servicioempresa, servicioempresaestado, empresa, personasuscriptor);

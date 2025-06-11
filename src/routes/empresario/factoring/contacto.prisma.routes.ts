@@ -6,8 +6,8 @@ import { verifyToken, checkRole } from "#src/middlewares/auth.prisma.Middleware.
 const router = Router();
 
 //Empresario
-router.post("/empresario/factoring/contacto/listar", verifyToken, checkRole([2]), catchedAsync(contactoController.getContactos));
-router.post("/empresario/factoring/contacto/crear", verifyToken, checkRole([2]), catchedAsync(contactoController.createContacto));
-router.post("/empresario/factoring/contacto/master", verifyToken, checkRole([2]), catchedAsync(contactoController.getContactoMaster));
+router.post("/empresario/factoring/contacto/listar", verifyToken, checkRole([3]), catchedAsync(contactoController.getContactos));
+router.post("/empresario/factoring/contacto/crear", verifyToken, checkRole([3]), catchedAsync(contactoController.createContacto));
+router.post("/empresario/factoring/contacto/master", verifyToken, checkRole([3]), catchedAsync(contactoController.getContactoMaster));
 
 export default router;

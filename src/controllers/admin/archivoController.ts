@@ -244,7 +244,7 @@ export const getArchivoMaster = async (req, res) => {
 export const updateArchivo = async (req, res) => {
   log.debug(line(), "controller::updateArchivo");
   const { id } = req.params;
-  let NAME_REGX = /^[a-zA-Z ]+$/;
+  let NAME_REGX = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' -]+$/;
   const archivoUpdateSchema = yup
     .object()
     .shape({

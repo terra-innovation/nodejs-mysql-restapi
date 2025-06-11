@@ -176,7 +176,7 @@ export const getEmpresaByEmpresaid = async (tx: TxClient, empresaid: string) => 
   }
 };
 
-export const getEmpresaByRuc = async (tx: TxClient, ruc) => {
+export const getEmpresaByRuc = async (tx: TxClient, ruc: string) => {
   try {
     const empresa = await tx.empresa.findFirst({
       where: {

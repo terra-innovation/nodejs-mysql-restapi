@@ -360,7 +360,7 @@ export const registerUsuario = async (req: Request, res: Response) => {
   const usuarioObfuscated = await prismaFT.client.$transaction(
     async (tx) => {
       let EMAIL_REGX = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
-      let NAME_REGX = /^[a-zA-Z ]+$/;
+      let NAME_REGX = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' -]+$/;
 
       const usuarioCreateSchema = Yup.object()
         .shape({
@@ -535,6 +535,7 @@ export const validateEmail = async (req: Request, res: Response) => {
             };
             const usuarioUpdated = await usuarioDao.updateUsuario(tx, usuario.usuarioid, usuarioToUpdate);
 
+            /* Damos acceso al usuario como Usuario General */
             const idrol_usuariogeneral = 5;
 
             const usuariorolToCreate: Prisma.usuario_rolCreateInput = {
@@ -547,7 +548,7 @@ export const validateEmail = async (req: Request, res: Response) => {
               estado: 1,
             };
 
-            const usuariorolCreated = usuariorolDao.insertUsuariorol(tx, usuariorolToCreate);
+            const usuariorolCreated = await usuariorolDao.insertUsuariorol(tx, usuariorolToCreate);
           } else {
             log.warn(line(), "El código de verificación ha expirado: ", validacionValidated);
             throw new ClientError("El código de verificación no es válido o ha expidado", 404);

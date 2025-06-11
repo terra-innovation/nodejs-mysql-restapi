@@ -27,8 +27,6 @@ export const getPersonaverificacionestadoByIdpersonaverificacionestado = async (
   try {
     const personaverificacionestado = await tx.persona_verificacion_estado.findUnique({ where: { idpersonaverificacionestado: idpersonaverificacionestado } });
 
-    //const personaverificacionestados = await personaverificacionestado.getPersonaverificacionestados();
-
     return personaverificacionestado;
   } catch (error) {
     log.error(line(), "", error);

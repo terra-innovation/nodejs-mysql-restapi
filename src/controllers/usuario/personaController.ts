@@ -72,7 +72,7 @@ export const verifyPersona = async (req, res) => {
   const transaction = await sequelizeFT.transaction();
   try {
     const _idusuario = req.session_user?.usuario?._idusuario;
-    let NAME_REGX = /^[a-zA-Z ]+$/;
+    let NAME_REGX = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' -]+$/;
     const personaVerifySchema = yup
       .object()
       .shape({

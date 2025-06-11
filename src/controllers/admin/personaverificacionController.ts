@@ -111,7 +111,7 @@ export const getPersonaverificacionMaster = async (req, res) => {
 export const updatePersonaverificacion = async (req, res) => {
   log.debug(line(), "controller::updatePersonaverificacion");
   const { id } = req.params;
-  let NAME_REGX = /^[a-zA-Z ]+$/;
+  let NAME_REGX = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' -]+$/;
   const personaverificacionUpdateSchema = yup
     .object()
     .shape({

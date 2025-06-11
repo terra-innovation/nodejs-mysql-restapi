@@ -357,7 +357,7 @@ export const registerUsuario = async (req, res) => {
   const transaction = await sequelizeFT.transaction();
   try {
     let EMAIL_REGX = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
-    let NAME_REGX = /^[a-zA-Z ]+$/;
+    let NAME_REGX = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' -]+$/;
 
     const usuarioCreateSchema = Yup.object()
       .shape({

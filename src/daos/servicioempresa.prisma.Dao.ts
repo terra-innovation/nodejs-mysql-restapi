@@ -24,6 +24,21 @@ export const getFactoringempresasByVerificacion = async (tx: TxClient, estadolog
                 },
               },
             },
+            colaboradores: {
+              include: {
+                colaborador_tipo: true,
+                documento_tipo: true,
+                archivo_colaboradores: {
+                  include: {
+                    archivo: {
+                      include: {
+                        archivo_tipo: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
             empresa_cuenta_bancarias: {
               include: {
                 cuenta_bancaria: {
@@ -41,6 +56,16 @@ export const getFactoringempresasByVerificacion = async (tx: TxClient, estadolog
                         },
                       },
                     },
+                  },
+                },
+              },
+            },
+            pais_sede: true,
+            distrito_sede: {
+              include: {
+                provincia: {
+                  include: {
+                    departamento: true,
                   },
                 },
               },

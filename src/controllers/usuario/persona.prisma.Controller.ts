@@ -42,7 +42,10 @@ export const getPersonaMaster = async (req: Request, res: Response) => {
       const documentotipos = await documentotipoDao.getDocumentotipos(tx, filter_estados);
       const generos = await generoDao.getGeneros(tx, filter_estados);
       const usuario = await usuarioDao.getUsuarioByIdusuario(tx, session_idusuario);
-      const personaverificacionestado = await personaverificacionestadoDao.getPersonaverificacionestadoByIdpersonaverificacionestado(tx, usuario.persona?.idpersonaverificacionestado);
+      let personaverificacionestado = null;
+      if (usuario.persona) {
+        personaverificacionestado = await personaverificacionestadoDao.getPersonaverificacionestadoByIdpersonaverificacionestado(tx, usuario.persona.idpersonaverificacionestado);
+      }
 
       let personaMaster: Record<string, any> = {};
       personaMaster.paises = paises;
@@ -73,7 +76,7 @@ export const verifyPersona = async (req: Request, res: Response) => {
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
       const idusuario = req.session_user?.usuario?.idusuario;
-      let NAME_REGX = /^[a-zA-Z ]+$/;
+      let NAME_REGX = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' -]+$/;
       const personaVerifySchema = yup
         .object()
         .shape({
@@ -297,7 +300,7 @@ const crearIdentificacionSelfi = async (req, tx, personaValidated, personaCreate
 
   const archivopersonaToCreate: Prisma.archivo_personaCreateInput = {
     archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
-    persona: { connect: { idpersona: personaCreated.idcuentabancaria } },
+    persona: { connect: { idpersona: personaCreated.idpersona } },
     idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
     fechacrea: new Date(),
     idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
@@ -346,7 +349,7 @@ const crearIdentificacionReverso = async (req, tx, personaValidated, personaCrea
 
   const archivopersonaToCreate: Prisma.archivo_personaCreateInput = {
     archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
-    persona: { connect: { idpersona: personaCreated.idcuentabancaria } },
+    persona: { connect: { idpersona: personaCreated.idpersona } },
     idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
     fechacrea: new Date(),
     idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
@@ -395,7 +398,7 @@ const crearIdentificacionAnverso = async (req, tx, personaValidated, personaCrea
 
   const archivopersonaToCreate: Prisma.archivo_personaCreateInput = {
     archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
-    persona: { connect: { idpersona: personaCreated.idcuentabancaria } },
+    persona: { connect: { idpersona: personaCreated.idpersona } },
     idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
     fechacrea: new Date(),
     idusuariomod: req.session_user?.usuario?.idusuario ?? 1,

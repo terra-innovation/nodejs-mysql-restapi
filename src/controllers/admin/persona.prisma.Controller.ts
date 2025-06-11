@@ -111,7 +111,7 @@ export const getPersonaMaster = async (req: Request, res: Response) => {
 export const updatePersona = async (req: Request, res: Response) => {
   log.debug(line(), "controller::updatePersona");
   const { id } = req.params;
-  let NAME_REGX = /^[a-zA-Z ]+$/;
+  let NAME_REGX = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' -]+$/;
   const personaUpdateSchema = yup
     .object()
     .shape({
