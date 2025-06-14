@@ -2,8 +2,8 @@ import { FactoringPDF, FactoringpropuestaPDF } from "#src/types/Prisma.types.js"
 import PDFDocument from "pdfkit-table";
 import { createWriteStream } from "fs";
 
-import { formatNumber, formatPercentage } from "#src/utils/numberUtils.js";
-import { formatDate1, formatDate2 } from "#src/utils/dateUtils.js";
+import * as df from "#src/utils/dateUtils.js";
+import * as nf from "#src/utils/numberUtils.js";
 import path from "path";
 
 import * as storageUtils from "#src/utils/storageUtils.js";
@@ -39,7 +39,7 @@ class PDFGenerator {
         .fontSize(18)
         .font("Helvetica-Bold")
         .text("Propuesta de Factoring", 50, (y += 127), { align: "center" });
-      addText(11, "Helvetica", `Fecha: ${formatDate2(factoringpropuesta.fecha_propuesta)}`, 50);
+      addText(11, "Helvetica", `Fecha: ${df.formatDateTimeLocale(factoringpropuesta.fecha_propuesta)}`, 50);
       addText(11, "Helvetica", `Código de propuesta: ${factoringpropuesta.code}`, 17);
       addText(5, "Helvetica", ``, 5);
       addText(11, "Helvetica", `Cliente: ${factoring.empresa_cedente.razon_social}`, 17);
@@ -53,6 +53,8 @@ class PDFGenerator {
 
       // Detalle de la cotización (tabla)
 
+      const pruebaBorrar = nf.formatNumber(factoringpropuesta.monto_neto);
+
       const table = {
         headers: [
           { label: "Concepto", property: "concepto", width: 200, columnColor: "#e0e0e0", renderer: null },
@@ -61,22 +63,22 @@ class PDFGenerator {
 
         datas: [
           { concepto: "Factura", descripcion: facturas },
-          { concepto: "Valor neto", descripcion: formatNumber(factoringpropuesta.monto_neto, 2) },
+          { concepto: "Valor neto", descripcion: nf.formatNumber(factoringpropuesta.monto_neto) },
           { concepto: "Moneda", descripcion: factoring.moneda.codigo + " (" + factoring.moneda.nombre + ")" },
-          { concepto: "Fecha de pago (estimado)", descripcion: formatDate1(factoringpropuesta.fecha_pago_estimado) },
+          { concepto: "Fecha de pago (estimado)", descripcion: df.formatDateUTC(factoringpropuesta.fecha_pago_estimado) },
 
           { concepto: "Días (estimado)", descripcion: factoringpropuesta.dias_pago_estimado },
-          { concepto: "Tasa mensual", descripcion: formatPercentage(factoringpropuesta.tdm, 2) },
-          { concepto: "Financiamiento", descripcion: formatPercentage(factoringpropuesta.porcentaje_financiado_estimado, 2) },
+          { concepto: "Tasa mensual", descripcion: nf.formatPercentage(factoringpropuesta.tdm) },
+          { concepto: "Financiamiento", descripcion: nf.formatPercentage(factoringpropuesta.porcentaje_financiado_estimado) },
           { concepto: "Tipo factoring", descripcion: factoringpropuesta.factoring_tipo.nombre },
 
-          { concepto: "Valor garantía", descripcion: formatNumber(factoringpropuesta.monto_garantia, 2) },
-          { concepto: "Valor financiado", descripcion: formatNumber(factoringpropuesta.monto_financiado, 2) },
-          { concepto: "Valor descuento", descripcion: formatNumber(factoringpropuesta.monto_descuento, 2) },
-          { concepto: "Comisión FT", descripcion: formatNumber(factoringpropuesta.monto_comision, 2) },
-          { concepto: "Costo + Gastos", descripcion: formatNumber(factoringpropuesta.monto_costo_estimado, 2) },
-          { concepto: "IGV", descripcion: formatNumber(factoringpropuesta.monto_total_igv, 2) },
-          { concepto: "Valor adelanto", descripcion: "bold:" + formatNumber(factoringpropuesta.monto_adelanto, 2) },
+          { concepto: "Valor garantía", descripcion: nf.formatNumber(factoringpropuesta.monto_garantia) },
+          { concepto: "Valor financiado", descripcion: nf.formatNumber(factoringpropuesta.monto_financiado) },
+          { concepto: "Valor descuento", descripcion: nf.formatNumber(factoringpropuesta.monto_descuento) },
+          { concepto: "Comisión FT", descripcion: nf.formatNumber(factoringpropuesta.monto_comision) },
+          { concepto: "Costo + Gastos", descripcion: nf.formatNumber(factoringpropuesta.monto_costo_estimado) },
+          { concepto: "IGV", descripcion: nf.formatNumber(factoringpropuesta.monto_total_igv) },
+          { concepto: "Valor adelanto", descripcion: "bold:" + nf.formatNumber(factoringpropuesta.monto_adelanto) },
         ],
       };
 

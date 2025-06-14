@@ -76,7 +76,6 @@ export const updateFactoring = async (req: Request, res: Response) => {
   const { id } = req.params;
   const factoringUpdateSchema = yup.object().shape({
     factoringid: yup.string().trim().required().min(36).max(36),
-    factoringestadoid: yup.string().trim().required().min(36).max(36),
     factoringpropuestaaceptadaid: yup.string().trim().min(36).max(36),
   });
   const factoringValidated = factoringUpdateSchema.validateSync({ factoringid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
@@ -93,12 +92,6 @@ export const updateFactoring = async (req: Request, res: Response) => {
         throw new ClientError("Datos no válidos", 404);
       }
 
-      var factoringestado = await factoringestadoDao.getFactoringestadoByFactoringestadoid(tx, factoringValidated.factoringestadoid);
-      if (!factoringestado) {
-        log.warn(line(), "Factoring estado no existe: [" + factoringValidated.factoringestadoid + "]");
-        throw new ClientError("Datos no válidos", 404);
-      }
-
       if (factoringValidated.factoringpropuestaaceptadaid) {
         var factoringpropuesta = await factoringpropuestaDao.getFactoringpropuestaByFactoringpropuestaid(tx, factoringValidated.factoringpropuestaaceptadaid);
         if (!factoringpropuesta) {
@@ -108,7 +101,6 @@ export const updateFactoring = async (req: Request, res: Response) => {
       }
 
       const factoringToUpdate: Prisma.factoringUpdateInput = {
-        factoring_estado: { connect: { idfactoringestado: factoringestado.idfactoringestado } },
         factoring_propuesta_aceptada: factoringValidated.factoringpropuestaaceptadaid
           ? {
               connect: { idfactoringpropuesta: factoringpropuesta.idfactoringpropuesta },

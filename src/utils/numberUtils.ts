@@ -1,3 +1,5 @@
+import { Prisma } from "#src/models/prisma/ft_factoring/client";
+
 const localeConfig = {
   locale: "es-PE",
   options: {
@@ -11,6 +13,18 @@ export const formatNumber = (number, minimumFractionDigits = 2) => {
     return "";
   }
 
+  if (number instanceof Prisma.Decimal) {
+    number = number.toNumber();
+  }
+
+  if (typeof number === "string") {
+    number = parseFloat(number);
+  }
+
+  if (isNaN(number)) {
+    return ""; // Retorna vacío si no es un número válido
+  }
+
   const options = {
     ...localeConfig.options,
     minimumFractionDigits,
@@ -21,6 +35,18 @@ export const formatNumber = (number, minimumFractionDigits = 2) => {
 export const formatPercentage = (number, minimumFractionDigits = 2) => {
   if (number === null || number === undefined || number === "") {
     return "";
+  }
+
+  if (number instanceof Prisma.Decimal) {
+    number = number.toNumber();
+  }
+
+  if (typeof number === "string") {
+    number = parseFloat(number);
+  }
+
+  if (isNaN(number)) {
+    return ""; // Retorna vacío si no es un número válido
   }
 
   const options = {
