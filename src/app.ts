@@ -13,10 +13,6 @@ import inversionistaRoutes from "#src/routes/inversionista/index.prisma.js";
 import usuarioRoutes from "#src/routes/usuario/index.prisma.js";
 import secureRoutes from "#src/routes/secure/index.prisma.js";
 
-import { sequelizeFT } from "#src/config/bd/sequelize_db_factoring.js";
-
-//import { initModels } from "#src/models/ft_factoring/init-models.js";
-
 const app = express();
 
 app.use(express.json()); // Convierte los request a json
@@ -32,10 +28,6 @@ app.use("/api/v1", usuarioRoutes);
 app.use("/api/v1", secureRoutes);
 
 app.use(notFoundHandlerMiddleware); // Para cuando no existe la ruta
-
-// Para conexión de BBDD sequelizer
-app.locals.sequelize = sequelizeFT;
-//app.locals.models = initModels(sequelizeFT);
 
 app.use(errorHandlerMiddleware); // Middleware de manejo de errores global de Express
 

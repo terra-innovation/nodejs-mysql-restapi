@@ -10,7 +10,6 @@ import { log, line } from "#src/utils/logger.pino.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-import { Usuario } from "#root/src/models/ft_factoring/Usuario.js";
 
 export const getTimezones = async (req: Request, res: Response) => {
   log.debug(line(), "controller::validateTransaction");

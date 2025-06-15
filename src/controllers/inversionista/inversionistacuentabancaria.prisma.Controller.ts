@@ -165,6 +165,12 @@ export const updateInversionistacuentabancariaOnlyAlias = async (req: Request, r
         throw new ClientError("Datos no válidos", 404);
       }
 
+      var cuentasbancarias_por_alias = await inversionistacuentabancariaDao.getInversionistacuentabancariasByIdinversionistaAndAlias(tx, inversionistacuentabancaria.idinversionista, inversionistacuentabancariaValidated.alias, filter_estado);
+      if (cuentasbancarias_por_alias && cuentasbancarias_por_alias.length > 0) {
+        log.warn(line(), "El alias [" + inversionistacuentabancariaValidated.alias + "] se encuentra registrado. Ingrese un alias diferente.");
+        throw new ClientError("El alias [" + inversionistacuentabancariaValidated.alias + "] se encuentra registrado. Ingrese un alias diferente.", 404);
+      }
+
       const cuentabancaria = await cuentabancariaDao.getCuentabancariaByIdcuentabancaria(tx, inversionistacuentabancaria.idcuentabancaria);
 
       const cuentabancariaToUpdate: Prisma.cuenta_bancariaUpdateInput = {

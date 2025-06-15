@@ -1,13 +1,11 @@
 import { Prisma, factoring_propuesta_financiero } from "#src/models/prisma/ft_factoring/client";
-import { sequelizeFT } from "#src/config/bd/sequelize_db_factoring.js";
+
 import * as configuracionappDao from "#src/daos/configuracionapp.prisma.Dao.js";
 import * as factoringconfigcomisionDao from "#src/daos/factoringconfigcomision.prisma.Dao.js";
 import * as financieroconceptoDao from "#src/daos/financieroconcepto.prisma.Dao.js";
 import * as financierotipoDao from "#src/daos/financierotipo.prisma.Dao.js";
 import * as riesgoDao from "#src/daos/riesgo.prisma.Dao.js";
-import { ConfiguracionAppCreationAttributes } from "#src/models/ft_factoring/ConfiguracionApp.js";
 import { Simulacion, Costo, Comision } from "#src/types/Simulacion.prisma.types.js";
-import { safeRollback } from "#src/utils/transactionUtils.js";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 
 import { line, log } from "#root/src/utils/logger.pino.js";

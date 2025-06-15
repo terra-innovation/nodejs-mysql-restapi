@@ -11,7 +11,6 @@ import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { line, log } from "#root/src/utils/logger.pino.js";
 
-import { Sequelize } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 

@@ -20,7 +20,6 @@ import * as fs from "fs";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-import { Sequelize } from "sequelize";
 import * as storageUtils from "#src/utils/storageUtils.js";
 import type { cuenta_bancaria } from "#src/models/prisma/ft_factoring/client";
 import type { empresa_cuenta_bancaria } from "#src/models/prisma/ft_factoring/client";

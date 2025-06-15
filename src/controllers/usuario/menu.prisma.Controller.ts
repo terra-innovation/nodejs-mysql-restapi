@@ -64,10 +64,10 @@ export const getMenu = async (req: Request, res: Response) => {
   };
 
   const ordenMenu = [
-    { idrol: 5, menu: menuUsuario.menuUsuario }, // Usuario
     { idrol: 2, menu: menuAdmin.menuAdmin }, // Admin
     { idrol: 3, menu: menuEmpresario.menuEmpresario }, // Empresario
     { idrol: 4, menu: menuInversionista.menuInversionista }, // Inversionista
+    { idrol: 5, menu: menuUsuario.menuUsuario }, // Usuario
   ];
 
   const menuInversionistaX = [];

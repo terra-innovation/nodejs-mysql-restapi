@@ -19,10 +19,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import * as Yup from "yup";
-import { Sequelize } from "sequelize";
-import type { credencial } from "#src/models/prisma/ft_factoring/client";
-import type { validacion } from "#src/models/prisma/ft_factoring/client";
-import type { usuario } from "#src/models/prisma/ft_factoring/client";
+
 import { UsuarioSession } from "#root/src/types/UsuarioSession.types.js";
 
 export const loginUser = async (req: Request, res: Response) => {
@@ -406,7 +403,7 @@ export const registerUsuario = async (req: Request, res: Response) => {
       const emailvalidationcode = String(Math.floor(100000 + Math.random() * 900000)); // Código aleaatorio de 6 dígitos
       const hash = crypto
         .createHash("sha1")
-        .update(usuarioValidated.email + "|" + usuarioValidated.documentotipoid + "|" + usuarioValidated.documentonumero + "|" + Sequelize.fn("now", 3))
+        .update(usuarioValidated.email + "|" + usuarioValidated.documentotipoid + "|" + usuarioValidated.documentonumero + "|" + new Date().getTime())
         .digest("hex");
 
       //Encrypt user password. Cumple estándares PCI-DSS o la GDPR: hashing y salting

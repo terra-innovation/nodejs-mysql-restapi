@@ -7,7 +7,6 @@ import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 import { v4 as uuidv4 } from "uuid";
-import { now } from "sequelize/lib/utils";
 
 export const getUsuarioserviciosByIdusuario = async (tx: TxClient, idusuario, estados: number[]) => {
   try {

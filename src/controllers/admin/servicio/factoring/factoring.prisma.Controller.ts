@@ -7,7 +7,7 @@ import * as factoringestadoDao from "#src/daos/factoringestado.prisma.Dao.js";
 import * as factoringpropuestaDao from "#src/daos/factoringpropuesta.prisma.Dao.js";
 import * as factoringtipoDao from "#src/daos/factoringtipo.prisma.Dao.js";
 import * as riesgoDao from "#src/daos/riesgo.prisma.Dao.js";
-import { simulateFactoringLogicV1 } from "#src/logics/factoringLogic.js";
+import { simulateFactoringLogicV1 } from "#src/logics/factoring.prisma.Logic.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";

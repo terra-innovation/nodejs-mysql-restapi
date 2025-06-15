@@ -1,7 +1,6 @@
 import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma, colaborador } from "#src/models/prisma/ft_factoring/client";
 
-import { Empresa } from "#src/models/ft_factoring/Empresa.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 
 import { log, line } from "#src/utils/logger.pino.js";

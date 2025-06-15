@@ -182,7 +182,7 @@ export const updateEmpresacuentabancariaOnlyAlias = async (req: Request, res: Re
     .object()
     .shape({
       empresacuentabancariaid: yup.string().trim().required().min(36).max(36),
-      alias: yup.string().required().max(50),
+      alias: yup.string().trim().required().max(50),
     })
     .required();
   const empresacuentabancariaValidated = empresacuentabancariaUpdateSchema.validateSync({ empresacuentabancariaid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
@@ -202,6 +202,12 @@ export const updateEmpresacuentabancariaOnlyAlias = async (req: Request, res: Re
       if (!empresacuentabancariaAllowed) {
         log.warn(line(), "Empresa no asociada al usuario: [" + empresacuentabancaria.idempresa + ", " + _idusuario_session + "]");
         throw new ClientError("Datos no válidos", 404);
+      }
+
+      const cuentasbancarias_por_alias = await empresacuentabancariaDao.getEmpresacuentabancariasByIdempresaAndAlias(tx, empresacuentabancariaAllowed.idempresa, empresacuentabancariaValidated.alias, filter_estado);
+      if (cuentasbancarias_por_alias && cuentasbancarias_por_alias.length > 0) {
+        log.warn(line(), "El alias [" + empresacuentabancariaValidated.alias + "] se encuentra registrado. Ingrese un alias diferente.");
+        throw new ClientError("El alias [" + empresacuentabancariaValidated.alias + "] se encuentra registrado. Ingrese un alias diferente.", 404);
       }
 
       const cuentabancaria = await cuentabancariaDao.getCuentabancariaByIdcuentabancaria(tx, empresacuentabancaria.idcuentabancaria);

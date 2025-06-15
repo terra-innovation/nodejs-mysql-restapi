@@ -43,17 +43,6 @@ import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
-import { cuenta_bancaria } from "#src/models/prisma/ft_factoring/client";
-import { inversionista_cuenta_bancaria } from "#src/models/prisma/ft_factoring/client";
-import { usuario_servicio_verificacion } from "#src/models/prisma/ft_factoring/client";
-import { usuario_servicio } from "#src/models/prisma/ft_factoring/client";
-import { empresa } from "#src/models/prisma/ft_factoring/client";
-import { colaborador } from "#src/models/prisma/ft_factoring/client";
-import { empresa_cuenta_bancaria } from "#src/models/prisma/ft_factoring/client";
-import { servicio_empresa } from "#src/models/prisma/ft_factoring/client";
-import { usuario_servicio_empresa } from "#src/models/prisma/ft_factoring/client";
-import { servicio_empresa_verificacion } from "#src/models/prisma/ft_factoring/client";
-
 export const suscribirUsuarioServicioFactoringInversionista = async (req: Request, res: Response) => {
   log.debug(line(), "controller::suscribirUsuarioServicioFactoringInversionista");
   const idusuario = req.session_user?.usuario?.idusuario;
@@ -77,7 +66,7 @@ export const suscribirUsuarioServicioFactoringInversionista = async (req: Reques
       declaracion_datos_reales: yup.boolean().required(),
     })
     .required();
-  const usuarioservicioValidated = usuarioservicioSuscripcionSchema.validateSync({ ...req.files, ...req.body, idusuario, usuarioservicioid: id }, { abortEarly: false, stripUnknown: true });
+  const usuarioservicioValidated = usuarioservicioSuscripcionSchema.validateSync({ ...req.body, idusuario, usuarioservicioid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "usuarioservicioValidated:", usuarioservicioValidated);
 
   const resultado = await prismaFT.client.$transaction(
