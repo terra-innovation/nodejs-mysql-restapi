@@ -141,20 +141,15 @@ export const getEmpresas = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getEmpresas");
   //log.info(line(),req.session_user.usuario.idusuario);
 
-  const empresasJson = await prismaFT.client.$transaction(
+  const empresas = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estado = [1, 2];
       const empresas = await empresaDao.getEmpresas(tx, filter_estado);
-      var empresasJson = jsonUtils.sequelizeToJSON(empresas);
-      //log.info(line(),empresaObfuscated);
-
-      //var empresasFiltered = jsonUtils.removeAttributes(empresasJson, ["score"]);
-      //empresasFiltered = jsonUtils.removeAttributesPrivates(empresasFiltered);
-      return empresasJson;
+      return empresas;
     },
     { timeout: prismaFT.transactionTimeout }
   );
-  response(res, 201, empresasJson);
+  response(res, 201, empresas);
 };
 
 export const createEmpresa = async (req: Request, res: Response) => {
