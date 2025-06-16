@@ -1,11 +1,10 @@
 import { TxClient } from "#src/types/Prisma.types.js";
-import type { Prisma, archivo } from "#src/models/prisma/ft_factoring/client";
+import type { Prisma, archivo } from "#root/generated/prisma/ft_factoring/client.js";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
 
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
-import { ArchivoCreationAttributes } from "../models/ft_factoring/Archivo";
 
 export const getArchivos = async (tx: TxClient, estados: number[]) => {
   try {

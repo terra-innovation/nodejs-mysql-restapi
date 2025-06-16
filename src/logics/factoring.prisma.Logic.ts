@@ -1,4 +1,4 @@
-import { Prisma, factoring_propuesta_financiero } from "#src/models/prisma/ft_factoring/client";
+import { Prisma, factoring_propuesta_financiero } from "#root/generated/prisma/ft_factoring/client.js";
 
 import * as configuracionappDao from "#src/daos/configuracionapp.prisma.Dao.js";
 import * as factoringconfigcomisionDao from "#src/daos/factoringconfigcomision.prisma.Dao.js";

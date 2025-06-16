@@ -1,4 +1,4 @@
-import type { Prisma } from "#src/models/prisma/ft_factoring/client";
+import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import * as luxon from "luxon";
 import { v4 as uuidv4 } from "uuid";
 import { parseStringPromise } from "xml2js";

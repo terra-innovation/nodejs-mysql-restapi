@@ -1,4 +1,4 @@
-import type { Prisma, zlaboratorio_pedido } from "#src/models/prisma/ft_factoring/client";
+import type { Prisma, zlaboratorio_pedido } from "#root/generated/prisma/ft_factoring/client.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 
 import { log, line } from "#src/utils/logger.pino.js";

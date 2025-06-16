@@ -1,5 +1,5 @@
 import { TxClient } from "#src/types/Prisma.types.js";
-import type { Prisma, factoring_historial_estado } from "#src/models/prisma/ft_factoring/client";
+import type { Prisma, factoring_historial_estado } from "#root/generated/prisma/ft_factoring/client.js";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
 

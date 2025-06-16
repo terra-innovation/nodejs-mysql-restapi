@@ -1,4 +1,4 @@
-import type { Prisma } from "#src/models/prisma/ft_factoring/client";
+import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as personaDao from "#src/daos/persona.prisma.Dao.js";
@@ -19,7 +19,7 @@ import { log, line } from "#src/utils/logger.pino.js";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
-import type { persona } from "#src/models/prisma/ft_factoring/client";
+import type { persona } from "#root/generated/prisma/ft_factoring/client.js";
 
 export const activatePersona = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activatePersona");

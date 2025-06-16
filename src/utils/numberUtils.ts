@@ -1,4 +1,4 @@
-import { Prisma } from "#src/models/prisma/ft_factoring/client";
+import { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 
 const localeConfig = {
   locale: "es-PE",

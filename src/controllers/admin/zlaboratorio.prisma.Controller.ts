@@ -1,4 +1,4 @@
-import type { Prisma } from "#src/models/prisma/ft_factoring/client";
+import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as zlaboratoriousuarioDao from "#src/daos/zlaboratoriousuario.prisma.Dao.js";

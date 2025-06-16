@@ -1,4 +1,4 @@
-import type { Prisma } from "#src/models/prisma/ft_factoring/client";
+import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as servicioempresaDao from "#src/daos/servicioempresa.prisma.Dao.js";
@@ -13,11 +13,11 @@ import * as usuarioservicioverificacionDao from "#src/daos/usuarioservicioverifi
 import * as usuarioservicioempresaDao from "#src/daos/usuarioservicioempresa.prisma.Dao.js";
 import * as usuarioservicioempresaestadoDao from "#src/daos/usuarioservicioempresaestado.prisma.Dao.js";
 import * as usuarioservicioempresarolDao from "#src/daos/usuarioservicioempresarol.prisma.Dao.js";
-import type { servicio_empresa_verificacion } from "#src/models/prisma/ft_factoring/client";
-import type { servicio_empresa } from "#src/models/prisma/ft_factoring/client";
-import type { usuario_servicio_empresa } from "#src/models/prisma/ft_factoring/client";
-import type { usuario_servicio_verificacion } from "#src/models/prisma/ft_factoring/client";
-import type { usuario_servicio } from "#src/models/prisma/ft_factoring/client";
+import type { servicio_empresa_verificacion } from "#root/generated/prisma/ft_factoring/client.js";
+import type { servicio_empresa } from "#root/generated/prisma/ft_factoring/client.js";
+import type { usuario_servicio_empresa } from "#root/generated/prisma/ft_factoring/client.js";
+import type { usuario_servicio_verificacion } from "#root/generated/prisma/ft_factoring/client.js";
+import type { usuario_servicio } from "#root/generated/prisma/ft_factoring/client.js";
 
 import { response } from "#src/utils/CustomResponseOk.js";
 import { ClientError } from "#src/utils/CustomErrors.js";

@@ -1,4 +1,4 @@
-import type { Prisma } from "#src/models/prisma/ft_factoring/client";
+import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import type { UsuarioConRoles } from "#src/types/Prisma.types.js";
 
 export interface UsuarioSession {

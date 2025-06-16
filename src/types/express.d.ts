@@ -1,6 +1,6 @@
 import { Request } from "express";
 import { Multer } from "multer";
-import type { Prisma, usuario } from "#src/models/prisma/ft_factoring/client";
+import type { Prisma, usuario } from "#root/generated/prisma/ft_factoring/client.js";
 import type { UsuarioSession } from "#src/types/UsuarioSession.types.ts";
 
 interface CustomFile extends Multer.File {

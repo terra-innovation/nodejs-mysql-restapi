@@ -1,4 +1,5 @@
-import { PrismaClient, Prisma } from "#src/models/prisma/ft_factoring/client.js";
+//import { PrismaClient, Prisma } from "#src/models/prisma/ft_factoring/client.js";
+import { PrismaClient, Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { env, isProduction } from "#src/config.js";
 import { log, line } from "#src/utils/logger.pino.js";
 import { getContext } from "#src/utils/context/loggerContext.js";

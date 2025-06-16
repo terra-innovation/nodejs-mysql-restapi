@@ -1,4 +1,4 @@
-import { Prisma } from "#src/models/prisma/ft_factoring/client";
+import { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 
@@ -13,7 +13,7 @@ import { log, line } from "#src/utils/logger.pino.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-import type { contacto } from "#src/models/prisma/ft_factoring/client";
+import type { contacto } from "#root/generated/prisma/ft_factoring/client.js";
 
 export const getContactos = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getContactos");

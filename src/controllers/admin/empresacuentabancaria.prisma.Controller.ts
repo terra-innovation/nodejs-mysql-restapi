@@ -11,9 +11,9 @@ import { response } from "#src/utils/CustomResponseOk.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
-import type { Prisma } from "#src/models/prisma/ft_factoring/client";
-import type { cuenta_bancaria } from "#src/models/prisma/ft_factoring/client";
-import type { empresa_cuenta_bancaria } from "#src/models/prisma/ft_factoring/client";
+import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
+import type { cuenta_bancaria } from "#root/generated/prisma/ft_factoring/client.js";
+import type { empresa_cuenta_bancaria } from "#root/generated/prisma/ft_factoring/client.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";

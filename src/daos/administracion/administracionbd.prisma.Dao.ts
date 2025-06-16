@@ -2,7 +2,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
-import type { Prisma, zlaboratorio_usuario } from "#src/models/prisma/ft_factoring/client";
+import type { Prisma, zlaboratorio_usuario } from "#root/generated/prisma/ft_factoring/client.js";
 import { TxClient } from "#src/types/Prisma.types.js";
 
 export const getTimezones = async (tx: TxClient) => {

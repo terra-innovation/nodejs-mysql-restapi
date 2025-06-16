@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../../src/models/prisma/ft_factoring/"
+  output   = "../../generated/prisma/ft_factoring/"
 }
 
 datasource db {
@@ -2081,7 +2081,7 @@ model zlaboratorio_usuario {
 }
 
 /// --- INICIO LOG SCRIPT: pluralizar-schema.js ---
-/// Fecha de ejecución: 9/6/2025, 20:22:50
+/// Fecha de ejecución: 15/6/2025, 22:42:54
 /// Total líneas con relaciones tipo '[]': 137
 /// Modificaciones realizadas: 0
 /// Sin modificar (ya pluralizadas): 137
@@ -2227,7 +2227,7 @@ model zlaboratorio_usuario {
 
 
 /// --- INICIO LOG DE SCRIPT: renombrar-atributos-especiales.js ---
-/// Fecha de ejecución: 9/6/2025, 20:22:50
+/// Fecha de ejecución: 15/6/2025, 22:42:54
 /// ✔️ Línea 32: (relation-field) archivo_estado ya coincide con 'archivoestado'
 /// ✔️ Línea 33: (relation-field) archivo_tipo ya coincide con 'archivotipo'
 /// ✔️ Línea 55: (relation-field) archivo ya coincide con 'archivo'

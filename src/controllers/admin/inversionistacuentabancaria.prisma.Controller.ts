@@ -1,4 +1,4 @@
-import type { Prisma } from "#src/models/prisma/ft_factoring/client";
+import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as inversionistacuentabancariaDao from "#src/daos/inversionistacuentabancaria.prisma.Dao.js";
@@ -18,8 +18,8 @@ import { log, line } from "#src/utils/logger.pino.js";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
-import type { cuenta_bancaria } from "#src/models/prisma/ft_factoring/client";
-import type { inversionista_cuenta_bancaria } from "#src/models/prisma/ft_factoring/client";
+import type { cuenta_bancaria } from "#root/generated/prisma/ft_factoring/client.js";
+import type { inversionista_cuenta_bancaria } from "#root/generated/prisma/ft_factoring/client.js";
 
 export const updateInversionistacuentabancariaOnlyAliasAndCuentaBancariaEstado = async (req: Request, res: Response) => {
   log.debug(line(), "controller::updateInversionistacuentabancariaOnlyAliasAndCuentaBancariaEstado");

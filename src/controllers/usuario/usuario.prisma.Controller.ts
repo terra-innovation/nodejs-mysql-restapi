@@ -1,4 +1,4 @@
-import type { Prisma } from "#src/models/prisma/ft_factoring/client";
+import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
@@ -16,7 +16,7 @@ import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
-import type { usuario } from "#src/models/prisma/ft_factoring/client";
+import type { usuario } from "#root/generated/prisma/ft_factoring/client.js";
 
 export const yoUsuario = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getUsuarioYo");

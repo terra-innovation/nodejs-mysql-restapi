@@ -1,4 +1,4 @@
-import type { Prisma } from "#src/models/prisma/ft_factoring/client";
+import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 
@@ -13,7 +13,7 @@ import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-import type { factoring } from "#src/models/prisma/ft_factoring/client";
+import type { factoring } from "#root/generated/prisma/ft_factoring/client.js";
 
 import * as luxon from "luxon";
 

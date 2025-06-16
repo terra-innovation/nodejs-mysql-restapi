@@ -1,7 +1,7 @@
-import type { Prisma } from "#src/models/prisma/ft_factoring/client";
+import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import type { contacto } from "#src/models/prisma/ft_factoring/client";
+import type { contacto } from "#root/generated/prisma/ft_factoring/client.js";
 
 import * as contactoDao from "#src/daos/contacto.prisma.Dao.js";
 import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";

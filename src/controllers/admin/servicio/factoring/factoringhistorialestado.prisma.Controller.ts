@@ -1,4 +1,4 @@
-import type { Prisma } from "#src/models/prisma/ft_factoring/client";
+import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as factoringpropuestaDao from "#src/daos/factoringpropuesta.prisma.Dao.js";
@@ -17,7 +17,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-import type { factoring_historial_estado } from "#src/models/prisma/ft_factoring/client";
+import type { factoring_historial_estado } from "#root/generated/prisma/ft_factoring/client.js";
 
 import * as luxon from "luxon";
 import { v4 as uuidv4 } from "uuid";

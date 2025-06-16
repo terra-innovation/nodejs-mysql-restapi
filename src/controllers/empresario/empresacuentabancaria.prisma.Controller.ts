@@ -1,4 +1,4 @@
-import type { Prisma } from "#src/models/prisma/ft_factoring/client";
+import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 
@@ -23,8 +23,8 @@ import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import * as storageUtils from "#src/utils/storageUtils.js";
-import type { cuenta_bancaria } from "#src/models/prisma/ft_factoring/client";
-import type { empresa_cuenta_bancaria } from "#src/models/prisma/ft_factoring/client";
+import type { cuenta_bancaria } from "#root/generated/prisma/ft_factoring/client.js";
+import type { empresa_cuenta_bancaria } from "#root/generated/prisma/ft_factoring/client.js";
 
 export const createEmpresacuentabancaria = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createEmpresacuentabancaria");

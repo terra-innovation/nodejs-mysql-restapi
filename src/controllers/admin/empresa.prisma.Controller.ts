@@ -1,4 +1,4 @@
-import type { Prisma } from "#src/models/prisma/ft_factoring/client";
+import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
@@ -10,7 +10,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 
-import type { empresa } from "#src/models/prisma/ft_factoring/client";
+import type { empresa } from "#root/generated/prisma/ft_factoring/client.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";

@@ -1,7 +1,7 @@
-import type { Prisma } from "#src/models/prisma/ft_factoring/client";
+import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import type { archivo } from "#src/models/prisma/ft_factoring/client";
+import type { archivo } from "#root/generated/prisma/ft_factoring/client.js";
 import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
 import * as archivotipoDao from "#src/daos/archivotipo.prisma.Dao.js";
 import * as archivoestadoDao from "#src/daos/archivoestado.prisma.Dao.js";
