@@ -7,7 +7,6 @@ import * as factoringestadoDao from "#src/daos/factoringestado.prisma.Dao.js";
 import * as factoringpropuestaDao from "#src/daos/factoringpropuesta.prisma.Dao.js";
 import * as factoringtipoDao from "#src/daos/factoringtipo.prisma.Dao.js";
 import * as riesgoDao from "#src/daos/riesgo.prisma.Dao.js";
-import { simulateFactoringLogicV1 } from "#src/logics/factoring.prisma.Logic.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
@@ -118,59 +117,6 @@ export const updateFactoring = async (req: Request, res: Response) => {
     { timeout: prismaFT.transactionTimeout }
   );
   response(res, 200, {});
-};
-
-export const simulateFactoring = async (req: Request, res: Response) => {
-  log.debug(line(), "controller::simulateFactoring");
-  const { id } = req.params;
-  const factoringSimulateSchema = yup
-    .object()
-    .shape({
-      factoringid: yup.string().trim().required().min(36).max(36),
-      riesgooperacionid: yup.string().trim().required().min(36).max(36),
-      factoringtipoid: yup.string().trim().required().min(36).max(36),
-      tnm: yup.number().required().min(1).max(100),
-      porcentaje_adelanto: yup.number().required().min(0).max(100),
-    })
-    .required();
-  var factoringValidated = factoringSimulateSchema.validateSync({ factoringid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
-  //log.debug(line(),"factoringValidated:", factoringValidated);
-
-  const simulacion = await prismaFT.client.$transaction(
-    async (tx) => {
-      const session_idusuario = req.session_user.usuario.idusuario;
-      const filter_estados = [1];
-
-      var factoring = await factoringDao.getFactoringByFactoringid(tx, factoringValidated.factoringid);
-      if (!factoring) {
-        log.warn(line(), "Factoring no existe: [" + factoringValidated.factoringid + "]");
-        throw new ClientError("Datos no válidos", 404);
-      }
-
-      var factoringtipo = await factoringtipoDao.getFactoringtipoByFactoringtipoid(tx, factoringValidated.factoringtipoid);
-      if (!factoringtipo) {
-        log.warn(line(), "Factoring tipo no existe: [" + factoringValidated.factoringtipoid + "]");
-        throw new ClientError("Datos no válidos", 404);
-      }
-
-      var riesgooperacion = await riesgoDao.getRiesgoByRiesgoid(tx, factoringValidated.riesgooperacionid);
-      if (!riesgooperacion) {
-        log.warn(line(), "Riesgo operación no existe: [" + factoringValidated.riesgooperacionid + "]");
-        throw new ClientError("Datos no válidos", 404);
-      }
-
-      var dias_pago_estimado = luxon.DateTime.fromISO(factoring.fecha_pago_estimado).startOf("day").diff(luxon.DateTime.local().startOf("day"), "days").days; // Actualizamos la cantidad de dias para el pago
-      var simulacion = {};
-      simulacion = await simulateFactoringLogicV1(riesgooperacion.idriesgo, factoring.cuenta_bancaria.idbanco, factoring.cantidad_facturas, factoring.monto_neto, dias_pago_estimado, factoringValidated.porcentaje_adelanto, factoringValidated.tnm);
-
-      log.info(line(), "simulacion: ", simulacion);
-
-      return simulacion;
-    },
-    { timeout: prismaFT.transactionTimeout }
-  );
-
-  response(res, 201, { factoring: { ...factoringValidated }, ...simulacion });
 };
 
 export const getFactoringMaster = async (req: Request, res: Response) => {
