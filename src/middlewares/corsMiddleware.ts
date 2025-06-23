@@ -34,7 +34,7 @@ export const corsMiddleware = cors({
 });
 
 const CORS_ORIGINS = {
-  production: ["https://tusitio.com", "https://admin.tusitio.com"],
+  production: ["https://app.finanzatech.com", "https://app.finanzatech.com"],
   development: ["http://localhost:3000", "http://127.0.0.1:3000"],
   test: [],
 };

@@ -8,7 +8,7 @@ module.exports = {
       watch: false, // desactiva watch en producción
       max_memory_restart: "512M",
       env: {
-        NODE_ENV: "development",
+        NODE_ENV: "production",
       },
     },
   ],
