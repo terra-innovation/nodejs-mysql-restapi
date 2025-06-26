@@ -27,6 +27,21 @@ const menuMantenimiento = {
       ],
     },
     {
+      id: "admin-factoring-inversionista",
+      title: "Factoring inversionista",
+      type: "collapse",
+      icon: "dashboard",
+      children: [
+        {
+          id: "admin-factoring-inversionista-verificacion-lista",
+          title: "Verificación inversionista",
+          type: "item",
+          url: "/admin/servicio/factoring/inversionista/verificacion/lista",
+          breadcrumbs: true,
+        },
+      ],
+    },
+    {
       id: "admin-mantenimiento-cuentas-bancarias",
       title: "Mantenimiento",
       type: "collapse",
@@ -70,7 +85,7 @@ const menuMantenimiento = {
         },
         {
           id: "admin-persona-verificacion",
-          title: "Verificación",
+          title: "Verificación persona",
           type: "item",
           url: "/admin/personaverificacion/lista",
           breadcrumbs: true,
