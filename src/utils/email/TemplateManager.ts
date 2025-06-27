@@ -42,6 +42,88 @@ class TemplaceManager {
     return textoPlano;
   }
 
+  async templateFactoringInversionistaVerificacionMasInformacion(params) {
+    try {
+      const paramsSchema = yup
+        .object()
+        .shape({
+          codigo_servicio_inversionista: yup.string().trim().required().min(1).max(20),
+          nombres: yup.string().trim().required().min(1).max(100),
+          fecha_actual: yup.string().trim().required().min(1).max(200),
+          razon_no_aceptada: yup.string().trim().required().min(1).max(1000),
+        })
+        .required();
+      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+      const bodyEmailTHTML = await this.renderTemplate("factoring-inversionista-verificacion-mas-informacion.html", paramsValidated);
+      const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
+      const subjectEmailText = await this.renderSubject("Información adicional requerida para su suscripción al servicio de Inversión en Facturas de Factoring [{{codigo_servicio_inversionista}}]", paramsValidated);
+
+      const codigoverificacionMailOptions = {
+        subject: subjectEmailText,
+        text: bodyEmailText,
+        html: bodyEmailTHTML,
+      };
+      return codigoverificacionMailOptions;
+    } catch (error) {
+      log.error(line(), error);
+      throw error;
+    }
+  }
+
+  async templateFactoringInversionistaVerificacionRechazado(params) {
+    try {
+      const paramsSchema = yup
+        .object()
+        .shape({
+          codigo_servicio_inversionista: yup.string().trim().required().min(1).max(20),
+          nombres: yup.string().trim().required().min(1).max(100),
+          fecha_actual: yup.string().trim().required().min(1).max(200),
+        })
+        .required();
+      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+      const bodyEmailTHTML = await this.renderTemplate("factoring-inversionista-verificacion-rechazado.html", paramsValidated);
+      const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
+      const subjectEmailText = await this.renderSubject("Actualización sobre su solicitud de suscripción al servicio de Inversión en Facturas de Factoring [{{codigo_servicio_inversionista}}]", paramsValidated);
+
+      const codigoverificacionMailOptions = {
+        subject: subjectEmailText,
+        text: bodyEmailText,
+        html: bodyEmailTHTML,
+      };
+      return codigoverificacionMailOptions;
+    } catch (error) {
+      log.error(line(), error);
+      throw error;
+    }
+  }
+
+  async templateFactoringInversionistaVerificacionAprobado(params) {
+    try {
+      const paramsSchema = yup
+        .object()
+        .shape({
+          codigo_servicio_inversionista: yup.string().trim().required().min(1).max(20),
+          nombres: yup.string().trim().required().min(1).max(100),
+          fecha_actual: yup.string().trim().required().min(1).max(200),
+        })
+        .required();
+      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+      const bodyEmailTHTML = await this.renderTemplate("factoring-inversionista-verificacion-aprobado.html", paramsValidated);
+      const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
+      const subjectEmailText = await this.renderSubject("¡Bienvenido a Inversión en Facturas de Factoring! [{{codigo_servicio_inversionista}}]", paramsValidated);
+
+      const codigoverificacionMailOptions = {
+        subject: subjectEmailText,
+        text: bodyEmailText,
+        html: bodyEmailTHTML,
+      };
+      return codigoverificacionMailOptions;
+    } catch (error) {
+      log.error(line(), error);
+      throw error;
+    }
+  }
+
   async templateFactoringEmpresaVerificacionMasInformacion(params) {
     try {
       const paramsSchema = yup

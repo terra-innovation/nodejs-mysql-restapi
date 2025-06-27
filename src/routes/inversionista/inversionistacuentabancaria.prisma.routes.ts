@@ -6,9 +6,9 @@ import { verifyToken, checkRole } from "#src/middlewares/auth.prisma.Middleware.
 const router = Router();
 
 //Empresario
-router.get("/inversionista/inversionistacuentabancaria/listar", verifyToken, checkRole([2]), catchedAsync(inversionistacuentabancariaController.getInversionistacuentabancarias));
-router.post("/inversionista/inversionistacuentabancaria/crear", verifyToken, checkRole([2]), catchedAsync(inversionistacuentabancariaController.createInversionistacuentabancaria));
-router.patch("/inversionista/inversionistacuentabancaria/actualizar/:id", verifyToken, checkRole([2]), catchedAsync(inversionistacuentabancariaController.updateInversionistacuentabancariaOnlyAlias));
-router.get("/inversionista/inversionistacuentabancaria/master", verifyToken, checkRole([2]), catchedAsync(inversionistacuentabancariaController.getInversionistacuentabancariaMaster));
+router.get("/inversionista/inversionistacuentabancaria/listar", verifyToken, checkRole([4]), catchedAsync(inversionistacuentabancariaController.getInversionistacuentabancarias));
+router.post("/inversionista/inversionistacuentabancaria/crear", verifyToken, checkRole([4]), catchedAsync(inversionistacuentabancariaController.createInversionistacuentabancaria));
+router.patch("/inversionista/inversionistacuentabancaria/actualizar/:id", verifyToken, checkRole([4]), catchedAsync(inversionistacuentabancariaController.updateInversionistacuentabancariaOnlyAlias));
+router.get("/inversionista/inversionistacuentabancaria/master", verifyToken, checkRole([4]), catchedAsync(inversionistacuentabancariaController.getInversionistacuentabancariaMaster));
 
 export default router;

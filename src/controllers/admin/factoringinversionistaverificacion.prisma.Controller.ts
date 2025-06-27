@@ -2,11 +2,13 @@ import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as servicioempresaDao from "#src/daos/servicioempresa.prisma.Dao.js";
+import * as servicioinversionistaDao from "#src/daos/servicioinversionista.prisma.Dao.js";
 import * as personaDao from "#src/daos/persona.prisma.Dao.js";
 import * as usuariorolDao from "#src/daos/usuariorol.prisma.Dao.js";
-import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
+import * as inversionistaDao from "#src/daos/inversionista.prisma.Dao.js";
 import * as servicioempresaestadoDao from "#src/daos/servicioempresaestado.prisma.Dao.js";
-import * as servicioempresaverificacionDao from "#src/daos/servicioempresaverificacion.prisma.Dao.js";
+import * as servicioinversionistaestadoDao from "#src/daos/servicioinversionistaestado.prisma.Dao.js";
+import * as servicioinversionistaverificacionDao from "#src/daos/servicioinversionistaverificacion.prisma.Dao.js";
 import * as usuarioservicioDao from "#src/daos/usuarioservicio.prisma.Dao.js";
 import * as usuarioservicioestadoDao from "#src/daos/usuarioservicioestado.prisma.Dao.js";
 import * as usuarioservicioverificacionDao from "#src/daos/usuarioservicioverificacion.prisma.Dao.js";
@@ -34,52 +36,52 @@ export const createFactoringinversionistaverificacion = async (req: Request, res
   log.debug(line(), "controller::createFactoringinversionistaverificacion");
   const session_idusuario = req.session_user.usuario.idusuario;
   const filter_estado = [1, 2];
-  const servicioempresaverificacionCreateSchema = yup
+  const servicioinversionistaverificacionCreateSchema = yup
     .object()
     .shape({
-      servicioempresaid: yup.string().min(36).max(36).required(),
-      servicioempresaestadoid: yup.string().min(36).max(36).required(),
+      servicioinversionistaid: yup.string().min(36).max(36).required(),
+      servicioinversionistaestadoid: yup.string().min(36).max(36).required(),
       comentariousuario: yup.string().trim().max(1000),
       comentariointerno: yup.string().trim().max(1000).required(),
     })
     .required();
-  var servicioempresaverificacionValidated = servicioempresaverificacionCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
-  //log.debug(line(), "servicioempresaverificacionValidated:", servicioempresaverificacionValidated);
+  var servicioinversionistaverificacionValidated = servicioinversionistaverificacionCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
+  //log.debug(line(), "servicioinversionistaverificacionValidated:", servicioinversionistaverificacionValidated);
 
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
-      const servicioempresa = await servicioempresaDao.getServicioempresaByServicioempresaid(tx, servicioempresaverificacionValidated.servicioempresaid);
-      if (!servicioempresa) {
-        log.warn(line(), "Servicio empresa no existe: [" + servicioempresaverificacionValidated.servicioempresaid + "]");
+      const servicioinversionista = await servicioinversionistaDao.getServicioinversionistaByServicioinversionistaid(tx, servicioinversionistaverificacionValidated.servicioinversionistaid);
+      if (!servicioinversionista) {
+        log.warn(line(), "Servicio inversionista no existe: [" + servicioinversionistaverificacionValidated.servicioinversionistaid + "]");
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const personasuscriptor = await personaDao.getPersonaByIdusuario(tx, servicioempresa.idusuariosuscriptor);
+      const personasuscriptor = await personaDao.getPersonaByIdusuario(tx, servicioinversionista.idusuariosuscriptor);
       if (!personasuscriptor) {
-        log.warn(line(), "Usuario suscriptor no existe: [" + servicioempresa.idusuariosuscriptor + "]");
+        log.warn(line(), "Usuario suscriptor no existe: [" + servicioinversionista.idusuariosuscriptor + "]");
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const empresa = await empresaDao.getEmpresaByIdempresa(tx, servicioempresa.idempresa);
-      if (!empresa) {
-        log.warn(line(), "Empresa no existe: [" + servicioempresa.idempresa + "]");
+      const inversionista = await inversionistaDao.getInversionistaByIdinversionista(tx, servicioinversionista.idinversionista);
+      if (!inversionista) {
+        log.warn(line(), "Inversionista no existe: [" + servicioinversionista.idinversionista + "]");
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const servicioempresaestado = await servicioempresaestadoDao.getServicioempresaestadoByServicioempresaestadoid(tx, servicioempresaverificacionValidated.servicioempresaestadoid);
-      if (!servicioempresaestado) {
-        log.warn(line(), "Servicio empresa estado no existe: [" + servicioempresaverificacionValidated.servicioempresaestadoid + "]");
+      const servicioinversionistaestado = await servicioinversionistaestadoDao.getServicioinversionistaestadoByServicioinversionistaestadoid(tx, servicioinversionistaverificacionValidated.servicioinversionistaestadoid);
+      if (!servicioinversionistaestado) {
+        log.warn(line(), "Servicio inversionista estado no existe: [" + servicioinversionistaverificacionValidated.servicioinversionistaestadoid + "]");
         throw new ClientError("Datos no válidos", 404);
       }
 
-      // Inserta un nuevo registro en la tabla servicioempresaverificacion con el nuevo estado
-      const servicioempresaverificacionToCreate: Prisma.servicio_empresa_verificacionCreateInput = {
-        servicio_empresa: { connect: { idservicioempresa: servicioempresa.idservicioempresa } },
-        servicio_empresa_estado: { connect: { idservicioempresaestado: servicioempresaestado.idservicioempresaestado } },
+      // Inserta un nuevo registro en la tabla servicioinversionistaverificacion con el nuevo estado
+      const servicioinversionistaverificacionToCreate: Prisma.servicio_inversionista_verificacionCreateInput = {
+        servicio_inversionista: { connect: { idservicioinversionista: servicioinversionista.idservicioinversionista } },
+        servicio_inversionista_estado: { connect: { idservicioinversionistaestado: servicioinversionistaestado.idservicioinversionistaestado } },
         usuario_verifica: { connect: { idusuario: req.session_user.usuario.idusuario } },
-        comentariointerno: servicioempresaverificacionValidated.comentariointerno,
-        comentariousuario: servicioempresaverificacionValidated.comentariousuario,
-        servicioempresaverificacionid: uuidv4(),
+        comentariointerno: servicioinversionistaverificacionValidated.comentariointerno,
+        comentariousuario: servicioinversionistaverificacionValidated.comentariousuario,
+        servicioinversionistaverificacionid: uuidv4(),
         idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
         idusuariomod: req.session_user.usuario.idusuario ?? 1,
@@ -87,28 +89,27 @@ export const createFactoringinversionistaverificacion = async (req: Request, res
         estado: 1,
       };
 
-      const servicioempresaverificacionCreated = await servicioempresaverificacionDao.insertServicioempresaverificacion(tx, servicioempresaverificacionToCreate);
-      log.debug(line(), "servicioempresaverificacionCreated", servicioempresaverificacionCreated);
+      const servicioinversionistaverificacionCreated = await servicioinversionistaverificacionDao.insertServicioinversionistaverificacion(tx, servicioinversionistaverificacionToCreate);
+      log.debug(line(), "servicioinversionistaverificacionCreated", servicioinversionistaverificacionCreated);
 
-      // Actualiza la tabla servicioempresa con el nuevo estado
-      const servicioempresaToUpdate: Prisma.servicio_empresaUpdateInput = {
-        servicio_empresa_estado: { connect: { idservicioempresaestado: servicioempresaestado.idservicioempresaestado } },
+      // Actualiza la tabla servicioinversionista con el nuevo estado
+      const servicioinversionistaToUpdate: Prisma.servicio_inversionistaUpdateInput = {
+        servicio_inversionista_estado: { connect: { idservicioinversionistaestado: servicioinversionistaestado.idservicioinversionistaestado } },
         idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
       };
-      const servicioempresaUpdated = await servicioempresaDao.updateServicioempresa(tx, servicioempresaverificacionValidated.servicioempresaid, servicioempresaToUpdate);
-      log.debug(line(), "servicioempresaUpdated", servicioempresaUpdated);
+      const servicioinversionistaUpdated = await servicioinversionistaDao.updateServicioinversionista(tx, servicioinversionistaverificacionValidated.servicioinversionistaid, servicioinversionistaToUpdate);
+      log.debug(line(), "servicioinversionistaUpdated", servicioinversionistaUpdated);
 
       // Si el estado es estado 3 (Suscrito)
-      if (servicioempresaestado.idservicioempresaestado == 3) {
-        await darAccesoAlUsuarioServicioEmpresa(req, tx, servicioempresa, personasuscriptor);
-        await darAccesoAlUsuarioServicio(req, tx, servicioempresaverificacionValidated, servicioempresa, empresa, personasuscriptor);
-        /* Damos acceso al usuario como Empresario */
-        const idrol_empresario = 3;
+      if (servicioinversionistaestado.idservicioinversionistaestado == 3) {
+        await darAccesoAlUsuarioServicio(req, tx, servicioinversionistaverificacionValidated, servicioinversionista, inversionista, personasuscriptor);
+        /* Damos acceso al usuario como Inversionista */
+        const idrol_inversionista = 4;
 
         const usuariorolToCreate: Prisma.usuario_rolCreateInput = {
-          usuario: { connect: { idusuario: servicioempresa.idusuariosuscriptor } },
-          rol: { connect: { idrol: idrol_empresario } },
+          usuario: { connect: { idusuario: servicioinversionista.idusuariosuscriptor } },
+          rol: { connect: { idrol: idrol_inversionista } },
           idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
           fechacrea: new Date(),
           idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
@@ -117,9 +118,11 @@ export const createFactoringinversionistaverificacion = async (req: Request, res
         };
 
         const usuariorolCreated = await usuariorolDao.insertUsuariorol(tx, usuariorolToCreate);
+      } else if (servicioinversionistaestado.idservicioinversionistaestado == 2) {
+        await rechazarAccesoAlUsuarioServicio(req, tx, servicioinversionistaverificacionValidated, servicioinversionista, inversionista, personasuscriptor);
       }
 
-      await enviarCorreoSegunCorrespondeNuevoEstadoDeServicioEmpresa(servicioempresaverificacionValidated, servicioempresa, servicioempresaestado, empresa, personasuscriptor);
+      await enviarCorreoSegunCorrespondeNuevoEstadoDeServicioInversionista(servicioinversionistaverificacionValidated, servicioinversionista, servicioinversionistaestado, inversionista, personasuscriptor);
 
       return {};
     },
@@ -128,50 +131,17 @@ export const createFactoringinversionistaverificacion = async (req: Request, res
   response(res, 201, {});
 };
 
-const darAccesoAlUsuarioServicioEmpresa = async (req, tx, servicioempresa, personasuscriptor) => {
-  const usuarioservicioempresa = await usuarioservicioempresaDao.getUsuarioservicioempresaByIdusuarioIdServicioIdempresa(tx, personasuscriptor.idusuario, servicioempresa.idservicio, servicioempresa.idempresa);
-  if (!usuarioservicioempresa) {
-    log.warn(line(), "Usuario servicio empresa no existe: [" + personasuscriptor.idusuario + " - " + servicioempresa.idservicio + " - " + servicioempresa.idempresa + "]");
-    throw new ClientError("Datos no válidos", 404);
-  }
-
-  const usuarioservicioempresaestado_con_acceso = 2; // Con acceso
-  const usuarioservicioempresaestado = await usuarioservicioempresaestadoDao.getUsuarioservicioempresaestadoByIdusuarioservicioempresaestado(tx, usuarioservicioempresaestado_con_acceso);
-  if (!usuarioservicioempresaestado) {
-    log.warn(line(), "Usuario servicio empresa estado no existe: [" + usuarioservicioempresaestado_con_acceso + "]");
-    throw new ClientError("Datos no válidos", 404);
-  }
-
-  const usuarioservicioempresarol_administrador = 1; // Administrador
-  const usuarioservicioempresarol = await usuarioservicioempresarolDao.getUsuarioservicioempresarolByIdusuarioservicioempresarol(tx, usuarioservicioempresarol_administrador);
-  if (!usuarioservicioempresarol) {
-    log.warn(line(), "Usuario servicio empresa rol no existe: [" + usuarioservicioempresarol_administrador + "]");
-    throw new ClientError("Datos no válidos", 404);
-  }
-
-  // Actualiza la tabla usuarioservicioempresa con el nuevo estado
-  const usuarioservicioempresaToUpdate: Prisma.usuario_servicio_empresaUpdateInput = {
-    usuario_servicio_empresa_estado: { connect: { idusuarioservicioempresaestado: usuarioservicioempresaestado.idusuarioservicioempresaestado } },
-    usuario_servicio_empresa_rol: { connect: { idusuarioservicioempresarol: usuarioservicioempresarol.idusuarioservicioempresarol } },
-    idusuariomod: req.session_user.usuario.idusuario ?? 1,
-    fechamod: new Date(),
-  };
-
-  const usuarioservicioempresaUpdated = await usuarioservicioempresaDao.updateUsuarioservicioempresa(tx, usuarioservicioempresa.usuarioservicioempresaid, usuarioservicioempresaToUpdate);
-  log.debug(line(), "usuarioservicioempresaUpdated", usuarioservicioempresaUpdated);
-};
-
-const darAccesoAlUsuarioServicio = async (req, tx, servicioempresaverificacionValidated, servicioempresa, empresa, personasuscriptor) => {
-  const usuarioservicio = await usuarioservicioDao.getUsuarioservicioByIdusuarioIdservicio(tx, personasuscriptor.idusuario, servicioempresa.idservicio);
+const rechazarAccesoAlUsuarioServicio = async (req, tx, servicioinversionistaverificacionValidated, servicioinversionista, inversionista, personasuscriptor) => {
+  const usuarioservicio = await usuarioservicioDao.getUsuarioservicioByIdusuarioIdservicio(tx, personasuscriptor.idusuario, servicioinversionista.idservicio);
   if (!usuarioservicio) {
-    log.warn(line(), "Usuario servicio no existe: [" + personasuscriptor.idusuario + " - " + servicioempresa.idservicio + "]");
+    log.warn(line(), "Usuario servicio no existe: [" + personasuscriptor.idusuario + " - " + servicioinversionista.idservicio + "]");
     throw new ClientError("Datos no válidos", 404);
   }
 
-  const usuarioservicioestado_suscrito = 2; // Suscrito
+  const usuarioservicioestado_suscrito = 4; // Rechazado
   const usuarioservicioestado = await usuarioservicioestadoDao.getUsuarioservicioestadoByIdusuarioservicioestado(tx, usuarioservicioestado_suscrito);
   if (!usuarioservicioestado) {
-    log.warn(line(), "Usuario servicio empresa estado no existe: [" + usuarioservicioestado_suscrito + "]");
+    log.warn(line(), "Usuario servicio estado no existe: [" + usuarioservicioestado_suscrito + "]");
     throw new ClientError("Datos no válidos", 404);
   }
 
@@ -181,8 +151,8 @@ const darAccesoAlUsuarioServicio = async (req, tx, servicioempresaverificacionVa
     usuario_servicio_estado: { connect: { idusuarioservicioestado: usuarioservicioestado.idusuarioservicioestado } },
     usuario_verifica: { connect: { idusuario: req.session_user.usuario.idusuario } },
     usuarioservicioverificacionid: uuidv4(),
-    comentariousuario: servicioempresaverificacionValidated.comentariousuario,
-    comentariointerno: servicioempresaverificacionValidated.comentariointerno + " // Proceso automático. Se concedió acceso por la verificación de la empresa: " + empresa.code + " - " + empresa.ruc + " - " + empresa.razon_social,
+    comentariousuario: servicioinversionistaverificacionValidated.comentariousuario,
+    comentariointerno: servicioinversionistaverificacionValidated.comentariointerno + " // Proceso automático. Se rechazó acceso por la verificación del inversionista: " + inversionista.code,
 
     idusuariocrea: req.session_user.usuario.idusuario ?? 1,
     fechacrea: new Date(),
@@ -204,23 +174,64 @@ const darAccesoAlUsuarioServicio = async (req, tx, servicioempresaverificacionVa
   log.debug(line(), "usuarioservicioUpdated", usuarioservicioUpdated);
 };
 
-const enviarCorreoSegunCorrespondeNuevoEstadoDeServicioEmpresa = async (servicioempresaverificacionValidated, servicioempresa, servicioempresaestado, empresa, personasuscriptor) => {
+const darAccesoAlUsuarioServicio = async (req, tx, servicioinversionistaverificacionValidated, servicioinversionista, inversionista, personasuscriptor) => {
+  const usuarioservicio = await usuarioservicioDao.getUsuarioservicioByIdusuarioIdservicio(tx, personasuscriptor.idusuario, servicioinversionista.idservicio);
+  if (!usuarioservicio) {
+    log.warn(line(), "Usuario servicio no existe: [" + personasuscriptor.idusuario + " - " + servicioinversionista.idservicio + "]");
+    throw new ClientError("Datos no válidos", 404);
+  }
+
+  const usuarioservicioestado_suscrito = 2; // Suscrito
+  const usuarioservicioestado = await usuarioservicioestadoDao.getUsuarioservicioestadoByIdusuarioservicioestado(tx, usuarioservicioestado_suscrito);
+  if (!usuarioservicioestado) {
+    log.warn(line(), "Usuario servicio estado no existe: [" + usuarioservicioestado_suscrito + "]");
+    throw new ClientError("Datos no válidos", 404);
+  }
+
+  // Inserta un nuevo registro en la tabla usuarioservicioverificacion con el nuevo estado
+  const usuarioservicioverificacionToCreate: Prisma.usuario_servicio_verificacionCreateInput = {
+    usuario_servicio: { connect: { idusuarioservicio: usuarioservicio.idusuarioservicio } },
+    usuario_servicio_estado: { connect: { idusuarioservicioestado: usuarioservicioestado.idusuarioservicioestado } },
+    usuario_verifica: { connect: { idusuario: req.session_user.usuario.idusuario } },
+    usuarioservicioverificacionid: uuidv4(),
+    comentariousuario: servicioinversionistaverificacionValidated.comentariousuario,
+    comentariointerno: servicioinversionistaverificacionValidated.comentariointerno + " // Proceso automático. Se concedió acceso por la verificación del inversionista: " + inversionista.code,
+
+    idusuariocrea: req.session_user.usuario.idusuario ?? 1,
+    fechacrea: new Date(),
+    idusuariomod: req.session_user.usuario.idusuario ?? 1,
+    fechamod: new Date(),
+    estado: 1,
+  };
+
+  const usuarioservicioverificacionCreated = await usuarioservicioverificacionDao.insertUsuarioservicioverificacion(tx, usuarioservicioverificacionToCreate);
+  log.debug(line(), "usuarioservicioverificacionCreated", usuarioservicioverificacionCreated);
+
+  // Actualiza la tabla usuarioservicio con el nuevo estado
+  const usuarioservicioToUpdate: Prisma.usuario_servicioUpdateInput = {
+    usuario_servicio_estado: { connect: { idusuarioservicioestado: usuarioservicioestado.idusuarioservicioestado } },
+    idusuariomod: req.session_user.usuario.idusuario ?? 1,
+    fechamod: new Date(),
+  };
+  const usuarioservicioUpdated = await usuarioservicioDao.updateUsuarioservicio(tx, usuarioservicio.usuarioservicioid, usuarioservicioToUpdate);
+  log.debug(line(), "usuarioservicioUpdated", usuarioservicioUpdated);
+};
+
+const enviarCorreoSegunCorrespondeNuevoEstadoDeServicioInversionista = async (servicioinversionistaverificacionValidated, servicioinversionista, servicioinversionistaestado, inversionista, personasuscriptor) => {
   // Prepara y envia un correo
   const templateManager = new TemplateManager();
   const emailSender = new EmailSender();
 
-  if (servicioempresaestado.isenabledcomentariousuario) {
-    if (servicioempresaverificacionValidated.comentariousuario) {
+  if (servicioinversionistaestado.isenabledcomentariousuario) {
+    if (servicioinversionistaverificacionValidated.comentariousuario) {
       // Email de más información
       const dataEmail = {
-        codigo_servicio_empresa: servicioempresa.code,
+        codigo_servicio_inversionista: servicioinversionista.code,
         nombres: personasuscriptor.usuario.usuarionombres,
         fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
-        empresa_razon_social: empresa.razon_social,
-        empresa_ruc: empresa.ruc,
-        razon_no_aceptada: servicioempresaverificacionValidated.comentariousuario,
+        razon_no_aceptada: servicioinversionistaverificacionValidated.comentariousuario,
       };
-      const emailTemplate = await templateManager.templateFactoringEmpresaVerificacionMasInformacion(dataEmail);
+      const emailTemplate = await templateManager.templateFactoringInversionistaVerificacionMasInformacion(dataEmail);
 
       const mailOptions = {
         to: personasuscriptor.usuario.email,
@@ -233,16 +244,14 @@ const enviarCorreoSegunCorrespondeNuevoEstadoDeServicioEmpresa = async (servicio
     }
   }
 
-  if (servicioempresaestado.idservicioempresaestado == 3) {
+  if (servicioinversionistaestado.idservicioinversionistaestado == 3) {
     // Email de aprobado
     const dataEmail = {
-      codigo_servicio_empresa: servicioempresa.code,
+      codigo_servicio_inversionista: servicioinversionista.code,
       nombres: personasuscriptor.usuario.usuarionombres,
       fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
-      empresa_razon_social: empresa.razon_social,
-      empresa_ruc: empresa.ruc,
     };
-    const emailTemplate = await templateManager.templateFactoringEmpresaVerificacionAprobado(dataEmail);
+    const emailTemplate = await templateManager.templateFactoringInversionistaVerificacionAprobado(dataEmail);
 
     const mailOptions = {
       to: personasuscriptor.usuario.email,
@@ -251,16 +260,14 @@ const enviarCorreoSegunCorrespondeNuevoEstadoDeServicioEmpresa = async (servicio
       html: emailTemplate.html,
     };
     await emailSender.sendContactoFinanzatech(mailOptions);
-  } else if (servicioempresaestado.idservicioempresaestado == 2) {
+  } else if (servicioinversionistaestado.idservicioinversionistaestado == 2) {
     // Email de rechazado
     const dataEmail = {
-      codigo_servicio_empresa: servicioempresa.code,
+      codigo_servicio_inversionista: servicioinversionista.code,
       nombres: personasuscriptor.usuario.usuarionombres,
       fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
-      empresa_razon_social: empresa.razon_social,
-      empresa_ruc: empresa.ruc,
     };
-    const emailTemplate = await templateManager.templateFactoringEmpresaVerificacionRechazado(dataEmail);
+    const emailTemplate = await templateManager.templateFactoringInversionistaVerificacionRechazado(dataEmail);
 
     const mailOptions = {
       to: personasuscriptor.usuario.email,
@@ -276,44 +283,38 @@ export const getFactoringinversionistasByVerificacion = async (req: Request, res
   log.debug(line(), "controller::getFactoringinversionistasByVerificacion");
   //log.info(line(),req.session_user.usuario.idusuario);
 
-  const factoringempresasJson = await prismaFT.client.$transaction(
+  const factoringinversionistasJson = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estadologico = [1, 2];
-      const filter_idservicio = [1];
-      const filter_idarchivotipos = [4, 5, 6, 7];
-      const factoringempresas = await servicioempresaDao.getFactoringinversionistasByVerificacion(tx, filter_estadologico, filter_idservicio, filter_idarchivotipos);
-      var factoringempresasJson = jsonUtils.sequelizeToJSON(factoringempresas);
-      //log.info(line(),factoringempresaObfuscated);
+      const filter_idservicio = [2];
+      const filter_idarchivotipos = [1, 2, 3];
+      const factoringinversionistas = await servicioinversionistaDao.getFactoringinversionistasByVerificacion(tx, filter_estadologico, filter_idservicio, filter_idarchivotipos);
+      var factoringinversionistasJson = jsonUtils.sequelizeToJSON(factoringinversionistas);
+      //log.info(line(),factoringinversionistaObfuscated);
 
-      //var factoringempresasFiltered = jsonUtils.removeAttributes(factoringempresasJson, ["score"]);
-      //factoringempresasFiltered = jsonUtils.removeAttributesPrivates(factoringempresasFiltered);
-      return factoringempresasJson;
+      //var factoringinversionistasFiltered = jsonUtils.removeAttributes(factoringinversionistasJson, ["score"]);
+      //factoringinversionistasFiltered = jsonUtils.removeAttributesPrivates(factoringinversionistasFiltered);
+      return factoringinversionistasJson;
     },
     { timeout: prismaFT.transactionTimeout }
   );
-  response(res, 201, factoringempresasJson);
+  response(res, 201, factoringinversionistasJson);
 };
 
 export const getFactoringinversionistaverificacionMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFactoringinversionistaverificacionMaster");
-  const servicioempresaverificacionMasterFiltered = await prismaFT.client.$transaction(
+  const servicioinversionistaverificacionMaster = await prismaFT.client.$transaction(
     async (tx) => {
       const session_idusuario = req.session_user?.usuario?.idusuario;
       const filter_estados = [1];
-      const servicioempresaestados = await servicioempresaestadoDao.getServicioempresaestados(tx, filter_estados);
+      const servicioinversionistaestados = await servicioinversionistaestadoDao.getServicioinversionistaestados(tx, filter_estados);
 
-      let servicioempresaverificacionMaster: Record<string, any> = {};
-      servicioempresaverificacionMaster.servicioempresaestados = servicioempresaestados;
+      let servicioinversionistaverificacionMaster: Record<string, any> = {};
+      servicioinversionistaverificacionMaster.servicioinversionistaestados = servicioinversionistaestados;
 
-      let servicioempresaverificacionMasterJSON = jsonUtils.sequelizeToJSON(servicioempresaverificacionMaster);
-      //jsonUtils.prettyPrint(servicioempresaverificacionMasterJSON);
-      let servicioempresaverificacionMasterObfuscated = jsonUtils.ofuscarAtributosDefault(servicioempresaverificacionMasterJSON);
-      //jsonUtils.prettyPrint(servicioempresaverificacionMasterObfuscated);
-      let servicioempresaverificacionMasterFiltered = jsonUtils.removeAttributesPrivates(servicioempresaverificacionMasterObfuscated);
-      //jsonUtils.prettyPrint(servicioempresaverificacionMaster);
-      return servicioempresaverificacionMasterFiltered;
+      return servicioinversionistaverificacionMaster;
     },
     { timeout: prismaFT.transactionTimeout }
   );
-  response(res, 201, servicioempresaverificacionMasterFiltered);
+  response(res, 201, servicioinversionistaverificacionMaster);
 };

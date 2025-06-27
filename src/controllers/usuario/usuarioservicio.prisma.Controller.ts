@@ -16,8 +16,11 @@ import * as inversionistacuentabancariaDao from "#src/daos/inversionistacuentaba
 import * as colaboradortipoDao from "#src/daos/colaboradortipo.prisma.Dao.js";
 import * as colaboradorDao from "#src/daos/colaborador.prisma.Dao.js";
 import * as servicioempresaDao from "#src/daos/servicioempresa.prisma.Dao.js";
+import * as servicioinversionistaDao from "#src/daos/servicioinversionista.prisma.Dao.js";
 import * as servicioempresaestadoDao from "#src/daos/servicioempresaestado.prisma.Dao.js";
+import * as servicioinversionistaestadoDao from "#src/daos/servicioinversionistaestado.prisma.Dao.js";
 import * as servicioempresaverificacionDao from "#src/daos/servicioempresaverificacion.prisma.Dao.js";
+import * as servicioinversionistaverificacionDao from "#src/daos/servicioinversionistaverificacion.prisma.Dao.js";
 import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
 import * as usuarioservicioempresaDao from "#src/daos/usuarioservicioempresa.prisma.Dao.js";
 import * as usuarioservicioempresaestadoDao from "#src/daos/usuarioservicioempresaestado.prisma.Dao.js";
@@ -71,6 +74,8 @@ export const suscribirUsuarioServicioFactoringInversionista = async (req: Reques
 
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
+      const usuarioConected = await usuarioDao.getUsuarioByIdusuario(tx, usuarioservicioValidated.idusuario);
+
       const usuarioservicio = await usuarioservicioDao.getUsuarioservicioByUsuarioservicioid(tx, usuarioservicioValidated.usuarioservicioid);
       if (!usuarioservicio) {
         log.warn(line(), "El usuario servicio no existe: [" + usuarioservicioValidated.usuarioservicioid + "]");
@@ -114,6 +119,13 @@ export const suscribirUsuarioServicioFactoringInversionista = async (req: Reques
 
       if (!usuarioservicioValidated.declaracion_datos_reales) {
         log.warn(line(), "No aceptó la declaración de datos reales: [" + usuarioservicioValidated.declaracion_datos_reales + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
+
+      const servicioinversionistaestado_en_revision = 1;
+      const servicioinversionistaestado = await servicioinversionistaestadoDao.getServicioinversionistaestadoByIdservicioinversionistaestado(tx, servicioinversionistaestado_en_revision);
+      if (!servicioinversionistaestado) {
+        log.warn(line(), "Servicio inversionsita estado no existe: [" + servicioinversionistaestado_en_revision + "]");
         throw new ClientError("Datos no válidos", 404);
       }
 
@@ -185,8 +197,45 @@ export const suscribirUsuarioServicioFactoringInversionista = async (req: Reques
 
       log.debug(line(), "imversionistacuentabancariaCreated:", imversionistacuentabancariaCreated);
 
-      /* Registramos para la verificación del usuario_servicio en la tabla usuario_servicio_verificacion */
+      /* Registramos el Servicio para el Inversionista en la tabla servicio_inversionista */
+      const servicioinversionistaToCreate: Prisma.servicio_inversionistaCreateInput = {
+        servicio: { connect: { idservicio: 2 } },
+        inversionista: { connect: { idinversionista: inversionistaCreated.idinversionista } },
+        usuario_suscriptor: { connect: { idusuario: usuarioConected.idusuario } },
+        servicio_inversionista_estado: { connect: { idservicioinversionistaestado: servicioinversionistaestado.idservicioinversionistaestado } },
 
+        servicioinversionistaid: uuidv4(),
+        code: uuidv4().split("-")[0],
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
+
+      const servicioinversionistaCreated = await servicioinversionistaDao.insertServicioinversionista(tx, servicioinversionistaToCreate);
+
+      log.debug(line(), "servicioinversionistaCreated:", servicioinversionistaCreated);
+
+      /* Registramos para la verificación del servicio_inversionista en la tabla servicio_inversionista_verificacion */
+      const servicioinversionistaverificacionToCreate: Prisma.servicio_inversionista_verificacionCreateInput = {
+        servicio_inversionista: { connect: { idservicioinversionista: servicioinversionistaCreated.idservicioinversionista } },
+        servicio_inversionista_estado: { connect: { idservicioinversionistaestado: servicioinversionistaestado.idservicioinversionistaestado } },
+        usuario_verifica: { connect: { idusuario: req.session_user.usuario.idusuario } },
+        comentariointerno: "",
+        comentariousuario: "",
+        servicioinversionistaverificacionid: uuidv4(),
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
+
+      const servicioinversionistaverificacionCreated = await servicioinversionistaverificacionDao.insertServicioinversionistaverificacion(tx, servicioinversionistaverificacionToCreate);
+      log.debug(line(), "servicioinversionistaverificacionCreated:", servicioinversionistaverificacionCreated);
+
+      /* Registramos para la verificación del usuario_servicio en la tabla usuario_servicio_verificacion */
       const usuarioservicioverificacionToCreate: Prisma.usuario_servicio_verificacionCreateInput = {
         usuario_servicio: { connect: { idusuarioservicio: usuarioservicio.idusuarioservicio } },
         usuario_servicio_estado: { connect: { idusuarioservicioestado: usuarioservicioestado.idusuarioservicioestado } },
@@ -614,13 +663,13 @@ export const getUsuarioservicioMaster = async (req: Request, res: Response) => {
       usuarioservicioMaster.cuentatipos = cuentatipos;
       usuarioservicioMaster.persona = persona;
 
-      let usuarioservicioMasterJSON = jsonUtils.sequelizeToJSON(usuarioservicioMaster);
+      //let usuarioservicioMasterJSON = jsonUtils.sequelizeToJSON(usuarioservicioMaster);
       //jsonUtils.prettyPrint(usuarioservicioMasterJSON);
-      let usuarioservicioMasterObfuscated = jsonUtils.ofuscarAtributosDefault(usuarioservicioMasterJSON);
+      //let usuarioservicioMasterObfuscated = jsonUtils.ofuscarAtributosDefault(usuarioservicioMasterJSON);
       //jsonUtils.prettyPrint(usuarioservicioMasterObfuscated);
-      let usuarioservicioMasterFiltered = jsonUtils.removeAttributesPrivates(usuarioservicioMasterObfuscated);
+      //let usuarioservicioMasterFiltered = jsonUtils.removeAttributesPrivates(usuarioservicioMasterObfuscated);
       //jsonUtils.prettyPrint(usuarioservicioMaster);
-      return usuarioservicioMasterFiltered;
+      return usuarioservicioMaster;
     },
     { timeout: prismaFT.transactionTimeout }
   );
