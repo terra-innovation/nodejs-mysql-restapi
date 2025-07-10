@@ -20,6 +20,9 @@ import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import * as Yup from "yup";
 
+import EmailSender from "#src/utils/email/emailSender.js";
+import TemplateManager from "#src/utils/email/TemplateManager.js";
+
 import { UsuarioSession } from "#root/src/types/UsuarioSession.types.js";
 
 export const loginUser = async (req: Request, res: Response) => {
@@ -469,6 +472,27 @@ export const registerUsuario = async (req: Request, res: Response) => {
       const validacionCreated = await validacionDao.insertValidacion(tx, validacionToCreate);
       log.debug(line(), "validacionCreated", validacionCreated);
 
+      /* Enviar Email con el código de verificación */
+      const templateManager = new TemplateManager();
+      const emailSender = new EmailSender();
+      const dataEmail = {
+        otp: validacionToCreate.otp,
+        duracion_minutos: validacionToCreate.tiempo_expiracion,
+        fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
+      };
+      const emailTemplate = await templateManager.templateCodigoVerificacion(dataEmail);
+
+      const mailOptions = {
+        to: usuarioValidated.email,
+        subject: emailTemplate.subject,
+        text: emailTemplate.text,
+        html: emailTemplate.html,
+      };
+
+      await emailSender.sendContactoFinanzatech(mailOptions);
+      log.debug(line(), "Correo templateCodigoVerificacion enviado exitosamente.", usuarioValidated.email);
+
+      /* Retornar datos para la validación del usuarioP */
       const usuarioReturned: Record<string, any> = {};
       usuarioReturned.hash = usuarioToCreate.hash;
       usuarioReturned.email = usuarioValidated.email;

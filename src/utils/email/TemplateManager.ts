@@ -9,7 +9,7 @@ class TemplaceManager {
   private templateDir: string;
 
   constructor() {
-    this.templateDir = path.join(process.cwd(), "src/utils/email/templates");
+    this.templateDir = path.join(process.cwd(), "static", "email", "templates");
   }
 
   async loadTemplate(templateName) {
@@ -217,20 +217,20 @@ class TemplaceManager {
       const paramsSchema = yup
         .object()
         .shape({
-          name: yup.string().trim().required().min(1).max(100),
-          codigo: yup.string().trim().required().min(1).max(100),
-          fecha_actual: yup.string().trim().required().min(1).max(200),
+          otp: yup.string().trim().required().min(1).max(100),
           duracion_minutos: yup.number().required().min(1).max(200),
-          fechacrea: yup.string().trim().required().min(1).max(200),
+          fecha_actual: yup.string().trim().required().min(1).max(200),
         })
         .required();
       var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
-      const codigoverificacionEmail = await this.renderTemplate("codigo-verificacion.html", paramsValidated);
+      const bodyEmailTHTML = await this.renderTemplate("codigo-verificacion.html", paramsValidated);
+      const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
+      const subjectEmailText = await this.renderSubject("Código de verificación de Finanza Tech", paramsValidated);
 
       const codigoverificacionMailOptions = {
-        subject: "Código de verificación de Finanza Tech " + paramsValidated.fechacrea,
-        text: "Hola. Su código de verificación es: " + paramsValidated.codigo,
-        html: codigoverificacionEmail,
+        subject: subjectEmailText,
+        text: bodyEmailText,
+        html: bodyEmailTHTML,
       };
       return codigoverificacionMailOptions;
     } catch (error) {
