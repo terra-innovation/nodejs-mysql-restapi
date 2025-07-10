@@ -23,3 +23,11 @@ export const pathDate = (date) => {
 
   return datePath;
 };
+
+export const normalizarRuta = (ruta: string): string => {
+  // Divide la ruta por backslash, sin importar el SO actual
+  const partes = ruta.split(/\\+/); // maneja múltiples backslashes seguidos
+
+  // Une las partes con el separador adecuado para el SO actual
+  return path.join(...partes);
+};

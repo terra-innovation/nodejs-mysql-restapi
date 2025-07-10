@@ -25,6 +25,48 @@ import { fileURLToPath } from "url";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
+export const descargarArchivo = async (req: Request, res: Response) => {
+  log.debug(line(), "controller::descargarArchivo");
+  const { id } = req.params;
+  const archivoSchema = yup
+    .object()
+    .shape({
+      archivoid: yup.string().trim().required().min(36).max(36),
+    })
+    .required();
+  const archivoValidated = archivoSchema.validateSync({ archivoid: id }, { abortEarly: false, stripUnknown: true });
+  log.debug(line(), "archivoValidated:", archivoValidated);
+
+  const rutaAbsoluta = await prismaFT.client.$transaction(
+    async (tx) => {
+      const archivo = await archivoDao.getArchivoByArchivoid(tx, archivoValidated.archivoid);
+      if (archivo[0] === 0) {
+        throw new ClientError("Archivo no existe", 404);
+      }
+      log.debug(line(), "archivo:", archivo);
+
+      const archivoPath = path.join(storageUtils.STORAGE_PATH_SUCCESS, storageUtils.normalizarRuta(archivo.ruta), archivo.nombrealmacenamiento);
+      log.debug(line(), "archivoPath:", archivoPath);
+
+      const proyectoRutaAbsoluta = storageUtils.pathApp(); // raíz del proyecto
+      log.debug(line(), "proyectoRutaAbsoluta:", proyectoRutaAbsoluta);
+
+      // Convierte la ruta relativa a una ruta absoluta
+      const rutaAbsoluta = path.resolve(proyectoRutaAbsoluta, archivoPath);
+
+      return rutaAbsoluta;
+    },
+    { timeout: prismaFT.transactionTimeout }
+  );
+
+  res.sendFile(rutaAbsoluta, (err) => {
+    if (err) {
+      log.error(line(), "Error al descargar el archivo:", err);
+      res.status(500).send("Error");
+    }
+  });
+};
+
 export const cargarArchivo = async (req: Request, res: Response) => {
   log.debug(line(), "controller::cargarArchivo");
   const archivoCreated = await prismaFT.client.$transaction(
@@ -93,53 +135,6 @@ export const cargarArchivo = async (req: Request, res: Response) => {
     { timeout: prismaFT.transactionTimeout }
   );
   response(res, 200, { archivoid: archivoCreated.archivoid });
-};
-
-export const descargarArchivo = async (req: Request, res: Response) => {
-  log.debug(line(), "controller::descargarArchivo");
-  const { id } = req.params;
-  const archivoSchema = yup
-    .object()
-    .shape({
-      archivoid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
-  const archivoValidated = archivoSchema.validateSync({ archivoid: id }, { abortEarly: false, stripUnknown: true });
-  log.debug(line(), "archivoValidated:", archivoValidated);
-
-  const rutaAbsoluta = await prismaFT.client.$transaction(
-    async (tx) => {
-      const archivo = await archivoDao.getArchivoByArchivoid(tx, archivoValidated.archivoid);
-      if (archivo[0] === 0) {
-        throw new ClientError("Archivo no existe", 404);
-      }
-      log.debug(line(), "archivo:", archivo);
-
-      const archivoPath = path.join(storageUtils.STORAGE_PATH_SUCCESS, archivo.ruta, archivo.nombrealmacenamiento);
-      // Obtener el directorio actual del archivo (como si fuera __dirname en CommonJS)
-      const __filename = fileURLToPath(import.meta.url); // Convierte la URL a ruta de archivo
-      const __dirname = path.dirname(__filename); // Obtiene el directorio del archivo
-      log.debug(line(), "archivoPath:", archivoPath);
-      log.debug(line(), "__dirname:", __dirname);
-      log.debug(line(), "__filename:", __filename);
-
-      const proyectoRutaAbsoluta = path.resolve(__dirname, "../../../");
-      log.debug(line(), "proyectoRutaAbsoluta:", proyectoRutaAbsoluta);
-
-      // Convierte la ruta relativa a una ruta absoluta
-      const rutaAbsoluta = path.resolve(proyectoRutaAbsoluta, archivoPath);
-
-      return rutaAbsoluta;
-    },
-    { timeout: prismaFT.transactionTimeout }
-  );
-
-  res.sendFile(rutaAbsoluta, (err) => {
-    if (err) {
-      log.error(line(), "Error al descargar el archivo:", err);
-      res.status(500).send("Error");
-    }
-  });
 };
 
 export const activateArchivo = async (req: Request, res: Response) => {
