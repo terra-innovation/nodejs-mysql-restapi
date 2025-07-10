@@ -5,6 +5,7 @@ import fs from "fs";
 import { env } from "#src/config.js";
 import type { Level } from "pino";
 import { getContext } from "#src/utils/context/loggerContext.js";
+import pretty from "pino-pretty";
 
 type LogData = Record<string, unknown>;
 
@@ -75,13 +76,10 @@ const consoleLogLevel = env.LOG_LEVEL_CONSOLE || "debug";
 if (consoleLogLevel !== "silent") {
   levelTransports.push({
     level: consoleLogLevel as Level,
-    stream: pino.transport({
-      target: "pino-pretty",
-      options: {
-        colorize: true,
-        //translateTime: "yyyy-MM-dd HH:MM:ss.l o",
-        ignore: "pid,hostname",
-      },
+    stream: pretty({
+      colorize: true,
+      ignore: "pid,hostname",
+      //translateTime: "yyyy-MM-dd HH:MM:ss.l o",
     }),
   });
 }
