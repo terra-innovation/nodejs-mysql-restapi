@@ -5,6 +5,7 @@ import { log, line } from "#src/utils/logger.pino.js";
 import { prismaFT } from "#src/models/prisma/db-factoring.js";
 import { shutdownHandler } from "#src/utils/shutdownHandler.js";
 import { performance } from "node:perf_hooks";
+import "#src/utils/ipAccessControl.js"; // opcional: fuerza preload de listas
 
 const start = performance.now();
 

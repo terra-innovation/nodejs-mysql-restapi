@@ -1,0 +1,4 @@
+# IPs bloqueadas
+10.0.0.9
+# Bloquea todo (descomentar solo si quieres denegar todo acceso)
+# *
