@@ -28,8 +28,8 @@ export const httpLogger = pinoHttp({
         method: req.method,
         url: req.url,
         ip: req.raw?.ip || null,
-        host: req.raw.hostname || null,
-        userAgent: req.raw.get("user-agent"),
+        host: req.raw?.hostname || null,
+        userAgent: req.raw?.get("user-agent") || null,
       };
     },
     res(res) {

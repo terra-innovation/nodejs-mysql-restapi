@@ -15,6 +15,8 @@ import secureRoutes from "#src/routes/secure/index.prisma.js";
 
 const app = express();
 
+app.set("trust proxy", "::1"); // Para obtener la IP del proxy inverso local X-Real-IP
+app.set("trust proxy", "127.0.0.1"); // Para obtener la IP del proxy inverso local X-Real-IP
 app.use(express.json()); // Convierte los request a json
 app.use(corsMiddleware); // Middleware Cors
 app.use(loggerMiddleware); // Middleware Logger PINO
