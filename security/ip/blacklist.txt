@@ -1,4 +1,15 @@
 # IPs bloqueadas
 10.0.0.9
+
+
 # Bloquea todo (descomentar solo si quieres denegar todo acceso)
 # *
+
+
+# Puedes configurar las IP de la siguiente manera
+# IPs individuales
+# 192.168.0.1
+# Rangos CIDR
+# 192.168.0.0/24 
+# Rangos tipo 
+# 192.168.1.1-192.168.1.100
