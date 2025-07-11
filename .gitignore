@@ -13,5 +13,5 @@ generated/*
 .env.development
 .env.production
 src/daos - copia/*
-security/ip/blacklist.txt
 security/ip/whitelist.txt
+security/ip/blacklist.txt
