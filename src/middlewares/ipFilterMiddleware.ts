@@ -4,24 +4,33 @@ import { whitelist, blacklist, isWhitelistAll, isBlacklistAll } from "#src/utils
 import { log, line } from "#src/utils/logger.pino.js";
 
 export const ipFilterMiddleware = (req: Request, res: Response, next: NextFunction): void => {
-  const rawIp = req.ip || req.socket?.remoteAddress || "";
+  const rawIp = req.ip || req.socket?.remoteAddress || "anonymous";
   const ip = rawIp.replace(/^::ffff:/, "");
 
+  const dataTrazabilidad = {
+    id: req.id,
+    method: req.method,
+    url: req.url,
+    ip: rawIp,
+    host: req.hostname || "anonymous",
+    userAgent: req.get("user-agent") || "anonymous",
+  };
+
   if (!whitelist || !blacklist) {
-    log.warn(line(), "Acceso denegado: listas IP no disponibles", { ip });
-    res.status(403).json({ message: "Access Denied" });
+    log.warn(line(), "Acceso denegado: listas IP no disponibles", dataTrazabilidad);
+    res.status(403).json({ error: true, message: "Acceso denegado" });
     return;
   }
 
   if (isBlacklistAll()) {
-    log.warn(line(), "Acceso denegado: blacklist global (*)", { ip });
-    res.status(403).json({ message: "Access Denied" });
+    log.warn(line(), "Acceso denegado: blacklist global (*)", dataTrazabilidad);
+    res.status(403).json({ error: true, message: "Acceso denegado" });
     return;
   }
 
   if (ipRangeCheck(ip, blacklist)) {
-    log.warn(line(), "Acceso denegado: IP en blacklist", { ip });
-    res.status(403).json({ message: "Access Denied" });
+    log.warn(line(), "Acceso denegado: IP en blacklist", dataTrazabilidad);
+    res.status(403).json({ error: true, message: "Acceso denegado" });
     return;
   }
 
@@ -30,14 +39,14 @@ export const ipFilterMiddleware = (req: Request, res: Response, next: NextFuncti
   }
 
   if (whitelist.length === 0) {
-    log.warn(line(), "Acceso denegado: whitelist vacia", { ip });
-    res.status(403).json({ message: "Access Denied" });
+    log.warn(line(), "Acceso denegado: whitelist vacia", dataTrazabilidad);
+    res.status(403).json({ error: true, message: "Acceso denegado" });
     return;
   }
 
   if (!ipRangeCheck(ip, whitelist)) {
-    log.warn(line(), "Acceso denegado: IP no autorizada", { ip });
-    res.status(403).json({ message: "Access Denied" });
+    log.warn(line(), "Acceso denegado: IP no autorizada", dataTrazabilidad);
+    res.status(403).json({ error: true, message: "Acceso denegado" });
     return;
   }
 
