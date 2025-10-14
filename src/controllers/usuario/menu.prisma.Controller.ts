@@ -46,20 +46,6 @@ export const getMenu = async (req: Request, res: Response) => {
           },
         ],
       },
-      {
-        id: "components",
-        title: "components",
-        type: "item",
-        url: "/components-overview/buttons",
-        icon: "components",
-        target: true,
-        chip: {
-          label: "new",
-          color: "primary",
-          size: "small",
-          variant: "combined",
-        },
-      },
     ],
   };
 
@@ -73,7 +59,8 @@ export const getMenu = async (req: Request, res: Response) => {
   const menuInversionistaX = [];
   const menuItems = {
     //items: [menuDasboard, ...menuInversionista.menuInversionista, ...menuUsuario.menuUsuario, ...menuEmpresario.menuEmpresario, ...menuAdmin.menuAdmin, ...menuInversionistaX],
-    items: [menuDasboard],
+    //items: [menuDasboard],
+    items: [],
   };
 
   const rolesUsuario = req.session_user.usuario.usuario_roles.map((rol: any) => rol.idrol);

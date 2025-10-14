@@ -5,6 +5,14 @@ const menuFormulario = {
   type: "group",
   children: [
     {
+      id: "usuario-inicio",
+      title: "Inicio",
+      type: "item",
+      url: "/usuario/inicio",
+      icon: "IdcardOutlined",
+      breadcrumbs: true,
+    },
+    {
       id: "usuario-verificacion-cuenta-usuario",
       title: "Verificación de cuenta",
       type: "item",
