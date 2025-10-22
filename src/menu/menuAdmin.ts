@@ -95,10 +95,119 @@ const menuMantenimiento = {
   ],
 };
 
+const menuPaginas = {
+  id: "group-paginas",
+  title: "Páginas",
+  type: "group",
+  children: [
+    {
+      id: "authentication",
+      title: "Autenticación",
+      type: "collapse",
+      icon: "LoginOutlined",
+      children: [
+        {
+          id: "login",
+          title: "Login",
+          type: "item",
+          url: "/auth/login",
+          target: true,
+        },
+        {
+          id: "register",
+          title: "Registro",
+          type: "item",
+          url: "/auth/register",
+          target: true,
+        },
+        {
+          id: "Recuperar contraseña",
+          title: "forgot-password",
+          type: "item",
+          url: "/auth/forgot-password",
+          target: true,
+        },
+        {
+          id: "Restablecer contraseña",
+          title: "reset-password",
+          type: "item",
+          url: "/auth/reset-password",
+          target: true,
+        },
+        {
+          id: "check-mail",
+          title: "Revisa tu correo",
+          type: "item",
+          url: "/auth/check-mail",
+          target: true,
+        },
+        {
+          id: "code-verification",
+          title: "Código de verificación",
+          type: "item",
+          url: "/auth/code-verification",
+          target: true,
+        },
+        {
+          id: "token-verification-password",
+          title: "Token verificación password",
+          type: "item",
+          url: "/auth/token-verification-password",
+          target: true,
+        },
+        {
+          id: "token-invalid-password",
+          title: "Token inválido password",
+          type: "item",
+          url: "/auth/token-invalid-password",
+          target: true,
+        },
+      ],
+    },
+    {
+      id: "maintenance",
+      title: "Mantenimiento",
+      type: "collapse",
+      icon: "RocketOutlined",
+      isDropdown: true,
+      children: [
+        {
+          id: "error-404",
+          title: "Error 404",
+          type: "item",
+          url: "/maintenance/404",
+          target: true,
+        },
+        {
+          id: "error-500",
+          title: "Error 500",
+          type: "item",
+          url: "/maintenance/500",
+          target: true,
+        },
+        {
+          id: "coming-soon",
+          title: "Coming soon",
+          type: "item",
+          url: "/maintenance/coming-soon",
+          target: true,
+        },
+        {
+          id: "under-construction",
+          title: "Under construction",
+          type: "item",
+          url: "/maintenance/under-construction",
+          target: true,
+        },
+      ],
+    },
+  ],
+};
+
 const menuTitulo = {
   id: "admin-menu",
   type: "group",
-  title: "Menu Admministrador",
+  title: "Menu Administrador",
 };
 
 export const menuAdmin = [
@@ -108,4 +217,5 @@ export const menuAdmin = [
   },
   menuTitulo,
   menuMantenimiento,
+  menuPaginas,
 ];

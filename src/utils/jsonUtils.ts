@@ -89,7 +89,7 @@ export const removeAttributesUsusarioPrivates = (json) => {
 
 // Función para remover atributos de un json
 export const removeAttributesPrivates = (json) => {
-  return removeAttributes(json, ["idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado", /_id\w+/]);
+  return removeAttributes(json, ["idusuariocrea", "fechacrea", "idusuariomod", "fechamod", "estado", /\bid\w+/]);
 };
 
 // Función para remover atributos de un json

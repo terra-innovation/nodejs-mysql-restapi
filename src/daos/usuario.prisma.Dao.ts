@@ -6,6 +6,27 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
+export const getUsuarioPerfilByUsuarioid = async (tx: TxClient, usuarioid: string) => {
+  try {
+    const usuario = await tx.usuario.findFirst({
+      include: {
+        usuario_roles: {
+          include: {
+            rol: true,
+          },
+        },
+      },
+      where: {
+        usuarioid: usuarioid,
+      },
+    });
+    return usuario;
+  } catch (error) {
+    log.error(line(), "", error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getUsuarioDatosContactoByIdusuario = async (tx: TxClient, idusuario: number, estado: number[]) => {
   try {
     const usuario = await tx.usuario.findFirst({

@@ -10,7 +10,7 @@ const menuFormulario = {
       type: "item",
       url: "/usuario/inicio",
       icon: "IdcardOutlined",
-      breadcrumbs: true,
+      breadcrumbs: false,
     },
     {
       id: "usuario-verificacion-cuenta-usuario",

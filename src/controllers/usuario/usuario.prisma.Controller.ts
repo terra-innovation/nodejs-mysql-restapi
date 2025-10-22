@@ -36,7 +36,7 @@ export const yoUsuario = async (req: Request, res: Response) => {
       const session_idusuario = req.session_user?.usuario?.idusuario;
       const filter_estados = [1];
 
-      var usuario = await usuarioDao.getUsuarioByUsuarioid(tx, usuarioValidated.usuarioid);
+      var usuario = await usuarioDao.getUsuarioPerfilByUsuarioid(tx, usuarioValidated.usuarioid);
       if (!usuario) {
         log.warn(line(), "Usuario no existe: [" + usuarioValidated.usuarioid + "]");
         throw new ClientError("Datos no válidos", 404);
