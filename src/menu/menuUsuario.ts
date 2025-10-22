@@ -9,7 +9,7 @@ const menuFormulario = {
       title: "Inicio",
       type: "item",
       url: "/usuario/inicio",
-      icon: "IdcardOutlined",
+      icon: "HomeOutlined",
       breadcrumbs: false,
     },
     {
@@ -17,7 +17,7 @@ const menuFormulario = {
       title: "Verificación de cuenta",
       type: "item",
       url: "/usuario/persona/verificacion",
-      icon: "IdcardOutlined",
+      icon: "SafetyCertificateOutlined",
       breadcrumbs: true,
     },
     {
@@ -25,7 +25,7 @@ const menuFormulario = {
       title: "Servicios",
       type: "item",
       url: "/usuario/usuarioservicio/lista",
-      icon: "IdcardOutlined",
+      icon: "AppstoreOutlined",
       breadcrumbs: true,
     },
   ],

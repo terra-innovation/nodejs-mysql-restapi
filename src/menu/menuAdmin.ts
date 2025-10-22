@@ -2,13 +2,13 @@ const menuMantenimiento = {
   id: "admin-group-mantenimiento",
   title: "Mentenimiento",
   type: "group",
-  icon: "dashboard",
+  icon: "ToolOutlined",
   children: [
     {
       id: "admin-factoring-empresa",
       title: "Factoring empresa",
       type: "collapse",
-      icon: "dashboard",
+      icon: "ClusterOutlined",
       children: [
         {
           id: "admin-factoring-empresa-verificacion-lista",
@@ -30,7 +30,7 @@ const menuMantenimiento = {
       id: "admin-factoring-inversionista",
       title: "Factoring inversionista",
       type: "collapse",
-      icon: "dashboard",
+      icon: "FundOutlined",
       children: [
         {
           id: "admin-factoring-inversionista-verificacion-lista",
@@ -45,7 +45,7 @@ const menuMantenimiento = {
       id: "admin-mantenimiento-cuentas-bancarias",
       title: "Mantenimiento",
       type: "collapse",
-      icon: "dashboard",
+      icon: "BuildOutlined",
       children: [
         {
           id: "admin-mantenimiento-empresa-cuentas-bancarias",
@@ -74,7 +74,7 @@ const menuMantenimiento = {
       id: "admin-persona",
       title: "Personas",
       type: "collapse",
-      icon: "dashboard",
+      icon: "TeamOutlined",
       children: [
         {
           id: "admin-persona-lista",
