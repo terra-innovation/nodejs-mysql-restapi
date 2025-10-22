@@ -18,6 +18,8 @@ export const getMenu = async (req: Request, res: Response) => {
   const session_idusuario = req.session_user.usuario.idusuario;
   log.debug(line(), "session_idusuario", session_idusuario);
 
+  const session_usuario = req.session_user.usuario;
+
   const menuDasboard = {
     id: "group-dashboard",
     title: "dashboard",
@@ -29,31 +31,16 @@ export const getMenu = async (req: Request, res: Response) => {
         title: "dashboard",
         type: "collapse",
         icon: "dashboard",
-        children: [
-          {
-            id: "default",
-            title: "default",
-            type: "item",
-            url: "/dashboard/default",
-            breadcrumbs: false,
-          },
-          {
-            id: "analytics",
-            title: "analytics",
-            type: "item",
-            url: "/dashboard/analytics",
-            breadcrumbs: false,
-          },
-        ],
+        children: [],
       },
     ],
   };
 
   const ordenMenu = [
-    { idrol: 2, menu: menuAdmin.menuAdmin }, // Admin
-    { idrol: 3, menu: menuEmpresario.menuEmpresario }, // Empresario
-    { idrol: 4, menu: menuInversionista.menuInversionista }, // Inversionista
-    { idrol: 5, menu: menuUsuario.menuUsuario }, // Usuario
+    { idrol: 2, menu: menuAdmin.generarMenuAdmin(session_usuario) }, // Admin
+    { idrol: 3, menu: menuEmpresario.generarMenuEmpresario(session_usuario) }, // Empresario
+    { idrol: 4, menu: menuInversionista.generarMenuInversionista(session_usuario) }, // Inversionista
+    { idrol: 5, menu: menuUsuario.generarMenuUsuario(session_usuario) }, // Usuario
   ];
 
   const menuInversionistaX = [];

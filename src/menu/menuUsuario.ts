@@ -1,47 +1,62 @@
-const menuFormulario = {
-  id: "usuario-group-formulario",
-  title: "Formularios",
-  icon: "IdcardOutlined",
-  type: "group",
-  children: [
-    {
-      id: "usuario-inicio",
-      title: "Inicio",
-      type: "item",
-      url: "/usuario/inicio",
-      icon: "HomeOutlined",
-      breadcrumbs: false,
-    },
-    {
-      id: "usuario-verificacion-cuenta-usuario",
-      title: "Verificación de cuenta",
-      type: "item",
-      url: "/usuario/persona/verificacion",
-      icon: "SafetyCertificateOutlined",
-      breadcrumbs: true,
-    },
-    {
-      id: "usuario-servicio-lista",
-      title: "Servicios",
-      type: "item",
-      url: "/usuario/usuarioservicio/lista",
-      icon: "AppstoreOutlined",
-      breadcrumbs: true,
-    },
-  ],
-};
+import type { UsuarioConRoles } from "#src/types/Prisma.types.js";
 
-const menuTitulo = {
-  id: "usuario-menu",
-  type: "group",
-  title: "Menu Usuario",
-};
+export const generarMenuUsuario = (usuario: UsuarioConRoles) => {
+  const ispersonavalidated = usuario?.ispersonavalidated;
 
-export const menuUsuario = [
-  {
-    id: "usuario-divider-1",
+  const menuFormulario = {
+    id: "usuario-group-formulario",
+    title: "Formularios",
+    icon: "IdcardOutlined",
     type: "group",
-  },
-  menuTitulo,
-  menuFormulario,
-];
+    children: [
+      ...(ispersonavalidated
+        ? [
+            {
+              id: "usuario-inicio",
+              title: "Inicio",
+              type: "item",
+              url: "/usuario/inicio",
+              icon: "HomeOutlined",
+              breadcrumbs: false,
+            },
+            {
+              id: "usuario-servicio-lista",
+              title: "Servicios",
+              type: "item",
+              url: "/usuario/usuarioservicio/lista",
+              icon: "AppstoreOutlined",
+              breadcrumbs: true,
+            },
+          ]
+        : []),
+      // Solo mostrar esta opción si el usuario NO ha sido validado
+      ...(!ispersonavalidated
+        ? [
+            {
+              id: "usuario-verificacion-cuenta-usuario",
+              title: "Verificación de cuenta",
+              type: "item",
+              url: "/usuario/persona/verificacion",
+              icon: "SafetyCertificateOutlined",
+              breadcrumbs: true,
+            },
+          ]
+        : []),
+    ],
+  };
+
+  const menuTitulo = {
+    id: "usuario-menu",
+    type: "group",
+    title: "Menu Usuario",
+  };
+
+  return [
+    {
+      id: "usuario-divider-1",
+      type: "group",
+    },
+    menuTitulo,
+    menuFormulario,
+  ];
+};
