@@ -6,10 +6,11 @@ import { log, line } from "#src/utils/logger.pino.js";
 import { updateContext } from "#src/utils/context/loggerContext.js";
 import { UsuarioSession } from "#root/src/types/UsuarioSession.types.js";
 
-export const verifyToken = (req: Request, res: Response, next: NextFunction) => {
+export const isAuth = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.body.token || req.query.token || req.params.token || req.headers["authorization"];
 
   if (!authHeader) {
+    log.warn(line(), "Se requiere un token para la autenticación");
     res.status(403).json({ error: true, message: "Se requiere un token para la autenticación" });
     return;
   }
@@ -17,6 +18,7 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
   // Verificamos si el token está en el formato correcto
   const tokenParts = authHeader.split(" ");
   if (tokenParts.length !== 2 || tokenParts[0] !== "Bearer") {
+    log.warn(line(), "Formato de token inválido");
     res.status(401).json({ error: true, message: "Formato de token inválido" });
     return;
   }
@@ -28,6 +30,7 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
 
     // Verificación segura: asegurarse de que decoded sea del tipo esperado
     if (typeof decoded !== "object" || !decoded || !("usuario" in decoded)) {
+      log.warn(line(), "Token malformado");
       res.status(401).json({ error: true, message: "Token malformado" });
       return;
     }
@@ -40,12 +43,13 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
     updateContext({ userId: decoded.usuario.idusuario });
     next();
   } catch (err) {
+    log.warn(line(), "Token inválido");
     res.status(401).json({ error: true, message: "Token inválido" });
   }
 };
 
 // Middleware para verificar si el usuario tiene alguno de los roles especificados
-export const checkRole = (roles: number[]) => {
+export const isRole = (roles: number[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     // Verifica si req.user existe y tiene la propiedad 'roles'
     if (req.session_user && req.session_user.usuario.usuario_roles) {
@@ -58,10 +62,12 @@ export const checkRole = (roles: number[]) => {
         next();
       } else {
         // Si el usuario no tiene ninguno de los roles especificados, devuelve un error de acceso denegado
+        log.warn(line(), "Acceso denegado");
         res.status(403).json({ error: true, message: "Acceso denegado" });
       }
     } else {
       // Si req.user no existe o no tiene la propiedad 'roles', devuelve un error de acceso denegado
+      log.warn(line(), "Acceso denegado");
       res.status(403).json({ error: true, message: "Acceso denegado" });
     }
   };

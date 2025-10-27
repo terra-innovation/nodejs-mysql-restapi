@@ -4,7 +4,7 @@ import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 import { updateContext } from "#src/utils/context/loggerContext.js";
 
-export const verifyToken = (req, res, next) => {
+export const isAuth = (req, res, next) => {
   const authHeader = req.body.token || req.query.token || req.params.token || req.headers["authorization"];
 
   if (!authHeader) {
@@ -33,7 +33,7 @@ export const verifyToken = (req, res, next) => {
 };
 
 // Middleware para verificar si el usuario tiene alguno de los roles especificados
-export const checkRole = (roles) => {
+export const isRole = (roles) => {
   return (req, res, next) => {
     // Verifica si req.user existe y tiene la propiedad 'roles'
     if (req.session_user && req.session_user.usuario.rol_rols) {

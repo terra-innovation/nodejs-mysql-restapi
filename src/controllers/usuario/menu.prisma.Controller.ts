@@ -37,10 +37,10 @@ export const getMenu = async (req: Request, res: Response) => {
   };
 
   const ordenMenu = [
+    { idrol: 5, menu: menuUsuario.generarMenuUsuario(session_usuario) }, // Usuario
     { idrol: 2, menu: menuAdmin.generarMenuAdmin(session_usuario) }, // Admin
     { idrol: 3, menu: menuEmpresario.generarMenuEmpresario(session_usuario) }, // Empresario
     { idrol: 4, menu: menuInversionista.generarMenuInversionista(session_usuario) }, // Inversionista
-    { idrol: 5, menu: menuUsuario.generarMenuUsuario(session_usuario) }, // Usuario
   ];
 
   const menuInversionistaX = [];
