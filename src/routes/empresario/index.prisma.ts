@@ -1,5 +1,6 @@
 import { Router } from "express";
 
+import empresario_usuarioservicioempresaRoutes from "#root/src/routes/empresario/usuarioservicioempresa.prisma.routes.js";
 import empresario_contactoRoutes from "#src/routes/empresario/contacto.prisma.routes.js";
 import empresario_empresacuentabancariaRoutes from "#src/routes/empresario/empresacuentabancaria.prisma.routes.js";
 import empresario_facturaRoutes from "#src/routes/empresario/factura.prisma.routes.js";
@@ -11,6 +12,7 @@ import empresario_servicio_factoring_usuarioRoutes from "#src/routes/empresario/
 
 const router = Router();
 
+router.use(empresario_usuarioservicioempresaRoutes);
 router.use(empresario_empresacuentabancariaRoutes);
 router.use(empresario_contactoRoutes);
 router.use(empresario_facturaRoutes);

@@ -50,6 +50,14 @@ export const generarMenuEmpresario = (usuario: UsuarioConRoles) => {
         icon: "ContactsOutlined",
         breadcrumbs: true,
       },
+      {
+        id: "empresario-empresas",
+        title: "Empresas",
+        type: "item",
+        url: "/empresario/empresa/lista",
+        icon: "ContactsOutlined",
+        breadcrumbs: true,
+      },
     ],
   };
 
