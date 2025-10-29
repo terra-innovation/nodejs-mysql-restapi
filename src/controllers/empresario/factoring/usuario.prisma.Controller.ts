@@ -15,10 +15,10 @@ export const getUsuario = async (req: Request, res: Response) => {
       const filter_idusuario = req.session_user.usuario.idusuario;
       const filter_estado = [1, 2];
       const usuario = await usuarioDao.getUsuarioDatosContactoByIdusuario(tx, filter_idusuario, filter_estado);
-      var usuarioObfuscated = jsonUtils.ofuscarAtributos(usuario, ["email"], jsonUtils.PATRON_OFUSCAR_EMAIL);
-      usuarioObfuscated = jsonUtils.ofuscarAtributos(usuarioObfuscated, ["celular"], jsonUtils.PATRON_OFUSCAR_TELEFONO);
+      //var usuarioObfuscated = jsonUtils.ofuscarAtributos(usuario, ["email"], jsonUtils.PATRON_OFUSCAR_EMAIL);
+      //usuarioObfuscated = jsonUtils.ofuscarAtributos(usuarioObfuscated, ["celular"], jsonUtils.PATRON_OFUSCAR_TELEFONO);
       //log.info(line(),empresaObfuscated);
-      var usuarioFiltered = jsonUtils.removeAttributesPrivates(usuarioObfuscated);
+      var usuarioFiltered = jsonUtils.removeAttributesPrivates(usuario);
       return usuarioFiltered;
     },
     { timeout: prismaFT.transactionTimeout }

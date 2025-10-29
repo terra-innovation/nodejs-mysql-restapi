@@ -6,37 +6,6 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
-export const getContactosByIdusuario = async (tx: TxClient, idusuario: number, estados: number[]) => {
-  try {
-    const contactos = await tx.contacto.findMany({
-      include: { empresa: true },
-      where: {
-        estado: {
-          in: estados,
-        },
-        empresa: {
-          estado: {
-            in: estados,
-          },
-          usuario_servicio_empresas: {
-            some: {
-              estado: {
-                in: estados,
-              },
-              idusuario: idusuario,
-            },
-          },
-        },
-      },
-    });
-
-    return contactos;
-  } catch (error) {
-    log.error(line(), "", error);
-    throw new ClientError("Ocurrio un error", 500);
-  }
-};
-
 export const getContactosByIdempresaAndEmail = async (tx: TxClient, idempresa: number, email: string, estados: number[]) => {
   try {
     const contactos = await tx.contacto.findMany({
