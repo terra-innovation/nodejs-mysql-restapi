@@ -1,5 +1,6 @@
 import util from "util";
 import { log, line } from "#src/utils/logger.pino.js";
+import { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 
 export function omitNullAndUndefined<T extends Record<string, unknown>>(obj: T): T {
   return Object.fromEntries(Object.entries(obj).filter(([, value]) => value !== undefined && value !== null)) as T;
@@ -98,6 +99,16 @@ export const removeAttributes = (json, rules) => {
     return json;
   }
 
+  // Preservar fechas
+  if (json instanceof Date) {
+    return json.toISOString(); // Zulu
+  }
+
+  // Preservar decimales
+  if (json instanceof Prisma.Decimal) {
+    return json.toString(); // para mantener precisión como texto
+  }
+
   if (Array.isArray(json)) {
     return json.map((item) => removeAttributes(item, rules));
   }
@@ -107,6 +118,9 @@ export const removeAttributes = (json, rules) => {
     if (Object.prototype.hasOwnProperty.call(json, key)) {
       const value = json[key];
       if (!rules.some((rule) => (typeof rule === "string" && rule === key) || (rule instanceof RegExp && rule.test(key)))) {
+        if (key == "monto_factura") {
+          const nuevo = "";
+        }
         newObj[key] = removeAttributes(value, rules);
       }
     }

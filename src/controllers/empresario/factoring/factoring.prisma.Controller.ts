@@ -15,6 +15,7 @@ import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import * as jsonUtils from "#src/utils/jsonUtils.js";
 
 import * as luxon from "luxon";
 
@@ -32,7 +33,8 @@ export const getFactorings = async (req: Request, res: Response) => {
       const empresas_cedentes = await empresaDao.getEmpresasByIdusuario(tx, _idusuario_session, filter_estados);
       const _idcedentes = empresas_cedentes.map((empresa) => empresa.idempresa);
       const factorings = await factoringDao.getFactoringsByIdcedentes(tx, _idcedentes, filter_estados);
-      return factorings;
+      var factoringsFiltered = jsonUtils.removeAttributesPrivates(factorings);
+      return factoringsFiltered;
     },
     { timeout: prismaFT.transactionTimeout }
   );

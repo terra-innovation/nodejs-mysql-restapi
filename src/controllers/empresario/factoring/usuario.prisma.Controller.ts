@@ -18,6 +18,7 @@ export const getUsuario = async (req: Request, res: Response) => {
       //var usuarioObfuscated = jsonUtils.ofuscarAtributos(usuario, ["email"], jsonUtils.PATRON_OFUSCAR_EMAIL);
       //usuarioObfuscated = jsonUtils.ofuscarAtributos(usuarioObfuscated, ["celular"], jsonUtils.PATRON_OFUSCAR_TELEFONO);
       //log.info(line(),empresaObfuscated);
+
       var usuarioFiltered = jsonUtils.removeAttributesPrivates(usuario);
       return usuarioFiltered;
     },
