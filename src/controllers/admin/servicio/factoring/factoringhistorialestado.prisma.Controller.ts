@@ -179,8 +179,8 @@ export const createFactoringhistorialestado = async (req: Request, res: Response
       };
 
       const factoringhistorialestadoCreated = await factoringhistorialestadoDao.insertFactoringhistorialestado(tx, factoringhistorialestadoToCreate);
-
       log.debug(line(), "factoringhistorialestadoCreated:", factoringhistorialestadoCreated);
+
       const factoringToUpdate: Prisma.factoringUpdateInput = {
         factoring_estado: { connect: { idfactoringestado: factoringestado.idfactoringestado } },
         idusuariomod: req.session_user.usuario.idusuario ?? 1,

@@ -6,6 +6,39 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
+export const getFactoringByIdfactoringIdempresario = async (tx: TxClient, idfactoring: number, idempresario: number, estados: number[]) => {
+  try {
+    const factoring = await tx.factoring.findFirst({
+      include: {
+        empresa_cedente: true,
+        factoring_facturas: {
+          include: {
+            factura: true,
+          },
+        },
+      },
+      where: {
+        idfactoring: idfactoring,
+        empresa_cedente: {
+          usuario_servicio_empresas: {
+            some: {
+              idusuario: idempresario,
+            },
+          },
+        },
+
+        estado: {
+          in: estados,
+        },
+      },
+    });
+    return factoring;
+  } catch (error) {
+    log.error(line(), "", error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getFactoringsOportunidades = async (tx: TxClient, idfactoringestados, estados: number[]) => {
   try {
     const factorings = await tx.factoring.findMany({
@@ -107,7 +140,11 @@ export const getFactoringsByIdcedentes = async (tx: TxClient, idcedentes: number
         factoring_ejecutado: true,
         factoring_ejecutado_factoringes: true,
         factoring_estado: true,
-        factoring_facturas: true,
+        factoring_facturas: {
+          include: {
+            factura: true,
+          },
+        },
         factoring_historial_estados: true,
         factoring_pagos: true,
         factoring_propuesta_aceptada: {
@@ -262,7 +299,11 @@ export const getFactoringsByEstados = async (tx: TxClient, estados: number[]) =>
         factoring_ejecutado: true,
         factoring_ejecutado_factoringes: true,
         factoring_estado: true,
-        factoring_facturas: true,
+        factoring_facturas: {
+          include: {
+            factura: true,
+          },
+        },
         factoring_historial_estados: true,
         factoring_pagos: true,
         factoring_propuesta_aceptada: {

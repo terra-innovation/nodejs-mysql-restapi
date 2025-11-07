@@ -97,7 +97,7 @@ class PDFGenerator {
       addText(5, "Helvetica", ``, 350);
 
       addText(10, "Helvetica", `Nota:`, 17);
-      addText(10, "Helvetica", `(1) Los intereses aplicados (Valor descuento) dependen del día de financiamiento de la factura.`, 17);
+      addText(10, "Helvetica", `(1) Los intereses aplicados (Valor descuento) dependen de los días efectivos de financiamiento de la factura.`, 17);
 
       doc.end();
       // Resolvemos la promesa cuando el stream termine

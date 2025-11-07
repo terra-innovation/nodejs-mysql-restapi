@@ -10,7 +10,7 @@ import * as factoringpropuestaDao from "#src/daos/factoringpropuesta.prisma.Dao.
 import * as factoringfacturaDao from "#src/daos/factoringfactura.prisma.Dao.js";
 import * as factoringhistorialestadoDao from "#src/daos/factoringhistorialestado.prisma.Dao.js";
 import * as facturaDao from "#src/daos/factura.prisma.Dao.js";
-import * as contactoDao from "#src/daos/contacto.prisma.Dao.js";
+
 import * as colaboradorDao from "#src/daos/colaborador.prisma.Dao.js";
 import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
@@ -24,9 +24,100 @@ import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import type { factoring } from "#root/generated/prisma/ft_factoring/client.js";
 import type { factoring_factura } from "#root/generated/prisma/ft_factoring/client.js";
+import { connect } from "http2";
+
+export const acceptFactoringpropuesta = async (req: Request, res: Response) => {
+  log.debug(line(), "controller::acceptFactoringpropuesta");
+  const { factoringid } = req.params;
+  const factoringpropuestaUpdateSchema = yup
+    .object()
+    .shape({
+      factoringid: yup.string().trim().required().min(36).max(36),
+      factoringpropuestaid: yup.string().trim().required().min(36).max(36),
+    })
+    .required();
+  const factoringpropuestaValidated = factoringpropuestaUpdateSchema.validateSync({ factoringid: factoringid, ...req.body }, { abortEarly: false, stripUnknown: true });
+  log.debug(line(), "factoringpropuestaValidated:", factoringpropuestaValidated);
+
+  const resultado = await prismaFT.client.$transaction(
+    async (tx) => {
+      const filter_estados = [1];
+      const _idusuario_session = req.session_user.usuario.idusuario;
+
+      const factoring = await factoringDao.getFactoringByFactoringid(tx, factoringpropuestaValidated.factoringid);
+      if (!factoring) {
+        log.warn(line(), "Factoring no existe: [" + factoringpropuestaValidated.factoringid + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
+
+      const factoring_is_empresario = await factoringDao.getFactoringByIdfactoringIdempresario(tx, factoring.idfactoring, _idusuario_session, filter_estados);
+      if (!factoring_is_empresario) {
+        log.warn(line(), "Factoring [" + factoring.idfactoring + "] no pertenece al empresario [" + _idusuario_session + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
+
+      const factoringpropuesta = await factoringpropuestaDao.getFactoringpropuestaByFactoringpropuestaid(tx, factoringpropuestaValidated.factoringpropuestaid);
+      if (!factoringpropuesta) {
+        log.warn(line(), "Factoringpropuesta no existe: [" + factoringpropuestaValidated.factoringpropuestaid + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
+
+      const factoringpropuesta_is_factoring = await factoringpropuestaDao.getFactoringpropuestaVigenteByIdfactoringpropuestaIdfactoring(tx, factoringpropuesta.idfactoringpropuesta, factoring.idfactoring, filter_estados);
+      if (!factoringpropuesta_is_factoring) {
+        log.warn(line(), "Factoringpropuesta [" + factoringpropuesta.idfactoringpropuesta + "] no pertenece al factoring [" + factoring.idfactoring + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
+
+      const idfactoringpropuestaestado = 6; // Aprobada
+
+      const factoringpropuestaToUpdate: Prisma.factoring_propuestaUpdateInput = {
+        factoring_propuesta_estado: { connect: { idfactoringpropuestaestado: idfactoringpropuestaestado } },
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+      };
+
+      const factoringpropuestaUpdated = await factoringpropuestaDao.updateFactoringpropuesta(tx, factoringpropuesta.factoringpropuestaid, factoringpropuestaToUpdate);
+      log.debug(line(), "factoringpropuestaUpdated", factoringpropuestaUpdated);
+
+      const idfactoringestado = 4; // Propuesta aceptada
+
+      const factoringhistorialestadoToCreate: Prisma.factoring_historial_estadoCreateInput = {
+        factoring: { connect: { idfactoring: factoring.idfactoring } },
+        factoring_estado: { connect: { idfactoringestado: idfactoringestado } },
+        usuario_modifica: { connect: { idusuario: _idusuario_session } },
+
+        factoringhistorialestadoid: uuidv4(),
+        code: uuidv4().split("-")[0],
+        comentario: "",
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
+
+      const factoringhistorialestadoCreated = await factoringhistorialestadoDao.insertFactoringhistorialestado(tx, factoringhistorialestadoToCreate);
+      log.debug(line(), "factoringhistorialestadoCreated:", factoringhistorialestadoCreated);
+
+      const factoringToUpdate: Prisma.factoringUpdateInput = {
+        factoring_estado: { connect: { idfactoringestado: idfactoringestado } },
+        factoring_propuesta_aceptada: { connect: { idfactoringpropuesta: factoringpropuesta.idfactoringpropuesta } },
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+      };
+
+      const factoringUpdated = await factoringDao.updateFactoring(tx, factoring.factoringid, factoringToUpdate);
+      log.debug(line(), "factoringUpdated", factoringUpdated);
+
+      return {};
+    },
+    { timeout: prismaFT.transactionTimeout }
+  );
+  response(res, 200, {});
+};
 
 export const getFactoringpropuestaVigente = async (req: Request, res: Response) => {
-  log.debug(line(), "controller::getFactoringpropuestaByFactoringid");
+  log.debug(line(), "controller::getFactoringpropuestaVigente");
   const { factoringid } = req.params;
   const factoringpropuestaSchema = yup
     .object()
