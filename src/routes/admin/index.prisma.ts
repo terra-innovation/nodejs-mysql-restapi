@@ -13,6 +13,7 @@ import admin_personaRoutes from "#src/routes/admin/persona.prisma.routes.js";
 import admin_personaverificacionRoutes from "#src/routes/admin/personaverificacion.prisma.routes.js";
 import admin_servicio_factoring_factoringRoutes from "#src/routes/admin/servicio/factoring/factoring.prisma.routes.js";
 import admin_servicio_factoring_factoringhistorialestadoRoutes from "#src/routes/admin/servicio/factoring/factoringhistorialestado.prisma.routes.js";
+import admin_servicio_factoring_factoringpropuestahistorialestadoRoutes from "#src/routes/admin/servicio/factoring/factoringpropuestahistorialestado.prisma.routes.js";
 import admin_servicio_factoring_factoringpropuestaRoutes from "#src/routes/admin/servicio/factoring/factoringpropuesta.prisma.routes.js";
 import admin_zlaboratorioRoutes from "#src/routes/admin/zlaboratorio.prisma.routes.js";
 
@@ -36,5 +37,6 @@ router.use(admin_factoringinversionistaverificacionRoutes);
 router.use(admin_servicio_factoring_factoringRoutes);
 router.use(admin_servicio_factoring_factoringpropuestaRoutes);
 router.use(admin_servicio_factoring_factoringhistorialestadoRoutes);
+router.use(admin_servicio_factoring_factoringpropuestahistorialestadoRoutes);
 
 export default router;

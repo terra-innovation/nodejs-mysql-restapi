@@ -2,6 +2,7 @@ import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as factoringpropuestaDao from "#src/daos/factoringpropuesta.prisma.Dao.js";
+import * as factoringpropuestahistorialestadoDao from "#src/daos/factoringpropuestahistorialestado.prisma.Dao.js";
 import * as factoringpropuestafinancieroDao from "#src/daos/factoringpropuestafinanciero.prisma.Dao.js";
 import * as factoringpropuestaestadoDao from "#src/daos/factoringpropuestaestado.prisma.Dao.js";
 import * as factoringtipoDao from "#src/daos/factoringtipo.prisma.Dao.js";
@@ -109,6 +110,24 @@ export const updateFactoringpropuesta = async (req: Request, res: Response) => {
         log.warn(line(), "Factoringpropuestaestado no existe: [" + factoringpropuestaValidated.factoringpropuestaestadoid + "]");
         throw new ClientError("Datos no válidos", 404);
       }
+
+      const factoringpropuestahistorialestadoToCreate: Prisma.factoring_propuesta_historial_estadoCreateInput = {
+        factoring_propuesta: { connect: { idfactoringpropuesta: factoringpropuesta.idfactoringpropuesta } },
+        factoring_propuesta_estado: { connect: { idfactoringpropuestaestado: factoringpropuestaestado.idfactoringpropuestaestado } },
+        usuario_modifica: { connect: { idusuario: req.session_user.usuario.idusuario } },
+
+        factoringpropuestahistorialestadoid: uuidv4(),
+        code: uuidv4().split("-")[0],
+        comentario: "",
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
+
+      const factoringpropuestahistorialestadoCreated = await factoringpropuestahistorialestadoDao.insertFactoringpropuestahistorialestado(tx, factoringpropuestahistorialestadoToCreate);
+      log.debug(line(), "factoringpropuestahistorialestadoCreated:", factoringpropuestahistorialestadoCreated);
 
       const factoringpropuestaToUpdate: Prisma.factoring_propuestaUpdateInput = {
         factoring_propuesta_estado: { connect: { idfactoringpropuestaestado: factoringpropuestaestado.idfactoringpropuestaestado } },
@@ -251,6 +270,26 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
       const factoringpropuestaCreated = await factoringpropuestaDao.insertFactoringpropuesta(tx, jsonUtils.omitNullAndUndefined(factoringpropuestaToCreate));
       log.debug(line(), "factoringpropuestaCreated:", factoringpropuestaCreated);
 
+      const factoringpropuestahistorialestadoToCreate: Prisma.factoring_propuesta_historial_estadoCreateInput = {
+        factoring_propuesta: { connect: { idfactoringpropuesta: factoringpropuestaCreated.idfactoringpropuesta } },
+        factoring_propuesta_estado: { connect: { idfactoringpropuestaestado: factoringpropuestaestado.idfactoringpropuestaestado } },
+        usuario_modifica: { connect: { idusuario: req.session_user.usuario.idusuario } },
+
+        factoringpropuestahistorialestadoid: uuidv4(),
+        code: uuidv4().split("-")[0],
+
+        comentario: "",
+
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
+
+      const factoringpropuestahistorialestadoCreated = await factoringpropuestahistorialestadoDao.insertFactoringpropuestahistorialestado(tx, jsonUtils.omitNullAndUndefined(factoringpropuestahistorialestadoToCreate));
+      log.debug(line(), "factoringpropuestahistorialestadoCreated:", factoringpropuestahistorialestadoCreated);
+
       for (let i = 0; i < simulacion?.comisiones?.length; i++) {
         const comision = simulacion.comisiones[i];
 
@@ -324,7 +363,7 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
 };
 
 export const simulateFactoringpropuesta = async (req: Request, res: Response) => {
-  log.debug(line(), "controller::createFactoringpropuesta");
+  log.debug(line(), "controller::simulateFactoringpropuesta");
   const session_idusuario = req.session_user.usuario.idusuario;
   const filter_estado = [1, 2];
   const { id } = req.params;
