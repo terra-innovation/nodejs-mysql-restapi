@@ -65,9 +65,9 @@ class PDFGenerator {
           { concepto: "Factura", descripcion: facturas },
           { concepto: "Valor neto", descripcion: nf.formatNumber(factoringpropuesta.monto_neto) },
           { concepto: "Moneda", descripcion: factoring.moneda.codigo + " (" + factoring.moneda.nombre + ")" },
-          { concepto: "Fecha de pago (estimado)", descripcion: df.formatDateUTC(factoringpropuesta.fecha_pago_estimado) },
+          { concepto: "Fecha de pago (estimada)", descripcion: df.formatDateUTC(factoringpropuesta.fecha_pago_estimado) },
 
-          { concepto: "Días (estimado)", descripcion: factoringpropuesta.dias_pago_estimado },
+          { concepto: "Días (estimados)", descripcion: factoringpropuesta.dias_pago_estimado },
           { concepto: "Tasa mensual", descripcion: nf.formatPercentage(factoringpropuesta.tdm) },
           { concepto: "Financiamiento", descripcion: nf.formatPercentage(factoringpropuesta.porcentaje_financiado_estimado) },
           { concepto: "Tipo factoring", descripcion: factoringpropuesta.factoring_tipo.nombre },

@@ -4,6 +4,7 @@ import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 
 import * as cuentabancariaDao from "#src/daos/cuentabancaria.prisma.Dao.js";
 import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
+import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
 import * as personaDao from "#src/daos/persona.prisma.Dao.js";
 import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
 import * as factoringfacturaDao from "#src/daos/factoringfactura.prisma.Dao.js";
@@ -23,6 +24,8 @@ import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import type { factoring } from "#root/generated/prisma/ft_factoring/client.js";
 import type { factoring_factura } from "#root/generated/prisma/ft_factoring/client.js";
+
+import * as emailService from "#src/services/email.Service.js";
 
 export const getFactorings = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFactorings");
@@ -56,6 +59,7 @@ export const getFactoringMaster = async (req: Request, res: Response) => {
 
 export const createFactoring = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createFactoring");
+  const session_idusuario = req.session_user.usuario.idusuario;
   const factoringCreateSchema = yup
     .object()
     .shape({
@@ -80,9 +84,8 @@ export const createFactoring = async (req: Request, res: Response) => {
   var factoringValidated = factoringCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
   //log.debug(line(),"factoringValidated:", factoringValidated);
 
-  const factoringToCreate = await prismaFT.client.$transaction(
+  const factoringCreated = await prismaFT.client.$transaction(
     async (tx) => {
-      const session_idusuario = req.session_user.usuario.idusuario;
       const filter_estados = [1];
       const facturas = [];
 
@@ -212,9 +215,20 @@ export const createFactoring = async (req: Request, res: Response) => {
         log.debug(line(), "factoringfacturaCreated:", factoringfacturaCreated);
       }
 
-      return factoringToCreate;
+      return factoringCreated;
     },
     { timeout: prismaFT.transactionTimeout }
   );
-  response(res, 201, factoringToCreate);
+
+  const factoring = await prismaFT.client.$transaction((tx) => factoringDao.getFactoringByIdfactoring(tx, factoringCreated.idfactoring), { timeout: prismaFT.transactionTimeout });
+
+  const ususario = await prismaFT.client.$transaction((tx) => usuarioDao.getUsuarioByIdusuario(tx, session_idusuario), { timeout: prismaFT.transactionTimeout });
+
+  var paramsEmail = {
+    factoring: factoring,
+    session_usuario: ususario,
+  };
+  await emailService.sendFactoringEmpresaServicioFactoringSolicitud(ususario.email, paramsEmail);
+
+  response(res, 201, factoringCreated);
 };

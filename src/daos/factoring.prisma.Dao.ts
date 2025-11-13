@@ -351,7 +351,11 @@ export const getFactoringByIdfactoring = async (tx: TxClient, idfactoring: numbe
         factoring_ejecutado: true,
         factoring_ejecutado_factoringes: true,
         factoring_estado: true,
-        factoring_facturas: { include: { factura: true } },
+        factoring_facturas: {
+          include: {
+            factura: true,
+          },
+        },
         factoring_historial_estados: true,
         factoring_pagos: true,
         factoring_propuesta_aceptada: true,

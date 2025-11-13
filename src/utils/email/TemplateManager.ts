@@ -4,6 +4,7 @@ import path from "path";
 import * as yup from "yup";
 import { htmlToText } from "html-to-text";
 import { log, line } from "#src/utils/logger.pino.js";
+import { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 
 class TemplaceManager {
   private templateDir: string;
@@ -17,7 +18,54 @@ class TemplaceManager {
     return await fs.readFile(templatePath, "utf8");
   }
 
+  /**
+   * Convierte un objeto en un mapa plano con notación de puntos y soporte para arrays.
+   * Ejemplo: { cliente: { nombre: "Juan" }, items: [{ nombre: "Producto" }] }
+   * => { "cliente.nombre": "Juan", "items[0].nombre": "Producto" }
+   */
+  flattenObject(obj, prefix = "", res = {}) {
+    for (let key in obj) {
+      if (!obj.hasOwnProperty(key)) continue;
+      const value = obj[key];
+      const newKey = prefix ? `${prefix}.${key}` : key;
+
+      if (Array.isArray(value)) {
+        value.forEach((item, index) => {
+          this.flattenObject(item, `${newKey}[${index}]`, res);
+        });
+      } else if (value instanceof Date) {
+        res[newKey] = value.toISOString(); // formato estándar
+      } else if (value instanceof Prisma.Decimal) {
+        res[newKey] = value.toString(); // formato estándar
+      } else if (typeof value === "object" && value !== null) {
+        this.flattenObject(value, newKey, res);
+      } else {
+        res[newKey] = value ?? ""; // Si es null/undefined, usar cadena vacía
+      }
+    }
+    return res;
+  }
+
+  /**
+   * Renderiza una plantilla reemplazando {{key}} por valores del objeto params.
+   * Soporta claves anidadas y arrays.
+   */
   async renderTemplate(templateName, params) {
+    let template = await this.loadTemplate(templateName);
+    const flatParams = this.flattenObject(params);
+
+    //console.log("flatParams: ", JSON.stringify(flatParams, null, 2));
+
+    Object.keys(flatParams).forEach((key) => {
+      const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const regex = new RegExp(`{{\\s*${escapedKey}\\s*}}`, "g"); // Soporta espacios
+      template = template.replace(regex, flatParams[key]);
+    });
+
+    return template;
+  }
+
+  async renderTemplate_20251110_2201(templateName, params) {
     let template = await this.loadTemplate(templateName);
     Object.keys(params).forEach((key) => {
       const regex = new RegExp(`{{${key}}}`, "g");
@@ -28,6 +76,16 @@ class TemplaceManager {
   }
 
   async renderSubject(subject, params) {
+    const flatParams = this.flattenObject(params);
+
+    Object.keys(flatParams).forEach((key) => {
+      const regex = new RegExp(`{{\\s*${key}\\s*}}`, "g"); // Soporta espacios
+      subject = subject.replace(regex, flatParams[key]);
+    });
+    return subject;
+  }
+
+  async renderSubject_20251110_2201(subject, params) {
     Object.keys(params).forEach((key) => {
       const regex = new RegExp(`{{${key}}}`, "g");
       subject = subject.replace(regex, params[key]);
@@ -40,6 +98,85 @@ class TemplaceManager {
       wordwrap: 130, // Opcional: establece el límite de líneas para el texto plano
     });
     return textoPlano;
+  }
+
+  async templateFactoringEmpresaServicioFactoringSolicitud(params) {
+    try {
+      const paramsSchema = yup
+        .object()
+        .shape({
+          cabecera: yup
+            .object({
+              fecha_actual: yup.string().trim().required().min(1).max(200),
+            })
+            .required(),
+          factoring: yup
+            .object({
+              code: yup.string().required(),
+              fecha_registro: yup.string().required(),
+              monto_factura: yup.string().required(),
+              monto_detraccion: yup.string().required(),
+              monto_neto: yup.string().required(),
+              fecha_pago_estimado: yup.string().required(),
+              empresa_cedente: yup.object({
+                ruc: yup.string().required(),
+                razon_social: yup.string().required(),
+              }),
+              empresa_aceptante: yup.object({
+                ruc: yup.string().required(),
+                razon_social: yup.string().required(),
+              }),
+              moneda: yup.object({
+                codigo: yup.string().required(),
+                nombre: yup.string().required(),
+              }),
+              factoring_facturas: yup
+                .array()
+                .of(
+                  yup.object().shape({
+                    factura: yup.object({
+                      serie: yup.string().required(),
+                      numero_comprobante: yup.string().required(),
+                    }),
+                  })
+                )
+                .min(1)
+                .required(),
+            })
+            .required(),
+          session_usuario: yup
+            .object({
+              usuarionombres: yup.string().required(),
+              email: yup.string().required(),
+            })
+            .required(),
+          factoring_fomateado: yup
+            .object({
+              fecha_registro: yup.string().required(),
+              monto_factura: yup.string().required(),
+              monto_detraccion: yup.string().required(),
+              monto_neto: yup.string().required(),
+              fecha_pago_estimado: yup.string().required(),
+            })
+            .required(),
+        })
+        .required();
+      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+
+      const bodyEmailTHTML = await this.renderTemplate("factoring-empresa-servicio-factoring-solicitud.html", paramsValidated);
+      const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
+      const subjectEmailText = await this.renderSubject("Solicitud de operación de factoring [#{{factoring.code}}]", paramsValidated);
+
+      const codigoverificacionMailOptions = {
+        subject: subjectEmailText,
+        text: bodyEmailText,
+        html: bodyEmailTHTML,
+      };
+      return codigoverificacionMailOptions;
+    } catch (error) {
+      log.error(line(), error);
+      throw error;
+    }
   }
 
   async templateFactoringInversionistaVerificacionMasInformacion(params) {

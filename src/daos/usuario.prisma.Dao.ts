@@ -39,6 +39,7 @@ export const getUsuarioDatosContactoByIdusuario = async (tx: TxClient, idusuario
         celular: true,
       },
       where: {
+        idusuario: idusuario,
         estado: {
           in: estado,
         },
