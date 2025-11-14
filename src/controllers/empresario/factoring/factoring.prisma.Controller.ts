@@ -25,7 +25,7 @@ import * as yup from "yup";
 import type { factoring } from "#root/generated/prisma/ft_factoring/client.js";
 import type { factoring_factura } from "#root/generated/prisma/ft_factoring/client.js";
 
-import * as emailService from "#src/services/email.Service.js";
+import * as emailService from "#root/src/services/email.Service.js";
 
 export const getFactorings = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFactorings");
@@ -215,20 +215,20 @@ export const createFactoring = async (req: Request, res: Response) => {
         log.debug(line(), "factoringfacturaCreated:", factoringfacturaCreated);
       }
 
+      // Enviamos correo electrónico
+      const factoring_for_email = await factoringDao.getFactoringByIdfactoring(tx, factoringCreated.idfactoring);
+      const usuario_for_email = await usuarioDao.getUsuarioByIdusuario(tx, session_idusuario);
+
+      var paramsEmail = {
+        factoring: factoring_for_email,
+        usuario: usuario_for_email,
+      };
+      await emailService.sendFactoringEmpresaServicioFactoringSolicitud(usuario_for_email.email, paramsEmail);
+
       return factoringCreated;
     },
     { timeout: prismaFT.transactionTimeout }
   );
-
-  const factoring = await prismaFT.client.$transaction((tx) => factoringDao.getFactoringByIdfactoring(tx, factoringCreated.idfactoring), { timeout: prismaFT.transactionTimeout });
-
-  const ususario = await prismaFT.client.$transaction((tx) => usuarioDao.getUsuarioByIdusuario(tx, session_idusuario), { timeout: prismaFT.transactionTimeout });
-
-  var paramsEmail = {
-    factoring: factoring,
-    session_usuario: ususario,
-  };
-  await emailService.sendFactoringEmpresaServicioFactoringSolicitud(ususario.email, paramsEmail);
 
   response(res, 201, factoringCreated);
 };

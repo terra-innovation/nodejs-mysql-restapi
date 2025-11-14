@@ -7,9 +7,13 @@ import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
 import * as personaDao from "#src/daos/persona.prisma.Dao.js";
 import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
 import * as factoringpropuestaDao from "#src/daos/factoringpropuesta.prisma.Dao.js";
+import * as factoringpropuestahistorialestadoDao from "#src/daos/factoringpropuestahistorialestado.prisma.Dao.js";
 import * as factoringfacturaDao from "#src/daos/factoringfactura.prisma.Dao.js";
 import * as factoringhistorialestadoDao from "#src/daos/factoringhistorialestado.prisma.Dao.js";
 import * as facturaDao from "#src/daos/factura.prisma.Dao.js";
+import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
+
+import * as emailService from "#root/src/services/email.Service.js";
 
 import * as colaboradorDao from "#src/daos/colaborador.prisma.Dao.js";
 import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
@@ -28,6 +32,7 @@ import { connect } from "http2";
 
 export const acceptFactoringpropuesta = async (req: Request, res: Response) => {
   log.debug(line(), "controller::acceptFactoringpropuesta");
+  const _idusuario_session = req.session_user.usuario.idusuario;
   const { factoringid } = req.params;
   const factoringpropuestaUpdateSchema = yup
     .object()
@@ -39,10 +44,9 @@ export const acceptFactoringpropuesta = async (req: Request, res: Response) => {
   const factoringpropuestaValidated = factoringpropuestaUpdateSchema.validateSync({ factoringid: factoringid, ...req.body }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "factoringpropuestaValidated:", factoringpropuestaValidated);
 
-  const resultado = await prismaFT.client.$transaction(
+  const factoringpropuestaUpdated = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estados = [1];
-      const _idusuario_session = req.session_user.usuario.idusuario;
 
       const factoring = await factoringDao.getFactoringByFactoringid(tx, factoringpropuestaValidated.factoringid);
       if (!factoring) {
@@ -69,6 +73,24 @@ export const acceptFactoringpropuesta = async (req: Request, res: Response) => {
       }
 
       const idfactoringpropuestaestado = 6; // Aprobada
+
+      const factoringpropuestahistorialestadoToCreate: Prisma.factoring_propuesta_historial_estadoCreateInput = {
+        factoring_propuesta: { connect: { idfactoringpropuesta: factoringpropuesta.idfactoringpropuesta } },
+        factoring_propuesta_estado: { connect: { idfactoringpropuestaestado: idfactoringpropuestaestado } },
+        usuario_modifica: { connect: { idusuario: req.session_user.usuario.idusuario } },
+
+        factoringpropuestahistorialestadoid: uuidv4(),
+        code: uuidv4().split("-")[0],
+        comentario: "",
+        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
+
+      const factoringpropuestahistorialestadoCreated = await factoringpropuestahistorialestadoDao.insertFactoringpropuestahistorialestado(tx, factoringpropuestahistorialestadoToCreate);
+      log.debug(line(), "factoringpropuestahistorialestadoCreated:", factoringpropuestahistorialestadoCreated);
 
       const factoringpropuestaToUpdate: Prisma.factoring_propuestaUpdateInput = {
         factoring_propuesta_estado: { connect: { idfactoringpropuestaestado: idfactoringpropuestaestado } },
@@ -109,10 +131,24 @@ export const acceptFactoringpropuesta = async (req: Request, res: Response) => {
       const factoringUpdated = await factoringDao.updateFactoring(tx, factoring.factoringid, factoringToUpdate);
       log.debug(line(), "factoringUpdated", factoringUpdated);
 
-      return {};
+      // Enviamos correo electrónico
+      const factoring_for_email = await factoringDao.getFactoringByIdfactoring(tx, factoringpropuestaUpdated.idfactoring);
+      const usuario_for_email = await usuarioDao.getUsuarioByIdusuario(tx, _idusuario_session);
+      const factoringpropuesta_for_email = await factoringpropuestaDao.getFactoringpropuestaAceptadaByIdfactoringpropuesta(tx, factoringpropuestaUpdated.idfactoringpropuesta, [1]);
+
+      var paramsEmail = {
+        factoring: factoring_for_email,
+        factoringpropuesta: factoringpropuesta_for_email,
+        usuario: usuario_for_email,
+      };
+
+      await emailService.sendFactoringEmpresaServicioFactoringPropuestaAceptada(usuario_for_email.email, paramsEmail);
+
+      return factoringpropuestaUpdated;
     },
     { timeout: prismaFT.transactionTimeout }
   );
+
   response(res, 200, {});
 };
 

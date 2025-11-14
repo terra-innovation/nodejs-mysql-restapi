@@ -154,7 +154,7 @@ class TemplaceManager {
               }),
             })
             .required(),
-          session_usuario: yup
+          usuario: yup
             .object({
               usuarionombres: yup.string().required(),
               email: yup.string().required(),
@@ -251,7 +251,7 @@ class TemplaceManager {
               fecha_propuesta: yup.string().required(),
             })
             .required(),
-          session_usuario: yup
+          usuario: yup
             .object({
               usuarionombres: yup.string().required(),
               email: yup.string().required(),
@@ -331,7 +331,7 @@ class TemplaceManager {
                 .required(),
             })
             .required(),
-          session_usuario: yup
+          usuario: yup
             .object({
               usuarionombres: yup.string().required(),
               email: yup.string().required(),

@@ -58,7 +58,7 @@ async function testSendFactoringEmpresaServicioFactoringPropuestaAceptada() {
   var paramsEmail = {
     factoring: factoring,
     factoringpropuesta: factoringpropuesta,
-    session_usuario: session_usuario,
+    usuario: session_usuario,
   };
 
   console.log("paramsEmail: ", JSON.stringify(paramsEmail, null, 2));
@@ -106,7 +106,7 @@ async function testSendFactoringEmpresaServicioFactoringPropuestaDisponible() {
   var paramsEmail = {
     factoring: factoring,
     factoringpropuesta: factoringpropuesta,
-    session_usuario: session_usuario,
+    usuario: session_usuario,
   };
 
   console.log("paramsEmail: ", JSON.stringify(paramsEmail, null, 2));
@@ -154,7 +154,7 @@ async function testTemplateFactoringEmpresaServicioFactoringSolicitud() {
 
   var paramsEmail = {
     factoring: factoring,
-    session_usuario: session_usuario,
+    usuario: session_usuario,
   };
 
   //console.log("data_email: ", JSON.stringify(params, null, 2));

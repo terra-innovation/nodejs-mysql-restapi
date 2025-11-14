@@ -1,5 +1,5 @@
-import TemplateManager from "#src/utils/email/TemplateManager.ts";
-import EmailSender from "#src/utils/email/emailSender.ts";
+import TemplateManager from "#src/utils/email/TemplateManager.js";
+import EmailSender from "#src/utils/email/emailSender.js";
 import { log, line } from "#src/utils/logger.pino.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 
@@ -55,7 +55,7 @@ export const sendFactoringEmpresaServicioFactoringPropuestaAceptada = async (to,
       html: emailTemplate.html,
     };
 
-    //await emailSender.sendContactoFinanzatech(mailOptions);
+    await emailSender.sendContactoFinanzatech(mailOptions);
   } catch (error) {
     log.error(line(), "", error);
     throw error;

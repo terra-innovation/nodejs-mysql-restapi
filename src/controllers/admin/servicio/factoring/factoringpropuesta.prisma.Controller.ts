@@ -9,10 +9,12 @@ import * as factoringtipoDao from "#src/daos/factoringtipo.prisma.Dao.js";
 import * as factoringestrategiaDao from "#src/daos/factoringestrategia.prisma.Dao.js";
 import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
 import * as riesgoDao from "#src/daos/riesgo.prisma.Dao.js";
+import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import * as emailService from "#root/src/services/email.Service.js";
 
 import type { factoring_propuesta } from "#root/generated/prisma/ft_factoring/client.js";
 import { Simulacion } from "#src/types/Simulacion.prisma.types.js";
@@ -86,6 +88,7 @@ export const downloadFactoringpropuestaPDF = async (req: Request, res: Response)
 
 export const updateFactoringpropuesta = async (req: Request, res: Response) => {
   log.debug(line(), "controller::updateFactoringpropuesta");
+  const session_idusuario = req.session_user.usuario.idusuario;
   const { id } = req.params;
   const factoringpropuestaUpdateSchema = yup
     .object()
@@ -97,7 +100,7 @@ export const updateFactoringpropuesta = async (req: Request, res: Response) => {
   const factoringpropuestaValidated = factoringpropuestaUpdateSchema.validateSync({ factoringpropuestaid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "factoringpropuestaValidated:", factoringpropuestaValidated);
 
-  const resultado = await prismaFT.client.$transaction(
+  const factoringpropuestaUpdated = await prismaFT.client.$transaction(
     async (tx) => {
       var factoringpropuesta = await factoringpropuestaDao.getFactoringpropuestaByFactoringpropuestaid(tx, factoringpropuestaValidated.factoringpropuestaid);
       if (!factoringpropuesta) {
@@ -138,10 +141,24 @@ export const updateFactoringpropuesta = async (req: Request, res: Response) => {
       const factoringpropuestaUpdated = await factoringpropuestaDao.updateFactoringpropuesta(tx, factoringpropuestaValidated.factoringpropuestaid, factoringpropuestaToUpdate);
       log.debug(line(), "factoringpropuestaUpdated:", factoringpropuestaUpdated);
 
-      return {};
+      // Enviamos correo electrónico
+      if (factoringpropuestaUpdated.idfactoringpropuestaestado == 4) {
+        const factoring_for_email = await factoringDao.getFactoringByIdfactoring(tx, factoringpropuestaUpdated.idfactoring);
+        const usuario_for_email = await usuarioDao.getUsuarioByEmail(tx, factoring_for_email.contacto_cedente.email);
+        const factoringpropuesta_for_email = await factoringpropuestaDao.getFactoringpropuestaAceptadaByIdfactoringpropuesta(tx, factoringpropuestaUpdated.idfactoringpropuesta, [1]);
+        var paramsEmail = {
+          factoring: factoring_for_email,
+          factoringpropuesta: factoringpropuesta_for_email,
+          usuario: usuario_for_email,
+        };
+        await emailService.sendFactoringEmpresaServicioFactoringPropuestaDisponible(usuario_for_email.email, paramsEmail);
+      }
+
+      return factoringpropuestaUpdated;
     },
     { timeout: prismaFT.transactionTimeout }
   );
+
   response(res, 200, { ...factoringpropuestaValidated });
 };
 
