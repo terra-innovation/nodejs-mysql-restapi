@@ -100,6 +100,98 @@ class TemplaceManager {
     return textoPlano;
   }
 
+  async templateFactoringEmpresaServicioFactoringDeudorSolicitudConfirmacion(params) {
+    try {
+      const paramsSchema = yup
+        .object()
+        .shape({
+          cabecera: yup
+            .object({
+              fecha_actual: yup.string().trim().required().min(1).max(200),
+            })
+            .required(),
+          factoring: yup
+            .object({
+              code: yup.string().required(),
+              fecha_registro: yup.string().required(),
+              monto_factura: yup.string().required(),
+              monto_detraccion: yup.string().required(),
+              monto_neto: yup.string().required(),
+              fecha_pago_estimado: yup.string().required(),
+              empresa_cedente: yup.object({
+                ruc: yup.string().required(),
+                razon_social: yup.string().required(),
+              }),
+              empresa_aceptante: yup.object({
+                ruc: yup.string().required(),
+                razon_social: yup.string().required(),
+              }),
+              moneda: yup.object({
+                codigo: yup.string().required(),
+                nombre: yup.string().required(),
+              }),
+              factoring_facturas: yup
+                .array()
+                .of(
+                  yup.object().shape({
+                    factura: yup.object({
+                      serie: yup.string().required(),
+                      numero_comprobante: yup.string().required(),
+                    }),
+                  })
+                )
+                .min(1)
+                .required(),
+            })
+            .required(),
+          factoringpropuesta: yup
+            .object({
+              code: yup.string().required(),
+              fecha_propuesta: yup.string().required(),
+              dias_pago_estimado: yup.string().required(),
+              factoring_tipo: yup.object({
+                nombre: yup.string().required(),
+              }),
+            })
+            .required(),
+          usuario: yup
+            .object({
+              usuarionombres: yup.string().required(),
+              email: yup.string().required(),
+            })
+            .required(),
+          factoring_fomateado: yup
+            .object({
+              fecha_registro: yup.string().required(),
+              factura: yup.string().required(),
+            })
+            .required(),
+          factoringpropuesta_fomateado: yup
+            .object({
+              monto_neto: yup.string().required(),
+              fecha_pago_estimado: yup.string().required(),
+            })
+            .required(),
+        })
+        .required();
+      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+
+      const bodyEmailTHTML = await this.renderTemplate("factoring-empresa-servicio-factoring-deudor-solicitud-confirmacion.html", paramsValidated);
+      const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
+      const subjectEmailText = await this.renderSubject("Confirmación de factura {{factoring_fomateado.factura}} para Operación de Factoring", paramsValidated);
+
+      const codigoverificacionMailOptions = {
+        subject: subjectEmailText,
+        text: bodyEmailText,
+        html: bodyEmailTHTML,
+      };
+      return codigoverificacionMailOptions;
+    } catch (error) {
+      log.error(line(), error);
+      throw error;
+    }
+  }
+
   async templateFactoringEmpresaServicioFactoringPropuestaAceptada(params) {
     try {
       const paramsSchema = yup
