@@ -42,10 +42,10 @@ class PDFGenerator {
       addText(11, "Helvetica", `Fecha: ${df.formatDateTimeLocale(factoringpropuesta.fecha_propuesta)}`, 50);
       addText(11, "Helvetica", `Código de propuesta: ${factoringpropuesta.code}`, 17);
       addText(5, "Helvetica", ``, 5);
-      addText(11, "Helvetica", `Cliente: ${factoring.empresa_cedente.razon_social}`, 17);
+      addText(11, "Helvetica", `Cedente: ${factoring.empresa_cedente.razon_social}`, 17);
       addText(11, "Helvetica", `RUC: ${factoring.empresa_cedente.ruc}`, 17);
       addText(5, "Helvetica", ``, 5);
-      addText(11, "Helvetica", `Pagador: ${factoring.empresa_aceptante.razon_social}`, 17);
+      addText(11, "Helvetica", `Deudor: ${factoring.empresa_aceptante.razon_social}`, 17);
       addText(11, "Helvetica", `RUC: ${factoring.empresa_aceptante.ruc}`, 17);
       addText(5, "Helvetica", ``, 5);
 

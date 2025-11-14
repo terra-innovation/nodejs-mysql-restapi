@@ -6,6 +6,40 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
+export const getFactoringpropuestaAceptadaByIdfactoringpropuesta = async (tx: TxClient, idfactoringpropuesta: number, estados: number[]) => {
+  try {
+    const factoringpropuesta = await tx.factoring_propuesta.findFirst({
+      include: {
+        factoring: true,
+        factoring_estrategia: true,
+        factoring_factoringpropuestaaceptadas: true,
+        factoring_propuesta_estado: true,
+        factoring_propuesta_financieros: {
+          include: {
+            financiero_concepto: true,
+            financiero_tipo: true,
+          },
+        },
+        factoring_tipo: true,
+        riesgo_aceptante: true,
+        riesgo_cedente: true,
+        riesgo_operacion: true,
+      },
+      where: {
+        idfactoringpropuesta: idfactoringpropuesta,
+        estado: {
+          in: estados,
+        },
+      },
+    });
+
+    return factoringpropuesta;
+  } catch (error) {
+    log.error(line(), "", error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getFactoringpropuestaVigenteByIdfactoringpropuestaIdfactoring = async (tx: TxClient, idfactoringpropuesta: number, idfactoring: number, estados: number[]) => {
   try {
     const factoringpropuesta = await tx.factoring_propuesta.findFirst({

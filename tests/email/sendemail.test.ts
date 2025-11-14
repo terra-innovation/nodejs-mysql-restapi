@@ -5,6 +5,7 @@ dotenv.config(); // Carga tu archivo .env
 
 import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
 import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
+import * as factoringpropuestaDao from "#src/daos/factoringpropuesta.prisma.Dao.js";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 
@@ -23,7 +24,105 @@ const emailSender = new EmailSender();
 
 async function main() {
   //testTemplateCodigoVerificacion();
-  testTemplateFactoringEmpresaServicioFactoringSolicitud();
+  //testTemplateFactoringEmpresaServicioFactoringSolicitud();
+  //testSendFactoringEmpresaServicioFactoringPropuestaDisponible();
+  testSendFactoringEmpresaServicioFactoringPropuestaAceptada();
+}
+
+async function testSendFactoringEmpresaServicioFactoringPropuestaAceptada() {
+  const testToEmail = "jonyhurtado.proyectos@gmail.com"; // <-- ⚠️ CAMBIA ESTO
+
+  const idfactoring = 71;
+  const factoring = await prismaFT.client.$transaction((tx) => factoringDao.getFactoringByIdfactoring(tx, idfactoring), { timeout: prismaFT.transactionTimeout });
+
+  if (!factoring) {
+    console.error("Factoring no existe: [" + idfactoring + "]");
+  }
+
+  //console.log("factoring: ", JSON.stringify(factoring, null, 2));
+
+  const idusuario = 154;
+  const session_usuario = await prismaFT.client.$transaction((tx) => usuarioDao.getUsuarioByIdusuario(tx, idusuario), { timeout: prismaFT.transactionTimeout });
+
+  if (!session_usuario) {
+    console.error("session_usuario no existe: [" + idusuario + "]");
+  }
+
+  const idfactoringpropuesta = 42;
+  const factoringpropuesta = await prismaFT.client.$transaction((tx) => factoringpropuestaDao.getFactoringpropuestaAceptadaByIdfactoringpropuesta(tx, idfactoringpropuesta, [1]), { timeout: prismaFT.transactionTimeout });
+
+  if (!factoringpropuesta) {
+    console.error("factoringpropuesta no existe: [" + idfactoringpropuesta + "]");
+  }
+
+  var paramsEmail = {
+    factoring: factoring,
+    factoringpropuesta: factoringpropuesta,
+    session_usuario: session_usuario,
+  };
+
+  console.log("paramsEmail: ", JSON.stringify(paramsEmail, null, 2));
+
+  try {
+    console.log(line());
+    console.log("🚧 Generando contenido del correo con plantilla...");
+
+    await emailService.sendFactoringEmpresaServicioFactoringPropuestaAceptada(testToEmail, paramsEmail);
+
+    console.log("✅ Correo enviado exitosamente.");
+    console.log(line());
+  } catch (error) {
+    console.error("❌ Error durante la prueba de envío de correo:");
+    console.error(error);
+  }
+}
+
+async function testSendFactoringEmpresaServicioFactoringPropuestaDisponible() {
+  const testToEmail = "jonyhurtado.proyectos@gmail.com"; // <-- ⚠️ CAMBIA ESTO
+
+  const idfactoring = 71;
+  const factoring = await prismaFT.client.$transaction((tx) => factoringDao.getFactoringByIdfactoring(tx, idfactoring), { timeout: prismaFT.transactionTimeout });
+
+  if (!factoring) {
+    console.error("Factoring no existe: [" + idfactoring + "]");
+  }
+
+  //console.log("factoring: ", JSON.stringify(factoring, null, 2));
+
+  const idusuario = 154;
+  const session_usuario = await prismaFT.client.$transaction((tx) => usuarioDao.getUsuarioByIdusuario(tx, idusuario), { timeout: prismaFT.transactionTimeout });
+
+  if (!session_usuario) {
+    console.error("session_usuario no existe: [" + idusuario + "]");
+  }
+
+  const idfactoringpropuesta = 42;
+  const factoringpropuesta = await prismaFT.client.$transaction((tx) => factoringpropuestaDao.getFactoringpropuestaByIdfactoringpropuesta(tx, idfactoringpropuesta), { timeout: prismaFT.transactionTimeout });
+
+  if (!factoringpropuesta) {
+    console.error("factoringpropuesta no existe: [" + idfactoringpropuesta + "]");
+  }
+
+  var paramsEmail = {
+    factoring: factoring,
+    factoringpropuesta: factoringpropuesta,
+    session_usuario: session_usuario,
+  };
+
+  console.log("paramsEmail: ", JSON.stringify(paramsEmail, null, 2));
+
+  try {
+    console.log(line());
+    console.log("🚧 Generando contenido del correo con plantilla...");
+
+    await emailService.sendFactoringEmpresaServicioFactoringPropuestaDisponible(testToEmail, paramsEmail);
+
+    console.log("✅ Correo enviado exitosamente.");
+    console.log(line());
+  } catch (error) {
+    console.error("❌ Error durante la prueba de envío de correo:");
+    console.error(error);
+  }
 }
 
 async function testTemplateFactoringEmpresaServicioFactoringSolicitud() {
