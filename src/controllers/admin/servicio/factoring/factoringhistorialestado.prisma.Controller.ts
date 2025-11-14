@@ -8,6 +8,7 @@ import * as factoringtipoDao from "#src/daos/factoringtipo.prisma.Dao.js";
 import * as factoringestadoDao from "#src/daos/factoringestado.prisma.Dao.js";
 import * as factoringestrategiaDao from "#src/daos/factoringestrategia.prisma.Dao.js";
 import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
+import * as configuracionappDao from "#src/daos/configuracionapp.prisma.Dao.js";
 import * as factoringhistorialestadoDao from "#src/daos/factoringhistorialestado.prisma.Dao.js";
 import * as archivofactoringhistorialestadoDao from "#src/daos/archivofactoringhistorialestado.prisma.Dao.js";
 import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
@@ -16,6 +17,7 @@ import { response } from "#src/utils/CustomResponseOk.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import * as emailService from "#root/src/services/email.Service.js";
 
 import type { factoring_historial_estado } from "#root/generated/prisma/ft_factoring/client.js";
 
@@ -205,6 +207,18 @@ export const createFactoringhistorialestado = async (req: Request, res: Response
         const archivofactoringhistorialestadoCreated = await archivofactoringhistorialestadoDao.insertArchivofactoringhistorialestado(tx, archivofactoringhistorialestadoToCreate);
 
         log.debug(line(), "archivofactoringhistorialestadoCreated:", archivofactoringhistorialestadoCreated);
+      }
+
+      // Enviamos correo electrónico
+      if (factoringUpdated.idfactoringestado == 29) {
+        const factoring_for_email = await factoringDao.getFactoringByIdfactoring(tx, factoringUpdated.idfactoring);
+        const emails_cc_deudor_solicita_confirmacion = await configuracionappDao.getEmailsCCDeudorSolicitaConfirmacion(tx);
+        const ccEmails: string[] = JSON.parse(emails_cc_deudor_solicita_confirmacion?.valor || "[]");
+        ccEmails.push(factoring_for_email.contacto_cedente.email);
+        var paramsEmail = {
+          factoring: factoring_for_email,
+        };
+        await emailService.sendFactoringEmpresaServicioFactoringDeudorSolicitudConfirmacion(factoring_for_email.contacto_aceptante.email, ccEmails, paramsEmail);
       }
 
       return {};

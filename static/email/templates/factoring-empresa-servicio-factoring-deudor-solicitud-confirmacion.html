@@ -97,7 +97,7 @@
                                                 <tbody>
                                                   <tr>
                                                     <td class="h1 center pb25" style="color: #ffffff; font-family: Noto Sans, Arial, sans-serif; font-size: 40px; line-height: 46px; text-align: left; padding-bottom: 25px">
-                                                      Confirmación de factura {{factoring_fomateado.factura}} para Operación de Factoring
+                                                      Confirmación de factura {{factoring_formateado.factura}} para Operación de Factoring
                                                     </td>
                                                   </tr>
                                                 </tbody>
@@ -133,8 +133,8 @@
                                         </tr>
                                         <tr>
                                           <td class="text pb20" style="color: #222222; font-family: Noto Sans, Arial, sans-serif; font-size: 16px; line-height: 26px; text-align: left; padding-bottom: 20px">
-                                            Reciban un cordial saludo. Nos comunicamos en representación de <strong>Finanza Tech S.A.C. (RUC 20609264200)</strong>, factor con el que nuestro cliente
-                                            <strong>{{factoring.empresa_aceptante.razon_social}} (RUC {{factoring.empresa_aceptante.ruc}})</strong> desea realizar una <strong>operación de factoring</strong> sobre la siguiente factura detallada en líneas más abajo.
+                                            Reciban un cordial saludo. Nos comunicamos de la empresa <strong>Finanza Tech S.A.C. (RUC 20609264200)</strong>, factor con el que nuestro cliente
+                                            <strong>{{factoring.empresa_aceptante.razon_social}} (RUC {{factoring.empresa_aceptante.ruc}})</strong> desea realizar una <strong>operación de factoring</strong> sobre la factura detallada en líneas más abajo.
                                           </td>
                                         </tr>
                                         <tr>
@@ -142,7 +142,7 @@
                                             Para continuar con el proceso, necesitamos que nos confirmen lo siguiente:<br />
                                             <ol>
                                               <li><strong>Conformidad con la negociación</strong> planteada por nuestro cliente.</li>
-                                              <li><strong>Registro de la(s) factura(s)</strong> en su sistema.</li>
+                                              <li><strong>Registro de la factura</strong> en su sistema.</li>
                                               <li><strong>Fecha de pago</strong> indicada en lineas más abajo.</li>
                                               <li><strong>Valor neto</strong> corresponde al monto pendiente, considerando retenciones/detracciones si aplican.</li>
                                               <li><strong>Pago a la fecha de vencimiento</strong> se realizará a las cuentas de Finanza Tech S.A.C.</li>
@@ -225,7 +225,7 @@
                                         </tr>
                                         <tr>
                                           <td width="30%" style="color: #777777; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: left; padding: 10px 20px"><strong>Valor neto:</strong></td>
-                                          <td width="70%" style="color: #777777; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: right; padding: 10px 20px">{{factoringpropuesta_fomateado.monto_neto}}</td>
+                                          <td width="70%" style="color: #777777; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: right; padding: 10px 20px">{{factoring_formateado.monto_neto}}</td>
                                         </tr>
                                         <tr>
                                           <td width="35%"><p style="font-family: Poppins, sans-serif; border-top: dotted 1px #c6cacf"></p></td>
@@ -233,7 +233,7 @@
                                         </tr>
                                         <tr>
                                           <td width="30%" style="color: #777777; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: left; padding: 10px 20px"><strong>Fecha de pago:</strong></td>
-                                          <td width="70%" style="color: #777777; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: right; padding: 10px 20px">{{factoringpropuesta_fomateado.fecha_pago_estimado}}</td>
+                                          <td width="70%" style="color: #777777; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: right; padding: 10px 20px">{{factoring_formateado.fecha_pago_estimado}}</td>
                                         </tr>
                                         <tr>
                                           <td width="35%"><p style="font-family: Poppins, sans-serif; border-top: dotted 1px #c6cacf"></p></td>

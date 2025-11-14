@@ -18,6 +18,10 @@ export const getComisionBCP = async (tx: TxClient) => {
   return await getConfiguracionappByIdconfiguracionapp(tx, 3);
 };
 
+export const getEmailsCCDeudorSolicitaConfirmacion = async (tx: TxClient) => {
+  return await getConfiguracionappByIdconfiguracionapp(tx, 4);
+};
+
 export const getConfiguracionapps = async (tx: TxClient, estados: number[]) => {
   try {
     const configuracionapps = await tx.configuracion_app.findMany({

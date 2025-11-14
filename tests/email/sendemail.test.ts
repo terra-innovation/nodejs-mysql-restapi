@@ -6,6 +6,7 @@ dotenv.config(); // Carga tu archivo .env
 import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
 import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
 import * as factoringpropuestaDao from "#src/daos/factoringpropuesta.prisma.Dao.js";
+import * as configuracionappDao from "#src/daos/configuracionapp.prisma.Dao.js";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 
@@ -26,7 +27,47 @@ async function main() {
   //testTemplateCodigoVerificacion();
   //testTemplateFactoringEmpresaServicioFactoringSolicitud();
   //testSendFactoringEmpresaServicioFactoringPropuestaDisponible();
-  testSendFactoringEmpresaServicioFactoringPropuestaAceptada();
+  //testSendFactoringEmpresaServicioFactoringPropuestaAceptada();
+  testSendFactoringEmpresaServicioFactoringDeudorSolicitudConfirmacion();
+}
+
+async function testSendFactoringEmpresaServicioFactoringDeudorSolicitudConfirmacion() {
+  const testToEmail = "jonyhurtado.proyectos@gmail.com"; // <-- ⚠️ CAMBIA ESTO
+
+  configuracionappDao;
+  const ccEmails = await prismaFT.client.$transaction((tx) => configuracionappDao.getEmailsCCDeudorSolicitaConfirmacion(tx), { timeout: prismaFT.transactionTimeout });
+
+  const testCCEmail: string[] = JSON.parse(ccEmails?.valor || "[]");
+  //testCCEmail.push("jonycaleb@gmail.com");
+  //testCCEmail.push("calebjony@hotmail.com");
+
+  const idfactoring = 71;
+  const factoring = await prismaFT.client.$transaction((tx) => factoringDao.getFactoringByIdfactoring(tx, idfactoring), { timeout: prismaFT.transactionTimeout });
+
+  if (!factoring) {
+    console.error("Factoring no existe: [" + idfactoring + "]");
+  }
+
+  //console.log("factoring: ", JSON.stringify(factoring, null, 2));
+
+  var paramsEmail = {
+    factoring: factoring,
+  };
+
+  console.log("paramsEmail: ", JSON.stringify(paramsEmail, null, 2));
+
+  try {
+    console.log(line());
+    console.log("🚧 Generando contenido del correo con plantilla...");
+
+    await emailService.sendFactoringEmpresaServicioFactoringDeudorSolicitudConfirmacion(testToEmail, testCCEmail, paramsEmail);
+
+    console.log("✅ Correo enviado exitosamente.");
+    console.log(line());
+  } catch (error) {
+    console.error("❌ Error durante la prueba de envío de correo:");
+    console.error(error);
+  }
 }
 
 async function testSendFactoringEmpresaServicioFactoringPropuestaAceptada() {

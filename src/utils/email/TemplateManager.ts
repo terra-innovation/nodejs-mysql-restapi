@@ -144,30 +144,9 @@ class TemplaceManager {
                 .required(),
             })
             .required(),
-          factoringpropuesta: yup
+          factoring_formateado: yup
             .object({
-              code: yup.string().required(),
-              fecha_propuesta: yup.string().required(),
-              dias_pago_estimado: yup.string().required(),
-              factoring_tipo: yup.object({
-                nombre: yup.string().required(),
-              }),
-            })
-            .required(),
-          usuario: yup
-            .object({
-              usuarionombres: yup.string().required(),
-              email: yup.string().required(),
-            })
-            .required(),
-          factoring_fomateado: yup
-            .object({
-              fecha_registro: yup.string().required(),
               factura: yup.string().required(),
-            })
-            .required(),
-          factoringpropuesta_fomateado: yup
-            .object({
               monto_neto: yup.string().required(),
               fecha_pago_estimado: yup.string().required(),
             })
@@ -178,7 +157,7 @@ class TemplaceManager {
 
       const bodyEmailTHTML = await this.renderTemplate("factoring-empresa-servicio-factoring-deudor-solicitud-confirmacion.html", paramsValidated);
       const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
-      const subjectEmailText = await this.renderSubject("Confirmación de factura {{factoring_fomateado.factura}} para Operación de Factoring", paramsValidated);
+      const subjectEmailText = await this.renderSubject("Confirmación de factura {{factoring_formateado.factura}} para Operación de Factoring", paramsValidated);
 
       const codigoverificacionMailOptions = {
         subject: subjectEmailText,
@@ -252,12 +231,12 @@ class TemplaceManager {
               email: yup.string().required(),
             })
             .required(),
-          factoring_fomateado: yup
+          factoring_formateado: yup
             .object({
               fecha_registro: yup.string().required(),
             })
             .required(),
-          factoringpropuesta_fomateado: yup
+          factoringpropuesta_formateado: yup
             .object({
               fecha_propuesta: yup.string().required(),
               monto_neto: yup.string().required(),
@@ -349,12 +328,12 @@ class TemplaceManager {
               email: yup.string().required(),
             })
             .required(),
-          factoring_fomateado: yup
+          factoring_formateado: yup
             .object({
               fecha_registro: yup.string().required(),
             })
             .required(),
-          factoringpropuesta_fomateado: yup
+          factoringpropuesta_formateado: yup
             .object({
               fecha_propuesta: yup.string().required(),
             })
@@ -429,7 +408,7 @@ class TemplaceManager {
               email: yup.string().required(),
             })
             .required(),
-          factoring_fomateado: yup
+          factoring_formateado: yup
             .object({
               fecha_registro: yup.string().required(),
               monto_factura: yup.string().required(),
