@@ -10,6 +10,46 @@ import * as nf from "#src/utils/numberUtils.js";
 const templateManager = new TemplateManager();
 const emailSender = new EmailSender();
 
+export const sendFactoringEmpresaServicioFactoringCedenteConfirmacionTransferencia = async (to, params) => {
+  try {
+    const cabecera = {
+      fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
+    };
+
+    const factoring_formateado = {
+      factura: "" + params.factoring?.factoring_facturas[0].factura.serie + "-" + params.factoring?.factoring_facturas[0].factura.numero_comprobante,
+      monto_neto: nf.formatNumber(params.factoring?.monto_neto),
+      fecha_pago_estimado: df.formatDateUTC(params.factoring?.fecha_pago_estimado),
+    };
+
+    const factoringtransferenciacedente_formateado = {
+      fecha: df.formatDateLocale(params.factoringtransferenciacedente?.fecha),
+      monto: nf.formatNumber(params.factoringtransferenciacedente?.monto),
+    };
+
+    params = {
+      ...params,
+      cabecera,
+      factoring_formateado,
+      factoringtransferenciacedente_formateado,
+    };
+
+    const emailTemplate = await templateManager.templateFactoringEmpresaServicioFactoringCedenteConfirmacionTransferencia(params);
+
+    const mailOptions = {
+      to: to,
+      subject: emailTemplate.subject,
+      text: emailTemplate.text,
+      html: emailTemplate.html,
+    };
+
+    await emailSender.sendContactoFinanzatech(mailOptions);
+  } catch (error) {
+    log.error(line(), "", error);
+    throw error;
+  }
+};
+
 export const sendFactoringEmpresaServicioFactoringDeudorSolicitudConfirmacion = async (to, cc, params) => {
   try {
     const cabecera = {

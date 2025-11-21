@@ -11,36 +11,36 @@ datasource db {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model archivo {
-  idarchivo                                Int                                       @id @default(autoincrement()) @map("_idarchivo") @db.UnsignedInt
-  archivoid                                String                                    @unique(map: "UQ_archivoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
-  idarchivotipo                            Int                                       @map("_idarchivotipo") @db.UnsignedInt
-  idarchivoestado                          Int                                       @map("_idarchivoestado") @db.UnsignedInt
-  codigo                                   String                                    @default("0") @db.VarChar(50)
-  nombrereal                               String                                    @db.VarChar(200)
-  nombrealmacenamiento                     String                                    @db.VarChar(200)
-  ruta                                     String                                    @db.VarChar(500)
-  tamanio                                  Int                                       @default(0) @db.UnsignedInt
-  mimetype                                 String                                    @db.VarChar(100)
-  encoding                                 String                                    @db.VarChar(50)
-  extension                                String                                    @db.VarChar(20)
-  observacion                              String?                                   @db.Text
-  fechavencimiento                         DateTime?                                 @db.Date
-  idusuariocrea                            Int                                       @default(1)
-  fechacrea                                DateTime                                  @default(now()) @db.Timestamp(3)
-  idusuariomod                             Int                                       @default(1)
-  fechamod                                 DateTime                                  @default(now()) @db.Timestamp(3)
-  estado                                   Int                                       @default(1) @db.TinyInt
-  archivo_estado                           archivo_estado                            @relation(fields: [idarchivoestado], references: [idarchivoestado], onUpdate: Restrict, map: "FK_archivo_idarchivoestado")
-  archivo_tipo                             archivo_tipo                              @relation(fields: [idarchivotipo], references: [idarchivotipo], onUpdate: Restrict, map: "FK_archivo_idarchivotipo")
-  archivo_colaboradores                    archivo_colaborador[]
-  archivo_cuenta_bancarias                 archivo_cuenta_bancaria[]
-  archivo_empresas                         archivo_empresa[]
-  archivo_factoring_historial_estados      archivo_factoring_historial_estado[]
+  idarchivo                               Int                                       @id @default(autoincrement()) @map("_idarchivo") @db.UnsignedInt
+  archivoid                               String                                    @unique(map: "UQ_archivoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  idarchivotipo                           Int                                       @map("_idarchivotipo") @db.UnsignedInt
+  idarchivoestado                         Int                                       @map("_idarchivoestado") @db.UnsignedInt
+  codigo                                  String                                    @default("0") @db.VarChar(50)
+  nombrereal                              String                                    @db.VarChar(200)
+  nombrealmacenamiento                    String                                    @db.VarChar(200)
+  ruta                                    String                                    @db.VarChar(500)
+  tamanio                                 Int                                       @default(0) @db.UnsignedInt
+  mimetype                                String                                    @db.VarChar(100)
+  encoding                                String                                    @db.VarChar(50)
+  extension                               String                                    @db.VarChar(20)
+  observacion                             String?                                   @db.Text
+  fechavencimiento                        DateTime?                                 @db.Date
+  idusuariocrea                           Int                                       @default(1)
+  fechacrea                               DateTime                                  @default(now()) @db.Timestamp(3)
+  idusuariomod                            Int                                       @default(1)
+  fechamod                                DateTime                                  @default(now()) @db.Timestamp(3)
+  estado                                  Int                                       @default(1) @db.TinyInt
+  archivo_estado                          archivo_estado                            @relation(fields: [idarchivoestado], references: [idarchivoestado], onUpdate: Restrict, map: "FK_archivo_idarchivoestado")
+  archivo_tipo                            archivo_tipo                              @relation(fields: [idarchivotipo], references: [idarchivotipo], onUpdate: Restrict, map: "FK_archivo_idarchivotipo")
+  archivo_colaboradores                   archivo_colaborador[]
+  archivo_cuenta_bancarias                archivo_cuenta_bancaria[]
+  archivo_empresas                        archivo_empresa[]
+  archivo_factoring_historial_estados     archivo_factoring_historial_estado[]
   archivo_factoring_transferencia_cedentes archivo_factoring_transferencia_cedente[]
-  archivo_facturas                         archivo_factura[]
-  archivo_inversionista_depositos          archivo_inversionista_deposito[]
-  archivo_inversionista_retiros            archivo_inversionista_retiro[]
-  archivo_personas                         archivo_persona[]
+  archivo_facturas                        archivo_factura[]
+  archivo_inversionista_depositos         archivo_inversionista_deposito[]
+  archivo_inversionista_retiros           archivo_inversionista_retiro[]
+  archivo_personas                        archivo_persona[]
 
   @@index([idarchivoestado], map: "FK_archivo_idarchivoestado")
   @@index([idarchivotipo], map: "FK_archivo_idarchivotipo")
@@ -654,20 +654,19 @@ model empresa {
 }
 
 model empresa_cuenta_bancaria {
-  idempresacuentabancaria          Int                               @id @default(autoincrement()) @map("_idempresacuentabancaria") @db.UnsignedInt
-  empresacuentabancariaid          String                            @unique(map: "UQ_empresacuentabancaria_empresacuentabancariaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
-  code                             String                            @unique(map: "UQ_empresacuentabancaria_code") @db.VarChar(20)
-  idempresa                        Int                               @map("_idempresa") @db.UnsignedInt
-  idcuentabancaria                 Int                               @map("_idcuentabancaria") @db.UnsignedInt
-  idusuariocrea                    Int                               @default(1)
-  fechacrea                        DateTime                          @default(now()) @db.Timestamp(3)
-  idusuariomod                     Int                               @default(1)
-  fechamod                         DateTime                          @default(now()) @db.Timestamp(3)
-  estado                           Int                               @default(1) @db.TinyInt
-  cuenta_bancaria                  cuenta_bancaria                   @relation(fields: [idcuentabancaria], references: [idcuentabancaria], onUpdate: Restrict, map: "FK_empresacuentabancaria_idcuentabancaria")
-  empresa                          empresa                           @relation(fields: [idempresa], references: [idempresa], onUpdate: Restrict, map: "FK_empresacuentabancaria_idempresa")
-  factoring_pagos                  factoring_pago[]
-  factoring_transferencia_cedentes factoring_transferencia_cedente[]
+  idempresacuentabancaria Int              @id @default(autoincrement()) @map("_idempresacuentabancaria") @db.UnsignedInt
+  empresacuentabancariaid String           @unique(map: "UQ_empresacuentabancaria_empresacuentabancariaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                    String           @unique(map: "UQ_empresacuentabancaria_code") @db.VarChar(20)
+  idempresa               Int              @map("_idempresa") @db.UnsignedInt
+  idcuentabancaria        Int              @map("_idcuentabancaria") @db.UnsignedInt
+  idusuariocrea           Int              @default(1)
+  fechacrea               DateTime         @default(now()) @db.Timestamp(3)
+  idusuariomod            Int              @default(1)
+  fechamod                DateTime         @default(now()) @db.Timestamp(3)
+  estado                  Int              @default(1) @db.TinyInt
+  cuenta_bancaria         cuenta_bancaria  @relation(fields: [idcuentabancaria], references: [idcuentabancaria], onUpdate: Restrict, map: "FK_empresacuentabancaria_idcuentabancaria")
+  empresa                 empresa          @relation(fields: [idempresa], references: [idempresa], onUpdate: Restrict, map: "FK_empresacuentabancaria_idempresa")
+  factoring_pagos         factoring_pago[]
 
   @@unique([idempresa, idcuentabancaria], map: "UQ_empresacuentabancaria_idempresa_idcuentabancaria")
   @@index([idcuentabancaria], map: "FK_empresacuentabancaria_idcuentabancaria")
@@ -717,7 +716,6 @@ model factor {
   provincia_sede            provincia?               @relation(fields: [idprovinciasede], references: [idprovincia], onDelete: Restrict, onUpdate: Restrict, map: "FK_factor_idprovinciasede")
   riesgo                    riesgo?                  @relation(fields: [idriesgo], references: [idriesgo], onDelete: Restrict, onUpdate: Restrict, map: "FK_factor_idriesgo")
   factor_cuenta_bancarias   factor_cuenta_bancaria[]
-  factoringes               factoring[]
 
   @@index([iddepartamentosede], map: "FK_factor_iddepartamentosede")
   @@index([iddistritosede], map: "FK_factor_iddistritosede")
@@ -727,22 +725,21 @@ model factor {
 }
 
 model factor_cuenta_bancaria {
-  idfactorcuentabancaria           Int                               @id @map("_idfactorcuentabancaria") @db.UnsignedInt
-  factorcuentabancariaid           String                            @unique(map: "UQ_factorcuentabancaria_factorcuentabancariaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
-  code                             String                            @unique(map: "UQ_factorcuentabancaria_code") @db.VarChar(20)
-  idfactor                         Int                               @map("_idfactor") @db.UnsignedInt
-  idcuentabancaria                 Int                               @map("_idcuentabancaria") @db.UnsignedInt
-  idusuariocrea                    Int                               @default(1)
-  fechacrea                        DateTime                          @default(now()) @db.Timestamp(3)
-  idusuariomod                     Int                               @default(1)
-  fechamod                         DateTime                          @default(now()) @db.Timestamp(3)
-  estado                           Int                               @default(1) @db.TinyInt
-  cuenta_bancaria                  cuenta_bancaria                   @relation(fields: [idcuentabancaria], references: [idcuentabancaria], onUpdate: Restrict, map: "FK_factorcuentabancaria_idcuentabancaria")
-  factor                           factor                            @relation(fields: [idfactor], references: [idfactor], onUpdate: Restrict, map: "FK_factorcuentabancaria_idfactor")
-  factoring_pagos                  factoring_pago[]
-  factoring_transferencia_cedentes factoring_transferencia_cedente[]
-  inversionista_depositos          inversionista_deposito[]
-  inversionista_retiros            inversionista_retiro[]
+  idfactorcuentabancaria  Int                      @id @map("_idfactorcuentabancaria") @db.UnsignedInt
+  factorcuentabancariaid  String                   @unique(map: "UQ_factorcuentabancaria_factorcuentabancariaid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                    String                   @unique(map: "UQ_factorcuentabancaria_code") @db.VarChar(20)
+  idfactor                Int                      @map("_idfactor") @db.UnsignedInt
+  idcuentabancaria        Int                      @map("_idcuentabancaria") @db.UnsignedInt
+  idusuariocrea           Int                      @default(1)
+  fechacrea               DateTime                 @default(now()) @db.Timestamp(3)
+  idusuariomod            Int                      @default(1)
+  fechamod                DateTime                 @default(now()) @db.Timestamp(3)
+  estado                  Int                      @default(1) @db.TinyInt
+  cuenta_bancaria         cuenta_bancaria          @relation(fields: [idcuentabancaria], references: [idcuentabancaria], onUpdate: Restrict, map: "FK_factorcuentabancaria_idcuentabancaria")
+  factor                  factor                   @relation(fields: [idfactor], references: [idfactor], onUpdate: Restrict, map: "FK_factorcuentabancaria_idfactor")
+  factoring_pagos         factoring_pago[]
+  inversionista_depositos inversionista_deposito[]
+  inversionista_retiros   inversionista_retiro[]
 
   @@index([idcuentabancaria], map: "FK_factorcuentabancaria_idcuentabancaria")
   @@index([idfactor], map: "FK_factorcuentabancaria_idfactor")
@@ -750,47 +747,46 @@ model factor_cuenta_bancaria {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model factoring {
-  idfactoring                      Int                               @id @default(autoincrement()) @map("_idfactoring") @db.UnsignedInt
-  factoringid                      String                            @unique(map: "UQ_factoring_factoringid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
-  code                             String                            @unique(map: "UQ_factoring_code") @db.VarChar(255)
-  idfactor                         Int                               @default(1) @map("_idfactor") @db.UnsignedInt
-  idaceptante                      Int                               @map("_idaceptante") @db.UnsignedInt
-  idcedente                        Int                               @map("_idcedente") @db.UnsignedInt
-  idmoneda                         Int                               @map("_idmoneda") @db.UnsignedInt
-  idfactoringestado                Int                               @map("_idfactoringestado") @db.UnsignedInt
-  idcuentabancaria                 Int?                              @map("_idcuentabancaria") @db.UnsignedInt
-  idcontactoaceptante              Int?                              @map("_idcontactoaceptante") @db.UnsignedInt
-  idcontactocedente                Int?                              @map("_idcontactocedente") @db.UnsignedInt
-  idfactoringejecutado             Int?                              @map("_idfactoringejecutado") @db.UnsignedInt
-  idfactoringpropuestaaceptada     Int?                              @map("_idfactoringpropuestaaceptada") @db.UnsignedInt
-  cantidad_facturas                Int
-  fecha_registro                   DateTime                          @db.Timestamp(0)
-  fecha_emision                    DateTime                          @db.Timestamp(0)
-  fecha_operacion                  DateTime?                         @db.Timestamp(0)
-  fecha_pago_estimado              DateTime                          @db.Timestamp(0)
-  monto_factura                    Decimal                           @db.Decimal(10, 2)
-  monto_detraccion                 Decimal                           @db.Decimal(10, 2)
-  monto_neto                       Decimal                           @db.Decimal(10, 2)
-  idusuariocrea                    Int                               @default(1)
-  fechacrea                        DateTime                          @default(now()) @db.Timestamp(3)
-  idusuariomod                     Int                               @default(1)
-  fechamod                         DateTime                          @default(now()) @db.Timestamp(3)
-  estado                           Int                               @default(1) @db.TinyInt
-  empresa_aceptante                empresa                           @relation("factoring_idaceptanteToempresa", fields: [idaceptante], references: [idempresa], onUpdate: Restrict, map: "FK_factoring_idaceptante")
-  empresa_cedente                  empresa                           @relation("factoring_idcedenteToempresa", fields: [idcedente], references: [idempresa], onUpdate: Restrict, map: "FK_factoring_idcedente")
-  contacto_aceptante               contacto?                         @relation(fields: [idcontactoaceptante], references: [idcontacto], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_idcontactoaceptante")
-  contacto_cedente                 colaborador?                      @relation(fields: [idcontactocedente], references: [idcolaborador], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_idcontactocedente")
-  cuenta_bancaria                  cuenta_bancaria?                  @relation(fields: [idcuentabancaria], references: [idcuentabancaria], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_idcuentabancaria")
-  factor                           factor                            @relation(fields: [idfactor], references: [idfactor], onDelete: NoAction, onUpdate: Restrict, map: "FK_factoring_idfactor")
-  factoring_ejecutado              factoring_ejecutado?              @relation("factoring_idfactoringejecutadoTofactoring_ejecutado", fields: [idfactoringejecutado], references: [idfactoringejecutado], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_idfactoringejecutado")
-  factoring_estado                 factoring_estado                  @relation(fields: [idfactoringestado], references: [idfactoringestado], onUpdate: Restrict, map: "FK_factoring_idfactoringestado")
-  factoring_propuesta_aceptada     factoring_propuesta?              @relation("factoring_idfactoringpropuestaaceptadaTofactoring_propuesta", fields: [idfactoringpropuestaaceptada], references: [idfactoringpropuesta], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_idfactoringpropuestaaceptada")
-  moneda                           moneda                            @relation(fields: [idmoneda], references: [idmoneda], onUpdate: Restrict, map: "FK_factoring_idmoneda")
-  factoring_ejecutado_factoringes  factoring_ejecutado[]             @relation("factoring_ejecutado_idfactoringTofactoring")
-  factoring_facturas               factoring_factura[]
-  factoring_historial_estados      factoring_historial_estado[]
-  factoring_pagos                  factoring_pago[]
-  factoring_propuesta_factoringes  factoring_propuesta[]             @relation("factoring_propuesta_idfactoringTofactoring")
+  idfactoring                     Int                               @id @default(autoincrement()) @map("_idfactoring") @db.UnsignedInt
+  factoringid                     String                            @unique(map: "UQ_factoring_factoringid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                            String                            @unique(map: "UQ_factoring_code") @db.VarChar(255)
+  idfactor                        Int                               @default(1) @map("_idfactor") @db.UnsignedInt
+  idaceptante                     Int                               @map("_idaceptante") @db.UnsignedInt
+  idcedente                       Int                               @map("_idcedente") @db.UnsignedInt
+  idmoneda                        Int                               @map("_idmoneda") @db.UnsignedInt
+  idfactoringestado               Int                               @map("_idfactoringestado") @db.UnsignedInt
+  idcuentabancaria                Int?                              @map("_idcuentabancaria") @db.UnsignedInt
+  idcontactoaceptante             Int?                              @map("_idcontactoaceptante") @db.UnsignedInt
+  idcontactocedente               Int?                              @map("_idcontactocedente") @db.UnsignedInt
+  idfactoringejecutado            Int?                              @map("_idfactoringejecutado") @db.UnsignedInt
+  idfactoringpropuestaaceptada    Int?                              @map("_idfactoringpropuestaaceptada") @db.UnsignedInt
+  cantidad_facturas               Int
+  fecha_registro                  DateTime                          @db.Timestamp(0)
+  fecha_emision                   DateTime                          @db.Timestamp(0)
+  fecha_operacion                 DateTime?                         @db.Timestamp(0)
+  fecha_pago_estimado             DateTime                          @db.Timestamp(0)
+  monto_factura                   Decimal                           @db.Decimal(10, 2)
+  monto_detraccion                Decimal                           @db.Decimal(10, 2)
+  monto_neto                      Decimal                           @db.Decimal(10, 2)
+  idusuariocrea                   Int                               @default(1)
+  fechacrea                       DateTime                          @default(now()) @db.Timestamp(3)
+  idusuariomod                    Int                               @default(1)
+  fechamod                        DateTime                          @default(now()) @db.Timestamp(3)
+  estado                          Int                               @default(1) @db.TinyInt
+  empresa_aceptante               empresa                           @relation("factoring_idaceptanteToempresa", fields: [idaceptante], references: [idempresa], onUpdate: Restrict, map: "FK_factoring_idaceptante")
+  empresa_cedente                 empresa                           @relation("factoring_idcedenteToempresa", fields: [idcedente], references: [idempresa], onUpdate: Restrict, map: "FK_factoring_idcedente")
+  contacto_aceptante              contacto?                         @relation(fields: [idcontactoaceptante], references: [idcontacto], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_idcontactoaceptante")
+  contacto_cedente                colaborador?                      @relation(fields: [idcontactocedente], references: [idcolaborador], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_idcontactocedente")
+  cuenta_bancaria                 cuenta_bancaria?                  @relation(fields: [idcuentabancaria], references: [idcuentabancaria], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_idcuentabancaria")
+  factoring_ejecutado             factoring_ejecutado?              @relation("factoring_idfactoringejecutadoTofactoring_ejecutado", fields: [idfactoringejecutado], references: [idfactoringejecutado], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_idfactoringejecutado")
+  factoring_estado                factoring_estado                  @relation(fields: [idfactoringestado], references: [idfactoringestado], onUpdate: Restrict, map: "FK_factoring_idfactoringestado")
+  factoring_propuesta_aceptada    factoring_propuesta?              @relation("factoring_idfactoringpropuestaaceptadaTofactoring_propuesta", fields: [idfactoringpropuestaaceptada], references: [idfactoringpropuesta], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_idfactoringpropuestaaceptada")
+  moneda                          moneda                            @relation(fields: [idmoneda], references: [idmoneda], onUpdate: Restrict, map: "FK_factoring_idmoneda")
+  factoring_ejecutado_factoringes factoring_ejecutado[]             @relation("factoring_ejecutado_idfactoringTofactoring")
+  factoring_facturas              factoring_factura[]
+  factoring_historial_estados     factoring_historial_estado[]
+  factoring_pagos                 factoring_pago[]
+  factoring_propuesta_factoringes factoring_propuesta[]             @relation("factoring_propuesta_idfactoringTofactoring")
   factoring_transferencia_cedentes factoring_transferencia_cedente[]
 
   @@index([idaceptante], map: "FK_factoring_idaceptante")
@@ -802,7 +798,6 @@ model factoring {
   @@index([idfactoringestado], map: "FK_factoring_idfactoringestado")
   @@index([idfactoringpropuestaaceptada], map: "FK_factoring_idfactoringpropuestaaceptada")
   @@index([idmoneda], map: "FK_factoring_idmoneda")
-  @@index([idfactor], map: "FK_factoring_idfactor")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -1468,23 +1463,22 @@ model inversionista_retiro {
 }
 
 model moneda {
-  idmoneda                        Int                               @id @default(autoincrement()) @map("_idmoneda") @db.UnsignedInt
-  monedaid                        String                            @unique(map: "UQ_moneda_bancoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
-  code                            String                            @unique(map: "UQ_moneda_code") @db.VarChar(20)
-  nombre                          String                            @db.VarChar(50)
-  alias                           String                            @db.VarChar(50)
-  codigo                          String                            @db.VarChar(10)
-  simbolo                         String                            @db.VarChar(5)
-  color                           String                            @db.VarChar(20)
-  idusuariocrea                   Int                               @default(1)
-  fechacrea                       DateTime                          @default(now()) @db.Timestamp(3)
-  idusuariomod                    Int                               @default(1)
-  fechamod                        DateTime                          @default(now()) @db.Timestamp(3)
-  estado                          Int                               @default(1) @db.TinyInt
-  banco_cuentas                   banco_cuenta[]
-  cuenta_bancarias                cuenta_bancaria[]
-  factoringes                     factoring[]
-  factoring_transferencia_cedentes factoring_transferencia_cedente[]
+  idmoneda         Int               @id @default(autoincrement()) @map("_idmoneda") @db.UnsignedInt
+  monedaid         String            @unique(map: "UQ_moneda_bancoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code             String            @unique(map: "UQ_moneda_code") @db.VarChar(20)
+  nombre           String            @db.VarChar(50)
+  alias            String            @db.VarChar(50)
+  codigo           String            @db.VarChar(10)
+  simbolo          String            @db.VarChar(5)
+  color            String            @db.VarChar(20)
+  idusuariocrea    Int               @default(1)
+  fechacrea        DateTime          @default(now()) @db.Timestamp(3)
+  idusuariomod     Int               @default(1)
+  fechamod         DateTime          @default(now()) @db.Timestamp(3)
+  estado           Int               @default(1) @db.TinyInt
+  banco_cuentas    banco_cuenta[]
+  cuenta_bancarias cuenta_bancaria[]
+  factoringes      factoring[]
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -2205,80 +2199,70 @@ model archivo_factoring_transferencia_cedente {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model factoring_transferencia_cedente {
-  idfactoringtransferenciacedente          Int                                       @id @default(autoincrement()) @map("_idfactoringtransferenciacedente") @db.UnsignedInt
-  factoringtransferenciacedenteid          String                                    @unique(map: "UQ_ftc_factoringtransferenciacedenteid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
-  code                                     String                                    @unique(map: "UQ_ftc_code") @db.VarChar(255)
-  idfactoring                              Int                                       @map("_idfactoring") @db.UnsignedInt
-  idfactoringtransferenciatipo             Int                                       @map("_idfactoringtransferenciatipo") @db.UnsignedInt
-  idfactoringtransferenciaestado           Int                                       @map("_idfactoringtransferenciaestado") @db.UnsignedInt
-  idfactorcuentabancaria                   Int                                       @map("_idfactorcuentabancaria") @db.UnsignedInt
-  idempresacuentabancaria                  Int                                       @map("_idempresacuentabancaria") @db.UnsignedInt
-  idmoneda                                 Int                                       @map("_idmoneda") @db.UnsignedInt
-  numero_operacion                         String                                    @db.VarChar(50)
-  monto                                    Decimal                                   @db.Decimal(20, 2)
-  fecha                                    DateTime                                  @db.Timestamp(0)
-  idusuariocrea                            Int                                       @default(1)
-  fechacrea                                DateTime                                  @default(now()) @db.Timestamp(3)
-  idusuariomod                             Int                                       @default(1)
-  fechamod                                 DateTime                                  @default(now()) @db.Timestamp(3)
-  estado                                   Int                                       @default(1) @db.TinyInt
+  idfactoringtransferenciacedente         Int                                       @id @default(autoincrement()) @map("_idfactoringtransferenciacedente") @db.UnsignedInt
+  factoringtransferenciacedenteid         String                                    @unique(map: "UQ_ftc_factoringtransferenciacedenteid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                                    String                                    @unique(map: "UQ_ftc_code") @db.VarChar(255)
+  idfactoring                             Int                                       @map("_idfactoring") @db.UnsignedInt
+  idfactoringtransferenciatipo            Int                                       @map("_idfactoringtransferenciatipo") @db.UnsignedInt
+  idfactoringtransferenciaestado          Int                                       @map("_idfactoringtransferenciaestado") @db.UnsignedInt
+  monto                                   Decimal?                                  @db.Decimal(20, 2)
+  fecha                                   DateTime?                                 @db.Timestamp(0)
+  idusuariocrea                           Int                                       @default(1)
+  fechacrea                               DateTime                                  @default(now()) @db.Timestamp(3)
+  idusuariomod                            Int                                       @default(1)
+  fechamod                                DateTime                                  @default(now()) @db.Timestamp(3)
+  estado                                  Int                                       @default(1) @db.TinyInt
   archivo_factoring_transferencia_cedentes archivo_factoring_transferencia_cedente[]
-  empresa_cuenta_bancaria                  empresa_cuenta_bancaria                   @relation(fields: [idempresacuentabancaria], references: [idempresacuentabancaria], onDelete: NoAction, onUpdate: Restrict, map: "FK_ftc_idempresacuentabancaria")
-  factor_cuenta_bancaria                   factor_cuenta_bancaria                    @relation(fields: [idfactorcuentabancaria], references: [idfactorcuentabancaria], onDelete: NoAction, onUpdate: Restrict, map: "FK_ftc_idfactorcuentabancaria")
-  factoring                                factoring                                 @relation(fields: [idfactoring], references: [idfactoring], onDelete: NoAction, onUpdate: Restrict, map: "FK_ftc_idfactoring")
-  factoring_transferencia_estado           factoring_transferencia_estado            @relation(fields: [idfactoringtransferenciaestado], references: [idfactoringtransferenciaestado], onDelete: NoAction, onUpdate: Restrict, map: "FK_ftc_idfactoringtransferenciaestado")
-  factoring_transferencia_tipo             factoring_transferencia_tipo              @relation(fields: [idfactoringtransferenciatipo], references: [idfactoringtransferenciatipo], onDelete: NoAction, onUpdate: Restrict, map: "FK_ftc_idfactoringtransferenciatipo")
-  moneda                                   moneda                                    @relation(fields: [idmoneda], references: [idmoneda], onDelete: NoAction, onUpdate: Restrict, map: "FK_ftc_idmoneda")
+  factoring                               factoring                                 @relation(fields: [idfactoring], references: [idfactoring], onDelete: NoAction, onUpdate: Restrict, map: "FK_ftc_idfactoring")
+  factoring_transferencia_estado          factoring_transferencia_estado            @relation(fields: [idfactoringtransferenciaestado], references: [idfactoringtransferenciaestado], onDelete: NoAction, onUpdate: Restrict, map: "FK_ftc_idfactoringtransferenciaestado")
+  factoring_transferencia_tipo            factoring_transferencia_tipo              @relation(fields: [idfactoringtransferenciatipo], references: [idfactoringtransferenciatipo], onDelete: NoAction, onUpdate: Restrict, map: "FK_ftc_idfactoringtransferenciatipo")
 
   @@index([idfactoring], map: "FK_ftc_idfactoring")
   @@index([idfactoringtransferenciaestado], map: "FK_ftc_idfactoringtransferenciaestado")
   @@index([idfactoringtransferenciatipo], map: "FK_ftc_idfactoringtransferenciatipo")
-  @@index([idempresacuentabancaria], map: "FK_ftc_idempresacuentabancaria")
-  @@index([idfactorcuentabancaria], map: "FK_ftc_idfactorcuentabancaria")
-  @@index([idmoneda], map: "FK_ftc_idmoneda")
 }
 
 model factoring_transferencia_estado {
-  idfactoringtransferenciaestado   Int                               @id @map("_idfactoringtransferenciaestado") @db.UnsignedInt
-  factoringtransferenciaestadoid   String                            @unique(map: "UQ_factoringtransferenciaestado_factoringtransferenciaestadoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
-  code                             String                            @unique(map: "UQ_factoringtransferenciaestado_code") @db.VarChar(20)
-  nombre                           String                            @db.VarChar(50)
-  alias                            String                            @db.VarChar(50)
-  color                            String                            @db.VarChar(50)
-  idusuariocrea                    Int                               @default(1)
-  fechacrea                        DateTime                          @default(now()) @db.Timestamp(3)
-  idusuariomod                     Int                               @default(1)
-  fechamod                         DateTime                          @default(now()) @db.Timestamp(3)
-  estado                           Int                               @default(1) @db.TinyInt
+  idfactoringtransferenciaestado  Int                               @id @map("_idfactoringtransferenciaestado") @db.UnsignedInt
+  factoringtransferenciaestadoid  String                            @unique(map: "UQ_factoringtransferenciaestado_factoringtransferenciaestadoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                            String                            @unique(map: "UQ_factoringtransferenciaestado_code") @db.VarChar(20)
+  nombre                          String                            @db.VarChar(50)
+  alias                           String                            @db.VarChar(50)
+  color                           String                            @db.VarChar(50)
+  idusuariocrea                   Int                               @default(1)
+  fechacrea                       DateTime                          @default(now()) @db.Timestamp(3)
+  idusuariomod                    Int                               @default(1)
+  fechamod                        DateTime                          @default(now()) @db.Timestamp(3)
+  estado                          Int                               @default(1) @db.TinyInt
   factoring_transferencia_cedentes factoring_transferencia_cedente[]
 }
 
 model factoring_transferencia_tipo {
-  idfactoringtransferenciatipo     Int                               @id @map("_idfactoringtransferenciatipo") @db.UnsignedInt
-  factoringtransferenciatipoid     String                            @unique(map: "UQ_factoringtransferenciatipo_factoringtransferenciatipoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
-  code                             String                            @unique(map: "UQ_factoringtransferenciatipo_code") @db.VarChar(20)
-  nombre                           String                            @db.VarChar(50)
-  alias                            String                            @db.VarChar(50)
-  color                            String                            @db.VarChar(50)
-  idusuariocrea                    Int                               @default(1)
-  fechacrea                        DateTime                          @default(now()) @db.Timestamp(3)
-  idusuariomod                     Int                               @default(1)
-  fechamod                         DateTime                          @default(now()) @db.Timestamp(3)
-  estado                           Int                               @default(1) @db.TinyInt
+  idfactoringtransferenciatipo    Int                               @id @map("_idfactoringtransferenciatipo") @db.UnsignedInt
+  factoringtransferenciatipoid    String                            @unique(map: "UQ_factoringtransferenciatipo_factoringtransferenciatipoid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
+  code                            String                            @unique(map: "UQ_factoringtransferenciatipo_code") @db.VarChar(20)
+  nombre                          String                            @db.VarChar(50)
+  alias                           String                            @db.VarChar(50)
+  color                           String                            @db.VarChar(50)
+  idusuariocrea                   Int                               @default(1)
+  fechacrea                       DateTime                          @default(now()) @db.Timestamp(3)
+  idusuariomod                    Int                               @default(1)
+  fechamod                        DateTime                          @default(now()) @db.Timestamp(3)
+  estado                          Int                               @default(1) @db.TinyInt
   factoring_transferencia_cedentes factoring_transferencia_cedente[]
 }
 
 /// --- INICIO LOG SCRIPT: pluralizar-schema.js ---
-/// Fecha de ejecución: 19/11/2025, 17:04:26
-/// Total líneas con relaciones tipo '[]': 156
-/// Modificaciones realizadas: 2
-/// Sin modificar (ya pluralizadas): 154
+/// Fecha de ejecución: 19/11/2025, 10:22:24
+/// Total líneas con relaciones tipo '[]': 152
+/// Modificaciones realizadas: 5
+/// Sin modificar (ya pluralizadas): 147
 /// --- Detalle de líneas evaluadas ---
 /// Línea 35: 'archivo_colaboradores' ya está pluralizado correctamente.
 /// Línea 36: 'archivo_cuenta_bancarias' ya está pluralizado correctamente.
 /// Línea 37: 'archivo_empresas' ya está pluralizado correctamente.
 /// Línea 38: 'archivo_factoring_historial_estados' ya está pluralizado correctamente.
-/// Línea 39: 'archivo_factoring_transferencia_cedentes' ya está pluralizado correctamente.
+/// Línea 39: 'archivo_factoring_transferencia_cedente' ➜ 'archivo_factoring_transferencia_cedentes'
 /// Línea 40: 'archivo_facturas' ya está pluralizado correctamente.
 /// Línea 41: 'archivo_inversionista_depositos' ya está pluralizado correctamente.
 /// Línea 42: 'archivo_inversionista_retiros' ya está pluralizado correctamente.
@@ -2327,303 +2311,103 @@ model factoring_transferencia_tipo {
 /// Línea 646: 'servicio_empresas' ya está pluralizado correctamente.
 /// Línea 647: 'usuario_servicio_empresas' ya está pluralizado correctamente.
 /// Línea 669: 'factoring_pagos' ya está pluralizado correctamente.
-/// Línea 670: 'factoring_transferencia_cedentes' ya está pluralizado correctamente.
-/// Línea 719: 'factor_cuenta_bancarias' ya está pluralizado correctamente.
-/// Línea 720: 'factoring' ➜ 'factoringes'
-/// Línea 742: 'factoring_pagos' ya está pluralizado correctamente.
-/// Línea 743: 'factoring_transferencia_cedentes' ya está pluralizado correctamente.
-/// Línea 744: 'inversionista_depositos' ya está pluralizado correctamente.
-/// Línea 745: 'inversionista_retiros' ya está pluralizado correctamente.
-/// Línea 790: 'factoring_facturas' ya está pluralizado correctamente.
-/// Línea 791: 'factoring_historial_estados' ya está pluralizado correctamente.
-/// Línea 792: 'factoring_pagos' ya está pluralizado correctamente.
-/// Línea 794: 'factoring_transferencia_cedentes' ya está pluralizado correctamente.
-/// Línea 922: 'factoring_ejecutados' ya está pluralizado correctamente.
-/// Línea 940: 'factoringes' ya está pluralizado correctamente.
-/// Línea 941: 'factoring_historial_estados' ya está pluralizado correctamente.
-/// Línea 956: 'factoring_propuestas' ya está pluralizado correctamente.
-/// Línea 987: 'archivo_factoring_historial_estados' ya está pluralizado correctamente.
-/// Línea 1011: 'banco_transaccion_factoring_inversiones' ya está pluralizado correctamente.
-/// Línea 1095: 'factoring_propuesta_financieros' ya está pluralizado correctamente.
-/// Línea 1096: 'factoring_propuesta_historial_estados' ya está pluralizado correctamente.
-/// Línea 1119: 'factoring_propuestas' ya está pluralizado correctamente.
-/// Línea 1120: 'factoring_propuesta_historial_estados' ya está pluralizado correctamente.
-/// Línea 1160: 'factoring_propuestas' ya está pluralizado correctamente.
-/// Línea 1208: 'archivo_facturas' ya está pluralizado correctamente.
-/// Línea 1209: 'factoring_facturas' ya está pluralizado correctamente.
-/// Línea 1211: 'factura_impuestos' ya está pluralizado correctamente.
-/// Línea 1212: 'factura_itemes' ya está pluralizado correctamente.
-/// Línea 1213: 'factura_medio_pagos' ya está pluralizado correctamente.
-/// Línea 1214: 'factura_notas' ya está pluralizado correctamente.
-/// Línea 1215: 'factura_termino_pagos' ya está pluralizado correctamente.
-/// Línea 1333: 'factoring_propuesta_financieros' ya está pluralizado correctamente.
-/// Línea 1348: 'factoring_propuesta_financieros' ya está pluralizado correctamente.
-/// Línea 1360: 'personas' ya está pluralizado correctamente.
-/// Línea 1374: 'inversionista_banco_cuentas' ya está pluralizado correctamente.
-/// Línea 1375: 'inversionista_cuenta_bancarias' ya está pluralizado correctamente.
-/// Línea 1376: 'servicio_inversionistas' ya está pluralizado correctamente.
-/// Línea 1407: 'inversionista_depositos' ya está pluralizado correctamente.
-/// Línea 1408: 'inversionista_retiros' ya está pluralizado correctamente.
-/// Línea 1431: 'archivo_inversionista_depositos' ya está pluralizado correctamente.
-/// Línea 1432: 'banco_transaccion_inversionista_depositos' ya está pluralizado correctamente.
-/// Línea 1459: 'archivo_inversionista_retiros' ya está pluralizado correctamente.
-/// Línea 1460: 'banco_transaccion_inversionista_retiros' ya está pluralizado correctamente.
-/// Línea 1484: 'banco_cuentas' ya está pluralizado correctamente.
-/// Línea 1485: 'cuenta_bancarias' ya está pluralizado correctamente.
-/// Línea 1486: 'factoringes' ya está pluralizado correctamente.
-/// Línea 1487: 'factoring_transferencia_cedente' ➜ 'factoring_transferencia_cedentes'
-/// Línea 1502: 'departamentos' ya está pluralizado correctamente.
-/// Línea 1503: 'empresas' ya está pluralizado correctamente.
-/// Línea 1504: 'factores' ya está pluralizado correctamente.
-/// Línea 1519: 'persona_pep_indirectos' ya está pluralizado correctamente.
-/// Línea 1550: 'archivo_personas' ya está pluralizado correctamente.
-/// Línea 1551: 'colaboradores' ya está pluralizado correctamente.
-/// Línea 1563: 'persona_cuenta_bancarias' ya está pluralizado correctamente.
-/// Línea 1564: 'persona_declaraciones' ya está pluralizado correctamente.
-/// Línea 1565: 'persona_pep_directos' ya está pluralizado correctamente.
-/// Línea 1566: 'persona_pep_indirectos' ya está pluralizado correctamente.
-/// Línea 1567: 'persona_verificaciones' ya está pluralizado correctamente.
-/// Línea 1701: 'personas' ya está pluralizado correctamente.
-/// Línea 1702: 'persona_verificaciones' ya está pluralizado correctamente.
-/// Línea 1717: 'distritos' ya está pluralizado correctamente.
-/// Línea 1718: 'empresas' ya está pluralizado correctamente.
-/// Línea 1719: 'factores' ya está pluralizado correctamente.
-/// Línea 1720: 'personas' ya está pluralizado correctamente.
-/// Línea 1736: 'distritos' ya está pluralizado correctamente.
-/// Línea 1754: 'empresas' ya está pluralizado correctamente.
-/// Línea 1755: 'factores' ya está pluralizado correctamente.
-/// Línea 1756: 'factoring_config_comisiones' ya está pluralizado correctamente.
-/// Línea 1757: 'factoring_config_garantias' ya está pluralizado correctamente.
-/// Línea 1758: 'factoring_config_tasa_descuentos' ya está pluralizado correctamente.
-/// Línea 1776: 'usuario_roles' ya está pluralizado correctamente.
-/// Línea 1793: 'servicio_empresas' ya está pluralizado correctamente.
-/// Línea 1794: 'servicio_inversionistas' ya está pluralizado correctamente.
-/// Línea 1795: 'usuario_servicios' ya está pluralizado correctamente.
-/// Línea 1796: 'usuario_servicio_empresas' ya está pluralizado correctamente.
-/// Línea 1816: 'servicio_empresa_verificaciones' ya está pluralizado correctamente.
-/// Línea 1840: 'servicio_empresas' ya está pluralizado correctamente.
-/// Línea 1841: 'servicio_empresa_verificaciones' ya está pluralizado correctamente.
-/// Línea 1886: 'banco_transaccion_estado_historiales' ya está pluralizado correctamente.
-/// Línea 1888: 'factoring_historial_estados' ya está pluralizado correctamente.
-/// Línea 1889: 'factoring_propuesta_historial_estados' ya está pluralizado correctamente.
-/// Línea 1890: 'facturas' ya está pluralizado correctamente.
-/// Línea 1892: 'persona_verificaciones' ya está pluralizado correctamente.
-/// Línea 1893: 'servicio_empresas' ya está pluralizado correctamente.
-/// Línea 1894: 'servicio_empresa_verificaciones' ya está pluralizado correctamente.
-/// Línea 1895: 'servicio_inversionistas' ya está pluralizado correctamente.
-/// Línea 1896: 'servicio_inversionista_verificaciones' ya está pluralizado correctamente.
-/// Línea 1898: 'usuario_roles' ya está pluralizado correctamente.
-/// Línea 1899: 'usuario_servicios' ya está pluralizado correctamente.
-/// Línea 1900: 'usuario_servicio_empresas' ya está pluralizado correctamente.
-/// Línea 1901: 'usuario_servicio_verificaciones' ya está pluralizado correctamente.
-/// Línea 1902: 'validaciones' ya está pluralizado correctamente.
-/// Línea 1937: 'usuario_servicio_verificaciones' ya está pluralizado correctamente.
-/// Línea 1983: 'usuario_servicio_empresas' ya está pluralizado correctamente.
-/// Línea 1998: 'usuario_servicio_empresas' ya está pluralizado correctamente.
-/// Línea 2013: 'usuario_servicios' ya está pluralizado correctamente.
-/// Línea 2014: 'usuario_servicio_verificaciones' ya está pluralizado correctamente.
-/// Línea 2073: 'validaciones' ya está pluralizado correctamente.
-/// Línea 2099: 'zlaboratorio_pedidos' ya está pluralizado correctamente.
-/// Línea 2119: 'servicio_inversionista_verificaciones' ya está pluralizado correctamente.
-/// Línea 2143: 'servicio_inversionistas' ya está pluralizado correctamente.
-/// Línea 2144: 'servicio_inversionista_verificaciones' ya está pluralizado correctamente.
-/// Línea 2225: 'archivo_factoring_transferencia_cedentes' ya está pluralizado correctamente.
-/// Línea 2253: 'factoring_transferencia_cedentes' ya está pluralizado correctamente.
-/// Línea 2268: 'factoring_transferencia_cedentes' ya está pluralizado correctamente.
+/// Línea 718: 'factor_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 740: 'factoring_pagos' ya está pluralizado correctamente.
+/// Línea 741: 'inversionista_depositos' ya está pluralizado correctamente.
+/// Línea 742: 'inversionista_retiros' ya está pluralizado correctamente.
+/// Línea 786: 'factoring_facturas' ya está pluralizado correctamente.
+/// Línea 787: 'factoring_historial_estados' ya está pluralizado correctamente.
+/// Línea 788: 'factoring_pagos' ya está pluralizado correctamente.
+/// Línea 790: 'factoring_transferencia_cedente' ➜ 'factoring_transferencia_cedentes'
+/// Línea 917: 'factoring_ejecutados' ya está pluralizado correctamente.
+/// Línea 935: 'factoringes' ya está pluralizado correctamente.
+/// Línea 936: 'factoring_historial_estados' ya está pluralizado correctamente.
+/// Línea 951: 'factoring_propuestas' ya está pluralizado correctamente.
+/// Línea 982: 'archivo_factoring_historial_estados' ya está pluralizado correctamente.
+/// Línea 1006: 'banco_transaccion_factoring_inversiones' ya está pluralizado correctamente.
+/// Línea 1090: 'factoring_propuesta_financieros' ya está pluralizado correctamente.
+/// Línea 1091: 'factoring_propuesta_historial_estados' ya está pluralizado correctamente.
+/// Línea 1114: 'factoring_propuestas' ya está pluralizado correctamente.
+/// Línea 1115: 'factoring_propuesta_historial_estados' ya está pluralizado correctamente.
+/// Línea 1155: 'factoring_propuestas' ya está pluralizado correctamente.
+/// Línea 1203: 'archivo_facturas' ya está pluralizado correctamente.
+/// Línea 1204: 'factoring_facturas' ya está pluralizado correctamente.
+/// Línea 1206: 'factura_impuestos' ya está pluralizado correctamente.
+/// Línea 1207: 'factura_itemes' ya está pluralizado correctamente.
+/// Línea 1208: 'factura_medio_pagos' ya está pluralizado correctamente.
+/// Línea 1209: 'factura_notas' ya está pluralizado correctamente.
+/// Línea 1210: 'factura_termino_pagos' ya está pluralizado correctamente.
+/// Línea 1328: 'factoring_propuesta_financieros' ya está pluralizado correctamente.
+/// Línea 1343: 'factoring_propuesta_financieros' ya está pluralizado correctamente.
+/// Línea 1355: 'personas' ya está pluralizado correctamente.
+/// Línea 1369: 'inversionista_banco_cuentas' ya está pluralizado correctamente.
+/// Línea 1370: 'inversionista_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 1371: 'servicio_inversionistas' ya está pluralizado correctamente.
+/// Línea 1402: 'inversionista_depositos' ya está pluralizado correctamente.
+/// Línea 1403: 'inversionista_retiros' ya está pluralizado correctamente.
+/// Línea 1426: 'archivo_inversionista_depositos' ya está pluralizado correctamente.
+/// Línea 1427: 'banco_transaccion_inversionista_depositos' ya está pluralizado correctamente.
+/// Línea 1454: 'archivo_inversionista_retiros' ya está pluralizado correctamente.
+/// Línea 1455: 'banco_transaccion_inversionista_retiros' ya está pluralizado correctamente.
+/// Línea 1479: 'banco_cuentas' ya está pluralizado correctamente.
+/// Línea 1480: 'cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 1481: 'factoringes' ya está pluralizado correctamente.
+/// Línea 1496: 'departamentos' ya está pluralizado correctamente.
+/// Línea 1497: 'empresas' ya está pluralizado correctamente.
+/// Línea 1498: 'factores' ya está pluralizado correctamente.
+/// Línea 1513: 'persona_pep_indirectos' ya está pluralizado correctamente.
+/// Línea 1544: 'archivo_personas' ya está pluralizado correctamente.
+/// Línea 1545: 'colaboradores' ya está pluralizado correctamente.
+/// Línea 1557: 'persona_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 1558: 'persona_declaraciones' ya está pluralizado correctamente.
+/// Línea 1559: 'persona_pep_directos' ya está pluralizado correctamente.
+/// Línea 1560: 'persona_pep_indirectos' ya está pluralizado correctamente.
+/// Línea 1561: 'persona_verificaciones' ya está pluralizado correctamente.
+/// Línea 1695: 'personas' ya está pluralizado correctamente.
+/// Línea 1696: 'persona_verificaciones' ya está pluralizado correctamente.
+/// Línea 1711: 'distritos' ya está pluralizado correctamente.
+/// Línea 1712: 'empresas' ya está pluralizado correctamente.
+/// Línea 1713: 'factores' ya está pluralizado correctamente.
+/// Línea 1714: 'personas' ya está pluralizado correctamente.
+/// Línea 1730: 'distritos' ya está pluralizado correctamente.
+/// Línea 1748: 'empresas' ya está pluralizado correctamente.
+/// Línea 1749: 'factores' ya está pluralizado correctamente.
+/// Línea 1750: 'factoring_config_comisiones' ya está pluralizado correctamente.
+/// Línea 1751: 'factoring_config_garantias' ya está pluralizado correctamente.
+/// Línea 1752: 'factoring_config_tasa_descuentos' ya está pluralizado correctamente.
+/// Línea 1770: 'usuario_roles' ya está pluralizado correctamente.
+/// Línea 1787: 'servicio_empresas' ya está pluralizado correctamente.
+/// Línea 1788: 'servicio_inversionistas' ya está pluralizado correctamente.
+/// Línea 1789: 'usuario_servicios' ya está pluralizado correctamente.
+/// Línea 1790: 'usuario_servicio_empresas' ya está pluralizado correctamente.
+/// Línea 1810: 'servicio_empresa_verificaciones' ya está pluralizado correctamente.
+/// Línea 1834: 'servicio_empresas' ya está pluralizado correctamente.
+/// Línea 1835: 'servicio_empresa_verificaciones' ya está pluralizado correctamente.
+/// Línea 1880: 'banco_transaccion_estado_historiales' ya está pluralizado correctamente.
+/// Línea 1882: 'factoring_historial_estados' ya está pluralizado correctamente.
+/// Línea 1883: 'factoring_propuesta_historial_estados' ya está pluralizado correctamente.
+/// Línea 1884: 'facturas' ya está pluralizado correctamente.
+/// Línea 1886: 'persona_verificaciones' ya está pluralizado correctamente.
+/// Línea 1887: 'servicio_empresas' ya está pluralizado correctamente.
+/// Línea 1888: 'servicio_empresa_verificaciones' ya está pluralizado correctamente.
+/// Línea 1889: 'servicio_inversionistas' ya está pluralizado correctamente.
+/// Línea 1890: 'servicio_inversionista_verificaciones' ya está pluralizado correctamente.
+/// Línea 1892: 'usuario_roles' ya está pluralizado correctamente.
+/// Línea 1893: 'usuario_servicios' ya está pluralizado correctamente.
+/// Línea 1894: 'usuario_servicio_empresas' ya está pluralizado correctamente.
+/// Línea 1895: 'usuario_servicio_verificaciones' ya está pluralizado correctamente.
+/// Línea 1896: 'validaciones' ya está pluralizado correctamente.
+/// Línea 1931: 'usuario_servicio_verificaciones' ya está pluralizado correctamente.
+/// Línea 1977: 'usuario_servicio_empresas' ya está pluralizado correctamente.
+/// Línea 1992: 'usuario_servicio_empresas' ya está pluralizado correctamente.
+/// Línea 2007: 'usuario_servicios' ya está pluralizado correctamente.
+/// Línea 2008: 'usuario_servicio_verificaciones' ya está pluralizado correctamente.
+/// Línea 2067: 'validaciones' ya está pluralizado correctamente.
+/// Línea 2093: 'zlaboratorio_pedidos' ya está pluralizado correctamente.
+/// Línea 2113: 'servicio_inversionista_verificaciones' ya está pluralizado correctamente.
+/// Línea 2137: 'servicio_inversionistas' ya está pluralizado correctamente.
+/// Línea 2138: 'servicio_inversionista_verificaciones' ya está pluralizado correctamente.
+/// Línea 2215: 'archivo_factoring_transferencia_cedente' ➜ 'archivo_factoring_transferencia_cedentes'
+/// Línea 2237: 'factoring_transferencia_cedente' ➜ 'factoring_transferencia_cedentes'
+/// Línea 2252: 'factoring_transferencia_cedente' ➜ 'factoring_transferencia_cedentes'
 /// --- FIN LOG SCRIPT
-
-
-/// --- INICIO LOG DE SCRIPT: renombrar-atributos-especiales.js ---
-/// Fecha de ejecución: 19/11/2025, 17:04:26
-/// ✔️ Línea 33: (relation-field) archivo_estado ya coincide con 'archivoestado'
-/// ✔️ Línea 34: (relation-field) archivo_tipo ya coincide con 'archivotipo'
-/// ✔️ Línea 57: (relation-field) archivo ya coincide con 'archivo'
-/// ✔️ Línea 58: (relation-field) colaborador ya coincide con 'colaborador'
-/// ✔️ Línea 72: (relation-field) archivo ya coincide con 'archivo'
-/// ✔️ Línea 73: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
-/// ✔️ Línea 87: (relation-field) archivo ya coincide con 'archivo'
-/// ✔️ Línea 88: (relation-field) empresa ya coincide con 'empresa'
-/// ✔️ Línea 114: (relation-field) archivo ya coincide con 'archivo'
-/// ✔️ Línea 115: (relation-field) factoring_historial_estado ya coincide con 'factoringhistorialestado'
-/// ✔️ Línea 129: (relation-field) archivo ya coincide con 'archivo'
-/// ✔️ Línea 130: (relation-field) factura ya coincide con 'factura'
-/// ✔️ Línea 144: (relation-field) archivo ya coincide con 'archivo'
-/// ✔️ Línea 145: (relation-field) inversionista_deposito ya coincide con 'inversionistadeposito'
-/// ✔️ Línea 159: (relation-field) archivo ya coincide con 'archivo'
-/// ✔️ Línea 160: (relation-field) inversionista_retiro ya coincide con 'inversionistaretiro'
-/// ✔️ Línea 174: (relation-field) archivo ya coincide con 'archivo'
-/// ✔️ Línea 175: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 227: (relation-field) banco_cuenta_estado ya coincide con 'bancocuentaestado'
-/// ✔️ Línea 228: (relation-field) banco_cuenta_tipo ya coincide con 'bancocuentatipo'
-/// ✔️ Línea 229: (relation-field) moneda ya coincide con 'moneda'
-/// ✔️ Línea 282: (relation-field) banco_cuenta ya coincide con 'bancocuenta'
-/// ✔️ Línea 283: (relation-field) banco_transaccion_estado ya coincide con 'bancotransaccionestado'
-/// ✔️ Línea 284: (singular) banco_transaccion_estado_historial ya está correcto | Relación: 'banco_transaccion_idbancotransaccionestadohistorialTobanco_transaccion_estado_historial'
-/// ✔️ Línea 285: (relation-field) banco_transaccion_tipo ya coincide con 'bancotransacciontipo'
-/// ✔️ Línea 286: (plural) banco_transaccion_estado_historial_bancotransacciones ya está correcto | Relación: 'banco_transaccion_estado_historial_idbancotransaccionTobanco_transaccion'
-/// ✔️ Línea 324: (plural) banco_transaccion_bancotransaccionestadohistoriales ya está correcto | Relación: 'banco_transaccion_idbancotransaccionestadohistorialTobanco_transaccion_estado_historial'
-/// ✔️ Línea 325: (singular) banco_transaccion ya está correcto | Relación: 'banco_transaccion_estado_historial_idbancotransaccionTobanco_transaccion'
-/// ✔️ Línea 326: (relation-field) banco_transaccion_estado ya coincide con 'bancotransaccionestado'
-/// ✔️ Línea 327: (relation-field) usuario_modifica ya coincide con 'usuariomodifica'
-/// ✔️ Línea 342: (relation-field) banco_transaccion ya coincide con 'bancotransaccion'
-/// ✔️ Línea 343: (relation-field) factoring_inversion ya coincide con 'factoringinversion'
-/// ✔️ Línea 357: (relation-field) banco_transaccion ya coincide con 'bancotransaccion'
-/// ✔️ Línea 358: (relation-field) inversionista_deposito ya coincide con 'inversionistadeposito'
-/// ✔️ Línea 372: (relation-field) banco_transaccion ya coincide con 'bancotransaccion'
-/// ✔️ Línea 373: (relation-field) inversionista_retiro ya coincide con 'inversionistaretiro'
-/// ✔️ Línea 414: (relation-field) colaborador_tipo ya coincide con 'colaboradortipo'
-/// ✔️ Línea 415: (relation-field) documento_tipo ya coincide con 'documentotipo'
-/// ✔️ Línea 416: (relation-field) empresa ya coincide con 'empresa'
-/// ✔️ Línea 417: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 472: (relation-field) empresa ya coincide con 'empresa'
-/// ✔️ Línea 489: (relation-field) usuario ya coincide con 'usuario'
-/// ✔️ Línea 511: (relation-field) banco ya coincide con 'banco'
-/// ✔️ Línea 512: (relation-field) cuenta_bancaria_estado ya coincide con 'cuentabancariaestado'
-/// ✔️ Línea 513: (relation-field) cuenta_tipo ya coincide con 'cuentatipo'
-/// ✔️ Línea 514: (relation-field) moneda ya coincide con 'moneda'
-/// ✔️ Línea 566: (relation-field) pais ya coincide con 'pais'
-/// ✔️ Línea 589: (relation-field) provincia ya coincide con 'provincia'
-/// ✔️ Línea 590: (relation-field) region_natural ya coincide con 'regionnatural'
-/// ✔️ Línea 638: (relation-field) departamento_sede ya coincide con 'departamentosede'
-/// ✔️ Línea 639: (relation-field) distrito_sede ya coincide con 'distritosede'
-/// ✔️ Línea 640: (relation-field) pais_sede ya coincide con 'paissede'
-/// ✔️ Línea 641: (relation-field) provincia_sede ya coincide con 'provinciasede'
-/// ✔️ Línea 642: (relation-field) riesgo ya coincide con 'riesgo'
-/// ✔️ Línea 644: (plural) factoring_aceptantes ya está correcto | Relación: 'factoring_idaceptanteToempresa'
-/// ✔️ Línea 645: (plural) factoring_cedentes ya está correcto | Relación: 'factoring_idcedenteToempresa'
-/// ✔️ Línea 667: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
-/// ✔️ Línea 668: (relation-field) empresa ya coincide con 'empresa'
-/// ✔️ Línea 714: (relation-field) departamento_sede ya coincide con 'departamentosede'
-/// ✔️ Línea 715: (relation-field) distrito_sede ya coincide con 'distritosede'
-/// ✔️ Línea 716: (relation-field) pais_sede ya coincide con 'paissede'
-/// ✔️ Línea 717: (relation-field) provincia_sede ya coincide con 'provinciasede'
-/// ✔️ Línea 718: (relation-field) riesgo ya coincide con 'riesgo'
-/// ✔️ Línea 740: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
-/// ✔️ Línea 741: (relation-field) factor ya coincide con 'factor'
-/// ✔️ Línea 779: (singular) empresa_aceptante ya está correcto | Relación: 'factoring_idaceptanteToempresa'
-/// ✔️ Línea 780: (singular) empresa_cedente ya está correcto | Relación: 'factoring_idcedenteToempresa'
-/// ✔️ Línea 781: (relation-field) contacto_aceptante ya coincide con 'contactoaceptante'
-/// ✔️ Línea 782: (relation-field) contacto_cedente ya coincide con 'contactocedente'
-/// ✔️ Línea 783: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
-/// ✔️ Línea 784: (relation-field) factor ya coincide con 'factor'
-/// ✔️ Línea 785: (singular) factoring_ejecutado ya está correcto | Relación: 'factoring_idfactoringejecutadoTofactoring_ejecutado'
-/// ✔️ Línea 786: (relation-field) factoring_estado ya coincide con 'factoringestado'
-/// ✔️ Línea 787: (singular) factoring_propuesta_aceptada ya está correcto | Relación: 'factoring_idfactoringpropuestaaceptadaTofactoring_propuesta'
-/// ✔️ Línea 788: (relation-field) moneda ya coincide con 'moneda'
-/// ✔️ Línea 789: (plural) factoring_ejecutado_factoringes ya está correcto | Relación: 'factoring_ejecutado_idfactoringTofactoring'
-/// ✔️ Línea 793: (plural) factoring_propuesta_factoringes ya está correcto | Relación: 'factoring_propuesta_idfactoringTofactoring'
-/// ✔️ Línea 823: (relation-field) riesgo ya coincide con 'riesgo'
-/// ✔️ Línea 843: (relation-field) riesgo ya coincide con 'riesgo'
-/// ✔️ Línea 862: (relation-field) riesgo ya coincide con 'riesgo'
-/// ✔️ Línea 902: (plural) factoring_factoringejecutados ya está correcto | Relación: 'factoring_idfactoringejecutadoTofactoring_ejecutado'
-/// ✔️ Línea 903: (singular) factoring ya está correcto | Relación: 'factoring_ejecutado_idfactoringTofactoring'
-/// ✔️ Línea 904: (relation-field) factoring_ejecutado_estado ya coincide con 'factoringejecutadoestado'
-/// ✔️ Línea 967: (relation-field) factoring ya coincide con 'factoring'
-/// ✔️ Línea 968: (relation-field) factura ya coincide con 'factura'
-/// ✔️ Línea 988: (relation-field) factoring_estado ya coincide con 'factoringestado'
-/// ✔️ Línea 989: (relation-field) factoring ya coincide con 'factoring'
-/// ✔️ Línea 990: (relation-field) usuario_modifica ya coincide con 'usuariomodifica'
-/// ✔️ Línea 1029: (relation-field) empresa_cuenta_bancaria ya coincide con 'empresacuentabancaria'
-/// ✔️ Línea 1030: (relation-field) factor_cuenta_bancaria ya coincide con 'factorcuentabancaria'
-/// ✔️ Línea 1031: (relation-field) factoring ya coincide con 'factoring'
-/// ✔️ Línea 1087: (plural) factoring_factoringpropuestaaceptadas ya está correcto | Relación: 'factoring_idfactoringpropuestaaceptadaTofactoring_propuesta'
-/// ✔️ Línea 1088: (singular) factoring ya está correcto | Relación: 'factoring_propuesta_idfactoringTofactoring'
-/// ✔️ Línea 1089: (relation-field) factoring_estrategia ya coincide con 'factoringestrategia'
-/// ✔️ Línea 1090: (relation-field) factoring_propuesta_estado ya coincide con 'factoringpropuestaestado'
-/// ✔️ Línea 1091: (relation-field) factoring_tipo ya coincide con 'factoringtipo'
-/// ✔️ Línea 1092: (singular) riesgo_aceptante ya está correcto | Relación: 'factoring_propuesta_idriesgoaceptanteToriesgo'
-/// ✔️ Línea 1093: (singular) riesgo_cedente ya está correcto | Relación: 'factoring_propuesta_idriesgocedenteToriesgo'
-/// ✔️ Línea 1094: (singular) riesgo_operacion ya está correcto | Relación: 'factoring_propuesta_idriesgooperacionToriesgo'
-/// ✔️ Línea 1140: (relation-field) factoring_propuesta ya coincide con 'factoringpropuesta'
-/// ✔️ Línea 1141: (relation-field) financiero_concepto ya coincide con 'financieroconcepto'
-/// ✔️ Línea 1142: (relation-field) financiero_tipo ya coincide con 'financierotipo'
-/// ✔️ Línea 1210: (relation-field) usuario_upload ya coincide con 'usuarioupload'
-/// ✔️ Línea 1235: (relation-field) factura ya coincide con 'factura'
-/// ✔️ Línea 1264: (relation-field) factura ya coincide con 'factura'
-/// ✔️ Línea 1281: (relation-field) factura ya coincide con 'factura'
-/// ✔️ Línea 1297: (relation-field) factura ya coincide con 'factura'
-/// ✔️ Línea 1316: (relation-field) factura ya coincide con 'factura'
-/// ✔️ Línea 1373: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 1387: (relation-field) banco_cuenta ya coincide con 'bancocuenta'
-/// ✔️ Línea 1388: (relation-field) inversionista ya coincide con 'inversionista'
-/// ✔️ Línea 1405: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
-/// ✔️ Línea 1406: (relation-field) inversionista ya coincide con 'inversionista'
-/// ✔️ Línea 1433: (relation-field) banco_cuenta ya coincide con 'bancocuenta'
-/// ✔️ Línea 1434: (relation-field) factor_cuenta_bancaria ya coincide con 'factorcuentabancaria'
-/// ✔️ Línea 1435: (relation-field) inversionista_cuenta_bancaria ya coincide con 'inversionistacuentabancaria'
-/// ✔️ Línea 1461: (relation-field) banco_cuenta ya coincide con 'bancocuenta'
-/// ✔️ Línea 1462: (relation-field) factor_cuenta_bancaria ya coincide con 'factorcuentabancaria'
-/// ✔️ Línea 1463: (relation-field) inversionista_cuenta_bancaria ya coincide con 'inversionistacuentabancaria'
-/// ✔️ Línea 1505: (plural) persona_paisnacimientos ya está correcto | Relación: 'persona_idpaisnacimientoTopais'
-/// ✔️ Línea 1506: (plural) persona_paisnacionalidades ya está correcto | Relación: 'persona_idpaisnacionalidadTopais'
-/// ✔️ Línea 1507: (plural) persona_paisresidencias ya está correcto | Relación: 'persona_idpaisresidenciaTopais'
-/// ✔️ Línea 1553: (relation-field) departamento_residencia ya coincide con 'departamentoresidencia'
-/// ✔️ Línea 1554: (relation-field) distrito_residencia ya coincide con 'distritoresidencia'
-/// ✔️ Línea 1555: (relation-field) documento_tipo ya coincide con 'documentotipo'
-/// ✔️ Línea 1556: (relation-field) genero ya coincide con 'genero'
-/// ✔️ Línea 1557: (singular) pais_nacimiento ya está correcto | Relación: 'persona_idpaisnacimientoTopais'
-/// ✔️ Línea 1558: (singular) pais_nacionalidad ya está correcto | Relación: 'persona_idpaisnacionalidadTopais'
-/// ✔️ Línea 1559: (singular) pais_residencia ya está correcto | Relación: 'persona_idpaisresidenciaTopais'
-/// ✔️ Línea 1560: (relation-field) persona_verificacion_estado ya coincide con 'personaverificacionestado'
-/// ✔️ Línea 1561: (relation-field) provincia_residencia ya coincide con 'provinciaresidencia'
-/// ✔️ Línea 1562: (relation-field) usuario ya coincide con 'usuario'
-/// ✔️ Línea 1591: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
-/// ✔️ Línea 1592: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 1610: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 1631: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 1655: (relation-field) pep_vinculo ya coincide con 'pepvinculo'
-/// ✔️ Línea 1656: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 1675: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 1676: (relation-field) persona_verificacion_estado ya coincide con 'personaverificacionestado'
-/// ✔️ Línea 1677: (relation-field) usuario_verifica ya coincide con 'usuarioverifica'
-/// ✔️ Línea 1721: (relation-field) departamento ya coincide con 'departamento'
-/// ✔️ Línea 1759: (plural) factoring_propuesta_riesgoaceptantes ya está correcto | Relación: 'factoring_propuesta_idriesgoaceptanteToriesgo'
-/// ✔️ Línea 1760: (plural) factoring_propuesta_riesgocedentes ya está correcto | Relación: 'factoring_propuesta_idriesgocedenteToriesgo'
-/// ✔️ Línea 1761: (plural) factoring_propuesta_riesgooperaciones ya está correcto | Relación: 'factoring_propuesta_idriesgooperacionToriesgo'
-/// ✔️ Línea 1812: (relation-field) empresa ya coincide con 'empresa'
-/// ✔️ Línea 1813: (relation-field) servicio ya coincide con 'servicio'
-/// ✔️ Línea 1814: (relation-field) servicio_empresa_estado ya coincide con 'servicioempresaestado'
-/// ✔️ Línea 1815: (relation-field) usuario_suscriptor ya coincide con 'usuariosuscriptor'
-/// ✔️ Línea 1857: (relation-field) servicio_empresa ya coincide con 'servicioempresa'
-/// ✔️ Línea 1858: (relation-field) servicio_empresa_estado ya coincide con 'servicioempresaestado'
-/// ✔️ Línea 1859: (relation-field) usuario_verifica ya coincide con 'usuarioverifica'
-/// ✔️ Línea 1897: (relation-field) documento_tipo ya coincide con 'documentotipo'
-/// ✔️ Línea 1915: (relation-field) rol ya coincide con 'rol'
-/// ✔️ Línea 1916: (relation-field) usuario ya coincide con 'usuario'
-/// ✔️ Línea 1934: (relation-field) servicio ya coincide con 'servicio'
-/// ✔️ Línea 1935: (relation-field) usuario ya coincide con 'usuario'
-/// ✔️ Línea 1936: (relation-field) usuario_servicio_estado ya coincide con 'usuarioservicioestado'
-/// ✔️ Línea 1958: (relation-field) empresa ya coincide con 'empresa'
-/// ✔️ Línea 1959: (relation-field) servicio ya coincide con 'servicio'
-/// ✔️ Línea 1960: (relation-field) usuario ya coincide con 'usuario'
-/// ✔️ Línea 1961: (relation-field) usuario_servicio_empresa_estado ya coincide con 'usuarioservicioempresaestado'
-/// ✔️ Línea 1962: (relation-field) usuario_servicio_empresa_rol ya coincide con 'usuarioservicioempresarol'
-/// ✔️ Línea 2030: (relation-field) usuario_servicio ya coincide con 'usuarioservicio'
-/// ✔️ Línea 2031: (relation-field) usuario_servicio_estado ya coincide con 'usuarioservicioestado'
-/// ✔️ Línea 2032: (relation-field) usuario_verifica ya coincide con 'usuarioverifica'
-/// ✔️ Línea 2057: (relation-field) usuario ya coincide con 'usuario'
-/// ✔️ Línea 2058: (relation-field) validacion_tipo ya coincide con 'validaciontipo'
-/// ✔️ Línea 2086: (relation-field) usuario ya coincide con 'usuario'
-/// ✔️ Línea 2115: (relation-field) inversionista ya coincide con 'inversionista'
-/// ✔️ Línea 2116: (relation-field) servicio ya coincide con 'servicio'
-/// ✔️ Línea 2117: (relation-field) servicio_inversionista_estado ya coincide con 'servicioinversionistaestado'
-/// ✔️ Línea 2118: (relation-field) usuario_suscriptor ya coincide con 'usuariosuscriptor'
-/// ✔️ Línea 2160: (relation-field) servicio_inversionista ya coincide con 'servicioinversionista'
-/// ✔️ Línea 2161: (relation-field) servicio_inversionista_estado ya coincide con 'servicioinversionistaestado'
-/// ✔️ Línea 2162: (relation-field) usuario_verifica ya coincide con 'usuarioverifica'
-/// ✔️ Línea 2182: (relation-field) factoring_propuesta ya coincide con 'factoringpropuesta'
-/// ✔️ Línea 2183: (relation-field) factoring_propuesta_estado ya coincide con 'factoringpropuestaestado'
-/// ✔️ Línea 2184: (relation-field) usuario_modifica ya coincide con 'usuariomodifica'
-/// ✔️ Línea 2199: (relation-field) archivo ya coincide con 'archivo'
-/// ✔️ Línea 2200: (relation-field) factoring_transferencia_cedente ya coincide con 'factoringtransferenciacedente'
-/// ✔️ Línea 2226: (relation-field) empresa_cuenta_bancaria ya coincide con 'empresacuentabancaria'
-/// ✔️ Línea 2227: (relation-field) factor_cuenta_bancaria ya coincide con 'factorcuentabancaria'
-/// ✔️ Línea 2228: (relation-field) factoring ya coincide con 'factoring'
-/// ✔️ Línea 2229: (relation-field) factoring_transferencia_estado ya coincide con 'factoringtransferenciaestado'
-/// ✔️ Línea 2230: (relation-field) factoring_transferencia_tipo ya coincide con 'factoringtransferenciatipo'
-/// ✔️ Línea 2231: (relation-field) moneda ya coincide con 'moneda'
-/// 📊 Resumen del script: renombrar-atributos-especiales.js
-/// 🔎 Total relaciones '@relation' detectadas: 187
-/// ✅ Atributos renombrados: 0
-/// ⚠️ Ya estaban correctos: 187
-/// --- FIN LOG DE SCRIPT ---

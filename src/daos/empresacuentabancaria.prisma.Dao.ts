@@ -6,6 +6,77 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
+export const getEmpresacuentabancariasByIdempresaIdmoneda = async (tx: TxClient, idempresa: number, idmoneda: number, estados: number[]) => {
+  try {
+    const empresacuentabancaria = await tx.empresa_cuenta_bancaria.findMany({
+      include: {
+        empresa: true,
+        cuenta_bancaria: {
+          include: {
+            banco: true,
+            moneda: true,
+            cuenta_tipo: true,
+            cuenta_bancaria_estado: true,
+          },
+        },
+      },
+      where: {
+        idempresa: idempresa,
+        estado: {
+          in: estados,
+        },
+        cuenta_bancaria: {
+          estado: {
+            in: estados,
+          },
+          moneda: {
+            idmoneda: idmoneda,
+          },
+        },
+      },
+    });
+
+    return empresacuentabancaria;
+  } catch (error) {
+    log.error(line(), "", error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
+export const getEmpresacuentabancariasByIdempresa = async (tx: TxClient, idempresa: number, estados: number[]) => {
+  try {
+    const empresacuentabancaria = await tx.empresa_cuenta_bancaria.findMany({
+      include: {
+        empresa: true,
+        cuenta_bancaria: {
+          include: {
+            banco: true,
+            moneda: true,
+            cuenta_tipo: true,
+            cuenta_bancaria_estado: true,
+          },
+        },
+      },
+      where: {
+        idempresa: idempresa,
+        estado: {
+          in: estados,
+        },
+        cuenta_bancaria: {
+          estado: {
+            in: estados,
+          },
+        },
+      },
+    });
+
+    return empresacuentabancaria;
+  } catch (error) {
+    log.error(line(), "", error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getEmpresacuentabancariasForFactoring = async (tx: TxClient, idempresa: number, idmoneda: number, idcuentabancariaestado: number[], estados: number[]) => {
   try {
     const empresacuentabancaria = await tx.empresa_cuenta_bancaria.findMany({

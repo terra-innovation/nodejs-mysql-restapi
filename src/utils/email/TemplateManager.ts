@@ -100,6 +100,110 @@ class TemplaceManager {
     return textoPlano;
   }
 
+  async templateFactoringEmpresaServicioFactoringCedenteConfirmacionTransferencia(params) {
+    try {
+      const paramsSchema = yup
+        .object()
+        .shape({
+          usuario: yup
+            .object({
+              usuarionombres: yup.string().required(),
+              email: yup.string().required(),
+            })
+            .required(),
+          cabecera: yup
+            .object({
+              fecha_actual: yup.string().trim().required().min(1).max(200),
+            })
+            .required(),
+          factoring: yup
+            .object({
+              code: yup.string().required(),
+              fecha_registro: yup.string().required(),
+              monto_factura: yup.string().required(),
+              monto_detraccion: yup.string().required(),
+              monto_neto: yup.string().required(),
+              fecha_pago_estimado: yup.string().required(),
+              empresa_cedente: yup.object({
+                ruc: yup.string().required(),
+                razon_social: yup.string().required(),
+              }),
+              empresa_aceptante: yup.object({
+                ruc: yup.string().required(),
+                razon_social: yup.string().required(),
+              }),
+              moneda: yup.object({
+                codigo: yup.string().required(),
+                nombre: yup.string().required(),
+              }),
+            })
+            .required(),
+          factoring_formateado: yup
+            .object({
+              factura: yup.string().required(),
+            })
+            .required(),
+          factoringtransferenciacedente: yup
+            .object({
+              code: yup.string().required(),
+              fecha: yup.string().required(),
+              monto: yup.string().required(),
+              numero_operacion: yup.string().required(),
+              factoring_transferencia_estado: yup.object({
+                nombre: yup.string().required(),
+              }),
+              factoring_transferencia_tipo: yup.object({
+                nombre: yup.string().required(),
+              }),
+              factor_cuenta_bancaria: yup.object({
+                cuenta_bancaria: yup.object({
+                  numero: yup.string().required(),
+                  banco: yup.object({
+                    nombre: yup.string().required(),
+                  }),
+                }),
+              }),
+              empresa_cuenta_bancaria: yup.object({
+                cuenta_bancaria: yup.object({
+                  numero: yup.string().required(),
+                  banco: yup.object({
+                    nombre: yup.string().required(),
+                  }),
+                }),
+              }),
+              moneda: yup.object({
+                codigo: yup.string().required(),
+                nombre: yup.string().required(),
+                simbolo: yup.string().required(),
+              }),
+            })
+            .required(),
+          factoringtransferenciacedente_formateado: yup
+            .object({
+              fecha: yup.string().required(),
+              monto: yup.string().required(),
+            })
+            .required(),
+        })
+        .required();
+      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+
+      const bodyEmailTHTML = await this.renderTemplate("factoring-empresa-servicio-factoring-cedente-confirmacion-transferencia.html", paramsValidated);
+      const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
+      const subjectEmailText = await this.renderSubject("Confirmación de transferencia bancaria por Operación de Factoring de factura {{factoring_formateado.factura}}", paramsValidated);
+
+      const codigoverificacionMailOptions = {
+        subject: subjectEmailText,
+        text: bodyEmailText,
+        html: bodyEmailTHTML,
+      };
+      return codigoverificacionMailOptions;
+    } catch (error) {
+      log.error(line(), error);
+      throw error;
+    }
+  }
+
   async templateFactoringEmpresaServicioFactoringDeudorSolicitudConfirmacion(params) {
     try {
       const paramsSchema = yup

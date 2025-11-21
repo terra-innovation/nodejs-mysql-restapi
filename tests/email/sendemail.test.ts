@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 dotenv.config(); // Carga tu archivo .env
 
 import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
+import * as factoringtransferenciacedenteDao from "#src/daos/factoringtransferenciacedente.prisma.Dao.js";
 import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
 import * as factoringpropuestaDao from "#src/daos/factoringpropuesta.prisma.Dao.js";
 import * as configuracionappDao from "#src/daos/configuracionapp.prisma.Dao.js";
@@ -16,6 +17,7 @@ import { log, line } from "#src/utils/logger.pino.js";
 
 import * as df from "#src/utils/dateUtils.js";
 import * as nf from "#src/utils/numberUtils.js";
+import * as jsonUtils from "#src/utils/jsonUtils.js";
 
 import * as emailService from "#src/services/email.Service.js";
 
@@ -28,7 +30,58 @@ async function main() {
   //testTemplateFactoringEmpresaServicioFactoringSolicitud();
   //testSendFactoringEmpresaServicioFactoringPropuestaDisponible();
   //testSendFactoringEmpresaServicioFactoringPropuestaAceptada();
-  testSendFactoringEmpresaServicioFactoringDeudorSolicitudConfirmacion();
+  //testSendFactoringEmpresaServicioFactoringDeudorSolicitudConfirmacion();
+  testSendFactoringEmpresaServicioFactoringCedenteConfirmacionTransferencia();
+}
+
+async function testSendFactoringEmpresaServicioFactoringCedenteConfirmacionTransferencia() {
+  const testToEmail = "jonyhurtado.proyectos@gmail.com"; // <-- ⚠️ CAMBIA ESTO
+
+  const idusuario = 154;
+  const session_usuario = await prismaFT.client.$transaction((tx) => usuarioDao.getUsuarioByIdusuario(tx, idusuario), { timeout: prismaFT.transactionTimeout });
+
+  if (!session_usuario) {
+    console.error("session_usuario no existe: [" + idusuario + "]");
+  }
+
+  const idfactoring = 73;
+  const factoring = await prismaFT.client.$transaction((tx) => factoringDao.getFactoringByIdfactoring(tx, idfactoring), { timeout: prismaFT.transactionTimeout });
+
+  if (!factoring) {
+    console.error("Factoring no existe: [" + idfactoring + "]");
+  }
+
+  //console.log("factoring: ", JSON.stringify(factoring, null, 2));
+
+  const idfactoringtransferenciacedente = 3;
+  const factoringtransferenciacedente = await prismaFT.client.$transaction((tx) => factoringtransferenciacedenteDao.getFactoringtransferenciacedenteByIdfactoringtransferenciacedente(tx, idfactoringtransferenciacedente), { timeout: prismaFT.transactionTimeout });
+
+  if (!factoring) {
+    console.error("Factoringtransferenciacedente no existe: [" + idfactoring + "]");
+  }
+
+  var factoringtransferenciacedenteObfuscated = jsonUtils.ofuscarAtributos(factoringtransferenciacedente, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
+
+  var paramsEmail = {
+    factoring: factoring,
+    factoringtransferenciacedente: factoringtransferenciacedenteObfuscated,
+    usuario: session_usuario,
+  };
+
+  console.log("paramsEmail: ", JSON.stringify(paramsEmail, null, 2));
+
+  try {
+    console.log(line());
+    console.log("🚧 Generando contenido del correo con plantilla...");
+
+    await emailService.sendFactoringEmpresaServicioFactoringCedenteConfirmacionTransferencia(testToEmail, paramsEmail);
+
+    console.log("✅ Correo enviado exitosamente.");
+    console.log(line());
+  } catch (error) {
+    console.error("❌ Error durante la prueba de envío de correo:");
+    console.error(error);
+  }
 }
 
 async function testSendFactoringEmpresaServicioFactoringDeudorSolicitudConfirmacion() {
