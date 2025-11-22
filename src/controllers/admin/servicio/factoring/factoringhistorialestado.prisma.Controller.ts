@@ -8,6 +8,7 @@ import * as factoringtipoDao from "#src/daos/factoringtipo.prisma.Dao.js";
 import * as factoringestadoDao from "#src/daos/factoringestado.prisma.Dao.js";
 import * as factoringestrategiaDao from "#src/daos/factoringestrategia.prisma.Dao.js";
 import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
+import * as factorcuentabancariaDao from "#src/daos/factorcuentabancaria.prisma.Dao.js";
 import * as configuracionappDao from "#src/daos/configuracionapp.prisma.Dao.js";
 import * as factoringhistorialestadoDao from "#src/daos/factoringhistorialestado.prisma.Dao.js";
 import * as archivofactoringhistorialestadoDao from "#src/daos/archivofactoringhistorialestado.prisma.Dao.js";
@@ -219,6 +220,22 @@ export const createFactoringhistorialestado = async (req: Request, res: Response
           factoring: factoring_for_email,
         };
         await emailService.sendFactoringEmpresaServicioFactoringDeudorSolicitudConfirmacion(factoring_for_email.contacto_aceptante.email, ccEmails, paramsEmail);
+      }
+
+      if (factoringUpdated.idfactoringestado == 10) {
+        const idbanco = 1;
+        const estados = [1];
+        const factoring_for_email = await factoringDao.getFactoringByIdfactoring(tx, factoringUpdated.idfactoring);
+        const factorcuentabancaria_for_email = await factorcuentabancariaDao.getFactorcuentabancariasByIdfactorIdmonedaIdbanco(tx, factoring_for_email?.idfactor ?? 0, factoring_for_email?.idmoneda ?? 0, idbanco, estados);
+
+        const emails_cc_deudor_solicita_confirmacion = await configuracionappDao.getEmailsCCDeudorSolicitaConfirmacion(tx);
+        const ccEmails: string[] = JSON.parse(emails_cc_deudor_solicita_confirmacion?.valor || "[]");
+        ccEmails.push(factoring_for_email.contacto_cedente.email);
+        var paramsEmail_10 = {
+          factoring: factoring_for_email,
+          factorcuentabancaria: factorcuentabancaria_for_email,
+        };
+        await emailService.sendFactoringEmpresaServicioFactoringDeudorNotificacionTransferencia(factoring_for_email.contacto_aceptante.email, ccEmails, paramsEmail_10);
       }
 
       return {};

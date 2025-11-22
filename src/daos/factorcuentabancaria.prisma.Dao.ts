@@ -6,6 +6,42 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
+export const getFactorcuentabancariasByIdfactorIdmonedaIdbanco = async (tx: TxClient, idfactor: number, idmoneda: number, idbanco: number, estados: number[]) => {
+  try {
+    const factorcuentabancaria = await tx.factor_cuenta_bancaria.findFirst({
+      include: {
+        factor: true,
+        cuenta_bancaria: {
+          include: {
+            banco: true,
+            moneda: true,
+            cuenta_tipo: true,
+            cuenta_bancaria_estado: true,
+          },
+        },
+      },
+      where: {
+        idfactor: idfactor,
+        estado: {
+          in: estados,
+        },
+        cuenta_bancaria: {
+          idmoneda: idmoneda,
+          idbanco: idbanco,
+          estado: {
+            in: estados,
+          },
+        },
+      },
+    });
+
+    return factorcuentabancaria;
+  } catch (error) {
+    log.error(line(), "", error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getFactorcuentabancariasByIdfactorIdmoneda = async (tx: TxClient, idfactor: number, idmoneda: number, estados: number[]) => {
   try {
     const factorcuentabancaria = await tx.factor_cuenta_bancaria.findMany({

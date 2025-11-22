@@ -100,6 +100,101 @@ class TemplaceManager {
     return textoPlano;
   }
 
+  async templateFactoringEmpresaServicioFactoringDeudorNotificacionTransferencia(params) {
+    try {
+      const paramsSchema = yup
+        .object()
+        .shape({
+          cabecera: yup
+            .object({
+              fecha_actual: yup.string().trim().required().min(1).max(200),
+            })
+            .required(),
+          factoring: yup
+            .object({
+              code: yup.string().required(),
+              fecha_registro: yup.string().required(),
+              monto_factura: yup.string().required(),
+              monto_detraccion: yup.string().required(),
+              monto_neto: yup.string().required(),
+              fecha_pago_estimado: yup.string().required(),
+              empresa_cedente: yup.object({
+                ruc: yup.string().required(),
+                razon_social: yup.string().required(),
+              }),
+              empresa_aceptante: yup.object({
+                ruc: yup.string().required(),
+                razon_social: yup.string().required(),
+              }),
+              moneda: yup.object({
+                codigo: yup.string().required(),
+                nombre: yup.string().required(),
+                simbolo: yup.string().required(),
+              }),
+              factoring_facturas: yup
+                .array()
+                .of(
+                  yup.object().shape({
+                    factura: yup.object({
+                      serie: yup.string().required(),
+                      numero_comprobante: yup.string().required(),
+                    }),
+                  })
+                )
+                .min(1)
+                .required(),
+            })
+            .required(),
+          factoring_formateado: yup
+            .object({
+              factura: yup.string().required(),
+              monto_factura: yup.string().required(),
+              monto_neto: yup.string().required(),
+              fecha_pago_estimado: yup.string().required(),
+            })
+            .required(),
+          factorcuentabancaria: yup
+            .object({
+              factor: yup.object({
+                razon_social: yup.string().required(),
+              }),
+              cuenta_bancaria: yup.object({
+                numero: yup.string().required(),
+                cci: yup.string().required(),
+                banco: yup.object({
+                  nombre: yup.string().required(),
+                }),
+                cuenta_tipo: yup.object({
+                  nombre: yup.string().required(),
+                }),
+                moneda: yup.object({
+                  codigo: yup.string().required(),
+                  nombre: yup.string().required(),
+                }),
+              }),
+            })
+            .required(),
+        })
+        .required();
+      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+
+      const bodyEmailTHTML = await this.renderTemplate("factoring-empresa-servicio-factoring-deudor-notificacion-transferencia.html", paramsValidated);
+      const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
+      const subjectEmailText = await this.renderSubject("Confirmación de transferencia de factura {{factoring_formateado.factura}} y datos para pago", paramsValidated);
+
+      const codigoverificacionMailOptions = {
+        subject: subjectEmailText,
+        text: bodyEmailText,
+        html: bodyEmailTHTML,
+      };
+
+      return codigoverificacionMailOptions;
+    } catch (error) {
+      log.error(line(), error);
+      throw error;
+    }
+  }
+
   async templateFactoringEmpresaServicioFactoringCedenteConfirmacionTransferencia(params) {
     try {
       const paramsSchema = yup

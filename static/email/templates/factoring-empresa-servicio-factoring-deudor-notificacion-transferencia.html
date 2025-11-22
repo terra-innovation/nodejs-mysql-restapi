@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Confirmación de factura para Operación de Factoring</title>
+    <title>Confirmación de transferencia de factura y datos para pago</title>
   </head>
   <body>
     <div></div>
@@ -97,7 +97,7 @@
                                                 <tbody>
                                                   <tr>
                                                     <td class="h1 center pb25" style="color: #ffffff; font-family: Noto Sans, Arial, sans-serif; font-size: 40px; line-height: 46px; text-align: left; padding-bottom: 25px">
-                                                      Confirmación de factura {{factoring_formateado.factura}} para Operación de Factoring
+                                                      Confirmación de transferencia de factura {{factoring_formateado.factura}} y datos para pago
                                                     </td>
                                                   </tr>
                                                 </tbody>
@@ -132,27 +132,12 @@
                                           <td class="text pb20" style="color: #222222; font-family: Noto Sans, Arial, sans-serif; font-size: 16px; line-height: 26px; text-align: left; padding-bottom: 20px">Estimados,</td>
                                         </tr>
                                         <tr>
-                                          <td class="text pb20" style="color: #222222; font-family: Noto Sans, Arial, sans-serif; font-size: 16px; line-height: 26px; text-align: left; padding-bottom: 20px">
-                                            Reciban un cordial saludo. Nos comunicamos de la empresa <strong>Finanza Tech S.A.C. (RUC 20609264200)</strong>, factor con el que nuestro cliente
-                                            <strong>{{factoring.empresa_aceptante.razon_social}} (RUC {{factoring.empresa_aceptante.ruc}})</strong> desea realizar una <strong>operación de factoring</strong> sobre la factura detallada en líneas más abajo.
-                                          </td>
+                                          <td class="text pb20" style="color: #222222; font-family: Noto Sans, Arial, sans-serif; font-size: 16px; line-height: 26px; text-align: left; padding-bottom: 20px">Reciban un cordial saludo.</td>
                                         </tr>
                                         <tr>
                                           <td class="text pb20" style="color: #222222; font-family: Noto Sans, Arial, sans-serif; font-size: 16px; line-height: 26px; text-align: left; padding-bottom: 20px">
-                                            Para continuar con el proceso, necesitamos que nos confirmen lo siguiente:<br />
-                                            <ol>
-                                              <li><strong>Conformidad con la negociación</strong> planteada por nuestro cliente.</li>
-                                              <li><strong>Registro de la factura</strong> en su sistema.</li>
-                                              <li><strong>Fecha de pago</strong> indicada en lineas más abajo.</li>
-                                              <li><strong>Valor neto</strong> corresponde al monto pendiente, considerando retenciones/detracciones si aplican.</li>
-                                              <li><strong>Pago a la fecha de vencimiento</strong> se realizará a las cuentas de Finanza Tech S.A.C.</li>
-                                            </ol>
-                                          </td>
-                                        </tr>
-                                        <tr>
-                                          <td class="text pb20" style="color: #222222; font-family: Noto Sans, Arial, sans-serif; font-size: 16px; line-height: 26px; text-align: left; padding-bottom: 20px">
-                                            <strong>Nota:</strong><br />
-                                            Si está conforme, le solicitamos confirmar respondiendo a este mismo correo para validar el registro en la plataforma <strong>Factrack-Cavali</strong>.
+                                            Les informamos que la factura detalla más abajo ha sido transferida a <strong>Finanza Tech S.A.C. (RUC 20609264200)</strong> y registrada en <strong>Factrack-CAVALI</strong>, conforme a la Ley de Factoring y normativa vigente en Perú.
+                                            En consecuencia, el pago debe realizarse únicamente a la cuenta bancaria de <strong>Finanza Tech S.A.C.</strong>, cuyos datos se detallan más abajo en este mismo correo.
                                           </td>
                                         </tr>
                                       </tbody>
@@ -189,7 +174,7 @@
                                     <table border="0" width="100%" cellspacing="0" cellpadding="0">
                                       <tbody>
                                         <tr>
-                                          <td width="100%" style="color: #000000; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: left; padding: 10px 0px"><strong>DATOS DE LA FACTURA:</strong></td>
+                                          <td width="100%" style="color: #000000; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: left; padding: 10px 0px"><strong>DATOS DE LA FACTURA TRANSFERIDA:</strong></td>
                                         </tr>
                                         <tr>
                                           <td width="100%"><p style="font-family: Poppins, sans-serif; border-top: dotted 1px #c6cacf"></p></td>
@@ -227,15 +212,23 @@
                                           <td width="70%"><p style="font-family: Poppins, sans-serif; border-top: dotted 1px #c6cacf"></p></td>
                                         </tr>
                                         <tr>
-                                          <td width="30%" style="color: #777777; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: left; padding: 10px 20px"><strong>Valor neto:</strong></td>
-                                          <td width="70%" style="color: #777777; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: right; padding: 10px 20px">{{factoring_formateado.monto_neto}}</td>
+                                          <td width="30%" style="color: #777777; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: left; padding: 10px 20px"><strong>Valor factura:</strong></td>
+                                          <td width="70%" style="color: #777777; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: right; padding: 10px 20px">{{factoring.moneda.simbolo}} {{factoring_formateado.monto_factura}}</td>
                                         </tr>
                                         <tr>
                                           <td width="35%"><p style="font-family: Poppins, sans-serif; border-top: dotted 1px #c6cacf"></p></td>
                                           <td width="70%"><p style="font-family: Poppins, sans-serif; border-top: dotted 1px #c6cacf"></p></td>
                                         </tr>
                                         <tr>
-                                          <td width="30%" style="color: #777777; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: left; padding: 10px 20px"><strong>Fecha de pago:</strong></td>
+                                          <td width="30%" style="color: #777777; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: left; padding: 10px 20px"><strong>Valor neto (pendiente):</strong></td>
+                                          <td width="70%" style="color: #777777; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: right; padding: 10px 20px">{{factoring.moneda.simbolo}} {{factoring_formateado.monto_neto}}</td>
+                                        </tr>
+                                        <tr>
+                                          <td width="35%"><p style="font-family: Poppins, sans-serif; border-top: dotted 1px #c6cacf"></p></td>
+                                          <td width="70%"><p style="font-family: Poppins, sans-serif; border-top: dotted 1px #c6cacf"></p></td>
+                                        </tr>
+                                        <tr>
+                                          <td width="30%" style="color: #777777; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: left; padding: 10px 20px"><strong>Fecha de vencimiento:</strong></td>
                                           <td width="70%" style="color: #777777; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: right; padding: 10px 20px">{{factoring_formateado.fecha_pago_estimado}}</td>
                                         </tr>
                                         <tr>
@@ -254,8 +247,85 @@
                                     <table border="0" width="100%" cellspacing="0" cellpadding="0">
                                       <tbody>
                                         <tr>
+                                          <td width="100%" style="color: #000000; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: left; padding: 10px 0px"><strong>DATOS DE LA CUENTA BANCARIA DEL FACTOR PARA PAGO:</strong></td>
+                                        </tr>
+                                        <tr>
+                                          <td width="100%"><p style="font-family: Poppins, sans-serif; border-top: dotted 1px #c6cacf"></p></td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                    <table border="0" width="100%" cellspacing="0" cellpadding="0">
+                                      <tbody>
+                                        <tr>
+                                          <td width="35%" style="color: #777777; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: left; padding: 10px 20px"><strong>Titular:</strong></td>
+                                          <td width="70%" style="color: #777777; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: right; padding: 10px 20px">{{factorcuentabancaria.factor.razon_social}}</td>
+                                        </tr>
+                                        <tr>
+                                          <td width="35%"><p style="font-family: Poppins, sans-serif; border-top: dotted 1px #c6cacf"></p></td>
+                                          <td width="70%"><p style="font-family: Poppins, sans-serif; border-top: dotted 1px #c6cacf"></p></td>
+                                        </tr>
+                                        <tr>
+                                          <td width="35%" style="color: #777777; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: left; padding: 10px 20px"><strong>Banco:</strong></td>
+                                          <td width="70%" style="color: #777777; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: right; padding: 10px 20px">{{factorcuentabancaria.cuenta_bancaria.banco.nombre}}</td>
+                                        </tr>
+                                        <tr>
+                                          <td width="35%"><p style="font-family: Poppins, sans-serif; border-top: dotted 1px #c6cacf"></p></td>
+                                          <td width="70%"><p style="font-family: Poppins, sans-serif; border-top: dotted 1px #c6cacf"></p></td>
+                                        </tr>
+                                        <tr>
+                                          <td width="35%" style="color: #777777; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: left; padding: 10px 20px"><strong>Tipo de cuenta:</strong></td>
+                                          <td width="70%" style="color: #777777; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: right; padding: 10px 20px">{{factorcuentabancaria.cuenta_bancaria.cuenta_tipo.nombre}}</td>
+                                        </tr>
+                                        <tr>
+                                          <td width="35%"><p style="font-family: Poppins, sans-serif; border-top: dotted 1px #c6cacf"></p></td>
+                                          <td width="70%"><p style="font-family: Poppins, sans-serif; border-top: dotted 1px #c6cacf"></p></td>
+                                        </tr>
+                                        <tr>
+                                          <td width="35%" style="color: #777777; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: left; padding: 10px 20px"><strong>Número de cuenta:</strong></td>
+                                          <td width="70%" style="color: #777777; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: right; padding: 10px 20px">{{factorcuentabancaria.cuenta_bancaria.numero}}</td>
+                                        </tr>
+                                        <tr>
+                                          <td width="35%"><p style="font-family: Poppins, sans-serif; border-top: dotted 1px #c6cacf"></p></td>
+                                          <td width="70%"><p style="font-family: Poppins, sans-serif; border-top: dotted 1px #c6cacf"></p></td>
+                                        </tr>
+                                        <tr>
+                                          <td width="35%" style="color: #777777; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: left; padding: 10px 20px"><strong>CCI:</strong></td>
+                                          <td width="70%" style="color: #777777; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: right; padding: 10px 20px">{{factorcuentabancaria.cuenta_bancaria.cci}}</td>
+                                        </tr>
+                                        <tr>
+                                          <td width="35%"><p style="font-family: Poppins, sans-serif; border-top: dotted 1px #c6cacf"></p></td>
+                                          <td width="70%"><p style="font-family: Poppins, sans-serif; border-top: dotted 1px #c6cacf"></p></td>
+                                        </tr>
+                                        <tr>
+                                          <td width="35%" style="color: #777777; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: left; padding: 10px 20px"><strong>Moneda:</strong></td>
+                                          <td width="70%" style="color: #777777; font-family: Noto Sans, Arial, sans-serif; font-size: 14px; line-height: 26px; text-align: right; padding: 10px 20px">
+                                            {{factorcuentabancaria.cuenta_bancaria.moneda.codigo}} ({{factorcuentabancaria.cuenta_bancaria.moneda.nombre}})
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td width="35%"><p style="font-family: Poppins, sans-serif; border-top: dotted 1px #c6cacf"></p></td>
+                                          <td width="70%"><p style="font-family: Poppins, sans-serif; border-top: dotted 1px #c6cacf"></p></td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                    <table border="0" width="100%" cellspacing="0" cellpadding="0">
+                                      <tbody>
+                                        <tr>
+                                          <td width="100%" style="padding: 20px 0px"></td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                    <table border="0" width="100%" cellspacing="0" cellpadding="0">
+                                      <tbody>
+                                        <tr>
                                           <td class="text pb20" style="color: #222222; font-family: Noto Sans, Arial, sans-serif; font-size: 16px; line-height: 26px; text-align: left; padding-bottom: 20px">
-                                            Estamos a su disposición para resolver cualquier duda y acompañarlo en el proceso.
+                                            <strong>Importante:</strong> De conformidad con la Ley de Factoring y la normativa vigente en Perú, los derechos de cobro de la factura mencionada han sido cedidos a <strong>Finanza Tech S.A.C.</strong> (factor). Por lo tanto, cualquier
+                                            pago relacionado con esta factura debe realizarse únicamente a la cuenta bancaria indicada del factor. El incumplimiento de esta disposición no libera la obligación de pago.
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td class="text pb20" style="color: #222222; font-family: Noto Sans, Arial, sans-serif; font-size: 16px; line-height: 26px; text-align: left; padding-bottom: 20px">
+                                            Agradecemos su atención y cumplimiento oportuno. Estamos a su disposición para resolver cualquier consulta y acompañarlo en el proceso.
                                           </td>
                                         </tr>
                                         <tr>
