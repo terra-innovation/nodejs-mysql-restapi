@@ -44,6 +44,14 @@ const envSchema = z.object({
   MAIL_CONTACTO_FINANZATECH_PASS: z.string(),
   MAIL_BACKUP: z.string().email(),
 
+  // Telegram
+  TELEGRAM_IMPORTANT_TOKEN: z.string(),
+  TELEGRAM_IMPORTANT_CHATID: z.string(),
+  TELEGRAM_IMFORMATION_TOKEN: z.string(),
+  TELEGRAM_IMFORMATION_CHATID: z.string(),
+  TELEGRAM_WARING_TOKEN: z.string(),
+  TELEGRAM_WARRING_CHATID: z.string(),
+
   // Prisma
   PRISMA_DATABASE_FACTORING_URL: z.string().url(),
   PRISMA_DATABASE_FACTORING_TRANSACTION_TIMEOUT: z.coerce.number(),
