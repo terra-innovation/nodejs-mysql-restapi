@@ -33,7 +33,55 @@ async function main() {
   //testSendFactoringEmpresaServicioFactoringPropuestaAceptada();
   //testSendFactoringEmpresaServicioFactoringDeudorSolicitudConfirmacion();
   //testSendFactoringEmpresaServicioFactoringCedenteConfirmacionTransferencia();
-  testSendFactoringEmpresaServicioFactoringDeudorNotificacionTransferencia();
+  //testSendFactoringEmpresaServicioFactoringDeudorNotificacionTransferencia();
+  testSendFactoringEmpresaServicioFactoringCedenteNotificacionInicioOperacion();
+}
+
+async function testSendFactoringEmpresaServicioFactoringCedenteNotificacionInicioOperacion() {
+  const testToEmail = "jonyhurtado.proyectos@gmail.com"; // <-- ⚠️ CAMBIA ESTO
+
+  const idfactoring = 73;
+  const factoring = await prismaFT.client.$transaction((tx) => factoringDao.getFactoringByIdfactoring(tx, idfactoring), { timeout: prismaFT.transactionTimeout });
+
+  if (!factoring) {
+    console.error("Factoring no existe: [" + idfactoring + "]");
+  }
+
+  //console.log("factoring: ", JSON.stringify(factoring, null, 2));
+
+  const idusuario = 154;
+  const session_usuario = await prismaFT.client.$transaction((tx) => usuarioDao.getUsuarioByIdusuario(tx, idusuario), { timeout: prismaFT.transactionTimeout });
+
+  if (!session_usuario) {
+    console.error("session_usuario no existe: [" + idusuario + "]");
+  }
+
+  const factoringpropuesta = await prismaFT.client.$transaction((tx) => factoringpropuestaDao.getFactoringpropuestaAceptadaByIdfactoringpropuesta(tx, factoring?.idfactoringpropuestaaceptada ?? 0, [1]), { timeout: prismaFT.transactionTimeout });
+
+  if (!factoringpropuesta) {
+    console.error("factoringpropuesta no existe: [" + (factoring?.idfactoringpropuestaaceptada ?? 0) + "]");
+  }
+
+  var paramsEmail = {
+    factoring: factoring,
+    factoringpropuesta: factoringpropuesta,
+    usuario: session_usuario,
+  };
+
+  console.log("paramsEmail: ", JSON.stringify(paramsEmail, null, 2));
+
+  try {
+    console.log(line());
+    console.log("🚧 Generando contenido del correo con plantilla...");
+
+    await emailService.sendFactoringEmpresaServicioFactoringCedenteNotificacionInicioOperacion(testToEmail, paramsEmail);
+
+    console.log("✅ Correo enviado exitosamente.");
+    console.log(line());
+  } catch (error) {
+    console.error("❌ Error durante la prueba de envío de correo:");
+    console.error(error);
+  }
 }
 
 async function testSendFactoringEmpresaServicioFactoringDeudorNotificacionTransferencia() {

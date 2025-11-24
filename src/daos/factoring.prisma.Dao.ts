@@ -337,7 +337,11 @@ export const getFactoringByIdfactoring = async (tx: TxClient, idfactoring: numbe
     const factoring = await tx.factoring.findUnique({
       include: {
         contacto_aceptante: true,
-        contacto_cedente: true,
+        contacto_cedente: {
+          include: {
+            persona: true,
+          },
+        },
         cuenta_bancaria: {
           include: {
             banco: true,

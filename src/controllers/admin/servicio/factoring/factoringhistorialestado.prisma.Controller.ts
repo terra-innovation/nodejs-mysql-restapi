@@ -8,6 +8,7 @@ import * as factoringtipoDao from "#src/daos/factoringtipo.prisma.Dao.js";
 import * as factoringestadoDao from "#src/daos/factoringestado.prisma.Dao.js";
 import * as factoringestrategiaDao from "#src/daos/factoringestrategia.prisma.Dao.js";
 import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
+import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
 import * as factorcuentabancariaDao from "#src/daos/factorcuentabancaria.prisma.Dao.js";
 import * as configuracionappDao from "#src/daos/configuracionapp.prisma.Dao.js";
 import * as factoringhistorialestadoDao from "#src/daos/factoringhistorialestado.prisma.Dao.js";
@@ -191,7 +192,6 @@ export const createFactoringhistorialestado = async (req: Request, res: Response
       };
 
       const factoringUpdated = await factoringDao.updateFactoring(tx, factoringhistorialestadoValidated.factoringid, factoringToUpdate);
-
       log.debug(line(), "factoringUpdated:", factoringUpdated);
 
       for (const archivo of archivos) {
@@ -212,6 +212,7 @@ export const createFactoringhistorialestado = async (req: Request, res: Response
 
       // Enviamos correo electrónico
       if (factoringUpdated.idfactoringestado == 29) {
+        //Deudor notificado sobre la operación
         const factoring_for_email = await factoringDao.getFactoringByIdfactoring(tx, factoringUpdated.idfactoring);
         const emails_cc_deudor_solicita_confirmacion = await configuracionappDao.getEmailsCCDeudorSolicitaConfirmacion(tx);
         const ccEmails: string[] = JSON.parse(emails_cc_deudor_solicita_confirmacion?.valor || "[]");
@@ -223,6 +224,7 @@ export const createFactoringhistorialestado = async (req: Request, res: Response
       }
 
       if (factoringUpdated.idfactoringestado == 10) {
+        //Deudor notificado de la transferencia
         const idbanco = 1;
         const estados = [1];
         const factoring_for_email = await factoringDao.getFactoringByIdfactoring(tx, factoringUpdated.idfactoring);
@@ -236,6 +238,31 @@ export const createFactoringhistorialestado = async (req: Request, res: Response
           factorcuentabancaria: factorcuentabancaria_for_email,
         };
         await emailService.sendFactoringEmpresaServicioFactoringDeudorNotificacionTransferencia(factoring_for_email.contacto_aceptante.email, ccEmails, paramsEmail_10);
+      }
+
+      if (factoringUpdated.idfactoringestado == 36) {
+        // Inicio de Operación de Factoring
+
+        const factoringToUpdate_2: Prisma.factoringUpdateInput = {
+          fecha_operacion: new Date(),
+          idusuariomod: req.session_user.usuario.idusuario ?? 1,
+          fechamod: new Date(),
+        };
+
+        const factoringUpdated_2 = await factoringDao.updateFactoring(tx, factoringhistorialestadoValidated.factoringid, factoringToUpdate_2);
+        log.debug(line(), "factoringUpdated_2:", factoringUpdated_2);
+
+        const estados = [1];
+        const factoring_for_email = await factoringDao.getFactoringByIdfactoring(tx, factoringUpdated.idfactoring);
+        const factoringpropuesta_for_email = await factoringpropuestaDao.getFactoringpropuestaAceptadaByIdfactoringpropuesta(tx, factoring_for_email?.idfactoringpropuestaaceptada ?? 0, estados);
+        const usuario_for_email = await usuarioDao.getUsuarioByIdusuario(tx, factoring_for_email.contacto_cedente.persona.idusuario);
+
+        var paramsEmail_36 = {
+          factoring: factoring_for_email,
+          factoringpropuesta: factoringpropuesta_for_email,
+          usuario: usuario_for_email,
+        };
+        await emailService.sendFactoringEmpresaServicioFactoringCedenteNotificacionInicioOperacion(factoring_for_email.contacto_cedente.email, paramsEmail_36);
       }
 
       return {};

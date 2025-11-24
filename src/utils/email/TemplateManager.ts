@@ -100,6 +100,109 @@ class TemplaceManager {
     return textoPlano;
   }
 
+  async templateFactoringEmpresaServicioFactoringCedenteNotificacionInicioOperacion(params) {
+    try {
+      const paramsSchema = yup
+        .object()
+        .shape({
+          cabecera: yup
+            .object({
+              fecha_actual: yup.string().trim().required().min(1).max(200),
+            })
+            .required(),
+          factoring: yup
+            .object({
+              code: yup.string().required(),
+              fecha_registro: yup.string().required(),
+              monto_factura: yup.string().required(),
+              monto_detraccion: yup.string().required(),
+              monto_neto: yup.string().required(),
+              fecha_pago_estimado: yup.string().required(),
+              empresa_cedente: yup.object({
+                ruc: yup.string().required(),
+                razon_social: yup.string().required(),
+              }),
+              empresa_aceptante: yup.object({
+                ruc: yup.string().required(),
+                razon_social: yup.string().required(),
+              }),
+              moneda: yup.object({
+                codigo: yup.string().required(),
+                nombre: yup.string().required(),
+              }),
+              factoring_facturas: yup
+                .array()
+                .of(
+                  yup.object().shape({
+                    factura: yup.object({
+                      serie: yup.string().required(),
+                      numero_comprobante: yup.string().required(),
+                    }),
+                  })
+                )
+                .min(1)
+                .required(),
+            })
+            .required(),
+          factoringpropuesta: yup
+            .object({
+              code: yup.string().required(),
+              fecha_propuesta: yup.string().required(),
+              dias_pago_estimado: yup.string().required(),
+              factoring_tipo: yup.object({
+                nombre: yup.string().required(),
+              }),
+            })
+            .required(),
+          usuario: yup
+            .object({
+              usuarionombres: yup.string().required(),
+              email: yup.string().required(),
+            })
+            .required(),
+          factoring_formateado: yup
+            .object({
+              factura: yup.string().required(),
+              fecha_registro: yup.string().required(),
+              fecha_operacion: yup.string().required(),
+            })
+            .required(),
+          factoringpropuesta_formateado: yup
+            .object({
+              fecha_propuesta: yup.string().required(),
+              monto_neto: yup.string().required(),
+              fecha_pago_estimado: yup.string().required(),
+              tdm: yup.string().required(),
+              porcentaje_financiado_estimado: yup.string().required(),
+              monto_garantia: yup.string().required(),
+              monto_financiado: yup.string().required(),
+              monto_descuento: yup.string().required(),
+              monto_comision: yup.string().required(),
+              monto_costo_estimado: yup.string().required(),
+              monto_total_igv: yup.string().required(),
+              monto_adelanto: yup.string().required(),
+            })
+            .required(),
+        })
+        .required();
+      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+
+      const bodyEmailTHTML = await this.renderTemplate("factoring-empresa-servicio-factoring-cedente-confirmacion-inicio-operacion.html", paramsValidated);
+      const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
+      const subjectEmailText = await this.renderSubject("Confirmación de inicio de Operación de Factoring [#{{factoring.code}}]", paramsValidated);
+
+      const codigoverificacionMailOptions = {
+        subject: subjectEmailText,
+        text: bodyEmailText,
+        html: bodyEmailTHTML,
+      };
+      return codigoverificacionMailOptions;
+    } catch (error) {
+      log.error(line(), error);
+      throw error;
+    }
+  }
+
   async templateFactoringEmpresaServicioFactoringDeudorNotificacionTransferencia(params) {
     try {
       const paramsSchema = yup
