@@ -4,6 +4,9 @@ import { log, line } from "#src/utils/logger.pino.js";
 import { ipFilterMiddleware } from "#src/middlewares/ipFilterMiddleware.js";
 import { loggerMiddleware } from "#src/middlewares/loggerMiddleware.js";
 import { corsMiddleware } from "#src/middlewares/corsMiddleware";
+import { helmetMiddleware } from "#src/middlewares/helmetMiddleware";
+import { rateLimiterGlobalMiddleware } from "#src/middlewares/ratelimiterMiddleware";
+import { blockSuspiciousUAMiddleware } from "#src/middlewares/blockSuspiciousUAMiddleware";
 import { errorHandlerMiddleware } from "#src/middlewares/errorHandlerMiddleware";
 import { notFoundHandlerMiddleware } from "#src/middlewares/notFoundHandlerMiddleware";
 
@@ -20,6 +23,9 @@ app.set("trust proxy", "::1"); // Para obtener la IP del proxy inverso local X-R
 app.set("trust proxy", "127.0.0.1"); // Para obtener la IP del proxy inverso local X-Real-IP
 app.use(express.json()); // Convierte los request a json
 app.use(ipFilterMiddleware); // Restringue el acceso por IP
+app.use(rateLimiterGlobalMiddleware); // Limita la cantidad de solicitudes global en un tiempo establecido
+app.use(blockSuspiciousUAMiddleware); //Bloquea User-Agents sospechosos
+app.use(helmetMiddleware); // Middleware Helmet. Seguridad para Express que configura encabezados HTTP
 app.use(corsMiddleware); // Middleware Cors
 app.use(loggerMiddleware); // Middleware Logger PINO
 
