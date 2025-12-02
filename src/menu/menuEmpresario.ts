@@ -11,7 +11,7 @@ export const generarMenuEmpresario = (usuario: UsuarioConRoles) => {
     children: [
       {
         id: "empresario-vendes-facturas",
-        title: "Vender factura",
+        title: "Ceder factura",
         type: "item",
         url: "/empresario/factoring/nuevo",
         icon: "UploadOutlined",

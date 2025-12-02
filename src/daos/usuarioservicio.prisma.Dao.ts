@@ -36,6 +36,9 @@ export const habilitarServiciosParaUsuario = async (tx: TxClient, idusuario: num
     // Buscar todos los servicios
     const todosLosServicios = await tx.servicio.findMany({
       select: { idservicio: true },
+      where: {
+        estado: 1,
+      },
     });
 
     const serviciosAInsertar = todosLosServicios.map((servicio) => ({

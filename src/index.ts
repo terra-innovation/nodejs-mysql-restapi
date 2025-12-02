@@ -25,7 +25,7 @@ async function startServer(): Promise<void> {
 
     shutdownHandler.registerShutdownHooks();
   } catch (err) {
-    log.error("🔥 Error starting server: ", err);
+    log.error(line(), "Error starting server: ", err);
     process.exit(1);
   }
 }

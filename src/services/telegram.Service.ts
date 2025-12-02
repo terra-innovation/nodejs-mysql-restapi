@@ -1,6 +1,10 @@
 import axios from "axios";
 import { log, line } from "#src/utils/logger.pino.js";
 import { env } from "#src/config.js";
+import * as df from "#src/utils/dateUtils.js";
+import * as jsonUtils from "#src/utils/jsonUtils.js";
+
+import { getContext } from "#src/utils/context/loggerContext.js";
 
 export const sendMessageTelegramImportant = async (message: string): Promise<void> => {
   const token = env.TELEGRAM_IMPORTANT_TOKEN;
@@ -18,6 +22,39 @@ export const sendMessageTelegramWaring = async (message: string): Promise<void> 
   const token = env.TELEGRAM_WARING_TOKEN;
   const chatID = env.TELEGRAM_WARRING_CHATID;
   await sendMessageTelegram(token, chatID, message);
+};
+
+export const sendMessageTelegramError = async (message: string): Promise<void> => {
+  const token = env.TELEGRAM_ERROR_TOKEN;
+  const chatID = env.TELEGRAM_ERROR_CHATID;
+  await sendMessageTelegram(token, chatID, message);
+};
+
+export const sendMessageTelegramEndPointNotFound = async (json: any): Promise<void> => {
+  const store = getContext();
+
+  const newline = "\r\n";
+  var mensaje = "";
+
+  mensaje += "[" + df.formatDateTimeWithZoneLocale(new Date()) + "]" + newline;
+  mensaje += newline;
+  mensaje += "<b>API.FINANZATECH.COM: Error</b>" + newline;
+  mensaje += newline;
+
+  // Información del error
+  mensaje +=
+    jsonUtils.jsonToPlainText(
+      {
+        ...(store && typeof store === "object" && !Array.isArray(store) ? store : {}),
+        env: env.NODE_ENV,
+      },
+      newline
+    ) + newline;
+  mensaje += newline;
+  mensaje += jsonUtils.jsonToPlainText(json, newline) + newline;
+  mensaje += newline;
+
+  sendMessageTelegramError(mensaje);
 };
 
 /**

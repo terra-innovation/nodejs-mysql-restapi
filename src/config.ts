@@ -51,6 +51,8 @@ const envSchema = z.object({
   TELEGRAM_IMFORMATION_CHATID: z.string(),
   TELEGRAM_WARING_TOKEN: z.string(),
   TELEGRAM_WARRING_CHATID: z.string(),
+  TELEGRAM_ERROR_TOKEN: z.string(),
+  TELEGRAM_ERROR_CHATID: z.string(),
 
   // Prisma
   PRISMA_DATABASE_FACTORING_URL: z.string().url(),

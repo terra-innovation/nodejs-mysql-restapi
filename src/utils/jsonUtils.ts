@@ -22,6 +22,50 @@ export function deepOmitNullAndUndefined<T>(input: T): T {
   return input;
 }
 
+/**
+ * Genera un mensaje en texto plano a partir de un objeto JSON usando flattenObject.
+ * @param obj Objeto JSON original.
+ * @returns Texto plano con formato clave: valor.
+ */
+export function jsonToPlainText(obj: Record<string, any>, newline: string): string {
+  const flatMap = this.flattenObject(obj);
+  let mensaje = "";
+
+  for (const [key, value] of Object.entries(flatMap)) {
+    mensaje += `${key}: ${value}${newline}`;
+  }
+
+  return mensaje;
+}
+
+/**
+ * Convierte un objeto en un mapa plano con notación de puntos y soporte para arrays.
+ * Ejemplo: { cliente: { nombre: "Juan" }, items: [{ nombre: "Producto" }] }
+ * => { "cliente.nombre": "Juan", "items[0].nombre": "Producto" }
+ */
+export function flattenObject(obj: any, prefix = "", res: Record<string, any> = {}): Record<string, any> {
+  for (let key in obj) {
+    if (!obj.hasOwnProperty(key)) continue;
+    const value = obj[key];
+    const newKey = prefix ? `${prefix}.${key}` : key;
+
+    if (Array.isArray(value)) {
+      value.forEach((item, index) => {
+        this.flattenObject(item, `${newKey}[${index}]`, res);
+      });
+    } else if (value instanceof Date) {
+      res[newKey] = value.toISOString(); // formato estándar
+    } else if (value instanceof Prisma.Decimal) {
+      res[newKey] = value.toString(); // formato estándar
+    } else if (typeof value === "object" && value !== null) {
+      this.flattenObject(value, newKey, res);
+    } else {
+      res[newKey] = value ?? ""; // Si es null/undefined, usar cadena vacía
+    }
+  }
+  return res;
+}
+
 // Función para filtrar campos en un JSON
 export function filterFields(json, fields) {
   if (Array.isArray(json)) {
