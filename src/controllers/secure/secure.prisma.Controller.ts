@@ -11,6 +11,7 @@ import { response } from "#src/utils/CustomResponseOk.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { line, log } from "#root/src/utils/logger.pino.js";
+import * as telegramService from "#src/services/telegram.Service.js";
 
 import * as cryptoUtils from "#src/utils/cryptoUtils.js";
 import { env } from "#src/config.js";
@@ -57,6 +58,8 @@ export const loginUser = async (req: Request, res: Response) => {
         const token = jwt.sign(jwtPayload, env.TOKEN_KEY_JWT, {
           expiresIn: "200000h",
         });
+        log.info(line(), "Usuario autenticado", { idusuario: usuario_autenticado.idusuario, usuarioid: usuario_autenticado.usuarioid, code: usuario_autenticado.code, email: loginUserValidated.email });
+        telegramService.sendMessageTelegramLogin(usuario_autenticado);
         return { token, usuarioid: usuario_login.usuarioid };
       } else {
         log.warn(line(), "Credenciales no válidas: [" + loginUserValidated.email + "]");

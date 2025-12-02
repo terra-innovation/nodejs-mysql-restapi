@@ -10,7 +10,7 @@ export const ping = async (req: Request, res: Response) => {
   log.debug(line(), "controller::ping");
 
   // Forzamos un error intencional
-  throw new Error("Error forzado en ping para pruebas");
+  //throw new Error("Error forzado en ping para pruebas");
 
   const result = await prismaFT.client.$transaction(
     async (tx) => {
