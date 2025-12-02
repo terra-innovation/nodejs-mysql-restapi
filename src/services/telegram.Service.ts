@@ -38,12 +38,19 @@ export const sendMessageTelegramException = async (err: Error): Promise<void> =>
 
   const escapeHtml = (str = "") => str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
+  let stack = escapeHtml(err.stack || "");
+  const maxLengthStack = 3096;
+  const originalLengthStack = stack.length;
+
+  if (originalLengthStack > maxLengthStack) {
+    stack = stack.substring(0, 3000) + `...(tiene ${originalLengthStack} caracteres y supera el máximo de ${maxLengthStack} para mostrar el stack)`;
+  }
   const reasonToLog =
     err instanceof Error
       ? {
           name: err.name,
           message: err.message,
-          stack: `<pre>${escapeHtml(err.stack || "")}</pre>`,
+          stack: `<pre>${stack}</pre>`,
         }
       : err; // si no es un Error, simplemente registramos el valor
 
