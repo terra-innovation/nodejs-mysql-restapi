@@ -8,6 +8,10 @@ export const index = async (req: Request, res: Response) => {
 
 export const ping = async (req: Request, res: Response) => {
   log.debug(line(), "controller::ping");
+
+  // Forzamos un error intencional
+  throw new Error("Error forzado en ping para pruebas");
+
   const result = await prismaFT.client.$transaction(
     async (tx) => {
       const result = await prismaFT.client.$queryRaw<{ result: string }[]>`SELECT 'pong' as result`;

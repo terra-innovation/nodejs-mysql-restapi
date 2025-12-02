@@ -4,6 +4,7 @@ import { ValidationError } from "yup";
 import { log, line } from "#src/utils/logger.pino.js";
 import { customResponseError } from "#src/utils/CustomResponseError.js";
 import util from "util";
+import * as telegramService from "#src/services/telegram.Service.js";
 
 export function errorHandlerMiddleware(err: any, req: Request, res: Response, next: NextFunction): void {
   let { statusCode, message } = err;
@@ -32,6 +33,6 @@ export function errorHandlerMiddleware(err: any, req: Request, res: Response, ne
     //log.error(line(), "Uncaught Error:", util.inspect(err, { colors: true, depth: null }));
     log.error(line(), "Uncaught Error:", err);
   }
-
+  telegramService.sendMessageTelegramException(err);
   customResponseError(res, statusCode, message);
 }

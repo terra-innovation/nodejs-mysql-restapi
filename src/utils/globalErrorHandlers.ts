@@ -13,11 +13,12 @@ process.on("uncaughtException", (err: unknown) => {
 });
 
 process.on("unhandledRejection", (reason: unknown, promise: Promise<unknown>) => {
+  const reasonToLog = reason instanceof Error ? { message: reason.message, stack: reason.stack, name: reason.name } : reason; // si no es un Error, simplemente registramos el valor
   if (reason instanceof Error) {
     // Si el 'reason' es una instancia de Error, podemos registrar el stack
-    log.error(line(), "Unhandled Rejection at Promise:", { promise, reason });
+    log.error(line(), "Unhandled Rejection at Promise:", { promise, reasonToLog });
   } else {
     // Si el 'reason' no es un error, solo logueamos el valor
-    log.error(line(), "Unhandled Rejection at Promise (non-error type): ", { promise, reason });
+    log.error(line(), "Unhandled Rejection at Promise (non-error type): ", { promise, reasonToLog });
   }
 });
