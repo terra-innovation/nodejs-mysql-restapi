@@ -11,6 +11,7 @@ export const getPersonasByVerificacion = async (tx: TxClient, estado: number[], 
       include: {
         usuario: true,
         persona_verificacion_estado: true,
+        persona_declaraciones: true,
         documento_tipo: true,
         pais_nacimiento: true,
         pais_nacionalidad: true,

@@ -34,7 +34,7 @@ export const loginUser = async (req: Request, res: Response) => {
   const loginUserSchema = Yup.object()
     .shape({
       email: Yup.string().trim().required("Correo electrónico es requerido").email("Debe ser un correo válido").matches(EMAIL_REGX, "Debe ser un correo válido.").min(5, "Mínimo 5 caracteres").max(50, "Máximo 50 caracteres"),
-      password: Yup.string().required("Contraseña es requerido").min(6, "Mínimo 6 caracteres").max(20, "Máximo 20 caracteres"),
+      password: Yup.string().required("Contraseña es requerido").min(6, "Mínimo 6 caracteres").max(50, "Máximo 50 caracteres"),
     })
     .required();
   const loginUserValidated = loginUserSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
