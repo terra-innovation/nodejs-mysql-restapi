@@ -28,7 +28,7 @@ export const corsMiddleware = cors({
 
     log.warn(line(), `CORS blocked request from origin: ${origin}`);
 
-    return callback(new Error("CORS: Origin no permitido"));
+    return callback(new Error(`CORS: Origin no permitido (${origin})`));
   },
   exposedHeaders: ["Content-Disposition"],
 });

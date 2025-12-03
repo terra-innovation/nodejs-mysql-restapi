@@ -28,11 +28,26 @@ export function deepOmitNullAndUndefined<T>(input: T): T {
  * @returns Texto plano con formato clave: valor.
  */
 export function jsonToPlainText(obj: Record<string, any>, newline: string): string {
-  const flatMap = this.flattenObject(obj);
-  let mensaje = "";
+  // ✔ Si obj es null, undefined o no es un objeto → devolver string vacío
+  if (!obj || typeof obj !== "object") {
+    return "";
+  }
+  // ✔ Intentar generar el flatMap
+  let flatMap: Record<string, any>;
+  try {
+    flatMap = this.flattenObject(obj);
+    if (!flatMap || typeof flatMap !== "object") {
+      return "";
+    }
+  } catch (err) {
+    // Si flattenObject falla → retornar string vacío
+    return "";
+  }
 
+  // ✔ Convertir a texto plano
+  let mensaje = "";
   for (const [key, value] of Object.entries(flatMap)) {
-    mensaje += `${key}: ${value}${newline}`;
+    mensaje += `${key}: ${value ?? ""}${newline}`;
   }
 
   return mensaje;
