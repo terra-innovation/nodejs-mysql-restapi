@@ -4,18 +4,19 @@ import { isProduction, isDevelopment, isTest } from "#src/config.js";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 
 const rateLimiterGlobal = new RateLimiterMemory({
-  points: isProduction ? 100 : isDevelopment ? 2000 : isTest ? 2000 : 10, // 100 solicitudes
+  points: isProduction ? 500 : isDevelopment ? 2000 : isTest ? 2000 : 10, // 100 solicitudes
   duration: 10 * 60, //En 10 minutos
   insuranceLimiter: new RateLimiterMemory({ points: 50, duration: 10 * 60 }),
 });
 
 export const rateLimiterGlobalMiddleware = async (req, res, next) => {
   try {
-    await rateLimiterGlobal.consume(req.ip);
+    const rlRes = await rateLimiterGlobal.consume(req.ip);
     next();
-  } catch {
-    log.warn(line(), `Rate limit global excedido para IP`, { ip: req.ip });
-    res.status(429).json({ error: true, message: "Demasiadas solicitudes. Intenta más tarde." });
+  } catch (err) {
+    const minutesLeft = (err.msBeforeNext / 1000 / 60).toFixed(2);
+    log.warn(line(), `Rate limit global excedido para IP`, { ip: req.ip, minutesLeft });
+    res.status(429).json({ error: true, message: `Demasiadas solicitudes. Intenta nuevamente en ${minutesLeft} minutos.` });
   }
 };
 
@@ -27,10 +28,11 @@ const rateLimiterLogin = new RateLimiterMemory({
 
 export const rateLimiterLoginMiddleware = async (req, res, next) => {
   try {
-    await rateLimiterLogin.consume(req.ip);
+    const rlRes = await rateLimiterLogin.consume(req.ip);
     next();
-  } catch {
-    log.warn(line(), `Rate limit excedido para IP`, { ip: req.ip });
-    res.status(429).json({ error: true, message: "Demasiadas solicitudes. Intenta más tarde." });
+  } catch (err) {
+    const minutesLeft = (err.msBeforeNext / 1000 / 60).toFixed(2);
+    log.warn(line(), `Rate limit excedido para IP`, { ip: req.ip, minutesLeft });
+    res.status(429).json({ error: true, message: `Demasiadas solicitudes. Intenta nuevamente en ${minutesLeft} minutos.` });
   }
 };

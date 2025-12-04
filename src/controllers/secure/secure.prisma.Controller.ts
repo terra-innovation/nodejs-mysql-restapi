@@ -45,7 +45,7 @@ export const loginUser = async (req: Request, res: Response) => {
       const usuario_login = await usuarioDao.autenticarUsuario(tx, loginUserValidated.email);
       if (!usuario_login) {
         log.warn(line(), "Usuario no existe: [" + loginUserValidated.email + "]");
-        throw new ClientError("Usuario y/o contraseña no válida", 404);
+        throw new ClientError("Usuario y/o contraseña no válida.", 404);
       }
 
       if (usuario_login.email && usuario_login.credencial.password && bcrypt.compareSync(loginUserValidated.password, usuario_login.credencial.password)) {
@@ -63,7 +63,7 @@ export const loginUser = async (req: Request, res: Response) => {
         return { token, usuarioid: usuario_login.usuarioid };
       } else {
         log.warn(line(), "Credenciales no válidas: [" + loginUserValidated.email + "]");
-        throw new ClientError("Usuario y/o contraseña no válida", 404);
+        throw new ClientError("Usuario y/o contraseña no válida.", 404);
       }
     },
     { timeout: prismaFT.transactionTimeout }
