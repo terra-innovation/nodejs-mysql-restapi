@@ -17,6 +17,7 @@ import { response } from "#src/utils/CustomResponseOk.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import * as telegramService from "#src/services/telegram.Service.js";
 
 import * as storageUtils from "#src/utils/storageUtils.js";
 import * as validacionesYup from "#src/utils/validacionesYup.js";
@@ -259,6 +260,19 @@ export const verifyPersona = async (req: Request, res: Response) => {
       };
 
       await usuarioDao.updateUsuario(tx, usuarioConected.usuarioid, usuarioToUpdate);
+
+      const msnTelegram = {
+        title: "Nueva solicitud de verificación de Persona",
+        code: personaToCreate.code,
+        documentonumero: personaToCreate.documentonumero,
+        personanombres: personaToCreate.personanombres,
+        apellidopaterno: personaToCreate.apellidopaterno,
+        apellidomaterno: personaToCreate.apellidomaterno,
+        email: personaToCreate.email,
+        celular: personaToCreate.celular,
+      };
+
+      telegramService.sendMessageTelegramInfo(msnTelegram);
 
       return {};
     },

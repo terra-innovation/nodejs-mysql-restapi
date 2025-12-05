@@ -1,6 +1,7 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
+import { isProduction, isDevelopment } from "#src/config.js";
 
 import * as cuentabancariaDao from "#src/daos/cuentabancaria.prisma.Dao.js";
 import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
@@ -16,6 +17,8 @@ import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import * as telegramService from "#src/services/telegram.Service.js";
+
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 
 import * as luxon from "luxon";
@@ -98,14 +101,14 @@ export const createFactoring = async (req: Request, res: Response) => {
 
         // Validar si el factoring ya existe
         //JCHR:20250213: Habillitar para producción
-        /*
-      const filter_estados_factoring = [1];
-      const factoring_existe = await factoringDao.getFactoringByRucCedenteAndCodigoFactura(tx, factura.proveedor_ruc, factura.serie, factura.numero_comprobante, filter_estados_factoring);
-      if (factoring_existe) {
-        log.warn(line(), "Factoring ya existe: [" + factura.proveedor_ruc + ", " + factura.serie + ", " + factura.numero_comprobante + ", " + filter_estados_factoring + "]");
-        throw new ClientError("La factura seleccionada ya está vinculada a una operación de factoring activa. Por favor, elija otra factura para continuar con el proceso.", 404);
-      }
-        */
+        if (isProduction) {
+          const filter_estados_factoring = [1];
+          const factoring_existe = await factoringDao.getFactoringByRucCedenteAndCodigoFactura(tx, factura.proveedor_ruc, factura.serie, factura.numero_comprobante, filter_estados_factoring);
+          if (factoring_existe) {
+            log.warn(line(), "Factoring ya existe: [" + factura.proveedor_ruc + ", " + factura.serie + ", " + factura.numero_comprobante + ", " + filter_estados_factoring + "]");
+            throw new ClientError("La factura seleccionada ya está vinculada a una operación de factoring activa. Por favor, elija otra factura para continuar con el proceso.", 404);
+          }
+        }
 
         facturas.push(factura);
       }
@@ -224,6 +227,16 @@ export const createFactoring = async (req: Request, res: Response) => {
         usuario: usuario_for_email,
       };
       await emailService.sendFactoringEmpresaServicioFactoringSolicitud(usuario_for_email.email, paramsEmail);
+
+      const msnTelegram = {
+        title: "Nueva Operación de Factoring",
+        code: factoringToCreate.code,
+        monto_factura: factoringToCreate.monto_factura,
+        monto_detraccion: factoringToCreate.monto_detraccion,
+        monto_neto: factoringToCreate.monto_neto,
+      };
+
+      telegramService.sendMessageTelegramInfo(msnTelegram);
 
       return factoringCreated;
     },

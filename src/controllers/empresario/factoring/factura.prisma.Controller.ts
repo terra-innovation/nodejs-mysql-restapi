@@ -18,6 +18,7 @@ import * as facturaterminopagoDao from "#src/daos/facturaterminopago.prisma.Dao.
 import * as archivofacturaDao from "#src/daos/archivofactura.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import * as telegramService from "#src/services/telegram.Service.js";
 
 import * as storageUtils from "#src/utils/storageUtils.js";
 import * as facturaUtils from "#src/utils/facturaUtils.js";
@@ -181,6 +182,24 @@ export const subirFactura = async (req: Request, res: Response) => {
       let facturaFiltered = jsonUtils.removeAttributesPrivates(facturaFinal);
       facturaFiltered = jsonUtils.removeAttributes(facturaFinal, ["items", "terminos_pago", "notas", "medios_pago"]);
       facturaFiltered = jsonUtils.removeAttributesPrivates(facturaFiltered);
+
+      const msnTelegram = {
+        title: "Nueva factura cargada",
+        code: facturaToCreate.code,
+        serie: facturaToCreate.serie,
+        numero_comprobante: facturaToCreate.numero_comprobante,
+        fecha_pago_mayor_estimado: facturaToCreate.fecha_pago_mayor_estimado,
+        importe_bruto: facturaToCreate.importe_bruto,
+        importe_neto: facturaToCreate.importe_neto,
+        dias_estimados_para_pago: facturaToCreate.dias_estimados_para_pago,
+        dias_desde_emision: facturaToCreate.dias_desde_emision,
+        proveedor_ruc: facturaToCreate.proveedor_ruc,
+        proveedor_razon_social: facturaToCreate.proveedor_razon_social,
+        cliente_ruc: facturaToCreate.cliente_ruc,
+        cliente_razon_social: facturaToCreate.cliente_razon_social,
+      };
+
+      telegramService.sendMessageTelegramInfo(msnTelegram);
 
       return facturaFiltered;
     },

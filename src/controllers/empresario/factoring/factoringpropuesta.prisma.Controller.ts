@@ -21,6 +21,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { log, line } from "#src/utils/logger.pino.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
+import * as telegramService from "#src/services/telegram.Service.js";
 
 import * as luxon from "luxon";
 
@@ -143,6 +144,18 @@ export const acceptFactoringpropuesta = async (req: Request, res: Response) => {
       };
 
       await emailService.sendFactoringEmpresaServicioFactoringPropuestaAceptada(usuario_for_email.email, paramsEmail);
+
+      const msnTelegram = {
+        title: "Factoring Electrónico: propuesta aceptada",
+        code: factoring.code,
+        tdm: factoringpropuesta.tdm,
+        monto_neto: factoringpropuesta.monto_neto,
+        monto_adelanto: factoringpropuesta.monto_adelanto,
+        fecha_pago_estimado: factoringpropuesta.fecha_pago_estimado,
+        dias_pago_estimado: factoringpropuesta.dias_pago_estimado,
+      };
+
+      telegramService.sendMessageTelegramInfo(msnTelegram);
 
       return factoringpropuestaUpdated;
     },

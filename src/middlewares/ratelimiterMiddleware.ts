@@ -21,7 +21,7 @@ export const rateLimiterGlobalMiddleware = async (req, res, next) => {
 };
 
 const rateLimiterLogin = new RateLimiterMemory({
-  points: isProduction ? 5 : isDevelopment ? 200 : isTest ? 200 : 10, // 5 solicitudes
+  points: isProduction ? 10 : isDevelopment ? 200 : isTest ? 200 : 10, // 5 solicitudes
   duration: 10 * 60, //En 10 minutos
   insuranceLimiter: new RateLimiterMemory({ points: 2, duration: 10 * 60 }),
 });

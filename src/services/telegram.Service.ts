@@ -6,6 +6,32 @@ import * as jsonUtils from "#src/utils/jsonUtils.js";
 
 import { getContext } from "#src/utils/context/loggerContext.js";
 
+export const sendMessageTelegramInfo = async (json: any): Promise<void> => {
+  const store = getContext();
+
+  const newline = "\r\n";
+  var mensaje = "";
+
+  mensaje += "[" + df.formatDateTimeWithZoneLocale(new Date()) + "]" + newline;
+  mensaje += newline;
+  mensaje += "<b>API.FINANZATECH.COM: Info</b>" + newline;
+  mensaje += newline;
+
+  mensaje +=
+    jsonUtils.jsonToPlainText(
+      {
+        ...(store && typeof store === "object" && !Array.isArray(store) ? store : {}),
+        env: env.NODE_ENV,
+      },
+      newline
+    ) + newline;
+  mensaje += newline;
+  mensaje += jsonUtils.jsonToPlainText(json, newline) + newline;
+  mensaje += newline;
+
+  sendMessageTelegramImportant(mensaje);
+};
+
 export const sendMessageTelegramLogin = async (json: any): Promise<void> => {
   const store = getContext();
 

@@ -495,6 +495,19 @@ export const registerUsuario = async (req: Request, res: Response) => {
       await emailSender.sendContactoFinanzatech(mailOptions);
       log.debug(line(), "Correo templateCodigoVerificacion enviado exitosamente.", usuarioValidated.email);
 
+      const msnTelegram = {
+        title: "Nuevo usuario registrado",
+        code: usuarioToCreate.code,
+        documentonumero: usuarioToCreate.documentonumero,
+        usuarionombres: usuarioToCreate.usuarionombres,
+        apellidopaterno: usuarioToCreate.apellidopaterno,
+        apellidomaterno: usuarioToCreate.apellidomaterno,
+        email: usuarioToCreate.email,
+        celular: usuarioToCreate.celular,
+      };
+
+      telegramService.sendMessageTelegramInfo(msnTelegram);
+
       /* Retornar datos para la validación del usuarioP */
       const usuarioReturned: Record<string, any> = {};
       usuarioReturned.hash = usuarioToCreate.hash;

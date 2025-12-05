@@ -37,6 +37,7 @@ import { response } from "#src/utils/CustomResponseOk.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import * as telegramService from "#src/services/telegram.Service.js";
 
 import * as storageUtils from "#src/utils/storageUtils.js";
 import * as validacionesYup from "#src/utils/validacionesYup.js";
@@ -622,6 +623,16 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
 
       const usuarioservicioUpdated = await usuarioservicioDao.updateUsuarioservicio(tx, usuarioservicio.usuarioservicioid, usuarioservicioToUpdate);
       log.debug(line(), "usuarioservicioUpdated:", usuarioservicioUpdated);
+
+      const msnTelegram = {
+        title: "Nueva solicitud de verificación de Empresa",
+        code: empresaToCreate.code,
+        ruc: empresaToCreate.ruc,
+        razon_social: empresaToCreate.razon_social,
+        direccion_sede: empresaToCreate.direccion_sede,
+      };
+
+      telegramService.sendMessageTelegramInfo(msnTelegram);
 
       return {};
     },
