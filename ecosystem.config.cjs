@@ -5,6 +5,7 @@ module.exports = {
       script: "dist/index.js",
       instances: 1, // puedes cambiar a 'max' para cluster mode
       autorestart: true,
+      max_restarts: 3,
       watch: false, // desactiva watch en producción
       max_memory_restart: "512M",
       env: {

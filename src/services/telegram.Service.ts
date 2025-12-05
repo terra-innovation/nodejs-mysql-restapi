@@ -172,13 +172,15 @@ export const sendMessageTelegram = async (token: string, chatId: string, message
 
   const url = `https://api.telegram.org/bot${token}/sendMessage`;
 
-  try {
-    await axios.post(url, {
-      chat_id: chatId,
-      text: message,
-      parse_mode: "HTML",
-    });
-  } catch (error) {
-    log.error(line(), "Error enviando mensaje a Telegram:", error);
+  if (env.TELEGRAM_ACTIVE) {
+    try {
+      await axios.post(url, {
+        chat_id: chatId,
+        text: message,
+        parse_mode: "HTML",
+      });
+    } catch (error) {
+      log.error(line(), "Error enviando mensaje a Telegram:", error);
+    }
   }
 };

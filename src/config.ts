@@ -39,12 +39,14 @@ const envSchema = z.object({
   SMTP_ZOHO_SECURE: z.enum(["true", "false"]).transform((v) => v === "true"),
 
   // Mails
+  MAIL_CONTACTO_FINANZATECH_ACTIVE: z.enum(["true", "false"]).transform((v) => v === "true"),
   MAIL_CONTACTO_FINANZATECH_NAME: z.string(),
   MAIL_CONTACTO_FINANZATECH_USER: z.string().email(),
   MAIL_CONTACTO_FINANZATECH_PASS: z.string(),
   MAIL_BACKUP: z.string().email(),
 
   // Telegram
+  TELEGRAM_ACTIVE: z.enum(["true", "false"]).transform((v) => v === "true"),
   TELEGRAM_IMPORTANT_TOKEN: z.string(),
   TELEGRAM_IMPORTANT_CHATID: z.string(),
   TELEGRAM_IMFORMATION_TOKEN: z.string(),
@@ -74,9 +76,8 @@ try {
   env = envSchema.parse(process.env);
 } catch (error) {
   if (error instanceof z.ZodError) {
-    console.error("Environment variable validation failed:");
     error.errors.forEach((err) => {
-      console.error(`- ${err.path.join(".")}: ${err.message}`);
+      console.error(`Environment variable validation failed: ${err.path.join(".")}: ${err.message}`);
     });
     process.exit(1); // Exit the process with an error code
   }

@@ -11,7 +11,9 @@ class EmailSender {
       from: '"' + env.MAIL_CONTACTO_FINANZATECH_NAME + '" <' + env.MAIL_CONTACTO_FINANZATECH_USER + ">",
       bcc: env.MAIL_BACKUP,
     };
-    return this.sendEmail(transporter, options);
+    if (env.MAIL_CONTACTO_FINANZATECH_ACTIVE) {
+      return this.sendEmail(transporter, options);
+    }
   }
 
   createTransporterZohoMail(user, pass) {
