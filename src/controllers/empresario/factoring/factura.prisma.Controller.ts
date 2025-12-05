@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as fs from "fs";
 import path from "path";
+import { isProduction, isDevelopment } from "#src/config.js";
 
 import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
 import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
@@ -97,17 +98,15 @@ export const subirFactura = async (req: Request, res: Response) => {
   const facturaFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       // Validar si el factoring ya existe
-
       // JCHR:20250213: Habillitar para producción
-
-      /*
-      const filter_estados_factoring = [1];
-      const factoring_existe = await factoringDao.getFactoringByRucCedenteAndCodigoFactura(tx, facturaToCreate.proveedor_ruc, facturaToCreate.serie, facturaToCreate.numero_comprobante, filter_estados_factoring);
-      if (factoring_existe) {
-        log.warn(line(), "Factoring ya existe: [" + facturaToCreate.proveedor_ruc + ", " + facturaToCreate.serie + ", " + facturaToCreate.numero_comprobante + ", " + filter_estados_factoring + "]");
-        throw new ClientError("La factura seleccionada ya está vinculada a una operación de factoring activa. Por favor, elija otra factura para continuar con el proceso.", 404);
+      if (isProduction) {
+        const filter_estados_factoring = [1];
+        const factoring_existe = await factoringDao.getFactoringByRucCedenteAndCodigoFactura(tx, facturaToCreate.proveedor_ruc, facturaToCreate.serie, facturaToCreate.numero_comprobante, filter_estados_factoring);
+        if (factoring_existe) {
+          log.warn(line(), "Factoring ya existe: [" + facturaToCreate.proveedor_ruc + ", " + facturaToCreate.serie + ", " + facturaToCreate.numero_comprobante + ", " + filter_estados_factoring + "]");
+          throw new ClientError("La factura (" + facturaToCreate.serie + "-" + facturaToCreate.numero_comprobante + ") seleccionada ya está vinculada a una operación de factoring activa. Por favor, elija otra factura para continuar con el proceso.", 404);
+        }
       }
-      */
 
       var empresa = await empresaDao.getEmpresaByIdusuarioAndRuc(tx, session_idusuario, facturaToCreate.proveedor_ruc, filter_estado);
       if (!empresa) {
