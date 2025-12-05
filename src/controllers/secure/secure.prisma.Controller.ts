@@ -59,7 +59,7 @@ export const loginUser = async (req: Request, res: Response) => {
           expiresIn: "200000h",
         });
         log.info(line(), "Usuario autenticado", { idusuario: usuario_autenticado.idusuario, usuarioid: usuario_autenticado.usuarioid, code: usuario_autenticado.code, email: loginUserValidated.email });
-        telegramService.sendMessageTelegramLogin(usuario_autenticado);
+        telegramService.sendMessageTelegramLogin({ email: usuario_autenticado.email });
         return { token, usuarioid: usuario_login.usuarioid };
       } else {
         log.warn(line(), "Credenciales no válidas: [" + loginUserValidated.email + "]");

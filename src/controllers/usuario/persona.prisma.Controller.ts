@@ -38,6 +38,7 @@ export const getPersonaMaster = async (req: Request, res: Response) => {
       const session_idusuario = req.session_user?.usuario?.idusuario;
       const filter_estados = [1];
       const paises = await paisDao.getPaises(tx, filter_estados);
+      const paisesperu = await paisDao.getPaisesPeru(tx);
       const distritos = await distritoDao.getDistritos(tx, filter_estados);
       const documentotipos = await documentotipoDao.getDocumentotipos(tx, filter_estados);
       const generos = await generoDao.getGeneros(tx, filter_estados);
@@ -49,6 +50,7 @@ export const getPersonaMaster = async (req: Request, res: Response) => {
 
       let personaMaster: Record<string, any> = {};
       personaMaster.paises = paises;
+      personaMaster.paisesperu = paisesperu;
       personaMaster.distritos = distritos;
       personaMaster.documentotipos = documentotipos;
       personaMaster.generos = generos;

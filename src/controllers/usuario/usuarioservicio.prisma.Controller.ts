@@ -648,6 +648,7 @@ export const getUsuarioservicioMaster = async (req: Request, res: Response) => {
 
       const usuarioservicio = await usuarioservicioDao.getUsuarioservicioByUsuarioservicioid(tx, usuarioservicioValidated.usuarioservicioid);
       const paises = await paisDao.getPaises(tx, filter_estados);
+      const paisesperu = await paisDao.getPaisesPeru(tx);
       const distritos = await distritoDao.getDistritos(tx, filter_estados);
       const bancos = await bancoDao.getBancos(tx, filter_estados);
       const monedas = await monedaDao.getMonedas(tx, filter_estados);
@@ -657,6 +658,7 @@ export const getUsuarioservicioMaster = async (req: Request, res: Response) => {
       let usuarioservicioMaster: Record<string, any> = {};
       usuarioservicioMaster.usuarioservicio = usuarioservicio;
       usuarioservicioMaster.paises = paises;
+      usuarioservicioMaster.paisesperu = paisesperu;
       usuarioservicioMaster.distritos = distritos;
       usuarioservicioMaster.bancos = bancos;
       usuarioservicioMaster.monedas = monedas;

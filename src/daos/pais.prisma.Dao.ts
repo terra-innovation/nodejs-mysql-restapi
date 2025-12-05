@@ -6,6 +6,10 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
+export const getPaisesPeru = async (tx: TxClient) => {
+  return await getPaisesByIdpaises(tx, [137]);
+};
+
 export const getPaises = async (tx: TxClient, estados: number[]) => {
   try {
     const paises = await tx.pais.findMany({
@@ -17,6 +21,25 @@ export const getPaises = async (tx: TxClient, estados: number[]) => {
     });
 
     return paises;
+  } catch (error) {
+    log.error(line(), "", error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
+export const getPaisesByIdpaises = async (tx: TxClient, idpaises: number[]) => {
+  try {
+    const pais = await tx.pais.findMany({
+      where: {
+        idpais: {
+          in: idpaises,
+        },
+      },
+    });
+
+    //const paises = await pais.getPaises();
+
+    return pais;
   } catch (error) {
     log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
