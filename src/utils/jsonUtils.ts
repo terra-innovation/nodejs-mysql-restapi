@@ -252,10 +252,10 @@ export function ofuscarEmail(email) {
     return nombreUsuario + "@" + "*".repeat(dominio.length);
   } else {
     // Ofuscar el nombre de usuario como antes
-    const primeraLetra = nombreUsuario.charAt(0);
-    const ultimaLetra = nombreUsuario.charAt(nombreUsuario.length - 1);
-    const medioOfuscado = "*".repeat(nombreUsuario.length - 2);
-    return primeraLetra + medioOfuscado + ultimaLetra + "@" + dominio;
+    const primerTexto = nombreUsuario.slice(0, 2);
+    const ultimoTexto = nombreUsuario.slice(-3);
+    const medioOfuscado = "*".repeat(5);
+    return primerTexto + medioOfuscado + ultimoTexto + "@" + dominio;
   }
 }
 
@@ -285,12 +285,12 @@ export function ofuscarCuenta(cuenta) {
 
 export function ofuscarTelefono(telefono) {
   // Verifica si el texto tiene al menos 10 caracteres
-  if (telefono.length < 3) {
+  if (telefono.length < 4) {
     return telefono;
   }
 
-  // Extrae los últimos 4 dígitos del texto
-  const ultimosDosDigitos = telefono.slice(-2);
+  // Extrae los últimos 3 dígitos del texto
+  const ultimosDosDigitos = telefono.slice(-3);
 
   // Genera una cadena de asteriscos de longitud 6 seguida de un espacio
   const asteriscos = "*".repeat(3) + " " + "*".repeat(3);

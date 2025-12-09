@@ -63,9 +63,7 @@ export const getPersonaMaster = async (req: Request, res: Response) => {
 
       let personaMasterJSON = jsonUtils.sequelizeToJSON(personaMaster);
       //jsonUtils.prettyPrint(personaMasterJSON);
-      let personaMasterObfuscated = jsonUtils.ofuscarAtributosDefault(personaMasterJSON);
-      //jsonUtils.prettyPrint(personaMasterObfuscated);
-      let personaMasterFiltered = jsonUtils.removeAttributesPrivates(personaMasterObfuscated);
+      let personaMasterFiltered = jsonUtils.removeAttributesPrivates(personaMasterJSON);
       //jsonUtils.prettyPrint(personaMaster);
       return personaMasterFiltered;
     },

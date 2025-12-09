@@ -93,8 +93,7 @@ export const sendFactoringEmpresaServicioFactoringDeudorNotificacionTransferenci
       html: emailTemplate.html,
     };
 
-    console.log(emailTemplate.html);
-    //await emailSender.sendContactoFinanzatech(mailOptions);
+    await emailSender.sendContactoFinanzatech(mailOptions);
   } catch (error) {
     log.error(line(), "", error);
     throw error;
