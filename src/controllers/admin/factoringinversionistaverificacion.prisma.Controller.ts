@@ -28,6 +28,7 @@ import { log, line } from "#src/utils/logger.pino.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
+import * as df from "#src/utils/dateUtils.js";
 
 import EmailSender from "#src/utils/email/emailSender.js";
 import TemplateManager from "#src/utils/email/TemplateManager.js";
@@ -228,7 +229,7 @@ const enviarCorreoSegunCorrespondeNuevoEstadoDeServicioInversionista = async (se
       const dataEmail = {
         codigo_servicio_inversionista: servicioinversionista.code,
         nombres: personasuscriptor.usuario.usuarionombres,
-        fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
+        fecha_actual: df.formatDateForEmailLocale(new Date().toISOString()),
         razon_no_aceptada: servicioinversionistaverificacionValidated.comentariousuario,
       };
       const emailTemplate = await templateManager.templateFactoringInversionistaVerificacionMasInformacion(dataEmail);
@@ -249,7 +250,7 @@ const enviarCorreoSegunCorrespondeNuevoEstadoDeServicioInversionista = async (se
     const dataEmail = {
       codigo_servicio_inversionista: servicioinversionista.code,
       nombres: personasuscriptor.usuario.usuarionombres,
-      fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
+      fecha_actual: df.formatDateForEmailLocale(new Date().toISOString()),
     };
     const emailTemplate = await templateManager.templateFactoringInversionistaVerificacionAprobado(dataEmail);
 
@@ -265,7 +266,7 @@ const enviarCorreoSegunCorrespondeNuevoEstadoDeServicioInversionista = async (se
     const dataEmail = {
       codigo_servicio_inversionista: servicioinversionista.code,
       nombres: personasuscriptor.usuario.usuarionombres,
-      fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
+      fecha_actual: df.formatDateForEmailLocale(new Date().toISOString()),
     };
     const emailTemplate = await templateManager.templateFactoringInversionistaVerificacionRechazado(dataEmail);
 

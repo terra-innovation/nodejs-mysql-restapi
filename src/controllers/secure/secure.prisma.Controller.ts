@@ -21,6 +21,8 @@ import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import * as Yup from "yup";
 
+import * as df from "#src/utils/dateUtils.js";
+
 import EmailSender from "#src/utils/email/emailSender.js";
 import TemplateManager from "#src/utils/email/TemplateManager.js";
 
@@ -481,7 +483,7 @@ export const registerUsuario = async (req: Request, res: Response) => {
       const dataEmail = {
         otp: validacionToCreate.otp,
         duracion_minutos: validacionToCreate.tiempo_expiracion,
-        fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
+        fecha_actual: df.formatDateForEmailLocale(new Date().toISOString()),
       };
       const emailTemplate = await templateManager.templateCodigoVerificacion(dataEmail);
 

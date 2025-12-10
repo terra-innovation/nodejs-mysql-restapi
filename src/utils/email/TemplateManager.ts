@@ -129,6 +129,7 @@ class TemplaceManager {
               moneda: yup.object({
                 codigo: yup.string().required(),
                 nombre: yup.string().required(),
+                simbolo: yup.string().required(),
               }),
               factoring_facturas: yup
                 .array()
@@ -273,6 +274,7 @@ class TemplaceManager {
                 moneda: yup.object({
                   codigo: yup.string().required(),
                   nombre: yup.string().required(),
+                  simbolo: yup.string().required(),
                 }),
               }),
             })
@@ -333,6 +335,7 @@ class TemplaceManager {
               moneda: yup.object({
                 codigo: yup.string().required(),
                 nombre: yup.string().required(),
+                simbolo: yup.string().required(),
               }),
             })
             .required(),
@@ -431,6 +434,7 @@ class TemplaceManager {
               moneda: yup.object({
                 codigo: yup.string().required(),
                 nombre: yup.string().required(),
+                simbolo: yup.string().required(),
               }),
               factoring_facturas: yup
                 .array()
@@ -502,6 +506,7 @@ class TemplaceManager {
               moneda: yup.object({
                 codigo: yup.string().required(),
                 nombre: yup.string().required(),
+                simbolo: yup.string().required(),
               }),
               factoring_facturas: yup
                 .array()
@@ -603,6 +608,7 @@ class TemplaceManager {
               moneda: yup.object({
                 codigo: yup.string().required(),
                 nombre: yup.string().required(),
+                simbolo: yup.string().required(),
               }),
               factoring_facturas: yup
                 .array()
@@ -689,6 +695,7 @@ class TemplaceManager {
               moneda: yup.object({
                 codigo: yup.string().required(),
                 nombre: yup.string().required(),
+                simbolo: yup.string().required(),
               }),
               factoring_facturas: yup
                 .array()

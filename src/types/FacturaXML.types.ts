@@ -30,6 +30,8 @@ export interface FacturaXML {
   importe_neto: number;
   codigo_archivo: string;
   monedaid?: string;
+  moneda_alias?: string;
+  moneda_simbolo?: string;
 }
 
 export interface ProveedorFactura {

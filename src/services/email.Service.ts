@@ -13,7 +13,7 @@ const emailSender = new EmailSender();
 export const sendFactoringEmpresaServicioFactoringCedenteNotificacionInicioOperacion = async (to, params) => {
   try {
     const cabecera = {
-      fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
+      fecha_actual: df.formatDateForEmailLocale(new Date().toISOString()),
     };
 
     const factoring_formateado = {
@@ -67,7 +67,7 @@ export const sendFactoringEmpresaServicioFactoringCedenteNotificacionInicioOpera
 export const sendFactoringEmpresaServicioFactoringDeudorNotificacionTransferencia = async (to, cc, params) => {
   try {
     const cabecera = {
-      fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
+      fecha_actual: df.formatDateForEmailLocale(new Date().toISOString()),
     };
 
     const factoring_formateado = {
@@ -103,7 +103,7 @@ export const sendFactoringEmpresaServicioFactoringDeudorNotificacionTransferenci
 export const sendFactoringEmpresaServicioFactoringCedenteConfirmacionTransferencia = async (to, params) => {
   try {
     const cabecera = {
-      fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
+      fecha_actual: df.formatDateForEmailLocale(new Date().toISOString()),
     };
 
     const factoring_formateado = {
@@ -143,7 +143,7 @@ export const sendFactoringEmpresaServicioFactoringCedenteConfirmacionTransferenc
 export const sendFactoringEmpresaServicioFactoringDeudorSolicitudConfirmacion = async (to, cc, params) => {
   try {
     const cabecera = {
-      fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
+      fecha_actual: df.formatDateForEmailLocale(new Date().toISOString()),
     };
 
     const factoring_formateado = {
@@ -178,7 +178,7 @@ export const sendFactoringEmpresaServicioFactoringDeudorSolicitudConfirmacion = 
 export const sendFactoringEmpresaServicioFactoringPropuestaAceptada = async (to, params) => {
   try {
     const cabecera = {
-      fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
+      fecha_actual: df.formatDateForEmailLocale(new Date().toISOString()),
     };
 
     const factoring_formateado = {
@@ -230,7 +230,7 @@ export const sendFactoringEmpresaServicioFactoringPropuestaAceptada = async (to,
 export const sendFactoringEmpresaServicioFactoringPropuestaDisponible = async (to, params) => {
   try {
     const cabecera = {
-      fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
+      fecha_actual: df.formatDateForEmailLocale(new Date().toISOString()),
     };
 
     const factoring_formateado = {
@@ -271,7 +271,7 @@ export const sendFactoringEmpresaServicioFactoringPropuestaDisponible = async (t
 export const sendFactoringEmpresaServicioFactoringSolicitud = async (to, params) => {
   try {
     const cabecera = {
-      fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
+      fecha_actual: df.formatDateForEmailLocale(new Date().toISOString()),
     };
 
     const factoring_formateado = {

@@ -39,6 +39,10 @@ export const formatDateForAuditLocale = (isoDate, format = "dd/LLL/yyyy HH:mm:ss
   return formatDateCustom(isoDate, format, defaultConfig);
 };
 
+export const formatDateForEmailLocale = (isoDate, format = "d LLLL yyyy") => {
+  return formatDateCustom(isoDate, format, defaultConfig);
+};
+
 export const formatDateCustomLocale = (isoDate, format = "dd/LLL/yyyy HH:mm ZZZ") => {
   return formatDateCustom(isoDate, format, defaultConfig);
 };

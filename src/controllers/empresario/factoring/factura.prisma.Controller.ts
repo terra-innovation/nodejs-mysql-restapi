@@ -178,6 +178,8 @@ export const subirFactura = async (req: Request, res: Response) => {
 
       const moneda = await monedaDao.getMonedaByCodigo(tx, facturaToCreate.codigo_tipo_moneda);
       facturaFinal.monedaid = moneda.monedaid;
+      facturaFinal.moneda_alias = moneda.alias;
+      facturaFinal.moneda_simbolo = moneda.simbolo;
 
       let facturaFiltered = jsonUtils.removeAttributesPrivates(facturaFinal);
       facturaFiltered = jsonUtils.removeAttributes(facturaFinal, ["items", "terminos_pago", "notas", "medios_pago"]);

@@ -27,6 +27,8 @@ import { log, line } from "#src/utils/logger.pino.js";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
+import * as df from "#src/utils/dateUtils.js";
+
 import EmailSender from "#src/utils/email/emailSender.js";
 import TemplateManager from "#src/utils/email/TemplateManager.js";
 
@@ -215,7 +217,7 @@ const enviarCorreoSegunCorrespondeNuevoEstadoDeServicioEmpresa = async (servicio
       const dataEmail = {
         codigo_servicio_empresa: servicioempresa.code,
         nombres: personasuscriptor.usuario.usuarionombres,
-        fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
+        fecha_actual: df.formatDateForEmailLocale(new Date().toISOString()),
         empresa_razon_social: empresa.razon_social,
         empresa_ruc: empresa.ruc,
         razon_no_aceptada: servicioempresaverificacionValidated.comentariousuario,
@@ -238,7 +240,7 @@ const enviarCorreoSegunCorrespondeNuevoEstadoDeServicioEmpresa = async (servicio
     const dataEmail = {
       codigo_servicio_empresa: servicioempresa.code,
       nombres: personasuscriptor.usuario.usuarionombres,
-      fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
+      fecha_actual: df.formatDateForEmailLocale(new Date().toISOString()),
       empresa_razon_social: empresa.razon_social,
       empresa_ruc: empresa.ruc,
     };
@@ -256,7 +258,7 @@ const enviarCorreoSegunCorrespondeNuevoEstadoDeServicioEmpresa = async (servicio
     const dataEmail = {
       codigo_servicio_empresa: servicioempresa.code,
       nombres: personasuscriptor.usuario.usuarionombres,
-      fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
+      fecha_actual: df.formatDateForEmailLocale(new Date().toISOString()),
       empresa_razon_social: empresa.razon_social,
       empresa_ruc: empresa.ruc,
     };

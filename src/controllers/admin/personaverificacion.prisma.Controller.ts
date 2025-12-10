@@ -17,6 +17,8 @@ import TemplateManager from "#src/utils/email/TemplateManager.js";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
+import * as df from "#src/utils/dateUtils.js";
+
 import type { persona_verificacion } from "#root/generated/prisma/ft_factoring/client.js";
 import type { persona } from "#root/generated/prisma/ft_factoring/client.js";
 import type { usuario } from "#root/generated/prisma/ft_factoring/client.js";
@@ -281,7 +283,7 @@ const enviarCorreoSegunCorrespondeNuevoEstadoDePersona = async (personaverificac
         codigo_usuario: persona.usuario.code,
         nombres: persona.usuario.usuarionombres,
         razon_no_aceptada: personaverificacionValidated.comentariousuario,
-        fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
+        fecha_actual: df.formatDateForEmailLocale(new Date().toISOString()),
       };
       const emailTemplate = await templateManager.templateCuentaUsarioVerificadaMasInformacion(dataEmail);
 
@@ -301,7 +303,7 @@ const enviarCorreoSegunCorrespondeNuevoEstadoDePersona = async (personaverificac
     const dataEmail = {
       codigo_usuario: persona.usuario.code,
       nombres: persona.usuario.usuarionombres,
-      fecha_actual: new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
+      fecha_actual: df.formatDateForEmailLocale(new Date().toISOString()),
     };
     const emailTemplate = await templateManager.templateCuentaUsarioVerificadaExito(dataEmail);
 
