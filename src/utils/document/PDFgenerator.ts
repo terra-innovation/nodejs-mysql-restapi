@@ -25,14 +25,14 @@ class PDFGenerator {
       var y = 0;
 
       // Encabezado
-      const imagePath = path.join(storageUtils.pathApp(), "src", "utils", "document", "cotizacion", "LogoFinanzaTech.png");
+      const imagePath = path.join(storageUtils.pathApp(), "assets", "images", "cotizacion", "LogoFinanzaTech.png");
       doc.image(imagePath, 50, 40, { width: 200 });
 
-      const addText = (size, font, text, yOffset) => {
+      const addText = (size, font, text, yOffset, options = {}) => {
         doc
           .fontSize(size)
           .font(font)
-          .text(text, 50, (y += yOffset));
+          .text(text, 50, (y += yOffset), { ...options });
       };
 
       doc
@@ -63,7 +63,7 @@ class PDFGenerator {
 
         datas: [
           { concepto: "Factura", descripcion: facturas },
-          { concepto: "Valor neto", descripcion: nf.formatNumber(factoringpropuesta.monto_neto) },
+          { concepto: "Valor neto", descripcion: factoring.moneda.simbolo + " " + nf.formatNumber(factoringpropuesta.monto_neto) },
           { concepto: "Moneda", descripcion: factoring.moneda.codigo + " (" + factoring.moneda.nombre + ")" },
           { concepto: "Fecha de pago (estimada)", descripcion: df.formatDateUTC(factoringpropuesta.fecha_pago_estimado) },
 
@@ -72,13 +72,13 @@ class PDFGenerator {
           { concepto: "Financiamiento", descripcion: nf.formatPercentage(factoringpropuesta.porcentaje_financiado_estimado) },
           { concepto: "Tipo factoring", descripcion: factoringpropuesta.factoring_tipo.nombre },
 
-          { concepto: "Valor garantía", descripcion: nf.formatNumber(factoringpropuesta.monto_garantia) },
-          { concepto: "Valor financiado", descripcion: nf.formatNumber(factoringpropuesta.monto_financiado) },
-          { concepto: "Valor descuento", descripcion: nf.formatNumber(factoringpropuesta.monto_descuento) },
-          { concepto: "Comisión FT", descripcion: nf.formatNumber(factoringpropuesta.monto_comision) },
-          { concepto: "Costo + Gastos", descripcion: nf.formatNumber(factoringpropuesta.monto_costo_estimado) },
-          { concepto: "IGV", descripcion: nf.formatNumber(factoringpropuesta.monto_total_igv) },
-          { concepto: "Valor adelanto", descripcion: "bold:" + nf.formatNumber(factoringpropuesta.monto_adelanto) },
+          { concepto: "Valor garantía", descripcion: factoring.moneda.simbolo + " " + nf.formatNumber(factoringpropuesta.monto_garantia) },
+          { concepto: "Valor financiado", descripcion: factoring.moneda.simbolo + " " + nf.formatNumber(factoringpropuesta.monto_financiado) },
+          { concepto: "Valor descuento (1)", descripcion: factoring.moneda.simbolo + " " + nf.formatNumber(factoringpropuesta.monto_descuento) },
+          { concepto: "Comisión FT", descripcion: factoring.moneda.simbolo + " " + nf.formatNumber(factoringpropuesta.monto_comision) },
+          { concepto: "Costo + Gastos", descripcion: factoring.moneda.simbolo + " " + nf.formatNumber(factoringpropuesta.monto_costo_estimado) },
+          { concepto: "IGV", descripcion: factoring.moneda.simbolo + " " + nf.formatNumber(factoringpropuesta.monto_total_igv) },
+          { concepto: "Valor adelanto", descripcion: "bold:" + factoring.moneda.simbolo + " " + nf.formatNumber(factoringpropuesta.monto_adelanto) },
         ],
       };
 
@@ -97,7 +97,9 @@ class PDFGenerator {
       addText(5, "Helvetica", ``, 350);
 
       addText(10, "Helvetica", `Nota:`, 17);
-      addText(10, "Helvetica", `(1) Los intereses aplicados (Valor descuento) dependen de los días efectivos de financiamiento de la factura.`, 17);
+
+      addText(7, "Helvetica", "(1)", 17, { continued: true });
+      addText(10, "Helvetica", ` Los intereses aplicados (Valor descuento) dependen de los días efectivos de financiamiento de la factura.`, 0);
 
       doc.end();
       // Resolvemos la promesa cuando el stream termine
