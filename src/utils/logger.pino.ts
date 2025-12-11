@@ -79,7 +79,7 @@ if (consoleLogLevel !== "silent") {
     stream: pretty({
       colorize: true,
       ignore: "pid,hostname",
-    }).pipe(process.stdout), // <-- fuerza salida a stdout
+    }),
   });
 }
 
@@ -157,9 +157,9 @@ function logMethod(level: "trace" | "debug" | "info" | "warn" | "error" | "fatal
 
 export const log = {
   trace: logMethod("trace"),
+  debug: logMethod("debug"),
   info: logMethod("info"),
   warn: logMethod("warn"),
   error: logMethod("error"),
-  debug: logMethod("debug"),
   fatal: logMethod("fatal"),
 };
