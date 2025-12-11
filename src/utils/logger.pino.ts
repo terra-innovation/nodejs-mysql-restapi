@@ -79,8 +79,7 @@ if (consoleLogLevel !== "silent") {
     stream: pretty({
       colorize: true,
       ignore: "pid,hostname",
-      //translateTime: "yyyy-MM-dd HH:MM:ss.l o",
-    }),
+    }).pipe(process.stdout), // <-- fuerza salida a stdout
   });
 }
 

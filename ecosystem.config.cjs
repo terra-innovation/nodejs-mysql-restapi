@@ -12,8 +12,8 @@ module.exports = {
         NODE_ENV: "production",
       },
       //log_file: "logs/pm2/ft-api-backend-combined.log", // Opcional: Unifica stdout y stderr en un solo archivo
-      out_file: "logs/pm2/ft-api-backend-stdout.log", // Archivo para logs de salida (info, debug, trace)
-      error_file: "logs/pm2/ft-api-backend-stderr.log", // Archivo para logs de error (warn, error, fatal)
+      out_file: "logs/pm2/ft-api-backend-stdout.log", // Archivo para logs de salida de console. (info, debug, trace)
+      error_file: "logs/pm2/ft-api-backend-stderr.log", // Archivo para logs de error de console. (warn, error, fatal)
       merge_logs: true, // Útil si usas múltiples instancias
       log_date_format: "YYYY-MM-DD HH:mm:ss.SSS",
     },
