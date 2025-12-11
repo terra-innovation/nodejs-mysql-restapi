@@ -17,7 +17,7 @@ export const getFacturaToCreate = (facturaJson: Partial<FacturaXML>, idusuario: 
     numero_comprobante: facturaJson.numero_comprobante,
     fecha_emision: facturaJson.fecha_emision ? new Date(facturaJson.fecha_emision) : null,
     hora_emision: facturaJson.hora_emision ? new Date(`1970-01-01T${facturaJson.hora_emision}Z`) : null,
-    fecha_vencimiento: facturaJson.fecha_vencimiento,
+    fecha_vencimiento: facturaJson.fecha_vencimiento ? new Date(facturaJson.fecha_emision) : null,
     codigo_tipo_documento: facturaJson.codigo_tipo_documento,
     UBLVersionID: facturaJson.UBLVersionID,
     CustomizationID: facturaJson.CustomizationID,
@@ -216,7 +216,7 @@ export const getFactura = (json) => {
     codigo_tipo_documento: codigo_tipo_documento,
     UBLVersionID: json.Invoice.UBLVersionID?.[0]._ ?? json.Invoice.UBLVersionID?.[0] ?? null,
     CustomizationID: json.Invoice.CustomizationID?.[0]._ ?? json.Invoice.CustomizationID?.[0] ?? null,
-    codigo_tipo_moneda: json.Invoice.DocumentCurrencyCode?.[0]._ ?? null,
+    codigo_tipo_moneda: json.Invoice.DocumentCurrencyCode?.[0]._ ?? json.Invoice.DocumentCurrencyCode?.[0] ?? null,
     cantidad_items: json.Invoice.LineCountNumeric?.[0] ?? null,
 
     proveedor: {
