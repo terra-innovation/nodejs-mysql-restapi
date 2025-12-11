@@ -180,7 +180,7 @@ export const getInvoiceTypeCode = (invoice) => {
 };
 
 export const procesarFacturaXML = async (file) => {
-  let archivoXML = fs.readFileSync(file.path, "latin1");
+  let archivoXML = fs.readFileSync(file.path, "utf8");
   archivoXML = archivoXML.replace(/cbc:/g, "").replace(/cac:/g, "").replace(/n1:/g, "").replace(/n2:/g, "");
   let archivoJson = await parseStringPromise(archivoXML);
 
@@ -260,7 +260,7 @@ export const getFactura = (json) => {
         //item: item,
         facturamediopagoid: uuidv4(),
         id: item.ID[0] ?? null,
-        medio_pago_codigo: item.PaymentMeansCode[0] ?? null,
+        medio_pago_codigo: item.PaymentMeansCode[0]._ ?? item.PaymentMeansCode[0] ?? null,
         cuenta_bancaria: item.PayeeFinancialAccount?.[0].ID[0] ?? null,
       };
 
@@ -272,10 +272,10 @@ export const getFactura = (json) => {
         //item: item,
         facturaterminopagoid: uuidv4(),
         id: item.ID[0] ?? null,
-        forma_pago: item.PaymentMeansID[0] ?? null,
-        monto: item.Amount?.[0]._ ?? null,
-        porcentaje: item.PaymentPercent?.[0] ?? null,
-        fecha_pago: item.PaymentDueDate?.[0] ?? null,
+        forma_pago: item.PaymentMeansID[0]._ ?? item.PaymentMeansID[0] ?? null,
+        monto: item.Amount?.[0]._ ?? item.Amount?.[0] ?? null,
+        porcentaje: item.PaymentPercent?.[0]._ ?? item.PaymentPercent?.[0] ?? null,
+        fecha_pago: item.PaymentDueDate?.[0]._ ?? item.PaymentDueDate?.[0] ?? null,
       };
 
       return termino_pago;
