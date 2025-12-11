@@ -59,11 +59,11 @@ if (fileLogLevel !== "silent") {
           target: "pino-roll",
           options: {
             file: join(logDir, level),
-            frequency: "hourly",
+            frequency: "daily",
             mkdir: true,
             size: config.size,
             limit: { count: config.limit },
-            dateFormat: "yyyyMMdd_HH",
+            dateFormat: "yyyyMMdd",
             extension: ".log",
           },
         }),

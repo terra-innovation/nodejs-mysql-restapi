@@ -35,7 +35,7 @@ export function jsonToPlainText(obj: Record<string, any>, newline: string): stri
   // ✔ Intentar generar el flatMap
   let flatMap: Record<string, any>;
   try {
-    flatMap = this.flattenObject(obj);
+    flatMap = flattenObject(obj);
     if (!flatMap || typeof flatMap !== "object") {
       return "";
     }
@@ -66,14 +66,14 @@ export function flattenObject(obj: any, prefix = "", res: Record<string, any> = 
 
     if (Array.isArray(value)) {
       value.forEach((item, index) => {
-        this.flattenObject(item, `${newKey}[${index}]`, res);
+        flattenObject(item, `${newKey}[${index}]`, res);
       });
     } else if (value instanceof Date) {
       res[newKey] = value.toISOString(); // formato estándar
     } else if (value instanceof Prisma.Decimal) {
       res[newKey] = value.toString(); // formato estándar
     } else if (typeof value === "object" && value !== null) {
-      this.flattenObject(value, newKey, res);
+      flattenObject(value, newKey, res);
     } else {
       res[newKey] = value ?? ""; // Si es null/undefined, usar cadena vacía
     }
