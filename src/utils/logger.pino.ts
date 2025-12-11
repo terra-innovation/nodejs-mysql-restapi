@@ -9,7 +9,14 @@ import pretty from "pino-pretty";
 
 type LogData = Record<string, unknown>;
 
-const validLevels: Level[] = ["trace", "debug", "info", "warn", "error", "fatal"];
+const levelLabels: Record<number, string> = {
+  10: "trace",
+  20: "debug",
+  30: "info",
+  40: "warn",
+  50: "error",
+  60: "fatal",
+};
 
 export function line(): string {
   const stack = new Error().stack?.split("\n") || [];
@@ -35,41 +42,25 @@ if (!fs.existsSync(logDir)) {
   fs.mkdirSync(logDir, { recursive: true });
 }
 
-const levelConfigs: Record<string, { size: string; limit: number }> = {
-  trace: { size: "2m", limit: 20 },
-  debug: { size: "5m", limit: 50 },
-  info: { size: "10m", limit: 100 },
-  warn: { size: "15m", limit: 200 },
-  error: { size: "20m", limit: 300 },
-  fatal: { size: "20m", limit: 300 },
-};
-
 const levelTransports: pino.StreamEntry[] = [];
 const fileLogLevel = env.LOG_LEVEL_FILE || "info";
 
 if (fileLogLevel !== "silent") {
-  for (const level of validLevels) {
-    const config = levelConfigs[level];
-    if (!config) continue;
-
-    if (pino.levels.values[level] >= pino.levels.values[fileLogLevel as Level]) {
-      levelTransports.push({
-        level,
-        stream: pino.transport({
-          target: "pino-roll",
-          options: {
-            file: join(logDir, level),
-            frequency: "daily",
-            mkdir: true,
-            size: config.size,
-            limit: { count: config.limit },
-            dateFormat: "yyyyMMdd",
-            extension: ".log",
-          },
-        }),
-      });
-    }
-  }
+  levelTransports.push({
+    level: fileLogLevel as Level,
+    stream: pino.transport({
+      target: "pino-roll",
+      options: {
+        file: join(logDir, "ft-api-backend"), // ✅ Un solo archivo base
+        frequency: "daily", // Rotación diaria
+        mkdir: true,
+        size: "10m", // Tamaño máximo por archivo
+        limit: { count: 300 }, // Número máximo de archivos
+        dateFormat: "yyyyMMdd",
+        extension: ".log", // Extensión del archivo
+      },
+    }),
+  });
 }
 
 const consoleLogLevel = env.LOG_LEVEL_CONSOLE || "debug";
@@ -90,6 +81,13 @@ export const loggerInstance = pino(
     level: pino.levels.values[env.LOG_LEVEL_FILE || "info"] < pino.levels.values[env.LOG_LEVEL_CONSOLE || "info"] ? env.LOG_LEVEL_FILE : env.LOG_LEVEL_CONSOLE,
     timestamp: () => `,"time":"${new Date().toISOString()}"`,
     formatters: {
+      level(label, number) {
+        // Agregamos el atributo "log" con el texto del nivel
+        return {
+          log: levelLabels[number] || label,
+          level: number, // mantenemos el número original
+        };
+      },
       log: (object) => {
         const store = getContext();
         return {
