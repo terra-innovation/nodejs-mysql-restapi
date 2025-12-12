@@ -10,6 +10,33 @@ import * as nf from "#src/utils/numberUtils.js";
 const templateManager = new TemplateManager();
 const emailSender = new EmailSender();
 
+export const sendEmailingVentaEnFrio = async (to, params) => {
+  try {
+    const cabecera = {
+      fecha_actual: df.formatDateForEmailLocale(new Date().toISOString()),
+    };
+
+    params = {
+      ...params,
+      cabecera,
+    };
+
+    const emailTemplate = await templateManager.templateEmailingVentaEnFrio(params);
+
+    const mailOptions = {
+      to: to,
+      subject: emailTemplate.subject,
+      text: emailTemplate.text,
+      html: emailTemplate.html,
+    };
+
+    await emailSender.sendContactoFinanzatech(mailOptions);
+  } catch (error) {
+    log.error(line(), "", error);
+    throw error;
+  }
+};
+
 export const sendFactoringEmpresaServicioFactoringCedenteNotificacionInicioOperacion = async (to, params) => {
   try {
     const cabecera = {

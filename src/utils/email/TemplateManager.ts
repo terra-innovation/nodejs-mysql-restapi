@@ -100,6 +100,36 @@ class TemplaceManager {
     return textoPlano;
   }
 
+  async templateEmailingVentaEnFrio(params) {
+    try {
+      const paramsSchema = yup
+        .object()
+        .shape({
+          cabecera: yup
+            .object({
+              fecha_actual: yup.string().trim().required().min(1).max(200),
+            })
+            .required(),
+        })
+        .required();
+      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+
+      const bodyEmailTHTML = await this.renderTemplate("emailing-venta-en-frio.html", paramsValidated);
+      const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
+      const subjectEmailText = await this.renderSubject("Obtén liquidez con el servicio de factoring electrónico de Finanza Tech", paramsValidated);
+
+      const codigoverificacionMailOptions = {
+        subject: subjectEmailText,
+        text: bodyEmailText,
+        html: bodyEmailTHTML,
+      };
+      return codigoverificacionMailOptions;
+    } catch (error) {
+      log.error(line(), error);
+      throw error;
+    }
+  }
+
   async templateFactoringEmpresaServicioFactoringCedenteNotificacionInicioOperacion(params) {
     try {
       const paramsSchema = yup

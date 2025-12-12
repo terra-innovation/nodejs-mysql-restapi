@@ -34,7 +34,29 @@ async function main() {
   //testSendFactoringEmpresaServicioFactoringDeudorSolicitudConfirmacion();
   //testSendFactoringEmpresaServicioFactoringCedenteConfirmacionTransferencia();
   //testSendFactoringEmpresaServicioFactoringDeudorNotificacionTransferencia();
-  testSendFactoringEmpresaServicioFactoringCedenteNotificacionInicioOperacion();
+  //testSendFactoringEmpresaServicioFactoringCedenteNotificacionInicioOperacion();
+  testSendEmailingVentaEnFrio();
+}
+
+async function testSendEmailingVentaEnFrio() {
+  const testToEmail = "dcolchado@modasa.com.pe"; // <-- ⚠️ CAMBIA ESTO
+
+  var paramsEmail = {};
+
+  console.log("paramsEmail: ", JSON.stringify(paramsEmail, null, 2));
+
+  try {
+    console.log(line());
+    console.log("🚧 Generando contenido del correo con plantilla...");
+
+    await emailService.sendEmailingVentaEnFrio(testToEmail, paramsEmail);
+
+    console.log("✅ Correo enviado exitosamente.");
+    console.log(line());
+  } catch (error) {
+    console.error("❌ Error durante la prueba de envío de correo:");
+    console.error(error);
+  }
 }
 
 async function testSendFactoringEmpresaServicioFactoringCedenteNotificacionInicioOperacion() {
