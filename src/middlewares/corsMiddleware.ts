@@ -1,6 +1,7 @@
 import cors from "cors";
 import { log, line } from "#src/utils/logger.pino.js";
 import { isProduction, isDevelopment, isTest } from "#src/config.js";
+import { CORSError } from "#src/utils/CustomErrors.js";
 
 function getAllowedOrigins(): string[] | "*" {
   if (isProduction) return CORS_ORIGINS.production;
@@ -28,7 +29,7 @@ export const corsMiddleware = cors({
 
     log.warn(line(), `CORS blocked request from origin: ${origin}`);
 
-    return callback(new Error(`CORS: Origin no permitido (${origin})`));
+    return callback(new CORSError(`CORS: Origin no permitido (${origin})`, 403));
   },
   exposedHeaders: ["Content-Disposition"],
 });

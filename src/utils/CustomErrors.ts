@@ -1,3 +1,10 @@
+export class CORSError extends Error {
+  public statusCode: number;
+  constructor(message: string, status = 400) {
+    super(message);
+    this.statusCode = status;
+  }
+}
 export class ArchivoError extends Error {
   public statusCode: number;
   constructor(message: string, status = 400) {
