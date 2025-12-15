@@ -39,7 +39,7 @@ async function main() {
 }
 
 async function testSendEmailingVentaEnFrio() {
-  const testToEmail = "dcolchado@modasa.com.pe"; // <-- ⚠️ CAMBIA ESTO
+  const testToEmail = "aalfaro@disal.com.pe"; // <-- ⚠️ CAMBIA ESTO
 
   var paramsEmail = {};
 

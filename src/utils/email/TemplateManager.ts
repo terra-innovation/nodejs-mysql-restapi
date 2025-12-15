@@ -110,20 +110,32 @@ class TemplaceManager {
               fecha_actual: yup.string().trim().required().min(1).max(200),
             })
             .required(),
+          random_subject: yup.string().trim(),
         })
         .required();
       var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
 
+      // Lista de asuntos
+      let subjectList = [];
+      subjectList.push("Obtén liquidez con el servicio de factoring de Finanza Tech");
+      subjectList.push("¿Tus ventas son a crédito? Convierte facturas en liquidez con Finanza Tech");
+      subjectList.push("Convierte tus facturas en liquidez con Finanza Tech");
+
+      // Selección aleatoria
+      const randomSubject = subjectList[Math.floor(Math.random() * subjectList.length)];
+
+      paramsValidated.random_subject = randomSubject;
+
       const bodyEmailTHTML = await this.renderTemplate("emailing-venta-en-frio.html", paramsValidated);
       const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
-      const subjectEmailText = await this.renderSubject("Obtén liquidez con el servicio de factoring electrónico de Finanza Tech", paramsValidated);
+      const subjectEmailText = await this.renderSubject(randomSubject, paramsValidated);
 
-      const codigoverificacionMailOptions = {
+      const mailOptions = {
         subject: subjectEmailText,
         text: bodyEmailText,
         html: bodyEmailTHTML,
       };
-      return codigoverificacionMailOptions;
+      return mailOptions;
     } catch (error) {
       log.error(line(), error);
       throw error;
