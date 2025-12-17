@@ -32,7 +32,8 @@ export function errorHandlerMiddleware(err: any, req: Request, res: Response, ne
   if (!esErrorConocido) {
     //log.error(line(), "Uncaught Error:", util.inspect(err, { colors: true, depth: null }));
     log.error(line(), "Uncaught Error:", err);
+    telegramService.sendMessageTelegramException(err);
   }
-  telegramService.sendMessageTelegramException(err);
+
   customResponseError(res, statusCode, message);
 }

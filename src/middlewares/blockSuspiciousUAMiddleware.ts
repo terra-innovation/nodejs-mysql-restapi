@@ -9,11 +9,14 @@ export const blockSuspiciousUAMiddleware = async (req, res, next) => {
 
   if (blockedAgents.some((agent) => ua.includes(agent))) {
     log.warn(line(), "User-Agent no permitido", { useragent: ua });
-    return res.status(403).json({
-      error: true,
-      message: "User-Agent no permitido",
-    });
+    if (isProduction) {
+      return res.status(404).end();
+    } else {
+      return res.status(404).json({
+        error: true,
+        message: "User-Agent no permitido",
+      });
+    }
   }
-
   next();
 };

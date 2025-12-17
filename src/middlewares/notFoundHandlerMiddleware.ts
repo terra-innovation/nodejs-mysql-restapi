@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import * as telegramService from "#src/services/telegram.Service.js";
+import { isProduction, isDevelopment, isTest } from "#src/config.js";
 
 export function notFoundHandlerMiddleware(req: Request, res: Response, next: NextFunction) {
   const notfound = {
@@ -8,6 +9,10 @@ export function notFoundHandlerMiddleware(req: Request, res: Response, next: Nex
     path: req.originalUrl,
     method: req.method,
   };
-  telegramService.sendMessageTelegramEndPointNotFound(notfound);
+
+  if (!isProduction) {
+    telegramService.sendMessageTelegramEndPointNotFound(notfound);
+  }
+
   res.status(404).json(notfound);
 }
