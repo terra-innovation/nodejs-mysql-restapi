@@ -1,7 +1,7 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["src/index.ts"], // punto de entrada principal
+  entry: ["src/index.ts", "src/run_script.ts"], // punto de entrada principal
   outDir: "dist", // carpeta de salida
   format: ["esm"], // puedes agregar 'cjs' si necesitas ambos formatos
   target: "node18", // ajusta a tu versión mínima de Node.js
