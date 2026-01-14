@@ -61,3 +61,19 @@ export type FactoringpropuestaPDF = Prisma.factoring_propuestaGetPayload<{
     riesgo_operacion: true;
   };
 }>;
+
+export type FactoringsimulacionPDF = Prisma.factoring_simulacionGetPayload<{
+  include: {
+    banco: true;
+    factoring_estrategia: true;
+    factoring_simulacion_financieros: {
+      include: {
+        financiero_concepto: true;
+        financiero_tipo: true;
+      };
+    };
+    factoring_tipo: true;
+    riesgo_operacion: true;
+    moneda: true;
+  };
+}>;

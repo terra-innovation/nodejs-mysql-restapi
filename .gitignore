@@ -15,3 +15,5 @@ generated/*
 src/daos - copia/*
 security/ip/whitelist.txt
 security/ip/blacklist.txt
+scripts/excel/BASE.xlsx
+temporal/*

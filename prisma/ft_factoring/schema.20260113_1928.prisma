@@ -2280,15 +2280,15 @@ model factoring_simulacion {
   idfactoringsimulacion            Int                               @id @default(autoincrement()) @map("_idfactoringsimulacion") @db.UnsignedInt
   factoringsimulacionid            String                            @unique(map: "UQ_factoring_simulacion_factoringsimulacionid") @default(dbgenerated("(uuid())")) @db.VarChar(50)
   code                             String                            @unique(map: "UQ_factoring_simulacion_code") @db.VarChar(255)
-  idfactoringtipo                  Int                               @map("_idfactoringtipo") @db.UnsignedInt
-  idriesgooperacion                Int                               @map("_idriesgooperacion") @db.UnsignedInt
-  idfactoringestrategia            Int                               @map("_idfactoringestrategia") @db.UnsignedInt
-  idbanco                          Int                               @map("_idbanco") @db.UnsignedInt
-  idmoneda                         Int                               @map("_idmoneda") @db.UnsignedInt
-  ruc_cedente                      String                            @db.VarChar(11)
-  ruc_aceptante                    String                            @db.VarChar(11)
-  razon_social_cedente             String                            @db.VarChar(200)
-  razon_social_aceptante           String                            @db.VarChar(200)
+  idfactoringtipo                  Int?                              @map("_idfactoringtipo") @db.UnsignedInt
+  idriesgooperacion                Int?                              @map("_idriesgooperacion") @db.UnsignedInt
+  idfactoringestrategia            Int?                              @map("_idfactoringestrategia") @db.UnsignedInt
+  idbanco                          Int?                              @map("_idbanco") @db.UnsignedInt
+  idmoneda                         Int?                              @map("_idmoneda") @db.UnsignedInt
+  ruc_cedente                      String?                           @db.VarChar(11)
+  ruc_aceptante                    String?                           @db.VarChar(11)
+  razon_social_cedente             String?                           @db.VarChar(200)
+  razon_social_aceptante           String?                           @db.VarChar(200)
   cantidad_facturas                Int
   tda                              Decimal?                          @db.Decimal(10, 5)
   tdm                              Decimal?                          @db.Decimal(10, 5)
@@ -2328,11 +2328,11 @@ model factoring_simulacion {
   idusuariomod                     Int                               @default(1)
   fechamod                         DateTime                          @default(now()) @db.Timestamp(3)
   estado                           Int                               @default(1) @db.TinyInt
-  banco                            banco                             @relation(fields: [idbanco], references: [idbanco], onUpdate: Restrict, map: "FK_factoring_simulacion_idbanco")
-  factoring_estrategia             factoring_estrategia              @relation(fields: [idfactoringestrategia], references: [idfactoringestrategia], onUpdate: Restrict, map: "FK_factoring_simulacion_idfactoringestrategia")
-  factoring_tipo                   factoring_tipo                    @relation(fields: [idfactoringtipo], references: [idfactoringtipo], onUpdate: Restrict, map: "FK_factoring_simulacion_idfactoringtipo")
-  moneda                           moneda                            @relation(fields: [idmoneda], references: [idmoneda], onUpdate: Restrict, map: "FK_factoring_simulacion_idmoneda")
-  riesgo_operacion                 riesgo                            @relation(fields: [idriesgooperacion], references: [idriesgo], onUpdate: Restrict, map: "FK_factoring_simulacion_idriesgooperacion")
+  banco                            banco?                            @relation(fields: [idbanco], references: [idbanco], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_simulacion_idbanco")
+  factoring_estrategia             factoring_estrategia?             @relation(fields: [idfactoringestrategia], references: [idfactoringestrategia], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_simulacion_idfactoringestrategia")
+  factoring_tipo                   factoring_tipo?                   @relation(fields: [idfactoringtipo], references: [idfactoringtipo], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_simulacion_idfactoringtipo")
+  moneda                           moneda?                           @relation(fields: [idmoneda], references: [idmoneda], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_simulacion_idmoneda")
+  riesgo_operacion                 riesgo?                           @relation(fields: [idriesgooperacion], references: [idriesgo], onDelete: Restrict, onUpdate: Restrict, map: "FK_factoring_simulacion_idriesgooperacion")
   factoring_simulacion_financieros factoring_simulacion_financiero[]
 
   @@index([idbanco], map: "FK_factoring_simulacion_idbanco")
@@ -2369,10 +2369,10 @@ model factoring_simulacion_financiero {
 }
 
 /// --- INICIO LOG SCRIPT: pluralizar-schema.js ---
-/// Fecha de ejecución: 13/1/2026, 19:49:03
+/// Fecha de ejecución: 13/1/2026, 19:28:31
 /// Total líneas con relaciones tipo '[]': 163
-/// Modificaciones realizadas: 0
-/// Sin modificar (ya pluralizadas): 163
+/// Modificaciones realizadas: 1
+/// Sin modificar (ya pluralizadas): 162
 /// --- Detalle de líneas evaluadas ---
 /// Línea 35: 'archivo_colaboradores' ya está pluralizado correctamente.
 /// Línea 36: 'archivo_cuenta_bancarias' ya está pluralizado correctamente.
@@ -2476,7 +2476,7 @@ model factoring_simulacion_financiero {
 /// Línea 1489: 'banco_cuentas' ya está pluralizado correctamente.
 /// Línea 1490: 'cuenta_bancarias' ya está pluralizado correctamente.
 /// Línea 1491: 'factoringes' ya está pluralizado correctamente.
-/// Línea 1492: 'factoring_simulaciones' ya está pluralizado correctamente.
+/// Línea 1492: 'factoring_simulacion' ➜ 'factoring_simulaciones'
 /// Línea 1493: 'factoring_transferencia_cedentes' ya está pluralizado correctamente.
 /// Línea 1508: 'departamentos' ya está pluralizado correctamente.
 /// Línea 1509: 'empresas' ya está pluralizado correctamente.
@@ -2538,207 +2538,3 @@ model factoring_simulacion_financiero {
 /// Línea 2275: 'factoring_transferencia_cedentes' ya está pluralizado correctamente.
 /// Línea 2336: 'factoring_simulacion_financieros' ya está pluralizado correctamente.
 /// --- FIN LOG SCRIPT
-
-
-/// --- INICIO LOG DE SCRIPT: renombrar-atributos-especiales.js ---
-/// Fecha de ejecución: 13/1/2026, 19:49:03
-/// ✔️ Línea 33: (relation-field) archivo_estado ya coincide con 'archivoestado'
-/// ✔️ Línea 34: (relation-field) archivo_tipo ya coincide con 'archivotipo'
-/// ✔️ Línea 57: (relation-field) archivo ya coincide con 'archivo'
-/// ✔️ Línea 58: (relation-field) colaborador ya coincide con 'colaborador'
-/// ✔️ Línea 72: (relation-field) archivo ya coincide con 'archivo'
-/// ✔️ Línea 73: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
-/// ✔️ Línea 87: (relation-field) archivo ya coincide con 'archivo'
-/// ✔️ Línea 88: (relation-field) empresa ya coincide con 'empresa'
-/// ✔️ Línea 114: (relation-field) archivo ya coincide con 'archivo'
-/// ✔️ Línea 115: (relation-field) factoring_historial_estado ya coincide con 'factoringhistorialestado'
-/// ✔️ Línea 129: (relation-field) archivo ya coincide con 'archivo'
-/// ✔️ Línea 130: (relation-field) factura ya coincide con 'factura'
-/// ✔️ Línea 144: (relation-field) archivo ya coincide con 'archivo'
-/// ✔️ Línea 145: (relation-field) inversionista_deposito ya coincide con 'inversionistadeposito'
-/// ✔️ Línea 159: (relation-field) archivo ya coincide con 'archivo'
-/// ✔️ Línea 160: (relation-field) inversionista_retiro ya coincide con 'inversionistaretiro'
-/// ✔️ Línea 174: (relation-field) archivo ya coincide con 'archivo'
-/// ✔️ Línea 175: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 228: (relation-field) banco_cuenta_estado ya coincide con 'bancocuentaestado'
-/// ✔️ Línea 229: (relation-field) banco_cuenta_tipo ya coincide con 'bancocuentatipo'
-/// ✔️ Línea 230: (relation-field) moneda ya coincide con 'moneda'
-/// ✔️ Línea 283: (relation-field) banco_cuenta ya coincide con 'bancocuenta'
-/// ✔️ Línea 284: (relation-field) banco_transaccion_estado ya coincide con 'bancotransaccionestado'
-/// ✔️ Línea 285: (singular) banco_transaccion_estado_historial ya está correcto | Relación: 'banco_transaccion_idbancotransaccionestadohistorialTobanco_transaccion_estado_historial'
-/// ✔️ Línea 286: (relation-field) banco_transaccion_tipo ya coincide con 'bancotransacciontipo'
-/// ✔️ Línea 287: (plural) banco_transaccion_estado_historial_bancotransacciones ya está correcto | Relación: 'banco_transaccion_estado_historial_idbancotransaccionTobanco_transaccion'
-/// ✔️ Línea 325: (plural) banco_transaccion_bancotransaccionestadohistoriales ya está correcto | Relación: 'banco_transaccion_idbancotransaccionestadohistorialTobanco_transaccion_estado_historial'
-/// ✔️ Línea 326: (singular) banco_transaccion ya está correcto | Relación: 'banco_transaccion_estado_historial_idbancotransaccionTobanco_transaccion'
-/// ✔️ Línea 327: (relation-field) banco_transaccion_estado ya coincide con 'bancotransaccionestado'
-/// ✔️ Línea 328: (relation-field) usuario_modifica ya coincide con 'usuariomodifica'
-/// ✔️ Línea 343: (relation-field) banco_transaccion ya coincide con 'bancotransaccion'
-/// ✔️ Línea 344: (relation-field) factoring_inversion ya coincide con 'factoringinversion'
-/// ✔️ Línea 358: (relation-field) banco_transaccion ya coincide con 'bancotransaccion'
-/// ✔️ Línea 359: (relation-field) inversionista_deposito ya coincide con 'inversionistadeposito'
-/// ✔️ Línea 373: (relation-field) banco_transaccion ya coincide con 'bancotransaccion'
-/// ✔️ Línea 374: (relation-field) inversionista_retiro ya coincide con 'inversionistaretiro'
-/// ✔️ Línea 415: (relation-field) colaborador_tipo ya coincide con 'colaboradortipo'
-/// ✔️ Línea 416: (relation-field) documento_tipo ya coincide con 'documentotipo'
-/// ✔️ Línea 417: (relation-field) empresa ya coincide con 'empresa'
-/// ✔️ Línea 418: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 473: (relation-field) empresa ya coincide con 'empresa'
-/// ✔️ Línea 490: (relation-field) usuario ya coincide con 'usuario'
-/// ✔️ Línea 512: (relation-field) banco ya coincide con 'banco'
-/// ✔️ Línea 513: (relation-field) cuenta_bancaria_estado ya coincide con 'cuentabancariaestado'
-/// ✔️ Línea 514: (relation-field) cuenta_tipo ya coincide con 'cuentatipo'
-/// ✔️ Línea 515: (relation-field) moneda ya coincide con 'moneda'
-/// ✔️ Línea 567: (relation-field) pais ya coincide con 'pais'
-/// ✔️ Línea 590: (relation-field) provincia ya coincide con 'provincia'
-/// ✔️ Línea 591: (relation-field) region_natural ya coincide con 'regionnatural'
-/// ✔️ Línea 639: (relation-field) departamento_sede ya coincide con 'departamentosede'
-/// ✔️ Línea 640: (relation-field) distrito_sede ya coincide con 'distritosede'
-/// ✔️ Línea 641: (relation-field) pais_sede ya coincide con 'paissede'
-/// ✔️ Línea 642: (relation-field) provincia_sede ya coincide con 'provinciasede'
-/// ✔️ Línea 643: (relation-field) riesgo ya coincide con 'riesgo'
-/// ✔️ Línea 645: (plural) factoring_aceptantes ya está correcto | Relación: 'factoring_idaceptanteToempresa'
-/// ✔️ Línea 646: (plural) factoring_cedentes ya está correcto | Relación: 'factoring_idcedenteToempresa'
-/// ✔️ Línea 668: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
-/// ✔️ Línea 669: (relation-field) empresa ya coincide con 'empresa'
-/// ✔️ Línea 715: (relation-field) departamento_sede ya coincide con 'departamentosede'
-/// ✔️ Línea 716: (relation-field) distrito_sede ya coincide con 'distritosede'
-/// ✔️ Línea 717: (relation-field) pais_sede ya coincide con 'paissede'
-/// ✔️ Línea 718: (relation-field) provincia_sede ya coincide con 'provinciasede'
-/// ✔️ Línea 719: (relation-field) riesgo ya coincide con 'riesgo'
-/// ✔️ Línea 741: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
-/// ✔️ Línea 742: (relation-field) factor ya coincide con 'factor'
-/// ✔️ Línea 780: (singular) empresa_aceptante ya está correcto | Relación: 'factoring_idaceptanteToempresa'
-/// ✔️ Línea 781: (singular) empresa_cedente ya está correcto | Relación: 'factoring_idcedenteToempresa'
-/// ✔️ Línea 782: (relation-field) contacto_aceptante ya coincide con 'contactoaceptante'
-/// ✔️ Línea 783: (relation-field) contacto_cedente ya coincide con 'contactocedente'
-/// ✔️ Línea 784: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
-/// ✔️ Línea 785: (relation-field) factor ya coincide con 'factor'
-/// ✔️ Línea 786: (singular) factoring_ejecutado ya está correcto | Relación: 'factoring_idfactoringejecutadoTofactoring_ejecutado'
-/// ✔️ Línea 787: (relation-field) factoring_estado ya coincide con 'factoringestado'
-/// ✔️ Línea 788: (singular) factoring_propuesta_aceptada ya está correcto | Relación: 'factoring_idfactoringpropuestaaceptadaTofactoring_propuesta'
-/// ✔️ Línea 789: (relation-field) moneda ya coincide con 'moneda'
-/// ✔️ Línea 790: (plural) factoring_ejecutado_factoringes ya está correcto | Relación: 'factoring_ejecutado_idfactoringTofactoring'
-/// ✔️ Línea 794: (plural) factoring_propuesta_factoringes ya está correcto | Relación: 'factoring_propuesta_idfactoringTofactoring'
-/// ✔️ Línea 824: (relation-field) riesgo ya coincide con 'riesgo'
-/// ✔️ Línea 844: (relation-field) riesgo ya coincide con 'riesgo'
-/// ✔️ Línea 863: (relation-field) riesgo ya coincide con 'riesgo'
-/// ✔️ Línea 903: (plural) factoring_factoringejecutados ya está correcto | Relación: 'factoring_idfactoringejecutadoTofactoring_ejecutado'
-/// ✔️ Línea 904: (singular) factoring ya está correcto | Relación: 'factoring_ejecutado_idfactoringTofactoring'
-/// ✔️ Línea 905: (relation-field) factoring_ejecutado_estado ya coincide con 'factoringejecutadoestado'
-/// ✔️ Línea 969: (relation-field) factoring ya coincide con 'factoring'
-/// ✔️ Línea 970: (relation-field) factura ya coincide con 'factura'
-/// ✔️ Línea 990: (relation-field) factoring_estado ya coincide con 'factoringestado'
-/// ✔️ Línea 991: (relation-field) factoring ya coincide con 'factoring'
-/// ✔️ Línea 992: (relation-field) usuario_modifica ya coincide con 'usuariomodifica'
-/// ✔️ Línea 1031: (relation-field) empresa_cuenta_bancaria ya coincide con 'empresacuentabancaria'
-/// ✔️ Línea 1032: (relation-field) factor_cuenta_bancaria ya coincide con 'factorcuentabancaria'
-/// ✔️ Línea 1033: (relation-field) factoring ya coincide con 'factoring'
-/// ✔️ Línea 1089: (plural) factoring_factoringpropuestaaceptadas ya está correcto | Relación: 'factoring_idfactoringpropuestaaceptadaTofactoring_propuesta'
-/// ✔️ Línea 1090: (singular) factoring ya está correcto | Relación: 'factoring_propuesta_idfactoringTofactoring'
-/// ✔️ Línea 1091: (relation-field) factoring_estrategia ya coincide con 'factoringestrategia'
-/// ✔️ Línea 1092: (relation-field) factoring_propuesta_estado ya coincide con 'factoringpropuestaestado'
-/// ✔️ Línea 1093: (relation-field) factoring_tipo ya coincide con 'factoringtipo'
-/// ✔️ Línea 1094: (singular) riesgo_aceptante ya está correcto | Relación: 'factoring_propuesta_idriesgoaceptanteToriesgo'
-/// ✔️ Línea 1095: (singular) riesgo_cedente ya está correcto | Relación: 'factoring_propuesta_idriesgocedenteToriesgo'
-/// ✔️ Línea 1096: (singular) riesgo_operacion ya está correcto | Relación: 'factoring_propuesta_idriesgooperacionToriesgo'
-/// ✔️ Línea 1142: (relation-field) factoring_propuesta ya coincide con 'factoringpropuesta'
-/// ✔️ Línea 1143: (relation-field) financiero_concepto ya coincide con 'financieroconcepto'
-/// ✔️ Línea 1144: (relation-field) financiero_tipo ya coincide con 'financierotipo'
-/// ✔️ Línea 1213: (relation-field) usuario_upload ya coincide con 'usuarioupload'
-/// ✔️ Línea 1238: (relation-field) factura ya coincide con 'factura'
-/// ✔️ Línea 1267: (relation-field) factura ya coincide con 'factura'
-/// ✔️ Línea 1284: (relation-field) factura ya coincide con 'factura'
-/// ✔️ Línea 1300: (relation-field) factura ya coincide con 'factura'
-/// ✔️ Línea 1319: (relation-field) factura ya coincide con 'factura'
-/// ✔️ Línea 1378: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 1392: (relation-field) banco_cuenta ya coincide con 'bancocuenta'
-/// ✔️ Línea 1393: (relation-field) inversionista ya coincide con 'inversionista'
-/// ✔️ Línea 1410: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
-/// ✔️ Línea 1411: (relation-field) inversionista ya coincide con 'inversionista'
-/// ✔️ Línea 1438: (relation-field) banco_cuenta ya coincide con 'bancocuenta'
-/// ✔️ Línea 1439: (relation-field) factor_cuenta_bancaria ya coincide con 'factorcuentabancaria'
-/// ✔️ Línea 1440: (relation-field) inversionista_cuenta_bancaria ya coincide con 'inversionistacuentabancaria'
-/// ✔️ Línea 1466: (relation-field) banco_cuenta ya coincide con 'bancocuenta'
-/// ✔️ Línea 1467: (relation-field) factor_cuenta_bancaria ya coincide con 'factorcuentabancaria'
-/// ✔️ Línea 1468: (relation-field) inversionista_cuenta_bancaria ya coincide con 'inversionistacuentabancaria'
-/// ✔️ Línea 1511: (plural) persona_paisnacimientos ya está correcto | Relación: 'persona_idpaisnacimientoTopais'
-/// ✔️ Línea 1512: (plural) persona_paisnacionalidades ya está correcto | Relación: 'persona_idpaisnacionalidadTopais'
-/// ✔️ Línea 1513: (plural) persona_paisresidencias ya está correcto | Relación: 'persona_idpaisresidenciaTopais'
-/// ✔️ Línea 1559: (relation-field) departamento_residencia ya coincide con 'departamentoresidencia'
-/// ✔️ Línea 1560: (relation-field) distrito_residencia ya coincide con 'distritoresidencia'
-/// ✔️ Línea 1561: (relation-field) documento_tipo ya coincide con 'documentotipo'
-/// ✔️ Línea 1562: (relation-field) genero ya coincide con 'genero'
-/// ✔️ Línea 1563: (singular) pais_nacimiento ya está correcto | Relación: 'persona_idpaisnacimientoTopais'
-/// ✔️ Línea 1564: (singular) pais_nacionalidad ya está correcto | Relación: 'persona_idpaisnacionalidadTopais'
-/// ✔️ Línea 1565: (singular) pais_residencia ya está correcto | Relación: 'persona_idpaisresidenciaTopais'
-/// ✔️ Línea 1566: (relation-field) persona_verificacion_estado ya coincide con 'personaverificacionestado'
-/// ✔️ Línea 1567: (relation-field) provincia_residencia ya coincide con 'provinciaresidencia'
-/// ✔️ Línea 1568: (relation-field) usuario ya coincide con 'usuario'
-/// ✔️ Línea 1597: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
-/// ✔️ Línea 1598: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 1616: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 1637: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 1661: (relation-field) pep_vinculo ya coincide con 'pepvinculo'
-/// ✔️ Línea 1662: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 1681: (relation-field) persona ya coincide con 'persona'
-/// ✔️ Línea 1682: (relation-field) persona_verificacion_estado ya coincide con 'personaverificacionestado'
-/// ✔️ Línea 1683: (relation-field) usuario_verifica ya coincide con 'usuarioverifica'
-/// ✔️ Línea 1727: (relation-field) departamento ya coincide con 'departamento'
-/// ✔️ Línea 1765: (plural) factoring_propuesta_riesgoaceptantes ya está correcto | Relación: 'factoring_propuesta_idriesgoaceptanteToriesgo'
-/// ✔️ Línea 1766: (plural) factoring_propuesta_riesgocedentes ya está correcto | Relación: 'factoring_propuesta_idriesgocedenteToriesgo'
-/// ✔️ Línea 1767: (plural) factoring_propuesta_riesgooperaciones ya está correcto | Relación: 'factoring_propuesta_idriesgooperacionToriesgo'
-/// ✔️ Línea 1819: (relation-field) empresa ya coincide con 'empresa'
-/// ✔️ Línea 1820: (relation-field) servicio ya coincide con 'servicio'
-/// ✔️ Línea 1821: (relation-field) servicio_empresa_estado ya coincide con 'servicioempresaestado'
-/// ✔️ Línea 1822: (relation-field) usuario_suscriptor ya coincide con 'usuariosuscriptor'
-/// ✔️ Línea 1864: (relation-field) servicio_empresa ya coincide con 'servicioempresa'
-/// ✔️ Línea 1865: (relation-field) servicio_empresa_estado ya coincide con 'servicioempresaestado'
-/// ✔️ Línea 1866: (relation-field) usuario_verifica ya coincide con 'usuarioverifica'
-/// ✔️ Línea 1904: (relation-field) documento_tipo ya coincide con 'documentotipo'
-/// ✔️ Línea 1922: (relation-field) rol ya coincide con 'rol'
-/// ✔️ Línea 1923: (relation-field) usuario ya coincide con 'usuario'
-/// ✔️ Línea 1941: (relation-field) servicio ya coincide con 'servicio'
-/// ✔️ Línea 1942: (relation-field) usuario ya coincide con 'usuario'
-/// ✔️ Línea 1943: (relation-field) usuario_servicio_estado ya coincide con 'usuarioservicioestado'
-/// ✔️ Línea 1965: (relation-field) empresa ya coincide con 'empresa'
-/// ✔️ Línea 1966: (relation-field) servicio ya coincide con 'servicio'
-/// ✔️ Línea 1967: (relation-field) usuario ya coincide con 'usuario'
-/// ✔️ Línea 1968: (relation-field) usuario_servicio_empresa_estado ya coincide con 'usuarioservicioempresaestado'
-/// ✔️ Línea 1969: (relation-field) usuario_servicio_empresa_rol ya coincide con 'usuarioservicioempresarol'
-/// ✔️ Línea 2037: (relation-field) usuario_servicio ya coincide con 'usuarioservicio'
-/// ✔️ Línea 2038: (relation-field) usuario_servicio_estado ya coincide con 'usuarioservicioestado'
-/// ✔️ Línea 2039: (relation-field) usuario_verifica ya coincide con 'usuarioverifica'
-/// ✔️ Línea 2064: (relation-field) usuario ya coincide con 'usuario'
-/// ✔️ Línea 2065: (relation-field) validacion_tipo ya coincide con 'validaciontipo'
-/// ✔️ Línea 2093: (relation-field) usuario ya coincide con 'usuario'
-/// ✔️ Línea 2122: (relation-field) inversionista ya coincide con 'inversionista'
-/// ✔️ Línea 2123: (relation-field) servicio ya coincide con 'servicio'
-/// ✔️ Línea 2124: (relation-field) servicio_inversionista_estado ya coincide con 'servicioinversionistaestado'
-/// ✔️ Línea 2125: (relation-field) usuario_suscriptor ya coincide con 'usuariosuscriptor'
-/// ✔️ Línea 2167: (relation-field) servicio_inversionista ya coincide con 'servicioinversionista'
-/// ✔️ Línea 2168: (relation-field) servicio_inversionista_estado ya coincide con 'servicioinversionistaestado'
-/// ✔️ Línea 2169: (relation-field) usuario_verifica ya coincide con 'usuarioverifica'
-/// ✔️ Línea 2189: (relation-field) factoring_propuesta ya coincide con 'factoringpropuesta'
-/// ✔️ Línea 2190: (relation-field) factoring_propuesta_estado ya coincide con 'factoringpropuestaestado'
-/// ✔️ Línea 2191: (relation-field) usuario_modifica ya coincide con 'usuariomodifica'
-/// ✔️ Línea 2206: (relation-field) archivo ya coincide con 'archivo'
-/// ✔️ Línea 2207: (relation-field) factoring_transferencia_cedente ya coincide con 'factoringtransferenciacedente'
-/// ✔️ Línea 2233: (relation-field) empresa_cuenta_bancaria ya coincide con 'empresacuentabancaria'
-/// ✔️ Línea 2234: (relation-field) factor_cuenta_bancaria ya coincide con 'factorcuentabancaria'
-/// ✔️ Línea 2235: (relation-field) factoring ya coincide con 'factoring'
-/// ✔️ Línea 2236: (relation-field) factoring_transferencia_estado ya coincide con 'factoringtransferenciaestado'
-/// ✔️ Línea 2237: (relation-field) factoring_transferencia_tipo ya coincide con 'factoringtransferenciatipo'
-/// ✔️ Línea 2238: (relation-field) moneda ya coincide con 'moneda'
-/// ✔️ Línea 2331: (relation-field) banco ya coincide con 'banco'
-/// ✔️ Línea 2332: (relation-field) factoring_estrategia ya coincide con 'factoringestrategia'
-/// ✔️ Línea 2333: (relation-field) factoring_tipo ya coincide con 'factoringtipo'
-/// ✔️ Línea 2334: (relation-field) moneda ya coincide con 'moneda'
-/// ✔️ Línea 2335: (relation-field) riesgo_operacion ya coincide con 'riesgooperacion'
-/// ✔️ Línea 2362: (relation-field) factoring_simulacion ya coincide con 'factoringsimulacion'
-/// ✔️ Línea 2363: (relation-field) financiero_concepto ya coincide con 'financieroconcepto'
-/// ✔️ Línea 2364: (relation-field) financiero_tipo ya coincide con 'financierotipo'
-/// 📊 Resumen del script: renombrar-atributos-especiales.js
-/// 🔎 Total relaciones '@relation' detectadas: 195
-/// ✅ Atributos renombrados: 0
-/// ⚠️ Ya estaban correctos: 195
-/// --- FIN LOG DE SCRIPT ---
