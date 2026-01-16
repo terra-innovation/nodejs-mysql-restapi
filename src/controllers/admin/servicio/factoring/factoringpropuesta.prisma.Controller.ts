@@ -172,6 +172,8 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
       factoringid: yup.string().trim().required().min(36).max(36),
       factoringtipoid: yup.string().trim().required().min(36).max(36),
       riesgooperacionid: yup.string().trim().required().min(36).max(36),
+      riesgocedenteid: yup.string().trim().required().min(36).max(36),
+      riesgoaceptanteid: yup.string().trim().required().min(36).max(36),
       factoringpropuestaestadoid: yup.string().trim().required().min(36).max(36),
       factoringestrategiaid: yup.string().trim().required().min(36).max(36),
       tdm: yup.number().required().min(0).max(100),
@@ -201,6 +203,18 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
       var riesgooperacion = await riesgoDao.getRiesgoByRiesgoid(tx, factoringValidated.riesgooperacionid);
       if (!riesgooperacion) {
         log.warn(line(), "Riesgo operación no existe: [" + factoringValidated.riesgooperacionid + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
+
+      var riesgocedente = await riesgoDao.getRiesgoByRiesgoid(tx, factoringValidated.riesgocedenteid);
+      if (!riesgocedente) {
+        log.warn(line(), "Riesgo cedente no existe: [" + factoringValidated.riesgocedenteid + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
+
+      var riesgoaceptante = await riesgoDao.getRiesgoByRiesgoid(tx, factoringValidated.riesgoaceptanteid);
+      if (!riesgoaceptante) {
+        log.warn(line(), "Riesgo aceptante no existe: [" + factoringValidated.riesgoaceptanteid + "]");
         throw new ClientError("Datos no válidos", 404);
       }
 
@@ -239,6 +253,8 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
         factoring_tipo: { connect: { idfactoringtipo: factoringtipo.idfactoringtipo } },
         factoring_propuesta_estado: { connect: { idfactoringpropuestaestado: factoringpropuestaestado.idfactoringpropuestaestado } },
         riesgo_operacion: { connect: { idriesgo: riesgooperacion.idriesgo } },
+        riesgo_cedente: { connect: { idriesgo: riesgocedente.idriesgo } },
+        riesgo_aceptante: { connect: { idriesgo: riesgoaceptante.idriesgo } },
         factoring_estrategia: { connect: { idfactoringestrategia: factoringestrategia.idfactoringestrategia } },
 
         factoringpropuestaid: uuidv4(),
