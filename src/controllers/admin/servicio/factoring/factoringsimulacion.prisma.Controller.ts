@@ -70,7 +70,7 @@ export const downloadFactoringsimulacionPDF = async (req: Request, res: Response
       const pdfGenerator = new PDFGenerator(filePath);
       await pdfGenerator.generateFactoringSimulacion(factoringsimulacion);
 
-      let filenameDownload = "Factoring_Propuesta_" + factoringsimulacion.ruc_cedente + "_" + factoringsimulacion.code + "_" + formattedDate + ".pdf";
+      let filenameDownload = "Factoring_Simulacion_" + factoringsimulacion.ruc_cedente + "_" + factoringsimulacion.code + "_" + formattedDate + ".pdf";
 
       // res.setHeader("Content-Disposition", 'attachment; filename="' + filenameDownload + '"');
 
@@ -397,7 +397,7 @@ export const activateFactoringsimulacion = async (req: Request, res: Response) =
 
   const factoringsimulacionActivated = await prismaFT.client.$transaction(
     async (tx) => {
-      const $Activated = await factoringsimulacionDao.activateFactoringsimulacion(tx, factoringsimulacionValidated.factoringsimulacionid, req.session_user.usuario.idusuario);
+      const factoringsimulacionActivated = await factoringsimulacionDao.activateFactoringsimulacion(tx, factoringsimulacionValidated.factoringsimulacionid, req.session_user.usuario.idusuario);
       if (factoringsimulacionActivated[0] === 0) {
         throw new ClientError("Factoringsimulacion no existe", 404);
       }

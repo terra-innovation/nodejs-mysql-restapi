@@ -133,7 +133,7 @@ class PDFGenerator {
         .font("Helvetica-Bold")
         .text("Simulación de Factoring", 50, (y += 127), { align: "center" });
       addText(11, "Helvetica", `Fecha: ${df.formatDateTimeLocale(factoringsimulacion.fecha_simulacion)}`, 50);
-      addText(11, "Helvetica", `Código de simulacion: ${factoringsimulacion.code}`, 17);
+      addText(11, "Helvetica", `Código de simulación: ${factoringsimulacion.code}`, 17);
       addText(5, "Helvetica", ``, 5);
       addText(11, "Helvetica", `Cedente: ${factoringsimulacion.razon_social_cedente}`, 17);
       addText(11, "Helvetica", `RUC: ${factoringsimulacion.ruc_cedente}`, 17);

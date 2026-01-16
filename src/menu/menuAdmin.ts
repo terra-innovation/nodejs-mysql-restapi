@@ -29,6 +29,13 @@ export const generarMenuAdmin = (usuario: UsuarioConRoles) => {
             url: "/admin/servicio/factoring/factoring/lista",
             breadcrumbs: true,
           },
+          {
+            id: "admin-factoring-factoringsimulacion-lista",
+            title: "Simulaciones",
+            type: "item",
+            url: "/admin/servicio/factoring/factoringsimulacion/lista",
+            breadcrumbs: true,
+          },
         ],
       },
       {

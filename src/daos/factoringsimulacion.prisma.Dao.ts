@@ -9,6 +9,19 @@ import { ESTADO } from "#src/constants/prisma.Constant.js";
 export const getFactoringsimulacions = async (tx: TxClient, estados: number[]) => {
   try {
     const factoringsimulacions = await tx.factoring_simulacion.findMany({
+      include: {
+        moneda: true,
+        banco: true,
+        factoring_estrategia: true,
+        factoring_simulacion_financieros: {
+          include: {
+            financiero_concepto: true,
+            financiero_tipo: true,
+          },
+        },
+        factoring_tipo: true,
+        riesgo_operacion: true,
+      },
       where: {
         estado: {
           in: estados,
