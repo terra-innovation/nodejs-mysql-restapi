@@ -112,7 +112,7 @@ export const simulateFactoringLogicV2 = async (
         total: new Decimal(0),
       };
       //costo_cavali.total = Number((costo_cavali.monto * 1 + costo_cavali.igv * 1).toFixed(2));
-      costo_cavali.total = costo_cavali.monto.mul(costo_cavali.igv).toDecimalPlaces(2);
+      costo_cavali.total = costo_cavali.monto.add(costo_cavali.igv).toDecimalPlaces(2);
       costos.push(costo_cavali);
 
       simulacion.costos = costos;
