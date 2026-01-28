@@ -15,7 +15,9 @@ const __filename = fileURLToPath(import.meta.url);
 const scriptName = path.basename(__filename);
 //const __dirname = path.dirname(__filename);
 //const jsonFilePath = path.join(__dirname, "BASE.txt");
-const jsonFilePath = path.resolve(process.cwd(), "temporal", "BASE.txt");
+//const jsonFilePath = path.resolve(process.cwd(), "temporal", "BASE.txt");
+
+const jsonFilePath = path.resolve(process.cwd(), "temporal", "20260127_BASE_2.xlsx");
 
 /**
  * Valida que el archivo exista y tenga permisos R/W
@@ -50,7 +52,7 @@ async function main(filePath: string) {
   assertFileAccessible(filePath);
 
   try {
-    await script.sendEmailingVentaEnFrio(filePath, startTime);
+    await script.sendEmailingVentaEnFrioXLSX(filePath, startTime);
   } catch (err) {
     console.error("💥 Error fatal del script:", err);
   }

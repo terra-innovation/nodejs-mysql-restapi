@@ -7,7 +7,7 @@ import { DateTime } from "luxon";
 import * as df from "#src/utils/dateUtils.js";
 import * as nf from "#src/utils/numberUtils.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-
+import xlsx from "xlsx";
 import * as emailService from "#src/services/email.Service.js";
 
 import fs from "fs";
@@ -16,15 +16,93 @@ interface VentaFrioRecord {
   ruc: string;
   razon_social: string;
   correo: string;
+  accion1: string;
   estado1: string;
-  fecha1: string; // ISO o yyyy-mm-dd
+  fecha1: number | null; // ISO o yyyy-mm-dd
+  hora1: number | null; // ISO o HH:mm:ss
   resultado1: string;
-  estado2?: string | null;
-  fecha2?: string;
-  resultado2?: string;
 }
 
-export const sendEmailingVentaEnFrio = async (filePath: string, startTime: number) => {
+/**
+ * Convierte DateTime a fecha Excel (días desde 1899-12-30)
+ */
+const toExcelDate = (dt: DateTime): number => dt.toMillis() / 86400000 + 25569;
+
+/**
+ * Convierte DateTime a hora Excel (fracción del día)
+ */
+const toExcelTime = (dt: DateTime): number => (dt.hour * 3600 + dt.minute * 60 + dt.second) / 86400;
+
+export const sendEmailingVentaEnFrioXLSX = async (filePath: string, startTime: number) => {
+  // 1. Leer Excel
+  const workbook = xlsx.readFile(filePath);
+  const sheetName = "Consolidado";
+
+  const sheet = workbook.Sheets[sheetName];
+  if (!sheet) {
+    console.log(`❌ No existe la hoja "${sheetName}"`);
+    return;
+  }
+
+  // 2. Convertir hoja a JSON (solo columnas existentes)
+  const data = xlsx.utils.sheet_to_json<VentaFrioRecord>(sheet, {
+    defval: null,
+  });
+
+  console.log(`📊 Registros totales  : ${data.length}`);
+
+  // 3. Filtrar pendientes
+  const pendientes = data.filter((r) => r.accion1 === "Enviar" && (!r.estado1 || r.estado1 === ""));
+
+  console.log(`📌 Pendientes        : ${pendientes.length}`);
+
+  if (pendientes.length === 0) {
+    console.log("📭 No hay registros para procesar");
+    return;
+  }
+
+  // 4. Seleccionar primer registro pendiente
+  const r = pendientes[0];
+
+  console.log("📨 Registro seleccionado");
+  console.log(`   • RUC             : ${r.ruc}`);
+  console.log(`   • Empresa         : ${r.razon_social}`);
+  console.log(`   • Correo          : ${r.correo}`);
+
+  const now = DateTime.now().setZone("America/Lima");
+  const started = Date.now();
+
+  try {
+    console.log("🚧 Enviando correo...");
+    await emailService.sendEmailingVentaEnFrio(r.correo, {});
+
+    r.estado1 = "Enviado";
+    r.resultado1 = "OK";
+    r.fecha1 = toExcelDate(now);
+    r.hora1 = toExcelTime(now);
+
+    console.log("✅ Resultado         : OK");
+  } catch (error) {
+    r.estado1 = "Enviado";
+    r.resultado1 = "ERROR";
+    r.fecha1 = toExcelDate(now);
+    r.hora1 = toExcelTime(now);
+
+    console.error("❌ Resultado         : ERROR");
+    console.error(error);
+  }
+
+  // 5. Volver a escribir la hoja Consolidado
+  const newSheet = xlsx.utils.json_to_sheet(data);
+  workbook.Sheets[sheetName] = newSheet;
+
+  // 6. Guardar el mismo archivo
+  xlsx.writeFile(workbook, filePath);
+
+  console.log("💾 Registro guardado en Excel");
+  console.log(`⏱️ Duración         : ${Date.now() - started} ms`);
+};
+export const sendEmailingVentaEnFrioJSON = async (filePath: string, startTime: number) => {
   // 1. Leer archivo
   const raw = fs.readFileSync(filePath, "utf-8");
   const data: VentaFrioRecord[] = JSON.parse(raw);
@@ -32,7 +110,7 @@ export const sendEmailingVentaEnFrio = async (filePath: string, startTime: numbe
   console.log(`📊 Registros totales  : ${data.length}`);
 
   // 2. Filtrar
-  const pendientes = data.filter((r) => r.resultado1 === "Recibido" && (r.estado2 === "" || r.estado2 === null)).sort((a, b) => new Date(a.fecha1 || "9999-12-31").getTime() - new Date(b.fecha1 || "9999-12-31").getTime());
+  const pendientes = data.filter((r) => r.resultado1 === "Enviar" && (r.estado1 === "" || r.estado1 === null));
 
   console.log(`📌 Pendientes        : ${pendientes.length}`);
 
@@ -57,15 +135,15 @@ export const sendEmailingVentaEnFrio = async (filePath: string, startTime: numbe
     console.log("🚧 Enviando correo...");
     await emailService.sendEmailingVentaEnFrio(r.correo, {});
 
-    r.estado2 = "Enviado";
-    r.resultado2 = "OK";
-    r.fecha2 = now;
+    r.estado1 = "Enviado";
+    r.resultado1 = "OK";
+    r.fecha1 = now;
 
     console.log("✅ Resultado         : OK");
   } catch (error) {
-    r.estado2 = "Enviado";
-    r.resultado2 = "ERROR";
-    r.fecha2 = now;
+    r.estado1 = "Enviado";
+    r.resultado1 = "ERROR";
+    r.fecha1 = now;
 
     console.error("❌ Resultado         : ERROR");
     console.error(error);
