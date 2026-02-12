@@ -10,16 +10,24 @@ export const getIGV = async (tx: TxClient) => {
   return await getConfiguracionappByIdconfiguracionapp(tx, 1);
 };
 
-export const getCostoCAVALI = async (tx: TxClient) => {
+export const getCostoCAVALIPen = async (tx: TxClient) => {
   return await getConfiguracionappByIdconfiguracionapp(tx, 2);
 };
 
-export const getComisionBCP = async (tx: TxClient) => {
+export const getComisionBCPPen = async (tx: TxClient) => {
   return await getConfiguracionappByIdconfiguracionapp(tx, 3);
 };
 
 export const getEmailsCCDeudorSolicitaConfirmacion = async (tx: TxClient) => {
   return await getConfiguracionappByIdconfiguracionapp(tx, 4);
+};
+
+export const getCostoCAVALIUsd = async (tx: TxClient) => {
+  return await getConfiguracionappByIdconfiguracionapp(tx, 5);
+};
+
+export const getComisionBCPUsd = async (tx: TxClient) => {
+  return await getConfiguracionappByIdconfiguracionapp(tx, 6);
 };
 
 export const getConfiguracionapps = async (tx: TxClient, estados: number[]) => {

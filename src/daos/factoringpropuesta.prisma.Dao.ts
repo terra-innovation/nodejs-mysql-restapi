@@ -1,5 +1,5 @@
 import { TxClient } from "#src/types/Prisma.types.js";
-import type { Prisma, factoring_propuesta } from "#root/generated/prisma/ft_factoring/client.js";
+import type { Prisma, factoring_propuesta, factoring_propuesta_financiero } from "#root/generated/prisma/ft_factoring/client.js";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
 
@@ -104,7 +104,20 @@ export const getFactoringpropuestaVigenteByIdfactoring = async (tx: TxClient, id
       },
     });
 
-    return factoringpropuesta;
+    const comisiones = factoringpropuesta.factoring_propuesta_financieros.filter((financiero) => financiero.financiero_tipo.idfinancierotipo === 1);
+    const costos = factoringpropuesta.factoring_propuesta_financieros.filter((financiero) => financiero.financiero_tipo.idfinancierotipo === 2);
+    const gastos = factoringpropuesta.factoring_propuesta_financieros.filter((financiero) => financiero.financiero_tipo.idfinancierotipo === 3);
+    const gastos_excento_igv = factoringpropuesta.factoring_propuesta_financieros.filter((financiero) => financiero.financiero_tipo.idfinancierotipo === 4);
+
+    const factoringpropuestaExtendido = {
+      ...factoringpropuesta,
+      comisiones,
+      costos,
+      gastos,
+      gastos_excento_igv,
+    };
+
+    return factoringpropuestaExtendido;
   } catch (error) {
     log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
@@ -113,7 +126,7 @@ export const getFactoringpropuestaVigenteByIdfactoring = async (tx: TxClient, id
 
 export const getFactoringpropuestasByIdfactoring = async (tx: TxClient, idfactoring: number, estados: number[]) => {
   try {
-    const facturas = await tx.factoring_propuesta.findMany({
+    const factoringpropuestas = await tx.factoring_propuesta.findMany({
       include: {
         factoring_tipo: true,
         factoring_propuesta_estado: true,
@@ -135,7 +148,23 @@ export const getFactoringpropuestasByIdfactoring = async (tx: TxClient, idfactor
         },
       },
     });
-    return facturas;
+
+    const factoringpropuestasExtendido = factoringpropuestas.map((propuesta) => {
+      const comisiones: factoring_propuesta_financiero[] = propuesta.factoring_propuesta_financieros.filter((financiero) => financiero.financiero_tipo.idfinancierotipo === 1);
+      const costos: factoring_propuesta_financiero[] = propuesta.factoring_propuesta_financieros.filter((financiero) => financiero.financiero_tipo.idfinancierotipo === 2);
+      const gastos: factoring_propuesta_financiero[] = propuesta.factoring_propuesta_financieros.filter((financiero) => financiero.financiero_tipo.idfinancierotipo === 3);
+      const gastos_excento_igv: factoring_propuesta_financiero[] = propuesta.factoring_propuesta_financieros.filter((financiero) => financiero.financiero_tipo.idfinancierotipo === 4);
+
+      return {
+        ...propuesta,
+        comisiones,
+        costos,
+        gastos,
+        gastos_excento_igv,
+      };
+    });
+
+    return factoringpropuestasExtendido;
   } catch (error) {
     log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
@@ -199,7 +228,20 @@ export const getFactoringpropuestaByFactoringpropuestaid = async (tx: TxClient, 
       },
     });
 
-    return factoringpropuesta;
+    const comisiones = factoringpropuesta.factoring_propuesta_financieros.filter((financiero) => financiero.financiero_tipo.idfinancierotipo === 1);
+    const costos = factoringpropuesta.factoring_propuesta_financieros.filter((financiero) => financiero.financiero_tipo.idfinancierotipo === 2);
+    const gastos = factoringpropuesta.factoring_propuesta_financieros.filter((financiero) => financiero.financiero_tipo.idfinancierotipo === 3);
+    const gastos_excento_igv = factoringpropuesta.factoring_propuesta_financieros.filter((financiero) => financiero.financiero_tipo.idfinancierotipo === 4);
+
+    const factoringpropuestaExtendido = {
+      ...factoringpropuesta,
+      comisiones,
+      costos,
+      gastos,
+      gastos_excento_igv,
+    };
+
+    return factoringpropuestaExtendido;
   } catch (error) {
     log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);

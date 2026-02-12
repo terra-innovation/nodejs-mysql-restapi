@@ -1,16 +1,20 @@
-export default {
+import type { Config } from "jest";
+
+const config: Config = {
   verbose: true,
   testEnvironment: "node",
   coveragePathIgnorePatterns: ["/node_modules/", "/dist/"],
   transform: {
-    "^.+\\.(ts|js)$": "ts-jest", // Usamos ts-jest para transformar archivos TypeScript
+    "^.+\\.(ts|js)$": "ts-jest",
   },
   moduleNameMapper: {
     "^#root/(.*)$": "<rootDir>/$1",
     "^#src/(.*)$": "<rootDir>/src/$1",
   },
-  roots: ["<rootDir>/tests/e2e"], // Apunta solo a las pruebas en tests/e2e
+  roots: ["<rootDir>/src", "<rootDir>/tests"],
   testMatch: ["**/__tests__/**/*.ts", "**/?(*.)+(spec|test).ts"],
   collectCoverageFrom: ["src/**/*.ts", "!src/**/*.d.ts"],
-  setupFilesAfterEnv: ["<rootDir>/tests/e2e/setup.ts"], // Configuración global de las pruebas
+  setupFilesAfterEnv: ["<rootDir>/tests/setup.ts"], // opcional
 };
+
+export default config;

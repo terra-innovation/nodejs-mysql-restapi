@@ -1,6 +1,41 @@
-import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
+import type { Prisma, factoring_simulacion_financiero } from "#root/generated/prisma/ft_factoring/client.js";
 
 export type TxClient = Prisma.TransactionClient;
+
+export type FactoringsimulacionfinancierosPDF = Prisma.factoring_simulacion_financieroGetPayload<{
+  include: {
+    financiero_tipo: true;
+    financiero_concepto: true;
+  };
+}>;
+
+export type FactoringpropuestafinancierosPDF = Prisma.factoring_propuesta_financieroGetPayload<{
+  include: {
+    financiero_tipo: true;
+    financiero_concepto: true;
+  };
+}>;
+
+export type FactoringsimulacionPDF = Prisma.factoring_simulacionGetPayload<{
+  include: {
+    banco: true;
+    factoring_estrategia: true;
+    factoring_simulacion_financieros: {
+      include: {
+        financiero_concepto: true;
+        financiero_tipo: true;
+      };
+    };
+    factoring_tipo: true;
+    riesgo_operacion: true;
+    moneda: true;
+  };
+}> & {
+  comisiones: FactoringsimulacionfinancierosPDF[];
+  costos: FactoringsimulacionfinancierosPDF[];
+  gastos: FactoringsimulacionfinancierosPDF[];
+  gastos_excento_igv: FactoringsimulacionfinancierosPDF[];
+};
 
 // Tipo exacto del usuario con roles incluidos
 export type UsuarioConRoles = Prisma.usuarioGetPayload<{
@@ -60,20 +95,9 @@ export type FactoringpropuestaPDF = Prisma.factoring_propuestaGetPayload<{
     riesgo_cedente: true;
     riesgo_operacion: true;
   };
-}>;
-
-export type FactoringsimulacionPDF = Prisma.factoring_simulacionGetPayload<{
-  include: {
-    banco: true;
-    factoring_estrategia: true;
-    factoring_simulacion_financieros: {
-      include: {
-        financiero_concepto: true;
-        financiero_tipo: true;
-      };
-    };
-    factoring_tipo: true;
-    riesgo_operacion: true;
-    moneda: true;
-  };
-}>;
+}> & {
+  comisiones: FactoringpropuestafinancierosPDF[];
+  costos: FactoringpropuestafinancierosPDF[];
+  gastos: FactoringpropuestafinancierosPDF[];
+  gastos_excento_igv: FactoringpropuestafinancierosPDF[];
+};

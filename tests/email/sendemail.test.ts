@@ -39,7 +39,7 @@ async function main() {
 }
 
 async function testSendEmailingVentaEnFrio() {
-  const testToEmail = "kattia@hamek.com.pe"; // <-- ⚠️ CAMBIA ESTO
+  const testToEmail = "galmora@iesa.com.pe"; // <-- ⚠️ CAMBIA ESTO
 
   var paramsEmail = {};
 
@@ -359,7 +359,7 @@ async function testTemplateFactoringEmpresaServicioFactoringSolicitud() {
 
       return session_usuario;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
 
   var paramsEmail = {

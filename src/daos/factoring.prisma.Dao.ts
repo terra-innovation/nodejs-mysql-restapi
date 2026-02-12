@@ -1,5 +1,5 @@
 import { TxClient } from "#src/types/Prisma.types.js";
-import type { Prisma, factoring } from "#root/generated/prisma/ft_factoring/client.js";
+import type { Prisma, factoring, factoring_propuesta_financiero } from "#root/generated/prisma/ft_factoring/client.js";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
 
@@ -150,6 +150,12 @@ export const getFactoringsByIdcedentes = async (tx: TxClient, idcedentes: number
         factoring_propuesta_aceptada: {
           include: {
             factoring_tipo: true,
+            factoring_propuesta_financieros: {
+              include: {
+                financiero_concepto: true,
+                financiero_tipo: true,
+              },
+            },
           },
         },
         factoring_propuesta_factoringes: {
@@ -169,7 +175,30 @@ export const getFactoringsByIdcedentes = async (tx: TxClient, idcedentes: number
       },
     });
 
-    return factorings;
+    const factoringsExtendido = factorings.map((factoring) => {
+      if (!factoring.factoring_propuesta_aceptada) {
+        return factoring;
+      }
+
+      const financieros = factoring.factoring_propuesta_aceptada.factoring_propuesta_financieros;
+
+      // Creamos la versión extendida de la propuesta
+      const propuestaExtendida = {
+        ...factoring.factoring_propuesta_aceptada,
+        comisiones: financieros.filter((f) => f.financiero_tipo.idfinancierotipo === 1),
+        costos: financieros.filter((f) => f.financiero_tipo.idfinancierotipo === 2),
+        gastos: financieros.filter((f) => f.financiero_tipo.idfinancierotipo === 3),
+        gastos_excento_igv: financieros.filter((f) => f.financiero_tipo.idfinancierotipo === 4),
+      };
+
+      // Retornamos el factoring con la propuesta modificada
+      return {
+        ...factoring,
+        factoring_propuesta_aceptada: propuestaExtendida,
+      };
+    });
+
+    return factoringsExtendido;
   } catch (error) {
     log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
@@ -309,6 +338,12 @@ export const getFactoringsByEstados = async (tx: TxClient, estados: number[]) =>
         factoring_propuesta_aceptada: {
           include: {
             factoring_tipo: true,
+            factoring_propuesta_financieros: {
+              include: {
+                financiero_concepto: true,
+                financiero_tipo: true,
+              },
+            },
           },
         },
         factoring_propuesta_factoringes: {
@@ -325,7 +360,30 @@ export const getFactoringsByEstados = async (tx: TxClient, estados: number[]) =>
       },
     });
 
-    return factorings;
+    const factoringsExtendido = factorings.map((factoring) => {
+      if (!factoring.factoring_propuesta_aceptada) {
+        return factoring;
+      }
+
+      const financieros = factoring.factoring_propuesta_aceptada.factoring_propuesta_financieros;
+
+      // Creamos la versión extendida de la propuesta
+      const propuestaExtendida = {
+        ...factoring.factoring_propuesta_aceptada,
+        comisiones: financieros.filter((f) => f.financiero_tipo.idfinancierotipo === 1),
+        costos: financieros.filter((f) => f.financiero_tipo.idfinancierotipo === 2),
+        gastos: financieros.filter((f) => f.financiero_tipo.idfinancierotipo === 3),
+        gastos_excento_igv: financieros.filter((f) => f.financiero_tipo.idfinancierotipo === 4),
+      };
+
+      // Retornamos el factoring con la propuesta modificada
+      return {
+        ...factoring,
+        factoring_propuesta_aceptada: propuestaExtendida,
+      };
+    });
+
+    return factoringsExtendido;
   } catch (error) {
     log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);

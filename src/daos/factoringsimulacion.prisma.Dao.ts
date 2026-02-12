@@ -1,5 +1,5 @@
 import { TxClient } from "#src/types/Prisma.types.js";
-import type { Prisma, factoring_simulacion } from "#root/generated/prisma/ft_factoring/client.js";
+import type { Prisma, factoring_simulacion, factoring_simulacion_financiero } from "#root/generated/prisma/ft_factoring/client.js";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
 
@@ -29,7 +29,24 @@ export const getFactoringsimulacions = async (tx: TxClient, estados: number[]) =
       },
     });
 
-    return factoringsimulacions;
+    const factoringsimulacionsExtendido = factoringsimulacions.map((simulacion) => {
+      // Filtramos los `factoring_simulacion_financieros` por tipo
+      const comisiones: factoring_simulacion_financiero[] = simulacion.factoring_simulacion_financieros.filter((financiero) => financiero.financiero_tipo.idfinancierotipo === 1);
+      const costos: factoring_simulacion_financiero[] = simulacion.factoring_simulacion_financieros.filter((financiero) => financiero.financiero_tipo.idfinancierotipo === 2);
+      const gastos: factoring_simulacion_financiero[] = simulacion.factoring_simulacion_financieros.filter((financiero) => financiero.financiero_tipo.idfinancierotipo === 3);
+      const gastos_excento_igv: factoring_simulacion_financiero[] = simulacion.factoring_simulacion_financieros.filter((financiero) => financiero.financiero_tipo.idfinancierotipo === 4);
+
+      // Devolvemos la simulación con las nuevas propiedades
+      return {
+        ...simulacion,
+        comisiones,
+        costos,
+        gastos,
+        gastos_excento_igv,
+      };
+    });
+
+    return factoringsimulacionsExtendido;
   } catch (error) {
     log.error(line(), error.original.code);
     log.error(line(), "", error);
@@ -73,7 +90,20 @@ export const getFactoringsimulacionByFactoringsimulacionid = async (tx: TxClient
       },
     });
 
-    return factoringsimulacion;
+    const comisiones = factoringsimulacion.factoring_simulacion_financieros.filter((financiero) => financiero.financiero_tipo.idfinancierotipo === 1);
+    const costos = factoringsimulacion.factoring_simulacion_financieros.filter((financiero) => financiero.financiero_tipo.idfinancierotipo === 2);
+    const gastos = factoringsimulacion.factoring_simulacion_financieros.filter((financiero) => financiero.financiero_tipo.idfinancierotipo === 3);
+    const gastos_excento_igv = factoringsimulacion.factoring_simulacion_financieros.filter((financiero) => financiero.financiero_tipo.idfinancierotipo === 4);
+
+    const factoringsimulacionExtendido = {
+      ...factoringsimulacion,
+      comisiones,
+      costos,
+      gastos,
+      gastos_excento_igv,
+    };
+
+    return factoringsimulacionExtendido;
   } catch (error) {
     log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);

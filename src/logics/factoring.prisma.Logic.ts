@@ -5,11 +5,204 @@ import * as factoringconfigcomisionDao from "#src/daos/factoringconfigcomision.p
 import * as financieroconceptoDao from "#src/daos/financieroconcepto.prisma.Dao.js";
 import * as financierotipoDao from "#src/daos/financierotipo.prisma.Dao.js";
 import * as riesgoDao from "#src/daos/riesgo.prisma.Dao.js";
-import { Simulacion, Costo, Comision } from "#src/types/Simulacion.prisma.types.js";
+import { Simulacion, Costo, Comision, Gasto_excento_igv } from "#src/types/Simulacion.prisma.types.js";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 
 import { line, log } from "#root/src/utils/logger.pino.js";
 import { Decimal } from "@prisma/client/runtime/library";
+
+export const simulateFactoringLogicV3 = async (
+  idriesgooperacion: number,
+  idbancocedente: number,
+  cantidad_facturas: number,
+  monto_neto: Prisma.Decimal,
+  dias_pago_estimado: number,
+  porcentaje_financiado: Prisma.Decimal,
+  tdm: Prisma.Decimal,
+  dias_antiguedad_estimado: number,
+  porcentaje_comision_descuento: Prisma.Decimal,
+  idmoneda: number,
+): Promise<Partial<Simulacion>> => {
+  log.debug(line(), "logic::simulateFactoringLogicV3");
+
+  const simulacion = await prismaFT.client.$transaction(
+    async (tx) => {
+      var simulacion: Partial<Simulacion> = {};
+
+      var constante_igv = await configuracionappDao.getIGV(tx);
+      var constante_costo_cavali_pen = await configuracionappDao.getCostoCAVALIPen(tx);
+      var constante_costo_cavali_usd = await configuracionappDao.getCostoCAVALIUsd(tx);
+      var constante_comison_bcp_pen = await configuracionappDao.getComisionBCPPen(tx);
+      var constante_comison_bcp_usd = await configuracionappDao.getComisionBCPUsd(tx);
+
+      var riesgooperacion = await riesgoDao.getRiesgoByIdriesgo(tx, idriesgooperacion);
+      var cofigcomision = await factoringconfigcomisionDao.getFactoringconfigcomisionByIdriesgo(tx, riesgooperacion.idriesgo, [1]);
+      var financiero_tipo_comision = await financierotipoDao.getComision(tx);
+      var financiero_tipo_costo = await financierotipoDao.getCosto(tx);
+      var financiero_tipo_gasto = await financierotipoDao.getGasto(tx);
+      var financiero_tipo_gasto_excento_igv = await financierotipoDao.getGasto_excento_igv(tx);
+
+      var financiero_concepto_comisionft = await financieroconceptoDao.getComisionFinanzaTech(tx);
+      var financiero_concepto_cavali = await financieroconceptoDao.getCostoCAVALIPen(tx);
+      var financiero_concepto_transaccion = await financieroconceptoDao.getCostoTransaccion(tx);
+      var financiero_concepto_gasto_interbancario = await financieroconceptoDao.getGastoInterbancario(tx);
+
+      simulacion.dias_pago_estimado = dias_pago_estimado;
+      simulacion.dias_antiguedad_estimado = dias_antiguedad_estimado;
+
+      simulacion.tda = new Decimal(1).add(tdm).pow(12).minus(1).toDecimalPlaces(10);
+
+      simulacion.tdm = tdm.toDecimalPlaces(5);
+
+      simulacion.tdd = new Decimal(1).add(tdm).pow(new Decimal(1).div(30)).minus(1).toDecimalPlaces(10);
+      simulacion.tdm_mora = new Decimal(0);
+      simulacion.tda_mora = new Decimal(0);
+      simulacion.tdd_mora = new Decimal(0);
+      simulacion.monto_neto = monto_neto;
+
+      simulacion.monto_garantia = monto_neto.mul(new Decimal(1).minus(porcentaje_financiado)).toDecimalPlaces(2);
+
+      simulacion.monto_efectivo = monto_neto.mul(porcentaje_financiado).toDecimalPlaces(2);
+
+      simulacion.monto_financiado = simulacion.monto_efectivo;
+
+      simulacion.monto_descuento = simulacion.monto_financiado.mul(new Decimal(1).add(simulacion.tdd!).pow(simulacion.dias_pago_estimado).minus(1)).toDecimalPlaces(2);
+
+      var comisiones = [];
+
+      const comisionft_porcentaje = cofigcomision.factor1
+        .mul(Decimal.exp(cofigcomision.factor2.div(simulacion.monto_neto)))
+        .mul(cofigcomision.factor3)
+        .toDecimalPlaces(5);
+
+      let monto_comision_bruto = comisionft_porcentaje.mul(simulacion.monto_neto).toDecimalPlaces(2);
+
+      let comisionft_monto = monto_comision_bruto.mul(new Decimal(1).minus(porcentaje_comision_descuento)).toDecimalPlaces(2);
+
+      let comisionft_igv = comisionft_monto.mul(constante_igv.valor).toDecimalPlaces(2);
+
+      let comision_ft: Partial<Comision> = {
+        idfinancierotipo: financiero_tipo_comision.idfinancierotipo,
+        idfinancieroconcepto: financiero_concepto_comisionft.idfinancieroconcepto,
+        cantidad: new Decimal(1),
+        monto_unitario: comisionft_monto,
+        monto: comisionft_monto,
+        igv: comisionft_igv,
+        financiero_tipo: financiero_tipo_comision,
+        financiero_concepto: financiero_concepto_comisionft,
+      };
+      comision_ft.total = comision_ft.monto.add(comision_ft.igv).toDecimalPlaces(2);
+      comision_ft.porcentaje_monto = comision_ft.monto.div(simulacion.monto_neto).toDecimalPlaces(5);
+      comisiones.push(comision_ft);
+
+      simulacion.comisiones = comisiones;
+
+      var costos = [];
+      var cavali_monto = idmoneda == 1 ? new Decimal(constante_costo_cavali_pen.valor) : new Decimal(constante_costo_cavali_usd.valor);
+      var cavali_monto_total = cavali_monto.mul(cantidad_facturas);
+      let costo_cavali: Partial<Costo> = {
+        idfinancierotipo: financiero_tipo_costo.idfinancierotipo,
+        idfinancieroconcepto: financiero_concepto_cavali.idfinancieroconcepto,
+        cantidad: new Decimal(cantidad_facturas),
+        monto_unitario: cavali_monto,
+        monto: cavali_monto_total,
+        igv: cavali_monto_total.mul(new Decimal(constante_igv.valor)).toDecimalPlaces(2),
+        financiero_tipo: financiero_tipo_costo,
+        financiero_concepto: financiero_concepto_cavali,
+        total: new Decimal(0),
+      };
+
+      costo_cavali.total = costo_cavali.monto.add(costo_cavali.igv).toDecimalPlaces(2);
+      costo_cavali.porcentaje_monto = costo_cavali.monto.div(simulacion.monto_neto).toDecimalPlaces(5);
+      costos.push(costo_cavali);
+
+      simulacion.costos = costos;
+
+      var gastos = [];
+
+      simulacion.gastos = gastos;
+
+      var gastos_excento_igv = [];
+
+      var gasto_interbantario_monto = new Decimal(idmoneda == 1 ? constante_comison_bcp_pen.valor : constante_comison_bcp_usd.valor);
+      if (idbancocedente != 1) {
+        let gasto_interbancario: Partial<Gasto_excento_igv> = {
+          idfinancierotipo: financiero_tipo_gasto_excento_igv.idfinancierotipo,
+          idfinancieroconcepto: financiero_concepto_gasto_interbancario.idfinancieroconcepto,
+          cantidad: new Decimal(1),
+          monto_unitario: gasto_interbantario_monto,
+          monto: gasto_interbantario_monto,
+          igv: new Decimal(0),
+          financiero_tipo: financiero_tipo_gasto_excento_igv,
+          financiero_concepto: financiero_concepto_gasto_interbancario,
+          total: new Decimal(0),
+        };
+        gasto_interbancario.total = gasto_interbancario.monto.add(gasto_interbancario.igv).toDecimalPlaces(2);
+        gasto_interbancario.porcentaje_monto = gasto_interbancario.monto.div(simulacion.monto_neto).toDecimalPlaces(5);
+        gastos_excento_igv.push(gasto_interbancario);
+      }
+
+      simulacion.gastos_excento_igv = gastos_excento_igv;
+
+      simulacion.monto_comision_bruto = monto_comision_bruto;
+
+      simulacion.monto_comision = comisiones.reduce((acc, item) => acc.add(new Decimal(item.monto)), new Decimal(0));
+
+      simulacion.monto_comision_igv = comisiones.reduce((acc, item) => acc.add(new Decimal(item.igv)), new Decimal(0));
+
+      simulacion.monto_costo_estimado = costos.reduce((acc, item) => acc.add(new Decimal(item.monto)), new Decimal(0));
+
+      simulacion.monto_costo_estimado_igv = costos.reduce((acc, item) => acc.add(new Decimal(item.igv)), new Decimal(0));
+
+      simulacion.monto_gasto_estimado = gastos.reduce((acc, item) => acc.add(new Decimal(item.monto)), new Decimal(0));
+
+      simulacion.monto_gasto_estimado_igv = gastos.reduce((acc, item) => acc.add(new Decimal(item.igv)), new Decimal(0));
+
+      simulacion.monto_total_igv = simulacion.monto_comision_igv.add(simulacion.monto_costo_estimado_igv).add(simulacion.monto_gasto_estimado_igv).toDecimalPlaces(2);
+
+      simulacion.monto_gasto_excento_igv = gastos_excento_igv.reduce((acc, item) => acc.add(new Decimal(item.monto)), new Decimal(0));
+
+      simulacion.monto_adelanto = simulacion.monto_financiado
+        .minus(simulacion.monto_descuento)
+        .minus(simulacion.monto_comision)
+        .minus(simulacion.monto_costo_estimado)
+        .minus(simulacion.monto_gasto_estimado)
+        .minus(simulacion.monto_total_igv)
+        .minus(simulacion.monto_gasto_excento_igv)
+        .toDecimalPlaces(2);
+
+      simulacion.monto_dia_mora_estimado = new Decimal(0);
+
+      simulacion.monto_dia_interes_estimado = simulacion.monto_financiado.mul(new Decimal(1).add(simulacion.tdd).pow(1).minus(1)).toDecimalPlaces(2);
+
+      simulacion.porcentaje_comision_descuento = porcentaje_comision_descuento.toDecimalPlaces(5);
+
+      simulacion.porcentaje_garantia_estimado = simulacion.monto_garantia.div(simulacion.monto_neto).toDecimalPlaces(5);
+
+      simulacion.porcentaje_efectivo_estimado = simulacion.monto_efectivo.div(simulacion.monto_neto).toDecimalPlaces(5);
+
+      simulacion.porcentaje_financiado_estimado = simulacion.monto_financiado.div(simulacion.monto_neto).toDecimalPlaces(5);
+
+      simulacion.porcentaje_descuento_estimado = simulacion.monto_descuento.div(simulacion.monto_neto).toDecimalPlaces(5);
+
+      simulacion.porcentaje_adelanto_estimado = simulacion.monto_adelanto.div(simulacion.monto_neto).toDecimalPlaces(5);
+
+      simulacion.porcentaje_comision_estimado = simulacion.monto_comision.div(simulacion.monto_neto).toDecimalPlaces(5);
+
+      simulacion.dias_cobertura_garantia_estimado = Decimal.ln(simulacion.monto_financiado.add(simulacion.monto_garantia).div(simulacion.monto_financiado))
+        .div(Decimal.ln(simulacion.tdm.add(1)))
+        .mul(30)
+        .floor()
+        .toNumber();
+
+      //log.debug(line(), "simulacion: ", simulacion);
+
+      return simulacion;
+    },
+    { timeout: prismaFT.transactionTimeout },
+  );
+  return simulacion;
+};
 
 export const simulateFactoringLogicV2 = async (
   idriesgooperacion: number,
@@ -19,7 +212,7 @@ export const simulateFactoringLogicV2 = async (
   dias_pago_estimado: number,
   porcentaje_financiado: Prisma.Decimal,
   tdm: Prisma.Decimal,
-  dias_antiguedad_estimado: number
+  dias_antiguedad_estimado: number,
 ): Promise<Partial<Simulacion>> => {
   log.debug(line(), "logic::simulateFactoringLogicV2");
 
@@ -28,8 +221,8 @@ export const simulateFactoringLogicV2 = async (
       var simulacion: Partial<Simulacion> = {};
 
       var constante_igv = await configuracionappDao.getIGV(tx);
-      var constante_costo_cavali = await configuracionappDao.getCostoCAVALI(tx);
-      var constante_comison_bcp = await configuracionappDao.getComisionBCP(tx);
+      var constante_costo_cavali_pen = await configuracionappDao.getCostoCAVALIPen(tx);
+      var constante_comison_bcp_pen = await configuracionappDao.getComisionBCPPen(tx);
 
       var riesgooperacion = await riesgoDao.getRiesgoByIdriesgo(tx, idriesgooperacion);
       var cofigcomision = await factoringconfigcomisionDao.getFactoringconfigcomisionByIdriesgo(tx, riesgooperacion.idriesgo, [1]);
@@ -38,7 +231,7 @@ export const simulateFactoringLogicV2 = async (
       var financiero_tipo_gasto = await financierotipoDao.getGasto(tx);
 
       var financiero_concepto_comisionft = await financieroconceptoDao.getComisionFinanzaTech(tx);
-      var financiero_concepto_cavali = await financieroconceptoDao.getCostoCAVALI(tx);
+      var financiero_concepto_cavali = await financieroconceptoDao.getCostoCAVALIPen(tx);
       var financiero_concepto_transaccion = await financieroconceptoDao.getCostoTransaccion(tx);
 
       simulacion.dias_pago_estimado = dias_pago_estimado;
@@ -79,20 +272,19 @@ export const simulateFactoringLogicV2 = async (
       //let comisionft_monto = Number((comisionft_porcentaje * simulacion.monto_neto).toFixed(2));
       let comisionft_monto = comisionft_porcentaje.mul(simulacion.monto_neto).toDecimalPlaces(2);
 
-      //comisionft_monto = comisionft_monto + Number(idbancocedente == 1 ? 0 : constante_comison_bcp.valor);
-      comisionft_monto = comisionft_monto.add(idbancocedente == 1 ? new Decimal(0) : constante_comison_bcp.valor);
+      //comisionft_monto = comisionft_monto + Number(idbancocedente == 1 ? 0 : constante_comison_bcp_pen.valor);
+      comisionft_monto = comisionft_monto.add(idbancocedente == 1 ? new Decimal(0) : constante_comison_bcp_pen.valor);
 
       //let comisionft_igv = Number((comisionft_monto * Number(constante_igv.valor)).toFixed(3));
       let comisionft_igv = comisionft_monto.mul(constante_igv.valor).toDecimalPlaces(3);
 
       let comision_ft: Partial<Comision> = {
-        comisionft_porcentaje: comisionft_porcentaje,
         idfinancierotipo: financiero_tipo_comision.idfinancierotipo,
         idfinancieroconcepto: financiero_concepto_comisionft.idfinancieroconcepto,
         monto: comisionft_monto,
         igv: comisionft_igv,
-        financierotipo: financiero_tipo_comision,
-        financieroconcepto: financiero_concepto_comisionft,
+        financiero_tipo: financiero_tipo_comision,
+        financiero_concepto: financiero_concepto_comisionft,
       };
       //comision_ft.total = Number((comision_ft.monto + comision_ft.igv).toFixed(2));
       comision_ft.total = comision_ft.monto.add(comision_ft.igv).toDecimalPlaces(2);
@@ -104,14 +296,12 @@ export const simulateFactoringLogicV2 = async (
       let costo_cavali: Partial<Costo> = {
         idfinancierotipo: financiero_tipo_costo.idfinancierotipo,
         idfinancieroconcepto: financiero_concepto_cavali.idfinancieroconcepto,
-        monto: new Decimal(constante_costo_cavali.valor),
-        //igv: Number((Number(constante_costo_cavali.valor) * Number(constante_igv.valor)).toFixed(3)),
-        igv: new Decimal(constante_costo_cavali.valor).mul(new Decimal(constante_igv.valor)).toDecimalPlaces(3),
-        financierotipo: financiero_tipo_costo,
-        financieroconcepto: financiero_concepto_cavali,
+        monto: new Decimal(constante_costo_cavali_pen.valor),
+        igv: new Decimal(constante_costo_cavali_pen.valor).mul(new Decimal(constante_igv.valor)).toDecimalPlaces(3),
+        financiero_tipo: financiero_tipo_costo,
+        financiero_concepto: financiero_concepto_cavali,
         total: new Decimal(0),
       };
-      //costo_cavali.total = Number((costo_cavali.monto * 1 + costo_cavali.igv * 1).toFixed(2));
       costo_cavali.total = costo_cavali.monto.add(costo_cavali.igv).toDecimalPlaces(2);
       costos.push(costo_cavali);
 
@@ -121,67 +311,38 @@ export const simulateFactoringLogicV2 = async (
 
       simulacion.gastos = gastos;
 
-      //simulacion.monto_comision = comisiones.reduce((acumulador, item) => {
-      //  return acumulador + item.monto;
-      //}, 0);
       simulacion.monto_comision = comisiones.reduce((acc, item) => acc.add(new Decimal(item.monto)), new Decimal(0));
 
-      //simulacion.monto_comision_igv = comisiones.reduce((acumulador, item) => {
-      //  return acumulador + item.igv;
-      //}, 0);
       simulacion.monto_comision_igv = comisiones.reduce((acc, item) => acc.add(new Decimal(item.igv)), new Decimal(0));
 
-      //simulacion.monto_costo_estimado = costos.reduce((acumulador, item) => {
-      //  return acumulador + item.monto;
-      //}, 0);
       simulacion.monto_costo_estimado = costos.reduce((acc, item) => acc.add(new Decimal(item.monto)), new Decimal(0));
 
-      //simulacion.monto_costo_estimado_igv = costos.reduce((acumulador, item) => {
-      //  return acumulador + item.igv;
-      //}, 0);
       simulacion.monto_costo_estimado_igv = costos.reduce((acc, item) => acc.add(new Decimal(item.igv)), new Decimal(0));
 
-      //simulacion.monto_gasto_estimado = gastos.reduce((acumulador, item) => {
-      //  return acumulador + item.monto;
-      //}, 0);
       simulacion.monto_gasto_estimado = gastos.reduce((acc, item) => acc.add(new Decimal(item.monto)), new Decimal(0));
 
-      //simulacion.monto_gasto_estimado_igv = gastos.reduce((acumulador, item) => {
-      //  return acumulador + item.igv;
-      //}, 0);
       simulacion.monto_gasto_estimado_igv = gastos.reduce((acc, item) => acc.add(new Decimal(item.igv)), new Decimal(0));
 
-      //simulacion.monto_total_igv = Number((simulacion.monto_comision_igv + simulacion.monto_costo_estimado_igv + simulacion.monto_gasto_estimado_igv).toFixed(2));
       simulacion.monto_total_igv = simulacion.monto_comision_igv.add(simulacion.monto_costo_estimado_igv).add(simulacion.monto_gasto_estimado_igv).toDecimalPlaces(2);
 
-      //simulacion.monto_adelanto = Number((simulacion.monto_financiado - simulacion.monto_descuento - simulacion.monto_comision - simulacion.monto_costo_estimado - simulacion.monto_gasto_estimado - simulacion.monto_total_igv).toFixed(2));
       simulacion.monto_adelanto = simulacion.monto_financiado.minus(simulacion.monto_descuento).minus(simulacion.monto_comision).minus(simulacion.monto_costo_estimado).minus(simulacion.monto_gasto_estimado).minus(simulacion.monto_total_igv).toDecimalPlaces(2);
 
-      //simulacion.monto_dia_mora_estimado = 0;
       simulacion.monto_dia_mora_estimado = new Decimal(0);
 
-      //simulacion.monto_dia_interes_estimado = Number((simulacion.monto_financiado * (Math.pow(1 + simulacion.tdd, 1) - 1)).toFixed(2));
       simulacion.monto_dia_interes_estimado = simulacion.monto_financiado.mul(new Decimal(1).add(simulacion.tdd).pow(1).minus(1)).toDecimalPlaces(2);
 
-      //simulacion.porcentaje_garantia_estimado = Number((simulacion.monto_garantia / simulacion.monto_neto).toFixed(5));
       simulacion.porcentaje_garantia_estimado = simulacion.monto_garantia.div(simulacion.monto_neto).toDecimalPlaces(5);
 
-      //simulacion.porcentaje_efectivo_estimado = Number((simulacion.monto_efectivo / simulacion.monto_neto).toFixed(5));
       simulacion.porcentaje_efectivo_estimado = simulacion.monto_efectivo.div(simulacion.monto_neto).toDecimalPlaces(5);
 
-      //simulacion.porcentaje_financiado_estimado = Number((simulacion.monto_financiado / simulacion.monto_neto).toFixed(5));
       simulacion.porcentaje_financiado_estimado = simulacion.monto_financiado.div(simulacion.monto_neto).toDecimalPlaces(5);
 
-      //simulacion.porcentaje_descuento_estimado = Number((simulacion.monto_descuento / simulacion.monto_neto).toFixed(5));
       simulacion.porcentaje_descuento_estimado = simulacion.monto_descuento.div(simulacion.monto_neto).toDecimalPlaces(5);
 
-      //simulacion.porcentaje_adelanto_estimado = Number((simulacion.monto_adelanto / simulacion.monto_neto).toFixed(5));
       simulacion.porcentaje_adelanto_estimado = simulacion.monto_adelanto.div(simulacion.monto_neto).toDecimalPlaces(5);
 
-      //simulacion.porcentaje_comision_estimado = Number((simulacion.monto_comision / simulacion.monto_neto).toFixed(5));
       simulacion.porcentaje_comision_estimado = simulacion.monto_comision.div(simulacion.monto_neto).toDecimalPlaces(5);
 
-      //simulacion.dias_cobertura_garantia_estimado = Math.floor((Math.log((simulacion.monto_financiado + simulacion.monto_garantia) / simulacion.monto_financiado) / Math.log(1 + simulacion.tdm)) * 30);
       simulacion.dias_cobertura_garantia_estimado = Decimal.ln(simulacion.monto_financiado.add(simulacion.monto_garantia).div(simulacion.monto_financiado))
         .div(Decimal.ln(simulacion.tdm.add(1)))
         .mul(30)
@@ -192,7 +353,7 @@ export const simulateFactoringLogicV2 = async (
 
       return simulacion;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   return simulacion;
 };
@@ -256,7 +417,7 @@ export const simulateFactoringLogicV1 = async (_idriesgooperacion, _idbancoceden
 
       return simulacion;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   return simulacion;
 };

@@ -18,6 +18,10 @@ export const getGasto = async (tx: TxClient) => {
   return await getFinancierotipoByIdfinancierotipo(tx, 3);
 };
 
+export const getGasto_excento_igv = async (tx: TxClient) => {
+  return await getFinancierotipoByIdfinancierotipo(tx, 4);
+};
+
 export const getFinancierotipos = async (tx: TxClient, estados: number[]) => {
   try {
     const financierotipos = await tx.financiero_tipo.findMany({

@@ -23,7 +23,7 @@ import * as luxon from "luxon";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
-import { simulateFactoringLogicV2 } from "#src/logics/factoring.prisma.Logic.js";
+import { simulateFactoringLogicV3 } from "#src/logics/factoring.prisma.Logic.js";
 
 import { unlink } from "fs/promises";
 import path from "path"; // Para eliminar el archivo después de enviarlo
@@ -71,7 +71,7 @@ export const downloadFactoringpropuestaPDF = async (req: Request, res: Response)
       }
 
       const pdfGenerator = new PDFGenerator(filePath);
-      await pdfGenerator.generateFactoringQuote(factoring, factoringpropuesta);
+      await pdfGenerator.generateFactoringPropuesta(factoring, factoringpropuesta);
 
       let filenameDownload = "Factoring_Propuesta_" + factoring.empresa_cedente.ruc + "_" + factoringpropuesta.code + "_" + formattedDate + ".pdf";
 
@@ -82,7 +82,7 @@ export const downloadFactoringpropuestaPDF = async (req: Request, res: Response)
       await unlink(filePath);
       return {};
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
 };
 
@@ -156,7 +156,7 @@ export const updateFactoringpropuesta = async (req: Request, res: Response) => {
 
       return factoringpropuestaUpdated;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
 
   response(res, 200, { ...factoringpropuestaValidated });
@@ -177,7 +177,8 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
       factoringpropuestaestadoid: yup.string().trim().required().min(36).max(36),
       factoringestrategiaid: yup.string().trim().required().min(36).max(36),
       tdm: yup.number().required().min(0).max(100),
-      porcentaje_financiado_estimado: yup.number().required().min(0).max(100),
+      porcentaje_financiado_estimado: yup.number().required().min(0).max(1),
+      porcentaje_comision_descuento: yup.number().required().min(0).max(1),
     })
     .required();
   var factoringValidated = factoringSimulateSchema.validateSync({ ...req.body }, { abortEarly: false, stripUnknown: true });
@@ -235,7 +236,7 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
       let dias_pago_estimado = fecha_fin.startOf("day").diff(fecha_ahora.startOf("day"), "days").days; // Actualizamos la cantidad de dias para el pago
       let dias_antiguedad_estimado = fecha_ahora.startOf("day").diff(luxon.DateTime.fromISO(factoring.fecha_emision.toISOString()).startOf("day"), "days").days;
       var simulacion: Partial<Simulacion> = {};
-      simulacion = await simulateFactoringLogicV2(
+      simulacion = await simulateFactoringLogicV3(
         riesgooperacion.idriesgo,
         factoring.cuenta_bancaria.idbanco,
         factoring.cantidad_facturas,
@@ -243,7 +244,9 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
         dias_pago_estimado,
         new Decimal(factoringValidated.porcentaje_financiado_estimado),
         new Decimal(factoringValidated.tdm),
-        dias_antiguedad_estimado
+        dias_antiguedad_estimado,
+        new Decimal(factoringValidated.porcentaje_comision_descuento),
+        factoring.moneda.idmoneda,
       );
 
       log.info(line(), "simulacion: ", simulacion);
@@ -282,10 +285,12 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
         monto_costo_estimado_igv: simulacion.monto_costo_estimado_igv,
         monto_gasto_estimado: simulacion.monto_gasto_estimado,
         monto_gasto_estimado_igv: simulacion.monto_gasto_estimado_igv,
+        monto_gasto_excento_igv: simulacion.monto_gasto_excento_igv,
         monto_total_igv: simulacion.monto_total_igv,
         monto_adelanto: simulacion.monto_adelanto,
         monto_dia_mora_estimado: simulacion.monto_dia_mora_estimado,
         monto_dia_interes_estimado: simulacion.monto_dia_interes_estimado,
+        porcentaje_comision_descuento: simulacion.porcentaje_comision_descuento,
         porcentaje_garantia_estimado: simulacion.porcentaje_garantia_estimado,
         porcentaje_efectivo_estimado: simulacion.porcentaje_efectivo_estimado,
         porcentaje_descuento_estimado: simulacion.porcentaje_descuento_estimado,
@@ -328,13 +333,16 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
 
         const factoringpropuestafinancieroToCreated: Prisma.factoring_propuesta_financieroCreateInput = {
           factoring_propuesta: { connect: { idfactoringpropuesta: factoringpropuestaCreated.idfactoringpropuesta } },
-          financiero_tipo: { connect: { idfinancierotipo: comision.financierotipo.idfinancierotipo } },
-          financiero_concepto: { connect: { idfinancieroconcepto: comision.financieroconcepto.idfinancieroconcepto } },
+          financiero_tipo: { connect: { idfinancierotipo: comision.financiero_tipo.idfinancierotipo } },
+          financiero_concepto: { connect: { idfinancieroconcepto: comision.financiero_concepto.idfinancieroconcepto } },
           factoringpropuestafinancieroid: uuidv4(),
           code: uuidv4().split("-")[0],
+          cantidad: comision.cantidad,
+          monto_unitario: comision.monto_unitario,
           monto: comision.monto,
           igv: comision.igv,
           total: comision.total,
+          porcentaje_monto: comision.porcentaje_monto,
           idusuariocrea: req.session_user.usuario.idusuario ?? 1,
           fechacrea: new Date(),
           idusuariomod: req.session_user.usuario.idusuario ?? 1,
@@ -350,13 +358,16 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
 
         const factoringpropuestafinancieroToCreated: Prisma.factoring_propuesta_financieroCreateInput = {
           factoring_propuesta: { connect: { idfactoringpropuesta: factoringpropuestaCreated.idfactoringpropuesta } },
-          financiero_tipo: { connect: { idfinancierotipo: costo.financierotipo.idfinancierotipo } },
-          financiero_concepto: { connect: { idfinancieroconcepto: costo.financieroconcepto.idfinancieroconcepto } },
+          financiero_tipo: { connect: { idfinancierotipo: costo.financiero_tipo.idfinancierotipo } },
+          financiero_concepto: { connect: { idfinancieroconcepto: costo.financiero_concepto.idfinancieroconcepto } },
           factoringpropuestafinancieroid: uuidv4(),
           code: uuidv4().split("-")[0],
+          cantidad: costo.cantidad,
+          monto_unitario: costo.monto_unitario,
           monto: costo.monto,
           igv: costo.igv,
           total: costo.total,
+          porcentaje_monto: costo.porcentaje_monto,
           idusuariocrea: req.session_user.usuario.idusuario ?? 1,
           fechacrea: new Date(),
           idusuariomod: req.session_user.usuario.idusuario ?? 1,
@@ -370,13 +381,40 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
         const gasto = simulacion.gastos[i];
         const factoringpropuestafinancieroToCreated: Prisma.factoring_propuesta_financieroCreateInput = {
           factoring_propuesta: { connect: { idfactoringpropuesta: factoringpropuestaCreated.idfactoringpropuesta } },
-          financiero_tipo: { connect: { idfinancierotipo: gasto.financierotipo.idfinancierotipo } },
-          financiero_concepto: { connect: { idfinancieroconcepto: gasto.financieroconcepto.idfinancieroconcepto } },
+          financiero_tipo: { connect: { idfinancierotipo: gasto.financiero_tipo.idfinancierotipo } },
+          financiero_concepto: { connect: { idfinancieroconcepto: gasto.financiero_concepto.idfinancieroconcepto } },
           factoringpropuestafinancieroid: uuidv4(),
           code: uuidv4().split("-")[0],
+          cantidad: gasto.cantidad,
+          monto_unitario: gasto.monto_unitario,
           monto: gasto.monto,
           igv: gasto.igv,
           total: gasto.total,
+          porcentaje_monto: gasto.porcentaje_monto,
+          idusuariocrea: req.session_user.usuario.idusuario ?? 1,
+          fechacrea: new Date(),
+          idusuariomod: req.session_user.usuario.idusuario ?? 1,
+          fechamod: new Date(),
+          estado: 1,
+        };
+        const factoringpropuestafinancieroCreated = await factoringpropuestafinancieroDao.insertFactoringpropuestafinanciero(tx, factoringpropuestafinancieroToCreated);
+        log.debug(line(), "factoringpropuestafinancieroCreated:", factoringpropuestafinancieroCreated);
+      }
+
+      for (let i = 0; i < simulacion?.gastos_excento_igv?.length; i++) {
+        const gasto_excento_igv = simulacion.gastos_excento_igv[i];
+        const factoringpropuestafinancieroToCreated: Prisma.factoring_propuesta_financieroCreateInput = {
+          factoring_propuesta: { connect: { idfactoringpropuesta: factoringpropuestaCreated.idfactoringpropuesta } },
+          financiero_tipo: { connect: { idfinancierotipo: gasto_excento_igv.financiero_tipo.idfinancierotipo } },
+          financiero_concepto: { connect: { idfinancieroconcepto: gasto_excento_igv.financiero_concepto.idfinancieroconcepto } },
+          factoringpropuestafinancieroid: uuidv4(),
+          code: uuidv4().split("-")[0],
+          cantidad: gasto_excento_igv.cantidad,
+          monto_unitario: gasto_excento_igv.monto_unitario,
+          monto: gasto_excento_igv.monto,
+          igv: gasto_excento_igv.igv,
+          total: gasto_excento_igv.total,
+          porcentaje_monto: gasto_excento_igv.porcentaje_monto,
           idusuariocrea: req.session_user.usuario.idusuario ?? 1,
           fechacrea: new Date(),
           idusuariomod: req.session_user.usuario.idusuario ?? 1,
@@ -389,7 +427,7 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
 
       return simulacion;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
 
   response(res, 201, { factoring: { ...factoringValidated }, ...simulacion });
@@ -409,6 +447,7 @@ export const simulateFactoringpropuesta = async (req: Request, res: Response) =>
       factoringestrategiaid: yup.string().trim().required().min(36).max(36),
       tdm: yup.number().required().min(0).max(100),
       porcentaje_financiado_estimado: yup.number().required().min(0).max(100),
+      porcentaje_comision_descuento: yup.number().required().min(0).max(1),
     })
     .required();
   var factoringValidated = factoringSimulateSchema.validateSync({ factoringid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
@@ -448,7 +487,7 @@ export const simulateFactoringpropuesta = async (req: Request, res: Response) =>
       var dias_pago_estimado = fecha_fin.startOf("day").diff(fecha_ahora.startOf("day"), "days").days; // Actualizamos la cantidad de dias para el pago
       let dias_antiguedad_estimado = fecha_ahora.startOf("day").diff(luxon.DateTime.fromISO(factoring.fecha_emision.toISOString()).startOf("day"), "days").days;
       var simulacion = {};
-      simulacion = await simulateFactoringLogicV2(
+      simulacion = await simulateFactoringLogicV3(
         riesgooperacion.idriesgo,
         factoring.cuenta_bancaria.idbanco,
         factoring.cantidad_facturas,
@@ -456,14 +495,16 @@ export const simulateFactoringpropuesta = async (req: Request, res: Response) =>
         dias_pago_estimado,
         new Decimal(factoringValidated.porcentaje_financiado_estimado),
         new Decimal(factoringValidated.tdm),
-        dias_antiguedad_estimado
+        dias_antiguedad_estimado,
+        new Decimal(factoringValidated.porcentaje_comision_descuento),
+        factoring.moneda.idmoneda,
       );
 
       log.info(line(), "simulacion: ", simulacion);
 
       return simulacion;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
 
   response(res, 201, { factoring: { ...factoringValidated }, ...simulacion });
@@ -500,7 +541,7 @@ export const getFactoringpropuestasByFactoringid = async (req: Request, res: Res
       //factoringpropuestasFiltered = jsonUtils.removeAttributesPrivates(factoringpropuestasFiltered);
       return factoringpropuestasJson;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, factoringpropuestasJson);
 };
@@ -526,7 +567,7 @@ export const activateFactoringpropuesta = async (req: Request, res: Response) =>
       log.debug(line(), "factoringpropuestaActivated:", factoringpropuestaActivated);
       return factoringpropuestaActivated;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 204, factoringpropuestaActivated);
 };
@@ -552,7 +593,7 @@ export const deleteFactoringpropuesta = async (req: Request, res: Response) => {
       log.debug(line(), "factoringpropuestaDeleted:", factoringpropuestaDeleted);
       return factoringpropuestaDeleted;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 204, factoringpropuestaDeleted);
 };
@@ -581,7 +622,7 @@ export const getFactoringpropuestaMaster = async (req: Request, res: Response) =
       //jsonUtils.prettyPrint(factoringpropuestasMaster);
       return factoringpropuestasMasterFiltered;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, factoringpropuestasMasterFiltered);
 };
@@ -601,7 +642,7 @@ export const getFactoringpropuestas = async (req: Request, res: Response) => {
       //factoringpropuestasFiltered = jsonUtils.removeAttributesPrivates(factoringpropuestasFiltered);
       return factoringpropuestasJson;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, factoringpropuestasJson);
 };

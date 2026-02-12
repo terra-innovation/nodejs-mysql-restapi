@@ -10,12 +10,16 @@ export const getComisionFinanzaTech = async (tx: TxClient) => {
   return await getFinancieroconceptoByIdfinancieroconcepto(tx, 1);
 };
 
-export const getCostoCAVALI = async (tx: TxClient) => {
+export const getCostoCAVALIPen = async (tx: TxClient) => {
   return await getFinancieroconceptoByIdfinancieroconcepto(tx, 2);
 };
 
 export const getCostoTransaccion = async (tx: TxClient) => {
   return await getFinancieroconceptoByIdfinancieroconcepto(tx, 3);
+};
+
+export const getGastoInterbancario = async (tx: TxClient) => {
+  return await getFinancieroconceptoByIdfinancieroconcepto(tx, 4);
 };
 
 export const getFinancieroconceptos = async (tx: TxClient, estados: number[]) => {

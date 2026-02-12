@@ -26,8 +26,6 @@ import * as luxon from "luxon";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
-import { simulateFactoringLogicV2 } from "#src/logics/factoring.prisma.Logic.js";
-
 import { unlink } from "fs/promises";
 import path from "path"; // Para eliminar el archivo después de enviarlo
 import PDFGenerator from "#src/utils/document/PDFgenerator.js";
@@ -74,7 +72,7 @@ export const sendCorreoFactoringtransferenciacedente = async (req: Request, res:
 
       return {};
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
 
   response(res, 200, {});
@@ -101,7 +99,7 @@ export const activateFactoringtransferenciacedente = async (req: Request, res: R
       log.debug(line(), "factoringtransferenciacedenteActivated:", factoringtransferenciacedenteActivated);
       return factoringtransferenciacedenteActivated;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 204, factoringtransferenciacedenteActivated);
 };
@@ -127,7 +125,7 @@ export const deleteFactoringtransferenciacedente = async (req: Request, res: Res
       log.debug(line(), "factoringtransferenciacedenteDeleted:", factoringtransferenciacedenteDeleted);
       return factoringtransferenciacedenteDeleted;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 204, factoringtransferenciacedenteDeleted);
 };
@@ -171,7 +169,7 @@ export const updateFactoringtransferenciacedente = async (req: Request, res: Res
 
       return factoringtransferenciacedenteUpdated;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
 
   response(res, 200, { ...factoringtransferenciacedenteValidated });
@@ -293,7 +291,7 @@ export const createFactoringtransferenciacedente = async (req: Request, res: Res
 
       return factoringtransferenciacedenteCreated;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
 
   response(res, 201, factoringtransferenciacedenteCreated);
@@ -330,7 +328,7 @@ export const getFactoringtransferenciacedentesByFactoringid = async (req: Reques
       //factoringtransferenciacedentesFiltered = jsonUtils.removeAttributesPrivates(factoringtransferenciacedentesFiltered);
       return factoringtransferenciacedentesJson;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, factoringtransferenciacedentesJson);
 };
@@ -380,7 +378,7 @@ export const getFactoringtransferenciacedenteMasterByFactoringid = async (req: R
       //jsonUtils.prettyPrint(factoringtransferenciacedentesMaster);
       return factoringtransferenciacedentesMasterFiltered;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, factoringtransferenciacedentesMasterFiltered);
 };
