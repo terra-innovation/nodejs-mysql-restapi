@@ -279,6 +279,7 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
         monto_efectivo: simulacion.monto_efectivo,
         monto_descuento: simulacion.monto_descuento,
         monto_financiado: simulacion.monto_financiado,
+        monto_comision_bruto: simulacion.monto_comision_bruto,
         monto_comision: simulacion.monto_comision,
         monto_comision_igv: simulacion.monto_comision_igv,
         monto_costo_estimado: simulacion.monto_costo_estimado,
