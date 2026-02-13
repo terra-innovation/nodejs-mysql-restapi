@@ -63,7 +63,7 @@ export const getEmpresacuentabancarias = async (req: Request, res: Response) => 
       empresacuentabancariasFiltered = jsonUtils.removeAttributesPrivates(empresacuentabancariasFiltered);
       return empresacuentabancariasFiltered;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, empresacuentabancariasFiltered);
 };
@@ -95,7 +95,7 @@ export const getEmpresacuentabancariaMaster = async (req: Request, res: Response
       //jsonUtils.prettyPrint(cuentasbancariasMaster);
       return cuentasbancariasMasterFiltered;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, cuentasbancariasMasterFiltered);
 };
@@ -224,7 +224,7 @@ export const createEmpresacuentabancaria = async (req: Request, res: Response) =
 
       return empresacuentabancariaFiltered;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, { ...empresacuentabancariaFiltered });
 };

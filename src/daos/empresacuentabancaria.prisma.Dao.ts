@@ -96,6 +96,9 @@ export const getEmpresacuentabancariasForFactoring = async (tx: TxClient, idempr
           in: estados,
         },
         cuenta_bancaria: {
+          moneda: {
+            idmoneda: idmoneda,
+          },
           idcuentabancariaestado: {
             in: idcuentabancariaestado,
           },
