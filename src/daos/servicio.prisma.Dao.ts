@@ -1,10 +1,10 @@
+import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { TxClient } from "#src/types/Prisma.types.js";
-import type { Prisma, servicio } from "#root/generated/prisma/ft_factoring/client.js";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
 
-import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
+import { line, log } from "#src/utils/logger.pino.js";
 
 export const getServicios = async (tx: TxClient, estados: number[]) => {
   try {
@@ -97,6 +97,21 @@ export const deleteServicio = async (tx: TxClient, servicioid: string, idusuario
   try {
     const result = await tx.servicio.update({
       data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
+      where: {
+        servicioid: servicioid,
+      },
+    });
+    return result;
+  } catch (error) {
+    log.error(line(), "", error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
+export const activateServicio = async (tx: TxClient, servicioid: string, idusuariomod: number) => {
+  try {
+    const result = await tx.servicio.update({
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ACTIVO },
       where: {
         servicioid: servicioid,
       },
