@@ -1,34 +1,24 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import * as servicioempresaDao from "#src/daos/servicioempresa.prisma.Dao.js";
-import * as servicioinversionistaDao from "#src/daos/servicioinversionista.prisma.Dao.js";
-import * as personaDao from "#src/daos/persona.prisma.Dao.js";
-import * as usuariorolDao from "#src/daos/usuariorol.prisma.Dao.js";
 import * as inversionistaDao from "#src/daos/inversionista.prisma.Dao.js";
-import * as servicioempresaestadoDao from "#src/daos/servicioempresaestado.prisma.Dao.js";
+import * as personaDao from "#src/daos/persona.prisma.Dao.js";
+import * as servicioinversionistaDao from "#src/daos/servicioinversionista.prisma.Dao.js";
 import * as servicioinversionistaestadoDao from "#src/daos/servicioinversionistaestado.prisma.Dao.js";
 import * as servicioinversionistaverificacionDao from "#src/daos/servicioinversionistaverificacion.prisma.Dao.js";
+import * as usuariorolDao from "#src/daos/usuariorol.prisma.Dao.js";
 import * as usuarioservicioDao from "#src/daos/usuarioservicio.prisma.Dao.js";
 import * as usuarioservicioestadoDao from "#src/daos/usuarioservicioestado.prisma.Dao.js";
 import * as usuarioservicioverificacionDao from "#src/daos/usuarioservicioverificacion.prisma.Dao.js";
-import * as usuarioservicioempresaDao from "#src/daos/usuarioservicioempresa.prisma.Dao.js";
-import * as usuarioservicioempresaestadoDao from "#src/daos/usuarioservicioempresaestado.prisma.Dao.js";
-import * as usuarioservicioempresarolDao from "#src/daos/usuarioservicioempresarol.prisma.Dao.js";
-import type { servicio_empresa_verificacion } from "#root/generated/prisma/ft_factoring/client.js";
-import type { servicio_empresa } from "#root/generated/prisma/ft_factoring/client.js";
-import type { usuario_servicio_empresa } from "#root/generated/prisma/ft_factoring/client.js";
-import type { usuario_servicio_verificacion } from "#root/generated/prisma/ft_factoring/client.js";
-import type { usuario_servicio } from "#root/generated/prisma/ft_factoring/client.js";
+import { Request, Response } from "express";
 
-import { response } from "#src/utils/CustomResponseOk.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
+import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { log, line } from "#src/utils/logger.pino.js";
+import { line, log } from "#src/utils/logger.pino.js";
 
+import * as df from "#src/utils/dateUtils.js";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-import * as df from "#src/utils/dateUtils.js";
 
 import EmailSender from "#src/utils/email/emailSender.js";
 import TemplateManager from "#src/utils/email/TemplateManager.js";
@@ -42,8 +32,8 @@ export const createFactoringinversionistaverificacion = async (req: Request, res
     .shape({
       servicioinversionistaid: yup.string().min(36).max(36).required(),
       servicioinversionistaestadoid: yup.string().min(36).max(36).required(),
-      comentariousuario: yup.string().trim().max(1000),
-      comentariointerno: yup.string().trim().max(1000).required(),
+      comentariousuario: yup.string().trim().max(20000),
+      comentariointerno: yup.string().trim().max(20000).required(),
     })
     .required();
   var servicioinversionistaverificacionValidated = servicioinversionistaverificacionCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
@@ -127,7 +117,7 @@ export const createFactoringinversionistaverificacion = async (req: Request, res
 
       return {};
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, {});
 };
@@ -297,7 +287,7 @@ export const getFactoringinversionistasByVerificacion = async (req: Request, res
       //factoringinversionistasFiltered = jsonUtils.removeAttributesPrivates(factoringinversionistasFiltered);
       return factoringinversionistasJson;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, factoringinversionistasJson);
 };
@@ -315,7 +305,7 @@ export const getFactoringinversionistaverificacionMaster = async (req: Request, 
 
       return servicioinversionistaverificacionMaster;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, servicioinversionistaverificacionMaster);
 };

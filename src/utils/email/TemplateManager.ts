@@ -1,10 +1,9 @@
-import * as config from "#src/config";
+import { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
+import { line, log } from "#src/utils/logger.pino.js";
 import fs from "fs/promises";
+import { htmlToText } from "html-to-text";
 import path from "path";
 import * as yup from "yup";
-import { htmlToText } from "html-to-text";
-import { log, line } from "#src/utils/logger.pino.js";
-import { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 
 class TemplaceManager {
   private templateDir: string;
@@ -181,7 +180,7 @@ class TemplaceManager {
                       serie: yup.string().required(),
                       numero_comprobante: yup.string().required(),
                     }),
-                  })
+                  }),
                 )
                 .min(1)
                 .required(),
@@ -285,7 +284,7 @@ class TemplaceManager {
                       serie: yup.string().required(),
                       numero_comprobante: yup.string().required(),
                     }),
-                  })
+                  }),
                 )
                 .min(1)
                 .required(),
@@ -486,7 +485,7 @@ class TemplaceManager {
                       serie: yup.string().required(),
                       numero_comprobante: yup.string().required(),
                     }),
-                  })
+                  }),
                 )
                 .min(1)
                 .required(),
@@ -558,7 +557,7 @@ class TemplaceManager {
                       serie: yup.string().required(),
                       numero_comprobante: yup.string().required(),
                     }),
-                  })
+                  }),
                 )
                 .min(1)
                 .required(),
@@ -660,7 +659,7 @@ class TemplaceManager {
                       serie: yup.string().required(),
                       numero_comprobante: yup.string().required(),
                     }),
-                  })
+                  }),
                 )
                 .min(1)
                 .required(),
@@ -747,7 +746,7 @@ class TemplaceManager {
                       serie: yup.string().required(),
                       numero_comprobante: yup.string().required(),
                     }),
-                  })
+                  }),
                 )
                 .min(1)
                 .required(),
@@ -796,7 +795,7 @@ class TemplaceManager {
           codigo_servicio_inversionista: yup.string().trim().required().min(1).max(20),
           nombres: yup.string().trim().required().min(1).max(100),
           fecha_actual: yup.string().trim().required().min(1).max(200),
-          razon_no_aceptada: yup.string().trim().required().min(1).max(1000),
+          razon_no_aceptada: yup.string().trim().required().min(1).max(20000),
         })
         .required();
       var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
@@ -880,7 +879,7 @@ class TemplaceManager {
           fecha_actual: yup.string().trim().required().min(1).max(200),
           empresa_razon_social: yup.string().trim().required().min(1).max(500),
           empresa_ruc: yup.string().trim().required().min(1).max(20),
-          razon_no_aceptada: yup.string().trim().required().min(1).max(1000),
+          razon_no_aceptada: yup.string().trim().required().min(1).max(20000),
         })
         .required();
       var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
@@ -992,7 +991,7 @@ class TemplaceManager {
         .shape({
           codigo_usuario: yup.string().trim().required().min(1).max(20),
           nombres: yup.string().trim().required().min(1).max(100),
-          razon_no_aceptada: yup.string().trim().required().min(1).max(1000),
+          razon_no_aceptada: yup.string().trim().required().min(1).max(20000),
           fecha_actual: yup.string().trim().required().min(1).max(200),
         })
         .required();

@@ -1,15 +1,15 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
+import * as personaDao from "#src/daos/persona.prisma.Dao.js";
 import * as personaverificacionDao from "#src/daos/personaverificacion.prisma.Dao.js";
 import * as personaverificacionestadoDao from "#src/daos/personaverificacionestado.prisma.Dao.js";
-import * as personaDao from "#src/daos/persona.prisma.Dao.js";
 import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
 import * as usuarioservicioDao from "#src/daos/usuarioservicio.prisma.Dao.js";
-import { response } from "#src/utils/CustomResponseOk.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
+import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { log, line } from "#src/utils/logger.pino.js";
+import { line, log } from "#src/utils/logger.pino.js";
+import { Request, Response } from "express";
 
 import EmailSender from "#src/utils/email/emailSender.js";
 import TemplateManager from "#src/utils/email/TemplateManager.js";
@@ -20,8 +20,6 @@ import * as yup from "yup";
 import * as df from "#src/utils/dateUtils.js";
 
 import type { persona_verificacion } from "#root/generated/prisma/ft_factoring/client.js";
-import type { persona } from "#root/generated/prisma/ft_factoring/client.js";
-import type { usuario } from "#root/generated/prisma/ft_factoring/client.js";
 
 export const activatePersonaverificacion = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activatePersonaverificacion");
@@ -49,7 +47,7 @@ export const activatePersonaverificacion = async (req: Request, res: Response) =
       log.debug(line(), "personaverificacionActivated:", personaverificacionActivated);
       return personaverificacionActivated;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 204, personaverificacionActivated);
 };
@@ -75,7 +73,7 @@ export const deletePersonaverificacion = async (req: Request, res: Response) => 
       log.debug(line(), "personaverificacionDeleted:", personaverificacionDeleted);
       return personaverificacionDeleted;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 204, personaverificacionDeleted);
 };
@@ -99,7 +97,7 @@ export const getPersonaverificacionMaster = async (req: Request, res: Response) 
       //jsonUtils.prettyPrint(personaverificacionMaster);
       return personaverificacionMasterFiltered;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, personaverificacionMasterFiltered);
 };
@@ -113,8 +111,8 @@ export const updatePersonaverificacion = async (req: Request, res: Response) => 
     .shape({
       personaverificacionid: yup.string().trim().required().min(36).max(36),
       personaverificacionestadoid: yup.string().min(36).max(36).required(),
-      comentariousuario: yup.string().trim().max(1000),
-      comentariointerno: yup.string().trim().max(1000).required(),
+      comentariousuario: yup.string().trim().max(20000),
+      comentariointerno: yup.string().trim().max(20000).required(),
     })
     .required();
   const personaverificacionValidated = personaverificacionUpdateSchema.validateSync({ personaverificacionid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
@@ -152,7 +150,7 @@ export const updatePersonaverificacion = async (req: Request, res: Response) => 
       }
       return {};
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 200, {});
 };
@@ -173,7 +171,7 @@ export const getPersonaverificacions = async (req: Request, res: Response) => {
       //personaverificacionverificacionsFiltered = jsonUtils.removeAttributesPrivates(personaverificacionverificacionsFiltered);
       return personaverificacionverificacionsJson;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, personaverificacionverificacionsJson);
 };
@@ -187,8 +185,8 @@ export const createPersonaverificacion = async (req: Request, res: Response) => 
     .shape({
       personaid: yup.string().min(36).max(36).required(),
       personaverificacionestadoid: yup.string().min(36).max(36).required(),
-      comentariousuario: yup.string().trim().max(1000),
-      comentariointerno: yup.string().trim().max(1000).required(),
+      comentariousuario: yup.string().trim().max(20000),
+      comentariointerno: yup.string().trim().max(20000).required(),
     })
     .required();
   var personaverificacionValidated = personaverificacionCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
@@ -267,7 +265,7 @@ export const createPersonaverificacion = async (req: Request, res: Response) => 
 
       return {};
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, {});
 };
