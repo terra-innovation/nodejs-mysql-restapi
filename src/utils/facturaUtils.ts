@@ -1,10 +1,10 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
+import * as jsonUtils from "#src/utils/jsonUtils.js";
+import { line, log } from "#src/utils/logger.pino.js";
+import * as fs from "fs";
 import * as luxon from "luxon";
 import { v4 as uuidv4 } from "uuid";
 import { parseStringPromise } from "xml2js";
-import * as fs from "fs";
-import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { log, line } from "#src/utils/logger.pino.js";
 import type { FacturaXML } from "../types/FacturaXML.types";
 
 export const getFacturaToCreate = (facturaJson: Partial<FacturaXML>, idusuario: number) => {
@@ -27,6 +27,11 @@ export const getFacturaToCreate = (facturaJson: Partial<FacturaXML>, idusuario: 
     fecha_registro: facturaJson.fecha_registro ? new Date(facturaJson.fecha_registro) : null,
     detraccion_cantidad: facturaJson.detraccion_cantidad,
     detraccion_monto: facturaJson.detraccion_monto,
+
+    retencion_monto: facturaJson.retencion_monto,
+    retencion_porcentaje: facturaJson.retencion_porcentaje,
+    retencion_base_imponible: facturaJson.retencion_base_imponible,
+
     pago_cantidad_cuotas: facturaJson.pago_cantidad_cuotas,
     fecha_pago_mayor_estimado: facturaJson.fecha_pago_mayor_estimado ? new Date(facturaJson.fecha_pago_mayor_estimado) : null,
     dias_desde_emision: facturaJson.dias_desde_emision,
@@ -205,19 +210,36 @@ export const getFactura = (json) => {
   if (!codigo_tipo_documento || codigo_tipo_documento != "01") {
     throw new Error("El archivo no es una factura");
   }
+
+  // 1. Extraer Retención (Código 62)
+  // Buscamos en el array de AllowanceCharge aquel que tenga el código de motivo 62
+  const allowanceCharges = json.Invoice.AllowanceCharge || [];
+  const retencionNodo = allowanceCharges.find((item) => {
+    const code = item.AllowanceChargeReasonCode?.[0]._ ?? item.AllowanceChargeReasonCode?.[0];
+    return code === "62";
+  });
+
+  const retencion_monto = retencionNodo ? parseFloat(retencionNodo.Amount?.[0]._ ?? retencionNodo.Amount?.[0] ?? 0) : 0;
+  const retencion_porcentaje = retencionNodo ? parseFloat(retencionNodo.MultiplierFactorNumeric?.[0]._ ?? retencionNodo.MultiplierFactorNumeric?.[0] ?? 0) : 0;
+  const retencion_base_imponible = retencionNodo ? parseFloat(retencionNodo.BaseAmount?.[0]._ ?? retencionNodo.BaseAmount?.[0] ?? 0) : 0;
+
   var facturaJson: Partial<FacturaXML> = {
     facturaid: uuidv4(),
     code: uuidv4().split("-")[0],
     serie: (json.Invoice.ID[0]._ ? json.Invoice.ID[0]._ : json.Invoice.ID[0]).split("-")[0],
     numero_comprobante: (json.Invoice.ID[0]._ ? json.Invoice.ID[0]._ : json.Invoice.ID[0]).split("-")[1],
     fecha_emision: json.Invoice.IssueDate[0]._ ?? json.Invoice.IssueDate[0] ?? null,
-    hora_emision: json.Invoice.IssueTime?.[0]._ ?? json.Invoice.IssueTime?.[0] ?? null,
+    hora_emision: json.Invoice.IssueTime?.[0]._ ?? json.Invoice.IssueTime?.[0] ?? "00:00:00",
     fecha_vencimiento: json.Invoice.DueDate?.[0]._ ?? json.Invoice.DueDate?.[0] ?? null,
     codigo_tipo_documento: codigo_tipo_documento,
     UBLVersionID: json.Invoice.UBLVersionID?.[0]._ ?? json.Invoice.UBLVersionID?.[0] ?? null,
     CustomizationID: json.Invoice.CustomizationID?.[0]._ ?? json.Invoice.CustomizationID?.[0] ?? null,
     codigo_tipo_moneda: json.Invoice.DocumentCurrencyCode?.[0]._ ?? json.Invoice.DocumentCurrencyCode?.[0] ?? null,
     cantidad_items: json.Invoice.LineCountNumeric?.[0] ?? null,
+
+    retencion_monto,
+    retencion_porcentaje,
+    retencion_base_imponible,
 
     proveedor: {
       ruc: json.Invoice.AccountingSupplierParty[0].Party[0].PartyIdentification?.[0].ID[0]._ ?? null,
@@ -286,7 +308,7 @@ export const getFactura = (json) => {
         //item: item,
         facturaitemid: uuidv4(),
         id: item.ID[0] ?? null,
-        codigo_producto_sunat: item.Item[0].CommodityClassification?.[0].ItemClassificationCode[0]._ ? item.Item[0].CommodityClassification?.[0].ItemClassificationCode[0]._ : item.Item[0].CommodityClassification?.[0].ItemClassificationCode[0] ?? null,
+        codigo_producto_sunat: item.Item[0].CommodityClassification?.[0].ItemClassificationCode[0]._ ? item.Item[0].CommodityClassification?.[0].ItemClassificationCode[0]._ : (item.Item[0].CommodityClassification?.[0].ItemClassificationCode[0] ?? null),
         codigo_producto_vendedor: item.Item[0].SellersItemIdentification?.[0].ID[0] ?? null,
         unidad_medida: item.InvoicedQuantity[0].$.unitCode ?? null,
         cantidad: item.InvoicedQuantity[0]._ ?? null,
@@ -345,7 +367,7 @@ export const getFactura = (json) => {
   facturaJson.dias_desde_emision = restarFechas(facturaJson.fecha_registro_para_calculos, facturaJson.fecha_emision);
   facturaJson.dias_estimados_para_pago = restarFechas(facturaJson.fecha_pago_mayor_estimado, facturaJson.fecha_registro_para_calculos);
   facturaJson.importe_bruto = parseFloat(parseFloat(facturaJson.impuesto.valor_venta.monto_pago).toFixed(2));
-  facturaJson.importe_neto = parseFloat((facturaJson.importe_bruto - facturaJson.detraccion_monto).toFixed(2));
+  facturaJson.importe_neto = parseFloat((facturaJson.importe_bruto - facturaJson.detraccion_monto - facturaJson.retencion_monto).toFixed(2));
   //log.info(line(),facturaJson);
   //log.info(line(),"Done");
 

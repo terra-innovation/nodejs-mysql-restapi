@@ -22,6 +22,9 @@ export interface FacturaXML {
   fecha_registro: string;
   detraccion_cantidad: number;
   detraccion_monto: number;
+  retencion_monto: number;
+  retencion_porcentaje: number;
+  retencion_base_imponible: number;
   pago_cantidad_cuotas: number;
   fecha_pago_mayor_estimado: string | null;
   dias_desde_emision: number;

@@ -157,6 +157,7 @@ class TemplaceManager {
               fecha_registro: yup.string().required(),
               monto_factura: yup.string().required(),
               monto_detraccion: yup.string().required(),
+              monto_retencion: yup.string().required(),
               monto_neto: yup.string().required(),
               fecha_pago_estimado: yup.string().required(),
               empresa_cedente: yup.object({
@@ -261,6 +262,7 @@ class TemplaceManager {
               fecha_registro: yup.string().required(),
               monto_factura: yup.string().required(),
               monto_detraccion: yup.string().required(),
+              monto_retencion: yup.string().required(),
               monto_neto: yup.string().required(),
               fecha_pago_estimado: yup.string().required(),
               empresa_cedente: yup.object({
@@ -363,6 +365,7 @@ class TemplaceManager {
               fecha_registro: yup.string().required(),
               monto_factura: yup.string().required(),
               monto_detraccion: yup.string().required(),
+              monto_retencion: yup.string().required(),
               monto_neto: yup.string().required(),
               fecha_pago_estimado: yup.string().required(),
               empresa_cedente: yup.object({
@@ -462,6 +465,7 @@ class TemplaceManager {
               fecha_registro: yup.string().required(),
               monto_factura: yup.string().required(),
               monto_detraccion: yup.string().required(),
+              monto_retencion: yup.string().required(),
               monto_neto: yup.string().required(),
               fecha_pago_estimado: yup.string().required(),
               empresa_cedente: yup.object({
@@ -534,6 +538,7 @@ class TemplaceManager {
               fecha_registro: yup.string().required(),
               monto_factura: yup.string().required(),
               monto_detraccion: yup.string().required(),
+              monto_retencion: yup.string().required(),
               monto_neto: yup.string().required(),
               fecha_pago_estimado: yup.string().required(),
               empresa_cedente: yup.object({
@@ -636,6 +641,7 @@ class TemplaceManager {
               fecha_registro: yup.string().required(),
               monto_factura: yup.string().required(),
               monto_detraccion: yup.string().required(),
+              monto_retencion: yup.string().required(),
               monto_neto: yup.string().required(),
               fecha_pago_estimado: yup.string().required(),
               empresa_cedente: yup.object({
@@ -723,6 +729,7 @@ class TemplaceManager {
               fecha_registro: yup.string().required(),
               monto_factura: yup.string().required(),
               monto_detraccion: yup.string().required(),
+              monto_retencion: yup.string().required(),
               monto_neto: yup.string().required(),
               fecha_pago_estimado: yup.string().required(),
               empresa_cedente: yup.object({
@@ -763,6 +770,7 @@ class TemplaceManager {
               fecha_registro: yup.string().required(),
               monto_factura: yup.string().required(),
               monto_detraccion: yup.string().required(),
+              monto_retencion: yup.string().required(),
               monto_neto: yup.string().required(),
               fecha_pago_estimado: yup.string().required(),
             })

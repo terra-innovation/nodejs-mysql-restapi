@@ -1,30 +1,30 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
+import { isProduction } from "#src/config.js";
+import { Request, Response } from "express";
 import * as fs from "fs";
 import path from "path";
-import { isProduction, isDevelopment } from "#src/config.js";
 
-import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
-import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
-import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
 import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
+import * as archivofacturaDao from "#src/daos/archivofactura.prisma.Dao.js";
+import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
+import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
 import * as facturaDao from "#src/daos/factura.prisma.Dao.js";
 import * as facturaimpuestoDao from "#src/daos/facturaimpuesto.prisma.Dao.js";
 import * as facturaitemDao from "#src/daos/facturaitem.prisma.Dao.js";
 import * as facturamediopagoDao from "#src/daos/facturamediopago.prisma.Dao.js";
 import * as facturanotaDao from "#src/daos/facturanota.prisma.Dao.js";
 import * as facturaterminopagoDao from "#src/daos/facturaterminopago.prisma.Dao.js";
-import * as archivofacturaDao from "#src/daos/archivofactura.prisma.Dao.js";
-import { response } from "#src/utils/CustomResponseOk.js";
-import { log, line } from "#src/utils/logger.pino.js";
+import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
 import * as telegramService from "#src/services/telegram.Service.js";
+import { response } from "#src/utils/CustomResponseOk.js";
+import { line, log } from "#src/utils/logger.pino.js";
 
-import * as storageUtils from "#src/utils/storageUtils.js";
+import { ClientError } from "#src/utils/CustomErrors.js";
 import * as facturaUtils from "#src/utils/facturaUtils.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
+import * as storageUtils from "#src/utils/storageUtils.js";
 import * as validacionesYup from "#src/utils/validacionesYup.js";
-import { ClientError } from "#src/utils/CustomErrors.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
@@ -93,7 +93,7 @@ export const subirFactura = async (req: Request, res: Response) => {
 
       return {};
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
 
   const facturaFiltered = await prismaFT.client.$transaction(
@@ -134,7 +134,7 @@ export const subirFactura = async (req: Request, res: Response) => {
         //throw new ClientError("Seleccione una factura que no haya transcurrido más de 8 días desde su fecha de emisión", 404);
       }
 
-      const REGLA_MINIMO_DE_DIAS_PARA_PAGO = 8;
+      const REGLA_MINIMO_DE_DIAS_PARA_PAGO = 5;
       if (facturaToCreate.dias_estimados_para_pago <= REGLA_MINIMO_DE_DIAS_PARA_PAGO) {
         log.warn(line(), "Seleccione una factura cuya fecha de vencimiento sea superior a " + REGLA_MINIMO_DE_DIAS_PARA_PAGO + " días.");
         throw new ClientError("Seleccione una factura cuya fecha de vencimiento sea superior a " + REGLA_MINIMO_DE_DIAS_PARA_PAGO + " días.", 404);
@@ -205,7 +205,7 @@ export const subirFactura = async (req: Request, res: Response) => {
 
       return facturaFiltered;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 200, facturaFiltered);
 };

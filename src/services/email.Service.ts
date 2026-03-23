@@ -1,7 +1,6 @@
 import TemplateManager from "#src/utils/email/TemplateManager.js";
 import EmailSender from "#src/utils/email/emailSender.js";
-import { log, line } from "#src/utils/logger.pino.js";
-import { ClientError } from "#src/utils/CustomErrors.js";
+import { line, log } from "#src/utils/logger.pino.js";
 
 import * as df from "#src/utils/dateUtils.js";
 import * as nf from "#src/utils/numberUtils.js";
@@ -49,6 +48,7 @@ export const sendFactoringEmpresaServicioFactoringCedenteNotificacionInicioOpera
       fecha_operacion: df.formatDateLocale(params.factoring?.fecha_operacion),
       monto_factura: nf.formatNumber(params.factoring?.monto_factura),
       monto_detraccion: nf.formatNumber(params.factoring?.monto_detraccion),
+      monto_retencion: nf.formatNumber(params.factoring?.monto_retencion),
       monto_neto: nf.formatNumber(params.factoring?.monto_neto),
       fecha_pago_estimado: df.formatDateUTC(params.factoring?.fecha_pago_estimado),
     };
@@ -212,6 +212,7 @@ export const sendFactoringEmpresaServicioFactoringPropuestaAceptada = async (to,
       fecha_registro: df.formatDateTimeLocale(params.factoring?.fecha_registro),
       monto_factura: nf.formatNumber(params.factoring?.monto_factura),
       monto_detraccion: nf.formatNumber(params.factoring?.monto_detraccion),
+      monto_retencion: nf.formatNumber(params.factoring?.monto_retencion),
       monto_neto: nf.formatNumber(params.factoring?.monto_neto),
       fecha_pago_estimado: df.formatDateUTC(params.factoring?.fecha_pago_estimado),
     };
@@ -264,6 +265,7 @@ export const sendFactoringEmpresaServicioFactoringPropuestaDisponible = async (t
       fecha_registro: df.formatDateTimeLocale(params.factoring?.fecha_registro),
       monto_factura: nf.formatNumber(params.factoring?.monto_factura),
       monto_detraccion: nf.formatNumber(params.factoring?.monto_detraccion),
+      monto_retencion: nf.formatNumber(params.factoring?.monto_retencion),
       monto_neto: nf.formatNumber(params.factoring?.monto_neto),
       fecha_pago_estimado: df.formatDateUTC(params.factoring?.fecha_pago_estimado),
     };
@@ -305,6 +307,7 @@ export const sendFactoringEmpresaServicioFactoringSolicitud = async (to, params)
       fecha_registro: df.formatDateTimeLocale(params.factoring?.fecha_registro),
       monto_factura: nf.formatNumber(params.factoring?.monto_factura),
       monto_detraccion: nf.formatNumber(params.factoring?.monto_detraccion),
+      monto_retencion: nf.formatNumber(params.factoring?.monto_retencion),
       monto_neto: nf.formatNumber(params.factoring?.monto_neto),
       fecha_pago_estimado: df.formatDateUTC(params.factoring?.fecha_pago_estimado),
     };
