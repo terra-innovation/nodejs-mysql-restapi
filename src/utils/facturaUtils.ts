@@ -211,18 +211,6 @@ export const getFactura = (json) => {
     throw new Error("El archivo no es una factura");
   }
 
-  // 1. Extraer Retención (Código 62)
-  // Buscamos en el array de AllowanceCharge aquel que tenga el código de motivo 62
-  const allowanceCharges = json.Invoice.AllowanceCharge || [];
-  const retencionNodo = allowanceCharges.find((item) => {
-    const code = item.AllowanceChargeReasonCode?.[0]._ ?? item.AllowanceChargeReasonCode?.[0];
-    return code === "62";
-  });
-
-  const retencion_monto = retencionNodo ? parseFloat(retencionNodo.Amount?.[0]._ ?? retencionNodo.Amount?.[0] ?? 0) : 0;
-  const retencion_porcentaje = retencionNodo ? parseFloat(retencionNodo.MultiplierFactorNumeric?.[0]._ ?? retencionNodo.MultiplierFactorNumeric?.[0] ?? 0) : 0;
-  const retencion_base_imponible = retencionNodo ? parseFloat(retencionNodo.BaseAmount?.[0]._ ?? retencionNodo.BaseAmount?.[0] ?? 0) : 0;
-
   var facturaJson: Partial<FacturaXML> = {
     facturaid: uuidv4(),
     code: uuidv4().split("-")[0],
@@ -237,9 +225,9 @@ export const getFactura = (json) => {
     codigo_tipo_moneda: json.Invoice.DocumentCurrencyCode?.[0]._ ?? json.Invoice.DocumentCurrencyCode?.[0] ?? null,
     cantidad_items: json.Invoice.LineCountNumeric?.[0] ?? null,
 
-    retencion_monto,
-    retencion_porcentaje,
-    retencion_base_imponible,
+    retencion_monto: 0,
+    retencion_porcentaje: 0,
+    retencion_base_imponible: 0,
 
     proveedor: {
       ruc: json.Invoice.AccountingSupplierParty[0].Party[0].PartyIdentification?.[0].ID[0]._ ?? null,
@@ -362,6 +350,12 @@ export const getFactura = (json) => {
   facturaJson.fecha_registro = luxon.DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss");
   facturaJson.detraccion_cantidad = contarDetracciones(facturaJson.terminos_pago || []);
   facturaJson.detraccion_monto = sumarMontosDetracciones(facturaJson.terminos_pago || []);
+
+  const datosRetencion = extraerDatosRetencion(json);
+  facturaJson.retencion_monto = datosRetencion.retencion_monto;
+  facturaJson.retencion_porcentaje = datosRetencion.retencion_porcentaje;
+  facturaJson.retencion_base_imponible = datosRetencion.retencion_base_imponible;
+
   facturaJson.pago_cantidad_cuotas = contarCuotasDepago(facturaJson.terminos_pago || []);
   facturaJson.fecha_pago_mayor_estimado = encontrarMayorFechaPago(facturaJson.terminos_pago || []);
   facturaJson.dias_desde_emision = restarFechas(facturaJson.fecha_registro_para_calculos, facturaJson.fecha_emision);
@@ -471,4 +465,19 @@ export const contarDetracciones = (json) => {
 
   // Devolver la cantidad de detracciones
   return cantidadDetracciones;
+};
+
+export const extraerDatosRetencion = (json: any) => {
+  const allowanceCharges = json.Invoice?.AllowanceCharge || [];
+
+  const retencionNodo = allowanceCharges.find((item: any) => {
+    const code = item.AllowanceChargeReasonCode?.[0]._ ?? item.AllowanceChargeReasonCode?.[0];
+    return code === "62";
+  });
+
+  return {
+    retencion_monto: retencionNodo ? parseFloat(retencionNodo.Amount?.[0]._ ?? retencionNodo.Amount?.[0] ?? 0) : 0,
+    retencion_porcentaje: retencionNodo ? parseFloat(retencionNodo.MultiplierFactorNumeric?.[0]._ ?? retencionNodo.MultiplierFactorNumeric?.[0] ?? 0) : 0,
+    retencion_base_imponible: retencionNodo ? parseFloat(retencionNodo.BaseAmount?.[0]._ ?? retencionNodo.BaseAmount?.[0] ?? 0) : 0,
+  };
 };
