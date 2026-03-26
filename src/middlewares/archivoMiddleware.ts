@@ -1,12 +1,12 @@
+import { ArchivoError } from "#src/utils/CustomErrors.js";
+import { line, log } from "#src/utils/logger.pino.js";
+import * as storageUtils from "#src/utils/storageUtils.js";
+import { fileTypeFromFile } from "file-type";
 import * as fs from "fs";
 import * as luxon from "luxon";
 import multer from "multer";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
-import { log, line } from "#src/utils/logger.pino.js";
-import * as storageUtils from "#src/utils/storageUtils.js";
-import { fileTypeFromFile } from "file-type";
-import { ArchivoError } from "#src/utils/CustomErrors.js";
 
 // Extensiones o mimetypes peligrosos comúnmente bloqueados
 const EXTENSIONES_NO_PERMITIDAS = [".exe", ".bat", ".cmd", ".sh", ".bash", ".msi", ".apk", ".bin", ".dll", ".scr", ".com", ".pif", ".vbs", ".wsf", ".jar", ".py", ".rb", ".php", ".pl"];
@@ -61,7 +61,7 @@ let storage_usuarioservicio = multer.diskStorage({
 export const upload_archivo = multer({
   storage: storage_usuarioservicio,
   limits: {
-    fileSize: 5 * 1024 * 1024, // Para formularios multiparte, el tamaño máximo de los archivos (en bytes)
+    fileSize: 10 * 1024 * 1024, // Para formularios multiparte, el tamaño máximo de los archivos (en bytes)
     files: 1, // Para los formularios multiparte, el número máximo de campos para archivos
     fieldSize: 0.5 * 1024 * 1024, //Tamaño máximo de los valores para cada campo (en bytes)
     fields: 1, // Número máximo de campos que no son archivos

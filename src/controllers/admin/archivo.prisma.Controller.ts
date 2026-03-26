@@ -1,10 +1,8 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import type { archivo } from "#root/generated/prisma/ft_factoring/client.js";
 import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
-import * as archivotipoDao from "#src/daos/archivotipo.prisma.Dao.js";
 import * as archivoestadoDao from "#src/daos/archivoestado.prisma.Dao.js";
+import * as archivotipoDao from "#src/daos/archivotipo.prisma.Dao.js";
 import * as distritoDao from "#src/daos/distrito.prisma.Dao.js";
 import * as documentotipoDao from "#src/daos/documentotipo.prisma.Dao.js";
 import * as generoDao from "#src/daos/genero.prisma.Dao.js";
@@ -12,15 +10,15 @@ import * as paisDao from "#src/daos/pais.prisma.Dao.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { log, line } from "#src/utils/logger.pino.js";
+import { line, log } from "#src/utils/logger.pino.js";
 import * as storageUtils from "#src/utils/storageUtils.js";
+import { Request, Response } from "express";
 
 import * as validacionesYup from "#src/utils/validacionesYup.js";
 
 import * as fs from "fs";
 import { unlink } from "fs/promises";
 import path from "path";
-import { fileURLToPath } from "url";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
@@ -56,7 +54,7 @@ export const descargarArchivo = async (req: Request, res: Response) => {
 
       return rutaAbsoluta;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
 
   res.sendFile(rutaAbsoluta, (err) => {
@@ -79,7 +77,7 @@ export const cargarArchivo = async (req: Request, res: Response) => {
           archivo: yup
             .mixed()
             .concat(validacionesYup.fileRequeridValidation())
-            .concat(validacionesYup.fileSizeValidation(5 * 1024 * 1024)),
+            .concat(validacionesYup.fileSizeValidation(10 * 1024 * 1024)),
           archivotipo_code: yup.string().trim().min(8).max(8),
         })
         .required();
@@ -132,7 +130,7 @@ export const cargarArchivo = async (req: Request, res: Response) => {
 
       return archivoCreated;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 200, { archivoid: archivoCreated.archivoid });
 };
@@ -158,7 +156,7 @@ export const activateArchivo = async (req: Request, res: Response) => {
       log.debug(line(), "archivoActivated:", archivoActivated);
       return archivoActivated;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 204, {});
 };
@@ -188,7 +186,7 @@ export const deleteArchivo = async (req: Request, res: Response) => {
 
       return {};
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 204, {});
 };
@@ -218,7 +216,7 @@ export const getArchivoMaster = async (req: Request, res: Response) => {
       //jsonUtils.prettyPrint(archivoMaster);
       return archivoMasterFiltered;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, archivoMasterFiltered);
 };
@@ -275,7 +273,7 @@ export const updateArchivo = async (req: Request, res: Response) => {
       }
       return {};
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 200, {});
 };
@@ -293,7 +291,7 @@ export const getArchivos = async (req: Request, res: Response) => {
       //archivosFiltered = jsonUtils.removeAttributesPrivates(archivosFiltered);
       return archivosJson;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, archivosJson);
 };
