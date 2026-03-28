@@ -35,6 +35,7 @@ export const updateFactoringhistorialestado = async (req: Request, res: Response
     .shape({
       factoringhistorialestadoid: yup.string().trim().required().min(36).max(36),
       comentario: yup.string().trim().required().min(2).max(65535),
+      archivos: yup.array().of(yup.string().min(36).max(36)),
     })
     .required();
   const factoringhistorialestadoValidated = factoringhistorialestadoUpdateSchema.validateSync({ factoringhistorialestadoid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
@@ -48,6 +49,18 @@ export const updateFactoringhistorialestado = async (req: Request, res: Response
         throw new ClientError("Datos no válidos", 404);
       }
 
+      let archivos = [];
+      if (factoringhistorialestadoValidated.archivos) {
+        for (const archivoid of factoringhistorialestadoValidated.archivos) {
+          var archivo = await archivoDao.getArchivoByArchivoid(tx, archivoid);
+          if (!archivo) {
+            log.warn(line(), "Archivo no existe: [" + archivoid + "]");
+            throw new ClientError("Datos no válidos", 404);
+          }
+          archivos.push(archivo);
+        }
+      }
+
       const factoringhistorialestadoToUpdate: Prisma.factoring_historial_estadoUpdateInput = {
         comentario: factoringhistorialestadoValidated.comentario,
         idusuariomod: req.session_user.usuario.idusuario ?? 1,
@@ -57,9 +70,25 @@ export const updateFactoringhistorialestado = async (req: Request, res: Response
       const factoringhistorialestadoUpdated = await factoringhistorialestadoDao.updateFactoringhistorialestado(tx, factoringhistorialestadoValidated.factoringhistorialestadoid, factoringhistorialestadoToUpdate);
       log.debug(line(), "factoringhistorialestadoUpdated:", factoringhistorialestadoUpdated);
 
+      for (const archivo of archivos) {
+        const archivofactoringhistorialestadoToCreate: Prisma.archivo_factoring_historial_estadoCreateInput = {
+          archivo: { connect: { idarchivo: archivo.idarchivo } },
+          factoring_historial_estado: { connect: { idfactoringhistorialestado: factoringhistorialestadoUpdated.idfactoringhistorialestado } },
+          idusuariocrea: req.session_user.usuario.idusuario ?? 1,
+          fechacrea: new Date(),
+          idusuariomod: req.session_user.usuario.idusuario ?? 1,
+          fechamod: new Date(),
+          estado: 1,
+        };
+
+        const archivofactoringhistorialestadoCreated = await archivofactoringhistorialestadoDao.insertArchivofactoringhistorialestado(tx, archivofactoringhistorialestadoToCreate);
+
+        log.debug(line(), "archivofactoringhistorialestadoCreated:", archivofactoringhistorialestadoCreated);
+      }
+
       return {};
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 200, { ...factoringhistorialestadoValidated });
 };
@@ -95,7 +124,7 @@ export const getFactoringhistorialestadosByFactoringid = async (req: Request, re
       //factoringpropuestasFiltered = jsonUtils.removeAttributesPrivates(factoringpropuestasFiltered);
       return factoringhistorialestadosJson;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, factoringhistorialestadosJson);
 };
@@ -118,7 +147,7 @@ export const getFactoringhistorialestadoMaster = async (req: Request, res: Respo
       //jsonUtils.prettyPrint(factoringhistorialestadosMaster);
       return factoringhistorialestadosMasterFiltered;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, factoringhistorialestadosMasterFiltered);
 };
@@ -267,7 +296,7 @@ export const createFactoringhistorialestado = async (req: Request, res: Response
 
       return {};
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
 
   response(res, 201, { ...factoringhistorialestadoValidated });
@@ -298,7 +327,7 @@ export const activateFactoringhistorialestado = async (req: Request, res: Respon
 
       return factoringhistorialestadoActivated;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 204, factoringhistorialestadoActivated);
 };
@@ -328,7 +357,7 @@ export const deleteFactoringhistorialestado = async (req: Request, res: Response
 
       return factoringhistorialestadoDeleted;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 204, factoringhistorialestadoDeleted);
 };
@@ -348,7 +377,7 @@ export const getFactoringhistorialestados = async (req: Request, res: Response) 
       //factoringhistorialestadosFiltered = jsonUtils.removeAttributesPrivates(factoringhistorialestadosFiltered);
       return factoringhistorialestadosJson;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, factoringhistorialestadosJson);
 };
