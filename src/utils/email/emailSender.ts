@@ -1,5 +1,7 @@
 import nodemailer from "nodemailer";
 import { env } from "#src/config.js";
+import { line, log } from "#src/utils/logger.pino.js";
+import { logHtmlLink, logTxtLink } from "#src/utils/debug.js";
 
 class EmailSender {
   constructor() {}
@@ -11,8 +13,19 @@ class EmailSender {
       from: '"' + env.MAIL_CONTACTO_FINANZATECH_NAME + '" <' + env.MAIL_CONTACTO_FINANZATECH_USER + ">",
       bcc: env.MAIL_BACKUP,
     };
+
+    log.debug(line(), "From: ", options.from);
+    log.debug(line(), "To: ", options.to);
+    log.debug(line(), "BCC: ", options.bcc);
+    log.debug(line(), "Asunto: ", options.subject);
+    logHtmlLink(options.html);
+    logTxtLink(options.text);
+
     if (env.MAIL_CONTACTO_FINANZATECH_ACTIVE) {
+      log.debug(line(), "El envío de correo está activado para: ", env.MAIL_CONTACTO_FINANZATECH_USER);
       return this.sendEmail(transporter, options);
+    } else {
+      log.debug(line(), "Advertencia: El envío de correo está desactivado. para: ", env.MAIL_CONTACTO_FINANZATECH_USER);
     }
   }
 

@@ -22,6 +22,11 @@ class TemplaceManager {
    * Ejemplo: { cliente: { nombre: "Juan" }, items: [{ nombre: "Producto" }] }
    * => { "cliente.nombre": "Juan", "items[0].nombre": "Producto" }
    */
+  private getNestedValue(obj, path) {
+    if (!path) return obj;
+    return path.split(".").reduce((acc, part) => acc && acc[part], obj);
+  }
+
   flattenObject(obj, prefix = "", res = {}) {
     for (let key in obj) {
       if (!obj.hasOwnProperty(key)) continue;
@@ -51,6 +56,11 @@ class TemplaceManager {
    */
   async renderTemplate(templateName, params) {
     let template = await this.loadTemplate(templateName);
+    // 1. Procesar primero los bucles (foreach)
+    template = this.processLoops(template, params);
+
+    // 2. Aplanar el resto para variables simples (como ya lo haces)
+
     const flatParams = this.flattenObject(params);
 
     //console.log("flatParams: ", JSON.stringify(flatParams, null, 2));
@@ -72,6 +82,36 @@ class TemplaceManager {
     });
 
     return template;
+  }
+
+  private processLoops(template: string, params: any): string {
+    // Regex para capturar {{#foreach nombreArray}} contenido {{/foreach}}
+    // Ahora soporta puntos en el nombre (ej: factoringpropuesta.gastos) y el alias (ej: as financiero)
+    const loopRegex = /{{\s*#foreach\s+([\w.]+)(?:\s+as\s+(\w+))?\s*}}([\s\S]*?){{\s*\/foreach\s*}}/g;
+
+    return template.replace(loopRegex, (match, arrayPath, alias, subTemplate) => {
+      const list = this.getNestedValue(params, arrayPath);
+
+      if (!Array.isArray(list)) return "";
+
+      // Para cada item en el array, renderizamos el subTemplate
+      return list
+        .map((item) => {
+          let renderedItem = subTemplate;
+
+          // Aplanamos el item actual para soportar objetos anidados dentro del array
+          // Si hay un alias, lo usamos como prefijo
+          const flatItem = this.flattenObject(item, alias || "");
+
+          Object.keys(flatItem).forEach((key) => {
+            const regex = new RegExp(`{{\\s*${key}\\s*}}`, "g");
+            renderedItem = renderedItem.replace(regex, flatItem[key]);
+          });
+
+          return renderedItem;
+        })
+        .join("");
+    });
   }
 
   async renderSubject(subject, params) {
@@ -195,6 +235,30 @@ class TemplaceManager {
               factoring_tipo: yup.object({
                 nombre: yup.string().required(),
               }),
+              costos: yup.array().of(
+                yup.object({
+                  monto: yup.mixed().required(),
+                  financiero_concepto: yup.object({
+                    alias: yup.string().required(),
+                  }),
+                }),
+              ),
+              gastos: yup.array().of(
+                yup.object({
+                  monto: yup.mixed().required(),
+                  financiero_concepto: yup.object({
+                    alias: yup.string().required(),
+                  }),
+                }),
+              ),
+              gastos_excento_igv: yup.array().of(
+                yup.object({
+                  monto: yup.mixed().required(),
+                  financiero_concepto: yup.object({
+                    alias: yup.string().required(),
+                  }),
+                }),
+              ),
             })
             .required(),
           usuario: yup
@@ -576,6 +640,30 @@ class TemplaceManager {
               factoring_tipo: yup.object({
                 nombre: yup.string().required(),
               }),
+              costos: yup.array().of(
+                yup.object({
+                  monto: yup.mixed().required(),
+                  financiero_concepto: yup.object({
+                    alias: yup.string().required(),
+                  }),
+                }),
+              ),
+              gastos: yup.array().of(
+                yup.object({
+                  monto: yup.mixed().required(),
+                  financiero_concepto: yup.object({
+                    alias: yup.string().required(),
+                  }),
+                }),
+              ),
+              gastos_excento_igv: yup.array().of(
+                yup.object({
+                  monto: yup.mixed().required(),
+                  financiero_concepto: yup.object({
+                    alias: yup.string().required(),
+                  }),
+                }),
+              ),
             })
             .required(),
           usuario: yup

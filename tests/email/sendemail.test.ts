@@ -34,8 +34,8 @@ async function main() {
   //testSendFactoringEmpresaServicioFactoringDeudorSolicitudConfirmacion();
   //testSendFactoringEmpresaServicioFactoringCedenteConfirmacionTransferencia();
   //testSendFactoringEmpresaServicioFactoringDeudorNotificacionTransferencia();
-  //testSendFactoringEmpresaServicioFactoringCedenteNotificacionInicioOperacion();
-  testSendEmailingVentaEnFrio();
+  testSendFactoringEmpresaServicioFactoringCedenteNotificacionInicioOperacion();
+  //testSendEmailingVentaEnFrio();
 }
 
 async function testSendEmailingVentaEnFrio() {
@@ -62,20 +62,22 @@ async function testSendEmailingVentaEnFrio() {
 async function testSendFactoringEmpresaServicioFactoringCedenteNotificacionInicioOperacion() {
   const testToEmail = "jonyhurtado.proyectos@gmail.com"; // <-- ⚠️ CAMBIA ESTO
 
-  const idfactoring = 73;
+  const idfactoring = 91;
   const factoring = await prismaFT.client.$transaction((tx) => factoringDao.getFactoringByIdfactoring(tx, idfactoring), { timeout: prismaFT.transactionTimeout });
 
   if (!factoring) {
     console.error("Factoring no existe: [" + idfactoring + "]");
+    return;
   }
 
   //console.log("factoring: ", JSON.stringify(factoring, null, 2));
 
-  const idusuario = 154;
+  const idusuario = 160;
   const session_usuario = await prismaFT.client.$transaction((tx) => usuarioDao.getUsuarioByIdusuario(tx, idusuario), { timeout: prismaFT.transactionTimeout });
 
   if (!session_usuario) {
     console.error("session_usuario no existe: [" + idusuario + "]");
+    return;
   }
 
   const factoringpropuesta = await prismaFT.client.$transaction((tx) => factoringpropuestaDao.getFactoringpropuestaAceptadaByIdfactoringpropuesta(tx, factoring?.idfactoringpropuestaaceptada ?? 0, [1]), { timeout: prismaFT.transactionTimeout });
@@ -90,7 +92,7 @@ async function testSendFactoringEmpresaServicioFactoringCedenteNotificacionInici
     usuario: session_usuario,
   };
 
-  console.log("paramsEmail: ", JSON.stringify(paramsEmail, null, 2));
+  //console.log("paramsEmail: ", JSON.stringify(paramsEmail, null, 2));
 
   try {
     console.log(line());
@@ -121,6 +123,7 @@ async function testSendFactoringEmpresaServicioFactoringDeudorNotificacionTransf
 
   if (!factoring) {
     console.error("Factoring no existe: [" + idfactoring + "]");
+    return;
   }
 
   const idbanco = 1;
@@ -158,6 +161,7 @@ async function testSendFactoringEmpresaServicioFactoringCedenteConfirmacionTrans
 
   if (!session_usuario) {
     console.error("session_usuario no existe: [" + idusuario + "]");
+    return;
   }
 
   const idfactoring = 73;
@@ -165,6 +169,7 @@ async function testSendFactoringEmpresaServicioFactoringCedenteConfirmacionTrans
 
   if (!factoring) {
     console.error("Factoring no existe: [" + idfactoring + "]");
+    return;
   }
 
   //console.log("factoring: ", JSON.stringify(factoring, null, 2));
@@ -215,6 +220,7 @@ async function testSendFactoringEmpresaServicioFactoringDeudorSolicitudConfirmac
 
   if (!factoring) {
     console.error("Factoring no existe: [" + idfactoring + "]");
+    return;
   }
 
   //console.log("factoring: ", JSON.stringify(factoring, null, 2));
@@ -242,27 +248,30 @@ async function testSendFactoringEmpresaServicioFactoringDeudorSolicitudConfirmac
 async function testSendFactoringEmpresaServicioFactoringPropuestaAceptada() {
   const testToEmail = "jonyhurtado.proyectos@gmail.com"; // <-- ⚠️ CAMBIA ESTO
 
-  const idfactoring = 71;
+  const idfactoring = 93;
   const factoring = await prismaFT.client.$transaction((tx) => factoringDao.getFactoringByIdfactoring(tx, idfactoring), { timeout: prismaFT.transactionTimeout });
 
   if (!factoring) {
     console.error("Factoring no existe: [" + idfactoring + "]");
+    return;
   }
 
   //console.log("factoring: ", JSON.stringify(factoring, null, 2));
 
-  const idusuario = 154;
+  const idusuario = 160;
   const session_usuario = await prismaFT.client.$transaction((tx) => usuarioDao.getUsuarioByIdusuario(tx, idusuario), { timeout: prismaFT.transactionTimeout });
 
   if (!session_usuario) {
     console.error("session_usuario no existe: [" + idusuario + "]");
+    return;
   }
 
-  const idfactoringpropuesta = 42;
+  const idfactoringpropuesta = 64;
   const factoringpropuesta = await prismaFT.client.$transaction((tx) => factoringpropuestaDao.getFactoringpropuestaAceptadaByIdfactoringpropuesta(tx, idfactoringpropuesta, [1]), { timeout: prismaFT.transactionTimeout });
 
   if (!factoringpropuesta) {
     console.error("factoringpropuesta no existe: [" + idfactoringpropuesta + "]");
+    return;
   }
 
   var paramsEmail = {
@@ -271,7 +280,7 @@ async function testSendFactoringEmpresaServicioFactoringPropuestaAceptada() {
     usuario: session_usuario,
   };
 
-  console.log("paramsEmail: ", JSON.stringify(paramsEmail, null, 2));
+  //console.log("paramsEmail: ", JSON.stringify(paramsEmail, null, 2));
 
   try {
     console.log(line());
@@ -295,6 +304,7 @@ async function testSendFactoringEmpresaServicioFactoringPropuestaDisponible() {
 
   if (!factoring) {
     console.error("Factoring no existe: [" + idfactoring + "]");
+    return;
   }
 
   //console.log("factoring: ", JSON.stringify(factoring, null, 2));
@@ -304,6 +314,7 @@ async function testSendFactoringEmpresaServicioFactoringPropuestaDisponible() {
 
   if (!session_usuario) {
     console.error("session_usuario no existe: [" + idusuario + "]");
+    return;
   }
 
   const idfactoringpropuesta = 42;
@@ -311,6 +322,7 @@ async function testSendFactoringEmpresaServicioFactoringPropuestaDisponible() {
 
   if (!factoringpropuesta) {
     console.error("factoringpropuesta no existe: [" + idfactoringpropuesta + "]");
+    return;
   }
 
   var paramsEmail = {
@@ -343,6 +355,7 @@ async function testTemplateFactoringEmpresaServicioFactoringSolicitud() {
 
   if (!factoring) {
     console.error("Factoring no existe: [" + idfactoring + "]");
+    return;
   }
 
   console.log("factoring: ", JSON.stringify(factoring, null, 2));
@@ -353,6 +366,7 @@ async function testTemplateFactoringEmpresaServicioFactoringSolicitud() {
       var session_usuario = await usuarioDao.getUsuarioByIdusuario(tx, idusuario);
       if (!session_usuario) {
         console.error("session_usuario no existe: [" + idusuario + "]");
+        return;
       } else {
         //console.log("session_usuario: ", session_usuario);
       }

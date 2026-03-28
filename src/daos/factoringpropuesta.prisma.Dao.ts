@@ -33,7 +33,20 @@ export const getFactoringpropuestaAceptadaByIdfactoringpropuesta = async (tx: Tx
       },
     });
 
-    return factoringpropuesta;
+    const comisiones = factoringpropuesta.factoring_propuesta_financieros.filter((financiero) => financiero.financiero_tipo.idfinancierotipo === 1);
+    const costos = factoringpropuesta.factoring_propuesta_financieros.filter((financiero) => financiero.financiero_tipo.idfinancierotipo === 2);
+    const gastos = factoringpropuesta.factoring_propuesta_financieros.filter((financiero) => financiero.financiero_tipo.idfinancierotipo === 3);
+    const gastos_excento_igv = factoringpropuesta.factoring_propuesta_financieros.filter((financiero) => financiero.financiero_tipo.idfinancierotipo === 4);
+
+    const factoringpropuestaExtendido = {
+      ...factoringpropuesta,
+      comisiones,
+      costos,
+      gastos,
+      gastos_excento_igv,
+    };
+
+    return factoringpropuestaExtendido;
   } catch (error) {
     log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
