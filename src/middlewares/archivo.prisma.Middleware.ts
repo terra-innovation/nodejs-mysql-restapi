@@ -28,7 +28,7 @@ const MIMETYPES_NO_PERMITIDOS: string[] = [
   "application/x-python-code",
 ];
 
-const EXTENSIONES_SIN_FIRMA_PERMITIDAS: string[] = [".csv", ".txt", ".log", ".md", ".json", ".xml", ".yml", ".yaml", ".tsv"];
+const EXTENSIONES_SIN_FIRMA_PERMITIDAS: string[] = [".csv", ".txt", ".log", ".md", ".json", ".xml", ".yml", ".yaml", ".tsv", ".eml"];
 
 let storage_usuarioservicio = multer.diskStorage({
   destination: (req: Request, file: Multer.File, cb: (error: Error | null, destination: string) => void) => {
