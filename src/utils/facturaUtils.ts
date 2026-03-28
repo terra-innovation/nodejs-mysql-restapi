@@ -185,7 +185,22 @@ export const getInvoiceTypeCode = (invoice) => {
 };
 
 export const procesarFacturaXML = async (file) => {
-  let archivoXML = fs.readFileSync(file.path, "utf8");
+  const buffer = fs.readFileSync(file.path);
+  // Detect encoding from XML header
+  const header = buffer.toString("binary", 0, 500);
+  const match = header.match(/encoding=["']([^"']+)["']/i);
+  const encoding = match ? match[1].toLowerCase() : "utf-8";
+
+  let archivoXML;
+  try {
+    const decoder = new TextDecoder(encoding);
+    archivoXML = decoder.decode(buffer);
+  } catch {
+    // Fallback to utf-8 if encoding is not supported
+    archivoXML = buffer.toString("utf-8");
+  }
+
+  // Sanitizar el XML para facilitar el acceso a las propiedades
   archivoXML = archivoXML.replace(/cbc:/g, "").replace(/cac:/g, "").replace(/n1:/g, "").replace(/n2:/g, "");
   let archivoJson = await parseStringPromise(archivoXML);
 
