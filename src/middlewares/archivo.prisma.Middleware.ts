@@ -8,27 +8,8 @@ import * as luxon from "luxon";
 import multer, { FileFilterCallback, Multer } from "multer";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
+import { corregirNombreArchivo } from "#src/utils/multerUtils.js";
 
-/**
- * Corrige la codificación del nombre original del archivo.
- * Multer interpreta los headers de multipart/form-data como ISO-8859-1 (Latin1),
- * pero los navegadores modernos envían los nombres en UTF-8.
- */
-const corregirNombreArchivo = (file: Multer.File) => {
-  if (!file || !file.originalname || (file as any)._encoding_corregida) {
-    return;
-  }
-
-  // Patrón para detectar secuencias que parecen UTF-8 mal interpretado como Latin1.
-  // Cubre secuencias de 2 bytes (tildes, ñ), 3 bytes (Euro €, símbolos) y 4 bytes (Emojis).
-  const tieneArtefactosUtf8 = /[\u00C2-\u00DF][\u0080-\u00BF]|[\u00E0-\u00EF][\u0080-\u00BF]{2}|[\u00F0-\u00F4][\u0080-\u00BF]{3}/.test(file.originalname);
-
-  if (tieneArtefactosUtf8) {
-    file.originalname = Buffer.from(file.originalname, "latin1").toString("utf8");
-  }
-
-  (file as any)._encoding_corregida = true;
-};
 
 // Extensiones o mimetypes peligrosos comúnmente bloqueados
 const EXTENSIONES_NO_PERMITIDAS: string[] = [".exe", ".bat", ".cmd", ".sh", ".bash", ".msi", ".apk", ".bin", ".dll", ".scr", ".com", ".pif", ".vbs", ".wsf", ".jar", ".py", ".rb", ".php", ".pl"];

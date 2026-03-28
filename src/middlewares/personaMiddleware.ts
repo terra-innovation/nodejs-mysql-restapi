@@ -4,6 +4,7 @@ import multer from "multer";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import { log, line } from "#src/utils/logger.pino.js";
+import { corregirNombreArchivo } from "#src/utils/multerUtils.js";
 import * as storageUtils from "#src/utils/storageUtils.js";
 import { ArchivoError } from "#src/utils/CustomErrors.js";
 
@@ -19,6 +20,7 @@ let storage_persona = multer.diskStorage({
     cb(null, rutaDestino);
   },
   filename: (req, file, cb) => {
+    corregirNombreArchivo(file);
     //log.info(line(),file);
     const extension = path.extname(file.originalname).slice(1) || "";
     const anio_upload = luxon.DateTime.now().toFormat("yyyy");
@@ -45,6 +47,7 @@ export const upload_persona = multer({
     fields: 20, // Número máximo de campos que no son archivos
   },
   fileFilter: async function (req, file, cb) {
+    corregirNombreArchivo(file);
     const validImageTypes = ["image/png", "image/jpeg", "image/jpg"];
     if (!validImageTypes.includes(file.mimetype)) {
       log.error(line(), `Formato de archivo inválido [${file.mimetype}] en archivo [${file.originalname}]. Tipos permitidos: ${validImageTypes.join(", ")}`);
