@@ -18,3 +18,4 @@ security/ip/blacklist.txt
 scripts/excel/BASE.xlsx
 temporal/*
 .env.test
+pases_a_produccion/*

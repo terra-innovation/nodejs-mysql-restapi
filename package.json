@@ -14,7 +14,8 @@
     "test": "cross-env NODE_ENV=test jest --config jest.config.js",
     "pretest_anterior": "cross-env NODE_ENV=test jest --clearCache",
     "prisma-sync": "node scripts/prisma/generate-models.js",
-    "list-unused-exports": "powershell -Command \"npx ts-prune | Select-String -NotMatch 'used in module' | Select-String '\\\\src\\\\controllers\\\\'\""
+    "list-unused-exports": "powershell -Command \"npx ts-prune | Select-String -NotMatch 'used in module' | Select-String '\\\\src\\\\controllers\\\\'\"",
+    "build-prod": "node scripts/produccion/build-prod.js"
   },
   "imports": {
     "#root/*": "./*",

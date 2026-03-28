@@ -11,5 +11,6 @@ export default defineConfig({
   shims: true, // agrega polyfills (como __dirname)
   splitting: false, // desactiva code splitting (ideal para backend)
   treeshake: true, // elimina código muerto
+  //minify: true, // comprime el código a su máxima expresión
   external: ["fs", "path", "@prisma/client", "#root/generated/prisma/ft_factoring"], // no empaquetes estos módulos, déjalos como están para que Node los cargue dinámicamente
 });
