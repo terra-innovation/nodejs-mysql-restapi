@@ -23,7 +23,7 @@ import * as luxon from "luxon";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
-import { simulateFactoringLogicV3 } from "#src/logics/factoring.prisma.Logic.js";
+import { simulateFactoringLogicV4 } from "#src/logics/factoring.prisma.Logic.js";
 
 import { unlink } from "fs/promises";
 import path from "path"; // Para eliminar el archivo después de enviarlo
@@ -31,6 +31,7 @@ import PDFGenerator from "#src/utils/document/PDFgenerator.js";
 import * as storageUtils from "#src/utils/storageUtils.js";
 import { sendFileAsync, setDownloadHeaders } from "#src/utils/httpUtils.js";
 import * as fs from "fs";
+import * as dateUtils from "#src/utils/dateUtils.js";
 import { Decimal } from "@prisma/client/runtime/library";
 
 export const downloadFactoringpropuestaPDF = async (req: Request, res: Response) => {
@@ -231,20 +232,21 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
         throw new ClientError("Datos no válidos", 404);
       }
 
-      let fecha_ahora = luxon.DateTime.local();
-      let fecha_fin = luxon.DateTime.fromISO(factoring.fecha_pago_estimado.toISOString());
-      let dias_pago_estimado = fecha_fin.startOf("day").diff(fecha_ahora.startOf("day"), "days").days; // Actualizamos la cantidad de dias para el pago
-      let dias_antiguedad_estimado = fecha_ahora.startOf("day").diff(luxon.DateTime.fromISO(factoring.fecha_emision.toISOString()).startOf("day"), "days").days;
+      let fecha_ahora = dateUtils.getNowLima();
+      let fecha_fin = dateUtils.toLimaDate(factoring.fecha_pago_estimado);
+      let fecha_emision = dateUtils.toLimaDate(factoring.fecha_emision);
+
       var simulacion: Partial<Simulacion> = {};
-      simulacion = await simulateFactoringLogicV3(
+      simulacion = await simulateFactoringLogicV4(
         riesgooperacion.idriesgo,
         factoring.cuenta_bancaria.idbanco,
         factoring.cantidad_facturas,
         factoring.monto_neto,
-        dias_pago_estimado,
+        fecha_ahora,
+        fecha_fin,
+        fecha_emision,
         new Decimal(factoringValidated.porcentaje_financiado_estimado),
         new Decimal(factoringValidated.tdm),
-        dias_antiguedad_estimado,
         new Decimal(factoringValidated.porcentaje_comision_descuento),
         factoring.moneda.idmoneda,
       );
@@ -262,7 +264,7 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
 
         factoringpropuestaid: uuidv4(),
         code: uuidv4().split("-")[0],
-        fecha_propuesta: new Date(),
+        fecha_propuesta: simulacion.fecha_propuesta,
 
         tda: simulacion.tda,
         tdm: simulacion.tdm,
@@ -272,7 +274,7 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
         tdd_mora: simulacion.tdd_mora,
         fecha_pago_estimado: factoring.fecha_pago_estimado,
         dias_pago_estimado: simulacion.dias_pago_estimado,
-        dias_antiguedad_estimado: dias_antiguedad_estimado,
+        dias_antiguedad_estimado: simulacion.dias_antiguedad_estimado,
         dias_cobertura_garantia_estimado: simulacion.dias_cobertura_garantia_estimado,
         monto_neto: simulacion.monto_neto,
         monto_garantia: simulacion.monto_garantia,
@@ -483,20 +485,21 @@ export const simulateFactoringpropuesta = async (req: Request, res: Response) =>
         throw new ClientError("Datos no válidos", 404);
       }
 
-      let fecha_ahora = luxon.DateTime.local();
-      let fecha_fin = luxon.DateTime.fromISO(factoring.fecha_pago_estimado.toISOString());
-      var dias_pago_estimado = fecha_fin.startOf("day").diff(fecha_ahora.startOf("day"), "days").days; // Actualizamos la cantidad de dias para el pago
-      let dias_antiguedad_estimado = fecha_ahora.startOf("day").diff(luxon.DateTime.fromISO(factoring.fecha_emision.toISOString()).startOf("day"), "days").days;
-      var simulacion = {};
-      simulacion = await simulateFactoringLogicV3(
+      let fecha_ahora = dateUtils.getNowLima();
+      let fecha_fin = dateUtils.toLimaDate(factoring.fecha_pago_estimado);
+      let fecha_emision = dateUtils.toLimaDate(factoring.fecha_emision);
+
+      var simulacion: Partial<Simulacion> = {};
+      simulacion = await simulateFactoringLogicV4(
         riesgooperacion.idriesgo,
         factoring.cuenta_bancaria.idbanco,
         factoring.cantidad_facturas,
         factoring.monto_neto,
-        dias_pago_estimado,
+        fecha_ahora,
+        fecha_fin,
+        fecha_emision,
         new Decimal(factoringValidated.porcentaje_financiado_estimado),
         new Decimal(factoringValidated.tdm),
-        dias_antiguedad_estimado,
         new Decimal(factoringValidated.porcentaje_comision_descuento),
         factoring.moneda.idmoneda,
       );

@@ -63,6 +63,25 @@ export const formatDateTimeWithZoneUTC = (isoDate) => {
   return formatDateCustom(isoDate, "dd/LLL/yyyy HH:mm ZZZ", utcConfig);
 };
 
-export const formatDateCustomUTC = (isoDate, format = "dd/LLL/yyyy HH:mm ZZZ") => {
-  return formatDateCustom(isoDate, format, utcConfig);
+export const formatDateCustomUTC = (isoDate, format = "dd/LLL/yyyy HH:mm ZZZ", config = utcConfig) => {
+  return formatDateCustom(isoDate, format, config);
+};
+
+/**
+ * Retorna la fecha/hora actual en la zona horaria predeterminada (America/Lima).
+ */
+export const getNowLima = () => {
+  return DateTime.now().setZone(defaultConfig.zone);
+};
+
+/**
+ * Convierte una fecha (Date, ISO string o DateTime) a la zona horaria de Lima,
+ * manteniendo el tiempo local si viene de la DB (UTC 00:00).
+ */
+export const toLimaDate = (date) => {
+  if (!date) return null;
+  if (DateTime.isDateTime(date)) return date.setZone(defaultConfig.zone);
+
+  const jsDate = date instanceof Date ? date : new Date(date);
+  return DateTime.fromJSDate(jsDate, { zone: "utc" }).setZone(defaultConfig.zone, { keepLocalTime: true });
 };

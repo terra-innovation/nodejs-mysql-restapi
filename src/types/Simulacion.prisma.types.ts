@@ -26,4 +26,5 @@ export interface Simulacion extends Partial<factoring_propuesta> {
   costos?: Costo[];
   gastos?: Gasto[];
   gastos_excento_igv?: Gasto_excento_igv[];
+  fecha_simulacion?: Date | string;
 }

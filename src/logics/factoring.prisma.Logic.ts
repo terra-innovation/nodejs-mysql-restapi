@@ -11,18 +11,24 @@ import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import { line, log } from "#root/src/utils/logger.pino.js";
 import { Decimal } from "@prisma/client/runtime/library";
 
-export const simulateFactoringLogicV3 = async (
-  idriesgooperacion: number,
-  idbancocedente: number,
-  cantidad_facturas: number,
-  monto_neto: Prisma.Decimal,
-  dias_pago_estimado: number,
-  porcentaje_financiado: Prisma.Decimal,
-  tdm: Prisma.Decimal,
-  dias_antiguedad_estimado: number,
-  porcentaje_comision_descuento: Prisma.Decimal,
-  idmoneda: number,
-): Promise<Partial<Simulacion>> => {
+import { DateTime } from "luxon";
+
+export const simulateFactoringLogicV4 = async (idriesgooperacion: number, idbancocedente: number, cantidad_facturas: number, monto_neto: Prisma.Decimal, fecha_ahora: DateTime, fecha_fin: DateTime, fecha_emision: DateTime, porcentaje_financiado: Prisma.Decimal, tdm: Prisma.Decimal, porcentaje_comision_descuento: Prisma.Decimal, idmoneda: number): Promise<Partial<Simulacion>> => {
+  log.debug(line(), "logic::simulateFactoringLogicV4");
+
+  const dias_pago_estimado = Math.floor(fecha_fin.startOf("day").diff(fecha_ahora.startOf("day"), "days").days);
+  const dias_antiguedad_estimado = Math.floor(fecha_ahora.startOf("day").diff(fecha_emision.startOf("day"), "days").days);
+
+  const simulacion = await simulateFactoringLogicV3(idriesgooperacion, idbancocedente, cantidad_facturas, monto_neto, dias_pago_estimado, porcentaje_financiado, tdm, dias_antiguedad_estimado, porcentaje_comision_descuento, idmoneda);
+
+  simulacion.fecha_pago_estimado = fecha_fin.toJSDate();
+  simulacion.fecha_propuesta = fecha_ahora.toJSDate();
+  simulacion.fecha_simulacion = fecha_ahora.toJSDate();
+
+  return simulacion;
+};
+
+export const simulateFactoringLogicV3 = async (idriesgooperacion: number, idbancocedente: number, cantidad_facturas: number, monto_neto: Prisma.Decimal, dias_pago_estimado: number, porcentaje_financiado: Prisma.Decimal, tdm: Prisma.Decimal, dias_antiguedad_estimado: number, porcentaje_comision_descuento: Prisma.Decimal, idmoneda: number): Promise<Partial<Simulacion>> => {
   log.debug(line(), "logic::simulateFactoringLogicV3");
 
   const simulacion = await prismaFT.client.$transaction(
@@ -162,14 +168,7 @@ export const simulateFactoringLogicV3 = async (
 
       simulacion.monto_gasto_excento_igv = gastos_excento_igv.reduce((acc, item) => acc.add(new Decimal(item.monto)), new Decimal(0));
 
-      simulacion.monto_adelanto = simulacion.monto_financiado
-        .minus(simulacion.monto_descuento)
-        .minus(simulacion.monto_comision)
-        .minus(simulacion.monto_costo_estimado)
-        .minus(simulacion.monto_gasto_estimado)
-        .minus(simulacion.monto_total_igv)
-        .minus(simulacion.monto_gasto_excento_igv)
-        .toDecimalPlaces(2);
+      simulacion.monto_adelanto = simulacion.monto_financiado.minus(simulacion.monto_descuento).minus(simulacion.monto_comision).minus(simulacion.monto_costo_estimado).minus(simulacion.monto_gasto_estimado).minus(simulacion.monto_total_igv).minus(simulacion.monto_gasto_excento_igv).toDecimalPlaces(2);
 
       simulacion.monto_dia_mora_estimado = new Decimal(0);
 
@@ -204,16 +203,7 @@ export const simulateFactoringLogicV3 = async (
   return simulacion;
 };
 
-export const simulateFactoringLogicV2 = async (
-  idriesgooperacion: number,
-  idbancocedente: number,
-  cantidad_facturas: number,
-  monto_neto: Prisma.Decimal,
-  dias_pago_estimado: number,
-  porcentaje_financiado: Prisma.Decimal,
-  tdm: Prisma.Decimal,
-  dias_antiguedad_estimado: number,
-): Promise<Partial<Simulacion>> => {
+export const simulateFactoringLogicV2 = async (idriesgooperacion: number, idbancocedente: number, cantidad_facturas: number, monto_neto: Prisma.Decimal, dias_pago_estimado: number, porcentaje_financiado: Prisma.Decimal, tdm: Prisma.Decimal, dias_antiguedad_estimado: number): Promise<Partial<Simulacion>> => {
   log.debug(line(), "logic::simulateFactoringLogicV2");
 
   const simulacion = await prismaFT.client.$transaction(
