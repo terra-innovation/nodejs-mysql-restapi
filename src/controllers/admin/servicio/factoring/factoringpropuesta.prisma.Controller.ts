@@ -180,6 +180,7 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
       tdm: yup.number().required().min(0).max(100),
       porcentaje_financiado_estimado: yup.number().required().min(0).max(1),
       porcentaje_comision_descuento: yup.number().required().min(0).max(1),
+      fecha_pago_estimado: yup.date().required(),
     })
     .required();
   var factoringValidated = factoringSimulateSchema.validateSync({ ...req.body }, { abortEarly: false, stripUnknown: true });
@@ -233,23 +234,11 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
       }
 
       let fecha_ahora = dateUtils.getNowLima();
-      let fecha_fin = dateUtils.toLimaDate(factoring.fecha_pago_estimado);
+      let fecha_fin = dateUtils.toLimaDate(factoringValidated.fecha_pago_estimado);
       let fecha_emision = dateUtils.toLimaDate(factoring.fecha_emision);
 
       var simulacion: Partial<Simulacion> = {};
-      simulacion = await simulateFactoringLogicV4(
-        riesgooperacion.idriesgo,
-        factoring.cuenta_bancaria.idbanco,
-        factoring.cantidad_facturas,
-        factoring.monto_neto,
-        fecha_ahora,
-        fecha_fin,
-        fecha_emision,
-        new Decimal(factoringValidated.porcentaje_financiado_estimado),
-        new Decimal(factoringValidated.tdm),
-        new Decimal(factoringValidated.porcentaje_comision_descuento),
-        factoring.moneda.idmoneda,
-      );
+      simulacion = await simulateFactoringLogicV4(riesgooperacion.idriesgo, factoring.cuenta_bancaria.idbanco, factoring.cantidad_facturas, factoring.monto_neto, fecha_ahora, fecha_fin, fecha_emision, new Decimal(factoringValidated.porcentaje_financiado_estimado), new Decimal(factoringValidated.tdm), new Decimal(factoringValidated.porcentaje_comision_descuento), factoring.moneda.idmoneda);
 
       log.info(line(), "simulacion: ", simulacion);
 
@@ -272,7 +261,7 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
         tda_mora: simulacion.tda_mora,
         tdm_mora: simulacion.tdm_mora,
         tdd_mora: simulacion.tdd_mora,
-        fecha_pago_estimado: factoring.fecha_pago_estimado,
+        fecha_pago_estimado: factoringValidated.fecha_pago_estimado,
         dias_pago_estimado: simulacion.dias_pago_estimado,
         dias_antiguedad_estimado: simulacion.dias_antiguedad_estimado,
         dias_cobertura_garantia_estimado: simulacion.dias_cobertura_garantia_estimado,
@@ -451,6 +440,7 @@ export const simulateFactoringpropuesta = async (req: Request, res: Response) =>
       tdm: yup.number().required().min(0).max(100),
       porcentaje_financiado_estimado: yup.number().required().min(0).max(100),
       porcentaje_comision_descuento: yup.number().required().min(0).max(1),
+      fecha_pago_estimado: yup.date().required(),
     })
     .required();
   var factoringValidated = factoringSimulateSchema.validateSync({ factoringid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
@@ -486,23 +476,11 @@ export const simulateFactoringpropuesta = async (req: Request, res: Response) =>
       }
 
       let fecha_ahora = dateUtils.getNowLima();
-      let fecha_fin = dateUtils.toLimaDate(factoring.fecha_pago_estimado);
+      let fecha_fin = dateUtils.toLimaDate(factoringValidated.fecha_pago_estimado);
       let fecha_emision = dateUtils.toLimaDate(factoring.fecha_emision);
 
       var simulacion: Partial<Simulacion> = {};
-      simulacion = await simulateFactoringLogicV4(
-        riesgooperacion.idriesgo,
-        factoring.cuenta_bancaria.idbanco,
-        factoring.cantidad_facturas,
-        factoring.monto_neto,
-        fecha_ahora,
-        fecha_fin,
-        fecha_emision,
-        new Decimal(factoringValidated.porcentaje_financiado_estimado),
-        new Decimal(factoringValidated.tdm),
-        new Decimal(factoringValidated.porcentaje_comision_descuento),
-        factoring.moneda.idmoneda,
-      );
+      simulacion = await simulateFactoringLogicV4(riesgooperacion.idriesgo, factoring.cuenta_bancaria.idbanco, factoring.cantidad_facturas, factoring.monto_neto, fecha_ahora, fecha_fin, fecha_emision, new Decimal(factoringValidated.porcentaje_financiado_estimado), new Decimal(factoringValidated.tdm), new Decimal(factoringValidated.porcentaje_comision_descuento), factoring.moneda.idmoneda);
 
       log.info(line(), "simulacion: ", simulacion);
 
