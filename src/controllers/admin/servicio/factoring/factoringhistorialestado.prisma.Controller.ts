@@ -257,6 +257,7 @@ export const createFactoringhistorialestado = async (req: Request, res: Response
         const idbanco = 1;
         const estados = [1];
         const factoring_for_email = await factoringDao.getFactoringByIdfactoring(tx, factoringUpdated.idfactoring);
+        const factoringpropuesta_for_email = await factoringpropuestaDao.getFactoringpropuestaAceptadaByIdfactoringpropuesta(tx, factoring_for_email?.idfactoringpropuestaaceptada ?? 0, estados);
         const factorcuentabancaria_for_email = await factorcuentabancariaDao.getFactorcuentabancariasByIdfactorIdmonedaIdbanco(tx, factoring_for_email?.idfactor ?? 0, factoring_for_email?.idmoneda ?? 0, idbanco, estados);
 
         const emails_cc_deudor_solicita_confirmacion = await configuracionappDao.getEmailsCCDeudorSolicitaConfirmacion(tx);
@@ -264,6 +265,7 @@ export const createFactoringhistorialestado = async (req: Request, res: Response
         ccEmails.push(factoring_for_email.contacto_cedente.email);
         var paramsEmail_10 = {
           factoring: factoring_for_email,
+          factoringpropuesta: factoringpropuesta_for_email,
           factorcuentabancaria: factorcuentabancaria_for_email,
         };
         await emailService.sendFactoringEmpresaServicioFactoringDeudorNotificacionTransferencia(factoring_for_email.contacto_aceptante.email, ccEmails, paramsEmail_10);

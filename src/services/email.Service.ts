@@ -104,10 +104,26 @@ export const sendFactoringEmpresaServicioFactoringDeudorNotificacionTransferenci
       fecha_pago_estimado: df.formatDateUTC(params.factoring?.fecha_pago_estimado),
     };
 
+    const factoringpropuesta_formateado = {
+      fecha_propuesta: df.formatDateTimeLocale(params.factoringpropuesta?.fecha_propuesta),
+      monto_neto: nf.formatNumber(params.factoringpropuesta?.monto_neto),
+      fecha_pago_estimado: df.formatDateUTC(params.factoringpropuesta?.fecha_pago_estimado),
+      tdm: nf.formatPercentage(params.factoringpropuesta?.tdm),
+      porcentaje_financiado_estimado: nf.formatPercentage(params.factoringpropuesta?.porcentaje_financiado_estimado),
+      monto_garantia: nf.formatNumber(params.factoringpropuesta?.monto_garantia),
+      monto_financiado: nf.formatNumber(params.factoringpropuesta?.monto_financiado),
+      monto_descuento: nf.formatNumber(params.factoringpropuesta?.monto_descuento),
+      monto_comision: nf.formatNumber(params.factoringpropuesta?.monto_comision),
+      monto_costo_estimado: nf.formatNumber(params.factoringpropuesta?.monto_costo_estimado),
+      monto_total_igv: nf.formatNumber(params.factoringpropuesta?.monto_total_igv),
+      monto_adelanto: nf.formatNumber(params.factoringpropuesta?.monto_adelanto),
+    };
+
     params = {
       ...params,
       cabecera,
       factoring_formateado,
+      factoringpropuesta_formateado,
     };
 
     const emailTemplate = await templateManager.templateFactoringEmpresaServicioFactoringDeudorNotificacionTransferencia(params);

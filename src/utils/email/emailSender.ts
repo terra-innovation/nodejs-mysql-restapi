@@ -2,6 +2,7 @@ import nodemailer from "nodemailer";
 import { env } from "#src/config.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { logHtmlLink, logTxtLink } from "#src/utils/debug.js";
+import { isProduction } from "#src/config.js";
 
 class EmailSender {
   constructor() {}
@@ -10,6 +11,7 @@ class EmailSender {
     const transporter = this.createTransporterZohoMail(env.MAIL_CONTACTO_FINANZATECH_USER, env.MAIL_CONTACTO_FINANZATECH_PASS);
     const options = {
       ...mailOptions,
+      subject: mailOptions.subject + (isProduction ? "" : " [Prueba]"),
       from: '"' + env.MAIL_CONTACTO_FINANZATECH_NAME + '" <' + env.MAIL_CONTACTO_FINANZATECH_USER + ">",
       bcc: env.MAIL_BACKUP,
     };

@@ -356,12 +356,62 @@ class TemplaceManager {
                 .required(),
             })
             .required(),
+          factoringpropuesta: yup
+            .object({
+              code: yup.string().required(),
+              fecha_propuesta: yup.string().required(),
+              dias_pago_estimado: yup.string().required(),
+              factoring_tipo: yup.object({
+                nombre: yup.string().required(),
+              }),
+              costos: yup.array().of(
+                yup.object({
+                  monto: yup.mixed().required(),
+                  financiero_concepto: yup.object({
+                    alias: yup.string().required(),
+                  }),
+                }),
+              ),
+              gastos: yup.array().of(
+                yup.object({
+                  monto: yup.mixed().required(),
+                  financiero_concepto: yup.object({
+                    alias: yup.string().required(),
+                  }),
+                }),
+              ),
+              gastos_excento_igv: yup.array().of(
+                yup.object({
+                  monto: yup.mixed().required(),
+                  financiero_concepto: yup.object({
+                    alias: yup.string().required(),
+                  }),
+                }),
+              ),
+            })
+            .required(),
           factoring_formateado: yup
             .object({
               factura: yup.string().required(),
               monto_factura: yup.string().required(),
               monto_neto: yup.string().required(),
               fecha_pago_estimado: yup.string().required(),
+            })
+            .required(),
+          factoringpropuesta_formateado: yup
+            .object({
+              fecha_propuesta: yup.string().required(),
+              monto_neto: yup.string().required(),
+              fecha_pago_estimado: yup.string().required(),
+              tdm: yup.string().required(),
+              porcentaje_financiado_estimado: yup.string().required(),
+              monto_garantia: yup.string().required(),
+              monto_financiado: yup.string().required(),
+              monto_descuento: yup.string().required(),
+              monto_comision: yup.string().required(),
+              monto_costo_estimado: yup.string().required(),
+              monto_total_igv: yup.string().required(),
+              monto_adelanto: yup.string().required(),
             })
             .required(),
           factorcuentabancaria: yup

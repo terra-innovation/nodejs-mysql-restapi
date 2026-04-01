@@ -84,6 +84,7 @@ async function testSendFactoringEmpresaServicioFactoringCedenteNotificacionInici
 
   if (!factoringpropuesta) {
     console.error("factoringpropuesta no existe: [" + (factoring?.idfactoringpropuestaaceptada ?? 0) + "]");
+    return;
   }
 
   var paramsEmail = {
@@ -126,14 +127,22 @@ async function testSendFactoringEmpresaServicioFactoringDeudorNotificacionTransf
     return;
   }
 
+  //console.log("factoring: ", JSON.stringify(factoring, null, 2));
+
+  const factoringpropuesta = await prismaFT.client.$transaction((tx) => factoringpropuestaDao.getFactoringpropuestaAceptadaByIdfactoringpropuesta(tx, factoring?.idfactoringpropuestaaceptada ?? 0, [1]), { timeout: prismaFT.transactionTimeout });
+
+  if (!factoringpropuesta) {
+    console.error("factoringpropuesta no existe: [" + (factoring?.idfactoringpropuestaaceptada ?? 0) + "]");
+    return;
+  }
+
   const idbanco = 1;
   const estados = [1];
   const factorcuentabancaria = await prismaFT.client.$transaction((tx) => factorcuentabancariaDao.getFactorcuentabancariasByIdfactorIdmonedaIdbanco(tx, factoring?.idfactor ?? 0, factoring?.idmoneda ?? 0, idbanco, estados), { timeout: prismaFT.transactionTimeout });
 
-  //console.log("factoring: ", JSON.stringify(factoring, null, 2));
-
   var paramsEmail = {
     factoring: factoring,
+    factoringpropuesta: factoringpropuesta,
     factorcuentabancaria: factorcuentabancaria,
   };
 
