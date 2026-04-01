@@ -126,6 +126,7 @@ export const acceptFactoringpropuesta = async (req: Request, res: Response) => {
         factoring_estado: { connect: { idfactoringestado: idfactoringestado } },
         factoring_propuesta_aceptada: { connect: { idfactoringpropuesta: factoringpropuesta.idfactoringpropuesta } },
         idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fecha_pago_confirmado: factoringpropuesta.fecha_pago_estimado,
         fechamod: new Date(),
       };
 
@@ -159,7 +160,7 @@ export const acceptFactoringpropuesta = async (req: Request, res: Response) => {
 
       return factoringpropuestaUpdated;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
 
   response(res, 200, {});
@@ -193,7 +194,7 @@ export const getFactoringpropuestaVigente = async (req: Request, res: Response) 
       var factoringpropuestaFiltered = jsonUtils.removeAttributesPrivates(factoringpropuesta);
       return factoringpropuestaFiltered;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, factoringpropuesta);
 };
