@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { catchedAsync } from "#src/utils/catchedAsync.js";
 import * as archivoController from "#src/controllers/admin/archivo.prisma.Controller.js";
-import { isAuth, isRole } from "#src/middlewares/auth.prisma.Middleware.js";
-import * as archivoMiddleware from "#src/middlewares/archivo.prisma.Middleware.js";
+import { isAuth, isRole } from "#root/src/middlewares/authMiddleware.js";
+import * as archivoMiddleware from "#root/src/middlewares/archivoMiddleware.js";
 
 const router = Router();
 

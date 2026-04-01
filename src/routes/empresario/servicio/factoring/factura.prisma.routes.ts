@@ -1,5 +1,5 @@
 import * as facturaController from "#root/src/controllers/empresario/factoring/factura.prisma.Controller.js";
-import { isRole, isAuth } from "#src/middlewares/auth.prisma.Middleware.js";
+import { isRole, isAuth } from "#root/src/middlewares/authMiddleware.js";
 import * as facturaMiddleware from "#src/middlewares/facturaMiddleware.js";
 import { catchedAsync } from "#src/utils/catchedAsync.js";
 import { Router } from "express";

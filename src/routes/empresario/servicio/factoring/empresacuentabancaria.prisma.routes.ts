@@ -2,7 +2,7 @@ import { Router } from "express";
 import { catchedAsync } from "#src/utils/catchedAsync.js";
 import * as empresacuentabancariaController from "#src/controllers/empresario/factoring/empresacuentabancaria.prisma.Controller.js";
 import * as empresacuentabancariaMiddleware from "#src/middlewares/empresacuentabancariaMiddleware.js";
-import { isAuth, isRole } from "#src/middlewares/auth.prisma.Middleware.js";
+import { isAuth, isRole } from "#root/src/middlewares/authMiddleware.js";
 
 const router = Router();
 

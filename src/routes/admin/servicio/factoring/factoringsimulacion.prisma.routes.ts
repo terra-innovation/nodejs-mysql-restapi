@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { catchedAsync } from "#src/utils/catchedAsync.js";
 import * as factoringsimulacionController from "#src/controllers/admin/servicio/factoring/factoringsimulacion.prisma.Controller.js";
-import { isAuth, isRole } from "#src/middlewares/auth.prisma.Middleware.js";
+import { isAuth, isRole } from "#root/src/middlewares/authMiddleware.js";
 
 const router = Router();
 

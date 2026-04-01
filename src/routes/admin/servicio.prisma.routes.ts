@@ -1,5 +1,5 @@
 import * as servicioController from "#src/controllers/admin/servicio.prisma.Controller.js";
-import { isAuth, isRole } from "#src/middlewares/auth.prisma.Middleware.js";
+import { isAuth, isRole } from "#root/src/middlewares/authMiddleware.js";
 import { catchedAsync } from "#src/utils/catchedAsync.js";
 import { Router } from "express";
 

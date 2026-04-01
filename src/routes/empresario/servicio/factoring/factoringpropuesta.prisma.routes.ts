@@ -1,5 +1,5 @@
 import * as factoringpropuestaController from "#src/controllers/empresario/factoring/factoringpropuesta.prisma.Controller.js";
-import { isRole, isAuth } from "#src/middlewares/auth.prisma.Middleware.js";
+import { isRole, isAuth } from "#root/src/middlewares/authMiddleware.js";
 import { catchedAsync } from "#src/utils/catchedAsync.js";
 import { Router } from "express";
 

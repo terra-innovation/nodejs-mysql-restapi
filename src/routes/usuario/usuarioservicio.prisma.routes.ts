@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { catchedAsync } from "#src/utils/catchedAsync.js";
 import * as usuarioservicioController from "#src/controllers/usuario/usuarioservicio.prisma.Controller.js";
-import { isAuth, isRole } from "#src/middlewares/auth.prisma.Middleware.js";
+import { isAuth, isRole } from "#root/src/middlewares/authMiddleware.js";
 import * as usuarioservicioMiddleware from "#src/middlewares/usuarioservicioMiddleware.js";
 
 const router = Router();
