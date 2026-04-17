@@ -1,4 +1,5 @@
-import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
+import { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
+import { Decimal } from "@prisma/client/runtime/library";
 import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as paisDao from "#src/daos/pais.prisma.Dao.js";
@@ -6,6 +7,7 @@ import * as provinciaDao from "#src/daos/provincia.prisma.Dao.js";
 import * as distritoDao from "#src/daos/distrito.prisma.Dao.js";
 import * as bancoDao from "#src/daos/banco.prisma.Dao.js";
 import * as cuentatipoDao from "#src/daos/cuentatipo.prisma.Dao.js";
+import * as documentotipoDao from "#src/daos/documentotipo.prisma.Dao.js";
 import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
 import * as personaDao from "#src/daos/persona.prisma.Dao.js";
 import * as inversionistaDao from "#src/daos/inversionista.prisma.Dao.js";
@@ -29,10 +31,12 @@ import * as usuarioservicioDao from "#src/daos/usuarioservicio.prisma.Dao.js";
 import * as usuarioservicioestadoDao from "#src/daos/usuarioservicioestado.prisma.Dao.js";
 import * as usuarioservicioverificacionDao from "#src/daos/usuarioservicioverificacion.prisma.Dao.js";
 import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
+import * as accionistaDao from "#src/daos/accionista.prisma.Dao.js";
 import * as archivoempresaDao from "#src/daos/archivoempresa.prisma.Dao.js";
 import * as archivocolaboradorDao from "#src/daos/archivocolaborador.prisma.Dao.js";
 import * as archivocuentabancariaDao from "#src/daos/archivocuentabancaria.prisma.Dao.js";
 import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
+import * as funcionarioDao from "#src/daos/funcionario.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
@@ -266,7 +270,7 @@ export const suscribirUsuarioServicioFactoringInversionista = async (req: Reques
 
       return {};
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 200, {});
 };
@@ -320,6 +324,10 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       numero: yup.string().required().max(20),
       cci: yup.string().required().max(20),
       alias: yup.string().required().max(50),
+
+      accionistas: yup.string().required(),
+
+      funcionarios: yup.string().required(),
 
       declaracion_conformidad_contrato: yup.boolean().required(),
       declaracion_datos_reales: yup.boolean().required(),
@@ -457,6 +465,17 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       const empresaCreated = await empresaDao.insertEmpresa(tx, empresaToCreate);
 
       log.debug(line(), "empresaCreated:", empresaCreated);
+
+      /* Registramos los accionistas */
+      const accionistas = JSON.parse(usuarioservicioValidated.accionistas);
+      if (Array.isArray(accionistas)) {
+        await crearAccionistasRecursivo(req, tx, empresaCreated, accionistas);
+      }
+
+      const funcionarios = JSON.parse(usuarioservicioValidated.funcionarios);
+      if (Array.isArray(funcionarios)) {
+        await crearFuncionarios(req, tx, empresaCreated, funcionarios);
+      }
 
       /* Creamos el Colaborador con los datos del usuario cómo representante legal */
       const usuarioConected = await usuarioDao.getUsuarioByIdusuario(tx, usuarioservicioValidated.idusuario);
@@ -636,7 +655,7 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
 
       return {};
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 200, {});
 };
@@ -664,6 +683,7 @@ export const getUsuarioservicioMaster = async (req: Request, res: Response) => {
       const bancos = await bancoDao.getBancos(tx, filter_estados);
       const monedas = await monedaDao.getMonedas(tx, filter_estados);
       const cuentatipos = await cuentatipoDao.getCuentatipos(tx, filter_estados);
+      const documentotipos = await documentotipoDao.getDocumentotipos(tx, filter_estados);
       const persona = await personaDao.getPersonaByIdusuario(tx, session_idusuario);
 
       let usuarioservicioMaster: Record<string, any> = {};
@@ -674,6 +694,7 @@ export const getUsuarioservicioMaster = async (req: Request, res: Response) => {
       usuarioservicioMaster.bancos = bancos;
       usuarioservicioMaster.monedas = monedas;
       usuarioservicioMaster.cuentatipos = cuentatipos;
+      usuarioservicioMaster.documentotipos = documentotipos;
       usuarioservicioMaster.persona = persona;
 
       //let usuarioservicioMasterJSON = jsonUtils.sequelizeToJSON(usuarioservicioMaster);
@@ -684,7 +705,7 @@ export const getUsuarioservicioMaster = async (req: Request, res: Response) => {
       //jsonUtils.prettyPrint(usuarioservicioMaster);
       return usuarioservicioMaster;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, usuarioservicioMasterFiltered);
 };
@@ -705,7 +726,7 @@ export const getUsuarioservicios = async (req: Request, res: Response) => {
       usuarioserviciosFiltered = jsonUtils.removeAttributesPrivates(usuarioserviciosFiltered);
       return usuarioserviciosFiltered;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, usuarioserviciosFiltered);
 };
@@ -905,4 +926,97 @@ const crearArchivoFichaRuc = async (req, tx, usuarioservicioValidated, empresaCr
   fs.unlinkSync(archivoOrigen);
 
   return archivoCreated;
+};
+
+const crearAccionistasRecursivo = async (req: Request, tx: any, empresaCreated: any, accionistas: any[], idaccionista_padre: number | null = null) => {
+  for (const acc of accionistas) {
+    const pais = await paisDao.findPaisPk(tx, acc.paisid);
+
+    if (!pais) {
+      log.warn(line(), "Pais no existe: [" + acc.paisid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+    const documentotipo = acc.documentotipoid ? await documentotipoDao.findDocumentotipoPk(tx, acc.documentotipoid) : null;
+
+    const accionistaToCreate: any = {
+      empresa: { connect: { idempresa: empresaCreated.idempresa } },
+      pais: { connect: { idpais: pais.idpais } },
+      accionistaid: uuidv4(),
+      code: uuidv4().split("-")[0],
+      tipo: acc.tipo,
+      porcentaje_acciones: new Decimal(acc.porcentaje_acciones),
+
+      idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
+      fechacrea: new Date(),
+      idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
+      fechamod: new Date(),
+      estado: 1,
+    };
+
+    if (idaccionista_padre) {
+      accionistaToCreate.accionista = { connect: { idaccionista: idaccionista_padre } };
+    }
+
+    if (acc.tipo === "PN") {
+      accionistaToCreate.nombres = acc.nombres;
+      accionistaToCreate.apellidos = acc.apellidos;
+      accionistaToCreate.documento_numero = acc.documentonumero;
+      if (documentotipo) {
+        accionistaToCreate.documento_tipo = { connect: { iddocumentotipo: documentotipo.iddocumentotipo } };
+      }
+      accionistaToCreate.es_pep = acc.es_pep;
+      accionistaToCreate.pep_cargo = acc.pep_cargo || "";
+      accionistaToCreate.pep_institucion = acc.pep_institucion || "";
+      accionistaToCreate.pep_vinculo = acc.pep_vinculo || "";
+      accionistaToCreate.pep_nombre_completo_referencia = acc.pep_nombre_completo || "";
+    } else {
+      accionistaToCreate.razon_social = acc.razon_social;
+      accionistaToCreate.ruc = acc.ruc;
+    }
+
+    const accionistaCreated = await accionistaDao.insertAccionista(tx, accionistaToCreate);
+
+    if (acc.tipo === "PJ" && acc.accionistas && Array.isArray(acc.accionistas) && acc.accionistas.length > 0) {
+      await crearAccionistasRecursivo(req, tx, empresaCreated, acc.accionistas, accionistaCreated.idaccionista);
+    }
+  }
+};
+
+const crearFuncionarios = async (req: Request, tx: any, empresaCreated: any, funcionarios: any[]) => {
+  for (const fun of funcionarios) {
+    const pais = await paisDao.findPaisPk(tx, fun.paisid);
+    if (!pais) {
+      log.warn(line(), "Pais no existe: [" + fun.paisid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+    const documentotipo = await documentotipoDao.findDocumentotipoPk(tx, fun.documentotipoid);
+    if (!documentotipo) {
+      log.warn(line(), "Documento tipo no existe: [" + fun.documentotipoid + "]");
+      throw new ClientError("Datos no válidos", 404);
+    }
+
+    const funcionarioToCreate: Prisma.funcionarioCreateInput = {
+      empresa: { connect: { idempresa: empresaCreated.idempresa } },
+      pais: { connect: { idpais: pais.idpais } },
+      documento_tipo: { connect: { iddocumentotipo: documentotipo.iddocumentotipo } },
+      funcionarioid: uuidv4(),
+      code: uuidv4().split("-")[0],
+      nombres: fun.nombres,
+      apellidos: fun.apellidos,
+      documento_numero: fun.documentonumero,
+      cargo: fun.cargo,
+      es_pep: fun.es_pep,
+      pep_vinculo: fun.pep_vinculo || "",
+      pep_nombre_completo_referencia: fun.pep_nombre_completo || "",
+      pep_cargo: fun.pep_cargo || "",
+      pep_institucion: fun.pep_institucion || "",
+      idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
+      fechacrea: new Date(),
+      idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
+      fechamod: new Date(),
+      estado: 1,
+    };
+
+    await funcionarioDao.insertFuncionario(tx, funcionarioToCreate);
+  }
 };

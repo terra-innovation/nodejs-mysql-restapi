@@ -18,6 +18,14 @@ export const getPaises = async (tx: TxClient, estados: number[]) => {
           in: estados,
         },
       },
+      orderBy: [
+        {
+          orden: "asc", // Primero Perú (1), luego el resto (2, 3...)
+        },
+        {
+          nombrepais: "asc", // Dentro del mismo número de orden, alfabetiza por nombre
+        },
+      ],
     });
 
     return paises;
