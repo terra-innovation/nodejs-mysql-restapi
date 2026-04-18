@@ -1,10 +1,31 @@
 import { TxClient } from "#src/types/Prisma.types.js";
-import type { Prisma, funcionario } from "#root/generated/prisma/ft_factoring/client.js";
+import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
 
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
+
+export const getFuncionariosByIdempresa = async (tx: TxClient, idempresa: number, estados: number[]) => {
+  try {
+    const funcionarios = await tx.funcionario.findMany({
+      include: {
+        pais: true,
+        documento_tipo: true,
+      },
+      where: {
+        idempresa: idempresa,
+        estado: {
+          in: estados,
+        },
+      },
+    });
+    return funcionarios;
+  } catch (error) {
+    log.error(line(), "", error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
 
 export const getFuncionarios = async (tx: TxClient, estados: number[]) => {
   try {

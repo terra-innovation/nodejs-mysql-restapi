@@ -15,6 +15,7 @@ export const getFactoringempresasByVerificacion = async (tx: TxClient, estadolog
         servicio_empresa_estado: true,
         empresa: {
           include: {
+            empresa_declaracion: true,
             archivo_empresas: {
               include: {
                 archivo: {

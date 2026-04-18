@@ -1,10 +1,50 @@
 import { TxClient } from "#src/types/Prisma.types.js";
-import type { Prisma, accionista } from "#root/generated/prisma/ft_factoring/client.js";
+import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
 
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
+
+export const getAccionistasByIdempresa = async (tx: TxClient, idempresa: number, estados: number[]) => {
+  try {
+    const accionistasFlat = await tx.accionista.findMany({
+      include: {
+        pais: true,
+        documento_tipo: true,
+      },
+      where: {
+        idempresa: idempresa,
+        estado: {
+          in: estados,
+        },
+      },
+      orderBy: [{ tipo: "desc" }, { razon_social: "asc" }, { apellidos: "asc" }, { nombres: "asc" }],
+    });
+
+    const map = new Map<number, any>();
+    accionistasFlat.forEach((acc: any) => {
+      map.set(acc.idaccionista, { ...acc, accionistas: [] });
+    });
+
+    const tree: any[] = [];
+    accionistasFlat.forEach((acc: any) => {
+      const node = map.get(acc.idaccionista);
+      if (acc.idaccionista_padre && map.has(acc.idaccionista_padre)) {
+        map.get(acc.idaccionista_padre).accionistas.push(node);
+      } else if (!acc.idaccionista_padre) {
+        tree.push(node);
+      }
+      // Si tiene idaccionista_padre pero el padre no está en el mapa (por filtros de estado),
+      // se ignora para mantener la consistencia de la jerarquía activa.
+    });
+
+    return tree;
+  } catch (error) {
+    log.error(line(), "", error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
 
 export const getAccionistas = async (tx: TxClient, estados: number[]) => {
   try {
