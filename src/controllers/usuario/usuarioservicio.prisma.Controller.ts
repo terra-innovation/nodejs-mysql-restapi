@@ -36,6 +36,7 @@ import * as archivoempresaDao from "#src/daos/archivoempresa.prisma.Dao.js";
 import * as archivocolaboradorDao from "#src/daos/archivocolaborador.prisma.Dao.js";
 import * as archivocuentabancariaDao from "#src/daos/archivocuentabancaria.prisma.Dao.js";
 import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
+import * as empresadeclaracionDao from "#src/daos/empresadeclaracion.prisma.Dao.js";
 import * as funcionarioDao from "#src/daos/funcionario.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
@@ -329,6 +330,8 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
 
       funcionarios: yup.string().required(),
 
+      declaracion_accionistas_autorizacion_datos: yup.boolean().required(),
+      declaracion_funcionarios_autorizacion_datos: yup.boolean().required(),
       declaracion_conformidad_contrato: yup.boolean().required(),
       declaracion_datos_reales: yup.boolean().required(),
     })
@@ -465,6 +468,24 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       const empresaCreated = await empresaDao.insertEmpresa(tx, empresaToCreate);
 
       log.debug(line(), "empresaCreated:", empresaCreated);
+
+      /* Registramos las declaraciones de la Empresa */
+      const empresadeclaracionToCreate: Prisma.empresa_declaracionCreateInput = {
+        empresa: { connect: { idempresa: empresaCreated.idempresa } },
+        empresadeclaracionid: uuidv4(),
+        declaracion_conformidad_contrato: usuarioservicioValidated.declaracion_conformidad_contrato,
+        declaracion_datos_reales: usuarioservicioValidated.declaracion_datos_reales,
+        declaracion_accionistas_autorizacion_datos: usuarioservicioValidated.declaracion_accionistas_autorizacion_datos,
+        declaracion_funcionarios_autorizacion_datos: usuarioservicioValidated.declaracion_funcionarios_autorizacion_datos,
+        idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
+
+      const empresadeclaracionCreated = await empresadeclaracionDao.insertEmpresadeclaracion(tx, empresadeclaracionToCreate);
+      log.debug(line(), "empresadeclaracionCreated:", empresadeclaracionCreated);
 
       /* Registramos los accionistas */
       const accionistas = JSON.parse(usuarioservicioValidated.accionistas);

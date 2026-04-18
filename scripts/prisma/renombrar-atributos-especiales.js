@@ -98,6 +98,7 @@ const renombrarAtributosEspeciales = (filePath) => {
   const updatedLines = lines.map((line, i) => {
     const originalLine = line;
 
+
     //if (!line.includes('@relation("')) return line;
 
     // --- Caso 1: Relaciones con array ([]), aplicar pluralización ---
