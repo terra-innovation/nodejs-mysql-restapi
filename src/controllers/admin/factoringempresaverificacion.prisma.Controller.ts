@@ -103,17 +103,23 @@ export const createFactoringempresaverificacion = async (req: Request, res: Resp
         /* Damos acceso al usuario como Empresario */
         const idrol_empresario = 3;
 
-        const usuariorolToCreate: Prisma.usuario_rolCreateInput = {
-          usuario: { connect: { idusuario: servicioempresa.idusuariosuscriptor } },
-          rol: { connect: { idrol: idrol_empresario } },
-          idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
-          fechacrea: new Date(),
-          idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
-          fechamod: new Date(),
-          estado: 1,
-        };
+        const rolExistente = await usuariorolDao.getUsuariorolByIdusuarioIdrol(tx, servicioempresa.idusuariosuscriptor, idrol_empresario);
 
-        const usuariorolCreated = await usuariorolDao.insertUsuariorol(tx, usuariorolToCreate);
+        if (!rolExistente) {
+          const usuariorolToCreate: Prisma.usuario_rolCreateInput = {
+            usuario: { connect: { idusuario: servicioempresa.idusuariosuscriptor } },
+            rol: { connect: { idrol: idrol_empresario } },
+            idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
+            fechacrea: new Date(),
+            idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
+            fechamod: new Date(),
+            estado: 1,
+          };
+          await usuariorolDao.insertUsuariorol(tx, usuariorolToCreate);
+        } else if (rolExistente.estado !== 1) {
+          // Si ya existe pero estaba inactivo, lo reactivamos para evitar errores de restricción única
+          await usuariorolDao.activateUsuariorol(tx, servicioempresa.idusuariosuscriptor, idrol_empresario, req.session_user?.usuario?.idusuario ?? 1);
+        }
       }
 
       await enviarCorreoSegunCorrespondeNuevoEstadoDeServicioEmpresa(servicioempresaverificacionValidated, servicioempresa, servicioempresaestado, empresa, personasuscriptor);
@@ -172,33 +178,36 @@ const darAccesoAlUsuarioServicio = async (req, tx, servicioempresaverificacionVa
     throw new ClientError("Datos no válidos", 404);
   }
 
-  // Inserta un nuevo registro en la tabla usuarioservicioverificacion con el nuevo estado
-  const usuarioservicioverificacionToCreate: Prisma.usuario_servicio_verificacionCreateInput = {
-    usuario_servicio: { connect: { idusuarioservicio: usuarioservicio.idusuarioservicio } },
-    usuario_servicio_estado: { connect: { idusuarioservicioestado: usuarioservicioestado.idusuarioservicioestado } },
-    usuario_verifica: { connect: { idusuario: req.session_user.usuario.idusuario } },
-    usuarioservicioverificacionid: uuidv4(),
-    comentariousuario: servicioempresaverificacionValidated.comentariousuario,
-    comentariointerno: servicioempresaverificacionValidated.comentariointerno + " // Proceso automático. Se concedió acceso por la verificación de la empresa: " + empresa.code + " - " + empresa.ruc + " - " + empresa.razon_social,
+  /* Solo si esta en estado En revisión*/
+  if (usuarioservicio.idusuarioservicioestado == 3) {
+    // Inserta un nuevo registro en la tabla usuarioservicioverificacion con el nuevo estado
+    const usuarioservicioverificacionToCreate: Prisma.usuario_servicio_verificacionCreateInput = {
+      usuario_servicio: { connect: { idusuarioservicio: usuarioservicio.idusuarioservicio } },
+      usuario_servicio_estado: { connect: { idusuarioservicioestado: usuarioservicioestado.idusuarioservicioestado } },
+      usuario_verifica: { connect: { idusuario: req.session_user.usuario.idusuario } },
+      usuarioservicioverificacionid: uuidv4(),
+      comentariousuario: servicioempresaverificacionValidated.comentariousuario,
+      comentariointerno: servicioempresaverificacionValidated.comentariointerno + " // Proceso automático. Se concedió acceso por la verificación de la empresa: " + empresa.code + " - " + empresa.ruc + " - " + empresa.razon_social,
 
-    idusuariocrea: req.session_user.usuario.idusuario ?? 1,
-    fechacrea: new Date(),
-    idusuariomod: req.session_user.usuario.idusuario ?? 1,
-    fechamod: new Date(),
-    estado: 1,
-  };
+      idusuariocrea: req.session_user.usuario.idusuario ?? 1,
+      fechacrea: new Date(),
+      idusuariomod: req.session_user.usuario.idusuario ?? 1,
+      fechamod: new Date(),
+      estado: 1,
+    };
 
-  const usuarioservicioverificacionCreated = await usuarioservicioverificacionDao.insertUsuarioservicioverificacion(tx, usuarioservicioverificacionToCreate);
-  log.debug(line(), "usuarioservicioverificacionCreated", usuarioservicioverificacionCreated);
+    const usuarioservicioverificacionCreated = await usuarioservicioverificacionDao.insertUsuarioservicioverificacion(tx, usuarioservicioverificacionToCreate);
+    log.debug(line(), "usuarioservicioverificacionCreated", usuarioservicioverificacionCreated);
 
-  // Actualiza la tabla usuarioservicio con el nuevo estado
-  const usuarioservicioToUpdate: Prisma.usuario_servicioUpdateInput = {
-    usuario_servicio_estado: { connect: { idusuarioservicioestado: usuarioservicioestado.idusuarioservicioestado } },
-    idusuariomod: req.session_user.usuario.idusuario ?? 1,
-    fechamod: new Date(),
-  };
-  const usuarioservicioUpdated = await usuarioservicioDao.updateUsuarioservicio(tx, usuarioservicio.usuarioservicioid, usuarioservicioToUpdate);
-  log.debug(line(), "usuarioservicioUpdated", usuarioservicioUpdated);
+    // Actualiza la tabla usuarioservicio con el nuevo estado
+    const usuarioservicioToUpdate: Prisma.usuario_servicioUpdateInput = {
+      usuario_servicio_estado: { connect: { idusuarioservicioestado: usuarioservicioestado.idusuarioservicioestado } },
+      idusuariomod: req.session_user.usuario.idusuario ?? 1,
+      fechamod: new Date(),
+    };
+    const usuarioservicioUpdated = await usuarioservicioDao.updateUsuarioservicio(tx, usuarioservicio.usuarioservicioid, usuarioservicioToUpdate);
+    log.debug(line(), "usuarioservicioUpdated", usuarioservicioUpdated);
+  }
 };
 
 const enviarCorreoSegunCorrespondeNuevoEstadoDeServicioEmpresa = async (servicioempresaverificacionValidated, servicioempresa, servicioempresaestado, empresa, personasuscriptor) => {

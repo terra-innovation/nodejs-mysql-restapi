@@ -10,9 +10,21 @@ export const getUsuarioservicioempresaByIdusuarioIdServicio = async (tx: TxClien
   try {
     const usuarioservicioempresa = await tx.usuario_servicio_empresa.findMany({
       include: {
-        empresa: true,
+        empresa: {
+          include: {
+            servicio_empresas: {
+              where: {
+                idservicio: idservicio,
+              },
+              include: {
+                servicio_empresa_estado: true,
+              },
+            },
+          },
+        },
         usuario_servicio_empresa_estado: true,
         usuario_servicio_empresa_rol: true,
+        servicio: true,
       },
       where: {
         idusuario: idusuario,

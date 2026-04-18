@@ -53,11 +53,47 @@ export const getUsuarioDatosContactoByIdusuario = async (tx: TxClient, idusuario
   }
 };
 
-export const getUsuariosActivos = async (tx: TxClient) => {
+export const getUsuarios = async (tx: TxClient, estado: number[]) => {
   try {
     const usuarios = await tx.usuario.findMany({
+      include: {
+        usuario_roles: {
+          include: {
+            rol: true,
+          },
+        },
+        usuario_servicios: {
+          include: {
+            servicio: true,
+            usuario_servicio_estado: true,
+            usuario_servicio_verificaciones: {
+              include: {
+                usuario_servicio_estado: true,
+                usuario_verifica: {
+                  select: {
+                    idusuario: true,
+                    usuarionombres: true,
+                    apellidopaterno: true,
+                    apellidomaterno: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        usuario_servicio_empresas: {
+          include: {
+            empresa: true,
+            servicio: true,
+            usuario_servicio_empresa_estado: true,
+            usuario_servicio_empresa_rol: true,
+          },
+        },
+      },
       where: {
-        estado: 1,
+        estado: {
+          in: estado,
+        },
       },
     });
 
@@ -238,6 +274,21 @@ export const deleteUsuario = async (tx: TxClient, usuarioid: string, idusuariomo
   try {
     const result = await tx.usuario.update({
       data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
+      where: {
+        usuarioid: usuarioid,
+      },
+    });
+    return result;
+  } catch (error) {
+    log.error(line(), "", error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
+export const activateUsuario = async (tx: TxClient, usuarioid: string, idusuariomod: number) => {
+  try {
+    const result = await tx.usuario.update({
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ACTIVO },
       where: {
         usuarioid: usuarioid,
       },

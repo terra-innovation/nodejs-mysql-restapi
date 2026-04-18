@@ -42,7 +42,7 @@ export const activatePersona = async (req: Request, res: Response) => {
       log.debug(line(), "personaActivated:", personaActivated);
       return personaActivated;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 204, personaActivated);
 };
@@ -73,7 +73,7 @@ export const deletePersona = async (req: Request, res: Response) => {
       log.debug(line(), "personaDeleted:", personaDeleted);
       return personaDeleted;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 204, personaDeleted);
 };
@@ -103,7 +103,7 @@ export const getPersonaMaster = async (req: Request, res: Response) => {
       //jsonUtils.prettyPrint(personaMaster);
       return personaMasterFiltered;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, personaMasterFiltered);
 };
@@ -158,7 +158,7 @@ export const updatePersona = async (req: Request, res: Response) => {
       }
       return {};
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 200, {});
 };
@@ -178,7 +178,7 @@ export const getPersonas = async (req: Request, res: Response) => {
       //personasFiltered = jsonUtils.removeAttributesPrivates(personasFiltered);
       return personasJson;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, personasJson);
 };

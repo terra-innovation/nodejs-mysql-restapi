@@ -87,6 +87,13 @@ export const generarMenuAdmin = (usuario: UsuarioConRoles) => {
             url: "/admin/servicio/lista",
             breadcrumbs: true,
           },
+          {
+            id: "admin-mantenimiento-usuarios",
+            title: "Usuarios",
+            type: "item",
+            url: "/admin/usuario/lista",
+            breadcrumbs: true,
+          },
         ],
       },
       {

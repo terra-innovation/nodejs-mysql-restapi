@@ -21,6 +21,7 @@ import admin_servicio_factoring_factoringtransferenciacedenteRoutes from "#src/r
 import admin_servicio_factoring_funcionarioRoutes from "#src/routes/admin/servicio/factoring/funcionario.prisma.routes.js";
 import admin_servicio_factoring_accionistaRoutes from "#src/routes/admin/servicio/factoring/accionista.prisma.routes.js";
 import admin_zlaboratorioRoutes from "#src/routes/admin/zlaboratorio.prisma.routes.js";
+import admin_usuarioRoutes from "#src/routes/admin/usuario.prisma.routes.js";
 
 import admin_administracionRoutes from "#root/src/routes/admin/administracion.prisma.routes.js";
 
@@ -38,6 +39,7 @@ router.use(admin_archivofacturaRoutes);
 router.use(admin_personaRoutes);
 router.use(admin_archivoRoutes);
 router.use(admin_personaverificacionRoutes);
+router.use(admin_usuarioRoutes);
 router.use(admin_factoringempresaverificacionRoutes);
 router.use(admin_factoringinversionistaverificacionRoutes);
 router.use(admin_servicio_factoring_factoringRoutes);

@@ -493,6 +493,7 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
         await crearAccionistasRecursivo(req, tx, empresaCreated, accionistas);
       }
 
+      /* Registramos los funcionarios */
       const funcionarios = JSON.parse(usuarioservicioValidated.funcionarios);
       if (Array.isArray(funcionarios)) {
         await crearFuncionarios(req, tx, empresaCreated, funcionarios);
@@ -635,34 +636,35 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       const servicioempresaverificacionCreated = await servicioempresaverificacionDao.insertServicioempresaverificacion(tx, servicioempresaverificacionToCreate);
       log.debug(line(), "servicioempresaverificacionCreated:", servicioempresaverificacionCreated);
 
-      /* Registramos para la verificación del usuario_servicio en la tabla usuario_servicio_verificacion */
-      const usuarioservicioverificacionToCreate: Prisma.usuario_servicio_verificacionCreateInput = {
-        usuario_servicio: { connect: { idusuarioservicio: usuarioservicio.idusuarioservicio } },
-        usuario_servicio_estado: { connect: { idusuarioservicioestado: usuarioservicioestado.idusuarioservicioestado } },
-        usuario_verifica: { connect: { idusuario: req.session_user.usuario.idusuario } },
-        usuarioservicioverificacionid: uuidv4(),
-        comentariousuario: "",
-        comentariointerno: "",
-        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
-        fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario.idusuario ?? 1,
-        fechamod: new Date(),
-        estado: 1,
-      };
+      /* Solo si está en estado Suscribirse */
+      if (usuarioservicio.idusuarioservicioestado == 1) {
+        /* Registramos para la verificación del usuario_servicio en la tabla usuario_servicio_verificacion */
+        const usuarioservicioverificacionToCreate: Prisma.usuario_servicio_verificacionCreateInput = {
+          usuario_servicio: { connect: { idusuarioservicio: usuarioservicio.idusuarioservicio } },
+          usuario_servicio_estado: { connect: { idusuarioservicioestado: usuarioservicioestado.idusuarioservicioestado } },
+          usuario_verifica: { connect: { idusuario: req.session_user.usuario.idusuario } },
+          usuarioservicioverificacionid: uuidv4(),
+          comentariousuario: "",
+          comentariointerno: "",
+          idusuariocrea: req.session_user.usuario.idusuario ?? 1,
+          fechacrea: new Date(),
+          idusuariomod: req.session_user.usuario.idusuario ?? 1,
+          fechamod: new Date(),
+          estado: 1,
+        };
 
-      const usuarioservicioverificacionCreated = await usuarioservicioverificacionDao.insertUsuarioservicioverificacion(tx, usuarioservicioverificacionToCreate);
-      log.debug(line(), "usuarioservicioverificacionCreated:", usuarioservicioverificacionCreated);
+        const usuarioservicioverificacionCreated = await usuarioservicioverificacionDao.insertUsuarioservicioverificacion(tx, usuarioservicioverificacionToCreate);
+        log.debug(line(), "usuarioservicioverificacionCreated:", usuarioservicioverificacionCreated);
 
-      /* Actualizamos el estado del usuario_servicio*/
-
-      const usuarioservicioToUpdate: Prisma.usuario_servicioUpdateInput = {
-        usuario_servicio_estado: { connect: { idusuarioservicioestado: usuarioservicioestado.idusuarioservicioestado } },
-        idusuariomod: req.session_user.usuario.idusuario ?? 1,
-        fechamod: new Date(),
-      };
-
-      const usuarioservicioUpdated = await usuarioservicioDao.updateUsuarioservicio(tx, usuarioservicio.usuarioservicioid, usuarioservicioToUpdate);
-      log.debug(line(), "usuarioservicioUpdated:", usuarioservicioUpdated);
+        /* Actualizamos el estado del usuario_servicio*/
+        const usuarioservicioToUpdate: Prisma.usuario_servicioUpdateInput = {
+          usuario_servicio_estado: { connect: { idusuarioservicioestado: usuarioservicioestado.idusuarioservicioestado } },
+          idusuariomod: req.session_user.usuario.idusuario ?? 1,
+          fechamod: new Date(),
+        };
+        const usuarioservicioUpdated = await usuarioservicioDao.updateUsuarioservicio(tx, usuarioservicio.usuarioservicioid, usuarioservicioToUpdate);
+        log.debug(line(), "usuarioservicioUpdated:", usuarioservicioUpdated);
+      }
 
       const msnTelegram = {
         title: "Nueva solicitud de verificación de Empresa",
