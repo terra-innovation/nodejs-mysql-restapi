@@ -22,138 +22,6 @@ import path from "path";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-import { fileTypeFromFile } from "file-type";
-
-export const cargarArchivo = async (req: Request, res: Response) => {
-  log.debug(line(), "controller::cargarArchivo");
-
-  // 1. Extraer archivo del request (Multer lo pone en req.files)
-  let archivoRaw: any;
-  if (req.files && !Array.isArray(req.files) && "archivo" in req.files) {
-    archivoRaw = req.files.archivo?.[0];
-  }
-
-  if (!archivoRaw) {
-    throw new ClientError("Archivo es requerido", 400);
-  }
-
-  const archivoOrigen = archivoRaw.path;
-
-  try {
-    const archivoCreated = await prismaFT.client.$transaction(
-      async (tx) => {
-        const idusuario = req.session_user?.usuario?.idusuario;
-        const archivoUploadSchema = yup
-          .object()
-          .shape({
-            idusuario: yup.number().required(),
-            archivotipo_code: yup.string().trim().min(8).max(8),
-          })
-          .required();
-
-        // Validamos solo el body y idusuario aquí, el archivo lo validamos dinámicamente luego
-        const bodyValidated = archivoUploadSchema.validateSync({ ...req.body, idusuario }, { abortEarly: false, stripUnknown: true });
-        log.debug(line(), "bodyValidated:", bodyValidated);
-
-        // 2. Obtener configuración del tipo de archivo desde la BBDD
-        let archivotipo: any;
-        if (bodyValidated.archivotipo_code) {
-          archivotipo = await archivotipoDao.getArchivotipoByCode(tx, bodyValidated.archivotipo_code);
-          if (!archivotipo) {
-            log.warn(line(), "Archivo tipo no existe: [" + bodyValidated.archivotipo_code + "]");
-            throw new ClientError("Tipo de archivo no válido", 404);
-          }
-        } else {
-          // Fallback al ID 10 (Sin tipo) si no se especifica código
-          archivotipo = await archivotipoDao.getArchivotipoByIdarchivotipo(tx, 10);
-          if (!archivotipo) {
-            log.error(line(), "Configuración por defecto (ID 10) no encontrada");
-            throw new ClientError("Error de configuración del sistema", 500);
-          }
-        }
-
-        // 3. Validaciones Dinámicas (BBDD + Seguridad)
-        const { size, originalname, mimetype: mimeMulter } = archivoRaw;
-        const extension = path.extname(originalname).toLowerCase();
-
-        // A. Validar Tamaño Máximo
-        if (archivotipo.tamanio_maximo && size > Number(archivotipo.tamanio_maximo)) {
-          log.warn(line(), `Archivo excede tamaño: ${size} > ${archivotipo.tamanio_maximo}`);
-          throw new ClientError(`El archivo excede el límite de ${Number(archivotipo.tamanio_maximo) / 1024 / 1024}MB`, 400);
-        }
-
-        // B. Validar Extensión Permitida
-        if (archivotipo.extensiones_permitidas) {
-          const permitidas = archivotipo.extensiones_permitidas
-            .toLowerCase()
-            .split(",")
-            .map((e) => e.trim());
-          if (!permitidas.includes(extension)) {
-            log.warn(line(), `Extensión no permitida: ${extension} para ${archivotipo.nombre}`);
-            throw new ClientError(`La extensión ${extension} no está permitida`, 400);
-          }
-        }
-
-        // C. Validar Mimetype Real (Magic Numbers)
-        const tipoDetectado = await fileTypeFromFile(archivoOrigen);
-        const mimeReal = tipoDetectado ? tipoDetectado.mime : mimeMulter;
-
-        if (archivotipo.mimetypes_permitidos) {
-          const mimesValidos = archivotipo.mimetypes_permitidos.split(",").map((m) => m.trim());
-          if (!mimesValidos.includes(mimeReal)) {
-            log.error(line(), `Falsificación detectada: Contenido real [${mimeReal}] no coincide con permitido para ${archivotipo.nombre}`);
-            throw new ClientError("El contenido del archivo no está permitido", 400);
-          }
-        }
-
-        // 4. Almacenamiento Final
-        const { anio_upload, mes_upload, dia_upload, filename, encoding, codigo_archivo } = archivoRaw;
-        const carpetaDestino = path.join(anio_upload, mes_upload, dia_upload);
-        const rutaDestino = path.join(storageUtils.STORAGE_PATH_SUCCESS, anio_upload, mes_upload, dia_upload, filename);
-
-        fs.mkdirSync(path.dirname(rutaDestino), { recursive: true });
-        fs.copyFileSync(archivoOrigen, rutaDestino);
-
-        // 5. Registro en Base de Datos
-        let archivoNuevo: Prisma.archivoCreateInput = {
-          archivoid: uuidv4(),
-          archivo_tipo: { connect: { idarchivotipo: archivotipo.idarchivotipo } },
-          archivo_estado: { connect: { idarchivoestado: 1 } },
-          codigo: codigo_archivo,
-          nombrereal: originalname,
-          nombrealmacenamiento: filename,
-          ruta: carpetaDestino,
-          tamanio: size,
-          mimetype: mimeReal,
-          encoding: encoding,
-          extension: extension.replace(".", ""),
-          observacion: "",
-          fechavencimiento: null,
-          idusuariocrea: idusuario ?? 1,
-          fechacrea: new Date(),
-          idusuariomod: idusuario ?? 1,
-          fechamod: new Date(),
-          estado: 1,
-        };
-
-        const archivoCreated = await archivoDao.insertArchivo(tx, archivoNuevo);
-        log.debug(line(), "archivoCreated:", archivoCreated);
-
-        await unlink(archivoOrigen); // Eliminamos el archivo temporal tras el éxito
-        return archivoCreated;
-      },
-      { timeout: prismaFT.transactionTimeout },
-    );
-
-    response(res, 200, { archivoid: archivoCreated.archivoid });
-  } catch (error) {
-    // Limpieza de emergencia: si algo falla, nos aseguramos de borrar el temporal
-    if (fs.existsSync(archivoOrigen)) {
-      await unlink(archivoOrigen).catch((e) => log.error(line(), "Error al borrar temporal:", e));
-    }
-    throw error;
-  }
-};
 
 export const descargarArchivo = async (req: Request, res: Response) => {
   log.debug(line(), "controller::descargarArchivo");
@@ -195,6 +63,76 @@ export const descargarArchivo = async (req: Request, res: Response) => {
       res.status(500).send("Error");
     }
   });
+};
+
+export const cargarArchivo = async (req: Request, res: Response) => {
+  log.debug(line(), "controller::cargarArchivo");
+  const archivoCreated = await prismaFT.client.$transaction(
+    async (tx) => {
+      const idusuario = req.session_user?.usuario?.idusuario;
+      const archivoUploadSchema = yup
+        .object()
+        .shape({
+          idusuario: yup.number().required(),
+          archivo: yup
+            .mixed()
+            .concat(validacionesYup.fileRequeridValidation())
+            .concat(validacionesYup.fileSizeValidation(10 * 1024 * 1024)),
+          archivotipo_code: yup.string().trim().min(8).max(8),
+        })
+        .required();
+      const archivoValidated = archivoUploadSchema.validateSync({ ...req.files, ...req.body, idusuario }, { abortEarly: false, stripUnknown: true });
+      log.debug(line(), "archivoValidated:", archivoValidated);
+
+      let idarchivotipo = 10; // Sin tipo
+      if (archivoValidated.archivotipo_code) {
+        const archivotipo = await archivotipoDao.getArchivotipoByCode(tx, archivoValidated.archivotipo_code);
+        if (!archivotipo) {
+          log.warn(line(), "Archivo tipo no existe: [" + archivoValidated.archivotipo_code + "]");
+          throw new ClientError("Datos no válidos", 404);
+        }
+        idarchivotipo = archivotipo.idarchivotipo;
+      }
+
+      const { archivo } = archivoValidated;
+      const { anio_upload, mes_upload, dia_upload, filename, path: archivoOrigen } = archivo[0];
+      const carpetaDestino = path.join(anio_upload, mes_upload, dia_upload);
+      const rutaDestino = path.join(storageUtils.STORAGE_PATH_SUCCESS, anio_upload, mes_upload, dia_upload, filename); // Crear la ruta completa del archivo de destino
+      fs.mkdirSync(path.dirname(rutaDestino), { recursive: true }); // Crear directorio si no existe
+      fs.copyFileSync(archivoOrigen, rutaDestino); // Copia el archivo
+
+      const { codigo_archivo, originalname, size, mimetype, encoding, extension } = archivo[0];
+
+      let archivoNuevo: Prisma.archivoCreateInput = {
+        archivoid: uuidv4(),
+        archivo_tipo: { connect: { idarchivotipo: idarchivotipo } },
+        archivo_estado: { connect: { idarchivoestado: 1 } },
+        codigo: codigo_archivo,
+        nombrereal: originalname,
+        nombrealmacenamiento: filename,
+        ruta: carpetaDestino,
+        tamanio: size,
+        mimetype: mimetype,
+        encoding: encoding,
+        extension: extension,
+        observacion: "",
+        fechavencimiento: null,
+        idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
+        fechacrea: new Date(),
+        idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
+        fechamod: new Date(),
+        estado: 1,
+      };
+      const archivoCreated = await archivoDao.insertArchivo(tx, archivoNuevo);
+      log.debug(line(), "archivoCreated:", archivoCreated);
+
+      await unlink(archivoOrigen); // Eliminamos el archivo temporal
+
+      return archivoCreated;
+    },
+    { timeout: prismaFT.transactionTimeout },
+  );
+  response(res, 200, { archivoid: archivoCreated.archivoid });
 };
 
 export const activateArchivo = async (req: Request, res: Response) => {
