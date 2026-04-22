@@ -41,7 +41,7 @@ let storage_factura = multer.diskStorage({
 export const upload_factura = multer({
   storage: storage_factura,
   limits: {
-    fileSize: 3 * 1024 * 1024, // Para formularios multiparte, el tamaño máximo de los archivos (en bytes)
+    fileSize: 10 * 1024 * 1024, // Para formularios multiparte, el tamaño máximo de los archivos (en bytes)
     files: 2, // Para los formularios multiparte, el número máximo de campos para archivos
     fieldSize: 0.5 * 1024 * 1024, //Tamaño máximo de los valores para cada campo (en bytes)
     fields: 0, // Número máximo de campos que no son archivos

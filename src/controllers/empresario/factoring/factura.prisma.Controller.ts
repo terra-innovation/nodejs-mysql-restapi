@@ -30,7 +30,7 @@ import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
 export const subirFactura = async (req: Request, res: Response) => {
-  log.debug(line(), "controller::verifyFactura");
+  log.debug(line(), "controller::subirFactura");
 
   const session_idusuario = req.session_user?.usuario?.idusuario;
   const filter_estado = [1];
@@ -46,7 +46,7 @@ export const subirFactura = async (req: Request, res: Response) => {
       factura_pdf: yup
         .mixed()
         .concat(validacionesYup.fileRequeridValidation())
-        .concat(validacionesYup.fileSizeValidation(3 * 1024 * 1024))
+        .concat(validacionesYup.fileSizeValidation(10 * 1024 * 1024))
         .concat(validacionesYup.fileTypeValidation(["application/pdf"])),
     })
     .required();
