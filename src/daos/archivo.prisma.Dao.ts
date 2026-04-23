@@ -9,11 +9,19 @@ import { ESTADO } from "#src/constants/prisma.Constant.js";
 export const getArchivos = async (tx: TxClient, estados: number[]) => {
   try {
     const archivos = await tx.archivo.findMany({
+      include: {
+        archivo_tipo: true,
+        archivo_estado: true,
+      },
       where: {
         estado: {
           in: estados,
         },
       },
+      orderBy: {
+        idarchivo: "desc",
+      },
+      take: 50,
     });
 
     return archivos;
