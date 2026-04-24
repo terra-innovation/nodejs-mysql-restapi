@@ -2,7 +2,6 @@ import { Router } from "express";
 import { catchedAsync } from "#src/utils/catchedAsync.js";
 import * as personaController from "#src/controllers/usuario/persona.prisma.Controller.js";
 import { isAuth, isRole } from "#root/src/middlewares/authMiddleware.js";
-import * as personaMiddleware from "#src/middlewares/personaMiddleware.js";
 
 const router = Router();
 
@@ -12,5 +11,5 @@ const router = Router();
 //router.patch("/usuario/persona/actualizar/:id", isAuth, isRole([5]), catchedAsync(personaController.updatePersonaOnlyAlias));
 router.get("/usuario/persona/master", isAuth, isRole([5]), catchedAsync(personaController.getPersonaMaster));
 
-router.post("/usuario/persona/verificar", isAuth, isRole([5]), personaMiddleware.upload, catchedAsync(personaController.verifyPersona));
+router.post("/usuario/persona/verificar", isAuth, isRole([5]), catchedAsync(personaController.verifyPersona));
 export default router;

@@ -13,16 +13,15 @@ import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
 import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
 import * as archivopersonaDao from "#src/daos/archivopersona.prisma.Dao.js";
 import * as personaverificacionestadoDao from "#src/daos/personaverificacionestado.prisma.Dao.js";
+import * as archivotipoDao from "#src/daos/archivotipo.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 import * as telegramService from "#src/services/telegram.Service.js";
 
-import * as storageUtils from "#src/utils/storageUtils.js";
-import * as validacionesYup from "#src/utils/validacionesYup.js";
-import * as fs from "fs";
-import path from "path";
+import { isProduction } from "#src/config.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
@@ -31,46 +30,6 @@ import type { persona } from "#root/generated/prisma/ft_factoring/client.js";
 import type { persona_declaracion } from "#root/generated/prisma/ft_factoring/client.js";
 import type { persona_verificacion } from "#root/generated/prisma/ft_factoring/client.js";
 import type { usuario } from "#root/generated/prisma/ft_factoring/client.js";
-
-export const getPersonaMaster = async (req: Request, res: Response) => {
-  log.debug(line(), "controller::getPersonaMaster");
-  const personaMasterFiltered = await prismaFT.client.$transaction(
-    async (tx) => {
-      const session_idusuario = req.session_user?.usuario?.idusuario;
-      const filter_estados = [1];
-      const paises = await paisDao.getPaises(tx, filter_estados);
-      const paisesperu = await paisDao.getPaisesPeru(tx);
-      const distritos = await distritoDao.getDistritos(tx, filter_estados);
-      const documentotipos = await documentotipoDao.getDocumentotipos(tx, filter_estados);
-      const generos = await generoDao.getGeneros(tx, filter_estados);
-      const usuario = await usuarioDao.getUsuarioByIdusuario(tx, session_idusuario);
-      let personaverificacionestado = null;
-      if (usuario.persona) {
-        personaverificacionestado = await personaverificacionestadoDao.getPersonaverificacionestadoByIdpersonaverificacionestado(tx, usuario.persona.idpersonaverificacionestado);
-      }
-
-      let personaMaster: Record<string, any> = {};
-      personaMaster.paises = paises;
-      personaMaster.paisesperu = paisesperu;
-      personaMaster.distritos = distritos;
-      personaMaster.documentotipos = documentotipos;
-      personaMaster.generos = generos;
-      personaMaster.usuario = jsonUtils.filterFields(jsonUtils.sequelizeToJSON(usuario), ["usuarioid", "email", "celular", "isemailvalidated", "ispersonavalidated"]);
-
-      if (personaverificacionestado) {
-        personaMaster.personaverificacionestado = personaverificacionestado;
-      }
-
-      let personaMasterJSON = jsonUtils.sequelizeToJSON(personaMaster);
-      //jsonUtils.prettyPrint(personaMasterJSON);
-      let personaMasterFiltered = jsonUtils.removeAttributesPrivates(personaMasterJSON);
-      //jsonUtils.prettyPrint(personaMaster);
-      return personaMasterFiltered;
-    },
-    { timeout: prismaFT.transactionTimeout }
-  );
-  response(res, 201, personaMasterFiltered);
-};
 
 export const verifyPersona = async (req: Request, res: Response) => {
   log.debug(line(), "controller::verifyPersona");
@@ -82,23 +41,10 @@ export const verifyPersona = async (req: Request, res: Response) => {
         .object()
         .shape({
           idusuario: yup.number().required(),
-          identificacion_anverso: yup
-            .mixed()
-            .concat(validacionesYup.fileRequeridValidation())
-            .concat(validacionesYup.fileSizeValidation(5 * 1024 * 1024))
-            .concat(validacionesYup.fileTypeValidation(["image/png", "image/jpeg", "image/jpg"])),
-          identificacion_reverso: yup
-            .mixed()
-            .concat(validacionesYup.fileRequeridValidation())
-            .concat(validacionesYup.fileSizeValidation(5 * 1024 * 1024))
-            .concat(validacionesYup.fileTypeValidation(["image/png", "image/jpeg", "image/jpg"])),
-          identificacion_selfi: yup
-            .mixed()
-            .concat(validacionesYup.fileRequeridValidation())
-            .concat(validacionesYup.fileSizeValidation(5 * 1024 * 1024))
-            .concat(validacionesYup.fileTypeValidation(["image/png", "image/jpeg", "image/jpg"])),
-
-          documentotipoid: yup.string().min(36).max(36).trim().required(),
+          identificacion_anverso: yup.string().trim().required().min(36).max(36),
+          identificacion_reverso: yup.string().trim().required().min(36).max(36),
+          identificacion_selfi: yup.string().trim().required().min(36).max(36),
+          documentotipoid: yup.string().trim().required().min(36).max(36),
           documentonumero: yup
             .string()
             .trim()
@@ -160,6 +106,24 @@ export const verifyPersona = async (req: Request, res: Response) => {
         throw new ClientError("Datos no válidos", 404);
       }
 
+      const filter_estado_archivo = isProduction ? [ESTADO.ACTIVO] : [ESTADO.ACTIVO, ESTADO.ELIMINADO];
+
+      const identificacionanverso = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(tx, personaValidated.identificacion_anverso, archivotipoDao.AT_DNI_ANVERSO_FRONTAL, filter_estado_archivo);
+      if (!identificacionanverso) {
+        log.warn(line(), "Identificación anverso no existe o tipo no coincide: [" + personaValidated.identificacion_anverso + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
+      const identificacionreverso = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(tx, personaValidated.identificacion_reverso, archivotipoDao.AT_DNI_REVERSO_DETRAS, filter_estado_archivo);
+      if (!identificacionreverso) {
+        log.warn(line(), "Identificación reverso no existe o tipo no coincide: [" + personaValidated.identificacion_reverso + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
+      const identificacionselfi = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(tx, personaValidated.identificacion_selfi, archivotipoDao.AT_FOTO_JUNTO_A_DNI, filter_estado_archivo);
+      if (!identificacionselfi) {
+        log.warn(line(), "Identificación selfi no existe o tipo no coincide: [" + personaValidated.identificacion_selfi + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
+
       const persona = await personaDao.getPersonaByIdusuario(tx, personaValidated.idusuario);
       if (persona) {
         log.warn(line(), "Persona ya existe");
@@ -212,13 +176,13 @@ export const verifyPersona = async (req: Request, res: Response) => {
 
       //let personaCreated = { _idpersona: 4 };
 
-      const identificacionanversoCreated = await crearIdentificacionAnverso(req, tx, personaValidated, personaCreated);
+      const identificacionanversoCreated = await vincularIdentificacionAnverso(req, tx, identificacionanverso, personaCreated);
       log.debug(line(), "identificacionanversoCreated:", identificacionanversoCreated);
 
-      const identificacionreversoCreated = await crearIdentificacionReverso(req, tx, personaValidated, personaCreated);
+      const identificacionreversoCreated = await vincularIdentificacionReverso(req, tx, identificacionreverso, personaCreated);
       log.debug(line(), "identificacionreversoCreated:", identificacionreversoCreated);
 
-      const identificacionselfiCreated = await crearIdentificacionSelfi(req, tx, personaValidated, personaCreated);
+      const identificacionselfiCreated = await vincularIdentificacionSelfi(req, tx, identificacionselfi, personaCreated);
       log.debug(line(), "identificacionselfiCreated:", identificacionselfiCreated);
 
       const personadeclaracionToCreate: Prisma.persona_declaracionCreateInput = {
@@ -274,154 +238,98 @@ export const verifyPersona = async (req: Request, res: Response) => {
 
       return {};
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 200, {});
 };
 
-const crearIdentificacionSelfi = async (req, tx, personaValidated, personaCreated) => {
-  //Copiamos el archivo
-  const { identificacion_selfi } = personaValidated;
-  const { anio_upload, mes_upload, dia_upload, filename, path: archivoOrigen } = identificacion_selfi[0];
-  const carpetaDestino = path.join(anio_upload, mes_upload, dia_upload);
-  const rutaDestino = path.join(storageUtils.STORAGE_PATH_SUCCESS, anio_upload, mes_upload, dia_upload, filename); // Crear la ruta completa del archivo de destino
-  fs.mkdirSync(path.dirname(rutaDestino), { recursive: true }); // Crear directorio si no existe
-  fs.copyFileSync(archivoOrigen, rutaDestino); // Copia el archivo
+export const getPersonaMaster = async (req: Request, res: Response) => {
+  log.debug(line(), "controller::getPersonaMaster");
+  const personaMasterFiltered = await prismaFT.client.$transaction(
+    async (tx) => {
+      const session_idusuario = req.session_user?.usuario?.idusuario;
+      const filter_estados = [1];
+      const paises = await paisDao.getPaises(tx, filter_estados);
+      const paisesperu = await paisDao.getPaisesPeru(tx);
+      const distritos = await distritoDao.getDistritos(tx, filter_estados);
+      const documentotipos = await documentotipoDao.getDocumentotipos(tx, filter_estados);
+      const generos = await generoDao.getGeneros(tx, filter_estados);
+      const usuario = await usuarioDao.getUsuarioByIdusuario(tx, session_idusuario);
+      let personaverificacionestado = null;
+      if (usuario.persona) {
+        personaverificacionestado = await personaverificacionestadoDao.getPersonaverificacionestadoByIdpersonaverificacionestado(tx, usuario.persona.idpersonaverificacionestado);
+      }
 
-  const { codigo_archivo, originalname, size, mimetype, encoding, extension } = identificacion_selfi[0];
+      let personaMaster: Record<string, any> = {};
+      personaMaster.paises = paises;
+      personaMaster.paisesperu = paisesperu;
+      personaMaster.distritos = distritos;
+      personaMaster.documentotipos = documentotipos;
+      personaMaster.generos = generos;
+      personaMaster.usuario = jsonUtils.filterFields(jsonUtils.sequelizeToJSON(usuario), ["usuarioid", "email", "celular", "isemailvalidated", "ispersonavalidated"]);
 
-  const archivoToCreate: Prisma.archivoCreateInput = {
-    archivoid: uuidv4(),
-    archivo_tipo: { connect: { idarchivotipo: 3 } },
-    archivo_estado: { connect: { idarchivoestado: 1 } },
-    codigo: codigo_archivo,
-    nombrereal: originalname,
-    nombrealmacenamiento: filename,
-    ruta: carpetaDestino,
-    tamanio: size,
-    mimetype: mimetype,
-    encoding: encoding,
-    extension: extension,
-    observacion: "",
-    fechavencimiento: null,
-    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
-    fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
-    fechamod: new Date(),
-    estado: 1,
-  };
-  const archivoCreated = await archivoDao.insertArchivo(tx, archivoToCreate);
+      if (personaverificacionestado) {
+        personaMaster.personaverificacionestado = personaverificacionestado;
+      }
 
-  const archivopersonaToCreate: Prisma.archivo_personaCreateInput = {
-    archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
-    persona: { connect: { idpersona: personaCreated.idpersona } },
-    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
-    fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
-    fechamod: new Date(),
-    estado: 1,
-  };
-
-  await archivopersonaDao.insertArchivoPersona(tx, archivopersonaToCreate);
-
-  fs.unlinkSync(archivoOrigen);
-  return archivoCreated;
+      let personaMasterJSON = jsonUtils.sequelizeToJSON(personaMaster);
+      //jsonUtils.prettyPrint(personaMasterJSON);
+      let personaMasterFiltered = jsonUtils.removeAttributesPrivates(personaMasterJSON);
+      //jsonUtils.prettyPrint(personaMaster);
+      return personaMasterFiltered;
+    },
+    { timeout: prismaFT.transactionTimeout },
+  );
+  response(res, 201, personaMasterFiltered);
 };
 
-const crearIdentificacionReverso = async (req, tx, personaValidated, personaCreated) => {
-  //Copiamos el archivo
-  const { identificacion_reverso } = personaValidated;
-  const { anio_upload, mes_upload, dia_upload, filename, path: archivoOrigen } = identificacion_reverso[0];
-  const carpetaDestino = path.join(anio_upload, mes_upload, dia_upload);
-  const rutaDestino = path.join(storageUtils.STORAGE_PATH_SUCCESS, anio_upload, mes_upload, dia_upload, filename); // Crear la ruta completa del archivo de destino
-  fs.mkdirSync(path.dirname(rutaDestino), { recursive: true }); // Crear directorio si no existe
-  fs.copyFileSync(archivoOrigen, rutaDestino); // Copia el archivo
-
-  const { codigo_archivo, originalname, size, mimetype, encoding, extension } = identificacion_reverso[0];
-
-  const archivoToCreate: Prisma.archivoCreateInput = {
-    archivoid: uuidv4(),
-    archivo_tipo: { connect: { idarchivotipo: 2 } },
-    archivo_estado: { connect: { idarchivoestado: 1 } },
-    codigo: codigo_archivo,
-    nombrereal: originalname,
-    nombrealmacenamiento: filename,
-    ruta: carpetaDestino,
-    tamanio: size,
-    mimetype: mimetype,
-    encoding: encoding,
-    extension: extension,
-    observacion: "",
-    fechavencimiento: null,
-    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
-    fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
-    fechamod: new Date(),
-    estado: 1,
-  };
-  const archivoCreated = await archivoDao.insertArchivo(tx, archivoToCreate);
+const vincularIdentificacionSelfi = async (req, tx, archivo, personaCreated) => {
+  const idusuario = req.session_user?.usuario?.idusuario ?? 1;
 
   const archivopersonaToCreate: Prisma.archivo_personaCreateInput = {
-    archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
+    archivo: { connect: { idarchivo: archivo.idarchivo } },
     persona: { connect: { idpersona: personaCreated.idpersona } },
-    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
+    idusuariocrea: idusuario,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
+    idusuariomod: idusuario,
     fechamod: new Date(),
     estado: 1,
   };
 
   await archivopersonaDao.insertArchivoPersona(tx, archivopersonaToCreate);
-
-  fs.unlinkSync(archivoOrigen);
-  return archivoCreated;
+  return archivo;
 };
 
-const crearIdentificacionAnverso = async (req, tx, personaValidated, personaCreated) => {
-  //Copiamos el archivo
-  const { identificacion_anverso } = personaValidated;
-  const { anio_upload, mes_upload, dia_upload, filename, path: archivoOrigen } = identificacion_anverso[0];
-  const carpetaDestino = path.join(anio_upload, mes_upload, dia_upload);
-  const rutaDestino = path.join(storageUtils.STORAGE_PATH_SUCCESS, anio_upload, mes_upload, dia_upload, filename); // Crear la ruta completa del archivo de destino
-  fs.mkdirSync(path.dirname(rutaDestino), { recursive: true }); // Crear directorio si no existe
-  fs.copyFileSync(archivoOrigen, rutaDestino); // Copia el archivo
-
-  const { codigo_archivo, originalname, size, mimetype, encoding, extension } = identificacion_anverso[0];
-
-  const archivoToCreate: Prisma.archivoCreateInput = {
-    archivoid: uuidv4(),
-    archivo_tipo: { connect: { idarchivotipo: 1 } },
-    archivo_estado: { connect: { idarchivoestado: 1 } },
-    codigo: codigo_archivo,
-    nombrereal: originalname,
-    nombrealmacenamiento: filename,
-    ruta: carpetaDestino,
-    tamanio: size,
-    mimetype: mimetype,
-    encoding: encoding,
-    extension: extension,
-    observacion: "",
-    fechavencimiento: null,
-    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
-    fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
-    fechamod: new Date(),
-    estado: 1,
-  };
-  const archivoCreated = await archivoDao.insertArchivo(tx, archivoToCreate);
+const vincularIdentificacionReverso = async (req, tx, archivo, personaCreated) => {
+  const idusuario = req.session_user?.usuario?.idusuario ?? 1;
 
   const archivopersonaToCreate: Prisma.archivo_personaCreateInput = {
-    archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
+    archivo: { connect: { idarchivo: archivo.idarchivo } },
     persona: { connect: { idpersona: personaCreated.idpersona } },
-    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
+    idusuariocrea: idusuario,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
+    idusuariomod: idusuario,
     fechamod: new Date(),
     estado: 1,
   };
 
   await archivopersonaDao.insertArchivoPersona(tx, archivopersonaToCreate);
+  return archivo;
+};
 
-  fs.unlinkSync(archivoOrigen);
-  return archivoCreated;
+const vincularIdentificacionAnverso = async (req, tx, archivo, personaCreated) => {
+  const idusuario = req.session_user?.usuario?.idusuario ?? 1;
+
+  const archivopersonaToCreate: Prisma.archivo_personaCreateInput = {
+    archivo: { connect: { idarchivo: archivo.idarchivo } },
+    persona: { connect: { idpersona: personaCreated.idpersona } },
+    idusuariocrea: idusuario,
+    fechacrea: new Date(),
+    idusuariomod: idusuario,
+    fechamod: new Date(),
+    estado: 1,
+  };
+
+  await archivopersonaDao.insertArchivoPersona(tx, archivopersonaToCreate);
+  return archivo;
 };

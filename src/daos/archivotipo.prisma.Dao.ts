@@ -1,5 +1,5 @@
 import { TxClient } from "#src/types/Prisma.types.js";
-import type { Prisma, archivo_tipo } from "#root/generated/prisma/ft_factoring/client.js";
+import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
 
