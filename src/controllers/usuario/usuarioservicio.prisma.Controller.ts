@@ -30,6 +30,7 @@ import * as usuarioservicioempresarolDao from "#src/daos/usuarioservicioempresar
 import * as usuarioservicioDao from "#src/daos/usuarioservicio.prisma.Dao.js";
 import * as usuarioservicioestadoDao from "#src/daos/usuarioservicioestado.prisma.Dao.js";
 import * as usuarioservicioverificacionDao from "#src/daos/usuarioservicioverificacion.prisma.Dao.js";
+import * as archivotipoDao from "#src/daos/archivotipo.prisma.Dao.js";
 import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
 import * as accionistaDao from "#src/daos/accionista.prisma.Dao.js";
 import * as archivoempresaDao from "#src/daos/archivoempresa.prisma.Dao.js";
@@ -44,13 +45,11 @@ import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 import * as telegramService from "#src/services/telegram.Service.js";
 
-import * as storageUtils from "#src/utils/storageUtils.js";
-import * as validacionesYup from "#src/utils/validacionesYup.js";
-import * as fs from "fs";
-import path from "path";
-
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
+
+import { isProduction } from "#src/config.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const suscribirUsuarioServicioFactoringInversionista = async (req: Request, res: Response) => {
   log.debug(line(), "controller::suscribirUsuarioServicioFactoringInversionista");
@@ -280,32 +279,72 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
   log.debug(line(), "controller::suscribirUsuarioServicioFactoringEmpresa");
   const idusuario = req.session_user?.usuario?.idusuario;
   const { id } = req.params;
-  const filter_estado = [1, 2];
+  const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
+  const funcionarioSchema = yup.object().shape({
+    nombres: yup.string().required(),
+    apellidos: yup.string().required(),
+    documentotipoid: yup.string().required(),
+    documentonumero: yup.string().required(),
+    cargo: yup.string().required(),
+    paisid: yup.string().required(),
+    es_pep: yup.boolean().required(),
+    pep_cargo: yup
+      .string()
+      .nullable()
+      .transform((v) => v || ""),
+    pep_institucion: yup
+      .string()
+      .nullable()
+      .transform((v) => v || ""),
+    pep_vinculo: yup
+      .string()
+      .nullable()
+      .transform((v) => v || ""),
+    pep_nombre_completo: yup
+      .string()
+      .nullable()
+      .transform((v) => v || ""),
+  });
+
+  const accionistaSchema: yup.ObjectSchema<any> = yup.object().shape({
+    tipo: yup.string().oneOf(["PN", "PJ"]).required(),
+    nombres: yup.string().when("tipo", { is: "PN", then: (s) => s.required(), otherwise: (s) => s.strip() }),
+    apellidos: yup.string().when("tipo", { is: "PN", then: (s) => s.required(), otherwise: (s) => s.strip() }),
+    documentotipoid: yup.string().when("tipo", { is: "PN", then: (s) => s.required(), otherwise: (s) => s.strip() }),
+    documentonumero: yup.string().when("tipo", { is: "PN", then: (s) => s.required(), otherwise: (s) => s.strip() }),
+    porcentaje_acciones: yup.number().required(),
+    paisid: yup.string().required(),
+    es_pep: yup.boolean().when("tipo", { is: "PN", then: (s) => s.required(), otherwise: (s) => s.strip() }),
+    pep_cargo: yup
+      .string()
+      .nullable()
+      .transform((v) => v || ""),
+    pep_institucion: yup
+      .string()
+      .nullable()
+      .transform((v) => v || ""),
+    pep_vinculo: yup
+      .string()
+      .nullable()
+      .transform((v) => v || ""),
+    pep_nombre_completo: yup
+      .string()
+      .nullable()
+      .transform((v) => v || ""),
+    razon_social: yup.string().when("tipo", { is: "PJ", then: (s) => s.required(), otherwise: (s) => s.strip() }),
+    ruc: yup.string().when("tipo", { is: "PJ", then: (s) => s.required(), otherwise: (s) => s.strip() }),
+    accionistas: yup.lazy(() => yup.array().of(accionistaSchema).nullable()),
+  });
+
   const usuarioservicioSuscripcionSchema = yup
     .object()
     .shape({
       idusuario: yup.number().required(),
       usuarioservicioid: yup.string().trim().required().min(36).max(36),
-      ficha_ruc: yup
-        .mixed()
-        .concat(validacionesYup.fileRequeridValidation())
-        .concat(validacionesYup.fileSizeValidation(5 * 1024 * 1024))
-        .concat(validacionesYup.fileTypeValidation(["application/pdf"])),
-      reporte_tributario_para_terceros: yup
-        .mixed()
-        .concat(validacionesYup.fileRequeridValidation())
-        .concat(validacionesYup.fileSizeValidation(5 * 1024 * 1024))
-        .concat(validacionesYup.fileTypeValidation(["application/pdf"])),
-      certificado_vigencia_poder: yup
-        .mixed()
-        .concat(validacionesYup.fileRequeridValidation())
-        .concat(validacionesYup.fileSizeValidation(5 * 1024 * 1024))
-        .concat(validacionesYup.fileTypeValidation(["application/pdf"])),
-      encabezado_cuenta_bancaria: yup
-        .mixed()
-        .concat(validacionesYup.fileRequeridValidation())
-        .concat(validacionesYup.fileSizeValidation(5 * 1024 * 1024))
-        .concat(validacionesYup.fileTypeValidation(["image/png", "image/jpeg", "image/jpg", "application/pdf"])),
+      ficha_ruc: yup.string().trim().required().min(36).max(36),
+      reporte_tributario_para_terceros: yup.string().trim().required().min(36).max(36),
+      certificado_vigencia_poder: yup.string().trim().required().min(36).max(36),
+      encabezado_cuenta_bancaria: yup.string().trim().required().min(36).max(36),
 
       ruc: yup.string().trim().required().min(11).max(11),
       razon_social: yup.string().trim().required().max(200),
@@ -326,9 +365,9 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       cci: yup.string().required().max(20),
       alias: yup.string().required().max(50),
 
-      accionistas: yup.string().required(),
+      accionistas: yup.array().of(accionistaSchema).required(),
 
-      funcionarios: yup.string().required(),
+      funcionarios: yup.array().of(funcionarioSchema).required(),
 
       declaracion_accionistas_autorizacion_datos: yup.boolean().required(),
       declaracion_funcionarios_autorizacion_datos: yup.boolean().required(),
@@ -423,6 +462,28 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
         throw new ClientError("Datos no válidos", 404);
       }
 
+      const filter_estado_archivo = isProduction ? [ESTADO.ACTIVO] : [ESTADO.ACTIVO, ESTADO.ELIMINADO];
+      const ficharuc = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(tx, usuarioservicioValidated.ficha_ruc, archivotipoDao.AT_FICHA_RUC, filter_estado_archivo);
+      if (!ficharuc) {
+        log.warn(line(), "Ficha RUC no existe o tipo no coincide: [" + usuarioservicioValidated.ficha_ruc + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
+      const reportetributario = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(tx, usuarioservicioValidated.reporte_tributario_para_terceros, archivotipoDao.AT_REPORTE_TRIBUTARIO_PARA_TERCEROS, filter_estado_archivo);
+      if (!reportetributario) {
+        log.warn(line(), "Reporte tributario no existe o tipo no coincide: [" + usuarioservicioValidated.reporte_tributario_para_terceros + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
+      const vigenciapoder = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(tx, usuarioservicioValidated.certificado_vigencia_poder, archivotipoDao.AT_VIGENCIA_DE_PODER_REPRESENTANTE_LEGAL, filter_estado_archivo);
+      if (!vigenciapoder) {
+        log.warn(line(), "Vigencia de poder no existe o tipo no coincide: [" + usuarioservicioValidated.certificado_vigencia_poder + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
+      const encabezadocuentabancaria = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(tx, usuarioservicioValidated.encabezado_cuenta_bancaria, archivotipoDao.AT_ENCABEZADO_DEL_EECC_DE_LA_CUENTA_BANCARIA, filter_estado_archivo);
+      if (!encabezadocuentabancaria) {
+        log.warn(line(), "Encabezado de cuenta bancaria no existe o tipo no coincide: [" + usuarioservicioValidated.encabezado_cuenta_bancaria + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
+
       const usuarioservicioempresaestado_sin_acceso = 1;
       const usuarioservicioempresaestado = await usuarioservicioempresaestadoDao.getUsuarioservicioempresaestadoByIdusuarioservicioempresaestado(tx, usuarioservicioempresaestado_sin_acceso);
       if (!usuarioservicioempresaestado) {
@@ -488,13 +549,13 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       log.debug(line(), "empresadeclaracionCreated:", empresadeclaracionCreated);
 
       /* Registramos los accionistas */
-      const accionistas = JSON.parse(usuarioservicioValidated.accionistas);
+      const accionistas = usuarioservicioValidated.accionistas;
       if (Array.isArray(accionistas)) {
         await crearAccionistasRecursivo(req, tx, empresaCreated, accionistas);
       }
 
       /* Registramos los funcionarios */
-      const funcionarios = JSON.parse(usuarioservicioValidated.funcionarios);
+      const funcionarios = usuarioservicioValidated.funcionarios;
       if (Array.isArray(funcionarios)) {
         await crearFuncionarios(req, tx, empresaCreated, funcionarios);
       }
@@ -606,16 +667,16 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
 
       log.debug(line(), "usuarioservicioempresaCreated:", usuarioservicioempresaCreated);
 
-      const ficharucCreated = await crearArchivoFichaRuc(req, tx, usuarioservicioValidated, empresaCreated);
+      const ficharucCreated = await vincularArchivoFichaRuc(req, tx, ficharuc, empresaCreated);
       log.debug(line(), "ficharucCreated:", ficharucCreated);
 
-      const reportetributarioCreated = await crearArchivoReporteTributarioParaTerceros(req, tx, usuarioservicioValidated, empresaCreated);
+      const reportetributarioCreated = await vincularArchivoReporteTributarioParaTerceros(req, tx, reportetributario, empresaCreated);
       log.debug(line(), "reportetributarioCreated:", reportetributarioCreated);
 
-      const vigenciapoderCreated = await crearArchivoVigenciaPoderRepresentanteLegal(req, tx, usuarioservicioValidated, colaboradorCreated);
+      const vigenciapoderCreated = await vincularArchivoVigenciaPoderRepresentanteLegal(req, tx, vigenciapoder, colaboradorCreated);
       log.debug(line(), "vigenciapoderCreated:", vigenciapoderCreated);
 
-      const encabezadocuentabancariaCreated = await crearArchivoEncabezadoCuentaBancaria(req, tx, usuarioservicioValidated, cuentabancariaCreated);
+      const encabezadocuentabancariaCreated = await vincularArchivoEncabezadoCuentaBancaria(req, tx, encabezadocuentabancaria, cuentabancariaCreated);
       log.debug(line(), "encabezadocuentabancariaCreated:", encabezadocuentabancariaCreated);
 
       /* Registramos para la verificación del servicio_empresa en la tabla servicio_empresa_verificacion */
@@ -754,201 +815,69 @@ export const getUsuarioservicios = async (req: Request, res: Response) => {
   response(res, 201, usuarioserviciosFiltered);
 };
 
-const crearArchivoEncabezadoCuentaBancaria = async (req, tx, usuarioservicioValidated, cuentabancariaCreated) => {
-  //Copiamos el archivo
-  const { encabezado_cuenta_bancaria } = usuarioservicioValidated;
-  const { anio_upload, mes_upload, dia_upload, filename, path: archivoOrigen } = encabezado_cuenta_bancaria[0];
-  const carpetaDestino = path.join(anio_upload, mes_upload, dia_upload);
-  const rutaDestino = path.join(storageUtils.STORAGE_PATH_SUCCESS, anio_upload, mes_upload, dia_upload, filename); // Crear la ruta completa del archivo de destino
-  fs.mkdirSync(path.dirname(rutaDestino), { recursive: true }); // Crear directorio si no existe
-  fs.copyFileSync(archivoOrigen, rutaDestino); // Copia el archivo
-
-  const { codigo_archivo, originalname, size, mimetype, encoding, extension } = encabezado_cuenta_bancaria[0];
-
-  const archivoToCreate: Prisma.archivoCreateInput = {
-    archivoid: uuidv4(),
-    archivo_tipo: { connect: { idarchivotipo: 7 } },
-    archivo_estado: { connect: { idarchivoestado: 1 } },
-    codigo: codigo_archivo,
-    nombrereal: originalname,
-    nombrealmacenamiento: filename,
-    ruta: carpetaDestino,
-    tamanio: size,
-    mimetype: mimetype,
-    encoding: encoding,
-    extension: extension,
-    observacion: "",
-    fechavencimiento: null,
-    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
-    fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
-    fechamod: new Date(),
-    estado: 1,
-  };
-  const archivoCreated = await archivoDao.insertArchivo(tx, archivoToCreate);
+const vincularArchivoEncabezadoCuentaBancaria = async (req, tx, archivo, cuentabancariaCreated) => {
+  const idusuario = req.session_user?.usuario?.idusuario ?? 1;
 
   const archivocuentabancariaToCreate: Prisma.archivo_cuenta_bancariaCreateInput = {
-    archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
+    archivo: { connect: { idarchivo: archivo.idarchivo } },
     cuenta_bancaria: { connect: { idcuentabancaria: cuentabancariaCreated.idcuentabancaria } },
-    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
+    idusuariocrea: idusuario,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
+    idusuariomod: idusuario,
     fechamod: new Date(),
     estado: 1,
   };
 
   await archivocuentabancariaDao.insertArchivoCuentaBancaria(tx, archivocuentabancariaToCreate);
-
-  fs.unlinkSync(archivoOrigen);
-
-  return archivoCreated;
+  return archivo;
 };
 
-const crearArchivoVigenciaPoderRepresentanteLegal = async (req, tx, usuarioservicioValidated, colaboradorCreated) => {
-  //Copiamos el archivo
-  const { certificado_vigencia_poder } = usuarioservicioValidated;
-  const { anio_upload, mes_upload, dia_upload, filename, path: archivoOrigen } = certificado_vigencia_poder[0];
-  const carpetaDestino = path.join(anio_upload, mes_upload, dia_upload);
-  const rutaDestino = path.join(storageUtils.STORAGE_PATH_SUCCESS, anio_upload, mes_upload, dia_upload, filename); // Crear la ruta completa del archivo de destino
-  fs.mkdirSync(path.dirname(rutaDestino), { recursive: true }); // Crear directorio si no existe
-  fs.copyFileSync(archivoOrigen, rutaDestino); // Copia el archivo
-
-  const { codigo_archivo, originalname, size, mimetype, encoding, extension } = certificado_vigencia_poder[0];
-
-  const archivoToCreate: Prisma.archivoCreateInput = {
-    archivoid: uuidv4(),
-    archivo_tipo: { connect: { idarchivotipo: 6 } },
-    archivo_estado: { connect: { idarchivoestado: 1 } },
-    codigo: codigo_archivo,
-    nombrereal: originalname,
-    nombrealmacenamiento: filename,
-    ruta: carpetaDestino,
-    tamanio: size,
-    mimetype: mimetype,
-    encoding: encoding,
-    extension: extension,
-    observacion: "",
-    fechavencimiento: null,
-    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
-    fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
-    fechamod: new Date(),
-    estado: 1,
-  };
-  const archivoCreated = await archivoDao.insertArchivo(tx, archivoToCreate);
+const vincularArchivoVigenciaPoderRepresentanteLegal = async (req, tx, archivo, colaboradorCreated) => {
+  const idusuario = req.session_user?.usuario?.idusuario ?? 1;
 
   const archivocolaboradorToCreate: Prisma.archivo_colaboradorCreateInput = {
-    archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
+    archivo: { connect: { idarchivo: archivo.idarchivo } },
     colaborador: { connect: { idcolaborador: colaboradorCreated.idcolaborador } },
-    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
+    idusuariocrea: idusuario,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
+    idusuariomod: idusuario,
     fechamod: new Date(),
     estado: 1,
   };
   await archivocolaboradorDao.insertArchivoColaborador(tx, archivocolaboradorToCreate);
-
-  fs.unlinkSync(archivoOrigen);
-
-  return archivoCreated;
+  return archivo;
 };
 
-const crearArchivoReporteTributarioParaTerceros = async (req, tx, usuarioservicioValidated, empresaCreated) => {
-  //Copiamos el archivo
-  const { reporte_tributario_para_terceros } = usuarioservicioValidated;
-  const { anio_upload, mes_upload, dia_upload, filename, path: archivoOrigen } = reporte_tributario_para_terceros[0];
-  const carpetaDestino = path.join(anio_upload, mes_upload, dia_upload);
-  const rutaDestino = path.join(storageUtils.STORAGE_PATH_SUCCESS, anio_upload, mes_upload, dia_upload, filename); // Crear la ruta completa del archivo de destino
-  fs.mkdirSync(path.dirname(rutaDestino), { recursive: true }); // Crear directorio si no existe
-  fs.copyFileSync(archivoOrigen, rutaDestino); // Copia el archivo
-
-  const { codigo_archivo, originalname, size, mimetype, encoding, extension } = reporte_tributario_para_terceros[0];
-
-  const archivoToCreate: Prisma.archivoCreateInput = {
-    archivoid: uuidv4(),
-    archivo_tipo: { connect: { idarchivotipo: 5 } },
-    archivo_estado: { connect: { idarchivoestado: 1 } },
-    codigo: codigo_archivo,
-    nombrereal: originalname,
-    nombrealmacenamiento: filename,
-    ruta: carpetaDestino,
-    tamanio: size,
-    mimetype: mimetype,
-    encoding: encoding,
-    extension: extension,
-    observacion: "",
-    fechavencimiento: null,
-    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
-    fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
-    fechamod: new Date(),
-    estado: 1,
-  };
-  const archivoCreated = await archivoDao.insertArchivo(tx, archivoToCreate);
+const vincularArchivoReporteTributarioParaTerceros = async (req, tx, archivo, empresaCreated) => {
+  const idusuario = req.session_user?.usuario?.idusuario ?? 1;
 
   const archivoempresaToCreate: Prisma.archivo_empresaCreateInput = {
-    archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
+    archivo: { connect: { idarchivo: archivo.idarchivo } },
     empresa: { connect: { idempresa: empresaCreated.idempresa } },
-    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
+    idusuariocrea: idusuario,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
+    idusuariomod: idusuario,
     fechamod: new Date(),
     estado: 1,
   };
   await archivoempresaDao.insertArchivoEmpresa(tx, archivoempresaToCreate);
-
-  fs.unlinkSync(archivoOrigen);
-
-  return archivoCreated;
+  return archivo;
 };
 
-const crearArchivoFichaRuc = async (req, tx, usuarioservicioValidated, empresaCreated) => {
-  //Copiamos el archivo
-  const { ficha_ruc } = usuarioservicioValidated;
-  const { anio_upload, mes_upload, dia_upload, filename, path: archivoOrigen } = ficha_ruc[0];
-  const carpetaDestino = path.join(anio_upload, mes_upload, dia_upload);
-  const rutaDestino = path.join(storageUtils.STORAGE_PATH_SUCCESS, anio_upload, mes_upload, dia_upload, filename); // Crear la ruta completa del archivo de destino
-  fs.mkdirSync(path.dirname(rutaDestino), { recursive: true }); // Crear directorio si no existe
-  fs.copyFileSync(archivoOrigen, rutaDestino); // Copia el archivo
-
-  const { codigo_archivo, originalname, size, mimetype, encoding, extension } = ficha_ruc[0];
-
-  const archivoToCreate: Prisma.archivoCreateInput = {
-    archivoid: uuidv4(),
-    archivo_tipo: { connect: { idarchivotipo: 4 } },
-    archivo_estado: { connect: { idarchivoestado: 1 } },
-    codigo: codigo_archivo,
-    nombrereal: originalname,
-    nombrealmacenamiento: filename,
-    ruta: carpetaDestino,
-    tamanio: size,
-    mimetype: mimetype,
-    encoding: encoding,
-    extension: extension,
-    observacion: "",
-    fechavencimiento: null,
-    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
-    fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
-    fechamod: new Date(),
-    estado: 1,
-  };
-  const archivoCreated = await archivoDao.insertArchivo(tx, archivoToCreate);
+const vincularArchivoFichaRuc = async (req, tx, archivo, empresaCreated) => {
+  const idusuario = req.session_user?.usuario?.idusuario ?? 1;
 
   const archivoempresaToCreate: Prisma.archivo_empresaCreateInput = {
-    archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
+    archivo: { connect: { idarchivo: archivo.idarchivo } },
     empresa: { connect: { idempresa: empresaCreated.idempresa } },
-    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
+    idusuariocrea: idusuario,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
+    idusuariomod: idusuario,
     fechamod: new Date(),
     estado: 1,
   };
   await archivoempresaDao.insertArchivoEmpresa(tx, archivoempresaToCreate);
-
-  fs.unlinkSync(archivoOrigen);
-
-  return archivoCreated;
+  return archivo;
 };
 
 const crearAccionistasRecursivo = async (req: Request, tx: any, empresaCreated: any, accionistas: any[], idaccionista_padre: number | null = null) => {

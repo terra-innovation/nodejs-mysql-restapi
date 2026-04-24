@@ -1,5 +1,5 @@
 import { TxClient } from "#src/types/Prisma.types.js";
-import type { Prisma, archivo } from "#root/generated/prisma/ft_factoring/client.js";
+import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
 
@@ -21,7 +21,7 @@ export const getArchivos = async (tx: TxClient, estados: number[]) => {
       orderBy: {
         idarchivo: "desc",
       },
-      take: 50,
+      //take: 50,
     });
 
     return archivos;
@@ -46,6 +46,25 @@ export const getArchivoByArchivoid = async (tx: TxClient, archivoid: string) => 
     const archivo = await tx.archivo.findFirst({
       where: {
         archivoid: archivoid,
+      },
+    });
+
+    return archivo;
+  } catch (error) {
+    log.error(line(), "", error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
+export const getArchivoByArchivoidAndIdarchivotipo = async (tx: TxClient, archivoid: string, idarchivotipo: number, estados: number[]) => {
+  try {
+    const archivo = await tx.archivo.findFirst({
+      where: {
+        archivoid: archivoid,
+        idarchivotipo: idarchivotipo,
+        estado: {
+          in: estados,
+        },
       },
     });
 
