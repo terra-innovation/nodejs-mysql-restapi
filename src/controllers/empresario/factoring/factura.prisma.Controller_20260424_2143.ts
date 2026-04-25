@@ -102,7 +102,7 @@ export const subirFactura = async (req: Request, res: Response) => {
       // Validar si el factoring ya existe
       // JCHR:20250213: Habillitar para producción
       if (isProduction) {
-        const filter_estados_factoring = [1];
+        const filter_estados_factoring = [ESTADO.ACTIVO];
         const factoring_existe = await factoringDao.getFactoringByRucCedenteAndCodigoFactura(tx, facturaToCreate.proveedor_ruc, facturaToCreate.serie, facturaToCreate.numero_comprobante, filter_estados_factoring);
         if (factoring_existe) {
           log.warn(line(), "Factoring ya existe: [" + facturaToCreate.proveedor_ruc + ", " + facturaToCreate.serie + ", " + facturaToCreate.numero_comprobante + ", " + filter_estados_factoring + "]");

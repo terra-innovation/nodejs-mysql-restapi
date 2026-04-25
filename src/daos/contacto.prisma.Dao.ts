@@ -62,6 +62,9 @@ export const getContactosByIdempresas = async (tx: TxClient, idempresas: number[
 export const getContactos = async (tx: TxClient, estados: number[]) => {
   try {
     const contactos = await tx.contacto.findMany({
+      include: {
+        empresa: true,
+      },
       where: {
         estado: {
           in: estados,
@@ -148,6 +151,21 @@ export const deleteContacto = async (tx: TxClient, contactoid: string, idusuario
   try {
     const result = await tx.contacto.update({
       data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
+      where: {
+        contactoid: contactoid,
+      },
+    });
+    return result;
+  } catch (error) {
+    log.error(line(), "", error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
+export const activateContacto = async (tx: TxClient, contactoid: string, idusuariomod: number) => {
+  try {
+    const result = await tx.contacto.update({
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ACTIVO },
       where: {
         contactoid: contactoid,
       },
