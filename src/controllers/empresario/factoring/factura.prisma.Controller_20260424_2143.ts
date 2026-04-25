@@ -2,6 +2,7 @@ import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import { isProduction } from "#src/config.js";
 import { Request, Response } from "express";
+import * as fs from "fs";
 import path from "path";
 
 import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
@@ -15,17 +16,16 @@ import * as facturamediopagoDao from "#src/daos/facturamediopago.prisma.Dao.js";
 import * as facturanotaDao from "#src/daos/facturanota.prisma.Dao.js";
 import * as facturaterminopagoDao from "#src/daos/facturaterminopago.prisma.Dao.js";
 import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
-
+import * as telegramService from "#src/services/telegram.Service.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
-import { ESTADO } from "#src/constants/prisma.Constant.js";
-import { ARCHIVO_TIPO } from "#src/daos/archivotipo.prisma.Dao.js";
 
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as facturaUtils from "#src/utils/facturaUtils.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import * as storageUtils from "#src/utils/storageUtils.js";
-import * as telegramService from "#src/services/telegram.Service.js";
+import * as validacionesYup from "#src/utils/validacionesYup.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
@@ -39,31 +39,22 @@ export const subirFactura = async (req: Request, res: Response) => {
   const facturaVerifySchema = yup
     .object()
     .shape({
-      factura_xml: yup.string().trim().required().min(36).max(36),
-      factura_pdf: yup.string().trim().required().min(36).max(36),
+      factura_xml: yup
+        .mixed()
+        .concat(validacionesYup.fileRequeridValidation())
+        .concat(validacionesYup.fileSizeValidation(3 * 1024 * 1024))
+        .concat(validacionesYup.fileTypeValidation(["text/xml", "application/xml"])),
+      factura_pdf: yup
+        .mixed()
+        .concat(validacionesYup.fileRequeridValidation())
+        .concat(validacionesYup.fileSizeValidation(10 * 1024 * 1024))
+        .concat(validacionesYup.fileTypeValidation(["application/pdf"])),
     })
     .required();
   const facturaValidated = facturaVerifySchema.validateSync({ ...req.files, ...req.body }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "facturaValidated:", facturaValidated);
 
-  const filter_estado_archivo = isProduction ? [ESTADO.ACTIVO] : [ESTADO.ACTIVO, ESTADO.ELIMINADO];
-
-  const archivo_xml = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(prismaFT.client, facturaValidated.factura_xml, ARCHIVO_TIPO.FACTURA_XML, filter_estado_archivo);
-  if (!archivo_xml) {
-    log.warn(line(), "Factura XML no existe o tipo no coincide: [" + facturaValidated.factura_xml + "]");
-    throw new ClientError("Datos no válidos", 404);
-  }
-
-  const archivo_pdf = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(prismaFT.client, facturaValidated.factura_pdf, ARCHIVO_TIPO.FACTURA_PDF, filter_estado_archivo);
-  if (!archivo_pdf) {
-    log.warn(line(), "Factura PDF no existe o tipo no coincide: [" + facturaValidated.factura_pdf + "]");
-    throw new ClientError("Datos no válidos", 404);
-  }
-
-  const path_xml = path.join(storageUtils.STORAGE_PATH_SUCCESS, archivo_xml.ruta, archivo_xml.nombrealmacenamiento);
-  const file_xml = { ...archivo_xml, path: path_xml };
-
-  const facturaJson = await facturaUtils.procesarFacturaXML(file_xml);
+  const facturaJson = await facturaUtils.procesarFacturaXML(facturaValidated.factura_xml[0]);
   if (!facturaJson) {
     log.warn(line(), "El archivo XML carece de una estructura válida");
     throw new ClientError("El archivo XML carece de una estructura válida", 404);
@@ -75,7 +66,7 @@ export const subirFactura = async (req: Request, res: Response) => {
     throw new ClientError("El archivo XML no corresponde a una factura válida");
   }
 
-  const facturaFinal = facturaUtils.buildFacturaJson(facturaJson, archivo_xml.codigo, session_idusuario);
+  const facturaFinal = facturaUtils.buildFacturaJson(facturaJson, facturaValidated.factura_xml[0].codigo_archivo, session_idusuario);
 
   const facturaToCreate = facturaUtils.getFacturaToCreate(facturaFinal, session_idusuario);
 
@@ -95,10 +86,10 @@ export const subirFactura = async (req: Request, res: Response) => {
       await procesarDatos(tx, impuestosToCreate, facturaimpuestoDao.insertFacturaimpuesto);
       await procesarDatos(tx, notasToCreate, facturanotaDao.insertFacturanota);
 
-      const facturaxmlCreated = await vincularFacturaXML(req, tx, archivo_xml, facturaCreated);
+      const facturaxmlCreated = await crearFacturaXML(req, tx, facturaValidated, facturaCreated);
       log.debug(line(), "facturaxmlCreated:", facturaxmlCreated);
 
-      const facturapdfCreated = await vincularFacturaPDF(req, tx, archivo_pdf, facturaCreated);
+      const facturapdfCreated = await crearFacturaPDF(req, tx, facturaValidated, facturaCreated);
       log.debug(line(), "facturapdfCreated:", facturapdfCreated);
 
       return {};
@@ -111,7 +102,7 @@ export const subirFactura = async (req: Request, res: Response) => {
       // Validar si el factoring ya existe
       // JCHR:20250213: Habillitar para producción
       if (isProduction) {
-        const filter_estados_factoring = [ESTADO.ACTIVO];
+        const filter_estados_factoring = [1];
         const factoring_existe = await factoringDao.getFactoringByRucCedenteAndCodigoFactura(tx, facturaToCreate.proveedor_ruc, facturaToCreate.serie, facturaToCreate.numero_comprobante, filter_estados_factoring);
         if (factoring_existe) {
           log.warn(line(), "Factoring ya existe: [" + facturaToCreate.proveedor_ruc + ", " + facturaToCreate.serie + ", " + facturaToCreate.numero_comprobante + ", " + filter_estados_factoring + "]");
@@ -229,36 +220,100 @@ const procesarDatos = async (tx, items, insertFunction) => {
   return results;
 };
 
-const vincularFacturaPDF = async (req, tx, archivo, facturaCreated) => {
-  const idusuario = req.session_user?.usuario?.idusuario ?? 1;
+const crearFacturaPDF = async (req, tx, facturaValidated, facturaCreated) => {
+  //Copiamos el archivo
+  const { factura_pdf } = facturaValidated;
+  const { anio_upload, mes_upload, dia_upload, filename, path: archivoOrigen } = factura_pdf[0];
+  const carpetaDestino = path.join(anio_upload, mes_upload, dia_upload);
+  const rutaDestino = path.join(storageUtils.STORAGE_PATH_SUCCESS, anio_upload, mes_upload, dia_upload, filename); // Crear la ruta completa del archivo de destino
+  fs.mkdirSync(path.dirname(rutaDestino), { recursive: true }); // Crear directorio si no existe
+  fs.copyFileSync(archivoOrigen, rutaDestino); // Copia el archivo
+
+  const { codigo_archivo, originalname, size, mimetype, encoding, extension } = factura_pdf[0];
+
+  const archivoToCreate: Prisma.archivoCreateInput = {
+    archivoid: uuidv4(),
+    archivo_tipo: { connect: { idarchivotipo: 9 } },
+    archivo_estado: { connect: { idarchivoestado: 1 } },
+    codigo: codigo_archivo,
+    nombrereal: originalname,
+    nombrealmacenamiento: filename,
+    ruta: carpetaDestino,
+    tamanio: size,
+    mimetype: mimetype,
+    encoding: encoding,
+    extension: extension,
+    observacion: "",
+    fechavencimiento: null,
+    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
+    fechacrea: new Date(),
+    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
+    fechamod: new Date(),
+    estado: 1,
+  };
+  const archivoCreated = await archivoDao.insertArchivo(tx, archivoToCreate);
 
   const archivofacturaToCreate: Prisma.archivo_facturaCreateInput = {
-    archivo: { connect: { idarchivo: archivo.idarchivo } },
+    archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
     factura: { connect: { idfactura: facturaCreated.idfactura } },
-    idusuariocrea: idusuario,
+    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
     fechacrea: new Date(),
-    idusuariomod: idusuario,
+    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
   };
 
   await archivofacturaDao.insertArchivoFactura(tx, archivofacturaToCreate);
-  return archivo;
+
+  fs.unlinkSync(archivoOrigen);
+  return archivoCreated;
 };
 
-const vincularFacturaXML = async (req, tx, archivo, facturaCreated) => {
-  const idusuario = req.session_user?.usuario?.idusuario ?? 1;
+const crearFacturaXML = async (req, tx, facturaValidated, facturaCreated) => {
+  //Copiamos el archivo
+  const { factura_xml } = facturaValidated;
+  const { anio_upload, mes_upload, dia_upload, filename, path: archivoOrigen } = factura_xml[0];
+  const carpetaDestino = path.join(anio_upload, mes_upload, dia_upload);
+  const rutaDestino = path.join(storageUtils.STORAGE_PATH_SUCCESS, anio_upload, mes_upload, dia_upload, filename); // Crear la ruta completa del archivo de destino
+  fs.mkdirSync(path.dirname(rutaDestino), { recursive: true }); // Crear directorio si no existe
+  fs.copyFileSync(archivoOrigen, rutaDestino); // Copia el archivo
+
+  const { codigo_archivo, originalname, size, mimetype, encoding, extension } = factura_xml[0];
+
+  const archivoToCreate: Prisma.archivoCreateInput = {
+    archivoid: uuidv4(),
+    archivo_tipo: { connect: { idarchivotipo: 8 } },
+    archivo_estado: { connect: { idarchivoestado: 1 } },
+    codigo: codigo_archivo,
+    nombrereal: originalname,
+    nombrealmacenamiento: filename,
+    ruta: carpetaDestino,
+    tamanio: size,
+    mimetype: mimetype,
+    encoding: encoding,
+    extension: extension,
+    observacion: "",
+    fechavencimiento: null,
+    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
+    fechacrea: new Date(),
+    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
+    fechamod: new Date(),
+    estado: 1,
+  };
+  const archivoCreated = await archivoDao.insertArchivo(tx, archivoToCreate);
 
   const archivofacturaToCreate: Prisma.archivo_facturaCreateInput = {
-    archivo: { connect: { idarchivo: archivo.idarchivo } },
+    archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
     factura: { connect: { idfactura: facturaCreated.idfactura } },
-    idusuariocrea: idusuario,
+    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
     fechacrea: new Date(),
-    idusuariomod: idusuario,
+    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
     fechamod: new Date(),
     estado: 1,
   };
 
   await archivofacturaDao.insertArchivoFactura(tx, archivofacturaToCreate);
-  return archivo;
+
+  fs.unlinkSync(archivoOrigen);
+  return archivoCreated;
 };

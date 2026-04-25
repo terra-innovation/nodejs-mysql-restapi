@@ -12,6 +12,7 @@ import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
 import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
 import * as archivopersonaDao from "#src/daos/archivopersona.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
@@ -83,7 +84,7 @@ export const getPersonaMaster = async (req: Request, res: Response) => {
   const personaMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const session_idusuario = req.session_user?.usuario?.idusuario;
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
       const paises = await paisDao.getPaises(tx, filter_estados);
       const distritos = await distritoDao.getDistritos(tx, filter_estados);
       const documentotipos = await documentotipoDao.getDocumentotipos(tx, filter_estados);
@@ -169,7 +170,7 @@ export const getPersonas = async (req: Request, res: Response) => {
     async (tx) => {
       //log.info(line(),req.session_user.usuario.idusuario);
 
-      const filter_estado = [1, 2];
+      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
       const personas = await personaDao.getPersonas(tx, filter_estado);
       var personasJson = jsonUtils.sequelizeToJSON(personas);
       //log.info(line(),personaObfuscated);

@@ -2,6 +2,7 @@ import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
 import * as archivotipoDao from "#src/daos/archivotipo.prisma.Dao.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";

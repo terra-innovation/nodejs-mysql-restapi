@@ -3,6 +3,7 @@ import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as accionistaDao from "#src/daos/accionista.prisma.Dao.js";
 import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
@@ -23,7 +24,7 @@ export const getAccionistasByEmpresaid = async (req: Request, res: Response) => 
 
   const accionistasJson = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estado = [1, 2];
+      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
 
       var empresa = await empresaDao.getEmpresaByEmpresaid(tx, accionistaValidated.empresaid);
       if (!empresa) {
@@ -33,7 +34,7 @@ export const getAccionistasByEmpresaid = async (req: Request, res: Response) => 
 
       const accionistas = await accionistaDao.getAccionistasByIdempresa(tx, empresa.idempresa, filter_estado);
       var accionistasJson = jsonUtils.sequelizeToJSON(accionistas);
-      
+
       return accionistasJson;
     },
     { timeout: prismaFT.transactionTimeout },

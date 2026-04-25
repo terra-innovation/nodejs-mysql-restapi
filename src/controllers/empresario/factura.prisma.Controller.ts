@@ -6,6 +6,7 @@ import * as bancoDao from "#src/daos/banco.prisma.Dao.js";
 import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
 import * as riesgoDao from "#src/daos/riesgo.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
@@ -30,7 +31,7 @@ export const getFacturasByFactoringid = async (req: Request, res: Response) => {
 
   const facturasJson = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estado = [1, 2];
+      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
 
       var factoring = await factoringDao.getFactoringByFactoringid(tx, facturaValidated.factoringid);
       if (!factoring) {
@@ -46,7 +47,7 @@ export const getFacturasByFactoringid = async (req: Request, res: Response) => {
       //facturasFiltered = jsonUtils.removeAttributesPrivates(facturasFiltered);
       return facturasJson;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, facturasJson);
 };
@@ -72,7 +73,7 @@ export const activateFactura = async (req: Request, res: Response) => {
       log.debug(line(), "facturaActivated:", facturaActivated);
       return facturaActivated;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 204, facturaActivated);
 };
@@ -103,7 +104,7 @@ export const deleteFactura = async (req: Request, res: Response) => {
       log.debug(line(), "facturaDeleted:", facturaDeleted);
       return facturaDeleted;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 204, facturaDeleted);
 };
@@ -112,7 +113,7 @@ export const getFacturaMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFacturaMaster");
   const facturasMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
       const riesgos = await riesgoDao.getRiesgos(tx, filter_estados);
       var facturasMaster: Record<string, any> = {};
       facturasMaster.riesgos = riesgos;
@@ -124,7 +125,7 @@ export const getFacturaMaster = async (req: Request, res: Response) => {
       //jsonUtils.prettyPrint(facturasMaster);
       return facturasMasterFiltered;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, facturasMasterFiltered);
 };
@@ -135,7 +136,7 @@ export const getFacturas = async (req: Request, res: Response) => {
 
   const facturasJson = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estado = [1, 2];
+      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
       const facturas = await facturaDao.getFacturas(tx, filter_estado);
       var facturasJson = jsonUtils.sequelizeToJSON(facturas);
       //log.info(line(),facturaObfuscated);
@@ -144,7 +145,7 @@ export const getFacturas = async (req: Request, res: Response) => {
       //facturasFiltered = jsonUtils.removeAttributesPrivates(facturasFiltered);
       return facturasJson;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, facturasJson);
 };

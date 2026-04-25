@@ -12,6 +12,7 @@ import * as inversionistaDao from "#src/daos/inversionista.prisma.Dao.js";
 import * as personaDao from "#src/daos/persona.prisma.Dao.js";
 import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
 import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
@@ -29,7 +30,7 @@ import * as storageUtils from "#src/utils/storageUtils.js";
 export const createInversionistacuentabancaria = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createInversionistacuentabancaria");
   const _idusuario_session = req.session_user.usuario.idusuario;
-  const filter_estado = [1, 2];
+  const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
   const inversionistacuentabancariaCreateSchema = yup
     .object()
     .shape({
@@ -131,7 +132,7 @@ export const createInversionistacuentabancaria = async (req: Request, res: Respo
 
       return inversionistacuentabancariaFiltered;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, { ...inversionistacuentabancariaFiltered });
 };
@@ -151,7 +152,7 @@ export const updateInversionistacuentabancariaOnlyAlias = async (req: Request, r
 
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estado = [1, 2];
+      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
       const _idusuario_session = req.session_user.usuario.idusuario;
       const inversionistacuentabancaria = await inversionistacuentabancariaDao.getInversionistacuentabancariaByInversionistacuentabancariaid(tx, inversionistacuentabancariaValidated.inversionistacuentabancariaid);
       if (!inversionistacuentabancaria) {
@@ -184,7 +185,7 @@ export const updateInversionistacuentabancariaOnlyAlias = async (req: Request, r
 
       return {};
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 200, {});
 };
@@ -196,7 +197,7 @@ export const getInversionistacuentabancarias = async (req: Request, res: Respons
       //log.info(line(),req.session_user.usuario.idusuario);
 
       const session_idusuario = req.session_user.usuario.idusuario;
-      const filter_estado = [1];
+      const filter_estado = [ESTADO.ACTIVO];
       const inversionistacuentabancarias = await inversionistacuentabancariaDao.getInversionistacuentabancariasByIdusuario(tx, session_idusuario, filter_estado);
       var inversionistacuentabancariasJson = jsonUtils.sequelizeToJSON(inversionistacuentabancarias);
       //log.info(line(),empresaObfuscated);
@@ -205,7 +206,7 @@ export const getInversionistacuentabancarias = async (req: Request, res: Respons
       inversionistacuentabancariasFiltered = jsonUtils.removeAttributesPrivates(inversionistacuentabancariasFiltered);
       return inversionistacuentabancariasFiltered;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, inversionistacuentabancariasFiltered);
 };
@@ -214,7 +215,7 @@ export const getInversionistacuentabancariaMaster = async (req: Request, res: Re
   log.debug(line(), "controller::getInversionistacuentabancariaMaster");
   const cuentasbancariasMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
       const session_idusuario = req.session_user.usuario.idusuario;
       //log.info(line(),req.session_user.usuario.rol_rols);
       //const roles = [2]; // Administrador
@@ -242,7 +243,7 @@ export const getInversionistacuentabancariaMaster = async (req: Request, res: Re
       //jsonUtils.prettyPrint(cuentasbancariasMaster);
       return cuentasbancariasMasterFiltered;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, cuentasbancariasMasterFiltered);
 };

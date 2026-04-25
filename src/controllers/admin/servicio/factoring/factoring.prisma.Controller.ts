@@ -7,6 +7,7 @@ import * as factoringestadoDao from "#src/daos/factoringestado.prisma.Dao.js";
 import * as factoringpropuestaDao from "#src/daos/factoringpropuesta.prisma.Dao.js";
 import * as factoringtipoDao from "#src/daos/factoringtipo.prisma.Dao.js";
 import * as riesgoDao from "#src/daos/riesgo.prisma.Dao.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
@@ -39,7 +40,7 @@ export const activateFactoring = async (req: Request, res: Response) => {
       log.debug(line(), "factoringActivated:", factoringActivated);
       return factoringActivated;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 204, factoringActivated);
 };
@@ -65,7 +66,7 @@ export const deleteFactoring = async (req: Request, res: Response) => {
       log.debug(line(), "factoringDeleted:", factoringDeleted);
       return factoringDeleted;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 204, factoringDeleted);
 };
@@ -83,7 +84,7 @@ export const updateFactoring = async (req: Request, res: Response) => {
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
       const session_idusuario = req.session_user.usuario.idusuario;
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
 
       var factoring = await factoringDao.getFactoringByFactoringid(tx, factoringValidated.factoringid);
       if (!factoring) {
@@ -114,14 +115,14 @@ export const updateFactoring = async (req: Request, res: Response) => {
 
       return {};
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 200, {});
 };
 
 export const getFactoringMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFactoringsMaster");
-  const filter_estados = [1];
+  const filter_estados = [ESTADO.ACTIVO];
 
   const factoringsMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
@@ -142,7 +143,7 @@ export const getFactoringMaster = async (req: Request, res: Response) => {
       //jsonUtils.prettyPrint(factoringsMasterFiltered);
       return factoringsMasterFiltered;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, factoringsMasterFiltered);
 };
@@ -155,7 +156,7 @@ export const getFactorings = async (req: Request, res: Response) => {
       const factorings = await factoringDao.getFactoringsByEstados(tx, filter_estados);
       return factorings;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, factorings);
 };

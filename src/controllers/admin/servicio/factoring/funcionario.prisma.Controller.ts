@@ -3,6 +3,7 @@ import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as funcionarioDao from "#src/daos/funcionario.prisma.Dao.js";
 import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
@@ -24,7 +25,7 @@ export const getFuncionariosByEmpresaid = async (req: Request, res: Response) =>
 
   const funcionariosJson = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estado = [1, 2];
+      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
 
       var empresa = await empresaDao.getEmpresaByEmpresaid(tx, funcionarioValidated.empresaid);
       if (!empresa) {

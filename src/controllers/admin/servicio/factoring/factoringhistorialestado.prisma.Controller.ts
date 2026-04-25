@@ -16,6 +16,7 @@ import * as archivofactoringhistorialestadoDao from "#src/daos/archivofactoringh
 import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
 import * as riesgoDao from "#src/daos/riesgo.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
@@ -108,7 +109,7 @@ export const getFactoringhistorialestadosByFactoringid = async (req: Request, re
 
   const factoringhistorialestadosJson = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estado = [1, 2];
+      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
 
       var factoring = await factoringDao.getFactoringByFactoringid(tx, factoringhistorialestadoValidated.factoringid);
       if (!factoring) {
@@ -133,7 +134,7 @@ export const getFactoringhistorialestadoMaster = async (req: Request, res: Respo
   log.debug(line(), "controller::getFactoringhistorialestadoMaster");
   const factoringhistorialestadosMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
       const factoringestados = await factoringestadoDao.getFactoringestados(tx, filter_estados);
 
       var factoringhistorialestadosMaster: Record<string, any> = {};
@@ -170,7 +171,7 @@ export const createFactoringhistorialestado = async (req: Request, res: Response
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
       const session_idusuario = req.session_user.usuario.idusuario;
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
 
       var factoring = await factoringDao.getFactoringByFactoringid(tx, factoringhistorialestadoValidated.factoringid);
       if (!factoring) {
@@ -255,7 +256,7 @@ export const createFactoringhistorialestado = async (req: Request, res: Response
       if (factoringUpdated.idfactoringestado == 10) {
         //Deudor notificado de la transferencia
         const idbanco = 1;
-        const estados = [1];
+        const estados = [ESTADO.ACTIVO];
         const factoring_for_email = await factoringDao.getFactoringByIdfactoring(tx, factoringUpdated.idfactoring);
         const factoringpropuesta_for_email = await factoringpropuestaDao.getFactoringpropuestaAceptadaByIdfactoringpropuesta(tx, factoring_for_email?.idfactoringpropuestaaceptada ?? 0, estados);
         const factorcuentabancaria_for_email = await factorcuentabancariaDao.getFactorcuentabancariasByIdfactorIdmonedaIdbanco(tx, factoring_for_email?.idfactor ?? 0, factoring_for_email?.idmoneda ?? 0, idbanco, estados);
@@ -283,7 +284,7 @@ export const createFactoringhistorialestado = async (req: Request, res: Response
         const factoringUpdated_2 = await factoringDao.updateFactoring(tx, factoringhistorialestadoValidated.factoringid, factoringToUpdate_2);
         log.debug(line(), "factoringUpdated_2:", factoringUpdated_2);
 
-        const estados = [1];
+        const estados = [ESTADO.ACTIVO];
         const factoring_for_email = await factoringDao.getFactoringByIdfactoring(tx, factoringUpdated.idfactoring);
         const factoringpropuesta_for_email = await factoringpropuestaDao.getFactoringpropuestaAceptadaByIdfactoringpropuesta(tx, factoring_for_email?.idfactoringpropuestaaceptada ?? 0, estados);
         const usuario_for_email = await usuarioDao.getUsuarioByIdusuario(tx, factoring_for_email.contacto_cedente.persona.idusuario);
@@ -370,7 +371,7 @@ export const getFactoringhistorialestados = async (req: Request, res: Response) 
 
   const factoringhistorialestadosJson = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estado = [1, 2];
+      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
       const factoringhistorialestados = await factoringhistorialestadoDao.getFactoringhistorialestados(tx, filter_estado);
       var factoringhistorialestadosJson = jsonUtils.sequelizeToJSON(factoringhistorialestados);
       //log.info(line(),factoringhistorialestadoObfuscated);

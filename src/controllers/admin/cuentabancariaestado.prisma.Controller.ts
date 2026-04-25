@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as cuentabancariaestadoDao from "#src/daos/cuentabancariaestado.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
@@ -31,7 +32,7 @@ export const activateCuentabancariaestado = async (req: Request, res: Response) 
       log.debug(line(), "cuentabancariaestadoActivated:", cuentabancariaestadoActivated);
       return cuentabancariaestadoActivated;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 204, cuentabancariaestadoActivated);
 };
@@ -56,7 +57,7 @@ export const deleteCuentabancariaestado = async (req: Request, res: Response) =>
       log.debug(line(), "cuentabancariaestadoDeleted:", cuentabancariaestadoDeleted);
       return cuentabancariaestadoDeleted;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 204, cuentabancariaestadoDeleted);
 };
@@ -104,7 +105,7 @@ export const updateCuentabancariaestado = async (req: Request, res: Response) =>
       var cuentabancariaestadoFiltered = jsonUtils.removeAttributesPrivates(cuentabancariaestadoObfuscated);
       return cuentabancariaestadoFiltered;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 200, cuentabancariaestadoFiltered);
 };
@@ -115,7 +116,7 @@ export const getCuentasbancarias = async (req: Request, res: Response) => {
 
   const cuentabancariaestadosJson = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estado = [1, 2];
+      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
       const cuentabancariaestados = await cuentabancariaestadoDao.getCuentabancariaestados(tx, filter_estado);
       var cuentabancariaestadosJson = jsonUtils.sequelizeToJSON(cuentabancariaestados);
       //log.info(line(),empresaObfuscated);
@@ -124,7 +125,7 @@ export const getCuentasbancarias = async (req: Request, res: Response) => {
       //cuentabancariaestadosFiltered = jsonUtils.removeAttributesPrivates(cuentabancariaestadosFiltered);
       return cuentabancariaestadosJson;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, cuentabancariaestadosJson);
 };
@@ -161,7 +162,7 @@ export const createCuentabancariaestado = async (req: Request, res: Response) =>
 
       return cuentabancariaestadoCreated;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, cuentabancariaestadoCreated);
 };

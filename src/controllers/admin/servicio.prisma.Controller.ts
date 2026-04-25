@@ -1,6 +1,7 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as servicioDao from "#src/daos/servicio.prisma.Dao.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
@@ -66,7 +67,7 @@ export const getServicioMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getServicioMaster");
   const serviciosMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
       var serviciosMaster: Record<string, any> = {};
       var serviciosMasterJSON = jsonUtils.sequelizeToJSON(serviciosMaster);
       //jsonUtils.prettyPrint(serviciosMasterJSON);
@@ -131,7 +132,7 @@ export const getServicios = async (req: Request, res: Response) => {
 
   const servicios = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estado = [1, 2];
+      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
       const servicios = await servicioDao.getServicios(tx, filter_estado);
       return servicios;
     },
@@ -143,7 +144,7 @@ export const getServicios = async (req: Request, res: Response) => {
 export const createServicio = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createServicio");
   const session_idusuario = req.session_user.usuario.idusuario;
-  const filter_estado = [1, 2];
+  const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
   const servicioCreateSchema = yup
     .object()
     .shape({

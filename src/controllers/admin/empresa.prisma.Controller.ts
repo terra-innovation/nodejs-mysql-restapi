@@ -6,6 +6,7 @@ import * as bancoDao from "#src/daos/banco.prisma.Dao.js";
 import * as cuentatipoDao from "#src/daos/cuentatipo.prisma.Dao.js";
 import * as riesgoDao from "#src/daos/riesgo.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
@@ -34,7 +35,7 @@ export const activateEmpresa = async (req: Request, res: Response) => {
       log.debug(line(), "empresaActivated:", empresaActivated);
       return empresaActivated;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   {
     response(res, 204, {});
@@ -62,7 +63,7 @@ export const deleteEmpresa = async (req: Request, res: Response) => {
       log.debug(line(), "empresaDeleted:", empresaDeleted);
       return empresaDeleted;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 204, empresaDeleted);
 };
@@ -71,7 +72,7 @@ export const getEmpresaMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getEmpresaMaster");
   const empresasMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
       const riesgos = await riesgoDao.getRiesgos(tx, filter_estados);
       var empresasMaster: Record<string, any> = {};
       empresasMaster.riesgos = riesgos;
@@ -83,7 +84,7 @@ export const getEmpresaMaster = async (req: Request, res: Response) => {
       //jsonUtils.prettyPrint(empresasMaster);
       return empresasMasterFiltered;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, empresasMasterFiltered);
 };
@@ -132,7 +133,7 @@ export const updateEmpresa = async (req: Request, res: Response) => {
 
       return {};
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 200, { ...empresaValidated });
 };
@@ -143,11 +144,11 @@ export const getEmpresas = async (req: Request, res: Response) => {
 
   const empresas = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estado = [1, 2];
+      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
       const empresas = await empresaDao.getEmpresas(tx, filter_estado);
       return empresas;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, empresas);
 };
@@ -155,7 +156,7 @@ export const getEmpresas = async (req: Request, res: Response) => {
 export const createEmpresa = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createEmpresa");
   const session_idusuario = req.session_user.usuario.idusuario;
-  const filter_estado = [1, 2];
+  const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
   const empresaCreateSchema = yup
     .object()
     .shape({
@@ -206,7 +207,7 @@ export const createEmpresa = async (req: Request, res: Response) => {
 
       return empresaCreated;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, empresaCreated);
 };

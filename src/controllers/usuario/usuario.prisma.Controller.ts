@@ -4,6 +4,7 @@ import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
 
 import { response } from "#src/utils/CustomResponseOk.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
@@ -34,7 +35,7 @@ export const yoUsuario = async (req: Request, res: Response) => {
   const usuarioFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const session_idusuario = req.session_user?.usuario?.idusuario;
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
 
       var usuario = await usuarioDao.getUsuarioPerfilByUsuarioid(tx, usuarioValidated.usuarioid);
       if (!usuario) {
@@ -50,7 +51,7 @@ export const yoUsuario = async (req: Request, res: Response) => {
       let usuarioFiltered = jsonUtils.removeAttributesPrivates(usuario);
       return usuarioFiltered;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, usuarioFiltered);
 };

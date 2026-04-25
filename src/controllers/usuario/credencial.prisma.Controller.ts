@@ -5,6 +5,7 @@ import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
 import * as credencialDao from "#src/daos/credencial.prisma.Dao.js";
 
 import { response } from "#src/utils/CustomResponseOk.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
@@ -50,7 +51,7 @@ export const updateCredencial = async (req: Request, res: Response) => {
   const usuarioFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const session_idusuario = req.session_user?.usuario?.idusuario;
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
 
       var usuario = await usuarioDao.getUsuarioByUsuarioid(tx, credencialValidated.usuarioid);
       if (!usuario) {
@@ -88,7 +89,7 @@ export const updateCredencial = async (req: Request, res: Response) => {
 
       return {};
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 200, usuarioFiltered);
 };

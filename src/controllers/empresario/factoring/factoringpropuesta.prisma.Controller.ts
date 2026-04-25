@@ -17,6 +17,7 @@ import * as emailService from "#root/src/services/email.Service.js";
 
 import * as colaboradorDao from "#src/daos/colaborador.prisma.Dao.js";
 import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { log, line } from "#src/utils/logger.pino.js";
@@ -47,7 +48,7 @@ export const acceptFactoringpropuesta = async (req: Request, res: Response) => {
 
   const factoringpropuestaUpdated = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
 
       const factoring = await factoringDao.getFactoringByFactoringid(tx, factoringpropuestaValidated.factoringid);
       if (!factoring) {
@@ -179,7 +180,7 @@ export const getFactoringpropuestaVigente = async (req: Request, res: Response) 
 
   const factoringpropuesta = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
       const _idusuario_session = req.session_user.usuario.idusuario;
 
       const factoring = await factoringDao.getFactoringByFactoringid(tx, factoringpropuestaValidated.factoringid);

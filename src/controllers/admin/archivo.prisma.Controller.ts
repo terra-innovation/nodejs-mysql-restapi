@@ -7,6 +7,7 @@ import * as distritoDao from "#src/daos/distrito.prisma.Dao.js";
 import * as documentotipoDao from "#src/daos/documentotipo.prisma.Dao.js";
 import * as generoDao from "#src/daos/genero.prisma.Dao.js";
 import * as paisDao from "#src/daos/pais.prisma.Dao.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
@@ -127,7 +128,7 @@ export const getArchivoMaster = async (req: Request, res: Response) => {
   const archivoMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const session_idusuario = req.session_user?.usuario?.idusuario;
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
       const paises = await paisDao.getPaises(tx, filter_estados);
       const distritos = await distritoDao.getDistritos(tx, filter_estados);
       const documentotipos = await documentotipoDao.getDocumentotipos(tx, filter_estados);
@@ -213,7 +214,7 @@ export const getArchivos = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getArchivos");
   const archivosJson = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estado = [1, 2];
+      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
       const archivos = await archivoDao.getArchivos(tx, filter_estado);
       var archivosJson = jsonUtils.sequelizeToJSON(archivos);
       //log.info(line(),archivoObfuscated);

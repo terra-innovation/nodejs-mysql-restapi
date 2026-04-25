@@ -13,7 +13,7 @@ import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
 import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
 import * as archivopersonaDao from "#src/daos/archivopersona.prisma.Dao.js";
 import * as personaverificacionestadoDao from "#src/daos/personaverificacionestado.prisma.Dao.js";
-import * as archivotipoDao from "#src/daos/archivotipo.prisma.Dao.js";
+
 import { response } from "#src/utils/CustomResponseOk.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
@@ -22,6 +22,9 @@ import * as telegramService from "#src/services/telegram.Service.js";
 
 import { isProduction } from "#src/config.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
+import { ARCHIVO_TIPO } from "#src/daos/archivotipo.prisma.Dao.js";
+
+
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
@@ -108,17 +111,17 @@ export const verifyPersona = async (req: Request, res: Response) => {
 
       const filter_estado_archivo = isProduction ? [ESTADO.ACTIVO] : [ESTADO.ACTIVO, ESTADO.ELIMINADO];
 
-      const identificacionanverso = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(tx, personaValidated.identificacion_anverso, archivotipoDao.AT_DNI_ANVERSO_FRONTAL, filter_estado_archivo);
+      const identificacionanverso = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(tx, personaValidated.identificacion_anverso, ARCHIVO_TIPO.DNI_ANVERSO_FRONTAL, filter_estado_archivo);
       if (!identificacionanverso) {
         log.warn(line(), "Identificación anverso no existe o tipo no coincide: [" + personaValidated.identificacion_anverso + "]");
         throw new ClientError("Datos no válidos", 404);
       }
-      const identificacionreverso = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(tx, personaValidated.identificacion_reverso, archivotipoDao.AT_DNI_REVERSO_DETRAS, filter_estado_archivo);
+      const identificacionreverso = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(tx, personaValidated.identificacion_reverso, ARCHIVO_TIPO.DNI_REVERSO_DETRAS, filter_estado_archivo);
       if (!identificacionreverso) {
         log.warn(line(), "Identificación reverso no existe o tipo no coincide: [" + personaValidated.identificacion_reverso + "]");
         throw new ClientError("Datos no válidos", 404);
       }
-      const identificacionselfi = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(tx, personaValidated.identificacion_selfi, archivotipoDao.AT_FOTO_JUNTO_A_DNI, filter_estado_archivo);
+      const identificacionselfi = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(tx, personaValidated.identificacion_selfi, ARCHIVO_TIPO.FOTO_JUNTO_A_DNI, filter_estado_archivo);
       if (!identificacionselfi) {
         log.warn(line(), "Identificación selfi no existe o tipo no coincide: [" + personaValidated.identificacion_selfi + "]");
         throw new ClientError("Datos no válidos", 404);
@@ -248,7 +251,7 @@ export const getPersonaMaster = async (req: Request, res: Response) => {
   const personaMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const session_idusuario = req.session_user?.usuario?.idusuario;
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
       const paises = await paisDao.getPaises(tx, filter_estados);
       const paisesperu = await paisDao.getPaisesPeru(tx);
       const distritos = await distritoDao.getDistritos(tx, filter_estados);

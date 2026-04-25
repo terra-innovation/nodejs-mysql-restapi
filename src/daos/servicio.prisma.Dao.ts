@@ -6,6 +6,11 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { line, log } from "#src/utils/logger.pino.js";
 
+export const SERVICIO = {
+  FACTORING_EMPRESAS: 1,
+  FACTORING_INVERSIONISTAS: 2,
+} as const;
+
 export const getServicios = async (tx: TxClient, estados: number[]) => {
   try {
     const servicios = await tx.servicio.findMany({

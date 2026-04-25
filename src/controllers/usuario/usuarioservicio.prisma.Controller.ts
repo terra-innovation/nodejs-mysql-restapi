@@ -30,7 +30,7 @@ import * as usuarioservicioempresarolDao from "#src/daos/usuarioservicioempresar
 import * as usuarioservicioDao from "#src/daos/usuarioservicio.prisma.Dao.js";
 import * as usuarioservicioestadoDao from "#src/daos/usuarioservicioestado.prisma.Dao.js";
 import * as usuarioservicioverificacionDao from "#src/daos/usuarioservicioverificacion.prisma.Dao.js";
-import * as archivotipoDao from "#src/daos/archivotipo.prisma.Dao.js";
+
 import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
 import * as accionistaDao from "#src/daos/accionista.prisma.Dao.js";
 import * as archivoempresaDao from "#src/daos/archivoempresa.prisma.Dao.js";
@@ -40,6 +40,10 @@ import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
 import * as empresadeclaracionDao from "#src/daos/empresadeclaracion.prisma.Dao.js";
 import * as funcionarioDao from "#src/daos/funcionario.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
+import { ARCHIVO_TIPO } from "#src/daos/archivotipo.prisma.Dao.js";
+
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
@@ -49,13 +53,13 @@ import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
 import { isProduction } from "#src/config.js";
-import { ESTADO } from "#src/constants/prisma.Constant.js";
+
 
 export const suscribirUsuarioServicioFactoringInversionista = async (req: Request, res: Response) => {
   log.debug(line(), "controller::suscribirUsuarioServicioFactoringInversionista");
   const idusuario = req.session_user?.usuario?.idusuario;
   const { id } = req.params;
-  const filter_estado = [1, 2];
+  const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
   const usuarioservicioSuscripcionSchema = yup
     .object()
     .shape({
@@ -463,22 +467,22 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
       }
 
       const filter_estado_archivo = isProduction ? [ESTADO.ACTIVO] : [ESTADO.ACTIVO, ESTADO.ELIMINADO];
-      const ficharuc = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(tx, usuarioservicioValidated.ficha_ruc, archivotipoDao.AT_FICHA_RUC, filter_estado_archivo);
+      const ficharuc = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(tx, usuarioservicioValidated.ficha_ruc, ARCHIVO_TIPO.FICHA_RUC, filter_estado_archivo);
       if (!ficharuc) {
         log.warn(line(), "Ficha RUC no existe o tipo no coincide: [" + usuarioservicioValidated.ficha_ruc + "]");
         throw new ClientError("Datos no válidos", 404);
       }
-      const reportetributario = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(tx, usuarioservicioValidated.reporte_tributario_para_terceros, archivotipoDao.AT_REPORTE_TRIBUTARIO_PARA_TERCEROS, filter_estado_archivo);
+      const reportetributario = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(tx, usuarioservicioValidated.reporte_tributario_para_terceros, ARCHIVO_TIPO.REPORTE_TRIBUTARIO_PARA_TERCEROS, filter_estado_archivo);
       if (!reportetributario) {
         log.warn(line(), "Reporte tributario no existe o tipo no coincide: [" + usuarioservicioValidated.reporte_tributario_para_terceros + "]");
         throw new ClientError("Datos no válidos", 404);
       }
-      const vigenciapoder = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(tx, usuarioservicioValidated.certificado_vigencia_poder, archivotipoDao.AT_VIGENCIA_DE_PODER_REPRESENTANTE_LEGAL, filter_estado_archivo);
+      const vigenciapoder = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(tx, usuarioservicioValidated.certificado_vigencia_poder, ARCHIVO_TIPO.VIGENCIA_DE_PODER_REPRESENTANTE_LEGAL, filter_estado_archivo);
       if (!vigenciapoder) {
         log.warn(line(), "Vigencia de poder no existe o tipo no coincide: [" + usuarioservicioValidated.certificado_vigencia_poder + "]");
         throw new ClientError("Datos no válidos", 404);
       }
-      const encabezadocuentabancaria = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(tx, usuarioservicioValidated.encabezado_cuenta_bancaria, archivotipoDao.AT_ENCABEZADO_DEL_EECC_DE_LA_CUENTA_BANCARIA, filter_estado_archivo);
+      const encabezadocuentabancaria = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(tx, usuarioservicioValidated.encabezado_cuenta_bancaria, ARCHIVO_TIPO.ENCABEZADO_DEL_EECC_DE_LA_CUENTA_BANCARIA, filter_estado_archivo);
       if (!encabezadocuentabancaria) {
         log.warn(line(), "Encabezado de cuenta bancaria no existe o tipo no coincide: [" + usuarioservicioValidated.encabezado_cuenta_bancaria + "]");
         throw new ClientError("Datos no válidos", 404);
@@ -758,7 +762,7 @@ export const getUsuarioservicioMaster = async (req: Request, res: Response) => {
 
   const usuarioservicioMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
 
       const usuarioservicio = await usuarioservicioDao.getUsuarioservicioByUsuarioservicioid(tx, usuarioservicioValidated.usuarioservicioid);
       const paises = await paisDao.getPaises(tx, filter_estados);
@@ -801,7 +805,7 @@ export const getUsuarioservicios = async (req: Request, res: Response) => {
       //log.info(line(),req.session_user.usuario.idusuario);
 
       const session_idusuario = req.session_user.usuario.idusuario;
-      const filter_estado = [1];
+      const filter_estado = [ESTADO.ACTIVO];
       const usuarioservicios = await usuarioservicioDao.getUsuarioserviciosByIdusuario(tx, session_idusuario, filter_estado);
       var usuarioserviciosJson = jsonUtils.sequelizeToJSON(usuarioservicios);
       //log.info(line(),empresaObfuscated);

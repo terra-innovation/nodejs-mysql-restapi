@@ -5,6 +5,7 @@ import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as archivofacturaDao from "#src/daos/archivofactura.prisma.Dao.js";
 import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
 import * as riesgoDao from "#src/daos/riesgo.prisma.Dao.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
@@ -30,7 +31,7 @@ export const getArchivofacturasByFactoringid = async (req: Request, res: Respons
 
   const archivofacturasJson = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estado = [1, 2];
+      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
 
       var factoring = await factoringDao.getFactoringByFactoringid(tx, archivofacturaValidated.factoringid);
       if (!factoring) {
@@ -46,7 +47,7 @@ export const getArchivofacturasByFactoringid = async (req: Request, res: Respons
       //archivofacturasFiltered = jsonUtils.removeAttributesPrivates(archivofacturasFiltered);
       return archivofacturasJson;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, archivofacturasJson);
 };

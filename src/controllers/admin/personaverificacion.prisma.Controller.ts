@@ -5,6 +5,7 @@ import * as personaverificacionDao from "#src/daos/personaverificacion.prisma.Da
 import * as personaverificacionestadoDao from "#src/daos/personaverificacionestado.prisma.Dao.js";
 import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
 import * as usuarioservicioDao from "#src/daos/usuarioservicio.prisma.Dao.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
@@ -83,7 +84,7 @@ export const getPersonaverificacionMaster = async (req: Request, res: Response) 
   const personaverificacionMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const session_idusuario = req.session_user?.usuario?.idusuario;
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
       const personaverificacionestados = await personaverificacionestadoDao.getPersonaverificacionestados(tx, filter_estados);
 
       let personaverificacionMaster: Record<string, any> = {};
@@ -161,7 +162,7 @@ export const getPersonaverificacions = async (req: Request, res: Response) => {
     async (tx) => {
       //log.info(line(),req.session_user.usuario.idusuario);
 
-      const filter_estado = [1, 2];
+      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
       const filter_idarchivotipo = [1, 2, 3];
       const personaverificacionverificacions = await personaDao.getPersonasByVerificacion(tx, filter_estado, filter_idarchivotipo);
       var personaverificacionverificacionsJson = jsonUtils.sequelizeToJSON(personaverificacionverificacions);
@@ -179,7 +180,7 @@ export const getPersonaverificacions = async (req: Request, res: Response) => {
 export const createPersonaverificacion = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createPersonaverificacion");
   const session_idusuario = req.session_user.usuario.idusuario;
-  const filter_estado = [1, 2];
+  const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
   const personaverificacionCreateSchema = yup
     .object()
     .shape({

@@ -10,6 +10,7 @@ import * as cuentatipoDao from "#src/daos/cuentatipo.prisma.Dao.js";
 import * as empresacuentabancariaDao from "#src/daos/empresacuentabancaria.prisma.Dao.js";
 import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
 import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
@@ -39,7 +40,7 @@ export const getEmpresacuentabancarias = async (req: Request, res: Response) => 
   const empresacuentabancariasFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const session_idusuario = req.session_user.usuario.idusuario;
-      const filter_estado = [1];
+      const filter_estado = [ESTADO.ACTIVO];
       var empresa_por_idusuario = await empresaDao.getEmpresaByIdusuarioAndEmpresaid(tx, session_idusuario, empresacuentabancariaValidated.empresaid, filter_estado);
       if (!empresa_por_idusuario) {
         log.warn(line(), "Empresa no asociada al usuario: [" + session_idusuario + ", " + empresacuentabancariaValidated.monedaid + "]");
@@ -72,7 +73,7 @@ export const getEmpresacuentabancariaMaster = async (req: Request, res: Response
   log.debug(line(), "controller::getEmpresacuentabancariaMaster");
   const cuentasbancariasMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
       const session_idusuario = req.session_user.usuario.idusuario;
 
       const empresas = await empresaDao.getEmpresasByIdusuario(tx, session_idusuario, filter_estados);
@@ -103,7 +104,7 @@ export const getEmpresacuentabancariaMaster = async (req: Request, res: Response
 export const createEmpresacuentabancaria = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createEmpresacuentabancaria");
   const session_idusuario = req.session_user.usuario.idusuario;
-  const filter_estado = [1, 2];
+  const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
   const empresacuentabancariaCreateSchema = yup
     .object()
     .shape({

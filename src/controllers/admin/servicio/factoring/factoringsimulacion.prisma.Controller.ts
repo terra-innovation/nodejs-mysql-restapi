@@ -13,6 +13,7 @@ import * as bancoDao from "#src/daos/banco.prisma.Dao.js";
 import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
 import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
@@ -87,7 +88,7 @@ export const downloadFactoringsimulacionPDF = async (req: Request, res: Response
 export const createFactoringsimulacion = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createFactoringsimulacion");
   const session_idusuario = req.session_user.usuario.idusuario;
-  const filter_estado = [1, 2];
+  const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
   const factoringSimulateSchema = yup
     .object()
     .shape({
@@ -124,7 +125,7 @@ export const createFactoringsimulacion = async (req: Request, res: Response) => 
   const simulacion = await prismaFT.client.$transaction(
     async (tx) => {
       const session_idusuario = req.session_user.usuario.idusuario;
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
 
       var banco = await bancoDao.getBancoByBancoid(tx, factoringValidated.bancoid);
       if (!banco) {
@@ -161,19 +162,7 @@ export const createFactoringsimulacion = async (req: Request, res: Response) => 
       let fecha_emision = dateUtils.toLimaDate(factoringValidated.fecha_emision);
 
       var simulacion: Partial<Simulacion> = {};
-      simulacion = await simulateFactoringLogicV4(
-        riesgooperacion.idriesgo,
-        banco.idbanco,
-        factoringValidated.cantidad_facturas,
-        new Decimal(factoringValidated.monto_neto),
-        fecha_ahora,
-        fecha_fin,
-        fecha_emision,
-        new Decimal(factoringValidated.porcentaje_financiado_estimado),
-        new Decimal(factoringValidated.tdm),
-        new Decimal(factoringValidated.porcentaje_comision_descuento),
-        moneda.idmoneda,
-      );
+      simulacion = await simulateFactoringLogicV4(riesgooperacion.idriesgo, banco.idbanco, factoringValidated.cantidad_facturas, new Decimal(factoringValidated.monto_neto), fecha_ahora, fecha_fin, fecha_emision, new Decimal(factoringValidated.porcentaje_financiado_estimado), new Decimal(factoringValidated.tdm), new Decimal(factoringValidated.porcentaje_comision_descuento), moneda.idmoneda);
 
       log.info(line(), "simulacion: ", simulacion);
 
@@ -348,7 +337,7 @@ export const createFactoringsimulacion = async (req: Request, res: Response) => 
 export const simulateFactoringsimulacion = async (req: Request, res: Response) => {
   log.debug(line(), "controller::simulateFactoringsimulacion");
   const session_idusuario = req.session_user.usuario.idusuario;
-  const filter_estado = [1, 2];
+  const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
 
   const factoringSimulateSchema = yup
     .object()
@@ -373,7 +362,7 @@ export const simulateFactoringsimulacion = async (req: Request, res: Response) =
   const simulacion = await prismaFT.client.$transaction(
     async (tx) => {
       const session_idusuario = req.session_user.usuario.idusuario;
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
 
       var banco = await bancoDao.getBancoByBancoid(tx, factoringValidated.bancoid);
       if (!banco) {
@@ -410,19 +399,7 @@ export const simulateFactoringsimulacion = async (req: Request, res: Response) =
       let fecha_emision = dateUtils.toLimaDate(factoringValidated.fecha_emision);
 
       var simulacion = {};
-      simulacion = await simulateFactoringLogicV4(
-        riesgooperacion.idriesgo,
-        banco.idbanco,
-        factoringValidated.cantidad_facturas,
-        new Decimal(factoringValidated.monto_neto),
-        fecha_ahora,
-        fecha_fin,
-        fecha_emision,
-        new Decimal(factoringValidated.porcentaje_financiado_estimado),
-        new Decimal(factoringValidated.tdm),
-        new Decimal(factoringValidated.porcentaje_comision_descuento),
-        moneda.idmoneda,
-      );
+      simulacion = await simulateFactoringLogicV4(riesgooperacion.idriesgo, banco.idbanco, factoringValidated.cantidad_facturas, new Decimal(factoringValidated.monto_neto), fecha_ahora, fecha_fin, fecha_emision, new Decimal(factoringValidated.porcentaje_financiado_estimado), new Decimal(factoringValidated.tdm), new Decimal(factoringValidated.porcentaje_comision_descuento), moneda.idmoneda);
 
       log.info(line(), "simulacion: ", simulacion);
 
@@ -490,7 +467,7 @@ export const getFactoringsimulacionMaster = async (req: Request, res: Response) 
   log.debug(line(), "controller::getFactoringsimulacionMaster");
   const factoringsimulacionsMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
       const bancos = await bancoDao.getBancos(tx, filter_estados);
       const riesgos = await riesgoDao.getRiesgos(tx, filter_estados);
       const factoringtipos = await factoringtipoDao.getFactoringtipos(tx, filter_estados);
@@ -523,7 +500,7 @@ export const getFactoringsimulacions = async (req: Request, res: Response) => {
 
   const factoringsimulacionsJson = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estado = [1, 2];
+      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
       const factoringsimulacions = await factoringsimulacionDao.getFactoringsimulacions(tx, filter_estado);
       var factoringsimulacionsJson = jsonUtils.sequelizeToJSON(factoringsimulacions);
 

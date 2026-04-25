@@ -14,6 +14,10 @@ import * as usuarioservicioestadoDao from "#src/daos/usuarioservicioestado.prism
 import * as usuarioservicioverificacionDao from "#src/daos/usuarioservicioverificacion.prisma.Dao.js";
 import { Request, Response } from "express";
 
+import { ESTADO } from "#src/constants/prisma.Constant.js";
+import { ARCHIVO_TIPO } from "#src/daos/archivotipo.prisma.Dao.js";
+import { SERVICIO } from "#src/daos/servicio.prisma.Dao.js";
+
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
@@ -30,7 +34,7 @@ import TemplateManager from "#src/utils/email/TemplateManager.js";
 export const createFactoringempresaverificacion = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createFactoringempresaverificacion");
   const session_idusuario = req.session_user.usuario.idusuario;
-  const filter_estado = [1, 2];
+  const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
   const servicioempresaverificacionCreateSchema = yup
     .object()
     .shape({
@@ -284,9 +288,9 @@ export const getFactoringempresasByVerificacion = async (req: Request, res: Resp
 
   const factoringempresasJson = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estadologico = [1, 2];
-      const filter_idservicio = [1];
-      const filter_idarchivotipos = [4, 5, 6, 7];
+      const filter_estadologico = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
+      const filter_idservicio = [SERVICIO.FACTORING_EMPRESAS];
+      const filter_idarchivotipos = [ARCHIVO_TIPO.FICHA_RUC, ARCHIVO_TIPO.REPORTE_TRIBUTARIO_PARA_TERCEROS, ARCHIVO_TIPO.VIGENCIA_DE_PODER_REPRESENTANTE_LEGAL, ARCHIVO_TIPO.ENCABEZADO_DEL_EECC_DE_LA_CUENTA_BANCARIA];
       const factoringempresas = await servicioempresaDao.getFactoringempresasByVerificacion(tx, filter_estadologico, filter_idservicio, filter_idarchivotipos);
       var factoringempresasJson = jsonUtils.sequelizeToJSON(factoringempresas);
       //log.info(line(),factoringempresaObfuscated);
@@ -305,7 +309,7 @@ export const getFactoringempresaverificacionMaster = async (req: Request, res: R
   const servicioempresaverificacionMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const session_idusuario = req.session_user?.usuario?.idusuario;
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
       const servicioempresaestados = await servicioempresaestadoDao.getServicioempresaestados(tx, filter_estados);
 
       let servicioempresaverificacionMaster: Record<string, any> = {};

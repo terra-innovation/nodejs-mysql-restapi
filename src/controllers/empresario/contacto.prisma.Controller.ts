@@ -6,6 +6,7 @@ import type { contacto } from "#root/generated/prisma/ft_factoring/client.js";
 import * as contactoDao from "#src/daos/contacto.prisma.Dao.js";
 import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
 import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
@@ -68,7 +69,7 @@ export const updateContacto = async (req: Request, res: Response) => {
 
       return {};
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 200, {});
 };
@@ -76,7 +77,7 @@ export const updateContacto = async (req: Request, res: Response) => {
 export const createContacto = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createContacto");
   const session_idusuario = req.session_user.usuario.idusuario;
-  const filter_estado = [1, 2];
+  const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
   const contactoCreateSchema = yup
     .object()
     .shape({
@@ -94,7 +95,7 @@ export const createContacto = async (req: Request, res: Response) => {
 
   const contactoFiltered = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
       var empresa = await empresaDao.getEmpresaByEmpresaid(tx, contactoValidated.empresaid);
       if (!empresa) {
         log.warn(line(), "Empresa no existe: [" + contactoValidated.empresaid + "]");
@@ -142,7 +143,7 @@ export const createContacto = async (req: Request, res: Response) => {
 
       return contactoFiltered;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, { ...contactoFiltered });
 };
@@ -154,7 +155,7 @@ export const getContactos = async (req: Request, res: Response) => {
       //log.info(line(),req.session_user.usuario.idusuario);
 
       const session_idusuario = req.session_user.usuario.idusuario;
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
       const empresas_cedentes = await empresaDao.getEmpresasByIdusuario(tx, session_idusuario, filter_estados);
       const _idcedentes = empresas_cedentes.map((empresa) => empresa.idempresa);
       const factorings = await factoringDao.getFactoringsByIdcedentes(tx, _idcedentes, filter_estados);
@@ -167,7 +168,7 @@ export const getContactos = async (req: Request, res: Response) => {
       contactosFiltered = jsonUtils.removeAttributesPrivates(contactosFiltered);
       return contactosFiltered;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, contactosFiltered);
 };
@@ -176,7 +177,7 @@ export const getContactoMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getContactoMaster");
   const contactoMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
       const session_idusuario = req.session_user.usuario.idusuario;
 
       const empresas_cedentes = await empresaDao.getEmpresasByIdusuario(tx, session_idusuario, filter_estados);
@@ -196,7 +197,7 @@ export const getContactoMaster = async (req: Request, res: Response) => {
       //jsonUtils.prettyPrint(contactoMaster);
       return contactoMasterFiltered;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, contactoMasterFiltered);
 };

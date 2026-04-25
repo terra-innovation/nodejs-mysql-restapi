@@ -11,6 +11,7 @@ import * as usuarioservicioestadoDao from "#src/daos/usuarioservicioestado.prism
 import * as usuarioservicioverificacionDao from "#src/daos/usuarioservicioverificacion.prisma.Dao.js";
 import { Request, Response } from "express";
 
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
@@ -26,7 +27,7 @@ import TemplateManager from "#src/utils/email/TemplateManager.js";
 export const createFactoringinversionistaverificacion = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createFactoringinversionistaverificacion");
   const session_idusuario = req.session_user.usuario.idusuario;
-  const filter_estado = [1, 2];
+  const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
   const servicioinversionistaverificacionCreateSchema = yup
     .object()
     .shape({
@@ -297,7 +298,7 @@ export const getFactoringinversionistaverificacionMaster = async (req: Request, 
   const servicioinversionistaverificacionMaster = await prismaFT.client.$transaction(
     async (tx) => {
       const session_idusuario = req.session_user?.usuario?.idusuario;
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
       const servicioinversionistaestados = await servicioinversionistaestadoDao.getServicioinversionistaestados(tx, filter_estados);
 
       let servicioinversionistaverificacionMaster: Record<string, any> = {};

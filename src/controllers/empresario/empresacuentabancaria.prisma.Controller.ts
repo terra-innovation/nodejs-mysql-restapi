@@ -10,6 +10,7 @@ import * as cuentatipoDao from "#src/daos/cuentatipo.prisma.Dao.js";
 import * as empresacuentabancariaDao from "#src/daos/empresacuentabancaria.prisma.Dao.js";
 import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
 import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
@@ -29,7 +30,7 @@ import type { empresa_cuenta_bancaria } from "#root/generated/prisma/ft_factorin
 export const createEmpresacuentabancaria = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createEmpresacuentabancaria");
   const session_idusuario = req.session_user.usuario.idusuario;
-  const filter_estado = [1, 2];
+  const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
   const empresacuentabancariaCreateSchema = yup
     .object()
     .shape({
@@ -138,7 +139,7 @@ export const createEmpresacuentabancaria = async (req: Request, res: Response) =
 
       return empresacuentabancariaFiltered;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, { ...empresacuentabancariaFiltered });
 };
@@ -147,7 +148,7 @@ export const getEmpresacuentabancariaMaster = async (req: Request, res: Response
   log.debug(line(), "controller::getEmpresacuentabancariaMaster");
   const cuentasbancariasMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
       const session_idusuario = req.session_user.usuario.idusuario;
 
       const empresas = await empresaDao.getEmpresasByIdusuario(tx, session_idusuario, filter_estados);
@@ -170,7 +171,7 @@ export const getEmpresacuentabancariaMaster = async (req: Request, res: Response
       //jsonUtils.prettyPrint(cuentasbancariasMaster);
       return cuentasbancariasMasterFiltered;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, cuentasbancariasMasterFiltered);
 };
@@ -190,7 +191,7 @@ export const updateEmpresacuentabancariaOnlyAlias = async (req: Request, res: Re
 
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estado = [1, 2];
+      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
       const _idusuario_session = req.session_user.usuario.idusuario;
       const empresacuentabancaria = await empresacuentabancariaDao.getEmpresacuentabancariaByEmpresacuentabancariaid(tx, empresacuentabancariaValidated.empresacuentabancariaid);
       if (!empresacuentabancaria) {
@@ -223,7 +224,7 @@ export const updateEmpresacuentabancariaOnlyAlias = async (req: Request, res: Re
 
       return {};
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 200, {});
 };
@@ -235,7 +236,7 @@ export const getEmpresacuentabancarias = async (req: Request, res: Response) => 
       //log.info(line(),req.session_user.usuario.idusuario);
 
       const session_idusuario = req.session_user.usuario.idusuario;
-      const filter_estado = [1];
+      const filter_estado = [ESTADO.ACTIVO];
       const empresacuentabancarias = await empresacuentabancariaDao.getEmpresacuentabancariasByIdusuario(tx, session_idusuario, filter_estado);
       var empresacuentabancariasJson = jsonUtils.sequelizeToJSON(empresacuentabancarias);
       //log.info(line(),empresaObfuscated);
@@ -244,7 +245,7 @@ export const getEmpresacuentabancarias = async (req: Request, res: Response) => 
       empresacuentabancariasFiltered = jsonUtils.removeAttributesPrivates(empresacuentabancariasFiltered);
       return empresacuentabancariasFiltered;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, empresacuentabancariasFiltered);
 };

@@ -14,6 +14,7 @@ import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
 import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
 import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
@@ -178,7 +179,7 @@ export const updateFactoringtransferenciacedente = async (req: Request, res: Res
 export const createFactoringtransferenciacedente = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createFactoringtransferenciacedente");
   const session_idusuario = req.session_user.usuario.idusuario;
-  const filter_estado = [1, 2];
+  const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
   const factoringtransferenciacedenteSchema = yup
     .object()
     .shape({
@@ -206,7 +207,7 @@ export const createFactoringtransferenciacedente = async (req: Request, res: Res
 
   const factoringtransferenciacedenteCreated = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
 
       var factoring = await factoringDao.getFactoringByFactoringid(tx, factoringtransferenciacedenteValidated.factoringid);
       if (!factoring) {
@@ -312,7 +313,7 @@ export const getFactoringtransferenciacedentesByFactoringid = async (req: Reques
 
   const factoringtransferenciacedentesJson = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estado = [1, 2];
+      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
 
       var factoring = await factoringDao.getFactoringByFactoringid(tx, factoringtransferenciacedenteValidated.factoringid);
       if (!factoring) {
@@ -347,7 +348,7 @@ export const getFactoringtransferenciacedenteMasterByFactoringid = async (req: R
 
   const factoringtransferenciacedentesMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
 
       var factoring = await factoringDao.getFactoringByFactoringid(tx, factoringtransferenciacedenteValidated.factoringid);
       if (!factoring) {

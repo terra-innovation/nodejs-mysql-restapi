@@ -4,6 +4,7 @@ import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as usuarioservicioempresaDao from "#src/daos/usuarioservicioempresa.prisma.Dao.js";
 
 import { response } from "#src/utils/CustomResponseOk.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
@@ -19,7 +20,7 @@ export const getUsuarioservicioempresas = async (req: Request, res: Response) =>
 
   const empresas = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
       const idservicio = 1;
       const _idusuario_session = req.session_user.usuario.idusuario;
 
@@ -27,7 +28,7 @@ export const getUsuarioservicioempresas = async (req: Request, res: Response) =>
       var empresasFiltered = jsonUtils.removeAttributesPrivates(usuarioservicioempresas);
       return empresasFiltered;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, empresas);
 };
@@ -36,11 +37,11 @@ export const getUsuarioservicioempresaMaster = async (req: Request, res: Respons
   log.debug(line(), "controller::getUsuarioservicioempresaMaster");
   const empresasMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
 
       return {};
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, empresasMasterFiltered);
 };

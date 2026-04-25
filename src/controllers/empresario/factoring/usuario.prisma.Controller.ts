@@ -13,7 +13,7 @@ export const getUsuario = async (req: Request, res: Response) => {
   const usuarioFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_idusuario = req.session_user.usuario.idusuario;
-      const filter_estado = [1, 2];
+      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
       const usuario = await usuarioDao.getUsuarioDatosContactoByIdusuario(tx, filter_idusuario, filter_estado);
       //var usuarioObfuscated = jsonUtils.ofuscarAtributos(usuario, ["email"], jsonUtils.PATRON_OFUSCAR_EMAIL);
       //usuarioObfuscated = jsonUtils.ofuscarAtributos(usuarioObfuscated, ["celular"], jsonUtils.PATRON_OFUSCAR_TELEFONO);
@@ -22,7 +22,7 @@ export const getUsuario = async (req: Request, res: Response) => {
       var usuarioFiltered = jsonUtils.removeAttributesPrivates(usuario);
       return usuarioFiltered;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, usuarioFiltered);
 };

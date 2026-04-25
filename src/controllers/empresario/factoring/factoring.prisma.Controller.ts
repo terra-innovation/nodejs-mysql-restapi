@@ -15,6 +15,7 @@ import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
 import * as personaDao from "#src/daos/persona.prisma.Dao.js";
 import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
 import * as telegramService from "#src/services/telegram.Service.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
@@ -31,7 +32,7 @@ export const getFactorings = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFactorings");
   const factorings = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
       const _idusuario_session = req.session_user.usuario.idusuario;
       const empresas_cedentes = await empresaDao.getEmpresasByIdusuario(tx, _idusuario_session, filter_estados);
       const _idcedentes = empresas_cedentes.map((empresa) => empresa.idempresa);
@@ -46,7 +47,7 @@ export const getFactorings = async (req: Request, res: Response) => {
 
 export const getFactoringMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFactoringsMaster");
-  const filter_estados = [1];
+  const filter_estados = [ESTADO.ACTIVO];
 
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
@@ -86,7 +87,7 @@ export const createFactoring = async (req: Request, res: Response) => {
 
   const factoringCreated = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
       const facturas = [];
 
       for (const [index, facturaid] of factoringValidated.facturas.entries()) {
@@ -99,7 +100,7 @@ export const createFactoring = async (req: Request, res: Response) => {
         // Validar si el factoring ya existe
         //JCHR:20250213: Habillitar para producción
         if (isProduction) {
-          const filter_estados_factoring = [1];
+          const filter_estados_factoring = [ESTADO.ACTIVO];
           const factoring_existe = await factoringDao.getFactoringByRucCedenteAndCodigoFactura(tx, factura.proveedor_ruc, factura.serie, factura.numero_comprobante, filter_estados_factoring);
           if (factoring_existe) {
             log.warn(line(), "Factoring ya existe: [" + factura.proveedor_ruc + ", " + factura.serie + ", " + factura.numero_comprobante + ", " + filter_estados_factoring + "]");

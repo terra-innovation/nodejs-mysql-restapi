@@ -4,6 +4,7 @@ import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as zlaboratoriousuarioDao from "#src/daos/zlaboratoriousuario.prisma.Dao.js";
 import * as zlaboratoriopedidoDao from "#src/daos/zlaboratoriopedido.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
@@ -14,7 +15,7 @@ import * as yup from "yup";
 export const validateTransaction = async (req: Request, res: Response) => {
   log.debug(line(), "controller::validateTransaction");
   const session_idusuario = req.session_user.usuario.idusuario;
-  const filter_estado = [1, 2];
+  const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
   const usuariopedidoCreateSchema = yup
     .object()
     .shape({
@@ -85,7 +86,7 @@ export const validateTransaction = async (req: Request, res: Response) => {
 */
       return usuarioCreated;
     },
-    { timeout: prismaFT.transactionTimeout }
+    { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, { ...resultado });
 };

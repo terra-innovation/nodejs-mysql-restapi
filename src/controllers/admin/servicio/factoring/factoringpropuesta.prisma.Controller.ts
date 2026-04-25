@@ -11,6 +11,7 @@ import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
 import * as riesgoDao from "#src/daos/riesgo.prisma.Dao.js";
 import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
@@ -166,7 +167,7 @@ export const updateFactoringpropuesta = async (req: Request, res: Response) => {
 export const createFactoringpropuesta = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createFactoringpropuesta");
   const session_idusuario = req.session_user.usuario.idusuario;
-  const filter_estado = [1, 2];
+  const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
   const factoringSimulateSchema = yup
     .object()
     .shape({
@@ -189,7 +190,7 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
   const simulacion = await prismaFT.client.$transaction(
     async (tx) => {
       const session_idusuario = req.session_user.usuario.idusuario;
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
 
       var factoring = await factoringDao.getFactoringByFactoringid(tx, factoringValidated.factoringid);
       if (!factoring) {
@@ -428,7 +429,7 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
 export const simulateFactoringpropuesta = async (req: Request, res: Response) => {
   log.debug(line(), "controller::simulateFactoringpropuesta");
   const session_idusuario = req.session_user.usuario.idusuario;
-  const filter_estado = [1, 2];
+  const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
   const { id } = req.params;
   const factoringSimulateSchema = yup
     .object()
@@ -449,7 +450,7 @@ export const simulateFactoringpropuesta = async (req: Request, res: Response) =>
   const simulacion = await prismaFT.client.$transaction(
     async (tx) => {
       const session_idusuario = req.session_user.usuario.idusuario;
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
 
       var factoring = await factoringDao.getFactoringByFactoringid(tx, factoringValidated.factoringid);
       if (!factoring) {
@@ -507,7 +508,7 @@ export const getFactoringpropuestasByFactoringid = async (req: Request, res: Res
 
   const factoringpropuestasJson = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estado = [1, 2];
+      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
 
       var factoring = await factoringDao.getFactoringByFactoringid(tx, factoringpropuestaValidated.factoringid);
       if (!factoring) {
@@ -584,7 +585,7 @@ export const getFactoringpropuestaMaster = async (req: Request, res: Response) =
   log.debug(line(), "controller::getFactoringpropuestaMaster");
   const factoringpropuestasMasterFiltered = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estados = [1];
+      const filter_estados = [ESTADO.ACTIVO];
       const riesgos = await riesgoDao.getRiesgos(tx, filter_estados);
       const factoringtipos = await factoringtipoDao.getFactoringtipos(tx, filter_estados);
       const factoringestrategias = await factoringestrategiaDao.getFactoringestrategias(tx, filter_estados);
@@ -615,7 +616,7 @@ export const getFactoringpropuestas = async (req: Request, res: Response) => {
 
   const factoringpropuestasJson = await prismaFT.client.$transaction(
     async (tx) => {
-      const filter_estado = [1, 2];
+      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
       const factoringpropuestas = await factoringpropuestaDao.getFactoringpropuestas(tx, filter_estado);
       var factoringpropuestasJson = jsonUtils.sequelizeToJSON(factoringpropuestas);
       //log.info(line(),factoringpropuestaObfuscated);
