@@ -6,6 +6,7 @@ import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 export const getUsuario = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getUsuario");

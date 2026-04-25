@@ -16,14 +16,10 @@ import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { line, log } from "#root/src/utils/logger.pino.js";
 
-import * as validacionesYup from "#src/utils/validacionesYup.js";
-import * as fs from "fs";
-import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-import * as storageUtils from "#src/utils/storageUtils.js";
-import type { cuenta_bancaria } from "#root/generated/prisma/ft_factoring/client.js";
-import type { empresa_cuenta_bancaria } from "#root/generated/prisma/ft_factoring/client.js";
+import { ARCHIVO_TIPO } from "#src/daos/archivotipo.prisma.Dao.js";
+import { isProduction } from "#src/config.js";
 
 export const getEmpresacuentabancarias = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getEmpresacuentabancarias");
@@ -108,11 +104,7 @@ export const createEmpresacuentabancaria = async (req: Request, res: Response) =
   const empresacuentabancariaCreateSchema = yup
     .object()
     .shape({
-      encabezado_cuenta_bancaria: yup
-        .mixed()
-        .concat(validacionesYup.fileRequeridValidation())
-        .concat(validacionesYup.fileSizeValidation(5 * 1024 * 1024))
-        .concat(validacionesYup.fileTypeValidation(["image/png", "image/jpeg", "image/jpg", "application/pdf"])),
+      encabezado_cuenta_bancaria: yup.string().trim().required().min(36).max(36),
       empresaid: yup.string().trim().required().min(36).max(36),
       bancoid: yup.string().trim().required().min(36).max(36),
       cuentatipoid: yup.string().trim().required().min(36).max(36),
@@ -122,7 +114,7 @@ export const createEmpresacuentabancaria = async (req: Request, res: Response) =
       alias: yup.string().required().max(50),
     })
     .required();
-  var empresacuentabancariaValidated = empresacuentabancariaCreateSchema.validateSync({ ...req.files, ...req.body }, { abortEarly: false, stripUnknown: true });
+  var empresacuentabancariaValidated = empresacuentabancariaCreateSchema.validateSync({ ...req.body }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "empresacuentabancariaValidated:", empresacuentabancariaValidated);
 
   const empresacuentabancariaFiltered = await prismaFT.client.$transaction(
@@ -199,7 +191,14 @@ export const createEmpresacuentabancaria = async (req: Request, res: Response) =
       const cuentabancariaCreated = await cuentabancariaDao.insertCuentabancaria(tx, cuentabancariaToCreate);
       log.debug(line(), "cuentabancariaCreated:", cuentabancariaCreated);
 
-      const encabezadocuentabancariaCreated = await crearArchivoEncabezadoCuentaBancaria(req, tx, empresacuentabancariaValidated, cuentabancariaCreated);
+      const filter_estado_archivo = isProduction ? [ESTADO.ACTIVO] : [ESTADO.ACTIVO, ESTADO.ELIMINADO];
+      const encabezadocuentabancaria = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(tx, empresacuentabancariaValidated.encabezado_cuenta_bancaria, ARCHIVO_TIPO.ENCABEZADO_DEL_EECC_DE_LA_CUENTA_BANCARIA, filter_estado_archivo);
+      if (!encabezadocuentabancaria) {
+        log.warn(line(), "Encabezado de cuenta bancaria no existe o tipo no coincide: [" + empresacuentabancariaValidated.encabezado_cuenta_bancaria + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
+
+      const encabezadocuentabancariaCreated = await vincularArchivoEncabezadoCuentaBancaria(req, tx, encabezadocuentabancaria, cuentabancariaCreated);
       log.debug(line(), "encabezadocuentabancariaCreated:", encabezadocuentabancariaCreated);
 
       const empresacuentabancariaToCreate: Prisma.empresa_cuenta_bancariaCreateInput = {
@@ -230,52 +229,19 @@ export const createEmpresacuentabancaria = async (req: Request, res: Response) =
   response(res, 201, { ...empresacuentabancariaFiltered });
 };
 
-const crearArchivoEncabezadoCuentaBancaria = async (req, tx, usuarioservicioValidated, cuentabancariaCreated) => {
-  //Copiamos el archivo
-  const { encabezado_cuenta_bancaria } = usuarioservicioValidated;
-  const { anio_upload, mes_upload, dia_upload, filename, path: archivoOrigen } = encabezado_cuenta_bancaria[0];
-  const carpetaDestino = path.join(anio_upload, mes_upload, dia_upload);
-  const rutaDestino = path.join(storageUtils.STORAGE_PATH_SUCCESS, anio_upload, mes_upload, dia_upload, filename); // Crear la ruta completa del archivo de destino
-  fs.mkdirSync(path.dirname(rutaDestino), { recursive: true }); // Crear directorio si no existe
-  fs.copyFileSync(archivoOrigen, rutaDestino); // Copia el archivo
-
-  const { codigo_archivo, originalname, size, mimetype, encoding, extension } = encabezado_cuenta_bancaria[0];
-
-  let archivoToCreate: Prisma.archivoCreateInput = {
-    archivoid: uuidv4(),
-    archivo_tipo: { connect: { idarchivotipo: 7 } },
-    archivo_estado: { connect: { idarchivoestado: 1 } },
-    codigo: codigo_archivo,
-    nombrereal: originalname,
-    nombrealmacenamiento: filename,
-    ruta: carpetaDestino,
-    tamanio: size,
-    mimetype: mimetype,
-    encoding: encoding,
-    extension: extension,
-    observacion: "",
-    fechavencimiento: null,
-    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
-    fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
-    fechamod: new Date(),
-    estado: 1,
-  };
-  const archivoCreated = await archivoDao.insertArchivo(tx, archivoToCreate);
+const vincularArchivoEncabezadoCuentaBancaria = async (req, tx, archivo, cuentabancariaCreated) => {
+  const idusuario = req.session_user?.usuario?.idusuario ?? 1;
 
   const archivocuentabancariaToCreate: Prisma.archivo_cuenta_bancariaCreateInput = {
-    archivo: { connect: { idarchivo: archivoCreated.idarchivo } },
+    archivo: { connect: { idarchivo: archivo.idarchivo } },
     cuenta_bancaria: { connect: { idcuentabancaria: cuentabancariaCreated.idcuentabancaria } },
-    idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
+    idusuariocrea: idusuario,
     fechacrea: new Date(),
-    idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
+    idusuariomod: idusuario,
     fechamod: new Date(),
     estado: 1,
   };
 
   await archivocuentabancariaDao.insertArchivoCuentaBancaria(tx, archivocuentabancariaToCreate);
-
-  fs.unlinkSync(archivoOrigen);
-
-  return archivoCreated;
+  return archivo;
 };
