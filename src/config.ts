@@ -34,16 +34,7 @@ const envSchema = z.object({
   TOKEN_KEY_OTP: z.string(),
 
   // SMTP
-  SMTP_ZOHO_HOST: z.string(),
-  SMTP_ZOHO_PORT: z.coerce.number(),
-  SMTP_ZOHO_SECURE: z.enum(["true", "false"]).transform((v) => v === "true"),
-
-  // Mails
-  MAIL_CONTACTO_FINANZATECH_ACTIVE: z.enum(["true", "false"]).transform((v) => v === "true"),
-  MAIL_CONTACTO_FINANZATECH_NAME: z.string(),
-  MAIL_CONTACTO_FINANZATECH_USER: z.string().email(),
-  MAIL_CONTACTO_FINANZATECH_PASS: z.string(),
-  MAIL_BACKUP: z.string().email(),
+  MAIL_ENCRYPTION_KEY_COFIG: z.string(),
 
   // Telegram
   TELEGRAM_ACTIVE: z.enum(["true", "false"]).transform((v) => v === "true"),
