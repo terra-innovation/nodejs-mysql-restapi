@@ -24,6 +24,9 @@ import admin_zlaboratorioRoutes from "#src/routes/admin/zlaboratorio.prisma.rout
 import admin_usuarioRoutes from "#src/routes/admin/usuario.prisma.routes.js";
 import admin_contactoRoutes from "#src/routes/admin/contacto.prisma.routes.js";
 import admin_configuracioncorreoRoutes from "#src/routes/admin/configuracioncorreo.prisma.routes.js";
+import admin_factorlimiteRoutes from "#src/routes/admin/factorlimite.prisma.routes.js";
+import admin_cedentelimiteRoutes from "#src/routes/admin/cedentelimite.prisma.routes.js";
+import admin_pagadorlimiteRoutes from "#src/routes/admin/pagadorlimite.prisma.routes.js";
 
 
 import admin_administracionRoutes from "#root/src/routes/admin/administracion.prisma.routes.js";
@@ -47,6 +50,9 @@ router.use(admin_factoringempresaverificacionRoutes);
 router.use(admin_factoringinversionistaverificacionRoutes);
 router.use(admin_contactoRoutes);
 router.use(admin_configuracioncorreoRoutes);
+router.use(admin_factorlimiteRoutes);
+router.use(admin_cedentelimiteRoutes);
+router.use(admin_pagadorlimiteRoutes);
 
 router.use(admin_servicio_factoring_factoringRoutes);
 router.use(admin_servicio_factoring_factoringpropuestaRoutes);

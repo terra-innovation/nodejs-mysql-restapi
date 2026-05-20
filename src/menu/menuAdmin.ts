@@ -109,6 +109,27 @@ export const generarMenuAdmin = (usuario: UsuarioConRoles) => {
             breadcrumbs: true,
           },
           {
+            id: "admin-mantenimiento-factorlimites",
+            title: "Factores limites",
+            type: "item",
+            url: "/admin/factorlimite/lista",
+            breadcrumbs: true,
+          },
+          {
+            id: "admin-mantenimiento-cedentelimites",
+            title: "Cedentes limites",
+            type: "item",
+            url: "/admin/cedentelimite/lista",
+            breadcrumbs: true,
+          },
+          {
+            id: "admin-mantenimiento-pagadorlimites",
+            title: "Pagadores limites",
+            type: "item",
+            url: "/admin/pagadorlimite/lista",
+            breadcrumbs: true,
+          },
+          {
             id: "admin-mantenimiento-configuracioncorreo",
             title: "Config Correo",
             type: "item",

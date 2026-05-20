@@ -7,12 +7,14 @@
       "request": "launch",
       "runtimeExecutable": "node",
       "runtimeArgs": [
+        "--watch",
         "--import",
         "tsx",
         "${workspaceFolder}/src/index.ts"
       ],
       "console": "integratedTerminal",
       "skipFiles": ["<node_internals>/**"],
+      "restart": true,
       "env": {
         "NODE_ENV": "development"
       }
