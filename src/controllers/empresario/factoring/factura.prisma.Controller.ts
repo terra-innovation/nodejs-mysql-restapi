@@ -15,6 +15,9 @@ import * as facturamediopagoDao from "#src/daos/facturamediopago.prisma.Dao.js";
 import * as facturanotaDao from "#src/daos/facturanota.prisma.Dao.js";
 import * as facturaterminopagoDao from "#src/daos/facturaterminopago.prisma.Dao.js";
 import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
+import * as factorlimiteDao from "#src/daos/factorlimite.prisma.Dao.js";
+import * as cedentelimiteDao from "#src/daos/cedentelimite.prisma.Dao.js";
+import * as pagadorlimiteDao from "#src/daos/pagadorlimite.prisma.Dao.js";
 
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
@@ -22,6 +25,7 @@ import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ARCHIVO_TIPO } from "#src/daos/archivotipo.prisma.Dao.js";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
+import { formatNumber } from "#src/utils/numberUtils.js";
 import * as facturaUtils from "#src/utils/facturaUtils.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import * as storageUtils from "#src/utils/storageUtils.js";
@@ -148,6 +152,61 @@ export const subirFactura = async (req: Request, res: Response) => {
       if (facturaToCreate.dias_estimados_para_pago <= REGLA_MINIMO_DE_DIAS_PARA_PAGO) {
         log.warn(line(), "Seleccione una factura cuya fecha de vencimiento sea superior a " + REGLA_MINIMO_DE_DIAS_PARA_PAGO + " días.");
         throw new ClientError("Seleccione una factura cuya fecha de vencimiento sea superior a " + REGLA_MINIMO_DE_DIAS_PARA_PAGO + " días.", 404);
+      }
+
+      /* Límites: Reglas de negocio del factor, cedente y pagador */
+      const dbMoneda = await monedaDao.getMonedaByCodigo(tx, facturaToCreate.codigo_tipo_moneda);
+      if (!dbMoneda) {
+        log.warn(line(), `Moneda no configurada en el sistema: ${facturaToCreate.codigo_tipo_moneda}`);
+        throw new ClientError(`La moneda especificada en la factura (${facturaToCreate.codigo_tipo_moneda}) no se encuentra registrada o habilitada en nuestra plataforma. Por favor, comuníquese con su asesor asignado para gestionar su registro.`, 404);
+      }
+      const idmoneda = dbMoneda.idmoneda;
+      const monedaSimbolo = dbMoneda.simbolo ?? facturaToCreate.codigo_tipo_moneda;
+      const monedaNombre = dbMoneda.alias ?? dbMoneda.nombre ?? facturaToCreate.codigo_tipo_moneda;
+
+      const importeNeto = Number(facturaToCreate.importe_neto?.toString() || 0);
+
+      // 1. Validar límite del Factor (ID 1)
+      const limitFactor = await factorlimiteDao.getFactorlimiteByIdfactorAndIdmoneda(tx, 1, idmoneda, filter_estado);
+      if (!limitFactor) {
+        log.warn(line(), `No se encontró límite de factor configurado para Factor ID 1, idmoneda: ${idmoneda} - ${monedaNombre}`);
+        throw new ClientError(`No se ha registrado una línea de factoring configurada para nuestra entidad en ${monedaNombre}. Por favor, póngase en contacto con su asesor.`, 422);
+      }
+      const dispFactor = Number(limitFactor.disponible);
+      if (importeNeto > dispFactor) {
+        log.warn(line(), `Importe neto supera límite de factor: ${importeNeto} > ${dispFactor}`);
+        throw new ClientError(`El importe neto de la factura (${monedaSimbolo} ${formatNumber(importeNeto)}) supera el límite disponible. Le invitamos a contactar a su asesor para evaluar la viabilidad de una excepción comercial.`, 422);
+      }
+
+      // 2. Validar límite del Cedente (empresa proveedora emisor)
+      const idcedente = empresa.idempresa;
+      const limitCedente = await cedentelimiteDao.getCedentelimiteByIdcedenteAndIdmoneda(tx, idcedente, idmoneda, filter_estado);
+      if (!limitCedente) {
+        log.warn(line(), `No se encontró límite de cedente para idcedente: ${idcedente} - ${empresa.razon_social} (${facturaFinal.cliente.ruc}), idmoneda: ${idmoneda} - ${monedaNombre}`);
+        throw new ClientError(`La empresa (${empresa.razon_social}) no cuenta con una línea disponible asignada en ${monedaNombre} en nuestra plataforma. Para iniciar el proceso de asignación de línea, por favor póngase en contacto con su asesor.`, 422);
+      }
+      const dispCedente = Number(limitCedente.disponible);
+      if (importeNeto > dispCedente) {
+        log.warn(line(), `Importe neto supera límite de cedente: ${importeNeto} > ${dispCedente}`);
+        throw new ClientError(`El importe neto de la factura (${monedaSimbolo} ${formatNumber(importeNeto)}) supera el límite disponible. Le invitamos a contactar a su asesor para evaluar la viabilidad de una excepción comercial.`, 422);
+      }
+
+      // 3. Validar límite del Pagador (empresa cliente receptor)
+      const pagador = await empresaDao.getEmpresaByRuc(tx, facturaFinal.cliente.ruc);
+      if (!pagador) {
+        log.warn(line(), `Empresa pagadora no registrada en la base de datos: RUC ${facturaFinal.cliente.ruc}`);
+        throw new ClientError(`La empresa pagadora (${facturaFinal.cliente.razon_social}, RUC: ${facturaFinal.cliente.ruc}) no registra una línea disponible asignada en la moneda ${monedaNombre}. Le invitamos a contactar a su asesor para iniciar la evaluación crediticia.`, 422);
+      }
+      const idpagador = pagador.idempresa;
+      const limitPagador = await pagadorlimiteDao.getPagadorlimiteByIdpagadorAndIdmoneda(tx, idpagador, idmoneda, filter_estado);
+      if (!limitPagador) {
+        log.warn(line(), `No se encontró límite de pagador para idpagador: ${idpagador}, idmoneda: ${idmoneda}`);
+        throw new ClientError(`La empresa pagadora (${pagador.razon_social}, RUC: ${pagador.ruc}) no registra una línea disponible asignada para la moneda ${monedaNombre} en nuestra plataforma. Le invitamos a contactar a su asesor para iniciar la evaluación crediticia.`, 422);
+      }
+      const dispPagador = Number(limitPagador.disponible);
+      if (importeNeto > dispPagador) {
+        log.warn(line(), `Importe neto supera límite de pagador: ${importeNeto} > ${dispPagador}`);
+        throw new ClientError(`El importe neto de la factura (${monedaSimbolo} ${formatNumber(importeNeto)}) supera la línea disponible asignada para la empresa pagadora (${pagador.razon_social}, RUC: ${pagador.ruc}). Le invitamos a contactar a su asesor para evaluar la viabilidad de una excepción comercial.`, 422);
       }
 
       let cliente = await empresaDao.getEmpresaByRuc(tx, facturaFinal.cliente.ruc);
