@@ -1,30 +1,22 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import * as factoringpropuestaDao from "#src/daos/factoringpropuesta.prisma.Dao.js";
-import * as factoringpropuestafinancieroDao from "#src/daos/factoringpropuestafinanciero.prisma.Dao.js";
-import * as factoringpropuestaestadoDao from "#src/daos/factoringpropuestaestado.prisma.Dao.js";
-import * as factoringtipoDao from "#src/daos/factoringtipo.prisma.Dao.js";
-import * as factoringestadoDao from "#src/daos/factoringestado.prisma.Dao.js";
-import * as factoringestrategiaDao from "#src/daos/factoringestrategia.prisma.Dao.js";
-import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
-import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
-import * as factorcuentabancariaDao from "#src/daos/factorcuentabancaria.prisma.Dao.js";
-import * as configuracionappDao from "#src/daos/configuracionapp.prisma.Dao.js";
-import * as factoringhistorialestadoDao from "#src/daos/factoringhistorialestado.prisma.Dao.js";
-import * as archivofactoringhistorialestadoDao from "#src/daos/archivofactoringhistorialestado.prisma.Dao.js";
-import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
-import * as riesgoDao from "#src/daos/riesgo.prisma.Dao.js";
-import { response } from "#src/utils/CustomResponseOk.js";
-import { ESTADO } from "#src/constants/prisma.Constant.js";
-import { ClientError } from "#src/utils/CustomErrors.js";
-import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { log, line } from "#src/utils/logger.pino.js";
 import * as emailService from "#root/src/services/email.Service.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
+import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
+import * as archivofactoringhistorialestadoDao from "#src/daos/archivofactoringhistorialestado.prisma.Dao.js";
+import * as configuracionappDao from "#src/daos/configuracionapp.prisma.Dao.js";
+import * as factorcuentabancariaDao from "#src/daos/factorcuentabancaria.prisma.Dao.js";
+import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
+import * as factoringestadoDao from "#src/daos/factoringestado.prisma.Dao.js";
+import * as factoringhistorialestadoDao from "#src/daos/factoringhistorialestado.prisma.Dao.js";
+import * as factoringpropuestaDao from "#src/daos/factoringpropuesta.prisma.Dao.js";
+import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
+import { ClientError } from "#src/utils/CustomErrors.js";
+import { response } from "#src/utils/CustomResponseOk.js";
+import * as jsonUtils from "#src/utils/jsonUtils.js";
+import { line, log } from "#src/utils/logger.pino.js";
+import { Request, Response } from "express";
 
-import type { factoring_historial_estado } from "#root/generated/prisma/ft_factoring/client.js";
-
-import * as luxon from "luxon";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
@@ -35,6 +27,7 @@ export const updateFactoringhistorialestado = async (req: Request, res: Response
     .object()
     .shape({
       factoringhistorialestadoid: yup.string().trim().required().min(36).max(36),
+      factoringestadoid: yup.string().trim().required().min(36).max(36),
       comentario: yup.string().trim().required().min(2).max(65535),
       archivos: yup.array().of(yup.string().min(36).max(36)),
     })
@@ -47,6 +40,12 @@ export const updateFactoringhistorialestado = async (req: Request, res: Response
       var factoringhistorialestado = await factoringhistorialestadoDao.getFactoringhistorialestadoByFactoringhistorialestadoid(tx, factoringhistorialestadoValidated.factoringhistorialestadoid);
       if (!factoringhistorialestado) {
         log.warn(line(), "Factoringhistorialestado no existe: [" + factoringhistorialestadoValidated.factoringhistorialestadoid + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
+
+      var factoringestado = await factoringestadoDao.getFactoringestadoByFactoringestadoid(tx, factoringhistorialestadoValidated.factoringestadoid);
+      if (!factoringestado) {
+        log.warn(line(), "Factoringestado no existe: [" + factoringhistorialestadoValidated.factoringestadoid + "]");
         throw new ClientError("Datos no válidos", 404);
       }
 
@@ -63,6 +62,7 @@ export const updateFactoringhistorialestado = async (req: Request, res: Response
       }
 
       const factoringhistorialestadoToUpdate: Prisma.factoring_historial_estadoUpdateInput = {
+        factoring_estado: { connect: { idfactoringestado: factoringestado.idfactoringestado } },
         comentario: factoringhistorialestadoValidated.comentario,
         idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
