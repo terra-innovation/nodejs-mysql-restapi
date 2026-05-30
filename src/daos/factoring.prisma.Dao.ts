@@ -1,10 +1,10 @@
+import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { TxClient } from "#src/types/Prisma.types.js";
-import type { Prisma, factoring, factoring_propuesta_financiero } from "#root/generated/prisma/ft_factoring/client.js";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
 
-import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
+import { line, log } from "#src/utils/logger.pino.js";
 
 export const getFactoringByIdfactoringIdempresario = async (tx: TxClient, idfactoring: number, idempresario: number, estados: number[]) => {
   try {
@@ -323,8 +323,8 @@ export const getFactoringsByEstados = async (tx: TxClient, estados: number[]) =>
             moneda: true,
           },
         },
-        empresa_aceptante: true,
-        empresa_cedente: true,
+        empresa_aceptante: { include: { riesgo: true } },
+        empresa_cedente: { include: { riesgo: true } },
         factoring_ejecutado: true,
         factoring_ejecutado_factoringes: true,
         factoring_estado: true,
