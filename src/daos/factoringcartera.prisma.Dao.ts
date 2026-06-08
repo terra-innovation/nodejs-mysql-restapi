@@ -115,31 +115,31 @@ export const getFactoringcarteraResumen = async (tx: TxClient) => {
   try {
     const result = await tx.$queryRaw`
       SELECT 
-    m.codigo AS moneda, 
-    fc.code, 
-    fc.estado1,  
-    COALESCE(COUNT(f._idfactoring), 0) AS cantidad, 
-    COALESCE(SUM(fp.monto_neto), 0) AS suma_monto_neto, 
-    COALESCE(SUM(fp.monto_garantia), 0) AS suma_monto_garantia, 
-    COALESCE(SUM(fp.monto_financiado), 0) AS suma_monto_financiado, 
-    COALESCE(SUM(fp.monto_descuento), 0) AS suma_monto_descuento, 
-    COALESCE(SUM(fp.monto_comision), 0) AS suma_monto_comision, 
-    COALESCE(SUM(fp.monto_adelanto), 0) AS suma_monto_adelanto
-FROM factoring_cartera fc
--- 1. Forzamos a que cada cartera exista para cada moneda del sistema
-CROSS JOIN moneda m 
-LEFT JOIN factoring_estado fe 
-    ON fc._idfactoringcartera = fe._idfactoringcartera
--- 2. Al unir factoring, aseguramos que coincida tanto el estado como la moneda de la fila actual
-LEFT JOIN factoring f 
-    ON f._idfactoringestado = fe._idfactoringestado 
-    AND f.estado IN (1)
-    AND f._idmoneda = m._idmoneda 
-LEFT JOIN factoring_propuesta fp 
-    ON fp._idfactoringpropuesta = f._idfactoringpropuestaaceptada
-WHERE fc._idfactoringcartera NOT IN (1)
-GROUP BY m.codigo, fc.code, fc.estado1, fc.orden
-ORDER BY m.codigo, fc.orden;
+          m.codigo AS moneda, 
+          fc.code, 
+          fc.estado1,  
+          COALESCE(COUNT(f._idfactoring), 0) AS cantidad, 
+          COALESCE(SUM(fp.monto_neto), 0) AS suma_monto_neto, 
+          COALESCE(SUM(fp.monto_garantia), 0) AS suma_monto_garantia, 
+          COALESCE(SUM(fp.monto_financiado), 0) AS suma_monto_financiado, 
+          COALESCE(SUM(fp.monto_descuento), 0) AS suma_monto_descuento, 
+          COALESCE(SUM(fp.monto_comision), 0) AS suma_monto_comision, 
+          COALESCE(SUM(fp.monto_adelanto), 0) AS suma_monto_adelanto
+      FROM factoring_cartera fc
+      -- 1. Forzamos a que cada cartera exista para cada moneda del sistema
+      CROSS JOIN moneda m 
+      LEFT JOIN factoring_estado fe 
+          ON fc._idfactoringcartera = fe._idfactoringcartera
+      -- 2. Al unir factoring, aseguramos que coincida tanto el estado como la moneda de la fila actual
+      LEFT JOIN factoring f 
+          ON f._idfactoringestado = fe._idfactoringestado 
+          AND f.estado IN (1)
+          AND f._idmoneda = m._idmoneda 
+      LEFT JOIN factoring_propuesta fp 
+          ON fp._idfactoringpropuesta = f._idfactoringpropuestaaceptada
+      WHERE fc._idfactoringcartera NOT IN (1)
+      GROUP BY m.codigo, fc.code, fc.estado1, fc.orden
+      ORDER BY m.codigo, fc.orden;
     `;
     return result;
   } catch (error) {
