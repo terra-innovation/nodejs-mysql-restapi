@@ -1,17 +1,24 @@
 import { Router } from "express";
 
+import admin_factoringcarteraRoutes from "#root/src/routes/admin/servicio/factoring/factoringcartera.prisma.routes.js";
 import admin_archivoRoutes from "#src/routes/admin/archivo.prisma.routes.js";
 import admin_archivofacturaRoutes from "#src/routes/admin/archivofactura.prisma.routes.js";
+import admin_cedentelimiteRoutes from "#src/routes/admin/cedentelimite.prisma.routes.js";
+import admin_configuracioncorreoRoutes from "#src/routes/admin/configuracioncorreo.prisma.routes.js";
+import admin_contactoRoutes from "#src/routes/admin/contacto.prisma.routes.js";
 import admin_cuentabancariaestadoRoutes from "#src/routes/admin/cuentabancariaestado.prisma.routes.js";
 import admin_empresaRoutes from "#src/routes/admin/empresa.prisma.routes.js";
 import admin_empresacuentabancariaRoutes from "#src/routes/admin/empresacuentabancaria.prisma.routes.js";
 import admin_factoringempresaverificacionRoutes from "#src/routes/admin/factoringempresaverificacion.prisma.routes.js";
 import admin_factoringinversionistaverificacionRoutes from "#src/routes/admin/factoringinversionistaverificacion.prisma.routes.js";
+import admin_factorlimiteRoutes from "#src/routes/admin/factorlimite.prisma.routes.js";
 import admin_facturaRoutes from "#src/routes/admin/factura.prisma.routes.js";
 import admin_inversionistacuentabancariaRoutes from "#src/routes/admin/inversionistacuentabancaria.prisma.routes.js";
+import admin_pagadorlimiteRoutes from "#src/routes/admin/pagadorlimite.prisma.routes.js";
 import admin_personaRoutes from "#src/routes/admin/persona.prisma.routes.js";
 import admin_personaverificacionRoutes from "#src/routes/admin/personaverificacion.prisma.routes.js";
 import admin_servicioRoutes from "#src/routes/admin/servicio.prisma.routes.js";
+import admin_servicio_factoring_accionistaRoutes from "#src/routes/admin/servicio/factoring/accionista.prisma.routes.js";
 import admin_servicio_factoring_factoringRoutes from "#src/routes/admin/servicio/factoring/factoring.prisma.routes.js";
 import admin_servicio_factoring_factoringhistorialestadoRoutes from "#src/routes/admin/servicio/factoring/factoringhistorialestado.prisma.routes.js";
 import admin_servicio_factoring_factoringpropuestaRoutes from "#src/routes/admin/servicio/factoring/factoringpropuesta.prisma.routes.js";
@@ -19,15 +26,8 @@ import admin_servicio_factoring_factoringpropuestahistorialestadoRoutes from "#s
 import admin_servicio_factoring_factoringsimulacionRoutes from "#src/routes/admin/servicio/factoring/factoringsimulacion.prisma.routes.js";
 import admin_servicio_factoring_factoringtransferenciacedenteRoutes from "#src/routes/admin/servicio/factoring/factoringtransferenciacedente.prisma.routes.js";
 import admin_servicio_factoring_funcionarioRoutes from "#src/routes/admin/servicio/factoring/funcionario.prisma.routes.js";
-import admin_servicio_factoring_accionistaRoutes from "#src/routes/admin/servicio/factoring/accionista.prisma.routes.js";
-import admin_zlaboratorioRoutes from "#src/routes/admin/zlaboratorio.prisma.routes.js";
 import admin_usuarioRoutes from "#src/routes/admin/usuario.prisma.routes.js";
-import admin_contactoRoutes from "#src/routes/admin/contacto.prisma.routes.js";
-import admin_configuracioncorreoRoutes from "#src/routes/admin/configuracioncorreo.prisma.routes.js";
-import admin_factorlimiteRoutes from "#src/routes/admin/factorlimite.prisma.routes.js";
-import admin_cedentelimiteRoutes from "#src/routes/admin/cedentelimite.prisma.routes.js";
-import admin_pagadorlimiteRoutes from "#src/routes/admin/pagadorlimite.prisma.routes.js";
-
+import admin_zlaboratorioRoutes from "#src/routes/admin/zlaboratorio.prisma.routes.js";
 
 import admin_administracionRoutes from "#root/src/routes/admin/administracion.prisma.routes.js";
 
@@ -53,6 +53,7 @@ router.use(admin_configuracioncorreoRoutes);
 router.use(admin_factorlimiteRoutes);
 router.use(admin_cedentelimiteRoutes);
 router.use(admin_pagadorlimiteRoutes);
+router.use(admin_factoringcarteraRoutes);
 
 router.use(admin_servicio_factoring_factoringRoutes);
 router.use(admin_servicio_factoring_factoringpropuestaRoutes);

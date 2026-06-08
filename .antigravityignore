@@ -1,0 +1,85 @@
+# ==========================================
+# ANTIGRAVITY IGNORE - REACT.JS PROJECT
+# ==========================================
+
+# 1. Dependencias (Crítico)
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+bun.lockb
+
+# 2. Archivos de Construcción (Build)
+dist/
+build/
+out/
+.next/
+.vite/
+*.tsbuildinfo
+
+# 3. Variables de Entorno y Secretos
+# Mantén los secretos fuera del alcance del LLM por seguridad
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+*.pem
+*.key
+
+# 4. Archivos Multimedia y Estáticos
+# Los LLMs no pueden ver imágenes, y los SVGs masivos consumen miles de tokens inútilmente
+public/
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.webp
+*.avif
+*.mp4
+*.webm
+*.ogg
+*.mp3
+*.wav
+*.flac
+*.aac
+*.svg
+*.woff
+*.woff2
+*.eot
+*.ttf
+*.otf
+
+# 5. Logs y Bases de Datos Locales
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+*.log
+*.sqlite
+*.sqlite3
+*.db
+
+# 6. Reportes de Cobertura y Testing
+coverage/
+.nyc_output/
+cypress/videos/
+cypress/screenshots/
+playwright-report/
+test-results/
+
+# 7. Configuraciones de Editores Locales y SO
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+
+# 8. Archivos de Traducción Compilados o Masivos
+# Opcional: Ignorar diccionarios masivos si usas i18n y no quieres que el LLM los lea todos
+# locales/**/*.json

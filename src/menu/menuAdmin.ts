@@ -16,6 +16,13 @@ export const generarMenuAdmin = (usuario: UsuarioConRoles) => {
         icon: "ClusterOutlined",
         children: [
           {
+            id: "admin-factoring-empresa-cartera-dashboard",
+            title: "Cartera",
+            type: "item",
+            url: "/admin/servicio/factoring/cartera/dashboard",
+            breadcrumbs: true,
+          },
+          {
             id: "admin-factoring-empresa-verificacion-lista",
             title: "Verificación empresa",
             type: "item",
