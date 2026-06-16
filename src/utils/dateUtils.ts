@@ -85,3 +85,19 @@ export const toLimaDate = (date) => {
   const jsDate = date instanceof Date ? date : new Date(date);
   return DateTime.fromJSDate(jsDate, { zone: "utc" }).setZone(defaultConfig.zone, { keepLocalTime: true });
 };
+
+/**
+ * Convierte una fecha/hora (Date, ISO string o DateTime) a la zona horaria de Lima,
+ * ajustando la hora según la diferencia de zona (sin keepLocalTime).
+ */
+export const toLimaDateTime = (date) => {
+  if (!date) return null;
+  if (DateTime.isDateTime(date)) return date.setZone(defaultConfig.zone);
+
+  if (date instanceof Date) {
+    return DateTime.fromJSDate(date).setZone(defaultConfig.zone);
+  }
+
+  return DateTime.fromISO(date).setZone(defaultConfig.zone);
+};
+
