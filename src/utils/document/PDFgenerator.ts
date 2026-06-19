@@ -1,6 +1,6 @@
-import { FactoringPDF, FactoringpropuestaPDF, FactoringsimulacionPDF } from "#src/types/Prisma.types.js";
-import PDFDocument from "pdfkit-table";
+import { FactoringliquidacionPDF, FactoringPDF, FactoringpropuestaPDF, FactoringsimulacionPDF } from "#src/types/Prisma.types.js";
 import { createWriteStream } from "fs";
+import PDFDocument from "pdfkit-table";
 
 import * as df from "#src/utils/dateUtils.js";
 import * as nf from "#src/utils/numberUtils.js";
@@ -55,10 +55,14 @@ class PDFGenerator {
 
       const pruebaBorrar = nf.formatNumber(factoringsimulacion.monto_neto);
 
+      const tableWidth = 400;
+      const col1Width = Math.round(tableWidth * 0.5);
+      const col2Width = tableWidth - col1Width;
+
       const table = {
         headers: [
-          { label: "Concepto", property: "concepto", width: 200, columnColor: "#e0e0e0", renderer: null },
-          { label: "Descripción", property: "descripcion", width: 200, align: "right", renderer: null },
+          { label: "Concepto", property: "concepto", width: col1Width, columnColor: "#e0e0e0", renderer: null },
+          { label: "Descripción", property: "descripcion", width: col2Width, align: "right", renderer: null },
         ],
 
         datas: [
@@ -99,7 +103,6 @@ class PDFGenerator {
         ],
       };
 
-      const tableWidth = 400;
       const table_center_x = (doc.page.width - tableWidth) / 2;
 
       doc.table(table, {
@@ -165,10 +168,14 @@ class PDFGenerator {
 
       const pruebaBorrar = nf.formatNumber(factoringpropuesta.monto_neto);
 
+      const tableWidth = 400;
+      const col1Width = Math.round(tableWidth * 0.5);
+      const col2Width = tableWidth - col1Width;
+
       const table = {
         headers: [
-          { label: "Concepto", property: "concepto", width: 200, columnColor: "#e0e0e0", renderer: null },
-          { label: "Descripción", property: "descripcion", width: 200, align: "right", renderer: null },
+          { label: "Concepto", property: "concepto", width: col1Width, columnColor: "#e0e0e0", renderer: null },
+          { label: "Descripción", property: "descripcion", width: col2Width, align: "right", renderer: null },
         ],
 
         datas: [
@@ -210,7 +217,6 @@ class PDFGenerator {
         ],
       };
 
-      const tableWidth = 400;
       const table_center_x = (doc.page.width - tableWidth) / 2;
 
       doc.table(table, {
@@ -231,6 +237,138 @@ class PDFGenerator {
 
       doc.end();
       // Resolvemos la promesa cuando el stream termine
+      stream.on("finish", () => resolve(this.filePath));
+      stream.on("error", (err) => reject(err));
+    });
+  }
+
+  generateFactoringliquidacion(factoring: FactoringPDF, factoringliquidacion: FactoringliquidacionPDF) {
+    return new Promise((resolve, reject) => {
+      const doc = new PDFDocument({ size: "A4", margin: 50 });
+
+      const stream = createWriteStream(this.filePath);
+      doc.pipe(stream);
+
+      var y = 0;
+
+      // Encabezado
+      const imagePath = path.join(storageUtils.pathApp(), "assets", "images", "cotizacion", "LogoFinanzaTech.png");
+      doc.image(imagePath, 50, 40, { width: 160 });
+
+      const addText = (size, font, text, yOffset, options = {}) => {
+        doc
+          .fontSize(size)
+          .font(font)
+          .text(text, 50, (y += yOffset), { ...options });
+      };
+
+      doc
+        .fontSize(18)
+        .font("Helvetica-Bold")
+        .text("Liquidación de Operación de Factoring", 50, (y += 107), { align: "center" });
+      addText(11, "Helvetica", `Fecha: ${df.formatDateLocale(factoringliquidacion.fecha_liquidacion)}`, 50);
+      addText(11, "Helvetica", `Código de liquidación: ${factoringliquidacion.code}`, 17);
+      addText(5, "Helvetica", ``, 5);
+
+      const datas: any[] = [
+        // Datos de la Operación
+        { concepto: "bold:DATOS DE LA OPERACIÓN", descripcion: "" },
+        { concepto: "Cedente", descripcion: factoring.empresa_cedente.razon_social + " (" + factoring.empresa_cedente.ruc + ")" },
+        { concepto: "Pagador", descripcion: factoring.empresa_aceptante.razon_social + " (" + factoring.empresa_aceptante.ruc + ")" },
+        { concepto: "Factura", descripcion: factoring.factoring_facturas.map((f) => `${f.factura.serie}-${f.factura.numero_comprobante}`).join(", ") },
+        { concepto: "Moneda", descripcion: factoring.moneda.nombre },
+        { concepto: "Código de operación de factoring", descripcion: factoring.code },
+        { concepto: "Código de propuesta aceptada", descripcion: factoring.factoring_propuesta_aceptada?.code || "" },
+        { concepto: "Tasa mensual", descripcion: factoring.factoring_propuesta_aceptada ? nf.formatPercentage(factoring.factoring_propuesta_aceptada.tdm) : "" },
+
+        // Plazos y Fechas
+        { concepto: "bold:PLAZOS Y FECHAS", descripcion: "" },
+        { concepto: "Fecha operación (inicio)", descripcion: factoring.fecha_operacion ? df.formatDateLocale(factoring.fecha_operacion) : "" },
+        { concepto: "Fecha proyectada de cobro", descripcion: factoring.factoring_propuesta_aceptada?.fecha_pago_estimado ? df.formatDateUTC(factoring.factoring_propuesta_aceptada.fecha_pago_estimado) : "" },
+        { concepto: "Fecha efectiva de cobro (fin)", descripcion: factoringliquidacion.fecha_pago_efectivo ? df.formatDateUTC(factoringliquidacion.fecha_pago_efectivo) : "" },
+        { concepto: "Días proyectados", descripcion: factoring.factoring_propuesta_aceptada ? nf.formatNumber(factoring.factoring_propuesta_aceptada.dias_pago_estimado, 0) : "" },
+        { concepto: "Días reales", descripcion: nf.formatNumber(factoringliquidacion.dias_pago_efectivo, 0) },
+      ];
+
+      if (Number(factoringliquidacion.dias_mora_efectivo || 0) > 0) {
+        datas.push({ concepto: "Días adicionales (mora)", descripcion: nf.formatNumber(factoringliquidacion.dias_mora_efectivo, 0) });
+      }
+
+      datas.push(
+        // Desglose de Importes
+        { concepto: "bold:DESGLOSE DE IMPORTES", descripcion: "" },
+        { concepto: "Valor neto", descripcion: factoring.moneda.simbolo + " " + nf.formatNumber(factoring.factoring_propuesta_aceptada?.monto_neto, 2) },
+        { concepto: "Valor financiado", descripcion: factoring.moneda.simbolo + " " + nf.formatNumber(factoring.factoring_propuesta_aceptada?.monto_financiado, 2) },
+        { concepto: "Valor garantía", descripcion: factoring.moneda.simbolo + " " + nf.formatNumber(factoring.factoring_propuesta_aceptada?.monto_garantia, 2) },
+        { concepto: "Valor descuento (propuesta)", descripcion: factoring.moneda.simbolo + " " + nf.formatNumber(factoring.factoring_propuesta_aceptada?.monto_descuento, 2) },
+        { concepto: "Valor descuento (real)", descripcion: factoring.moneda.simbolo + " " + nf.formatNumber(factoringliquidacion.monto_descuento_efectivo, 2) },
+      );
+
+      if (Number(factoringliquidacion.monto_descuento_a_favor || 0) > 0) {
+        datas.push({
+          concepto: "Reintegro de descuento por pago anticipado",
+          descripcion: factoring.moneda.simbolo + " " + nf.formatNumber(factoringliquidacion.monto_descuento_a_favor, 2),
+        });
+      }
+      if (Number(factoringliquidacion.monto_descuento_mora || 0) > 0) {
+        datas.push({
+          concepto: "Interés por días adicionales de financiamiento",
+          descripcion: factoring.moneda.simbolo + " " + nf.formatNumber(factoringliquidacion.monto_descuento_mora, 2),
+        });
+      }
+
+      datas.push({ concepto: "bold:DETALLE DE LIQUIDACIÓN", descripcion: "" });
+
+      factoringliquidacion.factoring_liquidacion_financieros.forEach((financiero) => {
+        const factorText = financiero.financiero_concepto.factor === 1 ? "(+)" : financiero.financiero_concepto.factor === -1 ? "(-)" : "(NE)";
+        let descText = `${factorText} ${financiero.financiero_concepto.nombre}`;
+        if (factoring.factoring_propuesta_aceptada && Number(factoring.factoring_propuesta_aceptada.porcentaje_comision_descuento || 0) > 0) {
+          descText += ` (${nf.formatPercentage(factoring.factoring_propuesta_aceptada.porcentaje_comision_descuento)} de descuento)`;
+        }
+        datas.push({
+          concepto: descText,
+          descripcion: factoring.moneda.simbolo + " " + nf.formatNumber(financiero.monto, 2),
+        });
+      });
+
+      datas.push({ concepto: "bold:Subtotal inafecto IGV", descripcion: factoring.moneda.simbolo + " " + nf.formatNumber(factoringliquidacion.monto_total_neto_inafecto_igv, 2) }, { concepto: "bold:Subtotal afecto IGV", descripcion: factoring.moneda.simbolo + " " + nf.formatNumber(factoringliquidacion.monto_total_neto_afecto_igv, 2) }, { concepto: "bold:IGV", descripcion: factoring.moneda.simbolo + " " + nf.formatNumber(factoringliquidacion.monto_total_igv, 2) });
+
+      if (Number(factoringliquidacion.monto_total_a_favor || 0) > 0) {
+        datas.push({
+          concepto: "bold:TOTAL A FAVOR DEL CEDENTE",
+          descripcion: "bold:" + factoring.moneda.simbolo + " " + nf.formatNumber(factoringliquidacion.monto_total_a_favor, 2),
+        });
+      }
+      if (Number(factoringliquidacion.monto_total_por_cobrar || 0) > 0) {
+        datas.push({
+          concepto: "bold:TOTAL POR COBRAR AL CEDENTE (DEUDA)",
+          descripcion: "bold:" + factoring.moneda.simbolo + " " + nf.formatNumber(factoringliquidacion.monto_total_por_cobrar, 2),
+        });
+      }
+
+      const tableWidth = 495;
+      const col1Width = Math.round(tableWidth * 0.5);
+      const col2Width = tableWidth - col1Width;
+      const table = {
+        headers: [
+          { label: "Concepto", property: "concepto", width: col1Width, columnColor: "#e0e0e0", renderer: null },
+          { label: "Descripción", property: "descripcion", width: col2Width, align: "right", renderer: null },
+        ],
+        datas,
+      };
+
+      const table_center_x = (doc.page.width - tableWidth) / 2;
+
+      doc.table(table, {
+        x: table_center_x,
+        y: (y += 20),
+        width: tableWidth,
+        hideHeader: true,
+        prepareHeader: () => doc.font("Helvetica-Bold").fontSize(11),
+        prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => doc.font("Helvetica").fontSize(10),
+      });
+
+      doc.end();
       stream.on("finish", () => resolve(this.filePath));
       stream.on("error", (err) => reject(err));
     });

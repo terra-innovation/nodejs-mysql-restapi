@@ -22,6 +22,33 @@ export const getGastoInterbancario = async (tx: TxClient) => {
   return await getFinancieroconceptoByIdfinancieroconcepto(tx, 4);
 };
 
+export const getFinancieroconceptosForLiquidacion = async (tx: TxClient, estados: number[]) => {
+  try {
+    const financieroconceptos = await tx.financiero_concepto.findMany({
+      where: {
+        estado: {
+          in: estados,
+        },
+        financiero_concepto_liquidacion: {
+          is: {
+            estado: {
+              in: estados,
+            },
+          },
+        },
+      },
+      orderBy: {
+        idfinancieroconcepto: "asc",
+      },
+    });
+
+    return financieroconceptos;
+  } catch (error) {
+    log.error(line(), "", error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getFinancieroconceptos = async (tx: TxClient, estados: number[]) => {
   try {
     const financieroconceptos = await tx.financiero_concepto.findMany({

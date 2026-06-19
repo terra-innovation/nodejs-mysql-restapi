@@ -101,3 +101,24 @@ export type FactoringpropuestaPDF = Prisma.factoring_propuestaGetPayload<{
   gastos: FactoringpropuestafinancierosPDF[];
   gastos_excento_igv: FactoringpropuestafinancierosPDF[];
 };
+
+export type FactoringliquidacionfinancierosPDF = Prisma.factoring_liquidacion_financieroGetPayload<{
+  include: {
+    financiero_tipo: true;
+    financiero_concepto: true;
+  };
+}>;
+
+export type FactoringliquidacionPDF = Prisma.factoring_liquidacionGetPayload<{
+  include: {
+    factoring: true;
+    factoring_liquidacion_estado: true;
+    factoring_liquidacion_financieros: {
+      include: {
+        financiero_concepto: true;
+        financiero_tipo: true;
+      };
+    };
+  };
+}>;
+

@@ -19,6 +19,13 @@ import { Request, Response } from "express";
 import * as luxon from "luxon";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
+import { unlink } from "fs/promises";
+import path from "path";
+import PDFGenerator from "#src/utils/document/PDFgenerator.js";
+import * as storageUtils from "#src/utils/storageUtils.js";
+import { sendFileAsync, setDownloadHeaders } from "#src/utils/httpUtils.js";
+import * as fs from "fs";
+
 
 const getFinancialData = async (tx: any, item: any, constante_igv: any, monto_neto: Decimal, orden: number) => {
   const financiero_tipo = await financierotipoDao.getFinancierotipoByFinancierotipoid(tx, item.financierotipoid);
@@ -96,7 +103,7 @@ const getFinancialDataById = async (tx: any, item: any, constante_igv: any) => {
   };
 };
 
-const runSimulation = async (tx: any, factoring: any, fecha_pago_efectivo_raw: any, financieros_raw?: any[]) => {
+const runSimulation = async (tx: any, factoring: any, fecha_pago_efectivo_raw: any, financieros_raw?: any[], exonerar_gasto_interbancario: boolean = false) => {
   if (!factoring.factoring_propuesta_aceptada) {
     log.warn(line(), "Factoring no tiene propuesta aceptada");
     throw new ClientError("El factoring no cuenta con una propuesta aceptada", 400);
@@ -188,22 +195,24 @@ const runSimulation = async (tx: any, factoring: any, fecha_pago_efectivo_raw: a
     );
   }
 
-  var gasto_interbantario_monto = new Decimal(factoring.idmoneda == 1 ? constante_comison_bcp_pen.valor : constante_comison_bcp_usd.valor);
-  if (factoring.cuenta_bancaria.idbanco != 1) {
-    factoring_liquidacion_financieros.push(
-      await getFinancialDataById(
-        tx,
-        {
-          idfinancierotipo: 2,
-          idfinancieroconcepto: 3,
-          cantidad: 1,
-          monto_unitario: gasto_interbantario_monto || 0,
-          descripcion: "",
-          orden: orden++,
-        },
-        constante_igv,
-      ),
-    );
+  if (!exonerar_gasto_interbancario) {
+    var gasto_interbantario_monto = new Decimal(factoring.idmoneda == 1 ? constante_comison_bcp_pen.valor : constante_comison_bcp_usd.valor);
+    if (factoring.cuenta_bancaria.idbanco != 1) {
+      factoring_liquidacion_financieros.push(
+        await getFinancialDataById(
+          tx,
+          {
+            idfinancierotipo: 2,
+            idfinancieroconcepto: 3,
+            cantidad: 1,
+            monto_unitario: gasto_interbantario_monto || 0,
+            descripcion: "",
+            orden: orden++,
+          },
+          constante_igv,
+        ),
+      );
+    }
   }
 
   if (financieros_raw && financieros_raw.length > 0) {
@@ -213,8 +222,8 @@ const runSimulation = async (tx: any, factoring: any, fecha_pago_efectivo_raw: a
     }
   }
 
-  let monto_total_neto_excento_igv_abono = new Decimal(0);
-  let monto_total_neto_excento_igv_cargo = new Decimal(0);
+  let monto_total_neto_inafecto_igv_abono = new Decimal(0);
+  let monto_total_neto_inafecto_igv_cargo = new Decimal(0);
   let monto_total_neto_afecto_igv_abono = new Decimal(0);
   let monto_total_neto_afecto_igv_cargo = new Decimal(0);
   let igv_abonos = new Decimal(0);
@@ -234,24 +243,24 @@ const runSimulation = async (tx: any, factoring: any, fecha_pago_efectivo_raw: a
       if (isAfecto) {
         monto_total_neto_afecto_igv_abono = monto_total_neto_afecto_igv_abono.add(amount);
       } else {
-        monto_total_neto_excento_igv_abono = monto_total_neto_excento_igv_abono.add(amount);
+        monto_total_neto_inafecto_igv_abono = monto_total_neto_inafecto_igv_abono.add(amount);
       }
       igv_abonos = igv_abonos.add(igvVal);
     } else {
       if (isAfecto) {
         monto_total_neto_afecto_igv_cargo = monto_total_neto_afecto_igv_cargo.add(amount);
       } else {
-        monto_total_neto_excento_igv_cargo = monto_total_neto_excento_igv_cargo.add(amount);
+        monto_total_neto_inafecto_igv_cargo = monto_total_neto_inafecto_igv_cargo.add(amount);
       }
       igv_cargos = igv_cargos.add(igvVal);
     }
   }
 
-  const monto_total_neto_excento_igv = monto_total_neto_excento_igv_abono.minus(monto_total_neto_excento_igv_cargo).toDecimalPlaces(2);
+  const monto_total_neto_inafecto_igv = monto_total_neto_inafecto_igv_abono.minus(monto_total_neto_inafecto_igv_cargo).toDecimalPlaces(2);
   const monto_total_neto_afecto_igv = monto_total_neto_afecto_igv_abono.minus(monto_total_neto_afecto_igv_cargo).toDecimalPlaces(2);
   const monto_total_igv = igv_abonos.minus(igv_cargos).toDecimalPlaces(2);
 
-  const netTotal = monto_total_neto_excento_igv.add(monto_total_neto_afecto_igv).add(monto_total_igv).toDecimalPlaces(2);
+  const netTotal = monto_total_neto_inafecto_igv.add(monto_total_neto_afecto_igv).add(monto_total_igv).toDecimalPlaces(2);
 
   let monto_total_a_favor = new Decimal(0);
   let monto_total_por_cobrar = new Decimal(0);
@@ -263,15 +272,16 @@ const runSimulation = async (tx: any, factoring: any, fecha_pago_efectivo_raw: a
   }
 
   return {
+    fecha_liquidacion: simBase.fecha_propuesta,
     fecha_pago_efectivo: fecha_fin.toJSDate(),
     dias_pago_efectivo,
     dias_mora_efectivo,
     monto_descuento_efectivo,
     monto_descuento_a_favor,
     monto_descuento_mora,
-    monto_total_neto_excento_igv_abono,
-    monto_total_neto_excento_igv_cargo,
-    monto_total_neto_excento_igv,
+    monto_total_neto_inafecto_igv_abono,
+    monto_total_neto_inafecto_igv_cargo,
+    monto_total_neto_inafecto_igv,
     monto_total_neto_afecto_igv_abono,
     monto_total_neto_afecto_igv_cargo,
     monto_total_neto_afecto_igv,
@@ -290,6 +300,7 @@ export const simulateFactoringliquidacion = async (req: Request, res: Response) 
     .shape({
       factoringid: yup.string().trim().required().min(36).max(36),
       fecha_pago_efectivo: yup.date().required(),
+      exonerar_gasto_interbancario: yup.boolean(),
       factoring_liquidacion_financieros: yup
         .array()
         .of(
@@ -315,7 +326,7 @@ export const simulateFactoringliquidacion = async (req: Request, res: Response) 
         throw new ClientError("Datos no válidos", 404);
       }
 
-      return await runSimulation(tx, factoring, validated.fecha_pago_efectivo, validated.factoring_liquidacion_financieros);
+      return await runSimulation(tx, factoring, validated.fecha_pago_efectivo, validated.factoring_liquidacion_financieros, validated.exonerar_gasto_interbancario);
     },
     { timeout: prismaFT.transactionTimeout },
   );
@@ -331,6 +342,7 @@ export const createFactoringliquidacion = async (req: Request, res: Response) =>
       factoringid: yup.string().trim().required().min(36).max(36),
       factoringliquidacionestadoid: yup.string().trim().required().min(36).max(36),
       fecha_pago_efectivo: yup.date().required(),
+      exonerar_gasto_interbancario: yup.boolean(),
       factoring_liquidacion_financieros: yup
         .array()
         .of(
@@ -362,22 +374,23 @@ export const createFactoringliquidacion = async (req: Request, res: Response) =>
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const sim = await runSimulation(tx, factoring, validated.fecha_pago_efectivo, validated.factoring_liquidacion_financieros);
+      const sim = await runSimulation(tx, factoring, validated.fecha_pago_efectivo, validated.factoring_liquidacion_financieros, validated.exonerar_gasto_interbancario);
 
       const toCreate: Prisma.factoring_liquidacionCreateInput = {
         factoring: { connect: { idfactoring: factoring.idfactoring } },
         factoring_liquidacion_estado: { connect: { idfactoringliquidacionestado: liqEstado.idfactoringliquidacionestado } },
         factoringliquidacionid: uuidv4(),
         code: uuidv4().split("-")[0],
+        fecha_liquidacion: sim.fecha_liquidacion,
         fecha_pago_efectivo: sim.fecha_pago_efectivo,
         dias_pago_efectivo: sim.dias_pago_efectivo,
         dias_mora_efectivo: sim.dias_mora_efectivo,
         monto_descuento_efectivo: sim.monto_descuento_efectivo,
         monto_descuento_a_favor: sim.monto_descuento_a_favor,
         monto_descuento_mora: sim.monto_descuento_mora,
-        monto_total_neto_excento_igv_abono: sim.monto_total_neto_excento_igv_abono,
-        monto_total_neto_excento_igv_cargo: sim.monto_total_neto_excento_igv_cargo,
-        monto_total_neto_excento_igv: sim.monto_total_neto_excento_igv,
+        monto_total_neto_inafecto_igv_abono: sim.monto_total_neto_inafecto_igv_abono,
+        monto_total_neto_inafecto_igv_cargo: sim.monto_total_neto_inafecto_igv_cargo,
+        monto_total_neto_inafecto_igv: sim.monto_total_neto_inafecto_igv,
         monto_total_neto_afecto_igv_abono: sim.monto_total_neto_afecto_igv_abono,
         monto_total_neto_afecto_igv_cargo: sim.monto_total_neto_afecto_igv_cargo,
         monto_total_neto_afecto_igv: sim.monto_total_neto_afecto_igv,
@@ -513,17 +526,37 @@ export const activateFactoringliquidacion = async (req: Request, res: Response) 
 export const getFactoringliquidacionMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFactoringliquidacionMaster");
 
+  const { factoringid } = req.params;
+  const usuarioservicioSchema = yup
+    .object()
+    .shape({
+      factoringid: yup.string().trim().required().min(36).max(36),
+    })
+    .required();
+  const factoringliquidacionValidated = usuarioservicioSchema.validateSync({ factoringid }, { abortEarly: false, stripUnknown: true });
+
   const result = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estados = [ESTADO.ACTIVO];
+
+      const factoring = await factoringDao.getFactoringByFactoringid(tx, factoringliquidacionValidated.factoringid);
+      if (!factoring) {
+        log.warn(line(), `Factoring no existe: [${factoringliquidacionValidated.factoringid}]`);
+        throw new ClientError("Datos no válidos", 404);
+      }
+
+      const idbanco_factor = 1;
+      const idbanco_cedente = factoring.cuenta_bancaria.idbanco;
+
       const estados = await factoringliquidacionestadoDao.getFactoringliquidacionestados(tx, filter_estados);
       const tipos = await financierotipoDao.getFinancierotipos(tx, filter_estados);
-      const conceptos = await financieroconceptoDao.getFinancieroconceptos(tx, filter_estados);
+      const conceptos = await financieroconceptoDao.getFinancieroconceptosForLiquidacion(tx, filter_estados);
 
       const master = {
         factoringliquidacionestados: estados,
         financierotipos: tipos,
         financieroconceptos: conceptos,
+        mismo_banco: idbanco_factor == idbanco_cedente,
       };
 
       const masterJSON = jsonUtils.sequelizeToJSON(master);
@@ -593,3 +626,53 @@ export const getFactoringliquidacionByFactoringid = async (req: Request, res: Re
   );
   response(res, 200, factoringliquidacionesJson);
 };
+
+export const downloadFactoringliquidacionPDF = async (req: Request, res: Response) => {
+  log.debug(line(), "controller::downloadFactoringliquidacionPDF");
+  const { factoringliquidacionid } = req.params;
+  const schema = yup
+    .object()
+    .shape({
+      factoringliquidacionid: yup.string().trim().required().min(36).max(36),
+    })
+    .required();
+  const validated = schema.validateSync({ factoringliquidacionid }, { abortEarly: false, stripUnknown: true });
+  log.debug(line(), "validated:", validated);
+
+  await prismaFT.client.$transaction(
+    async (tx) => {
+      var factoringliquidacion = await factoringliquidacionDao.getFactoringliquidacionByFactoringliquidacionid(tx, validated.factoringliquidacionid);
+      if (!factoringliquidacion) {
+        log.warn(line(), "Factoringliquidacion no existe: [" + validated.factoringliquidacionid + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
+
+      var factoring = await factoringDao.getFactoringByIdfactoring(tx, factoringliquidacion.idfactoring);
+      if (!factoring) {
+        log.warn(line(), "Factoring no existe: [" + factoringliquidacion.idfactoring + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
+
+      // Generar el PDF
+      const formattedDate = luxon.DateTime.now().toFormat("yyyyMMdd_HHmm");
+      const filename = formattedDate + "_factoring_liquidacion_" + factoring.empresa_cedente.ruc + "_" + factoringliquidacion.code + ".pdf";
+      const dirPath = path.join(storageUtils.pathApp(), storageUtils.STORAGE_PATH_PROCESAR, storageUtils.pathDate(new Date()));
+      const filePath = path.join(dirPath, filename);
+      if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true });
+      }
+
+      const pdfGenerator = new PDFGenerator(filePath);
+      await pdfGenerator.generateFactoringliquidacion(factoring, factoringliquidacion);
+
+      let filenameDownload = "Factoring_Liquidacion_" + factoring.empresa_cedente.ruc + "_" + factoringliquidacion.code + "_" + formattedDate + ".pdf";
+
+      setDownloadHeaders(res, filenameDownload);
+      await sendFileAsync(req, res, filePath);
+      await unlink(filePath);
+      return {};
+    },
+    { timeout: prismaFT.transactionTimeout },
+  );
+};
+
