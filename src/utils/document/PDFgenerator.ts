@@ -279,7 +279,6 @@ class PDFGenerator {
         { concepto: "Moneda", descripcion: factoring.moneda.nombre },
         { concepto: "Código de operación de factoring", descripcion: factoring.code },
         { concepto: "Código de propuesta aceptada", descripcion: factoring.factoring_propuesta_aceptada?.code || "" },
-        { concepto: "Tasa mensual", descripcion: factoring.factoring_propuesta_aceptada ? nf.formatPercentage(factoring.factoring_propuesta_aceptada.tdm) : "" },
 
         // Plazos y Fechas
         { concepto: "bold:PLAZOS Y FECHAS", descripcion: "" },
@@ -330,8 +329,6 @@ class PDFGenerator {
           descripcion: factoring.moneda.simbolo + " " + nf.formatNumber(financiero.monto, 2),
         });
       });
-
-      datas.push({ concepto: "bold:Subtotal inafecto IGV", descripcion: factoring.moneda.simbolo + " " + nf.formatNumber(factoringliquidacion.monto_total_neto_inafecto_igv, 2) }, { concepto: "bold:Subtotal afecto IGV", descripcion: factoring.moneda.simbolo + " " + nf.formatNumber(factoringliquidacion.monto_total_neto_afecto_igv, 2) }, { concepto: "bold:IGV", descripcion: factoring.moneda.simbolo + " " + nf.formatNumber(factoringliquidacion.monto_total_igv, 2) });
 
       if (Number(factoringliquidacion.monto_total_a_favor || 0) > 0) {
         datas.push({

@@ -12,20 +12,19 @@ import { simulateFactoringLogicV4 } from "#src/logics/factoring.prisma.Logic.js"
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as dateUtils from "#src/utils/dateUtils.js";
+import PDFGenerator from "#src/utils/document/PDFgenerator.js";
+import { sendFileAsync, setDownloadHeaders } from "#src/utils/httpUtils.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { line, log } from "#src/utils/logger.pino.js";
+import * as storageUtils from "#src/utils/storageUtils.js";
 import { Decimal } from "@prisma/client/runtime/library";
 import { Request, Response } from "express";
+import * as fs from "fs";
+import { unlink } from "fs/promises";
 import * as luxon from "luxon";
+import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-import { unlink } from "fs/promises";
-import path from "path";
-import PDFGenerator from "#src/utils/document/PDFgenerator.js";
-import * as storageUtils from "#src/utils/storageUtils.js";
-import { sendFileAsync, setDownloadHeaders } from "#src/utils/httpUtils.js";
-import * as fs from "fs";
-
 
 const getFinancialData = async (tx: any, item: any, constante_igv: any, monto_neto: Decimal, orden: number) => {
   const financiero_tipo = await financierotipoDao.getFinancierotipoByFinancierotipoid(tx, item.financierotipoid);
@@ -197,7 +196,9 @@ const runSimulation = async (tx: any, factoring: any, fecha_pago_efectivo_raw: a
 
   if (!exonerar_gasto_interbancario) {
     var gasto_interbantario_monto = new Decimal(factoring.idmoneda == 1 ? constante_comison_bcp_pen.valor : constante_comison_bcp_usd.valor);
-    if (factoring.cuenta_bancaria.idbanco != 1) {
+    var monto_probable_a_reembolsar_al_cedente = new Decimal(acceptedProp.monto_garantia || 0).minus(monto_descuento_mora).minus(gasto_interbantario_monto);
+
+    if (factoring.cuenta_bancaria.idbanco != 1 && monto_probable_a_reembolsar_al_cedente.greaterThan(0)) {
       factoring_liquidacion_financieros.push(
         await getFinancialDataById(
           tx,
@@ -675,4 +676,3 @@ export const downloadFactoringliquidacionPDF = async (req: Request, res: Respons
     { timeout: prismaFT.transactionTimeout },
   );
 };
-
