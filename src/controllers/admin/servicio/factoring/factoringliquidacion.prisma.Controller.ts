@@ -102,7 +102,7 @@ const getFinancialDataById = async (tx: any, item: any, constante_igv: any) => {
   };
 };
 
-const runSimulation = async (tx: any, factoring: any, fecha_pago_efectivo_raw: any, financieros_raw?: any[], exonerar_gasto_interbancario: boolean = false) => {
+const runSimulation = async (tx: any, factoring: any, fecha_liquidacion: any, fecha_pago_efectivo_raw: any, financieros_raw?: any[], exonerar_gasto_interbancario: boolean = false) => {
   if (!factoring.factoring_propuesta_aceptada) {
     log.warn(line(), "Factoring no tiene propuesta aceptada");
     throw new ClientError("El factoring no cuenta con una propuesta aceptada", 400);
@@ -111,7 +111,7 @@ const runSimulation = async (tx: any, factoring: any, fecha_pago_efectivo_raw: a
   var constante_comison_bcp_usd = await configuracionappDao.getComisionBCPUsd(tx);
   const constante_igv = await configuracionappDao.getIGV(tx);
   const fecha_operacion = dateUtils.toLimaDateTime(factoring.fecha_operacion);
-  const fecha_fin = dateUtils.toLimaDate(fecha_pago_efectivo_raw);
+  const fecha_fin = dateUtils.toLimaDateTime(fecha_pago_efectivo_raw);
   const fecha_emision = dateUtils.toLimaDate(factoring.fecha_emision);
 
   const acceptedProp = factoring.factoring_propuesta_aceptada;
@@ -273,7 +273,7 @@ const runSimulation = async (tx: any, factoring: any, fecha_pago_efectivo_raw: a
   }
 
   return {
-    fecha_liquidacion: simBase.fecha_propuesta,
+    fecha_liquidacion: fecha_liquidacion,
     fecha_pago_efectivo: fecha_fin.toJSDate(),
     dias_pago_efectivo,
     dias_mora_efectivo,
@@ -300,6 +300,7 @@ export const simulateFactoringliquidacion = async (req: Request, res: Response) 
     .object()
     .shape({
       factoringid: yup.string().trim().required().min(36).max(36),
+      fecha_liquidacion: yup.date().required(),
       fecha_pago_efectivo: yup.date().required(),
       exonerar_gasto_interbancario: yup.boolean(),
       factoring_liquidacion_financieros: yup
@@ -327,7 +328,7 @@ export const simulateFactoringliquidacion = async (req: Request, res: Response) 
         throw new ClientError("Datos no válidos", 404);
       }
 
-      return await runSimulation(tx, factoring, validated.fecha_pago_efectivo, validated.factoring_liquidacion_financieros, validated.exonerar_gasto_interbancario);
+      return await runSimulation(tx, factoring, validated.fecha_liquidacion, validated.fecha_pago_efectivo, validated.factoring_liquidacion_financieros, validated.exonerar_gasto_interbancario);
     },
     { timeout: prismaFT.transactionTimeout },
   );
@@ -342,6 +343,7 @@ export const createFactoringliquidacion = async (req: Request, res: Response) =>
     .shape({
       factoringid: yup.string().trim().required().min(36).max(36),
       factoringliquidacionestadoid: yup.string().trim().required().min(36).max(36),
+      fecha_liquidacion: yup.date().required(),
       fecha_pago_efectivo: yup.date().required(),
       exonerar_gasto_interbancario: yup.boolean(),
       factoring_liquidacion_financieros: yup
@@ -375,7 +377,7 @@ export const createFactoringliquidacion = async (req: Request, res: Response) =>
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const sim = await runSimulation(tx, factoring, validated.fecha_pago_efectivo, validated.factoring_liquidacion_financieros, validated.exonerar_gasto_interbancario);
+      const sim = await runSimulation(tx, factoring, validated.fecha_liquidacion, validated.fecha_pago_efectivo, validated.factoring_liquidacion_financieros, validated.exonerar_gasto_interbancario);
 
       const toCreate: Prisma.factoring_liquidacionCreateInput = {
         factoring: { connect: { idfactoring: factoring.idfactoring } },
@@ -447,6 +449,7 @@ export const updateFactoringliquidacion = async (req: Request, res: Response) =>
     .shape({
       factoringliquidacionid: yup.string().trim().required().min(36).max(36),
       factoringliquidacionestadoid: yup.string().trim().required().min(36).max(36),
+      fecha_liquidacion: yup.date().required(),
     })
     .required();
 
@@ -468,6 +471,7 @@ export const updateFactoringliquidacion = async (req: Request, res: Response) =>
 
       const toUpdate: Prisma.factoring_liquidacionUpdateInput = {
         factoring_liquidacion_estado: { connect: { idfactoringliquidacionestado: estado.idfactoringliquidacionestado } },
+        fecha_liquidacion: validated.fecha_liquidacion,
         idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
       };
