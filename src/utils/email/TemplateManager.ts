@@ -181,6 +181,82 @@ class TemplaceManager {
     }
   }
 
+  async templateFactoringEmpresaServicioFactoringCedenteNotificacionLiquidacion(params) {
+    try {
+      const paramsSchema = yup
+        .object()
+        .shape({
+          usuario: yup
+            .object({
+              usuarionombres: yup.string().required(),
+              email: yup.string().required(),
+            })
+            .required(),
+          cabecera: yup
+            .object({
+              fecha_actual: yup.string().trim().required().min(1).max(200),
+            })
+            .required(),
+          factoring: yup
+            .object({
+              code: yup.string().required(),
+              fecha_registro: yup.string().required(),
+              monto_factura: yup.string().required(),
+              monto_detraccion: yup.string().required(),
+              monto_retencion: yup.string().required(),
+              monto_neto: yup.string().required(),
+              fecha_pago_estimado: yup.string().required(),
+              empresa_cedente: yup.object({
+                ruc: yup.string().required(),
+                razon_social: yup.string().required(),
+              }),
+              empresa_aceptante: yup.object({
+                ruc: yup.string().required(),
+                razon_social: yup.string().required(),
+              }),
+              moneda: yup.object({
+                codigo: yup.string().required(),
+                nombre: yup.string().required(),
+                simbolo: yup.string().required(),
+              }),
+            })
+            .required(),
+          factoring_formateado: yup
+            .object({
+              factura: yup.string().required(),
+            })
+            .required(),
+          factoringliquidacion: yup
+            .object({
+              code: yup.string().required(),
+              fecha_liquidacion: yup.string().required(),
+            })
+            .required(),
+          factoringliquidacion_formateado: yup
+            .object({
+              fecha_liquidacion: yup.string().required(),
+            })
+            .required(),
+        })
+        .required();
+      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+
+      const bodyEmailTHTML = await this.renderTemplate("factoring-empresa-servicio-factoring-cedente-notificacion-liquidacion.html", paramsValidated);
+      const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
+      const subjectEmailText = await this.renderSubject("Liquidación disponible | OP:{{factoring.code}} - Factura: {{factoring_formateado.factura}}", paramsValidated);
+
+      const codigoverificacionMailOptions = {
+        subject: subjectEmailText,
+        text: bodyEmailText,
+        html: bodyEmailTHTML,
+      };
+      return codigoverificacionMailOptions;
+    } catch (error) {
+      log.error(line(), error);
+      throw error;
+    }
+  }
+
   async templateFactoringEmpresaServicioFactoringCedenteNotificacionInicioOperacion(params) {
     try {
       const paramsSchema = yup

@@ -349,3 +349,42 @@ export const sendFactoringEmpresaServicioFactoringSolicitud = async (to, params)
     throw error;
   }
 };
+
+export const sendFactoringEmpresaServicioFactoringCedenteNotificacionLiquidacion = async (to, params) => {
+  try {
+    const cabecera = {
+      fecha_actual: df.formatDateForEmailLocale(new Date().toISOString()),
+    };
+
+    const factoring_formateado = {
+      factura: "" + params.factoring?.factoring_facturas[0].factura.serie + "-" + params.factoring?.factoring_facturas[0].factura.numero_comprobante,
+      monto_neto: nf.formatNumber(params.factoring?.monto_neto),
+      fecha_pago_estimado: df.formatDateUTC(params.factoring?.fecha_pago_estimado),
+    };
+
+    const factoringliquidacion_formateado = {
+      fecha_liquidacion: df.formatDateLocale(params.factoringliquidacion?.fecha_liquidacion),
+    };
+
+    params = {
+      ...params,
+      cabecera,
+      factoring_formateado,
+      factoringliquidacion_formateado,
+    };
+
+    const emailTemplate = await templateManager.templateFactoringEmpresaServicioFactoringCedenteNotificacionLiquidacion(params);
+
+    const mailOptions = {
+      to: to,
+      subject: emailTemplate.subject,
+      text: emailTemplate.text,
+      html: emailTemplate.html,
+    };
+
+    await emailSender.sendContactoFinanzatech(mailOptions);
+  } catch (error) {
+    log.error(line(), "", error);
+    throw error;
+  }
+};

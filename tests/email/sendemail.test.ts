@@ -3,21 +3,19 @@
 import dotenv from "dotenv";
 dotenv.config(); // Carga tu archivo .env
 
+import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
+import * as configuracionappDao from "#src/daos/configuracionapp.prisma.Dao.js";
+import * as factorcuentabancariaDao from "#src/daos/factorcuentabancaria.prisma.Dao.js";
 import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
+import * as factoringliquidacionDao from "#src/daos/factoringliquidacion.prisma.Dao.js";
+import * as factoringpropuestaDao from "#src/daos/factoringpropuesta.prisma.Dao.js";
 import * as factoringtransferenciacedenteDao from "#src/daos/factoringtransferenciacedente.prisma.Dao.js";
 import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
-import * as factoringpropuestaDao from "#src/daos/factoringpropuesta.prisma.Dao.js";
-import * as factorcuentabancariaDao from "#src/daos/factorcuentabancaria.prisma.Dao.js";
-import * as configuracionappDao from "#src/daos/configuracionapp.prisma.Dao.js";
-import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 
 import TemplateManager from "#src/utils/email/TemplateManager.ts";
 import EmailSender from "#src/utils/email/emailSender.ts";
-import { log, line } from "#src/utils/logger.pino.js";
+import { line } from "#src/utils/logger.pino.js";
 
-import * as df from "#src/utils/dateUtils.js";
-import * as nf from "#src/utils/numberUtils.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 
 import * as emailService from "#src/services/email.Service.js";
@@ -34,7 +32,9 @@ async function main() {
   //testSendFactoringEmpresaServicioFactoringDeudorSolicitudConfirmacion();
   //testSendFactoringEmpresaServicioFactoringCedenteConfirmacionTransferencia();
   //testSendFactoringEmpresaServicioFactoringDeudorNotificacionTransferencia();
-  testSendFactoringEmpresaServicioFactoringCedenteNotificacionInicioOperacion();
+  //testSendFactoringEmpresaServicioFactoringCedenteNotificacionInicioOperacion();
+
+  testSendFactoringEmpresaServicioFactoringCedenteNotificacionLiquidacion();
   //testSendEmailingVentaEnFrio();
 }
 
@@ -50,6 +50,58 @@ async function testSendEmailingVentaEnFrio() {
     console.log("🚧 Generando contenido del correo con plantilla...");
 
     await emailService.sendEmailingVentaEnFrio(testToEmail, paramsEmail);
+
+    console.log("✅ Correo enviado exitosamente.");
+    console.log(line());
+  } catch (error) {
+    console.error("❌ Error durante la prueba de envío de correo:");
+    console.error(error);
+  }
+}
+
+async function testSendFactoringEmpresaServicioFactoringCedenteNotificacionLiquidacion() {
+  const testToEmail = "jonyhurtado.proyectos@gmail.com"; // <-- ⚠️ CAMBIA ESTO
+
+  const idfactoring = 107;
+  const factoring = await prismaFT.client.$transaction((tx) => factoringDao.getFactoringByIdfactoring(tx, idfactoring), { timeout: prismaFT.transactionTimeout });
+
+  if (!factoring) {
+    console.error("Factoring no existe: [" + idfactoring + "]");
+    return;
+  }
+
+  //console.log("factoring: ", JSON.stringify(factoring, null, 2));
+
+  const idusuario = 160;
+  const session_usuario = await prismaFT.client.$transaction((tx) => usuarioDao.getUsuarioByIdusuario(tx, idusuario), { timeout: prismaFT.transactionTimeout });
+
+  if (!session_usuario) {
+    console.error("session_usuario no existe: [" + idusuario + "]");
+    return;
+  }
+
+  const idfactoringliquidacion = 11;
+
+  const factoringliquidacion = await prismaFT.client.$transaction((tx) => factoringliquidacionDao.getFactoringliquidacionByIdfactoringliquidacion(tx, idfactoringliquidacion), { timeout: prismaFT.transactionTimeout });
+
+  if (!factoringliquidacion) {
+    console.error("factoringliquidacion no existe: [" + idfactoringliquidacion + "]");
+    return;
+  }
+
+  var paramsEmail = {
+    factoring: factoring,
+    factoringliquidacion: factoringliquidacion,
+    usuario: session_usuario,
+  };
+
+  //console.log("paramsEmail: ", JSON.stringify(paramsEmail, null, 2));
+
+  try {
+    console.log(line());
+    console.log("🚧 Generando contenido del correo con plantilla...");
+
+    await emailService.sendFactoringEmpresaServicioFactoringCedenteNotificacionLiquidacion(testToEmail, paramsEmail);
 
     console.log("✅ Correo enviado exitosamente.");
     console.log(line());

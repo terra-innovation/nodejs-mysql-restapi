@@ -1,11 +1,11 @@
+import { env, isProduction } from "#src/config.js";
+import * as configuracioncorreoDao from "#src/daos/configuracioncorreo.prisma.Dao.js";
+import { prismaFT } from "#src/models/prisma/db-factoring.js";
+import { decryptText } from "#src/utils/cryptoUtils.js";
+import { logHtmlLink, logTxtLink } from "#src/utils/debug.js";
+import { line, log } from "#src/utils/logger.pino.js";
 import nodemailer from "nodemailer";
 import { performance } from "perf_hooks";
-import { env, isProduction } from "#src/config.js";
-import { line, log } from "#src/utils/logger.pino.js";
-import { logHtmlLink, logTxtLink } from "#src/utils/debug.js";
-import { prismaFT } from "#src/models/prisma/db-factoring.js";
-import * as configuracioncorreoDao from "#src/daos/configuracioncorreo.prisma.Dao.js";
-import { decryptText } from "#src/utils/cryptoUtils.js";
 
 class EmailSender {
   constructor() {}
@@ -20,11 +20,6 @@ class EmailSender {
 
     if (!config) {
       log.error(line(), "No se encontró la configuración de correo para contacto Finanzatech (ID 1)");
-      return;
-    }
-
-    if (!config.is_enabled) {
-      log.debug(line(), "Advertencia: El envío de correo está desactivado en la base de datos para: ", config.smtp_user);
       return;
     }
 
@@ -54,7 +49,11 @@ class EmailSender {
     logHtmlLink(options.html);
     logTxtLink(options.text);
 
-    log.debug(line(), "El envío de correo está activado para: ", config.smtp_user);
+    if (!config.is_enabled) {
+      log.debug(line(), "Advertencia: El envío de correo está desactivado en la base de datos para: ", config.smtp_user);
+      return;
+    }
+
     return this.sendEmail(transporter, options);
   }
 

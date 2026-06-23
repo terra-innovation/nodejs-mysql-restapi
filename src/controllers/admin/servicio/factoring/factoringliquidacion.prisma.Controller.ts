@@ -8,6 +8,7 @@ import * as factoringliquidacionestadoDao from "#src/daos/factoringliquidaciones
 import * as factoringliquidacionfinancieroDao from "#src/daos/factoringliquidacionfinanciero.prisma.Dao.js";
 import * as financieroconceptoDao from "#src/daos/financieroconcepto.prisma.Dao.js";
 import * as financierotipoDao from "#src/daos/financierotipo.prisma.Dao.js";
+import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
 import { simulateFactoringLogicV4 } from "#src/logics/factoring.prisma.Logic.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
@@ -25,6 +26,51 @@ import * as luxon from "luxon";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
+
+import * as emailService from "#root/src/services/email.Service.js";
+
+export const sendCorreoFactoringliquidacion = async (req: Request, res: Response) => {
+  log.debug(line(), "controller::sendCorreoFactoringliquidacion");
+  const session_idusuario = req.session_user.usuario.idusuario;
+  const { id } = req.params;
+  const factoringliquidacionUpdateSchema = yup
+    .object()
+    .shape({
+      factoringliquidacionid: yup.string().trim().required().min(36).max(36),
+    })
+    .required();
+  const factoringliquidacionValidated = factoringliquidacionUpdateSchema.validateSync({ factoringliquidacionid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
+  log.debug(line(), "factoringliquidacionValidated:", factoringliquidacionValidated);
+
+  const factoringliquidacionSent = await prismaFT.client.$transaction(
+    async (tx) => {
+      const factoringliquidacionExisted = await factoringliquidacionDao.getFactoringliquidacionByFactoringliquidacionid(tx, factoringliquidacionValidated.factoringliquidacionid);
+      if (!factoringliquidacionExisted) {
+        log.warn(line(), "Factoringliquidacion no existe: [" + factoringliquidacionValidated.factoringliquidacionid + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
+
+      // Enviamos correo electrónico
+      const factoring_for_email = await factoringDao.getFactoringByIdfactoring(tx, factoringliquidacionExisted.idfactoring);
+      const factoringliquidacion_for_email = await factoringliquidacionDao.getFactoringliquidacionByIdfactoringliquidacion(tx, factoringliquidacionExisted.idfactoringliquidacion);
+      const usuario_for_email = await usuarioDao.getUsuarioByEmail(tx, factoring_for_email.contacto_cedente.email);
+
+      const factoringliquidacionObfuscated_for_email = jsonUtils.ofuscarAtributos(factoringliquidacion_for_email, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
+
+      var paramsEmail = {
+        factoring: factoring_for_email,
+        factoringliquidacion: factoringliquidacionObfuscated_for_email,
+        usuario: usuario_for_email,
+      };
+      await emailService.sendFactoringEmpresaServicioFactoringCedenteNotificacionLiquidacion(usuario_for_email.email, paramsEmail);
+
+      return {};
+    },
+    { timeout: prismaFT.transactionTimeout },
+  );
+
+  response(res, 200, {});
+};
 
 const getFinancialData = async (tx: any, item: any, constante_igv: any, monto_neto: Decimal, orden: number) => {
   const financiero_tipo = await financierotipoDao.getFinancierotipoByFinancierotipoid(tx, item.financierotipoid);
@@ -528,8 +574,8 @@ export const activateFactoringliquidacion = async (req: Request, res: Response) 
   response(res, 204, result);
 };
 
-export const getFactoringliquidacionMaster = async (req: Request, res: Response) => {
-  log.debug(line(), "controller::getFactoringliquidacionMaster");
+export const getFactoringliquidacionMasterByFactoringid = async (req: Request, res: Response) => {
+  log.debug(line(), "controller::getFactoringliquidacionMasterByFactoringid");
 
   const { factoringid } = req.params;
   const usuarioservicioSchema = yup
