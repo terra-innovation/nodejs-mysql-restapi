@@ -6,6 +6,30 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { line, log } from "#src/utils/logger.pino.js";
 
+export const getFactoringliquidacionsByIdfactoringAndVisisbleCendente = async (tx: TxClient, idfactoring: number, estados: number[]) => {
+  try {
+    const factoringliquidacions = await tx.factoring_liquidacion.findMany({
+      include: {
+        factoring_liquidacion_estado: true,
+      },
+      where: {
+        idfactoring: idfactoring,
+        estado: {
+          in: estados,
+        },
+        factoring_liquidacion_estado: {
+          visible_cedente: 1,
+        },
+      },
+    });
+
+    return factoringliquidacions;
+  } catch (error) {
+    log.error(line(), "", error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getFactoringliquidacionAceptadaByIdfactoringliquidacion = async (tx: TxClient, idfactoringliquidacion: number, estados: number[]) => {
   try {
     const factoringliquidacion = await tx.factoring_liquidacion.findFirst({
