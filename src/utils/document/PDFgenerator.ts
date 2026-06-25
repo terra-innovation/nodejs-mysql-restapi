@@ -338,7 +338,7 @@ class PDFGenerator {
       }
       if (Number(factoringliquidacion.monto_total_por_cobrar || 0) > 0) {
         datas.push({
-          concepto: "bold:TOTAL POR COBRAR AL CEDENTE (DEUDA)",
+          concepto: "bold:TOTAL A CARGO DEL CEDENTE",
           descripcion: "bold:" + factoring.moneda.simbolo + " " + nf.formatNumber(factoringliquidacion.monto_total_por_cobrar, 2),
         });
       }
