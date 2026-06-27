@@ -1,17 +1,16 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
-import * as bancoDao from "#src/daos/banco.prisma.Dao.js";
-import * as cuentatipoDao from "#src/daos/cuentatipo.prisma.Dao.js";
-import * as riesgoDao from "#src/daos/riesgo.prisma.Dao.js";
-import { response } from "#src/utils/CustomResponseOk.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
+import * as distritoDao from "#src/daos/distrito.prisma.Dao.js";
+import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
+import * as paisDao from "#src/daos/pais.prisma.Dao.js";
+import * as provinciaDao from "#src/daos/provincia.prisma.Dao.js";
+import * as riesgoDao from "#src/daos/riesgo.prisma.Dao.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
+import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { log, line } from "#src/utils/logger.pino.js";
-
-import type { empresa } from "#root/generated/prisma/ft_factoring/client.js";
+import { line, log } from "#src/utils/logger.pino.js";
+import { Request, Response } from "express";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
@@ -74,14 +73,18 @@ export const getEmpresaMaster = async (req: Request, res: Response) => {
     async (tx) => {
       const filter_estados = [ESTADO.ACTIVO];
       const riesgos = await riesgoDao.getRiesgos(tx, filter_estados);
+      const paises = await paisDao.getPaises(tx, filter_estados);
+      // getDistritos ya incluye provincia y departamento anidados
+      const distritos = await distritoDao.getDistritos(tx, filter_estados);
+
       var empresasMaster: Record<string, any> = {};
       empresasMaster.riesgos = riesgos;
+      empresasMaster.paises = paises;
+      empresasMaster.distritos = distritos;
+
       var empresasMasterJSON = jsonUtils.sequelizeToJSON(empresasMaster);
-      //jsonUtils.prettyPrint(empresasMasterJSON);
       var empresasMasterObfuscated = empresasMasterJSON;
-      //jsonUtils.prettyPrint(empresasMasterObfuscated);
       var empresasMasterFiltered = jsonUtils.removeAttributesPrivates(empresasMasterObfuscated);
-      //jsonUtils.prettyPrint(empresasMaster);
       return empresasMasterFiltered;
     },
     { timeout: prismaFT.transactionTimeout },
@@ -96,10 +99,74 @@ export const updateEmpresa = async (req: Request, res: Response) => {
     .object()
     .shape({
       empresaid: yup.string().trim().required().min(36).max(36),
-      riesgoid: yup.string().trim().required().min(36).max(36),
+      riesgoid: yup
+        .string()
+        .trim()
+        .transform((v) => (v === "" ? null : v))
+        .nullable()
+        .optional()
+        .min(36)
+        .max(36),
+      paisid: yup
+        .string()
+        .trim()
+        .transform((v) => (v === "" ? null : v))
+        .nullable()
+        .optional()
+        .min(36)
+        .max(36),
+      distritoid: yup
+        .string()
+        .trim()
+        .transform((v) => (v === "" ? null : v))
+        .nullable()
+        .optional()
+        .min(36)
+        .max(36),
+      ruc: yup
+        .string()
+        .trim()
+        .matches(/^\d{11}$/, "RUC debe ser un numero de exactamente 11 digitos")
+        .required(),
       razon_social: yup.string().trim().required().min(2).max(200),
-      nombre_comercial: yup.string().min(2).max(200),
-      domicilio_fiscal: yup.string().required().min(2).max(200),
+      nombre_comercial: yup
+        .string()
+        .trim()
+        .transform((v) => (v === "" ? null : v))
+        .nullable()
+        .optional()
+        .min(2)
+        .max(200),
+      fecha_inscripcion: yup
+        .date()
+        .transform((v) => (v === "" ? null : v))
+        .nullable()
+        .optional()
+        .typeError("fecha_inscripcion debe ser una fecha valida (YYYY-MM-DD)"),
+      domicilio_fiscal: yup
+        .string()
+        .trim()
+        .transform((v) => (v === "" ? null : v))
+        .nullable()
+        .optional()
+        .min(2)
+        .max(200),
+      direccion_sede: yup
+        .string()
+        .trim()
+        .transform((v) => (v === "" ? null : v))
+        .nullable()
+        .optional()
+        .min(2)
+        .max(200),
+      direccion_sede_referencia: yup
+        .string()
+        .trim()
+        .transform((v) => (v === "" ? null : v))
+        .nullable()
+        .optional()
+        .min(2)
+        .max(200),
     })
     .required();
   const empresaValidated = empresaUpdateSchema.validateSync({ empresaid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
@@ -107,23 +174,90 @@ export const updateEmpresa = async (req: Request, res: Response) => {
 
   const resultado = await prismaFT.client.$transaction(
     async (tx) => {
-      var riesgo = await riesgoDao.getRiesgoByRiesgoid(tx, empresaValidated.riesgoid);
-      if (!riesgo) {
-        log.warn(line(), "Riesgo no existe: [" + empresaValidated.riesgoid + "]");
-        throw new ClientError("Datos no válidos", 404);
-      }
-
       var empresa = await empresaDao.getEmpresaByEmpresaid(tx, empresaValidated.empresaid);
       if (!empresa) {
         log.warn(line(), "Empresa no existe: [" + empresaValidated.empresaid + "]");
-        throw new ClientError("Datos no válidos", 404);
+        throw new ClientError("Datos no validos", 404);
+      }
+
+      let idRiesgo: number | null | undefined = undefined;
+      if (empresaValidated.riesgoid !== undefined) {
+        if (empresaValidated.riesgoid === null) {
+          idRiesgo = null;
+        } else {
+          var riesgo = await riesgoDao.getRiesgoByRiesgoid(tx, empresaValidated.riesgoid);
+          if (!riesgo) {
+            log.warn(line(), "Riesgo no existe: [" + empresaValidated.riesgoid + "]");
+            throw new ClientError("Datos no validos", 404);
+          }
+          idRiesgo = riesgo.idriesgo;
+        }
+      }
+
+      let idPais: number | null | undefined = undefined;
+      if (empresaValidated.paisid !== undefined) {
+        if (empresaValidated.paisid === null) {
+          idPais = null;
+        } else {
+          var paisPk = await paisDao.findPaisPk(tx, empresaValidated.paisid);
+          if (!paisPk) {
+            log.warn(line(), "Pais no existe: [" + empresaValidated.paisid + "]");
+            throw new ClientError("Datos no validos", 404);
+          }
+          idPais = paisPk.idpais;
+        }
+      }
+
+      // distritoid -> deriva automaticamente provincia y departamento
+      let idDistrito: number | null | undefined = undefined;
+      let idProvincia: number | null | undefined = undefined;
+      let idDepartamento: number | null | undefined = undefined;
+      if (empresaValidated.distritoid !== undefined) {
+        if (empresaValidated.distritoid === null) {
+          idDistrito = null;
+          idProvincia = null;
+          idDepartamento = null;
+        } else {
+          var distritoSede = await distritoDao.getDistritoByDistritoid(tx, empresaValidated.distritoid);
+          if (!distritoSede) {
+            log.warn(line(), "Distrito no existe: [" + empresaValidated.distritoid + "]");
+            throw new ClientError("Datos no validos", 404);
+          }
+          const provinciaSede = await provinciaDao.getProvinciaByIdprovincia(tx, distritoSede.idprovincia);
+          if (!provinciaSede) {
+            log.warn(line(), "Provincia no existe para el distrito: [" + empresaValidated.distritoid + "]");
+            throw new ClientError("Datos no validos", 404);
+          }
+          idDistrito = distritoSede.iddistrito;
+          idProvincia = distritoSede.idprovincia;
+          idDepartamento = provinciaSede.iddepartamento;
+        }
       }
 
       const empresaToUpdate: Prisma.empresaUpdateInput = {
-        riesgo: { connect: { idriesgo: riesgo.idriesgo } },
+        ...(idRiesgo !== undefined && {
+          riesgo: idRiesgo === null ? { disconnect: true } : { connect: { idriesgo: idRiesgo } },
+        }),
+        ...(idPais !== undefined && {
+          pais_sede: idPais === null ? { disconnect: true } : { connect: { idpais: idPais } },
+        }),
+        ...(idDepartamento !== undefined && {
+          departamento_sede: idDepartamento === null ? { disconnect: true } : { connect: { iddepartamento: idDepartamento } },
+        }),
+        ...(idProvincia !== undefined && {
+          provincia_sede: idProvincia === null ? { disconnect: true } : { connect: { idprovincia: idProvincia } },
+        }),
+        ...(idDistrito !== undefined && {
+          distrito_sede: idDistrito === null ? { disconnect: true } : { connect: { iddistrito: idDistrito } },
+        }),
+
         razon_social: empresaValidated.razon_social,
-        nombre_comercial: empresaValidated.nombre_comercial,
-        domicilio_fiscal: empresaValidated.domicilio_fiscal,
+        nombre_comercial: empresaValidated.nombre_comercial ?? null,
+        fecha_inscripcion: empresaValidated.fecha_inscripcion ?? null,
+        domicilio_fiscal: empresaValidated.domicilio_fiscal ?? null,
+        direccion_sede: empresaValidated.direccion_sede ?? null,
+        direccion_sede_referencia: empresaValidated.direccion_sede_referencia ?? null,
+
         idusuariomod: req.session_user.usuario.idusuario ?? 1,
         fechamod: new Date(),
       };
@@ -140,7 +274,6 @@ export const updateEmpresa = async (req: Request, res: Response) => {
 
 export const getEmpresas = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getEmpresas");
-  //log.info(line(),req.session_user.usuario.idusuario);
 
   const empresas = await prismaFT.client.$transaction(
     async (tx) => {
@@ -156,19 +289,72 @@ export const getEmpresas = async (req: Request, res: Response) => {
 export const createEmpresa = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createEmpresa");
   const session_idusuario = req.session_user.usuario.idusuario;
-  const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
   const empresaCreateSchema = yup
     .object()
     .shape({
-      riesgoid: yup.string().trim().required().min(36).max(36),
+      riesgoid: yup
+        .string()
+        .trim()
+        .transform((v) => (v === "" ? null : v))
+        .nullable()
+        .optional()
+        .min(36)
+        .max(36),
+      paisid: yup
+        .string()
+        .trim()
+        .transform((v) => (v === "" ? null : v))
+        .nullable()
+        .optional()
+        .min(36)
+        .max(36),
+      distritoid: yup
+        .string()
+        .trim()
+        .transform((v) => (v === "" ? null : v))
+        .nullable()
+        .optional()
+        .min(36)
+        .max(36),
       ruc: yup
         .string()
         .trim()
-        .matches(/^\d{11}$/, "RUC debe ser un número de exactamente 11 dígitos")
+        .matches(/^\d{11}$/, "RUC debe ser un numero de exactamente 11 digitos")
         .required(),
       razon_social: yup.string().trim().required().min(2).max(200),
-      nombre_comercial: yup.string().min(2).max(200),
-      domicilio_fiscal: yup.string().required().min(2).max(200),
+      nombre_comercial: yup
+        .string()
+        .trim()
+        .transform((v) => (v === "" ? null : v))
+        .nullable()
+        .optional()
+        .min(2)
+        .max(200),
+      fecha_inscripcion: yup.date().nullable().optional().typeError("fecha_inscripcion debe ser una fecha valida (YYYY-MM-DD)"),
+      domicilio_fiscal: yup
+        .string()
+        .trim()
+        .transform((v) => (v === "" ? null : v))
+        .nullable()
+        .optional()
+        .min(2)
+        .max(200),
+      direccion_sede: yup
+        .string()
+        .trim()
+        .transform((v) => (v === "" ? null : v))
+        .nullable()
+        .optional()
+        .min(2)
+        .max(200),
+      direccion_sede_referencia: yup
+        .string()
+        .trim()
+        .transform((v) => (v === "" ? null : v))
+        .nullable()
+        .optional()
+        .min(2)
+        .max(200),
     })
     .required();
   var empresaValidated = empresaCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
@@ -176,35 +362,78 @@ export const createEmpresa = async (req: Request, res: Response) => {
 
   const empresaCreated = await prismaFT.client.$transaction(
     async (tx) => {
-      var riesgo = await riesgoDao.getRiesgoByRiesgoid(tx, empresaValidated.riesgoid);
-      if (!riesgo) {
-        log.warn(line(), "Riesgo no existe: [" + empresaValidated.riesgoid + "]");
-        throw new ClientError("Datos no válidos", 404);
-      }
-
+      // Verificar unicidad del RUC
       var empresas_por_ruc = await empresaDao.getEmpresaByRuc(tx, empresaValidated.ruc);
       if (empresas_por_ruc) {
         log.warn(line(), "La empresa [" + empresaValidated.ruc + "] se encuentra registrada. Ingrese un ruc diferente.");
-        throw new ClientError("La empresa [" + empresaValidated.ruc + "] se encuentra registrada. Ingrese un ruc diferente.", 404);
+        throw new ClientError("La empresa [" + empresaValidated.ruc + "] se encuentra registrada. Ingrese un ruc diferente.", 409);
       }
 
-      const empresaCreate = {
-        idriesgo: riesgo.idriesgo,
+      let idRiesgo: number | null = null;
+      if (empresaValidated.riesgoid) {
+        var riesgo = await riesgoDao.getRiesgoByRiesgoid(tx, empresaValidated.riesgoid);
+        if (!riesgo) {
+          log.warn(line(), "Riesgo no existe: [" + empresaValidated.riesgoid + "]");
+          throw new ClientError("Datos no validos", 404);
+        }
+        idRiesgo = riesgo.idriesgo;
+      }
+
+      let idPais: number | null = null;
+      if (empresaValidated.paisid) {
+        var paisPk = await paisDao.findPaisPk(tx, empresaValidated.paisid);
+        if (!paisPk) {
+          log.warn(line(), "Pais no existe: [" + empresaValidated.paisid + "]");
+          throw new ClientError("Datos no validos", 404);
+        }
+        idPais = paisPk.idpais;
+      }
+
+      // distritoid -> deriva automaticamente provincia y departamento
+      let idDistrito: number | null = null;
+      let idProvincia: number | null = null;
+      let idDepartamento: number | null = null;
+      if (empresaValidated.distritoid) {
+        var distritoSede = await distritoDao.getDistritoByDistritoid(tx, empresaValidated.distritoid);
+        if (!distritoSede) {
+          log.warn(line(), "Distrito no existe: [" + empresaValidated.distritoid + "]");
+          throw new ClientError("Datos no validos", 404);
+        }
+        const provinciaSede = await provinciaDao.getProvinciaByIdprovincia(tx, distritoSede.idprovincia);
+        if (!provinciaSede) {
+          log.warn(line(), "Provincia no existe para el distrito: [" + empresaValidated.distritoid + "]");
+          throw new ClientError("Datos no validos", 404);
+        }
+        idDistrito = distritoSede.iddistrito;
+        idProvincia = distritoSede.idprovincia;
+        idDepartamento = provinciaSede.iddepartamento;
+      }
+
+      const empresaCreate: Prisma.empresaCreateInput = {
         empresaid: uuidv4(),
         code: uuidv4().split("-")[0],
         ruc: empresaValidated.ruc,
         razon_social: empresaValidated.razon_social,
-        nombre_comercial: empresaValidated.nombre_comercial,
-        domicilio_fiscal: empresaValidated.domicilio_fiscal,
-        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
+        nombre_comercial: empresaValidated.nombre_comercial ?? null,
+        fecha_inscripcion: empresaValidated.fecha_inscripcion ?? null,
+        domicilio_fiscal: empresaValidated.domicilio_fiscal ?? null,
+        direccion_sede: empresaValidated.direccion_sede ?? null,
+        direccion_sede_referencia: empresaValidated.direccion_sede_referencia ?? null,
+
+        ...(idRiesgo && { riesgo: { connect: { idriesgo: idRiesgo } } }),
+        ...(idPais && { pais_sede: { connect: { idpais: idPais } } }),
+        ...(idDepartamento && { departamento_sede: { connect: { iddepartamento: idDepartamento } } }),
+        ...(idProvincia && { provincia_sede: { connect: { idprovincia: idProvincia } } }),
+        ...(idDistrito && { distrito_sede: { connect: { iddistrito: idDistrito } } }),
+
+        idusuariocrea: session_idusuario ?? 1,
         fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        idusuariomod: session_idusuario ?? 1,
         fechamod: new Date(),
-        estado: 1,
+        estado: ESTADO.ACTIVO,
       };
 
       const empresaCreated = await empresaDao.insertEmpresa(tx, empresaCreate);
-
       return empresaCreated;
     },
     { timeout: prismaFT.transactionTimeout },
