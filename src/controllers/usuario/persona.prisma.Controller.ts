@@ -1,38 +1,32 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import * as personaDao from "#src/daos/persona.prisma.Dao.js";
-import * as documentotipoDao from "#src/daos/documentotipo.prisma.Dao.js";
-import * as paisDao from "#src/daos/pais.prisma.Dao.js";
-import * as provinciaDao from "#src/daos/provincia.prisma.Dao.js";
-import * as distritoDao from "#src/daos/distrito.prisma.Dao.js";
-import * as generoDao from "#src/daos/genero.prisma.Dao.js";
-import * as personadeclaracionDao from "#src/daos/personadeclaracion.prisma.Dao.js";
-import * as personaverificacionDao from "#src/daos/personaverificacion.prisma.Dao.js";
-import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
 import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
 import * as archivopersonaDao from "#src/daos/archivopersona.prisma.Dao.js";
+import * as distritoDao from "#src/daos/distrito.prisma.Dao.js";
+import * as documentotipoDao from "#src/daos/documentotipo.prisma.Dao.js";
+import * as generoDao from "#src/daos/genero.prisma.Dao.js";
+import * as paisDao from "#src/daos/pais.prisma.Dao.js";
+import * as personaDao from "#src/daos/persona.prisma.Dao.js";
+import * as personadeclaracionDao from "#src/daos/personadeclaracion.prisma.Dao.js";
+import * as personaverificacionDao from "#src/daos/personaverificacion.prisma.Dao.js";
 import * as personaverificacionestadoDao from "#src/daos/personaverificacionestado.prisma.Dao.js";
+import * as provinciaDao from "#src/daos/provincia.prisma.Dao.js";
+import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
+import { Request, Response } from "express";
 
-import { response } from "#src/utils/CustomResponseOk.js";
-import { ClientError } from "#src/utils/CustomErrors.js";
-import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { log, line } from "#src/utils/logger.pino.js";
 import * as telegramService from "#src/services/telegram.Service.js";
+import { newPersonaVerificationMessage } from "#src/templates/telegram/persona.Template.js";
+import { ClientError } from "#src/utils/CustomErrors.js";
+import { response } from "#src/utils/CustomResponseOk.js";
+import * as jsonUtils from "#src/utils/jsonUtils.js";
+import { line, log } from "#src/utils/logger.pino.js";
 
 import { isProduction } from "#src/config.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ARCHIVO_TIPO } from "#src/daos/archivotipo.prisma.Dao.js";
 
-
-
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-
-import type { persona } from "#root/generated/prisma/ft_factoring/client.js";
-import type { persona_declaracion } from "#root/generated/prisma/ft_factoring/client.js";
-import type { persona_verificacion } from "#root/generated/prisma/ft_factoring/client.js";
-import type { usuario } from "#root/generated/prisma/ft_factoring/client.js";
 
 export const verifyPersona = async (req: Request, res: Response) => {
   log.debug(line(), "controller::verifyPersona");
@@ -226,18 +220,9 @@ export const verifyPersona = async (req: Request, res: Response) => {
 
       await usuarioDao.updateUsuario(tx, usuarioConected.usuarioid, usuarioToUpdate);
 
-      const msnTelegram = {
-        title: "Nueva solicitud de verificación de Persona",
-        code: personaToCreate.code,
-        documentonumero: personaToCreate.documentonumero,
-        personanombres: personaToCreate.personanombres,
-        apellidopaterno: personaToCreate.apellidopaterno,
-        apellidomaterno: personaToCreate.apellidomaterno,
-        email: personaToCreate.email,
-        celular: personaToCreate.celular,
-      };
+      const msnTelegram = newPersonaVerificationMessage(personaToCreate);
 
-      telegramService.sendMessageTelegramInfo(msnTelegram);
+      telegramService.sendMessageImportant(msnTelegram);
 
       return {};
     },

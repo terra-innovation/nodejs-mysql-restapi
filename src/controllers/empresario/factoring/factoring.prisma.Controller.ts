@@ -1,8 +1,9 @@
-import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
+import type { Prisma, factoring_factura } from "#root/generated/prisma/ft_factoring/client.js";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import { isProduction } from "#src/config.js";
 import { Request, Response } from "express";
 
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import * as colaboradorDao from "#src/daos/colaborador.prisma.Dao.js";
 import * as contactoDao from "#src/daos/contacto.prisma.Dao.js";
 import * as cuentabancariaDao from "#src/daos/cuentabancaria.prisma.Dao.js";
@@ -15,18 +16,17 @@ import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
 import * as personaDao from "#src/daos/persona.prisma.Dao.js";
 import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
 import * as telegramService from "#src/services/telegram.Service.js";
-import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 
-import type { factoring_factura } from "#root/generated/prisma/ft_factoring/client.js";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
 import * as emailService from "#root/src/services/email.Service.js";
+import { newFactoringMessage } from "#src/templates/telegram/factoring.Template.js";
 
 export const getFactorings = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFactorings");
@@ -227,16 +227,9 @@ export const createFactoring = async (req: Request, res: Response) => {
       };
       await emailService.sendFactoringEmpresaServicioFactoringSolicitud(usuario_for_email.email, paramsEmail);
 
-      const msnTelegram = {
-        title: "Nueva Operación de Factoring",
-        code: factoringToCreate.code,
-        monto_factura: factoringToCreate.monto_factura,
-        monto_detraccion: factoringToCreate.monto_detraccion,
-        monto_retencion: factoringToCreate.monto_retencion,
-        monto_neto: factoringToCreate.monto_neto,
-      };
+      const msnTelegram = newFactoringMessage(factoringToCreate);
 
-      telegramService.sendMessageTelegramInfo(msnTelegram);
+      telegramService.sendMessageImportant(msnTelegram);
 
       return factoringCreated;
     },

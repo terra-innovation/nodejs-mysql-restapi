@@ -1,23 +1,24 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
+import { line, log } from "#root/src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
+import * as credencialDao from "#src/daos/credencial.prisma.Dao.js";
+import * as documentotipoDao from "#src/daos/documentotipo.prisma.Dao.js";
+import * as personaverificacionestadoDao from "#src/daos/personaverificacionestado.prisma.Dao.js";
 import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
 import * as usuariorolDao from "#src/daos/usuariorol.prisma.Dao.js";
-import * as documentotipoDao from "#src/daos/documentotipo.prisma.Dao.js";
 import * as validacionDao from "#src/daos/validacion.prisma.Dao.js";
-import * as credencialDao from "#src/daos/credencial.prisma.Dao.js";
-import * as personaverificacionestadoDao from "#src/daos/personaverificacionestado.prisma.Dao.js";
-import { response } from "#src/utils/CustomResponseOk.js";
-import { ESTADO } from "#src/constants/prisma.Constant.js";
-import { ClientError } from "#src/utils/CustomErrors.js";
-import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { line, log } from "#root/src/utils/logger.pino.js";
 import * as telegramService from "#src/services/telegram.Service.js";
+import { newLoginMessage, newUsuarioRegistradoMessage } from "#src/templates/telegram/usuario.Template.js";
+import { ClientError } from "#src/utils/CustomErrors.js";
+import { response } from "#src/utils/CustomResponseOk.js";
+import * as jsonUtils from "#src/utils/jsonUtils.js";
+import { Request, Response } from "express";
 
-import * as cryptoUtils from "#src/utils/cryptoUtils.js";
 import { env } from "#src/config.js";
-import crypto from "crypto";
+import * as cryptoUtils from "#src/utils/cryptoUtils.js";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import * as Yup from "yup";
@@ -62,7 +63,8 @@ export const loginUser = async (req: Request, res: Response) => {
           expiresIn: "200000h",
         });
         log.info(line(), "Usuario autenticado", { idusuario: usuario_autenticado.idusuario, usuarioid: usuario_autenticado.usuarioid, code: usuario_autenticado.code, email: loginUserValidated.email });
-        telegramService.sendMessageTelegramLogin({ email: usuario_autenticado.email });
+        const msnTelegram = newLoginMessage(usuario_autenticado.email);
+        telegramService.sendMessageImportant(msnTelegram);
         return { token, usuarioid: usuario_login.usuarioid };
       } else {
         log.warn(line(), "Credenciales no válidas: [" + loginUserValidated.email + "]");
@@ -498,18 +500,9 @@ export const registerUsuario = async (req: Request, res: Response) => {
       await emailSender.sendContactoFinanzatech(mailOptions);
       log.debug(line(), "Correo templateCodigoVerificacion enviado exitosamente.", usuarioValidated.email);
 
-      const msnTelegram = {
-        title: "Nuevo usuario registrado",
-        code: usuarioToCreate.code,
-        documentonumero: usuarioToCreate.documentonumero,
-        usuarionombres: usuarioToCreate.usuarionombres,
-        apellidopaterno: usuarioToCreate.apellidopaterno,
-        apellidomaterno: usuarioToCreate.apellidomaterno,
-        email: usuarioToCreate.email,
-        celular: usuarioToCreate.celular,
-      };
+      const msnTelegram = newUsuarioRegistradoMessage(usuarioToCreate);
 
-      telegramService.sendMessageTelegramInfo(msnTelegram);
+      telegramService.sendMessageImportant(msnTelegram);
 
       /* Retornar datos para la validación del usuarioP */
       const usuarioReturned: Record<string, any> = {};

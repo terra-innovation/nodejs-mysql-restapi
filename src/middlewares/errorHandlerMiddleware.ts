@@ -1,10 +1,9 @@
-import { type Request, type Response, type NextFunction } from "express";
-import { CORSError, ArchivoError, ClientError, ConexionError, AuthClientError } from "#src/utils/CustomErrors.js";
-import { ValidationError } from "yup";
-import { log, line } from "#src/utils/logger.pino.js";
-import { customResponseError } from "#src/utils/CustomResponseError.js";
-import util from "util";
 import * as telegramService from "#src/services/telegram.Service.js";
+import { ArchivoError, AuthClientError, ClientError, ConexionError, CORSError } from "#src/utils/CustomErrors.js";
+import { customResponseError } from "#src/utils/CustomResponseError.js";
+import { line, log } from "#src/utils/logger.pino.js";
+import { type NextFunction, type Request, type Response } from "express";
+import { ValidationError } from "yup";
 
 export function errorHandlerMiddleware(err: any, req: Request, res: Response, next: NextFunction): void {
   let { statusCode, message } = err;
@@ -32,7 +31,7 @@ export function errorHandlerMiddleware(err: any, req: Request, res: Response, ne
   if (!esErrorConocido) {
     //log.error(line(), "Uncaught Error:", util.inspect(err, { colors: true, depth: null }));
     log.error(line(), "Uncaught Error:", err);
-    telegramService.sendMessageTelegramException(err);
+    telegramService.sendMessageException(err);
   }
 
   customResponseError(res, statusCode, message);

@@ -1,59 +1,58 @@
 import { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import { Decimal } from "@prisma/client/runtime/library";
-import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import * as paisDao from "#src/daos/pais.prisma.Dao.js";
-import * as provinciaDao from "#src/daos/provincia.prisma.Dao.js";
-import * as distritoDao from "#src/daos/distrito.prisma.Dao.js";
 import * as bancoDao from "#src/daos/banco.prisma.Dao.js";
-import * as cuentatipoDao from "#src/daos/cuentatipo.prisma.Dao.js";
-import * as documentotipoDao from "#src/daos/documentotipo.prisma.Dao.js";
-import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
-import * as personaDao from "#src/daos/persona.prisma.Dao.js";
-import * as inversionistaDao from "#src/daos/inversionista.prisma.Dao.js";
+import * as colaboradorDao from "#src/daos/colaborador.prisma.Dao.js";
+import * as colaboradortipoDao from "#src/daos/colaboradortipo.prisma.Dao.js";
 import * as cuentabancariaDao from "#src/daos/cuentabancaria.prisma.Dao.js";
 import * as cuentabancariaestadoDao from "#src/daos/cuentabancariaestado.prisma.Dao.js";
+import * as cuentatipoDao from "#src/daos/cuentatipo.prisma.Dao.js";
+import * as distritoDao from "#src/daos/distrito.prisma.Dao.js";
+import * as documentotipoDao from "#src/daos/documentotipo.prisma.Dao.js";
 import * as empresacuentabancariaDao from "#src/daos/empresacuentabancaria.prisma.Dao.js";
+import * as inversionistaDao from "#src/daos/inversionista.prisma.Dao.js";
 import * as inversionistacuentabancariaDao from "#src/daos/inversionistacuentabancaria.prisma.Dao.js";
-import * as colaboradortipoDao from "#src/daos/colaboradortipo.prisma.Dao.js";
-import * as colaboradorDao from "#src/daos/colaborador.prisma.Dao.js";
+import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
+import * as paisDao from "#src/daos/pais.prisma.Dao.js";
+import * as personaDao from "#src/daos/persona.prisma.Dao.js";
+import * as provinciaDao from "#src/daos/provincia.prisma.Dao.js";
 import * as servicioempresaDao from "#src/daos/servicioempresa.prisma.Dao.js";
-import * as servicioinversionistaDao from "#src/daos/servicioinversionista.prisma.Dao.js";
 import * as servicioempresaestadoDao from "#src/daos/servicioempresaestado.prisma.Dao.js";
-import * as servicioinversionistaestadoDao from "#src/daos/servicioinversionistaestado.prisma.Dao.js";
 import * as servicioempresaverificacionDao from "#src/daos/servicioempresaverificacion.prisma.Dao.js";
+import * as servicioinversionistaDao from "#src/daos/servicioinversionista.prisma.Dao.js";
+import * as servicioinversionistaestadoDao from "#src/daos/servicioinversionistaestado.prisma.Dao.js";
 import * as servicioinversionistaverificacionDao from "#src/daos/servicioinversionistaverificacion.prisma.Dao.js";
 import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
+import * as usuarioservicioDao from "#src/daos/usuarioservicio.prisma.Dao.js";
 import * as usuarioservicioempresaDao from "#src/daos/usuarioservicioempresa.prisma.Dao.js";
 import * as usuarioservicioempresaestadoDao from "#src/daos/usuarioservicioempresaestado.prisma.Dao.js";
 import * as usuarioservicioempresarolDao from "#src/daos/usuarioservicioempresarol.prisma.Dao.js";
-import * as usuarioservicioDao from "#src/daos/usuarioservicio.prisma.Dao.js";
 import * as usuarioservicioestadoDao from "#src/daos/usuarioservicioestado.prisma.Dao.js";
 import * as usuarioservicioverificacionDao from "#src/daos/usuarioservicioverificacion.prisma.Dao.js";
+import { Decimal } from "@prisma/client/runtime/library";
+import { Request, Response } from "express";
 
-import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import * as accionistaDao from "#src/daos/accionista.prisma.Dao.js";
-import * as archivoempresaDao from "#src/daos/archivoempresa.prisma.Dao.js";
+import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
 import * as archivocolaboradorDao from "#src/daos/archivocolaborador.prisma.Dao.js";
 import * as archivocuentabancariaDao from "#src/daos/archivocuentabancaria.prisma.Dao.js";
+import * as archivoempresaDao from "#src/daos/archivoempresa.prisma.Dao.js";
+import { ARCHIVO_TIPO } from "#src/daos/archivotipo.prisma.Dao.js";
 import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
 import * as empresadeclaracionDao from "#src/daos/empresadeclaracion.prisma.Dao.js";
 import * as funcionarioDao from "#src/daos/funcionario.prisma.Dao.js";
 import { response } from "#src/utils/CustomResponseOk.js";
-import { ESTADO } from "#src/constants/prisma.Constant.js";
-import { ARCHIVO_TIPO } from "#src/daos/archivotipo.prisma.Dao.js";
 
-
+import * as telegramService from "#src/services/telegram.Service.js";
+import { newEmpresaVerificationMessage } from "#src/templates/telegram/usuarioservicio.Template.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { log, line } from "#src/utils/logger.pino.js";
-import * as telegramService from "#src/services/telegram.Service.js";
+import { line, log } from "#src/utils/logger.pino.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
 import { isProduction } from "#src/config.js";
-
 
 export const suscribirUsuarioServicioFactoringInversionista = async (req: Request, res: Response) => {
   log.debug(line(), "controller::suscribirUsuarioServicioFactoringInversionista");
@@ -731,15 +730,9 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
         log.debug(line(), "usuarioservicioUpdated:", usuarioservicioUpdated);
       }
 
-      const msnTelegram = {
-        title: "Nueva solicitud de verificación de Empresa",
-        code: empresaToCreate.code,
-        ruc: empresaToCreate.ruc,
-        razon_social: empresaToCreate.razon_social,
-        direccion_sede: empresaToCreate.direccion_sede,
-      };
+      const msnTelegram = newEmpresaVerificationMessage(empresaToCreate);
 
-      telegramService.sendMessageTelegramInfo(msnTelegram);
+      telegramService.sendMessageImportant(msnTelegram);
 
       return {};
     },

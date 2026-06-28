@@ -1,6 +1,6 @@
-import util from "util";
-import { log, line } from "#src/utils/logger.pino.js";
 import { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
+import { line, log } from "#src/utils/logger.pino.js";
+import util from "util";
 
 export function omitNullAndUndefined<T extends Record<string, unknown>>(obj: T): T {
   return Object.fromEntries(Object.entries(obj).filter(([, value]) => value !== undefined && value !== null)) as T;
@@ -15,11 +15,42 @@ export function deepOmitNullAndUndefined<T>(input: T): T {
     return Object.fromEntries(
       Object.entries(input)
         .filter(([, v]) => v !== undefined && v !== null)
-        .map(([k, v]) => [k, deepOmitNullAndUndefined(v)])
+        .map(([k, v]) => [k, deepOmitNullAndUndefined(v)]),
     ) as T;
   }
 
   return input;
+}
+
+/**
+ * Genera un mensaje en texto plano a partir de un objeto JSON usando flattenObject.
+ * @param obj Objeto JSON original.
+ * @returns Texto plano con formato clave: valor.
+ */
+export function jsonForTelegram(obj: Record<string, any>, newline: string): string {
+  // ✔ Si obj es null, undefined o no es un objeto → devolver string vacío
+  if (!obj || typeof obj !== "object") {
+    return "";
+  }
+  // ✔ Intentar generar el flatMap
+  let flatMap: Record<string, any>;
+  try {
+    flatMap = flattenObject(obj);
+    if (!flatMap || typeof flatMap !== "object") {
+      return "";
+    }
+  } catch (err) {
+    // Si flattenObject falla → retornar string vacío
+    return "";
+  }
+
+  // ✔ Convertir a texto plano
+  let mensaje = "";
+  for (const [key, value] of Object.entries(flatMap)) {
+    mensaje += `<b>${key}</b>: ${value ?? ""}${newline}`;
+  }
+
+  return mensaje;
 }
 
 /**

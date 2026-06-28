@@ -1,36 +1,25 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
+import { Request, Response } from "express";
 
-import * as cuentabancariaDao from "#src/daos/cuentabancaria.prisma.Dao.js";
-import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
-import * as personaDao from "#src/daos/persona.prisma.Dao.js";
 import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
+import * as factoringhistorialestadoDao from "#src/daos/factoringhistorialestado.prisma.Dao.js";
 import * as factoringpropuestaDao from "#src/daos/factoringpropuesta.prisma.Dao.js";
 import * as factoringpropuestahistorialestadoDao from "#src/daos/factoringpropuestahistorialestado.prisma.Dao.js";
-import * as factoringfacturaDao from "#src/daos/factoringfactura.prisma.Dao.js";
-import * as factoringhistorialestadoDao from "#src/daos/factoringhistorialestado.prisma.Dao.js";
-import * as facturaDao from "#src/daos/factura.prisma.Dao.js";
 import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
 
 import * as emailService from "#root/src/services/email.Service.js";
 
-import * as colaboradorDao from "#src/daos/colaborador.prisma.Dao.js";
-import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
+import * as telegramService from "#src/services/telegram.Service.js";
+import { buildFactoringPropuestaAceptadaMessage } from "#src/templates/telegram/factoringpropuesta.Template.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
-import { log, line } from "#src/utils/logger.pino.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-import * as telegramService from "#src/services/telegram.Service.js";
-
-import * as luxon from "luxon";
+import { line, log } from "#src/utils/logger.pino.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-import type { factoring } from "#root/generated/prisma/ft_factoring/client.js";
-import type { factoring_factura } from "#root/generated/prisma/ft_factoring/client.js";
-import { connect } from "http2";
 
 export const acceptFactoringpropuesta = async (req: Request, res: Response) => {
   log.debug(line(), "controller::acceptFactoringpropuesta");
@@ -146,17 +135,9 @@ export const acceptFactoringpropuesta = async (req: Request, res: Response) => {
 
       await emailService.sendFactoringEmpresaServicioFactoringPropuestaAceptada(usuario_for_email.email, paramsEmail);
 
-      const msnTelegram = {
-        title: "Factoring Electrónico: propuesta aceptada",
-        code: factoring.code,
-        tdm: factoringpropuesta.tdm,
-        monto_neto: factoringpropuesta.monto_neto,
-        monto_adelanto: factoringpropuesta.monto_adelanto,
-        fecha_pago_estimado: factoringpropuesta.fecha_pago_estimado,
-        dias_pago_estimado: factoringpropuesta.dias_pago_estimado,
-      };
+      const msnTelegram = buildFactoringPropuestaAceptadaMessage(factoring, factoringpropuesta);
 
-      telegramService.sendMessageTelegramInfo(msnTelegram);
+      telegramService.sendMessageImportant(msnTelegram);
 
       return factoringpropuestaUpdated;
     },
