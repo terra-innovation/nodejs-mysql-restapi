@@ -254,15 +254,13 @@ export const getPersonaMaster = async (req: Request, res: Response) => {
       personaMaster.distritos = distritos;
       personaMaster.documentotipos = documentotipos;
       personaMaster.generos = generos;
-      personaMaster.usuario = jsonUtils.filterFields(jsonUtils.sequelizeToJSON(usuario), ["usuarioid", "email", "celular", "isemailvalidated", "ispersonavalidated"]);
+      personaMaster.usuario = jsonUtils.filterFields(usuario, ["usuarioid", "email", "celular", "isemailvalidated", "ispersonavalidated"]);
 
       if (personaverificacionestado) {
         personaMaster.personaverificacionestado = personaverificacionestado;
       }
 
-      let personaMasterJSON = jsonUtils.sequelizeToJSON(personaMaster);
-      //jsonUtils.prettyPrint(personaMasterJSON);
-      let personaMasterFiltered = jsonUtils.removeAttributesPrivates(personaMasterJSON);
+      let personaMasterFiltered = jsonUtils.removeAttributesPrivates(personaMaster);
       //jsonUtils.prettyPrint(personaMaster);
       return personaMasterFiltered;
     },

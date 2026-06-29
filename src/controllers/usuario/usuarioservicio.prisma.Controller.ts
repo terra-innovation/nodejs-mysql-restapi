@@ -778,12 +778,6 @@ export const getUsuarioservicioMaster = async (req: Request, res: Response) => {
       usuarioservicioMaster.documentotipos = documentotipos;
       usuarioservicioMaster.persona = persona;
 
-      //let usuarioservicioMasterJSON = jsonUtils.sequelizeToJSON(usuarioservicioMaster);
-      //jsonUtils.prettyPrint(usuarioservicioMasterJSON);
-      //let usuarioservicioMasterObfuscated = jsonUtils.ofuscarAtributosDefault(usuarioservicioMasterJSON);
-      //jsonUtils.prettyPrint(usuarioservicioMasterObfuscated);
-      //let usuarioservicioMasterFiltered = jsonUtils.removeAttributesPrivates(usuarioservicioMasterObfuscated);
-      //jsonUtils.prettyPrint(usuarioservicioMaster);
       return usuarioservicioMaster;
     },
     { timeout: prismaFT.transactionTimeout },
@@ -800,10 +794,8 @@ export const getUsuarioservicios = async (req: Request, res: Response) => {
       const session_idusuario = req.session_user.usuario.idusuario;
       const filter_estado = [ESTADO.ACTIVO];
       const usuarioservicios = await usuarioservicioDao.getUsuarioserviciosByIdusuario(tx, session_idusuario, filter_estado);
-      var usuarioserviciosJson = jsonUtils.sequelizeToJSON(usuarioservicios);
-      //log.info(line(),empresaObfuscated);
 
-      var usuarioserviciosFiltered = jsonUtils.removeAttributes(usuarioserviciosJson, ["score"]);
+      var usuarioserviciosFiltered = jsonUtils.removeAttributes(usuarioservicios, ["score"]);
       usuarioserviciosFiltered = jsonUtils.removeAttributesPrivates(usuarioserviciosFiltered);
       return usuarioserviciosFiltered;
     },
