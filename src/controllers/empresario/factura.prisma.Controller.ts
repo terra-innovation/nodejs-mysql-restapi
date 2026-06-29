@@ -1,19 +1,16 @@
-import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import * as facturaDao from "#src/daos/factura.prisma.Dao.js";
-import * as bancoDao from "#src/daos/banco.prisma.Dao.js";
-import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
-import * as riesgoDao from "#src/daos/riesgo.prisma.Dao.js";
-import { response } from "#src/utils/CustomResponseOk.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
+import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
+import * as facturaDao from "#src/daos/factura.prisma.Dao.js";
+import * as riesgoDao from "#src/daos/riesgo.prisma.Dao.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
+import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { log, line } from "#src/utils/logger.pino.js";
+import { line, log } from "#src/utils/logger.pino.js";
+import { Request, Response } from "express";
 
 import type { factura } from "#root/generated/prisma/ft_factoring/client.js";
 
-import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
 export const getFacturasByFactoringid = async (req: Request, res: Response) => {
@@ -40,12 +37,8 @@ export const getFacturasByFactoringid = async (req: Request, res: Response) => {
       }
 
       const facturas = await facturaDao.getFacturasByIdfactoring(tx, factoring.idfactoring, filter_estado);
-      var facturasJson = jsonUtils.sequelizeToJSON(facturas);
-      //log.info(line(),facturaObfuscated);
 
-      //var facturasFiltered = jsonUtils.removeAttributes(facturasJson, ["score"]);
-      //facturasFiltered = jsonUtils.removeAttributesPrivates(facturasFiltered);
-      return facturasJson;
+      return facturas;
     },
     { timeout: prismaFT.transactionTimeout },
   );
@@ -117,11 +110,8 @@ export const getFacturaMaster = async (req: Request, res: Response) => {
       const riesgos = await riesgoDao.getRiesgos(tx, filter_estados);
       var facturasMaster: Record<string, any> = {};
       facturasMaster.riesgos = riesgos;
-      var facturasMasterJSON = jsonUtils.sequelizeToJSON(facturasMaster);
-      //jsonUtils.prettyPrint(facturasMasterJSON);
-      var facturasMasterObfuscated = facturasMasterJSON;
-      //jsonUtils.prettyPrint(facturasMasterObfuscated);
-      var facturasMasterFiltered = jsonUtils.removeAttributesPrivates(facturasMasterObfuscated);
+
+      var facturasMasterFiltered = jsonUtils.removeAttributesPrivates(facturasMaster);
       //jsonUtils.prettyPrint(facturasMaster);
       return facturasMasterFiltered;
     },
@@ -138,12 +128,8 @@ export const getFacturas = async (req: Request, res: Response) => {
     async (tx) => {
       const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
       const facturas = await facturaDao.getFacturas(tx, filter_estado);
-      var facturasJson = jsonUtils.sequelizeToJSON(facturas);
-      //log.info(line(),facturaObfuscated);
 
-      //var facturasFiltered = jsonUtils.removeAttributes(facturasJson, ["score"]);
-      //facturasFiltered = jsonUtils.removeAttributesPrivates(facturasFiltered);
-      return facturasJson;
+      return facturas;
     },
     { timeout: prismaFT.transactionTimeout },
   );

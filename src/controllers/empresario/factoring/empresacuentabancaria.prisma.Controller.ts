@@ -1,25 +1,25 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
+import { Request, Response } from "express";
 
-import * as archivocuentabancariaDao from "#src/daos/archivocuentabancaria.prisma.Dao.js";
+import { line, log } from "#root/src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
+import * as archivocuentabancariaDao from "#src/daos/archivocuentabancaria.prisma.Dao.js";
 import * as bancoDao from "#src/daos/banco.prisma.Dao.js";
 import * as cuentabancariaDao from "#src/daos/cuentabancaria.prisma.Dao.js";
 import * as cuentatipoDao from "#src/daos/cuentatipo.prisma.Dao.js";
-import * as empresacuentabancariaDao from "#src/daos/empresacuentabancaria.prisma.Dao.js";
 import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
+import * as empresacuentabancariaDao from "#src/daos/empresacuentabancaria.prisma.Dao.js";
 import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
-import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { line, log } from "#root/src/utils/logger.pino.js";
 
+import { isProduction } from "#src/config.js";
+import { ARCHIVO_TIPO } from "#src/daos/archivotipo.prisma.Dao.js";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-import { ARCHIVO_TIPO } from "#src/daos/archivotipo.prisma.Dao.js";
-import { isProduction } from "#src/config.js";
 
 export const getEmpresacuentabancarias = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getEmpresacuentabancarias");
@@ -52,10 +52,8 @@ export const getEmpresacuentabancarias = async (req: Request, res: Response) => 
       var _idcuentabancariaestado = [2, 1]; // Verificado y Pendiente
 
       const empresacuentabancarias = await empresacuentabancariaDao.getEmpresacuentabancariasForFactoring(tx, empresa_por_idusuario.idempresa, moneda.idmoneda, _idcuentabancariaestado, filter_estado);
-      var empresacuentabancariasJson = jsonUtils.sequelizeToJSON(empresacuentabancarias);
-      //log.info(line(),empresaObfuscated);
 
-      var empresacuentabancariasFiltered = jsonUtils.removeAttributes(empresacuentabancariasJson, ["score"]);
+      var empresacuentabancariasFiltered = jsonUtils.removeAttributes(empresacuentabancarias, ["score"]);
       empresacuentabancariasFiltered = jsonUtils.ofuscarAtributosDefault(empresacuentabancariasFiltered);
       empresacuentabancariasFiltered = jsonUtils.removeAttributesPrivates(empresacuentabancariasFiltered);
       return empresacuentabancariasFiltered;
@@ -84,11 +82,7 @@ export const getEmpresacuentabancariaMaster = async (req: Request, res: Response
       cuentasbancariasMaster.monedas = monedas;
       cuentasbancariasMaster.cuentatipos = cuentatipos;
 
-      var cuentasbancariasMasterJSON = jsonUtils.sequelizeToJSON(cuentasbancariasMaster);
-      //jsonUtils.prettyPrint(cuentasbancariasMasterJSON);
-      var cuentasbancariasMasterObfuscated = cuentasbancariasMasterJSON;
-      //jsonUtils.prettyPrint(cuentasbancariasMasterObfuscated);
-      var cuentasbancariasMasterFiltered = jsonUtils.removeAttributesPrivates(cuentasbancariasMasterObfuscated);
+      var cuentasbancariasMasterFiltered = jsonUtils.removeAttributesPrivates(cuentasbancariasMaster);
       //jsonUtils.prettyPrint(cuentasbancariasMaster);
       return cuentasbancariasMasterFiltered;
     },

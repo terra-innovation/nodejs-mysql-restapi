@@ -1,20 +1,18 @@
 import { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
+import { Request, Response } from "express";
 
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import * as contactoDao from "#src/daos/contacto.prisma.Dao.js";
 import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
 import * as facturaDao from "#src/daos/factura.prisma.Dao.js";
-import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
-import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { log, line } from "#src/utils/logger.pino.js";
+import { line, log } from "#src/utils/logger.pino.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-import type { contacto } from "#root/generated/prisma/ft_factoring/client.js";
 
 export const getContactos = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getContactos");
@@ -56,10 +54,8 @@ export const getContactos = async (req: Request, res: Response) => {
       }
 
       const contactos = await contactoDao.getContactosByIdempresas(tx, [empresa.idempresa], filter_estados);
-      var contactosJson = jsonUtils.sequelizeToJSON(contactos);
-      //log.info(line(),empresaObfuscated);
 
-      var contactosFiltered = jsonUtils.removeAttributes(contactosJson, ["score"]);
+      var contactosFiltered = jsonUtils.removeAttributes(contactos, ["score"]);
       contactosFiltered = jsonUtils.removeAttributesPrivates(contactosFiltered);
       return contactosFiltered;
     },
@@ -195,11 +191,7 @@ export const getContactoMaster = async (req: Request, res: Response) => {
       var contactoMaster: Record<string, any> = {};
       contactoMaster.aceptantes = [empresa];
 
-      var contactoMasterJSON = jsonUtils.sequelizeToJSON(contactoMaster);
-      //jsonUtils.prettyPrint(contactoMasterJSON);
-      var contactoMasterObfuscated = contactoMasterJSON;
-      //jsonUtils.prettyPrint(contactoMasterObfuscated);
-      var contactoMasterFiltered = jsonUtils.removeAttributesPrivates(contactoMasterObfuscated);
+      var contactoMasterFiltered = jsonUtils.removeAttributesPrivates(contactoMaster);
       //jsonUtils.prettyPrint(contactoMaster);
       return contactoMasterFiltered;
     },

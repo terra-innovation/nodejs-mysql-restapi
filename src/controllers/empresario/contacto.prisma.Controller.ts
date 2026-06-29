@@ -1,16 +1,15 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import type { contacto } from "#root/generated/prisma/ft_factoring/client.js";
+import { Request, Response } from "express";
 
+import { line, log } from "#root/src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import * as contactoDao from "#src/daos/contacto.prisma.Dao.js";
 import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
 import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
-import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { line, log } from "#root/src/utils/logger.pino.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
@@ -161,10 +160,8 @@ export const getContactos = async (req: Request, res: Response) => {
       const factorings = await factoringDao.getFactoringsByIdcedentes(tx, _idcedentes, filter_estados);
       const _idaceptantes = factorings.map((factoring) => factoring.idaceptante);
       const contactos = await contactoDao.getContactosByIdempresas(tx, _idaceptantes, filter_estados);
-      var contactosJson = jsonUtils.sequelizeToJSON(contactos);
-      //log.info(line(),empresaObfuscated);
 
-      var contactosFiltered = jsonUtils.removeAttributes(contactosJson, ["score"]);
+      var contactosFiltered = jsonUtils.removeAttributes(contactos, ["score"]);
       contactosFiltered = jsonUtils.removeAttributesPrivates(contactosFiltered);
       return contactosFiltered;
     },
@@ -189,12 +186,8 @@ export const getContactoMaster = async (req: Request, res: Response) => {
       var contactoMaster: Record<string, any> = {};
       contactoMaster.aceptantes = aceptantes;
 
-      var contactoMasterJSON = jsonUtils.sequelizeToJSON(contactoMaster);
-      //jsonUtils.prettyPrint(contactoMasterJSON);
-      var contactoMasterObfuscated = contactoMasterJSON;
-      //jsonUtils.prettyPrint(contactoMasterObfuscated);
-      var contactoMasterFiltered = jsonUtils.removeAttributesPrivates(contactoMasterObfuscated);
-      //jsonUtils.prettyPrint(contactoMaster);
+      var contactoMasterFiltered = jsonUtils.removeAttributesPrivates(contactoMaster);
+
       return contactoMasterFiltered;
     },
     { timeout: prismaFT.transactionTimeout },
