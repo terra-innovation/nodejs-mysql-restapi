@@ -1,31 +1,21 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
+import { Request, Response } from "express";
 
-import * as archivocuentabancariaDao from "#src/daos/archivocuentabancaria.prisma.Dao.js";
-import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import * as bancoDao from "#src/daos/banco.prisma.Dao.js";
 import * as cuentabancariaDao from "#src/daos/cuentabancaria.prisma.Dao.js";
 import * as cuentatipoDao from "#src/daos/cuentatipo.prisma.Dao.js";
-import * as inversionistacuentabancariaDao from "#src/daos/inversionistacuentabancaria.prisma.Dao.js";
 import * as inversionistaDao from "#src/daos/inversionista.prisma.Dao.js";
-import * as personaDao from "#src/daos/persona.prisma.Dao.js";
-import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
+import * as inversionistacuentabancariaDao from "#src/daos/inversionistacuentabancaria.prisma.Dao.js";
 import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
-import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { log, line } from "#src/utils/logger.pino.js";
-
-import * as validacionesYup from "#src/utils/validacionesYup.js";
-
-import * as fs from "fs";
-import path from "path";
+import { line, log } from "#src/utils/logger.pino.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-import * as storageUtils from "#src/utils/storageUtils.js";
 
 export const createInversionistacuentabancaria = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createInversionistacuentabancaria");
@@ -199,10 +189,8 @@ export const getInversionistacuentabancarias = async (req: Request, res: Respons
       const session_idusuario = req.session_user.usuario.idusuario;
       const filter_estado = [ESTADO.ACTIVO];
       const inversionistacuentabancarias = await inversionistacuentabancariaDao.getInversionistacuentabancariasByIdusuario(tx, session_idusuario, filter_estado);
-      var inversionistacuentabancariasJson = jsonUtils.sequelizeToJSON(inversionistacuentabancarias);
-      //log.info(line(),empresaObfuscated);
 
-      var inversionistacuentabancariasFiltered = jsonUtils.removeAttributes(inversionistacuentabancariasJson, ["score"]);
+      var inversionistacuentabancariasFiltered = jsonUtils.removeAttributes(inversionistacuentabancarias, ["score"]);
       inversionistacuentabancariasFiltered = jsonUtils.removeAttributesPrivates(inversionistacuentabancariasFiltered);
       return inversionistacuentabancariasFiltered;
     },
@@ -235,11 +223,7 @@ export const getInversionistacuentabancariaMaster = async (req: Request, res: Re
         cuentatipos: cuentatipos,
       };
 
-      var cuentasbancariasMasterJSON = jsonUtils.sequelizeToJSON(cuentasbancariasMaster);
-      //jsonUtils.prettyPrint(cuentasbancariasMasterJSON);
-      var cuentasbancariasMasterObfuscated = cuentasbancariasMasterJSON;
-      //jsonUtils.prettyPrint(cuentasbancariasMasterObfuscated);
-      var cuentasbancariasMasterFiltered = jsonUtils.removeAttributesPrivates(cuentasbancariasMasterObfuscated);
+      var cuentasbancariasMasterFiltered = jsonUtils.removeAttributesPrivates(cuentasbancariasMaster);
       //jsonUtils.prettyPrint(cuentasbancariasMaster);
       return cuentasbancariasMasterFiltered;
     },
