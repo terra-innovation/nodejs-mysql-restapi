@@ -14,7 +14,6 @@ import { Request, Response } from "express";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
-import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { line, log } from "#src/utils/logger.pino.js";
 
 import * as df from "#src/utils/dateUtils.js";
@@ -281,12 +280,8 @@ export const getFactoringinversionistasByVerificacion = async (req: Request, res
       const filter_idservicio = [2];
       const filter_idarchivotipos = [1, 2, 3];
       const factoringinversionistas = await servicioinversionistaDao.getFactoringinversionistasByVerificacion(tx, filter_estadologico, filter_idservicio, filter_idarchivotipos);
-      var factoringinversionistasJson = jsonUtils.sequelizeToJSON(factoringinversionistas);
-      //log.info(line(),factoringinversionistaObfuscated);
 
-      //var factoringinversionistasFiltered = jsonUtils.removeAttributes(factoringinversionistasJson, ["score"]);
-      //factoringinversionistasFiltered = jsonUtils.removeAttributesPrivates(factoringinversionistasFiltered);
-      return factoringinversionistasJson;
+      return factoringinversionistas;
     },
     { timeout: prismaFT.transactionTimeout },
   );

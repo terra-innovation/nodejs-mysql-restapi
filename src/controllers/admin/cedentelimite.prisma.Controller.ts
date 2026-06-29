@@ -1,14 +1,14 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
+import { line, log } from "#root/src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import * as cedentelimiteDao from "#src/daos/cedentelimite.prisma.Dao.js";
 import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
 import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
-import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { line, log } from "#root/src/utils/logger.pino.js";
+import { Request, Response } from "express";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
@@ -57,12 +57,7 @@ export const createCedentelimite = async (req: Request, res: Response) => {
       }
 
       const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
-      const cedentelimiteExistente = await cedentelimiteDao.getCedentelimiteByIdcedenteAndIdmoneda(
-        tx,
-        empresa.idempresa,
-        moneda.idmoneda,
-        filter_estado
-      );
+      const cedentelimiteExistente = await cedentelimiteDao.getCedentelimiteByIdcedenteAndIdmoneda(tx, empresa.idempresa, moneda.idmoneda, filter_estado);
 
       if (cedentelimiteExistente) {
         log.warn(line(), "Ya existe un límite para el Cedente [" + cedentelimiteValidated.empresaid + "] y Moneda [" + cedentelimiteValidated.monedaid + "]");
@@ -71,7 +66,7 @@ export const createCedentelimite = async (req: Request, res: Response) => {
 
       const total = cedentelimiteValidated.total;
       const usado = cedentelimiteValidated.usado ?? 0;
-      const disponible = cedentelimiteValidated.disponible ?? (total - usado);
+      const disponible = cedentelimiteValidated.disponible ?? total - usado;
 
       const cedentelimiteToCreate: Prisma.cedente_limiteCreateInput = {
         cedentelimiteid: uuidv4(),
@@ -124,7 +119,7 @@ export const updateCedentelimite = async (req: Request, res: Response) => {
 
       const total = cedentelimiteValidated.total;
       const usado = cedentelimiteValidated.usado ?? 0;
-      const disponible = cedentelimiteValidated.disponible ?? (total - usado);
+      const disponible = cedentelimiteValidated.disponible ?? total - usado;
 
       const cedentelimiteToUpdate: Prisma.cedente_limiteUpdateInput = {
         total: total,
@@ -215,9 +210,7 @@ export const getCedentelimiteMaster = async (req: Request, res: Response) => {
         monedas,
       };
 
-      const cedentelimiteMasterJSON = jsonUtils.sequelizeToJSON(cedentelimiteMaster);
-      const cedentelimiteMasterFiltered = jsonUtils.removeAttributesPrivates(cedentelimiteMasterJSON);
-      return cedentelimiteMasterFiltered;
+      return cedentelimiteMaster;
     },
     { timeout: prismaFT.transactionTimeout },
   );

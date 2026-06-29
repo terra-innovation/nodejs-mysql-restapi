@@ -1,23 +1,16 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import * as personaDao from "#src/daos/persona.prisma.Dao.js";
-import * as documentotipoDao from "#src/daos/documentotipo.prisma.Dao.js";
-import * as paisDao from "#src/daos/pais.prisma.Dao.js";
-import * as provinciaDao from "#src/daos/provincia.prisma.Dao.js";
-import * as distritoDao from "#src/daos/distrito.prisma.Dao.js";
-import * as generoDao from "#src/daos/genero.prisma.Dao.js";
-import * as personadeclaracionDao from "#src/daos/personadeclaracion.prisma.Dao.js";
-import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
-import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
-import * as archivopersonaDao from "#src/daos/archivopersona.prisma.Dao.js";
-import { response } from "#src/utils/CustomResponseOk.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
+import * as distritoDao from "#src/daos/distrito.prisma.Dao.js";
+import * as documentotipoDao from "#src/daos/documentotipo.prisma.Dao.js";
+import * as generoDao from "#src/daos/genero.prisma.Dao.js";
+import * as paisDao from "#src/daos/pais.prisma.Dao.js";
+import * as personaDao from "#src/daos/persona.prisma.Dao.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
-import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { log, line } from "#src/utils/logger.pino.js";
+import { response } from "#src/utils/CustomResponseOk.js";
+import { line, log } from "#src/utils/logger.pino.js";
+import { Request, Response } from "express";
 
-import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
 import type { persona } from "#root/generated/prisma/ft_factoring/client.js";
@@ -96,13 +89,7 @@ export const getPersonaMaster = async (req: Request, res: Response) => {
       personaMaster.documentotipos = documentotipos;
       personaMaster.generos = generos;
 
-      let personaMasterJSON = jsonUtils.sequelizeToJSON(personaMaster);
-      //jsonUtils.prettyPrint(personaMasterJSON);
-      let personaMasterObfuscated = jsonUtils.ofuscarAtributosDefault(personaMasterJSON);
-      //jsonUtils.prettyPrint(personaMasterObfuscated);
-      let personaMasterFiltered = jsonUtils.removeAttributesPrivates(personaMasterObfuscated);
-      //jsonUtils.prettyPrint(personaMaster);
-      return personaMasterFiltered;
+      return personaMaster;
     },
     { timeout: prismaFT.transactionTimeout },
   );
@@ -172,12 +159,8 @@ export const getPersonas = async (req: Request, res: Response) => {
 
       const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
       const personas = await personaDao.getPersonas(tx, filter_estado);
-      var personasJson = jsonUtils.sequelizeToJSON(personas);
-      //log.info(line(),personaObfuscated);
 
-      //var personasFiltered = jsonUtils.removeAttributes(personasJson, ["score"]);
-      //personasFiltered = jsonUtils.removeAttributesPrivates(personasFiltered);
-      return personasJson;
+      return personas;
     },
     { timeout: prismaFT.transactionTimeout },
   );

@@ -2,6 +2,7 @@ import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import * as configuracionappDao from "#src/daos/configuracionapp.prisma.Dao.js";
+import * as factorcuentabancariaDao from "#src/daos/factorcuentabancaria.prisma.Dao.js";
 import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
 import * as factoringliquidacionDao from "#src/daos/factoringliquidacion.prisma.Dao.js";
 import * as factoringliquidacionestadoDao from "#src/daos/factoringliquidacionestado.prisma.Dao.js";
@@ -9,7 +10,6 @@ import * as factoringliquidacionfinancieroDao from "#src/daos/factoringliquidaci
 import * as financieroconceptoDao from "#src/daos/financieroconcepto.prisma.Dao.js";
 import * as financierotipoDao from "#src/daos/financierotipo.prisma.Dao.js";
 import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
-import * as factorcuentabancariaDao from "#src/daos/factorcuentabancaria.prisma.Dao.js";
 import { simulateFactoringLogicV4 } from "#src/logics/factoring.prisma.Logic.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
@@ -648,8 +648,7 @@ export const getFactoringliquidacionMasterByFactoringid = async (req: Request, r
         mismo_banco: idbanco_factor == idbanco_cedente,
       };
 
-      const masterJSON = jsonUtils.sequelizeToJSON(master);
-      return jsonUtils.removeAttributesPrivates(masterJSON);
+      return master;
     },
     { timeout: prismaFT.transactionTimeout },
   );
@@ -676,8 +675,7 @@ export const getFactoringliquidacionDetalle = async (req: Request, res: Response
         throw new ClientError("La liquidación no existe", 404);
       }
 
-      const liquidacionJSON = jsonUtils.sequelizeToJSON(liquidacion);
-      return jsonUtils.removeAttributesPrivates(liquidacionJSON);
+      return liquidacion;
     },
     { timeout: prismaFT.transactionTimeout },
   );

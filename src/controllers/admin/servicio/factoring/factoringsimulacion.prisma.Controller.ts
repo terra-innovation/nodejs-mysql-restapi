@@ -1,25 +1,21 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as factoringsimulacionDao from "#src/daos/factoringsimulacion.prisma.Dao.js";
+import { Request, Response } from "express";
 
 import * as factoringsimulacionfinancieroDao from "#src/daos/factoringsimulacionfinanciero.prisma.Dao.js";
 
-import * as factoringtipoDao from "#src/daos/factoringtipo.prisma.Dao.js";
-import * as factoringestrategiaDao from "#src/daos/factoringestrategia.prisma.Dao.js";
-import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
-import * as riesgoDao from "#src/daos/riesgo.prisma.Dao.js";
-import * as bancoDao from "#src/daos/banco.prisma.Dao.js";
-import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
-import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
-import { response } from "#src/utils/CustomResponseOk.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
+import * as bancoDao from "#src/daos/banco.prisma.Dao.js";
+import * as factoringestrategiaDao from "#src/daos/factoringestrategia.prisma.Dao.js";
+import * as factoringtipoDao from "#src/daos/factoringtipo.prisma.Dao.js";
+import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
+import * as riesgoDao from "#src/daos/riesgo.prisma.Dao.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
+import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { log, line } from "#src/utils/logger.pino.js";
-import * as emailService from "#root/src/services/email.Service.js";
+import { line, log } from "#src/utils/logger.pino.js";
 
-import type { factoring_simulacion } from "#root/generated/prisma/ft_factoring/client.js";
 import { Simulacion } from "#src/types/Simulacion.prisma.types.js";
 
 import * as luxon from "luxon";
@@ -28,14 +24,14 @@ import * as yup from "yup";
 
 import { simulateFactoringLogicV4 } from "#src/logics/factoring.prisma.Logic.js";
 
+import * as dateUtils from "#src/utils/dateUtils.js";
+import PDFGenerator from "#src/utils/document/PDFgenerator.js";
+import { sendFileAsync, setDownloadHeaders } from "#src/utils/httpUtils.js";
+import * as storageUtils from "#src/utils/storageUtils.js";
+import { Decimal } from "@prisma/client/runtime/library";
+import * as fs from "fs";
 import { unlink } from "fs/promises";
 import path from "path"; // Para eliminar el archivo después de enviarlo
-import PDFGenerator from "#src/utils/document/PDFgenerator.js";
-import * as storageUtils from "#src/utils/storageUtils.js";
-import { sendFileAsync, setDownloadHeaders } from "#src/utils/httpUtils.js";
-import * as fs from "fs";
-import * as dateUtils from "#src/utils/dateUtils.js";
-import { Decimal } from "@prisma/client/runtime/library";
 
 export const downloadFactoringsimulacionPDF = async (req: Request, res: Response) => {
   log.debug(line(), "controller::downloadFactoringsimulacionPDF");
@@ -56,9 +52,6 @@ export const downloadFactoringsimulacionPDF = async (req: Request, res: Response
         log.warn(line(), "Factoringsimulacion no existe: [" + factoringsimulacionValidated.factoringsimulacionid + "]");
         throw new ClientError("Datos no válidos", 404);
       }
-      //log.debug(line(), "factoringsimulacion:", jsonUtils.sequelizeToJSON(factoringsimulacion));
-
-      //log.debug(line(), "factoringsimulacion:", jsonUtils.sequelizeToJSON(factoring));
 
       // Generar el PDF
       const formattedDate = luxon.DateTime.now().toFormat("yyyyMMdd_HHmm");
@@ -481,13 +474,7 @@ export const getFactoringsimulacionMaster = async (req: Request, res: Response) 
       factoringsimulacionsMaster.factoringestrategias = factoringestrategias;
       factoringsimulacionsMaster.monedas = monedas;
 
-      var factoringsimulacionsMasterJSON = jsonUtils.sequelizeToJSON(factoringsimulacionsMaster);
-      //jsonUtils.prettyPrint(factoringsimulacionsMasterJSON);
-      var factoringsimulacionsMasterObfuscated = factoringsimulacionsMasterJSON;
-      //jsonUtils.prettyPrint(factoringsimulacionsMasterObfuscated);
-      var factoringsimulacionsMasterFiltered = jsonUtils.removeAttributesPrivates(factoringsimulacionsMasterObfuscated);
-      //jsonUtils.prettyPrint(factoringsimulacionsMaster);
-      return factoringsimulacionsMasterFiltered;
+      return factoringsimulacionsMaster;
     },
     { timeout: prismaFT.transactionTimeout },
   );
@@ -502,9 +489,8 @@ export const getFactoringsimulacions = async (req: Request, res: Response) => {
     async (tx) => {
       const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
       const factoringsimulacions = await factoringsimulacionDao.getFactoringsimulacions(tx, filter_estado);
-      var factoringsimulacionsJson = jsonUtils.sequelizeToJSON(factoringsimulacions);
 
-      return factoringsimulacionsJson;
+      return factoringsimulacions;
     },
     { timeout: prismaFT.transactionTimeout },
   );

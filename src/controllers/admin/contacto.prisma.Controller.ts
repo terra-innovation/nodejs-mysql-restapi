@@ -1,13 +1,13 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
+import { line, log } from "#root/src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import * as contactoDao from "#src/daos/contacto.prisma.Dao.js";
 import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
-import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { line, log } from "#root/src/utils/logger.pino.js";
+import { Request, Response } from "express";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
@@ -196,9 +196,7 @@ export const getContactoMaster = async (req: Request, res: Response) => {
       var contactoMaster: Record<string, any> = {};
       contactoMaster.empresas = empresas;
 
-      var contactoMasterJSON = jsonUtils.sequelizeToJSON(contactoMaster);
-      var contactoMasterFiltered = jsonUtils.removeAttributesPrivates(contactoMasterJSON);
-      return contactoMasterFiltered;
+      return contactoMaster;
     },
     { timeout: prismaFT.transactionTimeout },
   );

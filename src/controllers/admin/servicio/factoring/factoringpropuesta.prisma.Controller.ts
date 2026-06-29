@@ -1,23 +1,22 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import * as factoringpropuestaDao from "#src/daos/factoringpropuesta.prisma.Dao.js";
-import * as factoringpropuestahistorialestadoDao from "#src/daos/factoringpropuestahistorialestado.prisma.Dao.js";
-import * as factoringpropuestafinancieroDao from "#src/daos/factoringpropuestafinanciero.prisma.Dao.js";
-import * as factoringpropuestaestadoDao from "#src/daos/factoringpropuestaestado.prisma.Dao.js";
-import * as factoringtipoDao from "#src/daos/factoringtipo.prisma.Dao.js";
-import * as factoringestrategiaDao from "#src/daos/factoringestrategia.prisma.Dao.js";
+import * as emailService from "#root/src/services/email.Service.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
+import * as factoringestrategiaDao from "#src/daos/factoringestrategia.prisma.Dao.js";
+import * as factoringpropuestaDao from "#src/daos/factoringpropuesta.prisma.Dao.js";
+import * as factoringpropuestaestadoDao from "#src/daos/factoringpropuestaestado.prisma.Dao.js";
+import * as factoringpropuestafinancieroDao from "#src/daos/factoringpropuestafinanciero.prisma.Dao.js";
+import * as factoringpropuestahistorialestadoDao from "#src/daos/factoringpropuestahistorialestado.prisma.Dao.js";
+import * as factoringtipoDao from "#src/daos/factoringtipo.prisma.Dao.js";
 import * as riesgoDao from "#src/daos/riesgo.prisma.Dao.js";
 import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
-import { response } from "#src/utils/CustomResponseOk.js";
-import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
+import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { log, line } from "#src/utils/logger.pino.js";
-import * as emailService from "#root/src/services/email.Service.js";
+import { line, log } from "#src/utils/logger.pino.js";
+import { Request, Response } from "express";
 
-import type { factoring_propuesta } from "#root/generated/prisma/ft_factoring/client.js";
 import { Simulacion } from "#src/types/Simulacion.prisma.types.js";
 
 import * as luxon from "luxon";
@@ -26,14 +25,14 @@ import * as yup from "yup";
 
 import { simulateFactoringLogicV4 } from "#src/logics/factoring.prisma.Logic.js";
 
+import * as dateUtils from "#src/utils/dateUtils.js";
+import PDFGenerator from "#src/utils/document/PDFgenerator.js";
+import { sendFileAsync, setDownloadHeaders } from "#src/utils/httpUtils.js";
+import * as storageUtils from "#src/utils/storageUtils.js";
+import { Decimal } from "@prisma/client/runtime/library";
+import * as fs from "fs";
 import { unlink } from "fs/promises";
 import path from "path"; // Para eliminar el archivo después de enviarlo
-import PDFGenerator from "#src/utils/document/PDFgenerator.js";
-import * as storageUtils from "#src/utils/storageUtils.js";
-import { sendFileAsync, setDownloadHeaders } from "#src/utils/httpUtils.js";
-import * as fs from "fs";
-import * as dateUtils from "#src/utils/dateUtils.js";
-import { Decimal } from "@prisma/client/runtime/library";
 
 export const downloadFactoringpropuestaPDF = async (req: Request, res: Response) => {
   log.debug(line(), "controller::downloadFactoringpropuestaPDF");
@@ -54,14 +53,12 @@ export const downloadFactoringpropuestaPDF = async (req: Request, res: Response)
         log.warn(line(), "Factoringpropuesta no existe: [" + factoringpropuestaValidated.factoringpropuestaid + "]");
         throw new ClientError("Datos no válidos", 404);
       }
-      //log.debug(line(), "factoringpropuesta:", jsonUtils.sequelizeToJSON(factoringpropuesta));
 
       var factoring = await factoringDao.getFactoringByIdfactoring(tx, factoringpropuesta.idfactoring);
       if (!factoring) {
         log.warn(line(), "Factoring no existe: [" + factoringpropuesta.idfactoring + "]");
         throw new ClientError("Datos no válidos", 404);
       }
-      //log.debug(line(), "factoringpropuesta:", jsonUtils.sequelizeToJSON(factoring));
 
       // Generar el PDF
       const formattedDate = luxon.DateTime.now().toFormat("yyyyMMdd_HHmm");
@@ -517,12 +514,8 @@ export const getFactoringpropuestasByFactoringid = async (req: Request, res: Res
       }
 
       const factoringpropuestas = await factoringpropuestaDao.getFactoringpropuestasByIdfactoring(tx, factoring.idfactoring, filter_estado);
-      var factoringpropuestasJson = jsonUtils.sequelizeToJSON(factoringpropuestas);
-      //log.info(line(),factoringpropuestaObfuscated);
 
-      //var factoringpropuestasFiltered = jsonUtils.removeAttributes(factoringpropuestasJson, ["score"]);
-      //factoringpropuestasFiltered = jsonUtils.removeAttributesPrivates(factoringpropuestasFiltered);
-      return factoringpropuestasJson;
+      return factoringpropuestas;
     },
     { timeout: prismaFT.transactionTimeout },
   );
@@ -597,13 +590,7 @@ export const getFactoringpropuestaMaster = async (req: Request, res: Response) =
       factoringpropuestasMaster.factoringestrategias = factoringestrategias;
       factoringpropuestasMaster.factoringpropuestaestados = factoringpropuestaestados;
 
-      var factoringpropuestasMasterJSON = jsonUtils.sequelizeToJSON(factoringpropuestasMaster);
-      //jsonUtils.prettyPrint(factoringpropuestasMasterJSON);
-      var factoringpropuestasMasterObfuscated = factoringpropuestasMasterJSON;
-      //jsonUtils.prettyPrint(factoringpropuestasMasterObfuscated);
-      var factoringpropuestasMasterFiltered = jsonUtils.removeAttributesPrivates(factoringpropuestasMasterObfuscated);
-      //jsonUtils.prettyPrint(factoringpropuestasMaster);
-      return factoringpropuestasMasterFiltered;
+      return factoringpropuestasMaster;
     },
     { timeout: prismaFT.transactionTimeout },
   );
@@ -618,12 +605,8 @@ export const getFactoringpropuestas = async (req: Request, res: Response) => {
     async (tx) => {
       const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
       const factoringpropuestas = await factoringpropuestaDao.getFactoringpropuestas(tx, filter_estado);
-      var factoringpropuestasJson = jsonUtils.sequelizeToJSON(factoringpropuestas);
-      //log.info(line(),factoringpropuestaObfuscated);
 
-      //var factoringpropuestasFiltered = jsonUtils.removeAttributes(factoringpropuestasJson, ["score"]);
-      //factoringpropuestasFiltered = jsonUtils.removeAttributesPrivates(factoringpropuestasFiltered);
-      return factoringpropuestasJson;
+      return factoringpropuestas;
     },
     { timeout: prismaFT.transactionTimeout },
   );

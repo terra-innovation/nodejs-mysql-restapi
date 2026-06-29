@@ -1,14 +1,14 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import * as factorlimiteDao from "#src/daos/factorlimite.prisma.Dao.js";
-import * as factorDao from "#src/daos/factor.prisma.Dao.js";
-import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
+import { line, log } from "#root/src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
+import * as factorDao from "#src/daos/factor.prisma.Dao.js";
+import * as factorlimiteDao from "#src/daos/factorlimite.prisma.Dao.js";
+import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { line, log } from "#root/src/utils/logger.pino.js";
+import { Request, Response } from "express";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
@@ -57,12 +57,7 @@ export const createFactorlimite = async (req: Request, res: Response) => {
       }
 
       const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
-      const factorlimiteExistente = await factorlimiteDao.getFactorlimiteByIdfactorAndIdmoneda(
-        tx,
-        factor.idfactor,
-        moneda.idmoneda,
-        filter_estado
-      );
+      const factorlimiteExistente = await factorlimiteDao.getFactorlimiteByIdfactorAndIdmoneda(tx, factor.idfactor, moneda.idmoneda, filter_estado);
 
       if (factorlimiteExistente) {
         log.warn(line(), "Ya existe un límite para el Factor [" + factorlimiteValidated.factorid + "] y Moneda [" + factorlimiteValidated.monedaid + "]");
@@ -71,7 +66,7 @@ export const createFactorlimite = async (req: Request, res: Response) => {
 
       const total = factorlimiteValidated.total;
       const usado = factorlimiteValidated.usado ?? 0;
-      const disponible = factorlimiteValidated.disponible ?? (total - usado);
+      const disponible = factorlimiteValidated.disponible ?? total - usado;
 
       const factorlimiteToCreate: Prisma.factor_limiteCreateInput = {
         factorlimiteid: uuidv4(),
@@ -124,7 +119,7 @@ export const updateFactorlimite = async (req: Request, res: Response) => {
 
       const total = factorlimiteValidated.total;
       const usado = factorlimiteValidated.usado ?? 0;
-      const disponible = factorlimiteValidated.disponible ?? (total - usado);
+      const disponible = factorlimiteValidated.disponible ?? total - usado;
 
       const factorlimiteToUpdate: Prisma.factor_limiteUpdateInput = {
         total: total,
@@ -215,9 +210,7 @@ export const getFactorlimiteMaster = async (req: Request, res: Response) => {
         monedas,
       };
 
-      const factorlimiteMasterJSON = jsonUtils.sequelizeToJSON(factorlimiteMaster);
-      const factorlimiteMasterFiltered = jsonUtils.removeAttributesPrivates(factorlimiteMasterJSON);
-      return factorlimiteMasterFiltered;
+      return factorlimiteMaster;
     },
     { timeout: prismaFT.transactionTimeout },
   );

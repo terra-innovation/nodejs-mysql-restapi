@@ -1,24 +1,14 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import * as factoringpropuestaDao from "#src/daos/factoringpropuesta.prisma.Dao.js";
-import * as factoringpropuestafinancieroDao from "#src/daos/factoringpropuestafinanciero.prisma.Dao.js";
-import * as factoringpropuestaestadoDao from "#src/daos/factoringpropuestaestado.prisma.Dao.js";
-import * as factoringtipoDao from "#src/daos/factoringtipo.prisma.Dao.js";
-import * as factoringestrategiaDao from "#src/daos/factoringestrategia.prisma.Dao.js";
-import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
-import * as factoringpropuestahistorialestadoDao from "#src/daos/factoringpropuestahistorialestado.prisma.Dao.js";
-import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
-import * as riesgoDao from "#src/daos/riesgo.prisma.Dao.js";
-import { response } from "#src/utils/CustomResponseOk.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
+import * as factoringpropuestaDao from "#src/daos/factoringpropuesta.prisma.Dao.js";
+import * as factoringpropuestaestadoDao from "#src/daos/factoringpropuestaestado.prisma.Dao.js";
+import * as factoringpropuestahistorialestadoDao from "#src/daos/factoringpropuestahistorialestado.prisma.Dao.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
-import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { log, line } from "#src/utils/logger.pino.js";
+import { response } from "#src/utils/CustomResponseOk.js";
+import { line, log } from "#src/utils/logger.pino.js";
+import { Request, Response } from "express";
 
-import type { factoring_historial_estado } from "#root/generated/prisma/ft_factoring/client.js";
-
-import * as luxon from "luxon";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
@@ -83,12 +73,8 @@ export const getFactoringpropuestahistorialestadosByFactoringpropuestaid = async
       }
 
       const factoringpropuestahistorialestados = await factoringpropuestahistorialestadoDao.getFactoringpropuestahistorialestadosByIdfactoringpropuesta(tx, factoringpropuesta.idfactoringpropuesta, filter_estado);
-      var factoringpropuestahistorialestadosJson = jsonUtils.sequelizeToJSON(factoringpropuestahistorialestados);
-      //log.info(line(),factoringpropuestaObfuscated);
 
-      //var factoringpropuestasFiltered = jsonUtils.removeAttributes(factoringpropuestasJson, ["score"]);
-      //factoringpropuestasFiltered = jsonUtils.removeAttributesPrivates(factoringpropuestasFiltered);
-      return factoringpropuestahistorialestadosJson;
+      return factoringpropuestahistorialestados;
     },
     { timeout: prismaFT.transactionTimeout },
   );
@@ -105,13 +91,7 @@ export const getFactoringpropuestahistorialestadoMaster = async (req: Request, r
       var factoringpropuestahistorialestadosMaster: Record<string, any> = {};
       factoringpropuestahistorialestadosMaster.factoringpropuestaestados = factoringpropuestaestados;
 
-      var factoringpropuestahistorialestadosMasterJSON = jsonUtils.sequelizeToJSON(factoringpropuestahistorialestadosMaster);
-      //jsonUtils.prettyPrint(factoringpropuestahistorialestadosMasterJSON);
-      var factoringpropuestahistorialestadosMasterObfuscated = factoringpropuestahistorialestadosMasterJSON;
-      //jsonUtils.prettyPrint(factoringpropuestahistorialestadosMasterObfuscated);
-      var factoringpropuestahistorialestadosMasterFiltered = jsonUtils.removeAttributesPrivates(factoringpropuestahistorialestadosMasterObfuscated);
-      //jsonUtils.prettyPrint(factoringpropuestahistorialestadosMaster);
-      return factoringpropuestahistorialestadosMasterFiltered;
+      return factoringpropuestahistorialestadosMaster;
     },
     { timeout: prismaFT.transactionTimeout },
   );
@@ -253,12 +233,8 @@ export const getFactoringpropuestahistorialestados = async (req: Request, res: R
     async (tx) => {
       const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
       const factoringpropuestahistorialestados = await factoringpropuestahistorialestadoDao.getFactoringpropuestahistorialestados(tx, filter_estado);
-      var factoringpropuestahistorialestadosJson = jsonUtils.sequelizeToJSON(factoringpropuestahistorialestados);
-      //log.info(line(),factoringpropuestahistorialestadoObfuscated);
 
-      //var factoringpropuestahistorialestadosFiltered = jsonUtils.removeAttributes(factoringpropuestahistorialestadosJson, ["score"]);
-      //factoringpropuestahistorialestadosFiltered = jsonUtils.removeAttributesPrivates(factoringpropuestahistorialestadosFiltered);
-      return factoringpropuestahistorialestadosJson;
+      return factoringpropuestahistorialestados;
     },
     { timeout: prismaFT.transactionTimeout },
   );

@@ -1,5 +1,6 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
 import * as archivoestadoDao from "#src/daos/archivoestado.prisma.Dao.js";
 import * as archivotipoDao from "#src/daos/archivotipo.prisma.Dao.js";
@@ -7,7 +8,6 @@ import * as distritoDao from "#src/daos/distrito.prisma.Dao.js";
 import * as documentotipoDao from "#src/daos/documentotipo.prisma.Dao.js";
 import * as generoDao from "#src/daos/genero.prisma.Dao.js";
 import * as paisDao from "#src/daos/pais.prisma.Dao.js";
-import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
@@ -15,15 +15,9 @@ import { line, log } from "#src/utils/logger.pino.js";
 import * as storageUtils from "#src/utils/storageUtils.js";
 import { Request, Response } from "express";
 
-import * as validacionesYup from "#src/utils/validacionesYup.js";
-
-import * as fs from "fs";
-import { unlink } from "fs/promises";
 import path from "path";
 
-import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-import { fileTypeFromFile } from "file-type";
 
 export const descargarArchivo = async (req: Request, res: Response) => {
   log.debug(line(), "controller::descargarArchivo");
@@ -140,9 +134,7 @@ export const getArchivoMaster = async (req: Request, res: Response) => {
       archivoMaster.documentotipos = documentotipos;
       archivoMaster.generos = generos;
 
-      let archivoMasterJSON = jsonUtils.sequelizeToJSON(archivoMaster);
-      //jsonUtils.prettyPrint(archivoMasterJSON);
-      let archivoMasterObfuscated = jsonUtils.ofuscarAtributosDefault(archivoMasterJSON);
+      let archivoMasterObfuscated = jsonUtils.ofuscarAtributosDefault(archivoMaster);
       //jsonUtils.prettyPrint(archivoMasterObfuscated);
       let archivoMasterFiltered = jsonUtils.removeAttributesPrivates(archivoMasterObfuscated);
       //jsonUtils.prettyPrint(archivoMaster);
@@ -216,12 +208,8 @@ export const getArchivos = async (req: Request, res: Response) => {
     async (tx) => {
       const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
       const archivos = await archivoDao.getArchivos(tx, filter_estado);
-      var archivosJson = jsonUtils.sequelizeToJSON(archivos);
-      //log.info(line(),archivoObfuscated);
 
-      //var archivosFiltered = jsonUtils.removeAttributes(archivosJson, ["score"]);
-      //archivosFiltered = jsonUtils.removeAttributesPrivates(archivosFiltered);
-      return archivosJson;
+      return archivos;
     },
     { timeout: prismaFT.transactionTimeout },
   );

@@ -1,10 +1,9 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import * as servicioDao from "#src/daos/servicio.prisma.Dao.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
+import * as servicioDao from "#src/daos/servicio.prisma.Dao.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
-import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
 
@@ -69,13 +68,8 @@ export const getServicioMaster = async (req: Request, res: Response) => {
     async (tx) => {
       const filter_estados = [ESTADO.ACTIVO];
       var serviciosMaster: Record<string, any> = {};
-      var serviciosMasterJSON = jsonUtils.sequelizeToJSON(serviciosMaster);
-      //jsonUtils.prettyPrint(serviciosMasterJSON);
-      var serviciosMasterObfuscated = serviciosMasterJSON;
-      //jsonUtils.prettyPrint(serviciosMasterObfuscated);
-      var serviciosMasterFiltered = jsonUtils.removeAttributesPrivates(serviciosMasterObfuscated);
-      //jsonUtils.prettyPrint(serviciosMaster);
-      return serviciosMasterFiltered;
+
+      return serviciosMaster;
     },
     { timeout: prismaFT.transactionTimeout },
   );

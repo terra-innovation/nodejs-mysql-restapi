@@ -1,14 +1,13 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import * as personaDao from "#src/daos/persona.prisma.Dao.js";
 import * as personaverificacionDao from "#src/daos/personaverificacion.prisma.Dao.js";
 import * as personaverificacionestadoDao from "#src/daos/personaverificacionestado.prisma.Dao.js";
 import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
 import * as usuarioservicioDao from "#src/daos/usuarioservicio.prisma.Dao.js";
-import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
-import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
 
@@ -90,13 +89,7 @@ export const getPersonaverificacionMaster = async (req: Request, res: Response) 
       let personaverificacionMaster: Record<string, any> = {};
       personaverificacionMaster.personaverificacionestados = personaverificacionestados;
 
-      let personaverificacionMasterJSON = jsonUtils.sequelizeToJSON(personaverificacionMaster);
-      //jsonUtils.prettyPrint(personaverificacionMasterJSON);
-      let personaverificacionMasterObfuscated = jsonUtils.ofuscarAtributosDefault(personaverificacionMasterJSON);
-      //jsonUtils.prettyPrint(personaverificacionMasterObfuscated);
-      let personaverificacionMasterFiltered = jsonUtils.removeAttributesPrivates(personaverificacionMasterObfuscated);
-      //jsonUtils.prettyPrint(personaverificacionMaster);
-      return personaverificacionMasterFiltered;
+      return personaverificacionMaster;
     },
     { timeout: prismaFT.transactionTimeout },
   );
@@ -165,12 +158,8 @@ export const getPersonaverificacions = async (req: Request, res: Response) => {
       const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
       const filter_idarchivotipo = [1, 2, 3];
       const personaverificacionverificacions = await personaDao.getPersonasByVerificacion(tx, filter_estado, filter_idarchivotipo);
-      var personaverificacionverificacionsJson = jsonUtils.sequelizeToJSON(personaverificacionverificacions);
-      //log.info(line(),personaverificacionObfuscated);
 
-      //var personaverificacionverificacionsFiltered = jsonUtils.removeAttributes(personaverificacionverificacionsJson, ["score"]);
-      //personaverificacionverificacionsFiltered = jsonUtils.removeAttributesPrivates(personaverificacionverificacionsFiltered);
-      return personaverificacionverificacionsJson;
+      return personaverificacionverificacions;
     },
     { timeout: prismaFT.transactionTimeout },
   );

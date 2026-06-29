@@ -1,14 +1,14 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import * as pagadorlimiteDao from "#src/daos/pagadorlimite.prisma.Dao.js";
+import { line, log } from "#root/src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
 import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
-import { ESTADO } from "#src/constants/prisma.Constant.js";
+import * as pagadorlimiteDao from "#src/daos/pagadorlimite.prisma.Dao.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { line, log } from "#root/src/utils/logger.pino.js";
+import { Request, Response } from "express";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
@@ -57,12 +57,7 @@ export const createPagadorlimite = async (req: Request, res: Response) => {
       }
 
       const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
-      const pagadorlimiteExistente = await pagadorlimiteDao.getPagadorlimiteByIdpagadorAndIdmoneda(
-        tx,
-        empresa.idempresa,
-        moneda.idmoneda,
-        filter_estado
-      );
+      const pagadorlimiteExistente = await pagadorlimiteDao.getPagadorlimiteByIdpagadorAndIdmoneda(tx, empresa.idempresa, moneda.idmoneda, filter_estado);
 
       if (pagadorlimiteExistente) {
         log.warn(line(), "Ya existe un límite para el Pagador [" + pagadorlimiteValidated.empresaid + "] y Moneda [" + pagadorlimiteValidated.monedaid + "]");
@@ -71,7 +66,7 @@ export const createPagadorlimite = async (req: Request, res: Response) => {
 
       const total = pagadorlimiteValidated.total;
       const usado = pagadorlimiteValidated.usado ?? 0;
-      const disponible = pagadorlimiteValidated.disponible ?? (total - usado);
+      const disponible = pagadorlimiteValidated.disponible ?? total - usado;
 
       const pagadorlimiteToCreate: Prisma.pagador_limiteCreateInput = {
         pagadorlimiteid: uuidv4(),
@@ -124,7 +119,7 @@ export const updatePagadorlimite = async (req: Request, res: Response) => {
 
       const total = pagadorlimiteValidated.total;
       const usado = pagadorlimiteValidated.usado ?? 0;
-      const disponible = pagadorlimiteValidated.disponible ?? (total - usado);
+      const disponible = pagadorlimiteValidated.disponible ?? total - usado;
 
       const pagadorlimiteToUpdate: Prisma.pagador_limiteUpdateInput = {
         total: total,
@@ -215,9 +210,7 @@ export const getPagadorlimiteMaster = async (req: Request, res: Response) => {
         monedas,
       };
 
-      const pagadorlimiteMasterJSON = jsonUtils.sequelizeToJSON(pagadorlimiteMaster);
-      const pagadorlimiteMasterFiltered = jsonUtils.removeAttributesPrivates(pagadorlimiteMasterJSON);
-      return pagadorlimiteMasterFiltered;
+      return pagadorlimiteMaster;
     },
     { timeout: prismaFT.transactionTimeout },
   );

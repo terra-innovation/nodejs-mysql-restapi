@@ -1,21 +1,16 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
+import { Request, Response } from "express";
 
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
 import * as factoringestadoDao from "#src/daos/factoringestado.prisma.Dao.js";
 import * as factoringpropuestaDao from "#src/daos/factoringpropuesta.prisma.Dao.js";
 import * as factoringtipoDao from "#src/daos/factoringtipo.prisma.Dao.js";
 import * as riesgoDao from "#src/daos/riesgo.prisma.Dao.js";
-import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
-import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { log, line } from "#src/utils/logger.pino.js";
-
-import type { factoring } from "#root/generated/prisma/ft_factoring/client.js";
-
-import * as luxon from "luxon";
+import { line, log } from "#src/utils/logger.pino.js";
 
 import * as yup from "yup";
 
@@ -135,13 +130,7 @@ export const getFactoringMaster = async (req: Request, res: Response) => {
       factoringsMaster.factoringestados = factoringestados;
       factoringsMaster.riesgos = riesgos;
 
-      var factoringsMasterJSON = jsonUtils.sequelizeToJSON(factoringsMaster);
-      //jsonUtils.prettyPrint(factoringsMasterJSON);
-      var factoringsMasterObfuscated = factoringsMasterJSON;
-      //jsonUtils.prettyPrint(factoringsMasterObfuscated);
-      var factoringsMasterFiltered = jsonUtils.removeAttributesPrivates(factoringsMasterObfuscated);
-      //jsonUtils.prettyPrint(factoringsMasterFiltered);
-      return factoringsMasterFiltered;
+      return factoringsMaster;
     },
     { timeout: prismaFT.transactionTimeout },
   );

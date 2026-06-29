@@ -1,19 +1,13 @@
-import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
+import { Request, Response } from "express";
 
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import * as archivofacturaDao from "#src/daos/archivofactura.prisma.Dao.js";
 import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
-import * as riesgoDao from "#src/daos/riesgo.prisma.Dao.js";
-import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
-import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { log, line } from "#src/utils/logger.pino.js";
+import { line, log } from "#src/utils/logger.pino.js";
 
-import type { archivo_factura } from "#root/generated/prisma/ft_factoring/client.js";
-
-import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
 export const getArchivofacturasByFactoringid = async (req: Request, res: Response) => {
@@ -40,12 +34,8 @@ export const getArchivofacturasByFactoringid = async (req: Request, res: Respons
       }
 
       const archivofacturas = await archivofacturaDao.getArchivofacturasByIdfactoring(tx, factoring.idfactoring, filter_estado);
-      var archivofacturasJson = jsonUtils.sequelizeToJSON(archivofacturas);
-      //log.info(line(),archivofacturaObfuscated);
 
-      //var archivofacturasFiltered = jsonUtils.removeAttributes(archivofacturasJson, ["score"]);
-      //archivofacturasFiltered = jsonUtils.removeAttributesPrivates(archivofacturasFiltered);
-      return archivofacturasJson;
+      return archivofacturas;
     },
     { timeout: prismaFT.transactionTimeout },
   );

@@ -1,26 +1,21 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import * as inversionistacuentabancariaDao from "#src/daos/inversionistacuentabancaria.prisma.Dao.js";
-import * as cuentabancariaDao from "#src/daos/cuentabancaria.prisma.Dao.js";
-import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
-import * as bancoDao from "#src/daos/banco.prisma.Dao.js";
-import * as cuentatipoDao from "#src/daos/cuentatipo.prisma.Dao.js";
-import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
-import * as personaDao from "#src/daos/persona.prisma.Dao.js";
-import * as inversionistaDao from "#src/daos/inversionista.prisma.Dao.js";
-import * as cuentabancariaestadoDao from "#src/daos/cuentabancariaestado.prisma.Dao.js";
-import { response } from "#src/utils/CustomResponseOk.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
+import * as bancoDao from "#src/daos/banco.prisma.Dao.js";
+import * as cuentabancariaDao from "#src/daos/cuentabancaria.prisma.Dao.js";
+import * as cuentabancariaestadoDao from "#src/daos/cuentabancariaestado.prisma.Dao.js";
+import * as cuentatipoDao from "#src/daos/cuentatipo.prisma.Dao.js";
+import * as inversionistaDao from "#src/daos/inversionista.prisma.Dao.js";
+import * as inversionistacuentabancariaDao from "#src/daos/inversionistacuentabancaria.prisma.Dao.js";
+import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
+import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { log, line } from "#src/utils/logger.pino.js";
+import { line, log } from "#src/utils/logger.pino.js";
+import { Request, Response } from "express";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-
-import type { cuenta_bancaria } from "#root/generated/prisma/ft_factoring/client.js";
-import type { inversionista_cuenta_bancaria } from "#root/generated/prisma/ft_factoring/client.js";
 
 export const updateInversionistacuentabancariaOnlyAliasAndCuentaBancariaEstado = async (req: Request, res: Response) => {
   log.debug(line(), "controller::updateInversionistacuentabancariaOnlyAliasAndCuentaBancariaEstado");
@@ -80,9 +75,8 @@ export const getInversionistacuentabancarias = async (req: Request, res: Respons
     async (tx) => {
       const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
       const cuentasbancarias = await inversionistacuentabancariaDao.getInversionistacuentabancarias(tx, filter_estado);
-      var cuentasbancariasJson = jsonUtils.sequelizeToJSON(cuentasbancarias);
 
-      return cuentasbancariasJson;
+      return cuentasbancarias;
     },
     { timeout: prismaFT.transactionTimeout },
   );
@@ -180,13 +174,7 @@ export const getInversionistacuentabancariaMaster = async (req: Request, res: Re
       cuentasbancariasMaster.cuentatipos = cuentatipos;
       cuentasbancariasMaster.cuentabancariaestados = cuentabancariaestados;
 
-      var cuentasbancariasMasterJSON = jsonUtils.sequelizeToJSON(cuentasbancariasMaster);
-      //jsonUtils.prettyPrint(cuentasbancariasMasterJSON);
-      var cuentasbancariasMasterObfuscated = cuentasbancariasMasterJSON;
-      //jsonUtils.prettyPrint(cuentasbancariasMasterObfuscated);
-      var cuentasbancariasMasterFiltered = jsonUtils.removeAttributesPrivates(cuentasbancariasMasterObfuscated);
-      //jsonUtils.prettyPrint(cuentasbancariasMaster);
-      return cuentasbancariasMasterFiltered;
+      return cuentasbancariasMaster;
     },
     { timeout: prismaFT.transactionTimeout },
   );

@@ -8,7 +8,6 @@ import * as provinciaDao from "#src/daos/provincia.prisma.Dao.js";
 import * as riesgoDao from "#src/daos/riesgo.prisma.Dao.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
-import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
 
@@ -82,10 +81,7 @@ export const getEmpresaMaster = async (req: Request, res: Response) => {
       empresasMaster.paises = paises;
       empresasMaster.distritos = distritos;
 
-      var empresasMasterJSON = jsonUtils.sequelizeToJSON(empresasMaster);
-      var empresasMasterObfuscated = empresasMasterJSON;
-      var empresasMasterFiltered = jsonUtils.removeAttributesPrivates(empresasMasterObfuscated);
-      return empresasMasterFiltered;
+      return empresasMaster;
     },
     { timeout: prismaFT.transactionTimeout },
   );

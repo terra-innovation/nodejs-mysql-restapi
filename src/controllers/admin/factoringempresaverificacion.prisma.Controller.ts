@@ -20,7 +20,6 @@ import { SERVICIO } from "#src/daos/servicio.prisma.Dao.js";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
-import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { line, log } from "#src/utils/logger.pino.js";
 
 import { v4 as uuidv4 } from "uuid";
@@ -292,12 +291,8 @@ export const getFactoringempresasByVerificacion = async (req: Request, res: Resp
       const filter_idservicio = [SERVICIO.FACTORING_EMPRESAS];
       const filter_idarchivotipos = [ARCHIVO_TIPO.FICHA_RUC, ARCHIVO_TIPO.REPORTE_TRIBUTARIO_PARA_TERCEROS, ARCHIVO_TIPO.VIGENCIA_DE_PODER_REPRESENTANTE_LEGAL, ARCHIVO_TIPO.ENCABEZADO_DEL_EECC_DE_LA_CUENTA_BANCARIA];
       const factoringempresas = await servicioempresaDao.getFactoringempresasByVerificacion(tx, filter_estadologico, filter_idservicio, filter_idarchivotipos);
-      var factoringempresasJson = jsonUtils.sequelizeToJSON(factoringempresas);
-      //log.info(line(),factoringempresaObfuscated);
 
-      //var factoringempresasFiltered = jsonUtils.removeAttributes(factoringempresasJson, ["score"]);
-      //factoringempresasFiltered = jsonUtils.removeAttributesPrivates(factoringempresasFiltered);
-      return factoringempresasJson;
+      return factoringempresas;
     },
     { timeout: prismaFT.transactionTimeout },
   );
@@ -315,13 +310,7 @@ export const getFactoringempresaverificacionMaster = async (req: Request, res: R
       let servicioempresaverificacionMaster: Record<string, any> = {};
       servicioempresaverificacionMaster.servicioempresaestados = servicioempresaestados;
 
-      let servicioempresaverificacionMasterJSON = jsonUtils.sequelizeToJSON(servicioempresaverificacionMaster);
-      //jsonUtils.prettyPrint(servicioempresaverificacionMasterJSON);
-      let servicioempresaverificacionMasterObfuscated = jsonUtils.ofuscarAtributosDefault(servicioempresaverificacionMasterJSON);
-      //jsonUtils.prettyPrint(servicioempresaverificacionMasterObfuscated);
-      let servicioempresaverificacionMasterFiltered = jsonUtils.removeAttributesPrivates(servicioempresaverificacionMasterObfuscated);
-      //jsonUtils.prettyPrint(servicioempresaverificacionMaster);
-      return servicioempresaverificacionMasterFiltered;
+      return servicioempresaverificacionMaster;
     },
     { timeout: prismaFT.transactionTimeout },
   );

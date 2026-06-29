@@ -1,40 +1,25 @@
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
+import * as emailService from "#root/src/services/email.Service.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
+import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
+import * as archivofactoringtransferenciacedenteDao from "#src/daos/archivofactoringtransferenciacedente.prisma.Dao.js";
+import * as empresacuentabancariaDao from "#src/daos/empresacuentabancaria.prisma.Dao.js";
+import * as factorcuentabancariaDao from "#src/daos/factorcuentabancaria.prisma.Dao.js";
+import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
 import * as factoringtransferenciacedenteDao from "#src/daos/factoringtransferenciacedente.prisma.Dao.js";
 import * as factoringtransferenciaestadoDao from "#src/daos/factoringtransferenciaestado.prisma.Dao.js";
 import * as factoringtransferenciatipoDao from "#src/daos/factoringtransferenciatipo.prisma.Dao.js";
-import * as factoringtipoDao from "#src/daos/factoringtipo.prisma.Dao.js";
-import * as factoringestrategiaDao from "#src/daos/factoringestrategia.prisma.Dao.js";
-import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
-import * as empresacuentabancariaDao from "#src/daos/empresacuentabancaria.prisma.Dao.js";
-import * as factorcuentabancariaDao from "#src/daos/factorcuentabancaria.prisma.Dao.js";
-import * as archivofactoringtransferenciacedenteDao from "#src/daos/archivofactoringtransferenciacedente.prisma.Dao.js";
 import * as monedaDao from "#src/daos/moneda.prisma.Dao.js";
 import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
-import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
-import { response } from "#src/utils/CustomResponseOk.js";
-import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
+import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { log, line } from "#src/utils/logger.pino.js";
-import * as emailService from "#root/src/services/email.Service.js";
+import { line, log } from "#src/utils/logger.pino.js";
+import { Request, Response } from "express";
 
-import type { factoring_propuesta } from "#root/generated/prisma/ft_factoring/client.js";
-import { Simulacion } from "#src/types/Simulacion.prisma.types.js";
-
-import * as luxon from "luxon";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-
-import { unlink } from "fs/promises";
-import path from "path"; // Para eliminar el archivo después de enviarlo
-import PDFGenerator from "#src/utils/document/PDFgenerator.js";
-import * as storageUtils from "#src/utils/storageUtils.js";
-import { sendFileAsync, setDownloadHeaders } from "#src/utils/httpUtils.js";
-import * as fs from "fs";
-import { Decimal } from "@prisma/client/runtime/library";
-import { connect } from "http2";
 
 export const sendCorreoFactoringtransferenciacedente = async (req: Request, res: Response) => {
   log.debug(line(), "controller::sendCorreoFactoringtransferenciacedente");
@@ -322,12 +307,8 @@ export const getFactoringtransferenciacedentesByFactoringid = async (req: Reques
       }
 
       const factoringtransferenciacedentes = await factoringtransferenciacedenteDao.getFactoringtransferenciacedentesByIdfactoring(tx, factoring.idfactoring, filter_estado);
-      var factoringtransferenciacedentesJson = jsonUtils.sequelizeToJSON(factoringtransferenciacedentes);
-      //log.info(line(),factoringtransferenciacedenteObfuscated);
 
-      //var factoringtransferenciacedentesFiltered = jsonUtils.removeAttributes(factoringtransferenciacedentesJson, ["score"]);
-      //factoringtransferenciacedentesFiltered = jsonUtils.removeAttributesPrivates(factoringtransferenciacedentesFiltered);
-      return factoringtransferenciacedentesJson;
+      return factoringtransferenciacedentes;
     },
     { timeout: prismaFT.transactionTimeout },
   );
@@ -371,13 +352,7 @@ export const getFactoringtransferenciacedenteMasterByFactoringid = async (req: R
       factoringtransferenciacedentesMaster.cedentecuentasbancarias = cedentecuentasbancarias;
       factoringtransferenciacedentesMaster.monedas = monedas;
 
-      var factoringtransferenciacedentesMasterJSON = jsonUtils.sequelizeToJSON(factoringtransferenciacedentesMaster);
-      //jsonUtils.prettyPrint(factoringtransferenciacedentesMasterJSON);
-      var factoringtransferenciacedentesMasterObfuscated = factoringtransferenciacedentesMasterJSON;
-      //jsonUtils.prettyPrint(factoringtransferenciacedentesMasterObfuscated);
-      var factoringtransferenciacedentesMasterFiltered = jsonUtils.removeAttributesPrivates(factoringtransferenciacedentesMasterObfuscated);
-      //jsonUtils.prettyPrint(factoringtransferenciacedentesMaster);
-      return factoringtransferenciacedentesMasterFiltered;
+      return factoringtransferenciacedentesMaster;
     },
     { timeout: prismaFT.transactionTimeout },
   );

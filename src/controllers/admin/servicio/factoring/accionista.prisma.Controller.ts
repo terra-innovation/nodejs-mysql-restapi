@@ -1,12 +1,11 @@
-import { Request, Response } from "express";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
 import * as accionistaDao from "#src/daos/accionista.prisma.Dao.js";
 import * as empresaDao from "#src/daos/empresa.prisma.Dao.js";
-import { response } from "#src/utils/CustomResponseOk.js";
-import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
-import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { log, line } from "#src/utils/logger.pino.js";
+import { response } from "#src/utils/CustomResponseOk.js";
+import { line, log } from "#src/utils/logger.pino.js";
+import { Request, Response } from "express";
 
 import * as yup from "yup";
 
@@ -33,9 +32,8 @@ export const getAccionistasByEmpresaid = async (req: Request, res: Response) => 
       }
 
       const accionistas = await accionistaDao.getAccionistasByIdempresa(tx, empresa.idempresa, filter_estado);
-      var accionistasJson = jsonUtils.sequelizeToJSON(accionistas);
 
-      return accionistasJson;
+      return accionistas;
     },
     { timeout: prismaFT.transactionTimeout },
   );
