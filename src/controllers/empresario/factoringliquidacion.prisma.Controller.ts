@@ -2,6 +2,7 @@ import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import * as factoringDao from "#src/daos/factoring.prisma.Dao.js";
 import * as factoringliquidacionDao from "#src/daos/factoringliquidacion.prisma.Dao.js";
+import * as factorcuentabancariaDao from "#src/daos/factorcuentabancaria.prisma.Dao.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
@@ -55,8 +56,11 @@ export const downloadFactoringliquidacionPDF = async (req: Request, res: Respons
 
       var factura_codigo = factoring?.factoring_facturas[0].factura.serie + "-" + factoring?.factoring_facturas[0].factura.numero_comprobante;
 
+      const IDFACFOR = 1;
+      const factorcuentasbancarias_for_pdf = await factorcuentabancariaDao.getFactorcuentabancariasByIdfactorIdmoneda(tx, IDFACFOR, factoring.idmoneda, [ESTADO.ACTIVO]);
+
       const pdfGenerator = new PDFGenerator(filePath);
-      await pdfGenerator.generateFactoringliquidacion(factoring, factoringliquidacion);
+      await pdfGenerator.generateFactoringliquidacion(factoring, factoringliquidacion, factorcuentasbancarias_for_pdf);
 
       let filenameDownload = "Factoring_Liquidacion_" + factoring.empresa_cedente.ruc + "_" + factura_codigo + "_" + formattedDate + ".pdf";
 

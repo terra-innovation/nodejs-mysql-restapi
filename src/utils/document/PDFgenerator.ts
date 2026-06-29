@@ -242,7 +242,7 @@ class PDFGenerator {
     });
   }
 
-  generateFactoringliquidacion(factoring: FactoringPDF, factoringliquidacion: FactoringliquidacionPDF) {
+  generateFactoringliquidacion(factoring: FactoringPDF, factoringliquidacion: FactoringliquidacionPDF, factorcuentasbancarias: any[] = []) {
     return new Promise((resolve, reject) => {
       const doc = new PDFDocument({ size: "A4", margin: 50 });
 
@@ -364,6 +364,26 @@ class PDFGenerator {
         prepareHeader: () => doc.font("Helvetica-Bold").fontSize(11),
         prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => doc.font("Helvetica").fontSize(10),
       });
+
+      // Pie de página: datos de pago si hay monto por cobrar
+      if (Number(factoringliquidacion.monto_total_por_cobrar || 0) > 0 && factorcuentasbancarias.length > 0) {
+        doc.moveDown(1.5);
+        doc.fontSize(8.5).font("Helvetica-Bold").text("Agradeceremos cancelar este documento en la(s) siguiente(s) cuenta(s) bancaria(s) a nombre de Finanza Tech S.A.C:", 50, undefined, { align: "left" });
+
+        factorcuentasbancarias.forEach((fcb) => {
+          const cb = fcb.cuenta_bancaria;
+          const bancNombre = cb?.banco?.nombre ?? "";
+          const cuentaTipo = cb?.cuenta_tipo?.nombre ?? "";
+          const monedaCod = cb?.moneda?.codigo ?? "";
+          const numero = cb?.numero ?? "";
+          const cci = cb?.cci ?? "";
+          const lineText = `${bancNombre}: ${cuentaTipo} ${monedaCod} ${numero}${cci ? ` (CCI ${cci})` : ""}`;
+          doc.fontSize(8.5).font("Helvetica").text(lineText, 50, undefined, { align: "left" });
+        });
+
+        doc.moveDown(0.5);
+        doc.fontSize(8.5).font("Helvetica").text("Sírvanse enviar sus constancias de pago al siguiente buzón: contacto@finanzatech.com", 50, undefined, { align: "left" });
+      }
 
       doc.end();
       stream.on("finish", () => resolve(this.filePath));

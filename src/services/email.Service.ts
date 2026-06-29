@@ -350,7 +350,7 @@ export const sendFactoringEmpresaServicioFactoringSolicitud = async (to, params)
   }
 };
 
-export const sendFactoringEmpresaServicioFactoringCedenteNotificacionLiquidacion = async (to, params) => {
+export const sendFactoringEmpresaServicioFactoringCedenteNotificacionLiquidacion = async (to, params, attachments?: any[]) => {
   try {
     const cabecera = {
       fecha_actual: df.formatDateForEmailLocale(new Date().toISOString()),
@@ -375,12 +375,16 @@ export const sendFactoringEmpresaServicioFactoringCedenteNotificacionLiquidacion
 
     const emailTemplate = await templateManager.templateFactoringEmpresaServicioFactoringCedenteNotificacionLiquidacion(params);
 
-    const mailOptions = {
+    const mailOptions: any = {
       to: to,
       subject: emailTemplate.subject,
       text: emailTemplate.text,
       html: emailTemplate.html,
     };
+
+    if (attachments) {
+      mailOptions.attachments = attachments;
+    }
 
     await emailSender.sendContactoFinanzatech(mailOptions);
   } catch (error) {

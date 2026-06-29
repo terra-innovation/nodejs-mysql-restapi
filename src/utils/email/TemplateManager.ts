@@ -56,7 +56,9 @@ class TemplaceManager {
    */
   async renderTemplate(templateName, params) {
     let template = await this.loadTemplate(templateName);
-    // 1. Procesar primero los bucles (foreach)
+    // 0. Procesar primero los condicionales (if/else)
+    template = this.processConditionals(template, params);
+    // 1. Procesar los bucles (foreach)
     template = this.processLoops(template, params);
 
     // 2. Aplanar el resto para variables simples (como ya lo haces)
@@ -112,6 +114,95 @@ class TemplaceManager {
         })
         .join("");
     });
+  }
+
+  /**
+   * Procesa bloques condicionales en la plantilla.
+   *
+   * Sintaxis soportada:
+   *   {{#if variable}}               → truthy/falsy
+   *   {{#if variable == "valor"}}     → igualdad estricta (string o número)
+   *   {{#if variable != "valor"}}     → desigualdad
+   *   {{#if variable > 0}}            → comparación numérica (>, <, >=, <=)
+   *   {{#else}}                       → bloque alternativo (opcional)
+   *   {{/if}}                         → cierre del bloque
+   *
+   * Ejemplo HTML:
+   *   {{#if factoringliquidacion.monto_total_por_cobrar > 0}}
+   *     <p>Hay un monto por cobrar</p>
+   *   {{#else}}
+   *     <p>No hay monto por cobrar</p>
+   *   {{/if}}
+   */
+  private processConditionals(template: string, params: any): string {
+    const flatParams = this.flattenObject(params);
+
+    // Regex: captura la condición, el bloque "then" y el bloque "else" opcional
+    const ifRegex = /{{\s*#if\s+(.+?)\s*}}([\s\S]*?)(?:{{\s*#else\s*}}([\s\S]*?))?{{\s*\/if\s*}}/g;
+
+    return template.replace(ifRegex, (match, condition, thenBlock, elseBlock = "") => {
+      const result = this.evaluateCondition(condition.trim(), flatParams);
+      return result ? thenBlock : elseBlock;
+    });
+  }
+
+  /**
+   * Evalúa una expresión de condición contra los params aplanados.
+   * Soporta: truthy, ==, !=, >, <, >=, <=
+   */
+  private evaluateCondition(condition: string, flatParams: Record<string, any>): boolean {
+    // Operadores soportados (orden importa: >= y <= antes que > y <)
+    const operatorRegex = /^(.+?)\s*(===|!==|==|!=|>=|<=|>|<)\s*(.+)$/;
+    const match = condition.match(operatorRegex);
+
+    if (match) {
+      const [, leftRaw, operator, rightRaw] = match;
+      const leftVal = this.resolveValue(leftRaw.trim(), flatParams);
+      const rightVal = this.resolveValue(rightRaw.trim(), flatParams);
+
+      // Intentar comparación numérica si ambos son números
+      const leftNum = Number(leftVal);
+      const rightNum = Number(rightVal);
+      const bothNumeric = !isNaN(leftNum) && !isNaN(rightNum);
+
+      switch (operator) {
+        case "==":
+        case "===":
+          return bothNumeric ? leftNum === rightNum : String(leftVal) === String(rightVal);
+        case "!=":
+        case "!==":
+          return bothNumeric ? leftNum !== rightNum : String(leftVal) !== String(rightVal);
+        case ">":
+          return bothNumeric && leftNum > rightNum;
+        case "<":
+          return bothNumeric && leftNum < rightNum;
+        case ">=":
+          return bothNumeric && leftNum >= rightNum;
+        case "<=":
+          return bothNumeric && leftNum <= rightNum;
+      }
+    }
+
+    // Sin operador: evalúa truthy/falsy del valor de la variable
+    const value = this.resolveValue(condition, flatParams);
+    return !!value && value !== "0" && value !== "false" && value !== "";
+  }
+
+  /**
+   * Resuelve el valor de un token: si existe en flatParams lo devuelve,
+   * si es un literal entre comillas devuelve el string, si no lo trata como literal.
+   */
+  private resolveValue(token: string, flatParams: Record<string, any>): any {
+    // Literal string entre comillas simples o dobles
+    if (/^["'].*["']$/.test(token)) {
+      return token.slice(1, -1);
+    }
+    // Clave en flatParams
+    if (token in flatParams) {
+      return flatParams[token];
+    }
+    // Literal numérico u otro
+    return token;
   }
 
   async renderSubject(subject, params) {
@@ -230,6 +321,8 @@ class TemplaceManager {
             .object({
               code: yup.string().required(),
               fecha_liquidacion: yup.string().required(),
+              monto_total_por_cobrar: yup.number().required(),
+              monto_total_a_favor: yup.number().required(),
             })
             .required(),
           factoringliquidacion_formateado: yup

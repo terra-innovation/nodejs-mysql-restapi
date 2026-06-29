@@ -9,6 +9,7 @@ import * as factoringliquidacionfinancieroDao from "#src/daos/factoringliquidaci
 import * as financieroconceptoDao from "#src/daos/financieroconcepto.prisma.Dao.js";
 import * as financierotipoDao from "#src/daos/financierotipo.prisma.Dao.js";
 import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
+import * as factorcuentabancariaDao from "#src/daos/factorcuentabancaria.prisma.Dao.js";
 import { simulateFactoringLogicV4 } from "#src/logics/factoring.prisma.Logic.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
@@ -52,6 +53,11 @@ export const sendCorreoFactoringliquidacion = async (req: Request, res: Response
 
       // Enviamos correo electrónico
       const factoring_for_email = await factoringDao.getFactoringByIdfactoring(tx, factoringliquidacionExisted.idfactoring);
+      if (!factoring_for_email) {
+        log.warn(line(), "Factoring no existe: [" + factoringliquidacionExisted.idfactoring + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
+
       const factoringliquidacion_for_email = await factoringliquidacionDao.getFactoringliquidacionByIdfactoringliquidacion(tx, factoringliquidacionExisted.idfactoringliquidacion);
       const usuario_for_email = await usuarioDao.getUsuarioByEmail(tx, factoring_for_email.contacto_cedente.email);
 
@@ -62,7 +68,39 @@ export const sendCorreoFactoringliquidacion = async (req: Request, res: Response
         factoringliquidacion: factoringliquidacionObfuscated_for_email,
         usuario: usuario_for_email,
       };
-      await emailService.sendFactoringEmpresaServicioFactoringCedenteNotificacionLiquidacion(usuario_for_email.email, paramsEmail);
+
+      // Generar el PDF
+      const formattedDate = luxon.DateTime.now().toFormat("yyyyMMdd_HHmm");
+      const filename = formattedDate + "_factoring_liquidacion_" + factoring_for_email.empresa_cedente.ruc + "_" + factoring_for_email.code + "_" + factoringliquidacionExisted.code + "_email" + ".pdf";
+      const dirPath = path.join(storageUtils.pathApp(), storageUtils.STORAGE_PATH_PROCESAR, storageUtils.pathDate(new Date()));
+      const filePath = path.join(dirPath, filename);
+      if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true });
+      }
+
+      const IDFACFOR = 1;
+      const factorcuentasbancarias_for_pdf = await factorcuentabancariaDao.getFactorcuentabancariasByIdfactorIdmoneda(tx, IDFACFOR, factoring_for_email.idmoneda, [ESTADO.ACTIVO]);
+
+      let pdfGenerated = false;
+      try {
+        const pdfGenerator = new PDFGenerator(filePath);
+        await pdfGenerator.generateFactoringliquidacion(factoring_for_email, factoringliquidacionExisted, factorcuentasbancarias_for_pdf);
+        pdfGenerated = true;
+
+        const attachmentName = "Factoring_Liquidacion_" + factoring_for_email.empresa_cedente.ruc + "_" + factoring_for_email.code + "_" + factoringliquidacionExisted.code + ".pdf";
+        const attachments = [
+          {
+            filename: attachmentName,
+            path: filePath,
+          },
+        ];
+
+        await emailService.sendFactoringEmpresaServicioFactoringCedenteNotificacionLiquidacion(usuario_for_email.email, paramsEmail, attachments);
+      } finally {
+        if (pdfGenerated || fs.existsSync(filePath)) {
+          await unlink(filePath);
+        }
+      }
 
       return {};
     },
@@ -713,8 +751,11 @@ export const downloadFactoringliquidacionPDF = async (req: Request, res: Respons
         fs.mkdirSync(dirPath, { recursive: true });
       }
 
+      const IDFACFOR = 1;
+      const factorcuentasbancarias_for_pdf = await factorcuentabancariaDao.getFactorcuentabancariasByIdfactorIdmoneda(tx, IDFACFOR, factoring.idmoneda, [ESTADO.ACTIVO]);
+
       const pdfGenerator = new PDFGenerator(filePath);
-      await pdfGenerator.generateFactoringliquidacion(factoring, factoringliquidacion);
+      await pdfGenerator.generateFactoringliquidacion(factoring, factoringliquidacion, factorcuentasbancarias_for_pdf);
 
       let filenameDownload = "Factoring_Liquidacion_" + factoring.empresa_cedente.ruc + "_" + factoringliquidacion.code + "_" + formattedDate + ".pdf";
 

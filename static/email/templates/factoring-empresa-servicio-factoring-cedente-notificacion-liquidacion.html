@@ -177,7 +177,7 @@
                                               padding-bottom: 20px;
                                             "
                                           >
-                                            Le informamos que la liquidación correspondiente a su operación de factoring ya se encuentra disponible para su consulta y descarga en nuestra plataforma.
+                                            Le informamos que la liquidación correspondiente a su operación de factoring ya se encuentra disponible para su consulta y descarga en nuestra plataforma. Asimismo, para su mayor comodidad, le adjuntamos el documento de la liquidación en este correo electrónico.
                                           </td>
                                         </tr>
                                       </tbody>
@@ -424,13 +424,31 @@
                                               padding-bottom: 20px;
                                             "
                                           >
-                                            Para revisar el documento, siga estos pasos en nuestro portal web:
-
+                                            Para revisar el documento, siga estos pasos en nuestro portal web: {{factoringliquidacion.monto_total_por_cobrar}}
                                             <ul>
                                               <li>Ingrese a su cuenta.</li>
                                               <li>Vaya a <b>Operaciones</b> y seleccione la operación de factoring.</li>
                                               <li>Haga clic en <b>Detalle</b> y diríjase a la sección <b>Liquidación</b>.</li>
                                             </ul>
+                                          </td>
+                                        </tr>
+                                        {{#if factoringliquidacion.monto_total_por_cobrar > 0}}
+                                        <tr>
+                                          <td
+                                            class="text pb20"
+                                            style="
+                                              color: #222222;
+                                              font-family:
+                                                Noto Sans,
+                                                Arial,
+                                                sans-serif;
+                                              font-size: 16px;
+                                              line-height: 26px;
+                                              text-align: left;
+                                              padding-bottom: 20px;
+                                            "
+                                          >
+                                            <b>Información importante sobre el pago:</b> Le recordamos que el pago del monto total a cargo del Cedente debe realizarse exclusivamente en la cuenta bancaria indicada en el mismo documento de liquidación adjunto.
                                           </td>
                                         </tr>
                                         <tr>
@@ -451,7 +469,42 @@
                                             Quedamos atentos a cualquier consulta que pueda tener.
                                           </td>
                                         </tr>
-
+                                        {{#else}}
+                                        <tr>
+                                          <td
+                                            class="text pb20"
+                                            style="
+                                              color: #222222;
+                                              font-family:
+                                                Noto Sans,
+                                                Arial,
+                                                sans-serif;
+                                              font-size: 16px;
+                                              line-height: 26px;
+                                              text-align: left;
+                                              padding-bottom: 20px;
+                                            "
+                                          >
+                                            Agradecemos su confianza y quedamos a su entera disposición para cualquier consulta adicional o para asistirles con la financiación de nuevas facturas.
+                                          </td>
+                                        </tr>
+                                        {{/if}}
+                                        <tr>
+                                          <td
+                                            class="text pb20"
+                                            style="
+                                              color: #222222;
+                                              font-family:
+                                                Noto Sans,
+                                                Arial,
+                                                sans-serif;
+                                              font-size: 16px;
+                                              line-height: 26px;
+                                              text-align: left;
+                                              padding-bottom: 20px;
+                                            "
+                                          ></td>
+                                        </tr>
                                         <tr>
                                           <td
                                             class="text pb20"
