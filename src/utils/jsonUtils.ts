@@ -137,15 +137,6 @@ export function filterFields(json, fields) {
   return json;
 }
 
-// Función para ofuscar el correo electrónico
-export function sequelizeToJSON(objeto) {
-  // Copia profunda del objeto
-  const objetoJSON = JSON.parse(JSON.stringify(objeto));
-
-  // Devuelve el objeto JSON
-  return objetoJSON;
-}
-
 // Imprime json en consola de manera legible y a colores
 export const prettyPrint = (obj) => {
   log.info(line(), util.inspect(obj, { depth: null, colors: true }));
