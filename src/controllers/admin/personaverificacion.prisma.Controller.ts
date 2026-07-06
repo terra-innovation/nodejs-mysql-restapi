@@ -1,6 +1,8 @@
-import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
+import type { Prisma, persona_verificacion } from "#root/generated/prisma/ft_factoring/client.js";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
+import * as archivoDao from "#src/daos/archivo.prisma.Dao.js";
+import * as archivopersonaverificacionDao from "#src/daos/archivopersonaverificacion.prisma.Dao.js";
 import * as personaDao from "#src/daos/persona.prisma.Dao.js";
 import * as personaverificacionDao from "#src/daos/personaverificacion.prisma.Dao.js";
 import * as personaverificacionestadoDao from "#src/daos/personaverificacionestado.prisma.Dao.js";
@@ -19,18 +21,47 @@ import * as yup from "yup";
 
 import * as df from "#src/utils/dateUtils.js";
 
-import type { persona_verificacion } from "#root/generated/prisma/ft_factoring/client.js";
+export const getPersonaverificacionsByPersonaid = async (req: Request, res: Response) => {
+  log.debug(line(), "controller::getPersonaverificacionsByPersonaid");
+  //log.info(line(),req.session_user.usuario.idusuario);
+  const { personaid } = req.params;
+  const personaverificacionSchema = yup
+    .object()
+    .shape({
+      personaid: yup.string().trim().required().min(36).max(36),
+    })
+    .required();
+  var personaverificacionValidated = personaverificacionSchema.validateSync({ personaid, ...req.body }, { abortEarly: false, stripUnknown: true });
+  log.debug(line(), "personaverificacionValidated:", personaverificacionValidated);
 
+  const personaverificacionsJson = await prismaFT.client.$transaction(
+    async (tx) => {
+      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
+
+      var persona = await personaDao.getPersonaByPersonaid(tx, personaverificacionValidated.personaid);
+      if (!persona) {
+        log.warn(line(), "Persona no existe: [" + personaverificacionValidated.personaid + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
+
+      const personaverificacions = await personaverificacionDao.getPersonaverificacionsByIdpersona(tx, persona.idpersona, filter_estado);
+
+      return personaverificacions;
+    },
+    { timeout: prismaFT.transactionTimeout },
+  );
+  response(res, 201, personaverificacionsJson);
+};
 export const activatePersonaverificacion = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activatePersonaverificacion");
-  const { id } = req.params;
+  const { personaverificacionid } = req.params;
   const personaverificacionSchema = yup
     .object()
     .shape({
       personaverificacionid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const personaverificacionValidated = personaverificacionSchema.validateSync({ personaverificacionid: id }, { abortEarly: false, stripUnknown: true });
+  const personaverificacionValidated = personaverificacionSchema.validateSync({ personaverificacionid: personaverificacionid }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "personaverificacionValidated:", personaverificacionValidated);
 
   const personaverificacionActivated = await prismaFT.client.$transaction(
@@ -54,14 +85,14 @@ export const activatePersonaverificacion = async (req: Request, res: Response) =
 
 export const deletePersonaverificacion = async (req: Request, res: Response) => {
   log.debug(line(), "controller::deletePersonaverificacion");
-  const { id } = req.params;
+  const { personaverificacionid } = req.params;
   const personaverificacionSchema = yup
     .object()
     .shape({
       personaverificacionid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const personaverificacionValidated = personaverificacionSchema.validateSync({ personaverificacionid: id }, { abortEarly: false, stripUnknown: true });
+  const personaverificacionValidated = personaverificacionSchema.validateSync({ personaverificacionid: personaverificacionid }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "personaverificacionValidated:", personaverificacionValidated);
 
   const personaverificacionDeleted = await prismaFT.client.$transaction(
@@ -98,7 +129,7 @@ export const getPersonaverificacionMaster = async (req: Request, res: Response) 
 
 export const updatePersonaverificacion = async (req: Request, res: Response) => {
   log.debug(line(), "controller::updatePersonaverificacion");
-  const { id } = req.params;
+  const { personaverificacionid } = req.params;
   let NAME_REGX = /^[a-zA-Z ]+$/;
   const personaverificacionUpdateSchema = yup
     .object()
@@ -107,9 +138,10 @@ export const updatePersonaverificacion = async (req: Request, res: Response) => 
       personaverificacionestadoid: yup.string().min(36).max(36).required(),
       comentariousuario: yup.string().trim().max(20000),
       comentariointerno: yup.string().trim().max(20000).required(),
+      archivos: yup.array().of(yup.string().min(36).max(36)),
     })
     .required();
-  const personaverificacionValidated = personaverificacionUpdateSchema.validateSync({ personaverificacionid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
+  const personaverificacionValidated = personaverificacionUpdateSchema.validateSync({ personaverificacionid: personaverificacionid, ...req.body }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "personaverificacionValidated:", personaverificacionValidated);
 
   const resultado = await prismaFT.client.$transaction(
@@ -126,6 +158,18 @@ export const updatePersonaverificacion = async (req: Request, res: Response) => 
         throw new ClientError("Datos no válidos", 404);
       }
 
+      let archivos = [];
+      if (personaverificacionValidated.archivos) {
+        for (const archivoid of personaverificacionValidated.archivos) {
+          var archivo = await archivoDao.getArchivoByArchivoid(tx, archivoid);
+          if (!archivo) {
+            log.warn(line(), "Archivo no existe: [" + archivoid + "]");
+            throw new ClientError("Datos no válidos", 404);
+          }
+          archivos.push(archivo);
+        }
+      }
+
       const personaverificacionToUpdate: Prisma.persona_verificacionUpdateInput = {
         persona_verificacion_estado: { connect: { idpersonaverificacionestado: personaverificacionestado.idpersonaverificacionestado } },
         comentariousuario: personaverificacionValidated.comentariousuario,
@@ -134,13 +178,23 @@ export const updatePersonaverificacion = async (req: Request, res: Response) => 
         fechamod: new Date(),
       };
 
-      const result = await personaverificacionDao.updatePersonaverificacion(tx, personaverificacion.personaverificacionid, personaverificacionToUpdate);
-      if (result[0] === 0) {
-        throw new ClientError("Personaverificacion no existe", 404);
-      }
-      const personaverificacionUpdated = await personaverificacionDao.getPersonaverificacionByPersonaverificacionid(tx, id);
-      if (!personaverificacionUpdated) {
-        throw new ClientError("Personaverificacion no existe", 404);
+      const personaverificacionUpdated = await personaverificacionDao.updatePersonaverificacion(tx, personaverificacion.personaverificacionid, personaverificacionToUpdate);
+      log.debug(line(), "personaverificacionUpdated:", personaverificacionUpdated);
+
+      for (const archivo of archivos) {
+        const archivofactoringhistorialestadoToCreate: Prisma.archivo_persona_verificacionCreateInput = {
+          archivo: { connect: { idarchivo: archivo.idarchivo } },
+          persona_verificacion: { connect: { idpersonaverificacion: personaverificacionUpdated.idpersonaverificacion } },
+          idusuariocrea: req.session_user.usuario.idusuario ?? 1,
+          fechacrea: new Date(),
+          idusuariomod: req.session_user.usuario.idusuario ?? 1,
+          fechamod: new Date(),
+          estado: 1,
+        };
+
+        const archivopersonaverificacionCreated = await archivopersonaverificacionDao.insertArchivopersonaverificacion(tx, archivofactoringhistorialestadoToCreate);
+
+        log.debug(line(), "archivopersonaverificacionCreated:", archivopersonaverificacionCreated);
       }
       return {};
     },
@@ -177,6 +231,7 @@ export const createPersonaverificacion = async (req: Request, res: Response) => 
       personaverificacionestadoid: yup.string().min(36).max(36).required(),
       comentariousuario: yup.string().trim().max(20000),
       comentariointerno: yup.string().trim().max(20000).required(),
+      archivos: yup.array().of(yup.string().min(36).max(36)),
     })
     .required();
   var personaverificacionValidated = personaverificacionCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
@@ -193,6 +248,18 @@ export const createPersonaverificacion = async (req: Request, res: Response) => 
       if (!personaverificacionestado) {
         log.warn(line(), "Persona verificación estado no existe: [" + personaverificacionValidated.personaverificacionestadoid + "]");
         throw new ClientError("Datos no válidos", 404);
+      }
+
+      let archivos = [];
+      if (personaverificacionValidated.archivos) {
+        for (const archivoid of personaverificacionValidated.archivos) {
+          var archivo = await archivoDao.getArchivoByArchivoid(tx, archivoid);
+          if (!archivo) {
+            log.warn(line(), "Archivo no existe: [" + archivoid + "]");
+            throw new ClientError("Datos no válidos", 404);
+          }
+          archivos.push(archivo);
+        }
       }
 
       const personaverificacionToCreate: Prisma.persona_verificacionCreateInput = {
@@ -214,6 +281,7 @@ export const createPersonaverificacion = async (req: Request, res: Response) => 
         comentariointerno: personaverificacionValidated.comentariointerno,
         comentariousuario: personaverificacionValidated.comentariousuario,
         personaverificacionid: uuidv4(),
+        code: uuidv4().split("-")[0],
         idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
         idusuariomod: req.session_user.usuario.idusuario ?? 1,
@@ -223,6 +291,22 @@ export const createPersonaverificacion = async (req: Request, res: Response) => 
 
       const personaverificacionCreated = await personaverificacionDao.insertPersonaverificacion(tx, personaverificacionToCreate);
       log.debug(line(), "personaverificacionCreated", personaverificacionCreated);
+
+      for (const archivo of archivos) {
+        const archivofactoringhistorialestadoToCreate: Prisma.archivo_persona_verificacionCreateInput = {
+          archivo: { connect: { idarchivo: archivo.idarchivo } },
+          persona_verificacion: { connect: { idpersonaverificacion: personaverificacionCreated.idpersonaverificacion } },
+          idusuariocrea: req.session_user.usuario.idusuario ?? 1,
+          fechacrea: new Date(),
+          idusuariomod: req.session_user.usuario.idusuario ?? 1,
+          fechamod: new Date(),
+          estado: 1,
+        };
+
+        const archivopersonaverificacionCreated = await archivopersonaverificacionDao.insertArchivopersonaverificacion(tx, archivofactoringhistorialestadoToCreate);
+
+        log.debug(line(), "archivopersonaverificacionCreated:", archivopersonaverificacionCreated);
+      }
 
       const personaToUpdate: Prisma.personaUpdateInput = {
         persona_verificacion_estado: { connect: { idpersonaverificacionestado: personaverificacionestado.idpersonaverificacionestado } },

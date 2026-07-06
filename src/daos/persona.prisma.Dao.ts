@@ -1,9 +1,9 @@
+import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { TxClient } from "#src/types/Prisma.types.js";
-import type { Prisma, persona } from "#root/generated/prisma/ft_factoring/client.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 
-import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
+import { line, log } from "#src/utils/logger.pino.js";
 
 export const getPersonasByVerificacion = async (tx: TxClient, estado: number[], idarchivotipo: number[]) => {
   try {
@@ -30,6 +30,16 @@ export const getPersonasByVerificacion = async (tx: TxClient, estado: number[], 
           include: {
             persona_verificacion_estado: true,
             usuario_verifica: true,
+            archivo_persona_verificaciones: {
+              include: {
+                archivo: {
+                  include: {
+                    archivo_estado: true,
+                    archivo_tipo: true,
+                  },
+                },
+              },
+            },
           },
         },
         archivo_personas: {

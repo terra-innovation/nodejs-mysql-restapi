@@ -1,10 +1,42 @@
+import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { TxClient } from "#src/types/Prisma.types.js";
-import type { Prisma, persona_verificacion } from "#root/generated/prisma/ft_factoring/client.js";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
 
-import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
+import { line, log } from "#src/utils/logger.pino.js";
+
+export const getPersonaverificacionsByIdpersona = async (tx: TxClient, idpersona: number, estados: number[]) => {
+  try {
+    const personaverificacions = await tx.persona_verificacion.findMany({
+      include: {
+        persona_verificacion_estado: true,
+        usuario_verifica: true,
+        archivo_persona_verificaciones: {
+          include: {
+            archivo: {
+              include: {
+                archivo_estado: true,
+                archivo_tipo: true,
+              },
+            },
+          },
+        },
+      },
+      where: {
+        idpersona: idpersona,
+        estado: {
+          in: estados,
+        },
+      },
+    });
+
+    return personaverificacions;
+  } catch (error) {
+    log.error(line(), "", error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
 
 export const getPersonaverificacions = async (tx: TxClient, estados: number[]) => {
   try {
