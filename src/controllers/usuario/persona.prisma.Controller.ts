@@ -201,6 +201,7 @@ export const verifyPersona = async (req: Request, res: Response) => {
         persona_verificacion_estado: { connect: { idpersonaverificacionestado: personaverificacionestado.idpersonaverificacionestado } },
         usuario_verifica: { connect: { idusuario: req.session_user?.usuario?.idusuario } },
         personaverificacionid: uuidv4(),
+        code: uuidv4().split("-")[0],
         comentariousuario: "",
         comentariointerno: "",
         idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
