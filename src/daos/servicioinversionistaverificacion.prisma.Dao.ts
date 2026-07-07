@@ -1,10 +1,42 @@
+import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { TxClient } from "#src/types/Prisma.types.js";
-import type { Prisma, servicio_inversionista_verificacion } from "#root/generated/prisma/ft_factoring/client.js";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
 
-import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
+import { line, log } from "#src/utils/logger.pino.js";
+
+export const getServicioinversionistaverificacionsByIdservicioinversionista = async (tx: TxClient, idservicioinversionista: number, estados: number[]) => {
+  try {
+    const servicioinversionistaverificacions = await tx.servicio_inversionista_verificacion.findMany({
+      include: {
+        servicio_inversionista_estado: true,
+        usuario_verifica: true,
+        archivo_servicio_inversionista_verificaciones: {
+          include: {
+            archivo: {
+              include: {
+                archivo_estado: true,
+                archivo_tipo: true,
+              },
+            },
+          },
+        },
+      },
+      where: {
+        idservicioinversionista: idservicioinversionista,
+        estado: {
+          in: estados,
+        },
+      },
+    });
+
+    return servicioinversionistaverificacions;
+  } catch (error) {
+    log.error(line(), "", error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
 
 export const getServicioinversionistaverificacions = async (tx: TxClient, estados: number[]) => {
   try {
@@ -99,6 +131,21 @@ export const deleteServicioinversionistaverificacion = async (tx: TxClient, serv
   try {
     const result = await tx.servicio_inversionista_verificacion.update({
       data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
+      where: {
+        servicioinversionistaverificacionid: servicioinversionistaverificacionid,
+      },
+    });
+    return result;
+  } catch (error) {
+    log.error(line(), "", error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
+export const activateServicioinversionistaverificacion = async (tx: TxClient, servicioinversionistaverificacionid: string, idusuariomod: number) => {
+  try {
+    const result = await tx.servicio_inversionista_verificacion.update({
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ACTIVO },
       where: {
         servicioinversionistaverificacionid: servicioinversionistaverificacionid,
       },

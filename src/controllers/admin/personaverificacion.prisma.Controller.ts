@@ -52,6 +52,7 @@ export const getPersonaverificacionsByPersonaid = async (req: Request, res: Resp
   );
   response(res, 201, personaverificacionsJson);
 };
+
 export const activatePersonaverificacion = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activatePersonaverificacion");
   const { personaverificacionid } = req.params;
