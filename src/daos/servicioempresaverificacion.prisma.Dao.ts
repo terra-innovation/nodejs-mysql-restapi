@@ -1,10 +1,52 @@
+import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { TxClient } from "#src/types/Prisma.types.js";
-import type { Prisma, servicio_empresa_verificacion } from "#root/generated/prisma/ft_factoring/client.js";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
 
-import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
+import { line, log } from "#src/utils/logger.pino.js";
+
+export const getServicioempresaverificacionsByIdservicioempresa = async (tx: TxClient, idservicioempresa: number, estados: number[]) => {
+  try {
+    const servicioempresaverificacions = await tx.servicio_empresa_verificacion.findMany({
+      include: {
+        servicio_empresa_estado: true,
+        usuario_verifica: true,
+        archivo_servicio_empresa_verificaciones: {
+          include: {
+            archivo: {
+              include: {
+                archivo_estado: true,
+                archivo_tipo: true,
+              },
+            },
+          },
+        },
+        servicio_empresa: {
+          include: {
+            empresa: {
+              include: {
+                colaboradores: true,
+              },
+            },
+            servicio: true,
+          },
+        },
+      },
+      where: {
+        idservicioempresa: idservicioempresa,
+        estado: {
+          in: estados,
+        },
+      },
+    });
+
+    return servicioempresaverificacions;
+  } catch (error) {
+    log.error(line(), "", error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
 
 export const getServicioempresaverificacions = async (tx: TxClient, estados: number[]) => {
   try {
@@ -99,6 +141,21 @@ export const deleteServicioempresaverificacion = async (tx: TxClient, servicioem
   try {
     const result = await tx.servicio_empresa_verificacion.update({
       data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ELIMINADO },
+      where: {
+        servicioempresaverificacionid: servicioempresaverificacionid,
+      },
+    });
+    return result;
+  } catch (error) {
+    log.error(line(), "", error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
+export const activateServicioempresaverificacion = async (tx: TxClient, servicioempresaverificacionid: string, idusuariomod: number) => {
+  try {
+    const result = await tx.servicio_empresa_verificacion.update({
+      data: { idusuariomod: idusuariomod, fechamod: new Date(), estado: ESTADO.ACTIVO },
       where: {
         servicioempresaverificacionid: servicioempresaverificacionid,
       },

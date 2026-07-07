@@ -57,63 +57,6 @@ export const getServicioinversionistaverificacionsByServicioinversionistaid = as
   response(res, 201, servicioinversionistaverificacionsJson);
 };
 
-export const activateFactoringinversionistaverificacion = async (req: Request, res: Response) => {
-  log.debug(line(), "controller::activateServicioinversionistaverificacion");
-  const { servicioinversionistaverificacionid } = req.params;
-  const servicioinversionistaverificacionSchema = yup
-    .object()
-    .shape({
-      servicioinversionistaverificacionid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
-  const servicioinversionistaverificacionValidated = servicioinversionistaverificacionSchema.validateSync({ servicioinversionistaverificacionid: servicioinversionistaverificacionid }, { abortEarly: false, stripUnknown: true });
-  log.debug(line(), "servicioinversionistaverificacionValidated:", servicioinversionistaverificacionValidated);
-
-  const servicioinversionistaverificacionActivated = await prismaFT.client.$transaction(
-    async (tx) => {
-      var camposAuditoria: Partial<servicio_inversionista_verificacion> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
-      camposAuditoria.fechamod = new Date();
-      camposAuditoria.estado = 1;
-
-      const servicioinversionistaverificacionActivated = await servicioinversionistaverificacionDao.activateServicioinversionistaverificacion(tx, servicioinversionistaverificacionValidated.servicioinversionistaverificacionid, req.session_user.usuario.idusuario);
-      if (servicioinversionistaverificacionActivated[0] === 0) {
-        throw new ClientError("Servicioinversionistaverificacion no existe", 404);
-      }
-      log.debug(line(), "servicioinversionistaverificacionActivated:", servicioinversionistaverificacionActivated);
-      return servicioinversionistaverificacionActivated;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
-  response(res, 204, servicioinversionistaverificacionActivated);
-};
-
-export const deleteFactoringinversionistaverificacion = async (req: Request, res: Response) => {
-  log.debug(line(), "controller::deleteServicioinversionistaverificacion");
-  const { servicioinversionistaverificacionid } = req.params;
-  const servicioinversionistaverificacionSchema = yup
-    .object()
-    .shape({
-      servicioinversionistaverificacionid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
-  const servicioinversionistaverificacionValidated = servicioinversionistaverificacionSchema.validateSync({ servicioinversionistaverificacionid: servicioinversionistaverificacionid }, { abortEarly: false, stripUnknown: true });
-  log.debug(line(), "servicioinversionistaverificacionValidated:", servicioinversionistaverificacionValidated);
-
-  const servicioinversionistaverificacionDeleted = await prismaFT.client.$transaction(
-    async (tx) => {
-      const servicioinversionistaverificacionDeleted = await servicioinversionistaverificacionDao.deleteServicioinversionistaverificacion(tx, servicioinversionistaverificacionValidated.servicioinversionistaverificacionid, req.session_user.usuario.idusuario);
-      if (servicioinversionistaverificacionDeleted[0] === 0) {
-        throw new ClientError("Servicioinversionistaverificacion no existe", 404);
-      }
-      log.debug(line(), "servicioinversionistaverificacionDeleted:", servicioinversionistaverificacionDeleted);
-      return servicioinversionistaverificacionDeleted;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
-  response(res, 204, servicioinversionistaverificacionDeleted);
-};
-
 export const updateFactoringinversionistaverificacion = async (req: Request, res: Response) => {
   log.debug(line(), "controller::updateFactoringinversionistaverificacion");
   const { servicioinversionistaverificacionid } = req.params;
@@ -501,4 +444,61 @@ export const getFactoringinversionistaverificacionMaster = async (req: Request, 
     { timeout: prismaFT.transactionTimeout },
   );
   response(res, 201, servicioinversionistaverificacionMaster);
+};
+
+export const activateFactoringinversionistaverificacion = async (req: Request, res: Response) => {
+  log.debug(line(), "controller::activateServicioinversionistaverificacion");
+  const { servicioinversionistaverificacionid } = req.params;
+  const servicioinversionistaverificacionSchema = yup
+    .object()
+    .shape({
+      servicioinversionistaverificacionid: yup.string().trim().required().min(36).max(36),
+    })
+    .required();
+  const servicioinversionistaverificacionValidated = servicioinversionistaverificacionSchema.validateSync({ servicioinversionistaverificacionid: servicioinversionistaverificacionid }, { abortEarly: false, stripUnknown: true });
+  log.debug(line(), "servicioinversionistaverificacionValidated:", servicioinversionistaverificacionValidated);
+
+  const servicioinversionistaverificacionActivated = await prismaFT.client.$transaction(
+    async (tx) => {
+      var camposAuditoria: Partial<servicio_inversionista_verificacion> = {};
+      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
+      camposAuditoria.fechamod = new Date();
+      camposAuditoria.estado = 1;
+
+      const servicioinversionistaverificacionActivated = await servicioinversionistaverificacionDao.activateServicioinversionistaverificacion(tx, servicioinversionistaverificacionValidated.servicioinversionistaverificacionid, req.session_user.usuario.idusuario);
+      if (servicioinversionistaverificacionActivated[0] === 0) {
+        throw new ClientError("Servicioinversionistaverificacion no existe", 404);
+      }
+      log.debug(line(), "servicioinversionistaverificacionActivated:", servicioinversionistaverificacionActivated);
+      return servicioinversionistaverificacionActivated;
+    },
+    { timeout: prismaFT.transactionTimeout },
+  );
+  response(res, 204, servicioinversionistaverificacionActivated);
+};
+
+export const deleteFactoringinversionistaverificacion = async (req: Request, res: Response) => {
+  log.debug(line(), "controller::deleteServicioinversionistaverificacion");
+  const { servicioinversionistaverificacionid } = req.params;
+  const servicioinversionistaverificacionSchema = yup
+    .object()
+    .shape({
+      servicioinversionistaverificacionid: yup.string().trim().required().min(36).max(36),
+    })
+    .required();
+  const servicioinversionistaverificacionValidated = servicioinversionistaverificacionSchema.validateSync({ servicioinversionistaverificacionid: servicioinversionistaverificacionid }, { abortEarly: false, stripUnknown: true });
+  log.debug(line(), "servicioinversionistaverificacionValidated:", servicioinversionistaverificacionValidated);
+
+  const servicioinversionistaverificacionDeleted = await prismaFT.client.$transaction(
+    async (tx) => {
+      const servicioinversionistaverificacionDeleted = await servicioinversionistaverificacionDao.deleteServicioinversionistaverificacion(tx, servicioinversionistaverificacionValidated.servicioinversionistaverificacionid, req.session_user.usuario.idusuario);
+      if (servicioinversionistaverificacionDeleted[0] === 0) {
+        throw new ClientError("Servicioinversionistaverificacion no existe", 404);
+      }
+      log.debug(line(), "servicioinversionistaverificacionDeleted:", servicioinversionistaverificacionDeleted);
+      return servicioinversionistaverificacionDeleted;
+    },
+    { timeout: prismaFT.transactionTimeout },
+  );
+  response(res, 204, servicioinversionistaverificacionDeleted);
 };

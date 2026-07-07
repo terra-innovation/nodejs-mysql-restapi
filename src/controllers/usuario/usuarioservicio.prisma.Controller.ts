@@ -691,6 +691,7 @@ export const suscribirUsuarioServicioFactoringEmpresa = async (req: Request, res
         comentariointerno: "",
         comentariousuario: "",
         servicioempresaverificacionid: uuidv4(),
+        code: uuidv4().split("-")[0],
         idusuariocrea: req.session_user.usuario.idusuario ?? 1,
         fechacrea: new Date(),
         idusuariomod: req.session_user.usuario.idusuario ?? 1,

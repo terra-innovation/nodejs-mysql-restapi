@@ -1,16 +1,22 @@
-import { Router } from "express";
-import { catchedAsync } from "#src/utils/catchedAsync.js";
-import * as factoringempresaverificacionController from "#src/controllers/admin/factoringempresaverificacion.prisma.Controller.js";
 import { isAuth, isRole } from "#root/src/middlewares/authMiddleware.js";
+import * as factoringempresaverificacionController from "#src/controllers/admin/factoringempresaverificacion.prisma.Controller.js";
+import { catchedAsync } from "#src/utils/catchedAsync.js";
+import { Router } from "express";
 
 const router = Router();
 
+export const endpoints = {
+  key: "/admin/servicio/factoring/empresa/verificacion",
+};
+
 //Usuario
-router.get("/admin/servicio/factoring/empresa/verificacion/listar", isAuth, isRole([2]), catchedAsync(factoringempresaverificacionController.getFactoringempresasByVerificacion));
-router.post("/admin/servicio/factoring/empresa/verificacion/crear", isAuth, isRole([2]), catchedAsync(factoringempresaverificacionController.createFactoringempresaverificacion));
-//router.patch("/admin/personaverificacion/actualizar/:id", isAuth, isRole([2]), catchedAsync(personaverificacionController.updatePersonaverificacion));
-router.get("/admin/servicio/factoring/empresa/verificacion/master", isAuth, isRole([2]), catchedAsync(factoringempresaverificacionController.getFactoringempresaverificacionMaster));
-//router.delete("/admin/personaverificacion/eliminar/:id", isAuth, isRole([2]), catchedAsync(personaverificacionController.deletePersonaverificacion));
-//router.patch("/admin/personaverificacion/activar/:id", isAuth, isRole([2]), catchedAsync(personaverificacionController.activatePersonaverificacion));
+router.get(endpoints.key + "/listar", isAuth, isRole([2]), catchedAsync(factoringempresaverificacionController.getFactoringempresasByVerificacion));
+router.post(endpoints.key + "/crear", isAuth, isRole([2]), catchedAsync(factoringempresaverificacionController.createFactoringempresaverificacion));
+router.patch(endpoints.key + "/actualizar/:servicioempresaverificacionid", isAuth, isRole([2]), catchedAsync(factoringempresaverificacionController.updateFactoringempresaverificacion));
+router.get(endpoints.key + "/master", isAuth, isRole([2]), catchedAsync(factoringempresaverificacionController.getFactoringempresaverificacionMaster));
+router.delete(endpoints.key + "/eliminar/:servicioempresaverificacionid", isAuth, isRole([2]), catchedAsync(factoringempresaverificacionController.deleteFactoringempresaverificacion));
+router.patch(endpoints.key + "/activar/:servicioempresaverificacionid", isAuth, isRole([2]), catchedAsync(factoringempresaverificacionController.activateFactoringempresaverificacion));
+
+router.get(endpoints.key + "/buscar/servicioempresa/:servicioempresaid", isAuth, isRole([2]), catchedAsync(factoringempresaverificacionController.getServicioempresaverificacionsByServicioempresaid));
 
 export default router;
