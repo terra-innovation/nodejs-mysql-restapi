@@ -1,10 +1,63 @@
+import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { TxClient } from "#src/types/Prisma.types.js";
-import type { Prisma, factoring_transferencia_cedente } from "#root/generated/prisma/ft_factoring/client.js";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
 
-import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
+import { line, log } from "#src/utils/logger.pino.js";
+
+export const getFactoringtransferenciacedentefForDownloadConstancia = async (tx: TxClient, factoringtransferenciacedenteid: string, estados: number[]) => {
+  try {
+    const factoringtransferenciacedente = await tx.factoring_transferencia_cedente.findFirst({
+      include: {
+        archivo_factoring_transferencia_cedentes: {
+          include: {
+            archivo: {
+              include: {
+                archivo_tipo: true,
+              },
+            },
+          },
+        },
+      },
+      where: {
+        factoringtransferenciacedenteid: factoringtransferenciacedenteid,
+        estado: {
+          in: estados,
+        },
+      },
+    });
+
+    return factoringtransferenciacedente;
+  } catch (error) {
+    log.error(line(), "", error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
+export const getFactoringtransferenciacedentesByIdfactoringAndVisisbleCendente = async (tx: TxClient, idfactoring: number, estados: number[]) => {
+  try {
+    const facturas = await tx.factoring_transferencia_cedente.findMany({
+      include: {
+        factoring_transferencia_tipo: true,
+        moneda: true,
+      },
+      where: {
+        idfactoring: idfactoring,
+        estado: {
+          in: estados,
+        },
+        factoring_transferencia_estado: {
+          visible_cedente: 1,
+        },
+      },
+    });
+    return facturas;
+  } catch (error) {
+    log.error(line(), "", error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
 
 export const getFactoringtransferenciacedentesByIdfactoring = async (tx: TxClient, idfactoring: number, estados: number[]) => {
   try {

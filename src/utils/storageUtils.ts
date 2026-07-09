@@ -31,3 +31,11 @@ export const normalizarRuta = (ruta: string): string => {
   // Une las partes con el separador adecuado para el SO actual
   return path.join(...partes);
 };
+
+export const sanitizarNombreArchivo = (nombre: string): string => {
+  if (!nombre) return "";
+  return nombre
+    .trim()
+    .replace(/[\r\n\t]+/g, "") // Remueve saltos de línea y tabulaciones
+    .replace(/[\\/:*?"<>|]/g, "_"); // Reemplaza caracteres inválidos para nombres de archivos con un guión bajo
+};

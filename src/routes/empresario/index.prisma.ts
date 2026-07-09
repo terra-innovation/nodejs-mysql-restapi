@@ -4,6 +4,7 @@ import empresario_usuarioservicioempresaRoutes from "#root/src/routes/empresario
 import empresario_contactoRoutes from "#src/routes/empresario/contacto.prisma.routes.js";
 import empresario_empresacuentabancariaRoutes from "#src/routes/empresario/empresacuentabancaria.prisma.routes.js";
 import empresario_factoringliquidacionRoutes from "#src/routes/empresario/factoringliquidacion.prisma.routes.js";
+import empresario_factoringtransferenciacedenteRoutes from "#src/routes/empresario/factoringtransferenciacedente.prisma.routes.js";
 import empresario_facturaRoutes from "#src/routes/empresario/factura.prisma.routes.js";
 import empresario_servicio_factoring_contactoRoutes from "#src/routes/empresario/servicio/factoring/contacto.prisma.routes.js";
 import empresario_servicio_factoring_empresacuentabancariaRoutes from "#src/routes/empresario/servicio/factoring/empresacuentabancaria.prisma.routes.js";
@@ -19,6 +20,7 @@ router.use(empresario_empresacuentabancariaRoutes);
 router.use(empresario_contactoRoutes);
 router.use(empresario_facturaRoutes);
 router.use(empresario_factoringliquidacionRoutes);
+router.use(empresario_factoringtransferenciacedenteRoutes);
 router.use(empresario_servicio_factoring_facturaRoutes);
 router.use(empresario_servicio_factoring_empresacuentabancariaRoutes);
 router.use(empresario_servicio_factoring_usuarioRoutes);
