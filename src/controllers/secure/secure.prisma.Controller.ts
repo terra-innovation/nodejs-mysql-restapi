@@ -299,7 +299,7 @@ export const sendTokenPassword = async (req: Request, res: Response) => {
           //Enviar enlace para recuperar contraseña
           let otp_encriptado = cryptoUtils.encryptText(resetpasswordvalidationcode.toString(), env.TOKEN_KEY_OTP);
           let url = env.WEB_SITE + "token-verification-password?hash=" + usuario.hash + "&codigo=" + validacionNext.codigo + "&token=" + otp_encriptado;
-          log.info(line(), "url", url);
+          log.debug(line(), "url", url);
         }
       }
 
