@@ -13,5 +13,6 @@
   },
   "html.validate.scripts": false,
   "html.validate.styles": false,
-  "html.suggest.html5": false
+  "html.suggest.html5": false,
+  "typescript.tsserver.experimental.enableProjectDiagnostics": true
 }

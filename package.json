@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "build_anterior": "tsc",
-    "build": "tsup",
+    "build": "tsc --noEmit && tsup",
     "dev": "tsx watch --tsconfig ./tsconfig.json  src/index.ts",
     "start": "node dist/index.js",
     "test_anterior": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
