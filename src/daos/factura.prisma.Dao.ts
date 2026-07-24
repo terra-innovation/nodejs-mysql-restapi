@@ -1,10 +1,43 @@
+import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { TxClient } from "#src/types/Prisma.types.js";
-import type { Prisma, factura } from "#root/generated/prisma/ft_factoring/client.js";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
 
-import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
+import { line, log } from "#src/utils/logger.pino.js";
+
+export const getFacturaByIdarchivo = async (tx: TxClient, idarchivo: number, estados: number[]) => {
+  try {
+    const factura = await tx.factura.findFirst({
+      include: {
+        archivo_facturas: {
+          include: {
+            archivo: {
+              include: {
+                archivo_tipo: true,
+                archivo_estado: true,
+              },
+            },
+          },
+        },
+      },
+      where: {
+        estado: {
+          in: estados,
+        },
+        archivo_facturas: {
+          some: {
+            idarchivo: idarchivo,
+          },
+        },
+      },
+    });
+    return factura;
+  } catch (error) {
+    log.error(line(), "", error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
 
 export const getFacturas = async (tx: TxClient, estados: number[]) => {
   try {

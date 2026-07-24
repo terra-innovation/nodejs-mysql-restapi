@@ -296,11 +296,11 @@ export const getFactura = (json) => {
       var termino_pago = {
         //item: item,
         facturaterminopagoid: uuidv4(),
-        id: item.ID[0] ?? null,
-        forma_pago: item.PaymentMeansID[0]._ ?? item.PaymentMeansID[0] ?? null,
-        monto: item.Amount?.[0]._ ?? item.Amount?.[0] ?? null,
-        porcentaje: item.PaymentPercent?.[0]._ ?? item.PaymentPercent?.[0] ?? null,
-        fecha_pago: item.PaymentDueDate?.[0]._ ?? item.PaymentDueDate?.[0] ?? null,
+        id: item.ID?.[0]?._ ?? item.ID?.[0] ?? null,
+        forma_pago: item.PaymentMeansID?.[0]?._ ?? item.PaymentMeansID?.[0] ?? null,
+        monto: item.Amount?.[0]?._ ?? item.Amount?.[0] ?? null,
+        porcentaje: item.PaymentPercent?.[0]?._ ?? item.PaymentPercent?.[0] ?? null,
+        fecha_pago: item.PaymentDueDate?.[0]?._ ?? item.PaymentDueDate?.[0] ?? null,
       };
 
       return termino_pago;
@@ -376,7 +376,7 @@ export const getFactura = (json) => {
   facturaJson.dias_desde_emision = restarFechas(facturaJson.fecha_registro_para_calculos, facturaJson.fecha_emision);
   facturaJson.dias_estimados_para_pago = restarFechas(facturaJson.fecha_pago_mayor_estimado, facturaJson.fecha_registro_para_calculos);
   facturaJson.importe_bruto = parseFloat(parseFloat(facturaJson.impuesto.valor_venta.monto_pago).toFixed(2));
-  facturaJson.importe_neto = parseFloat((facturaJson.importe_bruto - facturaJson.detraccion_monto - facturaJson.retencion_monto).toFixed(2));
+  facturaJson.importe_neto = calcularImporteNeto(facturaJson, json);
   //log.info(line(),facturaJson);
   //log.info(line(),"Done");
 
@@ -454,32 +454,113 @@ export const sumarMontosDetracciones = (json) => {
 
   // Iterar sobre cada elemento del JSON
   for (const elemento of json) {
-    // Verificar si es una detracción (tiene id igual a "Detraccion")
-    if (elemento.id === "Detraccion") {
-      // Convertir el monto a número y sumarlo a la suma total
-      sumaDetracciones += parseFloat(elemento.monto);
+    const id = elemento.id ? String(elemento.id).trim().toLowerCase() : "";
+    const formaPago = elemento.forma_pago ? String(elemento.forma_pago).trim().toLowerCase() : "";
+
+    // Verificar si es una detracción (id o forma_pago igual a "detraccion")
+    if (id === "detraccion" || formaPago === "detraccion") {
+      sumaDetracciones += parseFloat(elemento.monto || 0);
     }
   }
 
   return sumaDetracciones;
 };
 
-//Cuenta la cantidad de detraccione
+// Cuenta la cantidad de detracciones
 export const contarDetracciones = (json) => {
-  // Inicializar el contador en cero
   let cantidadDetracciones = 0;
 
   // Iterar sobre cada elemento del JSON
   for (const elemento of json) {
-    // Verificar si es una detracción (tiene id igual a "Detraccion")
-    if (elemento.id === "Detraccion") {
-      // Convertir el monto a número y sumarlo a la suma total
+    const id = elemento.id ? String(elemento.id).trim().toLowerCase() : "";
+    const formaPago = elemento.forma_pago ? String(elemento.forma_pago).trim().toLowerCase() : "";
+
+    // Verificar si es una detracción (id o forma_pago igual a "detraccion")
+    if (id === "detraccion" || formaPago === "detraccion") {
       cantidadDetracciones++;
     }
   }
 
-  // Devolver la cantidad de detracciones
   return cantidadDetracciones;
+};
+
+export const calcularImporteNeto = (facturaJson: Partial<FacturaXML>, jsonRaw?: any): number => {
+  const terminosPago = facturaJson.terminos_pago || [];
+
+  // Escenario 1: Buscar nodo de cabecera "Credito" en terminos_pago
+  const nodoCredito = terminosPago.find((item) => {
+    const id = item.id ? String(item.id).trim().toLowerCase() : "";
+    const formaPago = item.forma_pago ? String(item.forma_pago).trim().toLowerCase() : "";
+
+    const esCredito = formaPago === "credito" || id === "credito" || (id === "formapago" && formaPago === "credito");
+    const montoNum = item.monto != null ? parseFloat(String(item.monto)) : NaN;
+
+    return esCredito && !isNaN(montoNum) && montoNum > 0;
+  });
+
+  if (nodoCredito && nodoCredito.monto != null) {
+    return parseFloat(parseFloat(String(nodoCredito.monto)).toFixed(2));
+  }
+
+  // Escenario 2: Sumar cuotas de pago ("Cuota001", "Cuota002", etc.)
+  const cuotas = terminosPago.filter((item) => {
+    const id = item.id ? String(item.id).trim() : "";
+    const formaPago = item.forma_pago ? String(item.forma_pago).trim() : "";
+    const esCuota = /^cuota/i.test(formaPago) || /^cuota/i.test(id);
+    const montoNum = item.monto != null ? parseFloat(String(item.monto)) : NaN;
+    return esCuota && !isNaN(montoNum) && montoNum > 0;
+  });
+
+  if (cuotas.length > 0) {
+    const sumaCuotas = cuotas.reduce((acc, item) => acc + parseFloat(String(item.monto)), 0);
+    return parseFloat(sumaCuotas.toFixed(2));
+  }
+
+  // Escenario 3: Cálculo alternativo (Importe Bruto - Detracción en Moneda Factura - Retención)
+  const importeBruto = facturaJson.importe_bruto || 0;
+  const retencionMonto = facturaJson.retencion_monto || 0;
+  const codigoMoneda = (facturaJson.codigo_tipo_moneda || "PEN").toUpperCase();
+
+  let detraccionEnMonedaFactura = 0;
+  const detraccionMonto = facturaJson.detraccion_monto || 0;
+
+  if (detraccionMonto > 0) {
+    if (codigoMoneda === "PEN") {
+      detraccionEnMonedaFactura = detraccionMonto;
+    } else {
+      // Moneda extranjera (USD, EUR, etc.)
+      const nodoDetraccion = terminosPago.find((item) => {
+        const id = item.id ? String(item.id).trim().toLowerCase() : "";
+        const formaPago = item.forma_pago ? String(item.forma_pago).trim().toLowerCase() : "";
+        return id === "detraccion" || formaPago === "detraccion";
+      });
+
+      let porcentaje = 0;
+      if (nodoDetraccion && nodoDetraccion.porcentaje != null) {
+        porcentaje = parseFloat(String(nodoDetraccion.porcentaje));
+      }
+
+      if (porcentaje > 0) {
+        const tasa = porcentaje > 1 ? porcentaje / 100 : porcentaje;
+        detraccionEnMonedaFactura = importeBruto * tasa;
+      } else {
+        // Intentar usar tipo de cambio si está disponible en el XML raw
+        const paymentExchangeRate = jsonRaw?.Invoice?.PaymentExchangeRate?.[0];
+        const rateStr = paymentExchangeRate?.CalculationRate?.[0]?._ ?? paymentExchangeRate?.CalculationRate?.[0];
+        const rate = rateStr ? parseFloat(rateStr) : 0;
+
+        if (rate > 0) {
+          detraccionEnMonedaFactura = detraccionMonto / rate;
+        } else {
+          // Si no hay porcentaje ni tipo de cambio en el XML, no restar PEN directamente de USD
+          detraccionEnMonedaFactura = 0;
+        }
+      }
+    }
+  }
+
+  const netoCalculado = importeBruto - detraccionEnMonedaFactura - retencionMonto;
+  return parseFloat(netoCalculado.toFixed(2));
 };
 
 export const extraerDatosRetencion = (json: any) => {

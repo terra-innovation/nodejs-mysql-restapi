@@ -1,11 +1,11 @@
-import { TxClient } from "#src/types/Prisma.types.js";
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
+import { TxClient } from "#src/types/Prisma.types.js";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
 
-import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
- 
+import { line, log } from "#src/utils/logger.pino.js";
+
 export const ARCHIVO_TIPO = {
   DNI_ANVERSO_FRONTAL: 1,
   DNI_REVERSO_DETRAS: 2,
@@ -18,10 +18,8 @@ export const ARCHIVO_TIPO = {
   FACTURA_PDF: 9,
   SIN_TIPO: 10,
   CONSTANCIA_DE_TRANSFERENCIA: 11,
+  CONSTANCIA_PAGO_DETRACCION: 12,
 } as const;
-
-
-
 
 export const getArchivotipos = async (tx: TxClient, estados: number[]) => {
   try {
