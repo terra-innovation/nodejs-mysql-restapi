@@ -392,3 +392,29 @@ export const sendFactoringEmpresaServicioFactoringCedenteNotificacionLiquidacion
     throw error;
   }
 };
+
+export const sendRecuperarContrasena = async (to: string, params: { url: string; duracion_minutos: number }) => {
+  try {
+    const fecha_actual = df.formatDateForEmailLocale(new Date().toISOString());
+
+    const fullParams = {
+      ...params,
+      fecha_actual,
+    };
+
+    const emailTemplate = await templateManager.templateRecuperarContrasena(fullParams);
+
+    const mailOptions = {
+      to: to,
+      subject: emailTemplate.subject,
+      text: emailTemplate.text,
+      html: emailTemplate.html,
+    };
+
+    await emailSender.sendContactoFinanzatech(mailOptions);
+  } catch (error) {
+    log.error(line(), "", error);
+    throw error;
+  }
+};
+

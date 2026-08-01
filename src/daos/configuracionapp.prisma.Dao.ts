@@ -1,10 +1,10 @@
+import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { TxClient } from "#src/types/Prisma.types.js";
-import type { Prisma, configuracion_app } from "#root/generated/prisma/ft_factoring/client.js";
 
 import { ClientError } from "#src/utils/CustomErrors.js";
 
-import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
+import { line, log } from "#src/utils/logger.pino.js";
 
 export const getIGV = async (tx: TxClient) => {
   return await getConfiguracionappByIdconfiguracionapp(tx, 1);
@@ -28,6 +28,10 @@ export const getCostoCAVALIUsd = async (tx: TxClient) => {
 
 export const getComisionBCPUsd = async (tx: TxClient) => {
   return await getConfiguracionappByIdconfiguracionapp(tx, 6);
+};
+
+export const getRecuperarClaveExpiraURL = async (tx: TxClient) => {
+  return await getConfiguracionappByIdconfiguracionapp(tx, 7);
 };
 
 export const getConfiguracionapps = async (tx: TxClient, estados: number[]) => {

@@ -1,8 +1,7 @@
 // src/env.ts
-import { createEnv } from "@t3-oss/env-core";
-import { z } from "zod";
 import { config } from "dotenv";
 import { join } from "path";
+import { z } from "zod";
 
 if (process.env.NODE_ENV !== "production") {
   config({ path: join(process.cwd(), `.env.${process.env.NODE_ENV || "development"}`) });
@@ -12,6 +11,7 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]),
   PORT: z.coerce.number().default(3000),
   WEB_SITE: z.string().url(),
+  WEB_SITE_PORT: z.coerce.number().default(0),
 
   // Base de datos Factoring
   DB_FACTORING_NICKNAME: z.string(),

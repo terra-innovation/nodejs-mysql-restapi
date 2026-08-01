@@ -91,7 +91,7 @@ export function jsonToPlainText(obj: Record<string, any>, newline: string): stri
  */
 export function flattenObject(obj: any, prefix = "", res: Record<string, any> = {}): Record<string, any> {
   for (let key in obj) {
-    if (!obj.hasOwnProperty(key)) continue;
+    if (!Object.prototype.hasOwnProperty.call(obj, key)) continue;
     const value = obj[key];
     const newKey = prefix ? `${prefix}.${key}` : key;
 

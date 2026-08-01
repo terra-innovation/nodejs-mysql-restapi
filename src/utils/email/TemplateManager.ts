@@ -29,7 +29,7 @@ class TemplaceManager {
 
   flattenObject(obj, prefix = "", res = {}) {
     for (let key in obj) {
-      if (!obj.hasOwnProperty(key)) continue;
+      if (!Object.prototype.hasOwnProperty.call(obj, key)) continue;
       const value = obj[key];
       const newKey = prefix ? `${prefix}.${key}` : key;
 
@@ -1348,6 +1348,33 @@ class TemplaceManager {
         html: bodyEmailTHTML,
       };
       return codigoverificacionMailOptions;
+    } catch (error) {
+      log.error(line(), error);
+      throw error;
+    }
+  }
+
+  async templateRecuperarContrasena(params) {
+    try {
+      const paramsSchema = yup
+        .object()
+        .shape({
+          url: yup.string().trim().required().min(1).max(2000),
+          duracion_minutos: yup.number().required().min(1).max(10080),
+          fecha_actual: yup.string().trim().required().min(1).max(200),
+        })
+        .required();
+      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+      const bodyEmailTHTML = await this.renderTemplate("recuperar-contrasena.html", paramsValidated);
+      const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
+      const subjectEmailText = await this.renderSubject("Recuperación de contraseña", paramsValidated);
+
+      const recuperarContrasenaMailOptions = {
+        subject: subjectEmailText,
+        text: bodyEmailText,
+        html: bodyEmailTHTML,
+      };
+      return recuperarContrasenaMailOptions;
     } catch (error) {
       log.error(line(), error);
       throw error;

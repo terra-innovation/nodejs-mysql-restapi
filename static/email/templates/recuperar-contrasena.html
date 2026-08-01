@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>Código de verificación</title>
+    <title>Recuperación de contraseña</title>
   </head>
   <body>
     <div></div>
@@ -113,7 +113,7 @@
                                                         padding-bottom: 25px;
                                                       "
                                                     >
-                                                      Código de verificación de Finanza Tech
+                                                      Recuperación de contraseña
                                                     </td>
                                                   </tr>
                                                 </tbody>
@@ -177,7 +177,7 @@
                                               padding-bottom: 20px;
                                             "
                                           >
-                                            Tu código de verificación es:
+                                            Hemos recibido una solicitud para restablecer la contraseña de tu cuenta en Finanza Tech. Puedes continuar el proceso haciendo clic en el siguiente botón:
                                           </td>
                                         </tr>
                                         <tr>
@@ -191,12 +191,31 @@
                                                 sans-serif;
                                               font-size: 16px;
                                               line-height: 26px;
-                                              text-align: left;
-                                              padding-bottom: 20px;
+                                              text-align: center;
+                                              padding-bottom: 25px;
+                                              padding-top: 10px;
                                             "
                                           >
                                             <div style="text-align: center">
-                                              <p dir="ltr"><strong style="text-align: center; font-size: 28px; font-weight: bold">{{otp}}</strong></p>
+                                              <a
+                                                href="{{url}}"
+                                                target="_blank"
+                                                style="
+                                                  background-color: #2563eb;
+                                                  color: #ffffff;
+                                                  padding: 14px 32px;
+                                                  text-decoration: none;
+                                                  border-radius: 5px;
+                                                  font-weight: bold;
+                                                  display: inline-block;
+                                                  font-family:
+                                                    Noto Sans,
+                                                    Arial,
+                                                    sans-serif;
+                                                  font-size: 16px;
+                                                "
+                                                >Restablecer contraseña</a
+                                              >
                                             </div>
                                           </td>
                                         </tr>
@@ -204,6 +223,27 @@
                                           <td
                                             class="text pb20"
                                             style="
+                                              color: #555555;
+                                              font-family:
+                                                Noto Sans,
+                                                Arial,
+                                                sans-serif;
+                                              font-size: 14px;
+                                              line-height: 24px;
+                                              text-align: left;
+                                              padding-bottom: 20px;
+                                            "
+                                          >
+                                            Si el botón no funciona, copia y pega la siguiente URL en la barra de direcciones de tu navegador:
+                                            <p style="word-break: break-all; margin-top: 8px; margin-bottom: 0">
+                                              <a href="{{url}}" target="_blank" style="color: #0468b2; word-break: break-all">{{url}}</a>
+                                            </p>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td
+                                            class="text pb20"
+                                            style="
                                               color: #222222;
                                               font-family:
                                                 Noto Sans,
@@ -215,7 +255,7 @@
                                               padding-bottom: 20px;
                                             "
                                           >
-                                            Este código solo funcionará durante {{duracion_minutos}} minutos y si solicita un nuevo código, este código dejará de funcionar. Por tu seguridad, te recomendamos no compartirlo.
+                                            Este enlace funcionará por {{duracion_minutos}} minutos y si nuevamente solicita recuperar su contraseña, este enlace dejará de funcionar. Por su seguridad, le recomendamos no compartirlo.
                                           </td>
                                         </tr>
                                         <tr>

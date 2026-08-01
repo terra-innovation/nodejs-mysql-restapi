@@ -2,6 +2,7 @@ import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import { line, log } from "#root/src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
+import * as configuracionappDao from "#src/daos/configuracionapp.prisma.Dao.js";
 import * as credencialDao from "#src/daos/credencial.prisma.Dao.js";
 import * as documentotipoDao from "#src/daos/documentotipo.prisma.Dao.js";
 import * as personaverificacionestadoDao from "#src/daos/personaverificacionestado.prisma.Dao.js";
@@ -9,6 +10,7 @@ import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
 import * as usuariorolDao from "#src/daos/usuariorol.prisma.Dao.js";
 import * as validacionDao from "#src/daos/validacion.prisma.Dao.js";
 import * as telegramService from "#src/services/telegram.Service.js";
+import * as emailService from "#src/services/email.Service.js";
 import { newLoginMessage, newUsuarioRegistradoMessage } from "#src/templates/telegram/usuario.Template.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
@@ -252,6 +254,7 @@ export const sendTokenPassword = async (req: Request, res: Response) => {
       if (!usuario) {
         log.warn(line(), "Usuario no existe: ", validacionValidated);
       } else {
+        const constante_url_expira = await configuracionappDao.getRecuperarClaveExpiraURL(tx);
         const idvalidaciontipo = 3; // 1: Para recuperar contraseña
         const resetpasswordvalidationcode = String(Math.floor(100000 + Math.random() * 900000)); // Código aleaatorio de 6 dígitos
         const validacionPrev = await validacionDao.getValidacionByIdusuarioAndIdvalidaciontipo(tx, usuario.idusuario, idvalidaciontipo, filter_estado);
@@ -265,7 +268,7 @@ export const sendTokenPassword = async (req: Request, res: Response) => {
             valor: validacionValidated.email,
             otp: resetpasswordvalidationcode,
             tiempo_marca: new Date(),
-            tiempo_expiracion: 15, // En minutos
+            tiempo_expiracion: Number(constante_url_expira.valor), // En minutos
             codigo: crypto.randomBytes(77).toString("hex").slice(0, 77),
             idusuariocrea: req.session_user?.usuario?.idusuario ?? 1,
             fechacrea: new Date(),
@@ -282,7 +285,7 @@ export const sendTokenPassword = async (req: Request, res: Response) => {
           const validacionToUpdate: Prisma.validacionUpdateInput = {
             otp: resetpasswordvalidationcode,
             tiempo_marca: new Date(),
-            tiempo_expiracion: 15, // En minutos
+            tiempo_expiracion: Number(constante_url_expira.valor), // En minutos
             verificado: 0,
             fecha_verificado: null,
             idusuariomod: req.session_user?.usuario?.idusuario ?? 1,
@@ -298,8 +301,15 @@ export const sendTokenPassword = async (req: Request, res: Response) => {
         if (validacionNext) {
           //Enviar enlace para recuperar contraseña
           let otp_encriptado = cryptoUtils.encryptText(resetpasswordvalidationcode.toString(), env.TOKEN_KEY_OTP);
-          let url = env.WEB_SITE + "token-verification-password?hash=" + usuario.hash + "&codigo=" + validacionNext.codigo + "&token=" + otp_encriptado;
+          let port = env.WEB_SITE_PORT > 0 ? ":" + env.WEB_SITE_PORT : "";
+          let url = env.WEB_SITE + port + "/token-verification-password?hash=" + usuario.hash + "&codigo=" + validacionNext.codigo + "&token=" + otp_encriptado;
           log.debug(line(), "url", url);
+
+          await emailService.sendRecuperarContrasena(validacionValidated.email, {
+            url,
+            duracion_minutos: Number(constante_url_expira.valor),
+          });
+          log.debug(line(), "Correo de recuperación de contraseña enviado a:", validacionValidated.email);
         }
       }
 
