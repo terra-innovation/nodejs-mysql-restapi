@@ -179,6 +179,7 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
       porcentaje_financiado_estimado: yup.number().required().min(0).max(1),
       porcentaje_comision_descuento: yup.number().required().min(0).max(1),
       fecha_pago_estimado: yup.date().required(),
+      monto_neto: yup.number().required().min(1),
     })
     .required();
   var factoringValidated = factoringSimulateSchema.validateSync({ ...req.body }, { abortEarly: false, stripUnknown: true });
@@ -236,7 +237,7 @@ export const createFactoringpropuesta = async (req: Request, res: Response) => {
       let fecha_emision = dateUtils.toLimaDate(factoring.fecha_emision);
 
       var simulacion: Partial<Simulacion> = {};
-      simulacion = await simulateFactoringLogicV4(riesgooperacion.idriesgo, factoring.cuenta_bancaria.idbanco, factoring.cantidad_facturas, factoring.monto_neto, fecha_ahora, fecha_fin, fecha_emision, new Decimal(factoringValidated.porcentaje_financiado_estimado), new Decimal(factoringValidated.tdm), new Decimal(factoringValidated.porcentaje_comision_descuento), factoring.moneda.idmoneda);
+      simulacion = await simulateFactoringLogicV4(riesgooperacion.idriesgo, factoring.cuenta_bancaria.idbanco, factoring.cantidad_facturas, new Decimal(factoringValidated.monto_neto), fecha_ahora, fecha_fin, fecha_emision, new Decimal(factoringValidated.porcentaje_financiado_estimado), new Decimal(factoringValidated.tdm), new Decimal(factoringValidated.porcentaje_comision_descuento), factoring.moneda.idmoneda);
 
       log.info(line(), "simulacion: ", simulacion);
 
@@ -439,6 +440,7 @@ export const simulateFactoringpropuesta = async (req: Request, res: Response) =>
       porcentaje_financiado_estimado: yup.number().required().min(0).max(100),
       porcentaje_comision_descuento: yup.number().required().min(0).max(1),
       fecha_pago_estimado: yup.date().required(),
+      monto_neto: yup.number().required().min(1),
     })
     .required();
   var factoringValidated = factoringSimulateSchema.validateSync({ factoringid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
@@ -478,7 +480,7 @@ export const simulateFactoringpropuesta = async (req: Request, res: Response) =>
       let fecha_emision = dateUtils.toLimaDate(factoring.fecha_emision);
 
       var simulacion: Partial<Simulacion> = {};
-      simulacion = await simulateFactoringLogicV4(riesgooperacion.idriesgo, factoring.cuenta_bancaria.idbanco, factoring.cantidad_facturas, factoring.monto_neto, fecha_ahora, fecha_fin, fecha_emision, new Decimal(factoringValidated.porcentaje_financiado_estimado), new Decimal(factoringValidated.tdm), new Decimal(factoringValidated.porcentaje_comision_descuento), factoring.moneda.idmoneda);
+      simulacion = await simulateFactoringLogicV4(riesgooperacion.idriesgo, factoring.cuenta_bancaria.idbanco, factoring.cantidad_facturas, new Decimal(factoringValidated.monto_neto), fecha_ahora, fecha_fin, fecha_emision, new Decimal(factoringValidated.porcentaje_financiado_estimado), new Decimal(factoringValidated.tdm), new Decimal(factoringValidated.porcentaje_comision_descuento), factoring.moneda.idmoneda);
 
       log.info(line(), "simulacion: ", simulacion);
 
