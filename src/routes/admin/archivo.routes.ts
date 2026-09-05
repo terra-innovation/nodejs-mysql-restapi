@@ -1,0 +1,17 @@
+import * as archivoController from "#root/src/controllers/admin/archivo.Controller.js";
+import { isAuth, isRole } from "#root/src/middlewares/authMiddleware.js";
+import { catchedAsync } from "#src/utils/catchedAsync.js";
+import { Router } from "express";
+const router = Router();
+
+//Usuario
+router.get("/admin/archivo/listar", isAuth, isRole([2]), catchedAsync(archivoController.getArchivos));
+//router.post("/admin/archivo/crear", isAuth, isRole([2]), catchedAsync(archivoController.createArchivo));
+router.patch("/admin/archivo/actualizar/:id", isAuth, isRole([2]), catchedAsync(archivoController.updateArchivo));
+router.get("/admin/archivo/master", isAuth, isRole([2]), catchedAsync(archivoController.getArchivoMaster));
+router.delete("/admin/archivo/eliminar/:id", isAuth, isRole([2]), catchedAsync(archivoController.deleteArchivo));
+router.patch("/admin/archivo/activar/:id", isAuth, isRole([2]), catchedAsync(archivoController.activateArchivo));
+
+router.get("/admin/archivo/descargar/:id", isAuth, isRole([2]), catchedAsync(archivoController.descargarArchivo));
+
+export default router;

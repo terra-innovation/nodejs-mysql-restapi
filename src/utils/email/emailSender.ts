@@ -1,5 +1,5 @@
+import * as configuracioncorreoDao from "#root/src/daos/configuracioncorreo.Dao.js";
 import { env, isProduction } from "#src/config.js";
-import * as configuracioncorreoDao from "#src/daos/configuracioncorreo.prisma.Dao.js";
 import { prismaFT } from "#src/models/prisma/db-factoring.js";
 import { decryptText } from "#src/utils/cryptoUtils.js";
 import { logHtmlLink, logTxtLink } from "#src/utils/debug.js";

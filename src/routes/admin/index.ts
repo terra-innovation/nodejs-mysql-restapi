@@ -1,0 +1,71 @@
+import { Router } from "express";
+
+import admin_archivoRoutes from "#root/src/routes/admin/archivo.routes.js";
+import admin_archivofacturaRoutes from "#root/src/routes/admin/archivofactura.routes.js";
+import admin_cedentelimiteRoutes from "#root/src/routes/admin/cedentelimite.routes.js";
+import admin_configuracioncorreoRoutes from "#root/src/routes/admin/configuracioncorreo.routes.js";
+import admin_contactoRoutes from "#root/src/routes/admin/contacto.routes.js";
+import admin_cuentabancariaestadoRoutes from "#root/src/routes/admin/cuentabancariaestado.routes.js";
+import admin_empresaRoutes from "#root/src/routes/admin/empresa.routes.js";
+import admin_empresacuentabancariaRoutes from "#root/src/routes/admin/empresacuentabancaria.routes.js";
+import admin_factoringempresaverificacionRoutes from "#root/src/routes/admin/factoringempresaverificacion.routes.js";
+import admin_factoringinversionistaverificacionRoutes from "#root/src/routes/admin/factoringinversionistaverificacion.routes.js";
+import admin_factorlimiteRoutes from "#root/src/routes/admin/factorlimite.routes.js";
+import admin_facturaRoutes from "#root/src/routes/admin/factura.routes.js";
+import admin_inversionistacuentabancariaRoutes from "#root/src/routes/admin/inversionistacuentabancaria.routes.js";
+import admin_pagadorlimiteRoutes from "#root/src/routes/admin/pagadorlimite.routes.js";
+import admin_personaRoutes from "#root/src/routes/admin/persona.routes.js";
+import admin_personaverificacionRoutes from "#root/src/routes/admin/personaverificacion.routes.js";
+import admin_servicioRoutes from "#root/src/routes/admin/servicio.routes.js";
+import admin_servicio_factoring_accionistaRoutes from "#root/src/routes/admin/servicio/factoring/accionista.routes.js";
+import admin_servicio_factoring_factoringRoutes from "#root/src/routes/admin/servicio/factoring/factoring.routes.js";
+import admin_factoringcarteraRoutes from "#root/src/routes/admin/servicio/factoring/factoringcartera.routes.js";
+import admin_servicio_factoring_factoringfacturafactorRoutes from "#root/src/routes/admin/servicio/factoring/factoringfacturafactor.routes.js";
+import admin_servicio_factoring_factoringhistorialestadoRoutes from "#root/src/routes/admin/servicio/factoring/factoringhistorialestado.routes.js";
+import admin_servicio_factoring_factoringliquidacionRoutes from "#root/src/routes/admin/servicio/factoring/factoringliquidacion.routes.js";
+import admin_servicio_factoring_factoringpropuestaRoutes from "#root/src/routes/admin/servicio/factoring/factoringpropuesta.routes.js";
+import admin_servicio_factoring_factoringpropuestahistorialestadoRoutes from "#root/src/routes/admin/servicio/factoring/factoringpropuestahistorialestado.routes.js";
+import admin_servicio_factoring_factoringsimulacionRoutes from "#root/src/routes/admin/servicio/factoring/factoringsimulacion.routes.js";
+import admin_servicio_factoring_factoringtransferenciacedenteRoutes from "#root/src/routes/admin/servicio/factoring/factoringtransferenciacedente.routes.js";
+import admin_servicio_factoring_funcionarioRoutes from "#root/src/routes/admin/servicio/factoring/funcionario.routes.js";
+import admin_usuarioRoutes from "#root/src/routes/admin/usuario.routes.js";
+import admin_zlaboratorioRoutes from "#root/src/routes/admin/zlaboratorio.routes.js";
+
+import admin_administracionRoutes from "#root/src/routes/admin/administracion.routes.js";
+
+const router = Router();
+
+router.use(admin_administracionRoutes);
+router.use(admin_zlaboratorioRoutes);
+router.use(admin_empresacuentabancariaRoutes);
+router.use(admin_inversionistacuentabancariaRoutes);
+router.use(admin_cuentabancariaestadoRoutes);
+router.use(admin_empresaRoutes);
+router.use(admin_servicioRoutes);
+router.use(admin_facturaRoutes);
+router.use(admin_archivofacturaRoutes);
+router.use(admin_personaRoutes);
+router.use(admin_archivoRoutes);
+router.use(admin_personaverificacionRoutes);
+router.use(admin_usuarioRoutes);
+router.use(admin_factoringempresaverificacionRoutes);
+router.use(admin_factoringinversionistaverificacionRoutes);
+router.use(admin_contactoRoutes);
+router.use(admin_configuracioncorreoRoutes);
+router.use(admin_factorlimiteRoutes);
+router.use(admin_cedentelimiteRoutes);
+router.use(admin_pagadorlimiteRoutes);
+router.use(admin_factoringcarteraRoutes);
+
+router.use(admin_servicio_factoring_factoringRoutes);
+router.use(admin_servicio_factoring_factoringpropuestaRoutes);
+router.use(admin_servicio_factoring_factoringliquidacionRoutes);
+router.use(admin_servicio_factoring_factoringsimulacionRoutes);
+router.use(admin_servicio_factoring_factoringhistorialestadoRoutes);
+router.use(admin_servicio_factoring_factoringpropuestahistorialestadoRoutes);
+router.use(admin_servicio_factoring_factoringtransferenciacedenteRoutes);
+router.use(admin_servicio_factoring_factoringfacturafactorRoutes);
+router.use(admin_servicio_factoring_funcionarioRoutes);
+router.use(admin_servicio_factoring_accionistaRoutes);
+
+export default router;

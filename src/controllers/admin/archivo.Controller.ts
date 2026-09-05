@@ -1,0 +1,217 @@
+import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
+import * as archivoDao from "#root/src/daos/archivo.Dao.js";
+import * as archivoestadoDao from "#root/src/daos/archivoestado.Dao.js";
+import * as archivotipoDao from "#root/src/daos/archivotipo.Dao.js";
+import * as distritoDao from "#root/src/daos/distrito.Dao.js";
+import * as documentotipoDao from "#root/src/daos/documentotipo.Dao.js";
+import * as generoDao from "#root/src/daos/genero.Dao.js";
+import * as paisDao from "#root/src/daos/pais.Dao.js";
+import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
+import { ClientError } from "#src/utils/CustomErrors.js";
+import { response } from "#src/utils/CustomResponseOk.js";
+import * as jsonUtils from "#src/utils/jsonUtils.js";
+import { line, log } from "#src/utils/logger.pino.js";
+import * as storageUtils from "#src/utils/storageUtils.js";
+import { Request, Response } from "express";
+
+import path from "path";
+
+import * as yup from "yup";
+
+export const descargarArchivo = async (req: Request, res: Response) => {
+  log.debug(line(), "controller::descargarArchivo");
+  const { id } = req.params;
+  const archivoSchema = yup
+    .object()
+    .shape({
+      archivoid: yup.string().trim().required().min(36).max(36),
+    })
+    .required();
+  const archivoValidated = archivoSchema.validateSync({ archivoid: id }, { abortEarly: false, stripUnknown: true });
+  log.debug(line(), "archivoValidated:", archivoValidated);
+
+  const rutaAbsoluta = await prismaFT.client.$transaction(
+    async (tx) => {
+      const archivo = await archivoDao.getArchivoByArchivoid(tx, archivoValidated.archivoid);
+      if (archivo[0] === 0) {
+        throw new ClientError("Archivo no existe", 404);
+      }
+      log.debug(line(), "archivo:", archivo);
+
+      const archivoPath = path.join(storageUtils.STORAGE_PATH_SUCCESS, storageUtils.normalizarRuta(archivo.ruta), archivo.nombrealmacenamiento);
+      log.debug(line(), "archivoPath:", archivoPath);
+
+      const proyectoRutaAbsoluta = storageUtils.pathApp(); // raíz del proyecto
+      log.debug(line(), "proyectoRutaAbsoluta:", proyectoRutaAbsoluta);
+
+      // Convierte la ruta relativa a una ruta absoluta
+      const rutaAbsoluta = path.resolve(proyectoRutaAbsoluta, archivoPath);
+
+      return rutaAbsoluta;
+    },
+    { timeout: prismaFT.transactionTimeout },
+  );
+
+  res.sendFile(rutaAbsoluta, (err) => {
+    if (err) {
+      log.error(line(), "Error al descargar el archivo:", err);
+      res.status(500).send("Error");
+    }
+  });
+};
+
+export const activateArchivo = async (req: Request, res: Response) => {
+  log.debug(line(), "controller::activateArchivo");
+  const { id } = req.params;
+  const archivoSchema = yup
+    .object()
+    .shape({
+      archivoid: yup.string().trim().required().min(36).max(36),
+    })
+    .required();
+  const archivoValidated = archivoSchema.validateSync({ archivoid: id }, { abortEarly: false, stripUnknown: true });
+  log.debug(line(), "archivoValidated:", archivoValidated);
+
+  const archivoActivated = await prismaFT.client.$transaction(
+    async (tx) => {
+      const archivoActivated = await archivoDao.activateArchivo(tx, archivoValidated.archivoid, req.session_user.usuario.idusuario);
+      if (archivoActivated[0] === 0) {
+        throw new ClientError("Archivo no existe", 404);
+      }
+      log.debug(line(), "archivoActivated:", archivoActivated);
+      return archivoActivated;
+    },
+    { timeout: prismaFT.transactionTimeout },
+  );
+  response(res, 204, {});
+};
+
+export const deleteArchivo = async (req: Request, res: Response) => {
+  log.debug(line(), "controller::deleteArchivo");
+  const { id } = req.params;
+  const archivoSchema = yup
+    .object()
+    .shape({
+      archivoid: yup.string().trim().required().min(36).max(36),
+    })
+    .required();
+  const archivoValidated = archivoSchema.validateSync({ archivoid: id }, { abortEarly: false, stripUnknown: true });
+  log.debug(line(), "archivoValidated:", archivoValidated);
+
+  const resultado = await prismaFT.client.$transaction(
+    async (tx) => {
+      const archivo = await archivoDao.getArchivoByArchivoid(tx, archivoValidated.archivoid);
+      if (!archivo) {
+        log.warn(line(), "Archivo no existe: [" + archivoValidated.archivoid + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
+
+      const archivoDeleted = await archivoDao.deleteArchivo(tx, archivoValidated.archivoid, req.session_user.usuario.idusuario);
+      log.debug(line(), "archivoDeleted:", archivoDeleted);
+
+      return {};
+    },
+    { timeout: prismaFT.transactionTimeout },
+  );
+  response(res, 204, {});
+};
+
+export const getArchivoMaster = async (req: Request, res: Response) => {
+  log.debug(line(), "controller::getArchivoMaster");
+  const archivoMasterFiltered = await prismaFT.client.$transaction(
+    async (tx) => {
+      const session_idusuario = req.session_user?.usuario?.idusuario;
+      const filter_estados = [ESTADO.ACTIVO];
+      const paises = await paisDao.getPaises(tx, filter_estados);
+      const distritos = await distritoDao.getDistritos(tx, filter_estados);
+      const documentotipos = await documentotipoDao.getDocumentotipos(tx, filter_estados);
+      const generos = await generoDao.getGeneros(tx, filter_estados);
+
+      let archivoMaster: Record<string, any> = {};
+      archivoMaster.paises = paises;
+      archivoMaster.distritos = distritos;
+      archivoMaster.documentotipos = documentotipos;
+      archivoMaster.generos = generos;
+
+      let archivoMasterObfuscated = jsonUtils.ofuscarAtributosDefault(archivoMaster);
+      //jsonUtils.prettyPrint(archivoMasterObfuscated);
+      let archivoMasterFiltered = jsonUtils.removeAttributesPrivates(archivoMasterObfuscated);
+      //jsonUtils.prettyPrint(archivoMaster);
+      return archivoMasterFiltered;
+    },
+    { timeout: prismaFT.transactionTimeout },
+  );
+  response(res, 201, archivoMasterFiltered);
+};
+
+export const updateArchivo = async (req: Request, res: Response) => {
+  log.debug(line(), "controller::updateArchivo");
+  const { id } = req.params;
+  let NAME_REGX = /^[a-zA-Z ]+$/;
+  const archivoUpdateSchema = yup
+    .object()
+    .shape({
+      archivoid: yup.string().trim().required().min(36).max(36),
+      archivotipoid: yup.string().trim().required().min(36).max(36),
+      archivoestadoid: yup.string().trim().required().min(36).max(36),
+    })
+    .required();
+  const archivoValidated = archivoUpdateSchema.validateSync({ archivoid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
+  log.debug(line(), "archivoValidated:", archivoValidated);
+
+  const resultado = await prismaFT.client.$transaction(
+    async (tx) => {
+      const archivo = await archivoDao.getArchivoByArchivoid(tx, archivoValidated.archivoid);
+      if (!archivo) {
+        log.warn(line(), "Archivo no existe: [" + archivoValidated.archivoid + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
+
+      const archivotipo = await archivotipoDao.getArchivotipoByArchivotipoid(tx, archivoValidated.archivotipoid);
+      if (!archivo) {
+        log.warn(line(), "Archivotipo no existe: [" + archivoValidated.archivotipoid + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
+
+      const archivoestado = await archivoestadoDao.getArchivoestadoByArchivoestadoid(tx, archivoValidated.archivoestadoid);
+      if (!archivo) {
+        log.warn(line(), "Archivoestado no existe: [" + archivoValidated.archivoestadoid + "]");
+        throw new ClientError("Datos no válidos", 404);
+      }
+
+      const archivoToUpdate: Prisma.archivoUpdateInput = {
+        archivo_tipo: { connect: { idarchivotipo: archivotipo.idarchivotipo } },
+        archivo_estado: { connect: { idarchivoestado: archivoestado.idarchivoestado } },
+        idusuariomod: req.session_user.usuario.idusuario ?? 1,
+        fechamod: new Date(),
+      };
+
+      const result = await archivoDao.updateArchivo(tx, archivoValidated.archivoid, archivoToUpdate);
+      if (result[0] === 0) {
+        throw new ClientError("Archivo no existe", 404);
+      }
+      const archivoUpdated = await archivoDao.getArchivoByArchivoid(tx, id);
+      if (!archivoUpdated) {
+        throw new ClientError("Archivo no existe", 404);
+      }
+      return {};
+    },
+    { timeout: prismaFT.transactionTimeout },
+  );
+  response(res, 200, {});
+};
+
+export const getArchivos = async (req: Request, res: Response) => {
+  log.debug(line(), "controller::getArchivos");
+  const archivosJson = await prismaFT.client.$transaction(
+    async (tx) => {
+      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
+      const archivos = await archivoDao.getArchivos(tx, filter_estado);
+
+      return archivos;
+    },
+    { timeout: prismaFT.transactionTimeout },
+  );
+  response(res, 201, archivosJson);
+};

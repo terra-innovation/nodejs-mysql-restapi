@@ -1,21 +1,20 @@
 import express from "express";
-import { log, line } from "#src/utils/logger.pino.js";
 
+import { blockSuspiciousUAMiddleware } from "#src/middlewares/blockSuspiciousUAMiddleware";
+import { corsMiddleware } from "#src/middlewares/corsMiddleware";
+import { errorHandlerMiddleware } from "#src/middlewares/errorHandlerMiddleware";
+import { helmetMiddleware } from "#src/middlewares/helmetMiddleware";
 import { ipFilterMiddleware } from "#src/middlewares/ipFilterMiddleware.js";
 import { loggerMiddleware } from "#src/middlewares/loggerMiddleware.js";
-import { corsMiddleware } from "#src/middlewares/corsMiddleware";
-import { helmetMiddleware } from "#src/middlewares/helmetMiddleware";
-import { rateLimiterGlobalMiddleware } from "#src/middlewares/ratelimiterMiddleware";
-import { blockSuspiciousUAMiddleware } from "#src/middlewares/blockSuspiciousUAMiddleware";
-import { errorHandlerMiddleware } from "#src/middlewares/errorHandlerMiddleware";
 import { notFoundHandlerMiddleware } from "#src/middlewares/notFoundHandlerMiddleware";
+import { rateLimiterGlobalMiddleware } from "#src/middlewares/ratelimiterMiddleware";
 
-import indexRoutes from "#src/routes/index.prisma.routes.js";
-import adminRoutes from "#src/routes/admin/index.prisma.js";
-import empresarioRoutes from "#src/routes/empresario/index.prisma.js";
-import inversionistaRoutes from "#src/routes/inversionista/index.prisma.js";
-import usuarioRoutes from "#src/routes/usuario/index.prisma.js";
-import secureRoutes from "#src/routes/secure/index.prisma.js";
+import adminRoutes from "#root/src/routes/admin/index.js";
+import empresarioRoutes from "#root/src/routes/empresario/index.js";
+import indexRoutes from "#root/src/routes/index.routes.js";
+import inversionistaRoutes from "#root/src/routes/inversionista/index.js";
+import secureRoutes from "#root/src/routes/secure/index.js";
+import usuarioRoutes from "#root/src/routes/usuario/index.js";
 
 const app = express();
 
