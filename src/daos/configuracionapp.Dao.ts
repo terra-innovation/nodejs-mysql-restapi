@@ -34,6 +34,10 @@ export const getRecuperarClaveExpiraURL = async (tx: TxClient) => {
   return await getConfiguracionappByIdconfiguracionapp(tx, 7);
 };
 
+export const getSplaftRegistroOperacionesMontoMinimo = async (tx: TxClient) => {
+  return await getConfiguracionappByIdconfiguracionapp(tx, 8);
+};
+
 export const getConfiguracionapps = async (tx: TxClient, estados: number[]) => {
   try {
     const configuracionapps = await tx.configuracion_app.findMany({

@@ -167,6 +167,21 @@ export const generarMenuAdmin = (usuario: UsuarioConRoles) => {
           },
         ],
       },
+      {
+        id: "admin-splaft",
+        title: "SPLAFT",
+        type: "collapse",
+        icon: "SafetyCertificateOutlined",
+        children: [
+          {
+            id: "admin-splaft-registrooperacion-lista",
+            title: "Registro de operaciones",
+            type: "item",
+            url: "/admin/splaft/registrooperacion/lista",
+            breadcrumbs: true,
+          },
+        ],
+      },
     ],
   };
 

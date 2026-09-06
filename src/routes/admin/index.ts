@@ -32,6 +32,7 @@ import admin_usuarioRoutes from "#root/src/routes/admin/usuario.routes.js";
 import admin_zlaboratorioRoutes from "#root/src/routes/admin/zlaboratorio.routes.js";
 
 import admin_administracionRoutes from "#root/src/routes/admin/administracion.routes.js";
+import admin_splaft_registrooperacionRoutes from "#root/src/routes/admin/splaft/registrooperacion.routes.js";
 
 const router = Router();
 
@@ -56,6 +57,8 @@ router.use(admin_factorlimiteRoutes);
 router.use(admin_cedentelimiteRoutes);
 router.use(admin_pagadorlimiteRoutes);
 router.use(admin_factoringcarteraRoutes);
+
+router.use(admin_splaft_registrooperacionRoutes);
 
 router.use(admin_servicio_factoring_factoringRoutes);
 router.use(admin_servicio_factoring_factoringpropuestaRoutes);
