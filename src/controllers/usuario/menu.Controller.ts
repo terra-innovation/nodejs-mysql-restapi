@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 
 import * as menuAdmin from "#src/menu/menuAdmin.js";
 import * as menuEmpresario from "#src/menu/menuEmpresario.js";
+import * as menuFinanciero from "#src/menu/menuFinanciero.js";
 import * as menuInversionista from "#src/menu/menuInversionista.js";
 import * as menuUsuario from "#src/menu/menuUsuario.js";
 
@@ -34,6 +35,7 @@ export const getMenu = async (req: Request, res: Response) => {
   const ordenMenu = [
     { idrol: 5, menu: menuUsuario.generarMenuUsuario(session_usuario) }, // Usuario
     { idrol: 2, menu: menuAdmin.generarMenuAdmin(session_usuario) }, // Admin
+    { idrol: 6, menu: menuFinanciero.generarMenuFinanciero(session_usuario) }, // Admin
     { idrol: 3, menu: menuEmpresario.generarMenuEmpresario(session_usuario) }, // Empresario
     { idrol: 4, menu: menuInversionista.generarMenuInversionista(session_usuario) }, // Inversionista
   ];

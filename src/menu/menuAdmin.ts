@@ -5,7 +5,7 @@ export const generarMenuAdmin = (usuario: UsuarioConRoles) => {
 
   const menuMantenimiento = {
     id: "admin-group-mantenimiento",
-    title: "Mentenimiento",
+    title: "Mantenimiento",
     type: "group",
     icon: "ToolOutlined",
     children: [
@@ -211,15 +211,15 @@ export const generarMenuAdmin = (usuario: UsuarioConRoles) => {
             target: true,
           },
           {
-            id: "Recuperar contraseña",
-            title: "forgot-password",
+            id: "forgot-password",
+            title: "Recuperar contraseña",
             type: "item",
             url: "/auth/forgot-password",
             target: true,
           },
           {
-            id: "Restablecer contraseña",
-            title: "reset-password",
+            id: "reset-password",
+            title: "Restablecer contraseña",
             type: "item",
             url: "/auth/reset-password",
             target: true,

@@ -5,7 +5,7 @@ export const generarMenuInversionista = (usuario: UsuarioConRoles) => {
 
   const menuFactoringElectronico = {
     id: "inversionista-group-factoring-electronico",
-    title: "Factorgin",
+    title: "Factoring",
     icon: "IdcardOutlined",
     type: "group",
     children: [

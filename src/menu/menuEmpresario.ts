@@ -5,7 +5,7 @@ export const generarMenuEmpresario = (usuario: UsuarioConRoles) => {
 
   const menuFactoringElectronico = {
     id: "empresario-group-factoring-electronico",
-    title: "Factorgin Electrónico",
+    title: "Factoring Electrónico",
     icon: "IdcardOutlined",
     type: "group",
     children: [
