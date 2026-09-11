@@ -60,6 +60,10 @@ const envSchema = z.object({
   PRISMA_DATABASE_FACTORING_LOG_ERROR: z.enum(["true", "false"]).transform((v) => v === "true"),
   PRISMA_DATABASE_FACTORING_LOG_SLOW_QUERIES: z.enum(["true", "false"]).transform((v) => v === "true"),
   PRISMA_DATABASE_FACTORING_SLOW_QUERY_THRESHOLD: z.coerce.number(),
+
+  // Decolecta - Tipo de Cambio SUNAT / SBS
+  DECOLECTA_BASE_URL: z.string().url().default("https://api.decolecta.com/v1"),
+  DECOLECTA_API_TOKEN: z.string(),
 });
 
 export let env: z.infer<typeof envSchema>;

@@ -11,6 +11,7 @@ import { rateLimiterGlobalMiddleware } from "#src/middlewares/ratelimiterMiddlew
 
 import adminRoutes from "#root/src/routes/admin/index.js";
 import empresarioRoutes from "#root/src/routes/empresario/index.js";
+import financieroRoutes from "#root/src/routes/financiero/index.js";
 import indexRoutes from "#root/src/routes/index.routes.js";
 import inversionistaRoutes from "#root/src/routes/inversionista/index.js";
 import secureRoutes from "#root/src/routes/secure/index.js";
@@ -32,6 +33,7 @@ app.use(helmetMiddleware); // Middleware Helmet. Seguridad para Express que conf
 app.use("/", indexRoutes);
 app.use("/api/v1", adminRoutes);
 app.use("/api/v1", empresarioRoutes);
+app.use("/api/v1", financieroRoutes);
 app.use("/api/v1", inversionistaRoutes);
 app.use("/api/v1", usuarioRoutes);
 app.use("/api/v1", secureRoutes);

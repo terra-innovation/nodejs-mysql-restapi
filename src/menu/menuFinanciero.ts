@@ -11,9 +11,17 @@ export const generarMenuFinanciero = (usuario: UsuarioConRoles) => {
     children: [
       {
         id: "financiero-sbs-tipo_de_cambio",
-        title: "Tipo de cambio",
+        title: "SBS Tipo de cambio",
         type: "item",
-        url: "/financiero/sbs/tipodecambio/lista",
+        url: "/financiero/sbstipocambio/lista",
+        icon: "BankOutlined",
+        breadcrumbs: true,
+      },
+      {
+        id: "financiero-sunat-tipo_de_cambio",
+        title: "Sunat Tipo de cambio",
+        type: "item",
+        url: "/financiero/sunattipocambio/lista",
         icon: "BankOutlined",
         breadcrumbs: true,
       },

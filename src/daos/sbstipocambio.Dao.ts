@@ -1,0 +1,450 @@
+import { TxClient } from "#src/types/Prisma.types.js";
+import type { Prisma, sbs_tipo_cambio } from "#root/generated/prisma/ft_factoring/client.js";
+
+import { ClientError } from "#src/utils/CustomErrors.js";
+import { log, line } from "#src/utils/logger.pino.js";
+import { ESTADO } from "#src/constants/prisma.Constant.js";
+
+/**
+ * Obtiene el tipo de cambio SBS para una fecha y par de monedas específicos.
+ */
+export const getSbsTipoCambioByFecha = async (
+  tx: TxClient,
+  fecha: Date,
+  idmonedabase: number,
+  idmonedacotizada: number,
+  estados: number[] = [ESTADO.ACTIVO],
+) => {
+  try {
+    const registro = await tx.sbs_tipo_cambio.findFirst({
+      where: {
+        idmonedabase,
+        idmonedacotizada,
+        fecha,
+        estado: {
+          in: estados,
+        },
+      },
+      include: {
+        moneda_base: true,
+        moneda_cotizada: true,
+      },
+    });
+
+    return registro;
+  } catch (error) {
+    log.error(line(), "Error al obtener tipo de cambio SBS por fecha", error);
+    throw new ClientError("Ocurrió un error al obtener el tipo de cambio SBS", 500);
+  }
+};
+
+/**
+ * Obtiene el último tipo de cambio registrado de SBS.
+ */
+export const getUltimoSbsTipoCambio = async (
+  tx: TxClient,
+  idmonedabase: number,
+  idmonedacotizada: number,
+  estados: number[] = [ESTADO.ACTIVO],
+) => {
+  try {
+    const registro = await tx.sbs_tipo_cambio.findFirst({
+      where: {
+        idmonedabase,
+        idmonedacotizada,
+        estado: {
+          in: estados,
+        },
+      },
+      include: {
+        moneda_base: true,
+        moneda_cotizada: true,
+      },
+      orderBy: {
+        fecha: "desc",
+      },
+    });
+
+    return registro;
+  } catch (error) {
+    log.error(line(), "Error al obtener último tipo de cambio SBS", error);
+    throw new ClientError("Ocurrió un error al consultar el último tipo de cambio SBS", 500);
+  }
+};
+
+/**
+ * Obtiene el historial de tipos de cambio SBS en un rango de fechas.
+ */
+export const getSbsTipoCambioHistorial = async (
+  tx: TxClient,
+  idmonedabase: number,
+  idmonedacotizada: number,
+  fechaInicio?: Date,
+  fechaFin?: Date,
+  estados: number[] = [ESTADO.ACTIVO],
+) => {
+  try {
+    const where: Prisma.sbs_tipo_cambioWhereInput = {
+      idmonedabase,
+      idmonedacotizada,
+      estado: {
+        in: estados,
+      },
+    };
+
+    if (fechaInicio || fechaFin) {
+      where.fecha = {};
+      if (fechaInicio) where.fecha.gte = fechaInicio;
+      if (fechaFin) where.fecha.lte = fechaFin;
+    }
+
+    const historial = await tx.sbs_tipo_cambio.findMany({
+      where,
+      include: {
+        moneda_base: true,
+        moneda_cotizada: true,
+      },
+      orderBy: {
+        fecha: "desc",
+      },
+    });
+
+    return historial;
+  } catch (error) {
+    log.error(line(), "Error al obtener historial de tipos de cambio SBS", error);
+    throw new ClientError("Ocurrió un error al obtener el historial de tipos de cambio SBS", 500);
+  }
+};
+
+/**
+ * Inserta un nuevo registro de tipo de cambio SBS.
+ */
+export const insertSbsTipoCambio = async (
+  tx: TxClient,
+  sbstipocambio: Prisma.sbs_tipo_cambioUncheckedCreateInput,
+) => {
+  try {
+    const nuevo = await tx.sbs_tipo_cambio.create({ data: sbstipocambio });
+    return nuevo;
+  } catch (error) {
+    log.error(line(), "Error al insertar tipo de cambio SBS", error);
+    throw new ClientError("Ocurrió un error al guardar el tipo de cambio SBS", 500);
+  }
+};
+
+/**
+ * Inserta o actualiza (upsert) un registro de tipo de cambio SBS basado en la clave única:
+ * [idmonedabase, idmonedacotizada, fecha].
+ */
+export const upsertSbsTipoCambio = async (
+  tx: TxClient,
+  data: Prisma.sbs_tipo_cambioUncheckedCreateInput,
+) => {
+  try {
+    const registro = await tx.sbs_tipo_cambio.upsert({
+      where: {
+        idmonedabase_idmonedacotizada_fecha: {
+          idmonedabase: data.idmonedabase,
+          idmonedacotizada: data.idmonedacotizada,
+          fecha: data.fecha as Date,
+        },
+      },
+      create: data,
+      update: {
+        precio_compra: data.precio_compra,
+        precio_venta: data.precio_venta,
+        precio_contable: data.precio_contable,
+        fechamod: new Date(),
+        idusuariomod: data.idusuariomod || 1,
+        estado: data.estado || ESTADO.ACTIVO,
+      },
+      include: {
+        moneda_base: true,
+        moneda_cotizada: true,
+      },
+    });
+
+    return registro;
+  } catch (error) {
+    log.error(line(), "Error al realizar upsert de tipo de cambio SBS", error);
+    throw new ClientError("Ocurrió un error al sincronizar el tipo de cambio SBS", 500);
+  }
+};
+
+/**
+ * Obtiene todos los tipos de cambio SBS según los estados proporcionados.
+ */
+export const getSbsTipoCambios = async (tx: TxClient, estados: number[]) => {
+  try {
+    const registros = await tx.sbs_tipo_cambio.findMany({
+      include: {
+        moneda_base: true,
+        moneda_cotizada: true,
+      },
+      where: {
+        estado: {
+          in: estados,
+        },
+      },
+      orderBy: {
+        fecha: "desc",
+      },
+    });
+
+    return registros;
+  } catch (error) {
+    log.error(line(), "Error al listar tipos de cambio SBS", error);
+    throw new ClientError("Ocurrió un error al obtener la lista de tipos de cambio SBS", 500);
+  }
+};
+
+/**
+ * Obtiene un tipo de cambio SBS por su UUID (sbstipocambioid).
+ */
+export const getSbsTipoCambioBySbstipocambioid = async (tx: TxClient, sbstipocambioid: string) => {
+  try {
+    const registro = await tx.sbs_tipo_cambio.findFirst({
+      include: {
+        moneda_base: true,
+        moneda_cotizada: true,
+      },
+      where: {
+        sbstipocambioid,
+      },
+    });
+
+    return registro;
+  } catch (error) {
+    log.error(line(), "Error al buscar tipo de cambio SBS por UUID", error);
+    throw new ClientError("Ocurrió un error al buscar el tipo de cambio SBS", 500);
+  }
+};
+
+/**
+ * Actualiza un tipo de cambio SBS por su UUID (sbstipocambioid).
+ */
+export const updateSbsTipoCambio = async (
+  tx: TxClient,
+  sbstipocambioid: string,
+  sbstipocambio: Prisma.sbs_tipo_cambioUpdateInput,
+) => {
+  try {
+    const result = await tx.sbs_tipo_cambio.update({
+      data: sbstipocambio,
+      where: {
+        sbstipocambioid,
+      },
+    });
+    return result;
+  } catch (error) {
+    log.error(line(), "Error al actualizar tipo de cambio SBS", error);
+    throw new ClientError("Ocurrió un error al actualizar el tipo de cambio SBS", 500);
+  }
+};
+
+/**
+ * Elimina lógicamente un tipo de cambio SBS (estado = ESTADO.ELIMINADO).
+ */
+export const deleteSbsTipoCambio = async (tx: TxClient, sbstipocambioid: string, idusuariomod: number) => {
+  try {
+    const result = await tx.sbs_tipo_cambio.update({
+      data: {
+        idusuariomod,
+        fechamod: new Date(),
+        estado: ESTADO.ELIMINADO,
+      },
+      where: {
+        sbstipocambioid,
+      },
+    });
+    return result;
+  } catch (error) {
+    log.error(line(), "Error al eliminar tipo de cambio SBS", error);
+    throw new ClientError("Ocurrió un error al eliminar el tipo de cambio SBS", 500);
+  }
+};
+
+/**
+ * Activa un tipo de cambio SBS previamente eliminado (estado = ESTADO.ACTIVO).
+ */
+export const activateSbsTipoCambio = async (tx: TxClient, sbstipocambioid: string, idusuariomod: number) => {
+  try {
+    const result = await tx.sbs_tipo_cambio.update({
+      data: {
+        idusuariomod,
+        fechamod: new Date(),
+        estado: ESTADO.ACTIVO,
+      },
+      where: {
+        sbstipocambioid,
+      },
+    });
+    return result;
+  } catch (error) {
+    log.error(line(), "Error al activar tipo de cambio SBS", error);
+    throw new ClientError("Ocurrió un error al activar el tipo de cambio SBS", 500);
+  }
+};
+
+/**
+ * Opciones para la paginación de tipos de cambio SBS.
+ */
+export interface SbsTipoCambioPaginationOptions {
+  page?: number;
+  pageIndex?: number;
+  limit?: number;
+  pageSize?: number;
+  offset?: number;
+  skip?: number;
+  sortBy?: string;
+  order?: string;
+  desc?: boolean | string;
+  search?: string;
+  fechaInicio?: string;
+  fechaFin?: string;
+  estados?: number[] | string;
+  estado?: number | string;
+  monedaCodigo?: string;
+}
+
+/**
+ * Obtiene la lista paginada de tipos de cambio SBS con estrategia estándar de opciones (Offset-based).
+ */
+export const getSbsTipoCambiosPaginado = async (
+  tx: TxClient,
+  options: SbsTipoCambioPaginationOptions = {}
+) => {
+  try {
+    // 1. Normalizar paginación
+    const limit = Math.min(100, Math.max(1, Number(options.limit || options.pageSize || 10)));
+    let page = 1;
+    if (options.page !== undefined) {
+      page = Math.max(1, Number(options.page));
+    } else if (options.pageIndex !== undefined) {
+      page = Math.max(1, Number(options.pageIndex) + 1);
+    }
+
+    const skip =
+      options.skip !== undefined
+        ? Math.max(0, Number(options.skip))
+        : options.offset !== undefined
+        ? Math.max(0, Number(options.offset))
+        : (page - 1) * limit;
+
+    // 2. Normalizar ordenamiento
+    const allowedSortFields = [
+      "fecha",
+      "precio_compra",
+      "precio_venta",
+      "precio_contable",
+      "fechacrea",
+      "fechamod",
+      "estado",
+      "code",
+    ];
+    const requestedSort = options.sortBy || "fecha";
+    const sortField = allowedSortFields.includes(requestedSort) ? requestedSort : "fecha";
+
+    let sortDirection: "asc" | "desc" = "desc";
+    if (options.order) {
+      sortDirection = String(options.order).toLowerCase() === "asc" ? "asc" : "desc";
+    } else if (options.desc !== undefined) {
+      sortDirection = options.desc === true || options.desc === "true" ? "desc" : "asc";
+    }
+
+    // 3. Normalizar filtros de estado
+    let filterEstados: number[] = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
+    if (options.estados) {
+      filterEstados = Array.isArray(options.estados)
+        ? options.estados.map(Number)
+        : String(options.estados).split(",").map(Number);
+    } else if (options.estado !== undefined) {
+      filterEstados = String(options.estado).split(",").map(Number);
+    }
+
+    // 4. Construir cláusula Where
+    const where: Prisma.sbs_tipo_cambioWhereInput = {
+      estado: {
+        in: filterEstados,
+      },
+    };
+
+    // Rango de fechas
+    if (options.fechaInicio || options.fechaFin) {
+      where.fecha = {};
+      if (options.fechaInicio) {
+        where.fecha.gte = new Date(options.fechaInicio);
+      }
+      if (options.fechaFin) {
+        const finDate = new Date(options.fechaFin);
+        if (typeof options.fechaFin === "string" && options.fechaFin.length === 10) {
+          finDate.setUTCHours(23, 59, 59, 999);
+        }
+        where.fecha.lte = finDate;
+      }
+    }
+
+    // Filtro por moneda específica
+    if (options.monedaCodigo) {
+      const cod = options.monedaCodigo.toUpperCase();
+      where.OR = [
+        { moneda_base: { codigo: cod } },
+        { moneda_cotizada: { codigo: cod } },
+      ];
+    }
+
+    // Búsqueda global por texto
+    if (options.search && options.search.trim()) {
+      const term = options.search.trim();
+      const searchConditions: Prisma.sbs_tipo_cambioWhereInput[] = [
+        { code: { contains: term } },
+        { moneda_base: { codigo: { contains: term } } },
+        { moneda_base: { nombre: { contains: term } } },
+        { moneda_cotizada: { codigo: { contains: term } } },
+        { moneda_cotizada: { nombre: { contains: term } } },
+      ];
+
+      if (where.OR) {
+        where.AND = [{ OR: where.OR }, { OR: searchConditions }];
+        delete where.OR;
+      } else {
+        where.OR = searchConditions;
+      }
+    }
+
+    // 5. Ejecución concurrente de conteo y consulta
+    const [total, items] = await Promise.all([
+      tx.sbs_tipo_cambio.count({ where }),
+      tx.sbs_tipo_cambio.findMany({
+        where,
+        include: {
+          moneda_base: true,
+          moneda_cotizada: true,
+        },
+        orderBy: {
+          [sortField]: sortDirection,
+        },
+        skip,
+        take: limit,
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      items,
+      total,
+      page,
+      limit,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+      pageIndex: page - 1,
+      pageSize: limit,
+      pageCount: totalPages,
+    };
+  } catch (error) {
+    log.error(line(), "Error al obtener tipos de cambio SBS paginados", error);
+    throw new ClientError("Ocurrió un error al obtener la lista paginada de tipos de cambio SBS", 500);
+  }
+};
