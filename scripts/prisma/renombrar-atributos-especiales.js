@@ -44,7 +44,11 @@ const getDateFormatted = () => {
 };
 
 const createBackup = (filePath) => {
-  const backupFile = path.join(path.dirname(filePath), `schema.${getDateFormatted()}.prisma`);
+  const backupDir = path.join(path.dirname(filePath), "backup");
+  if (!fs.existsSync(backupDir)) {
+    fs.mkdirSync(backupDir, { recursive: true });
+  }
+  const backupFile = path.join(backupDir, `schema.${getDateFormatted()}.prisma.bak`);
   fs.copyFileSync(filePath, backupFile);
   console.log(`✅ Copia de seguridad creada: ${backupFile}`);
 };
