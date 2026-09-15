@@ -12,20 +12,14 @@ import { decolectaService } from "#src/integrations/decolecta/index.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { line, log } from "#src/utils/logger.pino.js";
 
-const DEFAULT_ZONE = "America/Lima";
+import { parseDateUtcMidnight } from "#src/utils/dateUtils.js";
 
 /**
- * Convierte un string YYYY-MM-DD a objeto Date al inicio del día en zona horaria America/Lima.
+ * Convierte un string o valor de fecha a objeto Date anclado a medianoche UTC
+ * para el manejo preciso de columnas MySQL DATE (@db.Date) en Prisma sin desfases horarios.
  */
 export const parseFechaLima = (fechaStr?: string): Date => {
-  if (!fechaStr) {
-    return DateTime.now().setZone(DEFAULT_ZONE).startOf("day").toJSDate();
-  }
-  const dt = DateTime.fromISO(fechaStr, { zone: DEFAULT_ZONE }).startOf("day");
-  if (!dt.isValid) {
-    throw new ClientError(`La fecha proporcionada '${fechaStr}' no es válida. Formato requerido: YYYY-MM-DD`, 400);
-  }
-  return dt.toJSDate();
+  return parseDateUtcMidnight(fechaStr);
 };
 
 /**

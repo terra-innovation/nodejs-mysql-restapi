@@ -4,6 +4,7 @@ import type { Prisma, sbs_tipo_cambio } from "#root/generated/prisma/ft_factorin
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
+import { parseDateUtcMidnight } from "#src/utils/dateUtils.js";
 
 /**
  * Obtiene el tipo de cambio SBS para una fecha y par de monedas específicos.
@@ -141,15 +142,19 @@ export const upsertSbsTipoCambio = async (
   data: Prisma.sbs_tipo_cambioUncheckedCreateInput,
 ) => {
   try {
+    const fechaNormalizada = parseDateUtcMidnight(data.fecha as any);
     const registro = await tx.sbs_tipo_cambio.upsert({
       where: {
         idmonedabase_idmonedacotizada_fecha: {
           idmonedabase: data.idmonedabase,
           idmonedacotizada: data.idmonedacotizada,
-          fecha: data.fecha as Date,
+          fecha: fechaNormalizada,
         },
       },
-      create: data,
+      create: {
+        ...data,
+        fecha: fechaNormalizada,
+      },
       update: {
         precio_compra: data.precio_compra,
         precio_venta: data.precio_venta,
@@ -302,6 +307,7 @@ export interface SbsTipoCambioPaginationOptions {
   search?: string;
   fechaInicio?: string;
   fechaFin?: string;
+  fecha?: string;
   estados?: number[] | string;
   estado?: number | string;
   monedaCodigo?: string;
@@ -369,18 +375,16 @@ export const getSbsTipoCambiosPaginado = async (
       },
     };
 
-    // Rango de fechas
-    if (options.fechaInicio || options.fechaFin) {
+    // Filtro por fecha exacta o rango de fechas
+    if (options.fecha) {
+      where.fecha = parseDateUtcMidnight(options.fecha);
+    } else if (options.fechaInicio || options.fechaFin) {
       where.fecha = {};
       if (options.fechaInicio) {
-        where.fecha.gte = new Date(options.fechaInicio);
+        where.fecha.gte = parseDateUtcMidnight(options.fechaInicio);
       }
       if (options.fechaFin) {
-        const finDate = new Date(options.fechaFin);
-        if (typeof options.fechaFin === "string" && options.fechaFin.length === 10) {
-          finDate.setUTCHours(23, 59, 59, 999);
-        }
-        where.fecha.lte = finDate;
+        where.fecha.lte = parseDateUtcMidnight(options.fechaFin);
       }
     }
 

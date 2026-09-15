@@ -1,9 +1,7 @@
 import { ClientError } from "#src/utils/CustomErrors.js";
 
-import { log, line } from "#src/utils/logger.pino.js";
-import { ESTADO } from "#src/constants/prisma.Constant.js";
-import type { Prisma, zlaboratorio_usuario } from "#root/generated/prisma/ft_factoring/client.js";
 import { TxClient } from "#src/types/Prisma.types.js";
+import { line, log } from "#src/utils/logger.pino.js";
 
 export const getTimezones = async (tx: TxClient) => {
   try {
@@ -11,14 +9,22 @@ export const getTimezones = async (tx: TxClient) => {
       {
         global_time_zone: string;
         session_time_zone: string;
-        now: Date;
-        sys_time: Date;
-        current_timestamp: Date;
-        utc_timestamp: Date;
+        system_time_zone: string;
+        now: string;
+        sys_time: string;
+        current_timestamp: string;
+        utc_timestamp: string;
+        diferencia_horas: string;
       }[]
-    >`SELECT @@global.time_zone as global_time_zone, @@session.time_zone as 'session_time_zone', 
-      NOW() AS 'now', SYSDATE() AS 'sys_time'
-    , CURRENT_TIMESTAMP AS 'current_timestamp', UTC_TIMESTAMP() AS 'utc_timestamp';`;
+    >`SELECT 
+      @@global.time_zone as global_time_zone, 
+      @@session.time_zone as 'session_time_zone', 
+      @@system_time_zone AS system_time_zone,
+      DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s') AS 'now',
+      DATE_FORMAT(SYSDATE(), '%Y-%m-%d %H:%i:%s') AS 'sys_time',
+      DATE_FORMAT(CURRENT_TIMESTAMP, '%Y-%m-%d %H:%i:%s') AS 'current_timestamp', 
+      DATE_FORMAT(UTC_TIMESTAMP(), '%Y-%m-%d %H:%i:%s') AS 'utc_timestamp',
+      CAST(TIMEDIFF(NOW(), UTC_TIMESTAMP()) AS CHAR) AS diferencia_horas;`;
 
     return result;
   } catch (error) {

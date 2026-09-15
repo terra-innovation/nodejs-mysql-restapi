@@ -182,6 +182,21 @@ export const generarMenuAdmin = (usuario: UsuarioConRoles) => {
           },
         ],
       },
+      {
+        id: "admin-sistema",
+        title: "Sistema",
+        type: "collapse",
+        icon: "SafetyCertificateOutlined",
+        children: [
+          {
+            id: "admin-sistema-administracion-timezones",
+            title: "Timezones",
+            type: "item",
+            url: "/admin/sistema/administracion/lista",
+            breadcrumbs: true,
+          },
+        ],
+      },
     ],
   };
 

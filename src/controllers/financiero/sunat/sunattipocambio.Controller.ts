@@ -136,7 +136,11 @@ export const createSunatTipoCambio = async (req: Request, res: Response) => {
   const sunatCreateSchema = yup
     .object()
     .shape({
-      fecha: yup.string().trim().required("La fecha es requerida (YYYY-MM-DD)"),
+      fecha: yup
+        .string()
+        .trim()
+        .required("La fecha es requerida (YYYY-MM-DD)")
+        .matches(/^\d{4}-\d{2}-\d{2}/, "El formato de fecha debe ser YYYY-MM-DD o ISO"),
       precio_compra: yup.number().required("El precio de compra es requerido").positive(),
       precio_venta: yup.number().required("El precio de venta es requerido").positive(),
       monedabaseid: yup.string().trim().optional(),
@@ -225,7 +229,11 @@ export const updateSunatTipoCambio = async (req: Request, res: Response) => {
       sunattipocambioid: yup.string().trim().required().min(36).max(36),
       precio_compra: yup.number().optional().positive(),
       precio_venta: yup.number().optional().positive(),
-      fecha: yup.string().trim().optional(),
+      fecha: yup
+        .string()
+        .trim()
+        .optional()
+        .matches(/^\d{4}-\d{2}-\d{2}/, "El formato de fecha debe ser YYYY-MM-DD o ISO"),
     })
     .required();
 
@@ -261,7 +269,18 @@ export const updateSunatTipoCambio = async (req: Request, res: Response) => {
         dataToUpdate.precio_venta = new Prisma.Decimal(validated.precio_venta);
       }
       if (validated.fecha) {
-        dataToUpdate.fecha = tipocambioLogic.parseFechaLima(validated.fecha);
+        const nuevaFecha = tipocambioLogic.parseFechaLima(validated.fecha);
+        const existente = await sunattipocambioDao.getSunatTipoCambioByFecha(
+          tx,
+          nuevaFecha,
+          registro.idmonedabase,
+          registro.idmonedacotizada,
+          [ESTADO.ACTIVO, ESTADO.ELIMINADO]
+        );
+        if (existente && existente.sunattipocambioid !== validated.sunattipocambioid) {
+          throw new ClientError("Ya existe otro tipo de cambio SUNAT registrado para esta fecha y par de monedas", 400);
+        }
+        dataToUpdate.fecha = nuevaFecha;
       }
 
       await sunattipocambioDao.updateSunatTipoCambio(tx, validated.sunattipocambioid, dataToUpdate);

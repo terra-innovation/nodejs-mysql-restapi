@@ -64,6 +64,8 @@ const envSchema = z.object({
   // Decolecta - Tipo de Cambio SUNAT / SBS
   DECOLECTA_BASE_URL: z.string().url().default("https://api.decolecta.com/v1"),
   DECOLECTA_API_TOKEN: z.string(),
+  APISPERU_BASE_URL: z.string().url().default("https://tipocambio.apisperu.com/api/v1"),
+  APISPERU_API_TOKEN: z.string(),
 });
 
 export let env: z.infer<typeof envSchema>;
