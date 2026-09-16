@@ -20,7 +20,7 @@ router.patch("/financiero/sbs/tipo-cambio/activar/:id", isAuth, isRole([6]), cat
 // ==========================================
 // Consultas Operativas y Sincronización Decolecta
 // ==========================================
-// Obtener tipo de cambio SBS del día de hoy
+// Obtener tipo de cambio SBS del día de hoy (Estrategia Fallback en cascada / Failover jerárquico)
 router.get("/financiero/sbs/tipo-cambio/hoy", isAuth, isRole([6]), catchedAsync(sbsController.getSbsTipoCambioHoy));
 
 // Obtener tipo de cambio SBS por fecha específica (YYYY-MM-DD)

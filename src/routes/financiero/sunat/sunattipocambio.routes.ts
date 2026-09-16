@@ -20,7 +20,7 @@ router.patch("/financiero/sunat/tipo-cambio/activar/:id", isAuth, isRole([6]), c
 // ==========================================
 // Consultas Operativas y Sincronización Decolecta
 // ==========================================
-// Obtener tipo de cambio SUNAT del día de hoy
+// Obtener tipo de cambio SUNAT del día de hoy (Estrategia Fallback en cascada / Failover jerárquico)
 router.get("/financiero/sunat/tipo-cambio/hoy", isAuth, isRole([6]), catchedAsync(sunatController.getSunatTipoCambioHoy));
 
 // Obtener tipo de cambio SUNAT por fecha específica (YYYY-MM-DD)

@@ -30,6 +30,9 @@
       "runtimeArgs": ["run", "dev"],
       "console": "integratedTerminal",
       "outputCapture": "std",
+      "env": {
+        "NODE_ENV": "development"
+      },
       "preLaunchTask": "tsc-watch"
     }
   ]

@@ -5,6 +5,7 @@ import { response } from "#src/utils/CustomResponseOk.js";
 import * as tipocambioLogic from "#src/logics/tipocambio.Logic.js";
 import * as sunattipocambioDao from "#src/daos/sunattipocambio.Dao.js";
 import * as monedaDao from "#src/daos/moneda.Dao.js";
+import * as configuracionappDao from "#src/daos/configuracionapp.Dao.js";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
@@ -13,12 +14,13 @@ import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
 /**
- * Obtiene el tipo de cambio SUNAT del día de hoy (o más reciente).
+ * Obtiene el tipo de cambio SUNAT del día de hoy (o más reciente) con estrategia Fallback en cascada.
+ * No recibe serviciotipocambioid.
  * GET /api/v1/financiero/sunat/tipo-cambio/hoy
  */
 export const getSunatTipoCambioHoy = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getSunatTipoCambioHoy");
-  const data = await tipocambioLogic.obtenerSunatLogic();
+  const data = await tipocambioLogic.obtenerSunatLogic(undefined);
   response(res, 200, data);
 };
 
@@ -29,7 +31,8 @@ export const getSunatTipoCambioHoy = async (req: Request, res: Response) => {
 export const getSunatTipoCambioPorFecha = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getSunatTipoCambioPorFecha");
   const { fecha } = req.params;
-  const data = await tipocambioLogic.obtenerSunatLogic(fecha);
+  const serviciotipocambioid = (req.query.serviciotipocambioid || req.body.serviciotipocambioid) as string | undefined;
+  const data = await tipocambioLogic.obtenerSunatLogic(fecha, serviciotipocambioid);
   response(res, 200, data);
 };
 
@@ -54,26 +57,28 @@ export const sincronizarSunatTipoCambio = async (req: Request, res: Response) =>
   log.debug(line(), "controller::sincronizarSunatTipoCambio");
   const mes = req.body.mes || req.body.month || req.query.mes || req.query.month;
   const anio = req.body.anio || req.body.year || req.query.anio || req.query.year;
+  const serviciotipocambioid = (req.body.serviciotipocambioid || req.query.serviciotipocambioid) as string | undefined;
 
   if (mes && anio) {
-    const data = await tipocambioLogic.sincronizarSunatMesLogic(Number(mes), Number(anio));
+    const data = await tipocambioLogic.sincronizarSunatMesLogic(Number(mes), Number(anio), serviciotipocambioid);
     return response(res, 201, data);
   }
 
   const fecha = (req.body.fecha || req.query.fecha) as string | undefined;
-  const data = await tipocambioLogic.sincronizarSunatLogic(fecha);
+  const data = await tipocambioLogic.sincronizarSunatLogic(fecha, serviciotipocambioid);
   response(res, 201, data);
 };
 
 /**
- * Fuerza la sincronización de un mes completo de SUNAT con la API Decolecta y actualiza la BD.
+ * Fuerza la sincronización de un mes completo de SUNAT con la API seleccionada y actualiza la BD.
  * POST /api/v1/financiero/sunat/tipo-cambio/sincronizar-mes
  */
 export const sincronizarSunatMesTipoCambio = async (req: Request, res: Response) => {
   log.debug(line(), "controller::sincronizarSunatMesTipoCambio");
   const mes = Number(req.body.mes || req.body.month || req.query.mes || req.query.month);
   const anio = Number(req.body.anio || req.body.year || req.query.anio || req.query.year);
-  const data = await tipocambioLogic.sincronizarSunatMesLogic(mes, anio);
+  const serviciotipocambioid = (req.body.serviciotipocambioid || req.query.serviciotipocambioid) as string | undefined;
+  const data = await tipocambioLogic.sincronizarSunatMesLogic(mes, anio, serviciotipocambioid);
   response(res, 201, data);
 };
 
@@ -379,10 +384,14 @@ export const getSunatTipoCambioMaster = async (req: Request, res: Response) => {
   const master = await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estados = [ESTADO.ACTIVO];
-      const monedas = await monedaDao.getMonedas(tx, filter_estados);
+      const [monedas, servicios_tipo_cambio] = await Promise.all([
+        monedaDao.getMonedas(tx, filter_estados),
+        configuracionappDao.getServiciosTipoDeCambioParsed(tx),
+      ]);
 
       const sunatMaster: Record<string, any> = {
         monedas,
+        servicios_tipo_cambio,
       };
 
       return sunatMaster;

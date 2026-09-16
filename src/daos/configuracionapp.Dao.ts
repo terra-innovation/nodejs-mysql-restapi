@@ -38,8 +38,36 @@ export const getSplaftRegistroOperacionesMontoMinimo = async (tx: TxClient) => {
   return await getConfiguracionappByIdconfiguracionapp(tx, 8);
 };
 
+export interface ServicioTipoCambioConfig {
+  idserviciotipocambio: number;
+  serviciotipocambioid: string;
+  code: string;
+  nombre: string;
+  url: string;
+  prioridad: number;
+  estado: number;
+}
+
 export const getServiciosTipoDeCambio = async (tx: TxClient) => {
   return await getConfiguracionappByIdconfiguracionapp(tx, 9);
+};
+
+export const getServiciosTipoDeCambioParsed = async (tx: TxClient): Promise<ServicioTipoCambioConfig[]> => {
+  try {
+    const config = await getServiciosTipoDeCambio(tx);
+    if (!config || !config.valor) {
+      return [];
+    }
+
+    const parsed = typeof config.valor === "string" ? JSON.parse(config.valor) : config.valor;
+    if (Array.isArray(parsed)) {
+      return parsed as ServicioTipoCambioConfig[];
+    }
+    return [];
+  } catch (error) {
+    log.error(line(), "Error al parsear servicios de tipo de cambio de configuracion_app", error);
+    return [];
+  }
 };
 
 export const getConfiguracionapps = async (tx: TxClient, estados: number[]) => {

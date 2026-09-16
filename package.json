@@ -15,7 +15,11 @@
     "pretest_anterior": "cross-env NODE_ENV=test jest --clearCache",
     "prisma-sync": "node scripts/prisma/generate-models.js",
     "list-unused-exports": "powershell -Command \"npx ts-prune | Select-String -NotMatch 'used in module' | Select-String '\\\\src\\\\controllers\\\\'\"",
-    "build-prod": "node scripts/produccion/build-prod.js"
+    "build-prod": "node scripts/produccion/build-prod.js",
+    "cron:tipo-cambio": "cross-env NODE_ENV=development node --env-file=.env.development --import tsx/esm src/scripts/sync_tipo_cambio.ts",
+    "cron:tipo-cambio:prod": "node dist/scripts/sync_tipo_cambio.js",
+    "cron:email-venta-frio": "cross-env NODE_ENV=development tsx src/scripts/email_venta_frio.ts",
+    "cron:email-venta-frio:prod": "node dist/scripts/email_venta_frio.js"
   },
   "imports": {
     "#root/*": "./*",

@@ -158,7 +158,9 @@ export const upsertSbsTipoCambio = async (
       update: {
         precio_compra: data.precio_compra,
         precio_venta: data.precio_venta,
-        precio_contable: data.precio_contable,
+        ...(data.precio_contable !== null && data.precio_contable !== undefined
+          ? { precio_contable: data.precio_contable }
+          : {}),
         fechamod: new Date(),
         idusuariomod: data.idusuariomod || 1,
         estado: data.estado || ESTADO.ACTIVO,
