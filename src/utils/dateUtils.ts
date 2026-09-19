@@ -13,6 +13,10 @@ const utcConfig = {
 export const formatDateCustom = (isoDate, format = "dd/LLL/yyyy HH:mm ZZZ", config = defaultConfig) => {
   if (!isoDate) return "";
 
+  if (DateTime.isDateTime(isoDate)) {
+    return isoDate.setZone(config.zone).toFormat(format);
+  }
+
   if (isoDate instanceof Date) {
     return DateTime.fromJSDate(isoDate, config).toFormat(format);
   }
@@ -34,6 +38,12 @@ export const formatDateForLogLocale = (isoDate) => {
 
 export const formatDateTimeWithZoneLocale = (isoDate) => {
   return formatDateCustom(isoDate, "dd/LLL/yyyy HH:mm:ss ZZZ", defaultConfig);
+};
+
+export const formatDateWithZoneLocale = (isoDate, format = "yyyy-MM-dd (ZZ)") => {
+  if (!isoDate) return "";
+  const lima = toLimaDate(isoDate);
+  return lima ? lima.toFormat(format) : "";
 };
 
 export const formatDateForAuditLocale = (isoDate, format = "dd/LLL/yyyy HH:mm:ss.SSS ZZZ") => {
@@ -82,6 +92,13 @@ export const getNowLima = () => {
 export const toLimaDate = (date) => {
   if (!date) return null;
   if (DateTime.isDateTime(date)) return date.setZone(defaultConfig.zone);
+
+  if (typeof date === "string") {
+    const match = date.trim().match(/^(\d{4}-\d{2}-\d{2})/);
+    if (match) {
+      return DateTime.fromISO(match[1], { zone: defaultConfig.zone });
+    }
+  }
 
   const jsDate = date instanceof Date ? date : new Date(date);
   return DateTime.fromJSDate(jsDate, { zone: "utc" }).setZone(defaultConfig.zone, { keepLocalTime: true });

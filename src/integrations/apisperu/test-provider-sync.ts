@@ -23,20 +23,23 @@ async function main() {
     });
     console.log(`   ✅ Encontrados ${servicios.length} servicios configurados:`);
     servicios.forEach((s) => {
-      console.log(`      - [${s.idserviciotipocambio}] ${s.nombre} (UUID: ${s.serviciotipocambioid}, Prioridad: ${s.prioridad}, Estado: ${s.estado})`);
+      console.log(`      - [${s.idserviciotipocambio}] ${s.nombre} (UUID: ${s.serviciotipocambioid}, Prioridad SUNAT: ${s.prioridad_sunat}, Prioridad SBS: ${s.prioridad_sbs}, Estado: ${s.estado})`);
     });
 
     // 2. Probar resolución de proveedor
-    console.log("\n2️⃣ Probando resolución de proveedor...");
+    console.log("\n2️⃣ Probando resolución de proveedor (SUNAT y SBS)...");
     await prismaFT.client.$transaction(async (tx) => {
-      const defaultServicio = await tipocambioLogic.resolverServicioTipoCambio(tx);
-      console.log(`   ✅ Por defecto (sin ID): ${defaultServicio.nombre} (${defaultServicio.code})`);
+      const defaultSunat = await tipocambioLogic.resolverServicioTipoCambioSunat(tx);
+      console.log(`   ✅ SUNAT por defecto (sin ID): ${defaultSunat.nombre} (${defaultSunat.code}) - Prioridad SUNAT: ${defaultSunat.prioridad_sunat}`);
 
-      const provApisPeru = await tipocambioLogic.resolverServicioTipoCambio(tx, APIS_PERU_ID);
-      console.log(`   ✅ Por UUID APIs Perú: ${provApisPeru.nombre} (ID: ${provApisPeru.idserviciotipocambio})`);
+      const defaultSbs = await tipocambioLogic.resolverServicioTipoCambioSbs(tx);
+      console.log(`   ✅ SBS por defecto (sin ID): ${defaultSbs.nombre} (${defaultSbs.code}) - Prioridad SBS: ${defaultSbs.prioridad_sbs}`);
 
-      const provDecolecta = await tipocambioLogic.resolverServicioTipoCambio(tx, DECOLECTA_ID);
-      console.log(`   ✅ Por UUID Decolecta: ${provDecolecta.nombre} (ID: ${provDecolecta.idserviciotipocambio})`);
+      const provApisPeru = await tipocambioLogic.resolverServicioTipoCambioSunat(tx, APIS_PERU_ID);
+      console.log(`   ✅ Por UUID APIs Perú (SUNAT): ${provApisPeru.nombre} (ID: ${provApisPeru.idserviciotipocambio})`);
+
+      const provDecolecta = await tipocambioLogic.resolverServicioTipoCambioSbs(tx, DECOLECTA_ID);
+      console.log(`   ✅ Por UUID Decolecta (SBS): ${provDecolecta.nombre} (ID: ${provDecolecta.idserviciotipocambio})`);
     });
 
     // 3. Sincronización SUNAT con APIs Perú

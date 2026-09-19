@@ -2,8 +2,8 @@
  * test-fallback-unit.ts
  * Pruebas unitarias para validar la lógica de Fallback en cascada (Failover jerárquico).
  */
-import { ClientError } from "#src/utils/CustomErrors.js";
 import type { ServicioTipoCambioConfig } from "#src/daos/configuracionapp.Dao.js";
+import { ClientError } from "#src/utils/CustomErrors.js";
 
 async function runUnitTests() {
   console.log("==================================================");
@@ -34,7 +34,9 @@ async function runUnitTests() {
       code: "STC000200",
       nombre: "Decolecta",
       url: "https://api.decolecta.com",
-      prioridad: 2,
+      fecha_suscripcion: new Date("2026-09-10"),
+      prioridad_sunat: 2,
+      prioridad_sbs: 2,
       estado: 1,
     },
     {
@@ -43,7 +45,9 @@ async function runUnitTests() {
       code: "STC000300",
       nombre: "Servicio Inactivo",
       url: "https://api.inactivo.com",
-      prioridad: 0,
+      fecha_suscripcion: new Date("2026-09-10"),
+      prioridad_sunat: 0,
+      prioridad_sbs: 0,
       estado: 0, // inactivo
     },
     {
@@ -52,7 +56,9 @@ async function runUnitTests() {
       code: "STC000100",
       nombre: "APIs Perú",
       url: "https://tipocambio.apisperu.com",
-      prioridad: 1,
+      fecha_suscripcion: new Date("2026-09-10"),
+      prioridad_sunat: 1,
+      prioridad_sbs: 1,
       estado: 1,
     },
     {
@@ -61,19 +67,27 @@ async function runUnitTests() {
       code: "STC000400",
       nombre: "Servicio Backup",
       url: "https://api.backup.com",
-      prioridad: 5,
+      fecha_suscripcion: new Date("2026-09-10"),
+      prioridad_sunat: 5,
+      prioridad_sbs: 5,
       estado: 1,
     },
   ];
 
-  // Simulación de la lógica de resolverServiciosTipoCambioOrdenados
+  // Simulación de la lógica de resolverServiciosTipoCambioOrdenadosSunat
   const activos = mockServicios.filter((s) => s.estado === 1);
-  activos.sort((a, b) => a.prioridad - b.prioridad);
+  activos.sort((a, b) => a.prioridad_sunat - b.prioridad_sunat);
 
   assert(activos.length === 3, "Filtra servicios inactivos (solo 3 activos)");
-  assert(activos[0].nombre === "APIs Perú" && activos[0].prioridad === 1, "Primer servicio es prioridad 1 (APIs Perú)");
-  assert(activos[1].nombre === "Decolecta" && activos[1].prioridad === 2, "Segundo servicio es prioridad 2 (Decolecta)");
-  assert(activos[2].nombre === "Servicio Backup" && activos[2].prioridad === 5, "Tercer servicio es prioridad 5 (Servicio Backup)");
+  assert(activos[0].nombre === "APIs Perú" && activos[0].prioridad_sunat === 1, "Primer servicio SUNAT es prioridad 1 (APIs Perú)");
+  assert(activos[1].nombre === "Decolecta" && activos[1].prioridad_sunat === 2, "Segundo servicio SUNAT es prioridad 2 (Decolecta)");
+  assert(activos[2].nombre === "Servicio Backup" && activos[2].prioridad_sunat === 5, "Tercer servicio SUNAT es prioridad 5 (Servicio Backup)");
+
+  // Simulación de la lógica de resolverServiciosTipoCambioOrdenadosSbs
+  const activosSbs = mockServicios.filter((s) => s.estado === 1);
+  activosSbs.sort((a, b) => a.prioridad_sbs - b.prioridad_sbs);
+  assert(activosSbs.length === 3, "Filtra servicios inactivos para SBS (solo 3 activos)");
+  assert(activosSbs[0].prioridad_sbs <= activosSbs[1].prioridad_sbs, "Ordena correctamente por prioridad_sbs");
 
   // ----------------------------------------------------
   // Test 2: Ejecución exitosa con el primer servicio (no debe llamar al resto)
@@ -85,7 +99,7 @@ async function runUnitTests() {
     for (const servicio of servicios) {
       try {
         llamadas.push(servicio.nombre);
-        if (servicio.prioridad === 1) {
+        if (servicio.prioridad_sunat === 1) {
           // Éxito inmediato
           return { exitoso: true, servicio: servicio.nombre, compra: 3.35, venta: 3.37 };
         }
@@ -111,10 +125,10 @@ async function runUnitTests() {
     for (const servicio of servicios) {
       try {
         llamadas2.push(servicio.nombre);
-        if (servicio.prioridad === 1) {
+        if (servicio.prioridad_sunat === 1) {
           throw new Error("Network timeout en APIs Perú");
         }
-        if (servicio.prioridad === 2) {
+        if (servicio.prioridad_sunat === 2) {
           // Éxito en Decolecta
           return { exitoso: true, servicio: servicio.nombre, compra: 3.351, venta: 3.371 };
         }

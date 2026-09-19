@@ -49,10 +49,10 @@ export const resolverMonedas = async (tx: any, codigoBase: string, codigoCotizad
 };
 
 /**
- * Resuelve el servicio de tipo de cambio configurado a utilizar (APIs Perú o Decolecta).
+ * Resuelve el servicio de tipo de cambio de la SUNAT configurado a utilizar (APIs Perú o Decolecta).
  * Si no se pasa serviciotipocambioid, selecciona el servicio activo de mayor prioridad.
  */
-export const resolverServicioTipoCambio = async (tx: any, serviciotipocambioid?: string): Promise<ServicioTipoCambioConfig> => {
+export const resolverServicioTipoCambioSunat = async (tx: any, serviciotipocambioid?: string): Promise<ServicioTipoCambioConfig> => {
   const servicios = await configuracionappDao.getServiciosTipoDeCambioParsed(tx);
   const activos = servicios.filter((s) => s.estado === 1);
 
@@ -69,15 +69,15 @@ export const resolverServicioTipoCambio = async (tx: any, serviciotipocambioid?:
   }
 
   // Por defecto el de mayor prioridad (menor valor numérico de prioridad, ej. prioridad: 1)
-  activos.sort((a, b) => a.prioridad - b.prioridad);
+  activos.sort((a, b) => a.prioridad_sunat - b.prioridad_sunat);
   return activos[0];
 };
 
 /**
- * Obtiene todos los servicios de tipo de cambio activos (estado = 1)
- * ordenados por prioridad de menor a mayor (ej. prioridad 1 primero, luego 2, etc.).
+ * Resuelve el servicio de tipo de cambio de la SBS configurado a utilizar (APIs Perú o Decolecta).
+ * Si no se pasa serviciotipocambioid, selecciona el servicio activo de mayor prioridad.
  */
-export const resolverServiciosTipoCambioOrdenados = async (tx: any): Promise<ServicioTipoCambioConfig[]> => {
+export const resolverServicioTipoCambioSbs = async (tx: any, serviciotipocambioid?: string): Promise<ServicioTipoCambioConfig> => {
   const servicios = await configuracionappDao.getServiciosTipoDeCambioParsed(tx);
   const activos = servicios.filter((s) => s.estado === 1);
 
@@ -85,7 +85,48 @@ export const resolverServiciosTipoCambioOrdenados = async (tx: any): Promise<Ser
     throw new ClientError("No se encontraron servicios de tipo de cambio activos en la configuración", 500);
   }
 
-  activos.sort((a, b) => a.prioridad - b.prioridad);
+  if (serviciotipocambioid) {
+    const encontrado = activos.find((s) => s.serviciotipocambioid === serviciotipocambioid);
+    if (!encontrado) {
+      throw new ClientError(`El servicio de tipo de cambio '${serviciotipocambioid}' no existe o no está activo`, 404);
+    }
+    return encontrado;
+  }
+
+  // Por defecto el de mayor prioridad (menor valor numérico de prioridad, ej. prioridad: 1)
+  activos.sort((a, b) => a.prioridad_sbs - b.prioridad_sbs);
+  return activos[0];
+};
+
+/**
+ * Obtiene todos los servicios de tipo de cambio de la SUNAT activos (estado = 1)
+ * ordenados por prioridad de menor a mayor (ej. prioridad 1 primero, luego 2, etc.).
+ */
+export const resolverServiciosTipoCambioOrdenadosSunat = async (tx: any): Promise<ServicioTipoCambioConfig[]> => {
+  const servicios = await configuracionappDao.getServiciosTipoDeCambioParsed(tx);
+  const activos = servicios.filter((s) => s.estado === 1);
+
+  if (activos.length === 0) {
+    throw new ClientError("No se encontraron servicios de tipo de cambio activos en la configuración", 500);
+  }
+
+  activos.sort((a, b) => a.prioridad_sunat - b.prioridad_sunat);
+  return activos;
+};
+
+/**
+ * Obtiene todos los servicios de tipo de cambio de la SUNAT activos (estado = 1)
+ * ordenados por prioridad de menor a mayor (ej. prioridad 1 primero, luego 2, etc.).
+ */
+export const resolverServiciosTipoCambioOrdenadosSbs = async (tx: any): Promise<ServicioTipoCambioConfig[]> => {
+  const servicios = await configuracionappDao.getServiciosTipoDeCambioParsed(tx);
+  const activos = servicios.filter((s) => s.estado === 1);
+
+  if (activos.length === 0) {
+    throw new ClientError("No se encontraron servicios de tipo de cambio activos en la configuración", 500);
+  }
+
+  activos.sort((a, b) => a.prioridad_sbs - b.prioridad_sbs);
   return activos;
 };
 
@@ -104,10 +145,10 @@ interface ResultadoConsultaSunat {
 /**
  * Consulta un proveedor de tipo de cambio específico para SUNAT.
  */
-const consultarProveedorSunat = async (servicio: ServicioTipoCambioConfig, fechaIso?: string): Promise<ResultadoConsultaSunat> => {
+const consultarProveedorSunat = async (servicio: ServicioTipoCambioConfig, fechaIso: string): Promise<ResultadoConsultaSunat> => {
   if (servicio.idserviciotipocambio === 1) {
     // APIs Perú
-    const data = fechaIso ? await apisPeruService.getTipoCambioSunatPorFecha(fechaIso) : await apisPeruService.getTipoCambioSunatHoy();
+    const data = await apisPeruService.getTipoCambioSunatPorFecha(fechaIso);
 
     const usdRate = data?.rates?.USD;
     if (!data || !data.success || !data.date || !usdRate?.buy || !usdRate?.sell) {
@@ -123,7 +164,7 @@ const consultarProveedorSunat = async (servicio: ServicioTipoCambioConfig, fecha
     };
   } else if (servicio.idserviciotipocambio === 2) {
     // Decolecta
-    const dataDecolecta = fechaIso ? await decolectaService.getTipoCambioSunatPorFecha(fechaIso) : await decolectaService.getTipoCambioSunatHoy();
+    const dataDecolecta = await decolectaService.getTipoCambioSunatPorFecha(fechaIso);
 
     if (!dataDecolecta || !dataDecolecta.date || !dataDecolecta.buy_price || !dataDecolecta.sell_price) {
       throw new ClientError("Decolecta no retornó información válida para el tipo de cambio SUNAT", 502);
@@ -171,47 +212,49 @@ const persistirSunatTipoCambio = async (data: ResultadoConsultaSunat) => {
  * Obtiene todos los servicios de tipo de cambio con estado 1 ordenados por prioridad de menor a mayor.
  * Intenta uno por uno; cuando un servicio responde correctamente, detiene los intentos y retorna el resultado.
  */
-export const sincronizarSunatWithFallbackLogic = async (fechaIso?: string) => {
-  log.debug(line(), `logic::sincronizarSunatWithFallbackLogic - fecha: ${fechaIso || "hoy"}`);
+export const sincronizarSunatWithFallbackLogic = async (fechaIso: string) => {
+  log.debug(line(), `logic::sincronizarSunatWithFallbackLogic - fecha: ${fechaIso}`);
 
   const servicios = await prismaFT.client.$transaction(async (tx) => {
-    return await resolverServiciosTipoCambioOrdenados(tx);
+    return await resolverServiciosTipoCambioOrdenadosSunat(tx);
   });
 
   const errores: { servicio: string; prioridad: number; error: string }[] = [];
 
   for (const servicio of servicios) {
     try {
-      log.info(line(), `Intentando consultar tipo de cambio SUNAT con '${servicio.nombre}' (prioridad: ${servicio.prioridad})...`);
+      log.info(line(), `Intentando consultar tipo de cambio SUNAT con '${servicio.nombre}' (prioridad: ${servicio.prioridad_sunat})...`);
       const rawData = await consultarProveedorSunat(servicio, fechaIso);
       const resultado = await persistirSunatTipoCambio(rawData);
       log.info(line(), `Tipo de cambio SUNAT obtenido exitosamente con '${servicio.nombre}'`);
       return Object.assign(resultado, {
         origen: "API_EXTERNA" as const,
         proveedor: servicio.nombre,
-        prioridad: servicio.prioridad,
+        prioridad: servicio.prioridad_sunat,
       });
     } catch (err: any) {
       const msg = err?.message || String(err);
-      log.warn(line(), `Falló el proveedor SUNAT '${servicio.nombre}' (prioridad: ${servicio.prioridad}): ${msg}. Intentando siguiente proveedor en cascada...`);
+      log.warn(line(), `Falló el proveedor SUNAT '${servicio.nombre}' (prioridad: ${servicio.prioridad_sunat}): ${msg}. Intentando siguiente proveedor en cascada...`);
       errores.push({
         servicio: servicio.nombre,
-        prioridad: servicio.prioridad,
+        prioridad: servicio.prioridad_sunat,
         error: msg,
       });
     }
   }
 
   log.error(line(), "Todos los servicios de tipo de cambio SUNAT fallaron en cascada", errores);
-  throw new ClientError(`No se pudo obtener el tipo de cambio SUNAT. Fallaron todos los servicios configurados: ${errores.map((e) => `[${e.servicio}: ${e.error}]`).join(", ")}`, 502);
+  const clientErr = new ClientError(`No se pudo obtener el tipo de cambio SUNAT. Fallaron todos los servicios configurados: ${errores.map((e) => `[${e.servicio}: ${e.error}]`).join(", ")}`, 502);
+  (clientErr as any).errores = errores;
+  throw clientErr;
 };
 
 /**
  * Consulta la API externa para SUNAT y persiste/actualiza el registro en BD.
  * Si no se especifica serviciotipocambioid, aplica la estrategia de Fallback en cascada.
  */
-export const sincronizarSunatLogic = async (fechaIso?: string, serviciotipocambioid?: string) => {
-  log.debug(line(), `logic::sincronizarSunatLogic - fecha: ${fechaIso || "hoy"}, servicio: ${serviciotipocambioid || "cascade-fallback"}`);
+export const sincronizarSunatLogic = async (fechaIso: string, serviciotipocambioid?: string) => {
+  log.debug(line(), `logic::sincronizarSunatLogic - fecha: ${fechaIso}, servicio: ${serviciotipocambioid || "cascade-fallback"}`);
 
   // Si no se especifica un servicio particular, se utiliza la estrategia de Fallback en cascada
   if (!serviciotipocambioid) {
@@ -220,7 +263,7 @@ export const sincronizarSunatLogic = async (fechaIso?: string, serviciotipocambi
 
   // 1. Resolver el servicio configurado específico
   const servicio = await prismaFT.client.$transaction(async (tx) => {
-    return await resolverServicioTipoCambio(tx, serviciotipocambioid);
+    return await resolverServicioTipoCambioSunat(tx, serviciotipocambioid);
   });
 
   // 2. Consultar al servicio correspondiente
@@ -231,7 +274,7 @@ export const sincronizarSunatLogic = async (fechaIso?: string, serviciotipocambi
   return Object.assign(resultado, {
     origen: "API_EXTERNA" as const,
     proveedor: servicio.nombre,
-    prioridad: servicio.prioridad,
+    prioridad: servicio.prioridad_sunat,
   });
 };
 
@@ -251,7 +294,7 @@ export const sincronizarSunatMesLogic = async (mes: number, anio: number, servic
 
   // 1. Resolver el servicio configurado
   const servicio = await prismaFT.client.$transaction(async (tx) => {
-    return await resolverServicioTipoCambio(tx, serviciotipocambioid);
+    return await resolverServicioTipoCambioSunat(tx, serviciotipocambioid);
   });
 
   const itemsToSave: { date: string; buy_price: string; sell_price: string }[] = [];
@@ -345,8 +388,8 @@ export const sincronizarSunatMesLogic = async (mes: number, anio: number, servic
  * Si ya existe en la BD local, lo devuelve; si no, lo sincroniza desde la API configurada
  * o mediante Fallback en cascada (Failover jerárquico) si no se especifica un proveedor.
  */
-export const obtenerSunatLogic = async (fechaIso?: string, serviciotipocambioid?: string) => {
-  log.debug(line(), `logic::obtenerSunatLogic - fecha: ${fechaIso || "hoy"}`);
+export const obtenerSunatLogic = async (fechaIso: string, serviciotipocambioid?: string) => {
+  log.debug(line(), `logic::obtenerSunatLogic - fecha: ${fechaIso}`);
 
   const fechaBuscada = parseFechaLima(fechaIso);
 
@@ -404,10 +447,10 @@ interface ResultadoConsultaSbs {
 /**
  * Consulta un proveedor de tipo de cambio específico para SBS.
  */
-const consultarProveedorSbs = async (servicio: ServicioTipoCambioConfig, monedaCodigo = "USD", fechaIso?: string): Promise<ResultadoConsultaSbs> => {
+const consultarProveedorSbs = async (servicio: ServicioTipoCambioConfig, monedaCodigo = "USD", fechaIso: string): Promise<ResultadoConsultaSbs> => {
   if (servicio.idserviciotipocambio === 1) {
     // APIs Perú
-    const data = fechaIso ? await apisPeruService.getTipoCambioSbsPorFecha(fechaIso) : await apisPeruService.getTipoCambioSbsHoy();
+    const data = await apisPeruService.getTipoCambioSbsPorFecha(fechaIso);
 
     const rate = data?.rates?.[monedaCodigo];
     if (!data || !data.success || !data.date || !rate?.buy || !rate?.sell) {
@@ -476,47 +519,49 @@ const persistirSbsTipoCambio = async (data: ResultadoConsultaSbs) => {
  * Obtiene todos los servicios de tipo de cambio con estado 1 ordenados por prioridad de menor a mayor.
  * Intenta uno por uno; cuando un servicio responde correctamente, detiene los intentos y retorna el resultado.
  */
-export const sincronizarSbsWithFallbackLogic = async (monedaCodigo = "USD", fechaIso?: string) => {
-  log.debug(line(), `logic::sincronizarSbsWithFallbackLogic - moneda: ${monedaCodigo}, fecha: ${fechaIso || "hoy"}`);
+export const sincronizarSbsWithFallbackLogic = async (monedaCodigo = "USD", fechaIso: string) => {
+  log.debug(line(), `logic::sincronizarSbsWithFallbackLogic - moneda: ${monedaCodigo}, fecha: ${fechaIso}`);
 
   const servicios = await prismaFT.client.$transaction(async (tx) => {
-    return await resolverServiciosTipoCambioOrdenados(tx);
+    return await resolverServiciosTipoCambioOrdenadosSbs(tx);
   });
 
   const errores: { servicio: string; prioridad: number; error: string }[] = [];
 
   for (const servicio of servicios) {
     try {
-      log.info(line(), `Intentando consultar tipo de cambio SBS (${monedaCodigo}) con '${servicio.nombre}' (prioridad: ${servicio.prioridad})...`);
+      log.info(line(), `Intentando consultar tipo de cambio SBS (${monedaCodigo}) con '${servicio.nombre}' (prioridad: ${servicio.prioridad_sbs})...`);
       const rawData = await consultarProveedorSbs(servicio, monedaCodigo, fechaIso);
       const resultado = await persistirSbsTipoCambio(rawData);
       log.info(line(), `Tipo de cambio SBS (${monedaCodigo}) obtenido exitosamente con '${servicio.nombre}'`);
       return Object.assign(resultado, {
         origen: "API_EXTERNA" as const,
         proveedor: servicio.nombre,
-        prioridad: servicio.prioridad,
+        prioridad: servicio.prioridad_sbs,
       });
     } catch (err: any) {
       const msg = err?.message || String(err);
-      log.warn(line(), `Falló el proveedor SBS '${servicio.nombre}' (prioridad: ${servicio.prioridad}): ${msg}. Intentando siguiente proveedor en cascada...`);
+      log.warn(line(), `Falló el proveedor SBS '${servicio.nombre}' (prioridad: ${servicio.prioridad_sbs}): ${msg}. Intentando siguiente proveedor en cascada...`);
       errores.push({
         servicio: servicio.nombre,
-        prioridad: servicio.prioridad,
+        prioridad: servicio.prioridad_sbs,
         error: msg,
       });
     }
   }
 
   log.error(line(), `Todos los servicios de tipo de cambio SBS fallaron en cascada para la moneda ${monedaCodigo}`, errores);
-  throw new ClientError(`No se pudo obtener el tipo de cambio SBS. Fallaron todos los servicios configurados: ${errores.map((e) => `[${e.servicio}: ${e.error}]`).join(", ")}`, 502);
+  const clientErr = new ClientError(`No se pudo obtener el tipo de cambio SBS. Fallaron todos los servicios configurados: ${errores.map((e) => `[${e.servicio}: ${e.error}]`).join(", ")}`, 502);
+  (clientErr as any).errores = errores;
+  throw clientErr;
 };
 
 /**
  * Consulta la API externa para SBS (Promedio y Contable) y persiste/actualiza en BD.
  * Si no se especifica serviciotipocambioid, aplica la estrategia de Fallback en cascada.
  */
-export const sincronizarSbsLogic = async (monedaCodigo = "USD", fechaIso?: string, serviciotipocambioid?: string) => {
-  log.debug(line(), `logic::sincronizarSbsLogic - moneda: ${monedaCodigo}, fecha: ${fechaIso || "hoy"}, servicio: ${serviciotipocambioid || "cascade-fallback"}`);
+export const sincronizarSbsLogic = async (monedaCodigo = "USD", fechaIso: string, serviciotipocambioid?: string) => {
+  log.debug(line(), `logic::sincronizarSbsLogic - moneda: ${monedaCodigo}, fecha: ${fechaIso}, servicio: ${serviciotipocambioid || "cascade-fallback"}`);
 
   // Si no se especifica un servicio particular, se utiliza la estrategia de Fallback en cascada
   if (!serviciotipocambioid) {
@@ -525,7 +570,7 @@ export const sincronizarSbsLogic = async (monedaCodigo = "USD", fechaIso?: strin
 
   // 1. Resolver el servicio configurado específico
   const servicio = await prismaFT.client.$transaction(async (tx) => {
-    return await resolverServicioTipoCambio(tx, serviciotipocambioid);
+    return await resolverServicioTipoCambioSbs(tx, serviciotipocambioid);
   });
 
   // 2. Consultar al servicio correspondiente
@@ -536,7 +581,7 @@ export const sincronizarSbsLogic = async (monedaCodigo = "USD", fechaIso?: strin
   return Object.assign(resultado, {
     origen: "API_EXTERNA" as const,
     proveedor: servicio.nombre,
-    prioridad: servicio.prioridad,
+    prioridad: servicio.prioridad_sbs,
   });
 };
 
@@ -556,7 +601,7 @@ export const sincronizarSbsMesLogic = async (monedaCodigo = "USD", mes: number, 
 
   // 1. Resolver el servicio configurado
   const servicio = await prismaFT.client.$transaction(async (tx) => {
-    return await resolverServicioTipoCambio(tx, serviciotipocambioid);
+    return await resolverServicioTipoCambioSbs(tx, serviciotipocambioid);
   });
 
   const itemsToSave: { date: string; buy_price: string; sell_price: string; precio_contable: Prisma.Decimal | null }[] = [];
@@ -655,8 +700,8 @@ export const sincronizarSbsMesLogic = async (monedaCodigo = "USD", mes: number, 
  * Si ya existe en la BD local, lo devuelve; si no, lo sincroniza desde el proveedor seleccionado
  * o mediante Fallback en cascada (Failover jerárquico) si no se especifica un proveedor.
  */
-export const obtenerSbsLogic = async (monedaCodigo = "USD", fechaIso?: string, serviciotipocambioid?: string) => {
-  log.debug(line(), `logic::obtenerSbsLogic - moneda: ${monedaCodigo}, fecha: ${fechaIso || "hoy"}`);
+export const obtenerSbsLogic = async (monedaCodigo = "USD", fechaIso: string, serviciotipocambioid?: string) => {
+  log.debug(line(), `logic::obtenerSbsLogic - moneda: ${monedaCodigo}, fecha: ${fechaIso}`);
 
   const fechaBuscada = parseFechaLima(fechaIso);
 
@@ -703,21 +748,51 @@ export const obtenerHistorialSbsLogic = async (monedaCodigo = "USD", fechaInicio
 // ============================================================================
 
 /**
- * Sincroniza tanto SUNAT como SBS para el día actual aplicando estrategia Cache-Aside
- * (si ya existe en BD no consulta a las APIs externas) y Fallback en cascada
- * (Failover jerárquico de servicios activos ordenados por prioridad) si no existe en BD local.
+ * Sincroniza tanto SUNAT como SBS para una fecha determinada (o la fecha del sistema por defecto)
+ * aplicando estrategia Cache-Aside (si ya existe en BD no consulta a las APIs externas)
+ * y Fallback en cascada (Failover jerárquico de servicios activos ordenados por prioridad) si no existe en BD local.
  * Ideal para ser ejecutada desde scripts de Crontab / Programador de Tareas.
  *
+ * @param fechaIsoOrForzar Fecha en formato YYYY-MM-DD (opcional) o boolean para forzarSincronizacion
  * @param forzarSincronizacion Si es true, ignora el caché local y fuerza la consulta a las APIs externas
+ * @param throwOnError Si es false (por defecto), los fallos individuales en cascada no lanzan excepción y no detienen el flujo conjunto
  */
-export const sincronizarTipoCambioDelDiaLogic = async (forzarSincronizacion = false) => {
-  log.info(line(), `Iniciando sincronización conjunta de tipo de cambio (SUNAT + SBS) con Cache-Aside [forzar: ${forzarSincronizacion}]...`);
+export const sincronizarTipoCambioDelDiaLogic = async (fechaIso: string, forzarSincronizacion = false, throwOnError = false) => {
+  log.info(line(), `Iniciando sincronización conjunta de tipo de cambio (SUNAT + SBS) con Cache-Aside [fecha: ${fechaIso}, forzar: ${forzarSincronizacion}]...`);
 
-  const sunat = forzarSincronizacion ? await sincronizarSunatLogic() : await obtenerSunatLogic();
+  // 1. Consultar SUNAT
+  let sunat: any = null;
+  try {
+    sunat = forzarSincronizacion ? await sincronizarSunatLogic(fechaIso) : await obtenerSunatLogic(fechaIso);
+  } catch (err: any) {
+    if (throwOnError) throw err;
+    sunat = {
+      origen: "FALLO_EN_CASCADA" as const,
+      error: true,
+      mensaje: "Todos los servicios de tipo de cambio SUNAT fallaron en cascada",
+      detalle: err?.message || String(err),
+      errores: err?.errores,
+    };
+  }
+
   await new Promise((resolve) => setTimeout(resolve, 300));
-  const sbs = forzarSincronizacion ? await sincronizarSbsLogic("USD") : await obtenerSbsLogic("USD");
 
-  log.info(line(), `Sincronización conjunta completada. SUNAT: ${(sunat as any).origen || "OK"}, SBS: ${(sbs as any).origen || "OK"}`);
+  // 2. Consultar SBS
+  let sbs: any = null;
+  try {
+    sbs = forzarSincronizacion ? await sincronizarSbsLogic("USD", fechaIso) : await obtenerSbsLogic("USD", fechaIso);
+  } catch (err: any) {
+    if (throwOnError) throw err;
+    sbs = {
+      origen: "FALLO_EN_CASCADA" as const,
+      error: true,
+      mensaje: "Todos los servicios de tipo de cambio SBS fallaron en cascada para la moneda USD",
+      detalle: err?.message || String(err),
+      errores: err?.errores,
+    };
+  }
+
+  log.info(line(), `Sincronización conjunta completada. SUNAT: ${sunat?.origen || "ERROR"}, SBS: ${sbs?.origen || "ERROR"}`);
 
   return { sunat, sbs };
 };

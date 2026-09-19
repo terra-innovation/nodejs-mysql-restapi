@@ -13,6 +13,8 @@ import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
+import * as df from "#src/utils/dateUtils.js";
+
 /**
  * Obtiene el tipo de cambio SUNAT del día de hoy (o más reciente) con estrategia Fallback en cascada.
  * No recibe serviciotipocambioid.
@@ -20,7 +22,8 @@ import * as yup from "yup";
  */
 export const getSunatTipoCambioHoy = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getSunatTipoCambioHoy");
-  const data = await tipocambioLogic.obtenerSunatLogic(undefined);
+  const fecha = df.formatDateToYMD(df.getNowLima());
+  const data = await tipocambioLogic.obtenerSunatLogic(fecha);
   response(res, 200, data);
 };
 
@@ -64,7 +67,7 @@ export const sincronizarSunatTipoCambio = async (req: Request, res: Response) =>
     return response(res, 201, data);
   }
 
-  const fecha = (req.body.fecha || req.query.fecha) as string | undefined;
+  const fecha = ((req.body.fecha || req.query.fecha) as string | undefined) || df.formatDateToYMD(df.getNowLima());
   const data = await tipocambioLogic.sincronizarSunatLogic(fecha, serviciotipocambioid);
   response(res, 201, data);
 };

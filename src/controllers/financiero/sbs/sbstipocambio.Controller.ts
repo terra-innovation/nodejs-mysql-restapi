@@ -13,6 +13,8 @@ import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
+import * as df from "#src/utils/dateUtils.js";
+
 /**
  * Obtiene el tipo de cambio SBS del día de hoy (o más reciente) con estrategia Fallback en cascada.
  * No recibe serviciotipocambioid.
@@ -21,7 +23,8 @@ import * as yup from "yup";
 export const getSbsTipoCambioHoy = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getSbsTipoCambioHoy");
   const moneda = (req.query.moneda as string) || "USD";
-  const data = await tipocambioLogic.obtenerSbsLogic(moneda, undefined);
+  const fecha = df.formatDateToYMD(df.getNowLima());
+  const data = await tipocambioLogic.obtenerSbsLogic(moneda, fecha);
   response(res, 200, data);
 };
 
@@ -68,7 +71,7 @@ export const sincronizarSbsTipoCambio = async (req: Request, res: Response) => {
     return response(res, 201, data);
   }
 
-  const fecha = (req.body.fecha || req.query.fecha) as string | undefined;
+  const fecha = ((req.body.fecha || req.query.fecha) as string | undefined) || df.formatDateToYMD(df.getNowLima());
   const data = await tipocambioLogic.sincronizarSbsLogic(moneda, fecha, serviciotipocambioid);
   response(res, 201, data);
 };

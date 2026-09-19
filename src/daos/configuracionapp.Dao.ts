@@ -5,6 +5,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { line, log } from "#src/utils/logger.pino.js";
+import { parseDateUtcMidnight } from "#src/utils/dateUtils.js";
 
 export const getIGV = async (tx: TxClient) => {
   return await getConfiguracionappByIdconfiguracionapp(tx, 1);
@@ -44,7 +45,9 @@ export interface ServicioTipoCambioConfig {
   code: string;
   nombre: string;
   url: string;
-  prioridad: number;
+  fecha_suscripcion: Date;
+  prioridad_sunat: number;
+  prioridad_sbs: number;
   estado: number;
 }
 
@@ -61,7 +64,12 @@ export const getServiciosTipoDeCambioParsed = async (tx: TxClient): Promise<Serv
 
     const parsed = typeof config.valor === "string" ? JSON.parse(config.valor) : config.valor;
     if (Array.isArray(parsed)) {
-      return parsed as ServicioTipoCambioConfig[];
+      return parsed.map((item: any) => ({
+        ...item,
+        fecha_suscripcion: parseDateUtcMidnight(item.fecha_suscripcion),
+        prioridad_sunat: Number(item.prioridad_sunat ?? 1),
+        prioridad_sbs: Number(item.prioridad_sbs ?? 1),
+      })) as ServicioTipoCambioConfig[];
     }
     return [];
   } catch (error) {
