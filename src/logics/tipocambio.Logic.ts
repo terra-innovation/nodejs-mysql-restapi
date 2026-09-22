@@ -50,20 +50,21 @@ export const resolverMonedas = async (tx: any, codigoBase: string, codigoCotizad
 
 /**
  * Resuelve el servicio de tipo de cambio de la SUNAT configurado a utilizar (APIs Perú o Decolecta).
- * Si no se pasa serviciotipocambioid, selecciona el servicio activo de mayor prioridad.
+ * Una prioridad SUNAT menor o igual a cero deshabilita ese servicio solo para SUNAT.
+ * Si no se pasa serviciotipocambioid, selecciona el servicio habilitado de mayor prioridad.
  */
 export const resolverServicioTipoCambioSunat = async (tx: any, serviciotipocambioid?: string): Promise<ServicioTipoCambioConfig> => {
   const servicios = await configuracionappDao.getServiciosTipoDeCambioParsed(tx);
-  const activos = servicios.filter((s) => s.estado === 1);
+  const activos = servicios.filter((s) => s.estado === 1 && s.prioridad_sunat > 0);
 
   if (activos.length === 0) {
-    throw new ClientError("No se encontraron servicios de tipo de cambio activos en la configuración", 500);
+    throw new ClientError("No se encontraron servicios de tipo de cambio habilitados para SUNAT en la configuración", 500);
   }
 
   if (serviciotipocambioid) {
     const encontrado = activos.find((s) => s.serviciotipocambioid === serviciotipocambioid);
     if (!encontrado) {
-      throw new ClientError(`El servicio de tipo de cambio '${serviciotipocambioid}' no existe o no está activo`, 404);
+      throw new ClientError(`El servicio de tipo de cambio '${serviciotipocambioid}' no existe, no está activo o está deshabilitado para SUNAT`, 404);
     }
     return encontrado;
   }
@@ -75,20 +76,21 @@ export const resolverServicioTipoCambioSunat = async (tx: any, serviciotipocambi
 
 /**
  * Resuelve el servicio de tipo de cambio de la SBS configurado a utilizar (APIs Perú o Decolecta).
- * Si no se pasa serviciotipocambioid, selecciona el servicio activo de mayor prioridad.
+ * Una prioridad SBS menor o igual a cero deshabilita ese servicio solo para SBS.
+ * Si no se pasa serviciotipocambioid, selecciona el servicio habilitado de mayor prioridad.
  */
 export const resolverServicioTipoCambioSbs = async (tx: any, serviciotipocambioid?: string): Promise<ServicioTipoCambioConfig> => {
   const servicios = await configuracionappDao.getServiciosTipoDeCambioParsed(tx);
-  const activos = servicios.filter((s) => s.estado === 1);
+  const activos = servicios.filter((s) => s.estado === 1 && s.prioridad_sbs > 0);
 
   if (activos.length === 0) {
-    throw new ClientError("No se encontraron servicios de tipo de cambio activos en la configuración", 500);
+    throw new ClientError("No se encontraron servicios de tipo de cambio habilitados para SBS en la configuración", 500);
   }
 
   if (serviciotipocambioid) {
     const encontrado = activos.find((s) => s.serviciotipocambioid === serviciotipocambioid);
     if (!encontrado) {
-      throw new ClientError(`El servicio de tipo de cambio '${serviciotipocambioid}' no existe o no está activo`, 404);
+      throw new ClientError(`El servicio de tipo de cambio '${serviciotipocambioid}' no existe, no está activo o está deshabilitado para SBS`, 404);
     }
     return encontrado;
   }
@@ -99,15 +101,16 @@ export const resolverServicioTipoCambioSbs = async (tx: any, serviciotipocambioi
 };
 
 /**
- * Obtiene todos los servicios de tipo de cambio de la SUNAT activos (estado = 1)
+ * Obtiene todos los servicios de tipo de cambio habilitados para SUNAT
+ * (estado = 1 y prioridad_sunat > 0)
  * ordenados por prioridad de menor a mayor (ej. prioridad 1 primero, luego 2, etc.).
  */
 export const resolverServiciosTipoCambioOrdenadosSunat = async (tx: any): Promise<ServicioTipoCambioConfig[]> => {
   const servicios = await configuracionappDao.getServiciosTipoDeCambioParsed(tx);
-  const activos = servicios.filter((s) => s.estado === 1);
+  const activos = servicios.filter((s) => s.estado === 1 && s.prioridad_sunat > 0);
 
   if (activos.length === 0) {
-    throw new ClientError("No se encontraron servicios de tipo de cambio activos en la configuración", 500);
+    throw new ClientError("No se encontraron servicios de tipo de cambio habilitados para SUNAT en la configuración", 500);
   }
 
   activos.sort((a, b) => a.prioridad_sunat - b.prioridad_sunat);
@@ -115,15 +118,16 @@ export const resolverServiciosTipoCambioOrdenadosSunat = async (tx: any): Promis
 };
 
 /**
- * Obtiene todos los servicios de tipo de cambio de la SUNAT activos (estado = 1)
+ * Obtiene todos los servicios de tipo de cambio habilitados para SBS
+ * (estado = 1 y prioridad_sbs > 0)
  * ordenados por prioridad de menor a mayor (ej. prioridad 1 primero, luego 2, etc.).
  */
 export const resolverServiciosTipoCambioOrdenadosSbs = async (tx: any): Promise<ServicioTipoCambioConfig[]> => {
   const servicios = await configuracionappDao.getServiciosTipoDeCambioParsed(tx);
-  const activos = servicios.filter((s) => s.estado === 1);
+  const activos = servicios.filter((s) => s.estado === 1 && s.prioridad_sbs > 0);
 
   if (activos.length === 0) {
-    throw new ClientError("No se encontraron servicios de tipo de cambio activos en la configuración", 500);
+    throw new ClientError("No se encontraron servicios de tipo de cambio habilitados para SBS en la configuración", 500);
   }
 
   activos.sort((a, b) => a.prioridad_sbs - b.prioridad_sbs);
