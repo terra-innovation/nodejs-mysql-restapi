@@ -10,6 +10,21 @@ export const generarMenuFinanciero = (usuario: UsuarioConRoles) => {
     type: "group",
     children: [
       {
+        id: "financiero-factoring-empresa",
+        title: "Factoring empresa",
+        type: "collapse",
+        icon: "ClusterOutlined",
+        children: [
+          {
+            id: "financiero-factoring-factoring-lista",
+            title: "Operaciones",
+            type: "item",
+            url: "/financiero/servicio/factoring/factoring/lista",
+            breadcrumbs: true,
+          },
+        ],
+      },
+      {
         id: "financiero-sbs-tipo_de_cambio",
         title: "SBS Tipo de cambio",
         type: "item",
