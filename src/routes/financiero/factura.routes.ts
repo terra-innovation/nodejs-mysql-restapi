@@ -8,8 +8,8 @@ const router = Router();
 
 //Financiero
 
-router.get("/financiero/factura/buscar/factoring/:id", isAuth, isRole([2]), catchedAsync(facturaController.getFacturasByFactoringid));
+router.get("/financiero/factura/buscar/factoring/:id", isAuth, isRole([6]), catchedAsync(facturaController.getFacturasByFactoringid));
 
-router.post("/financiero/factura/factor/subir", isAuth, isRole([3]), catchedAsync(facturaController.subirFacturaFactor));
+router.post("/financiero/factura/factor/subir", isAuth, isRole([6]), catchedAsync(facturaController.subirFacturaFactor));
 
 export default router;

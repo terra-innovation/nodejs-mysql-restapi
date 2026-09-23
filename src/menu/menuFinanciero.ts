@@ -16,6 +16,13 @@ export const generarMenuFinanciero = (usuario: UsuarioConRoles) => {
         icon: "ClusterOutlined",
         children: [
           {
+            id: "financiero-factoring-pendientes-factura-cedente",
+            title: "Pendientes de facturar al cedente",
+            type: "item",
+            url: "/financiero/servicio/factoring/factoring/pendientes-factura-cedente",
+            breadcrumbs: true,
+          },
+          {
             id: "financiero-factoring-factoring-lista",
             title: "Operaciones",
             type: "item",

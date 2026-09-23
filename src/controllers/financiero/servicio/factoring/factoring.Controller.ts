@@ -43,3 +43,14 @@ export const getFactorings = async (req: Request, res: Response) => {
   );
   response(res, 201, factorings);
 };
+
+export const getFactoringsPendientesFacturaCedente = async (_req: Request, res: Response) => {
+  log.debug(line(), "controller::getFactoringsPendientesFacturaCedente");
+
+  const factorings = await prismaFT.client.$transaction(
+    async (tx) => factoringDao.getFactoringsPendientesFacturaCedente(tx),
+    { timeout: prismaFT.transactionTimeout },
+  );
+
+  response(res, 200, factorings);
+};

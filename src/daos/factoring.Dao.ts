@@ -391,6 +391,45 @@ export const getFactoringsByEstados = async (tx: TxClient, estados: number[]) =>
   }
 };
 
+/**
+ * Operaciones aceptadas que todavía no tienen una factura activa del factor
+ * asociada. Se usa como bandeja de trabajo para la facturación al cedente.
+ */
+export const getFactoringsPendientesFacturaCedente = async (tx: TxClient) => {
+  try {
+    return await tx.factoring.findMany({
+      include: {
+        empresa_cedente: true,
+        factoring_facturas: {
+          include: {
+            factura: true,
+          },
+        },
+        factoring_estado: true,
+        factoring_propuesta_aceptada: true,
+        moneda: true,
+      },
+      where: {
+        estado: ESTADO.ACTIVO,
+        idfactoringpropuestaaceptada: {
+          not: null,
+        },
+        factoring_factura_factores: {
+          none: {
+            estado: ESTADO.ACTIVO,
+          },
+        },
+      },
+      orderBy: {
+        fecha_operacion: "asc",
+      },
+    });
+  } catch (error) {
+    log.error(line(), "", error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getFactoringByIdfactoring = async (tx: TxClient, idfactoring: number) => {
   try {
     const factoring = await tx.factoring.findUnique({
