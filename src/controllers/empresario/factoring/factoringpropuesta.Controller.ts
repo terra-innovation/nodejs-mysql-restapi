@@ -8,10 +8,10 @@ import * as factoringpropuestaDao from "#root/src/daos/factoringpropuesta.Dao.js
 import * as factoringpropuestahistorialestadoDao from "#root/src/daos/factoringpropuestahistorialestado.Dao.js";
 import * as usuarioDao from "#root/src/daos/usuario.Dao.js";
 
-import * as emailService from "#root/src/services/email.Service.js";
+import * as emailService from "#root/src/providers/email/email.Provider.js";
 
 import { ESTADO } from "#src/constants/prisma.Constant.js";
-import * as telegramService from "#src/services/telegram.Service.js";
+import * as telegramService from "#src/providers/telegram/telegram.Provider.js";
 import { buildFactoringPropuestaAceptadaMessage } from "#src/templates/telegram/factoringpropuesta.Template.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";

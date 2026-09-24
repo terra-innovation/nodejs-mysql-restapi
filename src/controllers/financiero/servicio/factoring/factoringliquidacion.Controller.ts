@@ -21,7 +21,7 @@ import * as luxon from "luxon";
 import path from "path";
 import * as yup from "yup";
 
-import * as emailService from "#root/src/services/email.Service.js";
+import * as emailService from "#root/src/providers/email/email.Provider.js";
 
 export const sendCorreoFactoringliquidacion = async (req: Request, res: Response) => {
   log.debug(line(), "controller::sendCorreoFactoringliquidacion");

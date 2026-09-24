@@ -14,7 +14,7 @@ import * as usuarioDao from "#root/src/daos/usuario.Dao.js";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import { Request, Response } from "express";
 
-import * as telegramService from "#src/services/telegram.Service.js";
+import * as telegramService from "#src/providers/telegram/telegram.Provider.js";
 import { newPersonaVerificationMessage } from "#src/templates/telegram/persona.Template.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";

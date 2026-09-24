@@ -10,7 +10,7 @@ import * as factoringtransferenciatipoDao from "#root/src/daos/factoringtransfer
 import * as monedaDao from "#root/src/daos/moneda.Dao.js";
 import * as usuarioDao from "#root/src/daos/usuario.Dao.js";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import * as emailService from "#root/src/services/email.Service.js";
+import * as emailService from "#root/src/providers/email/email.Provider.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";

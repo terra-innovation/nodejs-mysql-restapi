@@ -9,8 +9,8 @@ import * as validacionDao from "#root/src/daos/validacion.Dao.js";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import { line, log } from "#root/src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
-import * as emailService from "#src/services/email.Service.js";
-import * as telegramService from "#src/services/telegram.Service.js";
+import * as emailService from "#src/providers/email/email.Provider.js";
+import * as telegramService from "#src/providers/telegram/telegram.Provider.js";
 import { newLoginMessage, newUsuarioRegistradoMessage } from "#src/templates/telegram/usuario.Template.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
@@ -27,8 +27,8 @@ import * as Yup from "yup";
 
 import * as df from "#src/utils/dateUtils.js";
 
-import EmailSender from "#src/utils/email/emailSender.js";
-import TemplateManager from "#src/utils/email/TemplateManager.js";
+import EmailSender from "#src/providers/email/emailSender.js";
+import TemplateManager from "#src/providers/email/TemplateManager.js";
 
 import { UsuarioSession } from "#root/src/types/UsuarioSession.types.js";
 

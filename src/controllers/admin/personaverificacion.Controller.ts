@@ -13,8 +13,8 @@ import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
 
-import EmailSender from "#src/utils/email/emailSender.js";
-import TemplateManager from "#src/utils/email/TemplateManager.js";
+import EmailSender from "#src/providers/email/emailSender.js";
+import TemplateManager from "#src/providers/email/TemplateManager.js";
 
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";

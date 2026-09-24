@@ -10,7 +10,7 @@ import { response } from "#src/utils/CustomResponseOk.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { Request, Response } from "express";
 
-import EmailSender from "#src/utils/email/emailSender.js";
+import EmailSender from "#src/providers/email/emailSender.js";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 

@@ -1,4 +1,4 @@
-import * as telegramService from "#src/services/telegram.Service.js";
+import * as telegramService from "#src/providers/telegram/telegram.Provider.js";
 import { ArchivoError, AuthClientError, ClientError, ConexionError, CORSError } from "#src/utils/CustomErrors.js";
 import { customResponseError } from "#src/utils/CustomResponseError.js";
 import { line, log } from "#src/utils/logger.pino.js";

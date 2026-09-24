@@ -9,7 +9,7 @@ import * as factoringhistorialestadoDao from "#root/src/daos/factoringhistoriale
 import * as factoringpropuestaDao from "#root/src/daos/factoringpropuesta.Dao.js";
 import * as usuarioDao from "#root/src/daos/usuario.Dao.js";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import * as emailService from "#root/src/services/email.Service.js";
+import * as emailService from "#root/src/providers/email/email.Provider.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";

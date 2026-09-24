@@ -24,7 +24,7 @@ import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 
-import * as telegramService from "#src/services/telegram.Service.js";
+import * as telegramService from "#src/providers/telegram/telegram.Provider.js";
 import { limitMessage, newFacturaCargadaMessage } from "#src/templates/telegram/factura.Template.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as facturaUtils from "#src/utils/facturaUtils.js";

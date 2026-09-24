@@ -9,7 +9,7 @@ import * as df from "#src/utils/dateUtils.js";
 import * as nf from "#src/utils/numberUtils.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 
-import * as telegramService from "#src/services/telegram.Service.js";
+import * as telegramService from "#src/providers/telegram/telegram.Provider.js";
 
 async function main() {
   testSendTelegramMensaje();

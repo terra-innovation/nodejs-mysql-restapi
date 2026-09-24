@@ -1,5 +1,5 @@
 import { isProduction } from "#src/config.js";
-import * as telegramService from "#src/services/telegram.Service.js";
+import * as telegramService from "#src/providers/telegram/telegram.Provider.js";
 import { NextFunction, Request, Response } from "express";
 
 export function notFoundHandlerMiddleware(req: Request, res: Response, next: NextFunction) {

@@ -2,7 +2,7 @@ import { DateTime } from "luxon";
 import xlsx from "xlsx";
 import fs from "fs";
 
-import * as emailService from "#src/services/email.Service.js";
+import * as emailService from "#src/providers/email/email.Provider.js";
 import { line, log } from "#src/utils/logger.pino.js";
 
 // ============================================================================

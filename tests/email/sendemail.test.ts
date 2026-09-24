@@ -12,13 +12,13 @@ import * as factoringpropuestaDao from "#src/daos/factoringpropuesta.prisma.Dao.
 import * as factoringtransferenciacedenteDao from "#src/daos/factoringtransferenciacedente.prisma.Dao.js";
 import * as usuarioDao from "#src/daos/usuario.prisma.Dao.js";
 
-import TemplateManager from "#src/utils/email/TemplateManager.ts";
-import EmailSender from "#src/utils/email/emailSender.ts";
+import TemplateManager from "#src/providers/email/TemplateManager.ts";
+import EmailSender from "#src/providers/email/emailSender.ts";
 import { line } from "#src/utils/logger.pino.js";
 
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 
-import * as emailService from "#src/services/email.Service.js";
+import * as emailService from "#src/providers/email/email.Provider.js";
 
 // Instanciar clases
 const templateManager = new TemplateManager();

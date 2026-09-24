@@ -30,8 +30,8 @@ import * as yup from "yup";
 
 import * as df from "#src/utils/dateUtils.js";
 
-import EmailSender from "#src/utils/email/emailSender.js";
-import TemplateManager from "#src/utils/email/TemplateManager.js";
+import EmailSender from "#src/providers/email/emailSender.js";
+import TemplateManager from "#src/providers/email/TemplateManager.js";
 
 export const getServicioempresaverificacionsByServicioempresaid = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getServicioempresaverificacionsByServicioempresaid");

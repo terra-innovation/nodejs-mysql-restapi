@@ -15,7 +15,7 @@ import * as monedaDao from "#root/src/daos/moneda.Dao.js";
 import * as personaDao from "#root/src/daos/persona.Dao.js";
 import * as usuarioDao from "#root/src/daos/usuario.Dao.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
-import * as telegramService from "#src/services/telegram.Service.js";
+import * as telegramService from "#src/providers/telegram/telegram.Provider.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
@@ -25,7 +25,7 @@ import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
-import * as emailService from "#root/src/services/email.Service.js";
+import * as emailService from "#root/src/providers/email/email.Provider.js";
 import { newFactoringMessage } from "#src/templates/telegram/factoring.Template.js";
 
 export const getFactorings = async (req: Request, res: Response) => {

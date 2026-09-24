@@ -43,7 +43,7 @@ import * as funcionarioDao from "#root/src/daos/funcionario.Dao.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 
-import * as telegramService from "#src/services/telegram.Service.js";
+import * as telegramService from "#src/providers/telegram/telegram.Provider.js";
 import { newEmpresaVerificationMessage } from "#src/templates/telegram/usuarioservicio.Template.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";

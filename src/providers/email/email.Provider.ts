@@ -1,5 +1,5 @@
-import TemplateManager from "#src/utils/email/TemplateManager.js";
-import EmailSender from "#src/utils/email/emailSender.js";
+import TemplateManager from "./TemplateManager.js";
+import EmailSender from "./emailSender.js";
 import { line, log } from "#src/utils/logger.pino.js";
 
 import * as df from "#src/utils/dateUtils.js";

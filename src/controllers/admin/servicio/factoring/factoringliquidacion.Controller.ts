@@ -28,7 +28,7 @@ import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
-import * as emailService from "#root/src/services/email.Service.js";
+import * as emailService from "#root/src/providers/email/email.Provider.js";
 
 export const sendCorreoFactoringliquidacion = async (req: Request, res: Response) => {
   log.debug(line(), "controller::sendCorreoFactoringliquidacion");
