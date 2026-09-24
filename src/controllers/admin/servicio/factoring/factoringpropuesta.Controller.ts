@@ -23,7 +23,7 @@ import * as luxon from "luxon";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
-import { simulateFactoringLogicV4 } from "#root/src/logics/factoring.Logic.js";
+import { simulateFactoringLogicV4 } from "#root/src/services/factoring.Service.js";
 
 import * as dateUtils from "#src/utils/dateUtils.js";
 import PDFGenerator from "#src/utils/document/PDFgenerator.js";

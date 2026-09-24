@@ -8,7 +8,7 @@ import * as factoringliquidacionfinancieroDao from "#root/src/daos/factoringliqu
 import * as financieroconceptoDao from "#root/src/daos/financieroconcepto.Dao.js";
 import * as financierotipoDao from "#root/src/daos/financierotipo.Dao.js";
 import * as usuarioDao from "#root/src/daos/usuario.Dao.js";
-import { simulateFactoringLogicV4 } from "#root/src/logics/factoring.Logic.js";
+import { simulateFactoringLogicV4 } from "#root/src/services/factoring.Service.js";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";

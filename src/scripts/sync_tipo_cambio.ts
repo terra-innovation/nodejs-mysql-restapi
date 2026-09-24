@@ -44,7 +44,7 @@ if (process.env.NODE_ENV !== "production") {
   dotenv.config();
 }
 
-import { sincronizarTipoCambioDelDiaLogic } from "#src/logics/tipocambio.Logic.js";
+import { sincronizarTipoCambioDelDiaLogic } from "#src/services/tipocambio.Service.js";
 import * as df from "#src/utils/dateUtils.js";
 import { DateTime } from "luxon";
 

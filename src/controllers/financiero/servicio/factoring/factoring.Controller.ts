@@ -7,7 +7,7 @@ import * as factoringestadoDao from "#root/src/daos/factoringestado.Dao.js";
 import * as factoringtipoDao from "#root/src/daos/factoringtipo.Dao.js";
 import * as riesgoDao from "#root/src/daos/riesgo.Dao.js";
 import * as sunattipocambioDao from "#src/daos/sunattipocambio.Dao.js";
-import * as tipocambioLogic from "#src/logics/tipocambio.Logic.js";
+import * as tipocambioLogic from "#src/services/tipocambio.Service.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";

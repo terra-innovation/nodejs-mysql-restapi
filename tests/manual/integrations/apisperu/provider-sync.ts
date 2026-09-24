@@ -6,7 +6,7 @@ dotenv.config({ path: join(process.cwd(), ".env.development") });
 
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as configuracionappDao from "#src/daos/configuracionapp.Dao.js";
-import * as tipocambioLogic from "#src/logics/tipocambio.Logic.js";
+import * as tipocambioLogic from "#src/services/tipocambio.Service.js";
 
 const APIS_PERU_ID = "95d726e9-818e-4deb-bb3e-8ebae0ca697c";
 const DECOLECTA_ID = "4a16b2da-64f0-4e6f-986a-20d1f403e7a3";

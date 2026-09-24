@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { line, log } from "#root/src/utils/logger.pino.js";
 import { response } from "#src/utils/CustomResponseOk.js";
-import * as tipocambioLogic from "#src/logics/tipocambio.Logic.js";
+import * as tipocambioLogic from "#src/services/tipocambio.Service.js";
 import * as sbstipocambioDao from "#src/daos/sbstipocambio.Dao.js";
 import * as monedaDao from "#src/daos/moneda.Dao.js";
 import * as configuracionappDao from "#src/daos/configuracionapp.Dao.js";
