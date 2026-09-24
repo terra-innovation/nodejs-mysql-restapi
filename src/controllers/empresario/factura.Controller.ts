@@ -1,21 +1,11 @@
-import * as factoringDao from "#root/src/daos/factoring.Dao.js";
-import * as facturaDao from "#root/src/daos/factura.Dao.js";
-import * as riesgoDao from "#root/src/daos/riesgo.Dao.js";
-import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import { ESTADO } from "#src/constants/prisma.Constant.js";
-import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
-import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
-
-import type { factura } from "#root/generated/prisma/ft_factoring/client.js";
-
 import * as yup from "yup";
+import * as facturaService from "#src/services/empresario/factura.Service.js";
 
 export const getFacturasByFactoringid = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFacturasByFactoringid");
-  //log.info(line(),req.session_user.usuario.idusuario);
   const { id } = req.params;
   const facturaSearchSchema = yup
     .object()
@@ -23,25 +13,16 @@ export const getFacturasByFactoringid = async (req: Request, res: Response) => {
       factoringid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const facturaValidated = facturaSearchSchema.validateSync({ factoringid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
+  const facturaValidated = facturaSearchSchema.validateSync(
+    { factoringid: id, ...req.body },
+    { abortEarly: false, stripUnknown: true },
+  );
   log.debug(line(), "facturaValidated:", facturaValidated);
 
-  const facturasJson = await prismaFT.client.$transaction(
-    async (tx) => {
-      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
+  const facturasJson = await facturaService.getFacturasByFactoringidService({
+    factoringid: facturaValidated.factoringid,
+  });
 
-      var factoring = await factoringDao.getFactoringByFactoringid(tx, facturaValidated.factoringid);
-      if (!factoring) {
-        log.warn(line(), "Factoring no existe: [" + facturaValidated.factoringid + "]");
-        throw new ClientError("Datos no válidos", 404);
-      }
-
-      const facturas = await facturaDao.getFacturasByIdfactoring(tx, factoring.idfactoring, filter_estado);
-
-      return facturas;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
   response(res, 201, facturasJson);
 };
 
@@ -54,20 +35,17 @@ export const activateFactura = async (req: Request, res: Response) => {
       facturaid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const facturaValidated = facturaSchema.validateSync({ facturaid: id }, { abortEarly: false, stripUnknown: true });
+  const facturaValidated = facturaSchema.validateSync(
+    { facturaid: id },
+    { abortEarly: false, stripUnknown: true },
+  );
   log.debug(line(), "facturaValidated:", facturaValidated);
 
-  const facturaActivated = await prismaFT.client.$transaction(
-    async (tx) => {
-      const facturaActivated = await facturaDao.activateFactura(tx, facturaValidated.facturaid, req.session_user.usuario.idusuario);
-      if (facturaActivated[0] === 0) {
-        throw new ClientError("Factura no existe", 404);
-      }
-      log.debug(line(), "facturaActivated:", facturaActivated);
-      return facturaActivated;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
+  const facturaActivated = await facturaService.activateFacturaService({
+    facturaid: facturaValidated.facturaid,
+    idusuario: req.session_user?.usuario?.idusuario ?? 1,
+  });
+
   response(res, 204, facturaActivated);
 };
 
@@ -80,58 +58,28 @@ export const deleteFactura = async (req: Request, res: Response) => {
       facturaid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const facturaValidated = facturaSchema.validateSync({ facturaid: id }, { abortEarly: false, stripUnknown: true });
+  const facturaValidated = facturaSchema.validateSync(
+    { facturaid: id },
+    { abortEarly: false, stripUnknown: true },
+  );
   log.debug(line(), "facturaValidated:", facturaValidated);
 
-  const facturaDeleted = await prismaFT.client.$transaction(
-    async (tx) => {
-      var camposAuditoria: Partial<factura> = {};
-      camposAuditoria.idusuariomod = req.session_user.usuario.idusuario ?? 1;
-      camposAuditoria.fechamod = new Date();
-      camposAuditoria.estado = 2;
+  const facturaDeleted = await facturaService.deleteFacturaService({
+    facturaid: facturaValidated.facturaid,
+    idusuario: req.session_user?.usuario?.idusuario ?? 1,
+  });
 
-      const facturaDeleted = await facturaDao.deleteFactura(tx, facturaValidated.facturaid, req.session_user.usuario.idusuario);
-      if (facturaDeleted[0] === 0) {
-        throw new ClientError("Factura no existe", 404);
-      }
-      log.debug(line(), "facturaDeleted:", facturaDeleted);
-      return facturaDeleted;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
   response(res, 204, facturaDeleted);
 };
 
 export const getFacturaMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFacturaMaster");
-  const facturasMasterFiltered = await prismaFT.client.$transaction(
-    async (tx) => {
-      const filter_estados = [ESTADO.ACTIVO];
-      const riesgos = await riesgoDao.getRiesgos(tx, filter_estados);
-      var facturasMaster: Record<string, any> = {};
-      facturasMaster.riesgos = riesgos;
-
-      var facturasMasterFiltered = jsonUtils.removeAttributesPrivates(facturasMaster);
-      //jsonUtils.prettyPrint(facturasMaster);
-      return facturasMasterFiltered;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
+  const facturasMasterFiltered = await facturaService.getFacturaMasterService();
   response(res, 201, facturasMasterFiltered);
 };
 
 export const getFacturas = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFacturas");
-  //log.info(line(),req.session_user.usuario.idusuario);
-
-  const facturasJson = await prismaFT.client.$transaction(
-    async (tx) => {
-      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
-      const facturas = await facturaDao.getFacturas(tx, filter_estado);
-
-      return facturas;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
+  const facturasJson = await facturaService.getFacturasService();
   response(res, 201, facturasJson);
 };
