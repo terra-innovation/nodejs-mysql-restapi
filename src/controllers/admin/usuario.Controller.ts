@@ -1,53 +1,25 @@
-import * as rolDao from "#root/src/daos/rol.Dao.js";
-import * as servicioDao from "#root/src/daos/servicio.Dao.js";
-import * as usuarioDao from "#root/src/daos/usuario.Dao.js";
-import * as usuarioServicioEmpresaEstadoDao from "#root/src/daos/usuarioservicioempresaestado.Dao.js";
-import * as usuarioServicioEmpresaRolDao from "#root/src/daos/usuarioservicioempresarol.Dao.js";
-import * as usuarioServicioEstadoDao from "#root/src/daos/usuarioservicioestado.Dao.js";
-import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import { ESTADO } from "#src/constants/prisma.Constant.js";
-import { response } from "#src/utils/CustomResponseOk.js";
-import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
 import * as yup from "yup";
+import { response } from "#src/utils/CustomResponseOk.js";
+import { line, log } from "#src/utils/logger.pino.js";
+
+import {
+  activateUsuarioService,
+  deleteUsuarioService,
+  getUsuarioMasterService,
+  getUsuariosService,
+} from "#src/services/usuario.Service.js";
 
 export const getUsuarios = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getUsuarios");
-  const usuariosJson = await prismaFT.client.$transaction(
-    async (tx) => {
-      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
-      const usuarios = await usuarioDao.getUsuarios(tx, filter_estado);
-
-      return usuarios;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
-  response(res, 201, usuariosJson);
+  const data = await getUsuariosService();
+  response(res, 201, data);
 };
 
 export const getUsuarioMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getUsuarioMaster");
-  const usuarioMasterFiltered = await prismaFT.client.$transaction(
-    async (tx) => {
-      const filter_estados = [ESTADO.ACTIVO];
-      const roles = await rolDao.getRoles(tx, filter_estados);
-      const servicios = await servicioDao.getServicios(tx, filter_estados);
-      const usuario_servicio_estados = await usuarioServicioEstadoDao.getUsuarioservicioestados(tx, filter_estados);
-      const usuario_servicio_empresa_roles = await usuarioServicioEmpresaRolDao.getUsuarioservicioempresarols(tx, filter_estados);
-      const usuario_servicio_empresa_estados = await usuarioServicioEmpresaEstadoDao.getUsuarioservicioempresaestados(tx, filter_estados);
-
-      let usuarioMaster: Record<string, any> = {};
-      usuarioMaster.roles = roles;
-      usuarioMaster.servicios = servicios;
-      usuarioMaster.usuario_servicio_estados = usuario_servicio_estados;
-      usuarioMaster.usuario_servicio_empresa_roles = usuario_servicio_empresa_roles;
-      usuarioMaster.usuario_servicio_empresa_estados = usuario_servicio_empresa_estados;
-
-      return usuarioMaster;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
-  response(res, 201, usuarioMasterFiltered);
+  const data = await getUsuarioMasterService();
+  response(res, 201, data);
 };
 
 export const activateUsuario = async (req: Request, res: Response) => {
@@ -59,16 +31,11 @@ export const activateUsuario = async (req: Request, res: Response) => {
       usuarioid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const usuarioValidated = usuarioSchema.validateSync({ usuarioid: id }, { abortEarly: false, stripUnknown: true });
+  const validated = usuarioSchema.validateSync({ usuarioid: id }, { abortEarly: false, stripUnknown: true });
 
-  const usuarioActivated = await prismaFT.client.$transaction(
-    async (tx) => {
-      const usuarioActivated = await usuarioDao.activateUsuario(tx, usuarioValidated.usuarioid, req.session_user.usuario.idusuario);
-      return usuarioActivated;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
-  response(res, 204, usuarioActivated);
+  const idusuario = req.session_user?.usuario?.idusuario ?? 1;
+  const data = await activateUsuarioService(validated.usuarioid, idusuario);
+  response(res, 204, data);
 };
 
 export const deleteUsuario = async (req: Request, res: Response) => {
@@ -80,14 +47,9 @@ export const deleteUsuario = async (req: Request, res: Response) => {
       usuarioid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const usuarioValidated = usuarioSchema.validateSync({ usuarioid: id }, { abortEarly: false, stripUnknown: true });
+  const validated = usuarioSchema.validateSync({ usuarioid: id }, { abortEarly: false, stripUnknown: true });
 
-  const usuarioDeleted = await prismaFT.client.$transaction(
-    async (tx) => {
-      const usuarioDeleted = await usuarioDao.deleteUsuario(tx, usuarioValidated.usuarioid, req.session_user.usuario.idusuario);
-      return usuarioDeleted;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
-  response(res, 204, usuarioDeleted);
+  const idusuario = req.session_user?.usuario?.idusuario ?? 1;
+  const data = await deleteUsuarioService(validated.usuarioid, idusuario);
+  response(res, 204, data);
 };
