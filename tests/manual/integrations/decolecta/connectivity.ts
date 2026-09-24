@@ -1,9 +1,9 @@
 /**
- * src/integrations/decolecta/test-decolecta.ts
+ * tests/manual/integrations/decolecta/connectivity.ts
  * Script de prueba manual para verificar la conectividad y respuesta de los endpoints de Decolecta.
  *
  * Ejecutar con:
- * npx tsx src/integrations/decolecta/test-decolecta.ts
+ * npx tsx tests/manual/integrations/decolecta/connectivity.ts
  */
 
 import {
@@ -13,7 +13,7 @@ import {
   getTipoCambioSbsPromedioPorFecha,
   getTipoCambioSbsPromedioPorMes,
   getTipoCambioSbsContable,
-} from "./index.js";
+} from "#src/integrations/decolecta/index.js";
 
 async function main() {
   console.log("==================================================");
@@ -29,6 +29,7 @@ async function main() {
     console.log("0️⃣.1 Consultando Tipo de Cambio SBS Promedio por Mes (USD, 08/2025)...");
     const sbsMes = await getTipoCambioSbsPromedioPorMes("USD", 8, 2025);
     console.log(`   ✅ SBS Promedio Mes: ${sbsMes.length} registros`, sbsMes[0]);
+
     // 1. Tipo de cambio SUNAT - Hoy / Más reciente
     console.log("1️⃣ Consultando Tipo de Cambio SUNAT (Hoy / Reciente)...");
     const sunatHoy = await getTipoCambioSunatHoy();

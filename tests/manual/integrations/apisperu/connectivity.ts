@@ -1,9 +1,9 @@
 /**
- * src/integrations/apisperu/test-apisperu.ts
+ * tests/manual/integrations/apisperu/connectivity.ts
  * Script de prueba manual para verificar la conectividad y respuesta de los endpoints de Apis Perú.
  *
  * Ejecutar con:
- * npx tsx src/integrations/apisperu/test-apisperu.ts
+ * npx tsx tests/manual/integrations/apisperu/connectivity.ts
  */
 
 import {
@@ -15,7 +15,7 @@ import {
   getTipoCambioSbsPorFecha,
   getTipoCambioSbsHistorial,
   getTipoCambioTodos,
-} from "./index.js";
+} from "#src/integrations/apisperu/index.js";
 
 async function main() {
   console.log("==================================================");

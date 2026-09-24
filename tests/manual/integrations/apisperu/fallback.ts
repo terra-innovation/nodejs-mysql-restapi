@@ -1,13 +1,16 @@
 /**
- * test-fallback-unit.ts
- * Pruebas unitarias para validar la lógica de Fallback en cascada (Failover jerárquico).
+ * tests/manual/integrations/apisperu/fallback.ts
+ * Pruebas manuales para validar la lógica de Fallback en cascada (Failover jerárquico).
+ *
+ * Ejecutar con:
+ * npx tsx tests/manual/integrations/apisperu/fallback.ts
  */
 import type { ServicioTipoCambioConfig } from "#src/daos/configuracionapp.Dao.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 
 async function runUnitTests() {
   console.log("==================================================");
-  console.log("🧪 PRUEBAS UNITARIAS DE FALLBACK EN CASCADA");
+  console.log("🧪 PRUEBAS DE FALLBACK EN CASCADA (MANUAL)");
   console.log("==================================================\n");
 
   let passed = 0;

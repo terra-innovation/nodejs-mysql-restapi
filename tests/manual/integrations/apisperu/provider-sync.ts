@@ -1,3 +1,4 @@
+// Script E2E manual. Requiere BD real y archivo .env configurado. Ejecutar con: npx tsx tests/manual/integrations/apisperu/provider-sync.ts
 import dotenv from "dotenv";
 import { join } from "path";
 
@@ -12,7 +13,7 @@ const DECOLECTA_ID = "4a16b2da-64f0-4e6f-986a-20d1f403e7a3";
 
 async function main() {
   console.log("==================================================");
-  console.log("🚀 INICIANDO PRUEBAS DE SELECCIÓN DE PROVEEDORES");
+  console.log("🚀 INICIANDO PRUEBAS DE SELECCIÓN DE PROVEEDORES (MANUAL)");
   console.log("==================================================\n");
 
   try {
