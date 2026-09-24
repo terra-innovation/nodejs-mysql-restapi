@@ -1,19 +1,11 @@
-import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import * as cuentabancariaestadoDao from "#root/src/daos/cuentabancariaestado.Dao.js";
-import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import { ESTADO } from "#src/constants/prisma.Constant.js";
-import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
-import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
-
-import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
+import * as cuentabancariaestadoService from "#src/services/cuentabancariaestado.Service.js";
 
 export const activateCuentabancariaestado = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activateCuentabancariaestado");
-  const session_idusuario = req.session_user.usuario.idusuario;
   const { id } = req.params;
   const cuentabancariaestadoSchema = yup
     .object()
@@ -21,23 +13,22 @@ export const activateCuentabancariaestado = async (req: Request, res: Response) 
       cuentabancariaestadoid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const cuentabancariaestadoValidated = cuentabancariaestadoSchema.validateSync({ cuentabancariaestadoid: id }, { abortEarly: false, stripUnknown: true });
+  const cuentabancariaestadoValidated = cuentabancariaestadoSchema.validateSync(
+    { cuentabancariaestadoid: id },
+    { abortEarly: false, stripUnknown: true },
+  );
   log.debug(line(), "cuentabancariaestadoValidated:", cuentabancariaestadoValidated);
 
-  const cuentabancariaestadoActivated = await prismaFT.client.$transaction(
-    async (tx) => {
-      const cuentabancariaestadoActivated = await cuentabancariaestadoDao.activateCuentabancariaestado(tx, cuentabancariaestadoValidated.cuentabancariaestadoid, req.session_user.usuario.idusuario);
-      log.debug(line(), "cuentabancariaestadoActivated:", cuentabancariaestadoActivated);
-      return cuentabancariaestadoActivated;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
+  const cuentabancariaestadoActivated = await cuentabancariaestadoService.activateCuentabancariaestadoService({
+    cuentabancariaestadoid: cuentabancariaestadoValidated.cuentabancariaestadoid,
+    idusuario: req.session_user?.usuario?.idusuario ?? 1,
+  });
+
   response(res, 204, cuentabancariaestadoActivated);
 };
 
 export const deleteCuentabancariaestado = async (req: Request, res: Response) => {
   log.debug(line(), "controller::deleteCuentabancariaestado");
-  const session_idusuario = req.session_user.usuario.idusuario;
   const { id } = req.params;
   const cuentabancariaestadoSchema = yup
     .object()
@@ -45,24 +36,22 @@ export const deleteCuentabancariaestado = async (req: Request, res: Response) =>
       cuentabancariaestadoid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const cuentabancariaestadoValidated = cuentabancariaestadoSchema.validateSync({ cuentabancariaestadoid: id }, { abortEarly: false, stripUnknown: true });
+  const cuentabancariaestadoValidated = cuentabancariaestadoSchema.validateSync(
+    { cuentabancariaestadoid: id },
+    { abortEarly: false, stripUnknown: true },
+  );
   log.debug(line(), "cuentabancariaestadoValidated:", cuentabancariaestadoValidated);
 
-  const cuentabancariaestadoDeleted = await prismaFT.client.$transaction(
-    async (tx) => {
-      const cuentabancariaestadoDeleted = await cuentabancariaestadoDao.deleteCuentabancariaestado(tx, cuentabancariaestadoValidated.cuentabancariaestadoid, req.session_user.usuario.idusuario);
+  const cuentabancariaestadoDeleted = await cuentabancariaestadoService.deleteCuentabancariaestadoService({
+    cuentabancariaestadoid: cuentabancariaestadoValidated.cuentabancariaestadoid,
+    idusuario: req.session_user?.usuario?.idusuario ?? 1,
+  });
 
-      log.debug(line(), "cuentabancariaestadoDeleted:", cuentabancariaestadoDeleted);
-      return cuentabancariaestadoDeleted;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
   response(res, 204, cuentabancariaestadoDeleted);
 };
 
 export const updateCuentabancariaestado = async (req: Request, res: Response) => {
   log.debug(line(), "controller::updateCuentabancariaestado");
-  const session_idusuario = req.session_user.usuario.idusuario;
   const { id } = req.params;
   const cuentabancariaestadoUpdateSchema = yup
     .object()
@@ -73,60 +62,31 @@ export const updateCuentabancariaestado = async (req: Request, res: Response) =>
       color: yup.string().trim().required().max(50),
     })
     .required();
-  const cuentabancariaestadoValidated = cuentabancariaestadoUpdateSchema.validateSync({ cuentabancariaestadoid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
+  const cuentabancariaestadoValidated = cuentabancariaestadoUpdateSchema.validateSync(
+    { cuentabancariaestadoid: id, ...req.body },
+    { abortEarly: false, stripUnknown: true },
+  );
   log.debug(line(), "cuentabancariaestadoValidated:", cuentabancariaestadoValidated);
 
-  const cuentabancariaestadoFiltered = await prismaFT.client.$transaction(
-    async (tx) => {
-      const cuentabancariaestadoToUpdate: Prisma.cuenta_bancaria_estadoUpdateInput = {
-        nombre: cuentabancariaestadoValidated.nombre,
-        alias: cuentabancariaestadoValidated.alias,
-        color: cuentabancariaestadoValidated.color,
-        idusuariomod: req.session_user.usuario.idusuario ?? 1,
-        fechamod: new Date(),
-      };
+  const cuentabancariaestadoFiltered = await cuentabancariaestadoService.updateCuentabancariaestadoService({
+    cuentabancariaestadoid: cuentabancariaestadoValidated.cuentabancariaestadoid,
+    nombre: cuentabancariaestadoValidated.nombre,
+    alias: cuentabancariaestadoValidated.alias,
+    color: cuentabancariaestadoValidated.color,
+    idusuario: req.session_user?.usuario?.idusuario ?? 1,
+  });
 
-      const result = await cuentabancariaestadoDao.updateCuentabancariaestado(tx, cuentabancariaestadoValidated.cuentabancariaestadoid, cuentabancariaestadoToUpdate);
-      if (result[0] === 0) {
-        throw new ClientError("Cuentabancariaestado no existe", 404);
-      }
-      log.info(line(), id);
-
-      const cuentabancariaestadoUpdated = await cuentabancariaestadoDao.getCuentabancariaestadoByCuentabancariaestadoid(tx, cuentabancariaestadoValidated.cuentabancariaestadoid);
-      if (!cuentabancariaestadoUpdated) {
-        throw new ClientError("Cuentabancariaestado no existe", 404);
-      }
-
-      var cuentabancariaestadoObfuscated = jsonUtils.ofuscarAtributos(cuentabancariaestadoUpdated, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
-      //log.info(line(),empresaObfuscated);
-
-      var cuentabancariaestadoFiltered = jsonUtils.removeAttributesPrivates(cuentabancariaestadoObfuscated);
-      return cuentabancariaestadoFiltered;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
   response(res, 200, cuentabancariaestadoFiltered);
 };
 
 export const getCuentasbancarias = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getCuentasbancarias");
-  //log.info(line(),req.session_user.usuario.idusuario);
-
-  const cuentabancariaestadosJson = await prismaFT.client.$transaction(
-    async (tx) => {
-      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
-      const cuentabancariaestados = await cuentabancariaestadoDao.getCuentabancariaestados(tx, filter_estado);
-
-      return cuentabancariaestados;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
-  response(res, 201, cuentabancariaestadosJson);
+  const cuentabancariaestados = await cuentabancariaestadoService.getCuentabancariaestadosService();
+  response(res, 201, cuentabancariaestados);
 };
 
 export const createCuentabancariaestado = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createCuentabancariaestado");
-  const session_idusuario = req.session_user.usuario.idusuario;
   const cuentabancariaestadoCreateSchema = yup
     .object()
     .shape({
@@ -135,28 +95,18 @@ export const createCuentabancariaestado = async (req: Request, res: Response) =>
       color: yup.string().trim().required().max(50),
     })
     .required();
-  var cuentabancariaestadoValidated = cuentabancariaestadoCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
+  const cuentabancariaestadoValidated = cuentabancariaestadoCreateSchema.validateSync(
+    req.body,
+    { abortEarly: false, stripUnknown: true },
+  );
   log.debug(line(), "cuentabancariaestadoValidated:", cuentabancariaestadoValidated);
 
-  const cuentabancariaestadoCreated = await prismaFT.client.$transaction(
-    async (tx) => {
-      const cuentabancariaestadoToCreate: Prisma.cuenta_bancaria_estadoCreateInput = {
-        cuentabancariaestadoid: uuidv4(),
-        nombre: cuentabancariaestadoValidated.nombre,
-        alias: cuentabancariaestadoValidated.alias,
-        color: cuentabancariaestadoValidated.color,
-        idusuariocrea: session_idusuario ?? 1,
-        fechacrea: new Date(),
-        idusuariomod: session_idusuario ?? 1,
-        fechamod: new Date(),
-        estado: 1,
-      };
+  const cuentabancariaestadoCreated = await cuentabancariaestadoService.createCuentabancariaestadoService({
+    nombre: cuentabancariaestadoValidated.nombre,
+    alias: cuentabancariaestadoValidated.alias,
+    color: cuentabancariaestadoValidated.color,
+    idusuario: req.session_user?.usuario?.idusuario ?? 1,
+  });
 
-      const cuentabancariaestadoCreated = await cuentabancariaestadoDao.insertCuentabancariaestado(tx, cuentabancariaestadoToCreate);
-
-      return cuentabancariaestadoCreated;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
   response(res, 201, cuentabancariaestadoCreated);
 };
