@@ -1,29 +1,10 @@
-import * as factoringcarteraDao from "#root/src/daos/factoringcartera.Dao.js";
-import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import { line, log } from "#root/src/utils/logger.pino.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { Request, Response } from "express";
+import * as factoringcarteraService from "#src/services/factoringcartera.Service.js";
 
 export const getFactoringcarteraResumen = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFactoringcarteraResumen");
-  const resumen = await prismaFT.client.$transaction(
-    async (tx) => {
-      const result = await factoringcarteraDao.getFactoringcarteraResumen(tx);
-
-      // Prisma raw queries might return BigInts for COUNT() or SUM() which break JSON.stringify
-      if (result && Array.isArray(result)) {
-        return result.map((row) => {
-          const newRow: any = {};
-          for (const key in row) {
-            newRow[key] = typeof row[key] === "bigint" ? row[key].toString() : row[key];
-          }
-          return newRow;
-        });
-      }
-
-      return result;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
+  const resumen = await factoringcarteraService.getFactoringcarteraResumenService();
   response(res, 200, resumen);
 };
