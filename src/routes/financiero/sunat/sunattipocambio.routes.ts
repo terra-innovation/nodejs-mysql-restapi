@@ -26,6 +26,9 @@ router.get("/financiero/sunat/tipo-cambio/hoy", isAuth, isRole([6]), catchedAsyn
 // Obtener tipo de cambio SUNAT por fecha específica (YYYY-MM-DD)
 router.get("/financiero/sunat/tipo-cambio/fecha/:fecha", isAuth, isRole([6]), catchedAsync(sunatController.getSunatTipoCambioPorFecha));
 
+// Obtener tipo de cambio SUNAT exacto para una fecha (YYYY-MM-DD) sin fallback
+router.get("/financiero/sunat/tipo-cambio/exacto/:fecha", isAuth, isRole([6]), catchedAsync(sunatController.getSunatTipoCambioExactoPorFecha));
+
 // Obtener historial de tipos de cambio SUNAT por rango de fechas
 router.get("/financiero/sunat/tipo-cambio/historial", isAuth, isRole([6]), catchedAsync(sunatController.getSunatTipoCambioHistorial));
 

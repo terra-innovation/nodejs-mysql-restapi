@@ -40,6 +40,45 @@ export const getSunatTipoCambioPorFecha = async (req: Request, res: Response) =>
 };
 
 /**
+ * Obtiene el tipo de cambio SUNAT exacto para una fecha específica (YYYY-MM-DD) consultando únicamente la BBDD sin fallback ni APIs externas.
+ * GET /api/v1/financiero/sunat/tipo-cambio/exacto/:fecha
+ */
+export const getSunatTipoCambioExactoPorFecha = async (req: Request, res: Response) => {
+  log.debug(line(), "controller::getSunatTipoCambioExactoPorFecha");
+  const { fecha } = req.params;
+
+  if (!fecha || !/^\d{4}-\d{2}-\d{2}$/.test(fecha.trim())) {
+    throw new ClientError("Formato de fecha inválido. Formato requerido: YYYY-MM-DD", 400);
+  }
+
+  const fechaParsed = df.parseDateUtcMidnight(fecha);
+
+  const data = await prismaFT.client.$transaction(
+    async (tx) => {
+      const { monedaBase, monedaCotizada } = await tipocambioLogic.resolverMonedas(tx, "USD", "PEN");
+      const filter_estado = [ESTADO.ACTIVO];
+
+      const registro = await sunattipocambioDao.getSunatTipoCambioByFecha(
+        tx,
+        fechaParsed,
+        monedaBase.idmoneda,
+        monedaCotizada.idmoneda,
+        filter_estado
+      );
+
+      if (!registro) {
+        throw new ClientError("No existe tipo de cambio SUNAT registrado para la fecha seleccionada", 422);
+      }
+
+      return jsonUtils.removeAttributesPrivates(registro);
+    },
+    { timeout: prismaFT.transactionTimeout }
+  );
+
+  response(res, 200, data);
+};
+
+/**
  * Obtiene el historial de tipos de cambio SUNAT en un rango de fechas.
  * GET /api/v1/financiero/sunat/tipo-cambio/historial
  */

@@ -8,6 +8,7 @@ const router = Router();
 //Financiero
 router.get("/financiero/servicio/factoring/factoring/listar", isAuth, isRole([6]), catchedAsync(factoringController.getFactorings));
 router.get("/financiero/servicio/factoring/factoring/pendientes-factura-cedente", isAuth, isRole([6]), catchedAsync(factoringController.getFactoringsPendientesFacturaCedente));
+router.get("/financiero/servicio/factoring/factoring/pre-factura/:factoringid", isAuth, isRole([6]), catchedAsync(factoringController.getPreFacturaCedente));
 router.get("/financiero/servicio/factoring/factoring/master", isAuth, isRole([6]), catchedAsync(factoringController.getFactoringMaster));
 
 export default router;
