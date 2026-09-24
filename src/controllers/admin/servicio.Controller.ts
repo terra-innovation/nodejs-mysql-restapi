@@ -1,14 +1,8 @@
-import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import * as servicioDao from "#root/src/daos/servicio.Dao.js";
-import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import { ESTADO } from "#src/constants/prisma.Constant.js";
-import { ClientError } from "#src/utils/CustomErrors.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
-
-import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
+import * as servicioService from "#src/services/servicio.Service.js";
 
 export const activateServicio = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activateServicio");
@@ -19,21 +13,18 @@ export const activateServicio = async (req: Request, res: Response) => {
       servicioid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const servicioValidated = servicioSchema.validateSync({ servicioid: id }, { abortEarly: false, stripUnknown: true });
+  const servicioValidated = servicioSchema.validateSync(
+    { servicioid: id },
+    { abortEarly: false, stripUnknown: true },
+  );
   log.debug(line(), "servicioValidated:", servicioValidated);
 
-  const servicioActivated = await prismaFT.client.$transaction(
-    async (tx) => {
-      const servicioActivated = await servicioDao.activateServicio(tx, servicioValidated.servicioid, req.session_user.usuario.idusuario);
+  await servicioService.activateServicioService({
+    servicioid: servicioValidated.servicioid,
+    idusuario: req.session_user?.usuario?.idusuario ?? 1,
+  });
 
-      log.debug(line(), "servicioActivated:", servicioActivated);
-      return servicioActivated;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
-  {
-    response(res, 204, {});
-  }
+  response(res, 204, {});
 };
 
 export const deleteServicio = async (req: Request, res: Response) => {
@@ -45,34 +36,23 @@ export const deleteServicio = async (req: Request, res: Response) => {
       servicioid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const servicioValidated = servicioSchema.validateSync({ servicioid: id }, { abortEarly: false, stripUnknown: true });
+  const servicioValidated = servicioSchema.validateSync(
+    { servicioid: id },
+    { abortEarly: false, stripUnknown: true },
+  );
   log.debug(line(), "servicioValidated:", servicioValidated);
 
-  const servicioDeleted = await prismaFT.client.$transaction(
-    async (tx) => {
-      const servicioDeleted = await servicioDao.deleteServicio(tx, servicioValidated.servicioid, req.session_user.usuario.idusuario);
-      if (servicioDeleted[0] === 0) {
-        throw new ClientError("Servicio no existe", 404);
-      }
-      log.debug(line(), "servicioDeleted:", servicioDeleted);
-      return servicioDeleted;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
+  const servicioDeleted = await servicioService.deleteServicioService({
+    servicioid: servicioValidated.servicioid,
+    idusuario: req.session_user?.usuario?.idusuario ?? 1,
+  });
+
   response(res, 204, servicioDeleted);
 };
 
 export const getServicioMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getServicioMaster");
-  const serviciosMasterFiltered = await prismaFT.client.$transaction(
-    async (tx) => {
-      const filter_estados = [ESTADO.ACTIVO];
-      var serviciosMaster: Record<string, any> = {};
-
-      return serviciosMaster;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
+  const serviciosMasterFiltered = await servicioService.getServicioMasterService();
   response(res, 201, serviciosMasterFiltered);
 };
 
@@ -90,55 +70,33 @@ export const updateServicio = async (req: Request, res: Response) => {
       pathroute: yup.string().trim().min(2).max(100),
     })
     .required();
-  const servicioValidated = servicioUpdateSchema.validateSync({ servicioid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
+  const servicioValidated = servicioUpdateSchema.validateSync(
+    { servicioid: id, ...req.body },
+    { abortEarly: false, stripUnknown: true },
+  );
   log.debug(line(), "servicioValidated:", servicioValidated);
 
-  const servicioUpdated = await prismaFT.client.$transaction(
-    async (tx) => {
-      var servicio = await servicioDao.getServicioByServicioid(tx, servicioValidated.servicioid);
-      if (!servicio) {
-        log.warn(line(), "Servicio no existe: [" + servicioValidated.servicioid + "]");
-        throw new ClientError("Datos no válidos", 404);
-      }
+  const servicioUpdated = await servicioService.updateServicioService({
+    servicioid: servicioValidated.servicioid,
+    nombre: servicioValidated.nombre,
+    alias: servicioValidated.alias,
+    descripcion: servicioValidated.descripcion,
+    urlcontrato: servicioValidated.urlcontrato,
+    pathroute: servicioValidated.pathroute,
+    idusuario: req.session_user?.usuario?.idusuario ?? 1,
+  });
 
-      const servicioToUpdate: Prisma.servicioUpdateInput = {
-        nombre: servicioValidated.nombre,
-        alias: servicioValidated.alias,
-        descripcion: servicioValidated.descripcion,
-        urlcontrato: servicioValidated.urlcontrato,
-        pathroute: servicioValidated.pathroute,
-        idusuariomod: req.session_user.usuario.idusuario ?? 1,
-        fechamod: new Date(),
-      };
-
-      const servicioUpdated = await servicioDao.updateServicio(tx, servicioValidated.servicioid, servicioToUpdate);
-      log.debug(line(), "servicioUpdated:", servicioUpdated);
-
-      return servicioUpdated;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
   response(res, 200, servicioUpdated);
 };
 
 export const getServicios = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getServicios");
-
-  const servicios = await prismaFT.client.$transaction(
-    async (tx) => {
-      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
-      const servicios = await servicioDao.getServicios(tx, filter_estado);
-      return servicios;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
+  const servicios = await servicioService.getServiciosService();
   response(res, 201, servicios);
 };
 
 export const createServicio = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createServicio");
-  const session_idusuario = req.session_user.usuario.idusuario;
-  const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
   const servicioCreateSchema = yup
     .object()
     .shape({
@@ -149,31 +107,20 @@ export const createServicio = async (req: Request, res: Response) => {
       pathroute: yup.string().trim().required().min(2).max(100),
     })
     .required();
-  var servicioValidated = servicioCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
+  const servicioValidated = servicioCreateSchema.validateSync(
+    req.body,
+    { abortEarly: false, stripUnknown: true },
+  );
   log.debug(line(), "servicioValidated:", servicioValidated);
 
-  const servicioCreated = await prismaFT.client.$transaction(
-    async (tx) => {
-      const servicioCreate = {
-        servicioid: uuidv4(),
-        code: uuidv4().split("-")[0],
-        nombre: servicioValidated.nombre,
-        alias: servicioValidated.alias,
-        descripcion: servicioValidated.descripcion,
-        urlcontrato: servicioValidated.urlcontrato,
-        pathroute: servicioValidated.pathroute,
-        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
-        fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario.idusuario ?? 1,
-        fechamod: new Date(),
-        estado: 1,
-      };
+  const servicioCreated = await servicioService.createServicioService({
+    nombre: servicioValidated.nombre,
+    alias: servicioValidated.alias,
+    descripcion: servicioValidated.descripcion,
+    urlcontrato: servicioValidated.urlcontrato,
+    pathroute: servicioValidated.pathroute,
+    idusuario: req.session_user?.usuario?.idusuario ?? 1,
+  });
 
-      const servicioCreated = await servicioDao.insertServicio(tx, servicioCreate);
-
-      return servicioCreated;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
   response(res, 201, servicioCreated);
 };
