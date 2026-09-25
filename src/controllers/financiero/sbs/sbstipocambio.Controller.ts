@@ -1,30 +1,32 @@
 import { Request, Response } from "express";
-import { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { line, log } from "#root/src/utils/logger.pino.js";
 import { response } from "#src/utils/CustomResponseOk.js";
-import * as tipocambioLogic from "#src/services/tipocambio.Service.js";
-import * as sbstipocambioDao from "#src/daos/sbstipocambio.Dao.js";
-import * as monedaDao from "#src/daos/moneda.Dao.js";
-import * as configuracionappDao from "#src/daos/configuracionapp.Dao.js";
-import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import { ESTADO } from "#src/constants/prisma.Constant.js";
-import { ClientError } from "#src/utils/CustomErrors.js";
-import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
-
-import * as df from "#src/utils/dateUtils.js";
+import {
+  getSbsTipoCambioHoyService,
+  getSbsTipoCambioPorFechaService,
+  getSbsTipoCambioHistorialService,
+  sincronizarSbsTipoCambioService,
+  sincronizarSbsMesTipoCambioService,
+  getSbsTipoCambiosListOrPaginatedService,
+  getSbsTipoCambiosPaginadoService,
+  createSbsTipoCambioService,
+  updateSbsTipoCambioService,
+  deleteSbsTipoCambioService,
+  activateSbsTipoCambioService,
+  getSbsTipoCambioMasterService,
+  CreateSbsTipoCambioDto,
+  UpdateSbsTipoCambioDto,
+} from "#root/src/services/financiero/sbstipocambio.Service.js";
 
 /**
  * Obtiene el tipo de cambio SBS del día de hoy (o más reciente) con estrategia Fallback en cascada.
- * No recibe serviciotipocambioid.
  * GET /api/v1/financiero/sbs/tipo-cambio/hoy
  */
 export const getSbsTipoCambioHoy = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getSbsTipoCambioHoy");
   const moneda = (req.query.moneda as string) || "USD";
-  const fecha = df.formatDateToYMD(df.getNowLima());
-  const data = await tipocambioLogic.obtenerSbsLogic(moneda, fecha);
+  const data = await getSbsTipoCambioHoyService(moneda);
   response(res, 200, data);
 };
 
@@ -37,7 +39,7 @@ export const getSbsTipoCambioPorFecha = async (req: Request, res: Response) => {
   const { fecha } = req.params;
   const moneda = (req.query.moneda as string) || "USD";
   const serviciotipocambioid = (req.query.serviciotipocambioid || req.body.serviciotipocambioid) as string | undefined;
-  const data = await tipocambioLogic.obtenerSbsLogic(moneda, fecha, serviciotipocambioid);
+  const data = await getSbsTipoCambioPorFechaService(moneda, fecha, serviciotipocambioid);
   response(res, 200, data);
 };
 
@@ -50,13 +52,12 @@ export const getSbsTipoCambioHistorial = async (req: Request, res: Response) => 
   const moneda = (req.query.moneda as string) || "USD";
   const fechaInicio = req.query.fechaInicio as string | undefined;
   const fechaFin = req.query.fechaFin as string | undefined;
-  const data = await tipocambioLogic.obtenerHistorialSbsLogic(moneda, fechaInicio, fechaFin);
+  const data = await getSbsTipoCambioHistorialService(moneda, fechaInicio, fechaFin);
   response(res, 200, data);
 };
 
 /**
  * Fuerza la sincronización con la API externa Decolecta y actualiza la BD.
- * Puede sincronizar por fecha individual o por mes y año si se proporcionan.
  * POST /api/v1/financiero/sbs/tipo-cambio/sincronizar
  */
 export const sincronizarSbsTipoCambio = async (req: Request, res: Response) => {
@@ -65,14 +66,15 @@ export const sincronizarSbsTipoCambio = async (req: Request, res: Response) => {
   const mes = req.body.mes || req.body.month || req.query.mes || req.query.month;
   const anio = req.body.anio || req.body.year || req.query.anio || req.query.year;
   const serviciotipocambioid = (req.body.serviciotipocambioid || req.query.serviciotipocambioid) as string | undefined;
+  const fecha = (req.body.fecha || req.query.fecha) as string | undefined;
 
-  if (mes && anio) {
-    const data = await tipocambioLogic.sincronizarSbsMesLogic(moneda, Number(mes), Number(anio), serviciotipocambioid);
-    return response(res, 201, data);
-  }
-
-  const fecha = ((req.body.fecha || req.query.fecha) as string | undefined) || df.formatDateToYMD(df.getNowLima());
-  const data = await tipocambioLogic.sincronizarSbsLogic(moneda, fecha, serviciotipocambioid);
+  const data = await sincronizarSbsTipoCambioService(
+    moneda,
+    fecha,
+    mes ? Number(mes) : undefined,
+    anio ? Number(anio) : undefined,
+    serviciotipocambioid,
+  );
   response(res, 201, data);
 };
 
@@ -86,41 +88,21 @@ export const sincronizarSbsMesTipoCambio = async (req: Request, res: Response) =
   const mes = Number(req.body.mes || req.body.month || req.query.mes || req.query.month);
   const anio = Number(req.body.anio || req.body.year || req.query.anio || req.query.year);
   const serviciotipocambioid = (req.body.serviciotipocambioid || req.query.serviciotipocambioid) as string | undefined;
-  const data = await tipocambioLogic.sincronizarSbsMesLogic(moneda, mes, anio, serviciotipocambioid);
+
+  const data = await sincronizarSbsMesTipoCambioService(moneda, mes, anio, serviciotipocambioid);
   response(res, 201, data);
 };
 
 /**
- * Lista los tipos de cambio SBS (activos y eliminados).
- * Si se proporcionan parámetros de paginación (page, limit, etc.), responde con paginación por opciones.
+ * Lista los tipos de cambio SBS (activos y eliminados o paginados).
  * GET /api/v1/financiero/sbs/tipo-cambio/listar
  */
 export const getSbsTipoCambios = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getSbsTipoCambios");
-  const hasPaginationParams =
-    req.query.page !== undefined ||
-    req.query.pageIndex !== undefined ||
-    req.query.limit !== undefined ||
-    req.query.pageSize !== undefined ||
-    req.query.offset !== undefined ||
-    req.query.skip !== undefined;
-
-  if (hasPaginationParams) {
-    const data = await tipocambioLogic.obtenerSbsPaginadoLogic({
-      ...req.query,
-      ...req.body,
-    });
-    return response(res, 200, data);
-  }
-
-  const data = await prismaFT.client.$transaction(
-    async (tx) => {
-      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
-      const registros = await sbstipocambioDao.getSbsTipoCambios(tx, filter_estado);
-      return registros;
-    },
-    { timeout: prismaFT.transactionTimeout }
-  );
+  const data = await getSbsTipoCambiosListOrPaginatedService({
+    ...req.query,
+    ...req.body,
+  });
   response(res, 200, data);
 };
 
@@ -136,7 +118,7 @@ export const getSbsTipoCambiosPaginado = async (req: Request, res: Response) => 
     ...req.body,
   };
 
-  const data = await tipocambioLogic.obtenerSbsPaginadoLogic(options);
+  const data = await getSbsTipoCambiosPaginadoService(options);
   response(res, 200, data);
 };
 
@@ -164,72 +146,14 @@ export const createSbsTipoCambio = async (req: Request, res: Response) => {
     })
     .required();
 
-  const validated = sbsCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
+  const validated = sbsCreateSchema.validateSync(req.body, {
+    abortEarly: false,
+    stripUnknown: true,
+  }) as CreateSbsTipoCambioDto;
   log.debug(line(), "sbsValidated:", validated);
 
-  const created = await prismaFT.client.$transaction(
-    async (tx) => {
-      const fechaRegistro = tipocambioLogic.parseFechaLima(validated.fecha);
-
-      // Resolver moneda base
-      let monedaBase = validated.monedabaseid
-        ? await monedaDao.getMonedaByMonedaid(tx, validated.monedabaseid)
-        : await monedaDao.getMonedaByCodigo(tx, validated.codigomonedabase || "USD");
-
-      if (!monedaBase) {
-        throw new ClientError("Moneda base no encontrada", 404);
-      }
-
-      // Resolver moneda cotizada
-      let monedaCotizada = validated.monedacotizadaid
-        ? await monedaDao.getMonedaByMonedaid(tx, validated.monedacotizadaid)
-        : await monedaDao.getMonedaByCodigo(tx, validated.codigomonedacotizada || "PEN");
-
-      if (!monedaCotizada) {
-        throw new ClientError("Moneda cotizada no encontrada", 404);
-      }
-
-      // Verificar si ya existe para ese par y fecha
-      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
-      const existente = await sbstipocambioDao.getSbsTipoCambioByFecha(
-        tx,
-        fechaRegistro,
-        monedaBase.idmoneda,
-        monedaCotizada.idmoneda,
-        filter_estado
-      );
-
-      if (existente) {
-        throw new ClientError("Ya existe un tipo de cambio SBS registrado para esta fecha y par de monedas", 400);
-      }
-
-      const idUsuario = req.session_user?.usuario?.idusuario ?? 1;
-      const precioContable = validated.precio_contable !== undefined
-        ? new Prisma.Decimal(validated.precio_contable)
-        : new Prisma.Decimal(validated.precio_venta);
-
-      const sbsToCreate: Prisma.sbs_tipo_cambioUncheckedCreateInput = {
-        sbstipocambioid: uuidv4(),
-        code: tipocambioLogic.generateCode(),
-        idmonedabase: monedaBase.idmoneda,
-        idmonedacotizada: monedaCotizada.idmoneda,
-        fecha: fechaRegistro,
-        precio_compra: new Prisma.Decimal(validated.precio_compra),
-        precio_venta: new Prisma.Decimal(validated.precio_venta),
-        precio_contable: precioContable,
-        idusuariocrea: idUsuario,
-        fechacrea: new Date(),
-        idusuariomod: idUsuario,
-        fechamod: new Date(),
-        estado: ESTADO.ACTIVO,
-      };
-
-      const result = await sbstipocambioDao.insertSbsTipoCambio(tx, sbsToCreate);
-      return jsonUtils.removeAttributesPrivates(result);
-    },
-    { timeout: prismaFT.transactionTimeout }
-  );
-
+  const idUsuario = req.session_user?.usuario?.idusuario ?? 1;
+  const created = await createSbsTipoCambioService(idUsuario, validated);
   response(res, 201, created);
 };
 
@@ -258,60 +182,13 @@ export const updateSbsTipoCambio = async (req: Request, res: Response) => {
 
   const validated = sbsUpdateSchema.validateSync(
     { sbstipocambioid: id, ...req.body },
-    { abortEarly: false, stripUnknown: true }
-  );
+    { abortEarly: false, stripUnknown: true },
+  ) as UpdateSbsTipoCambioDto;
   log.debug(line(), "sbsUpdateValidated:", validated);
 
-  await prismaFT.client.$transaction(
-    async (tx) => {
-      const registro = await sbstipocambioDao.getSbsTipoCambioBySbstipocambioid(
-        tx,
-        validated.sbstipocambioid
-      );
-
-      if (!registro) {
-        log.warn(line(), `Tipo de cambio SBS no existe: [${validated.sbstipocambioid}]`);
-        throw new ClientError("Tipo de cambio SBS no encontrado", 404);
-      }
-
-      const idUsuario = req.session_user?.usuario?.idusuario ?? 1;
-
-      const dataToUpdate: Prisma.sbs_tipo_cambioUpdateInput = {
-        idusuariomod: idUsuario,
-        fechamod: new Date(),
-      };
-
-      if (validated.precio_compra !== undefined) {
-        dataToUpdate.precio_compra = new Prisma.Decimal(validated.precio_compra);
-      }
-      if (validated.precio_venta !== undefined) {
-        dataToUpdate.precio_venta = new Prisma.Decimal(validated.precio_venta);
-      }
-      if (validated.precio_contable !== undefined) {
-        dataToUpdate.precio_contable = new Prisma.Decimal(validated.precio_contable);
-      }
-      if (validated.fecha) {
-        const nuevaFecha = tipocambioLogic.parseFechaLima(validated.fecha);
-        const existente = await sbstipocambioDao.getSbsTipoCambioByFecha(
-          tx,
-          nuevaFecha,
-          registro.idmonedabase,
-          registro.idmonedacotizada,
-          [ESTADO.ACTIVO, ESTADO.ELIMINADO]
-        );
-        if (existente && existente.sbstipocambioid !== validated.sbstipocambioid) {
-          throw new ClientError("Ya existe otro tipo de cambio SBS registrado para esta fecha y par de monedas", 400);
-        }
-        dataToUpdate.fecha = nuevaFecha;
-      }
-
-      await sbstipocambioDao.updateSbsTipoCambio(tx, validated.sbstipocambioid, dataToUpdate);
-      return {};
-    },
-    { timeout: prismaFT.transactionTimeout }
-  );
-
-  response(res, 200, {});
+  const idUsuario = req.session_user?.usuario?.idusuario ?? 1;
+  const result = await updateSbsTipoCambioService(idUsuario, validated);
+  response(res, 200, result);
 };
 
 /**
@@ -331,25 +208,8 @@ export const deleteSbsTipoCambio = async (req: Request, res: Response) => {
 
   const validated = schema.validateSync({ sbstipocambioid: id }, { abortEarly: false, stripUnknown: true });
 
-  const result = await prismaFT.client.$transaction(
-    async (tx) => {
-      const registro = await sbstipocambioDao.getSbsTipoCambioBySbstipocambioid(
-        tx,
-        validated.sbstipocambioid
-      );
-
-      if (!registro) {
-        log.warn(line(), `Tipo de cambio SBS no existe: [${validated.sbstipocambioid}]`);
-        throw new ClientError("Tipo de cambio SBS no encontrado", 404);
-      }
-
-      const idUsuario = req.session_user?.usuario?.idusuario ?? 1;
-      const resDelete = await sbstipocambioDao.deleteSbsTipoCambio(tx, validated.sbstipocambioid, idUsuario);
-      return resDelete;
-    },
-    { timeout: prismaFT.transactionTimeout }
-  );
-
+  const idUsuario = req.session_user?.usuario?.idusuario ?? 1;
+  const result = await deleteSbsTipoCambioService(idUsuario, validated.sbstipocambioid);
   response(res, 204, result);
 };
 
@@ -370,25 +230,8 @@ export const activateSbsTipoCambio = async (req: Request, res: Response) => {
 
   const validated = schema.validateSync({ sbstipocambioid: id }, { abortEarly: false, stripUnknown: true });
 
-  const result = await prismaFT.client.$transaction(
-    async (tx) => {
-      const registro = await sbstipocambioDao.getSbsTipoCambioBySbstipocambioid(
-        tx,
-        validated.sbstipocambioid
-      );
-
-      if (!registro) {
-        log.warn(line(), `Tipo de cambio SBS no existe: [${validated.sbstipocambioid}]`);
-        throw new ClientError("Tipo de cambio SBS no encontrado", 404);
-      }
-
-      const idUsuario = req.session_user?.usuario?.idusuario ?? 1;
-      const resActivate = await sbstipocambioDao.activateSbsTipoCambio(tx, validated.sbstipocambioid, idUsuario);
-      return resActivate;
-    },
-    { timeout: prismaFT.transactionTimeout }
-  );
-
+  const idUsuario = req.session_user?.usuario?.idusuario ?? 1;
+  const result = await activateSbsTipoCambioService(idUsuario, validated.sbstipocambioid);
   response(res, 204, result);
 };
 
@@ -398,23 +241,6 @@ export const activateSbsTipoCambio = async (req: Request, res: Response) => {
  */
 export const getSbsTipoCambioMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getSbsTipoCambioMaster");
-  const master = await prismaFT.client.$transaction(
-    async (tx) => {
-      const filter_estados = [ESTADO.ACTIVO];
-      const [monedas, servicios_tipo_cambio] = await Promise.all([
-        monedaDao.getMonedas(tx, filter_estados),
-        configuracionappDao.getServiciosTipoDeCambioParsed(tx),
-      ]);
-
-      const sbsMaster: Record<string, any> = {
-        monedas,
-        servicios_tipo_cambio,
-      };
-
-      return sbsMaster;
-    },
-    { timeout: prismaFT.transactionTimeout }
-  );
-
+  const master = await getSbsTipoCambioMasterService();
   response(res, 201, master);
 };
