@@ -3,14 +3,18 @@ export default {
   testEnvironment: "node",
   coveragePathIgnorePatterns: ["/node_modules/", "/dist/"],
   transform: {
-    "^.+\\.(ts|js)$": "ts-jest", // Usamos ts-jest para transformar archivos TypeScript
+    "^.+\\.(ts|js)$": "ts-jest",
   },
   moduleNameMapper: {
-    "^#root/(.*)$": "<rootDir>/$1",
-    "^#src/(.*)$": "<rootDir>/src/$1",
+    "^#root/(.*)\\.js$": ["<rootDir>/$1.ts", "<rootDir>/$1.js", "<rootDir>/$1"],
+    "^#root/(.*)$": ["<rootDir>/$1.ts", "<rootDir>/$1.js", "<rootDir>/$1"],
+    "^#src/(.*)\\.js$": ["<rootDir>/src/$1.ts", "<rootDir>/src/$1.js", "<rootDir>/src/$1"],
+    "^#src/(.*)$": ["<rootDir>/src/$1.ts", "<rootDir>/src/$1.js", "<rootDir>/src/$1"],
+    "^(\\.{1,2}/.*)\\.js$": "$1",
   },
-  roots: ["<rootDir>/tests/e2e"], // Apunta solo a las pruebas en tests/e2e
+  roots: ["<rootDir>/tests/unit", "<rootDir>/tests/e2e"],
+  testPathIgnorePatterns: ["/node_modules/", "/dist/", "tests/e2e/index.test.ts"],
   testMatch: ["**/__tests__/**/*.ts", "**/?(*.)+(spec|test).ts"],
   collectCoverageFrom: ["src/**/*.ts", "!src/**/*.d.ts"],
-  setupFilesAfterEnv: ["<rootDir>/tests/e2e/setup.ts"], // Configuración global de las pruebas
+  setupFilesAfterEnv: ["<rootDir>/tests/e2e/setup.ts"],
 };
