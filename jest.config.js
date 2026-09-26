@@ -6,6 +6,7 @@ export default {
     "^.+\\.(ts|js)$": "ts-jest",
   },
   moduleNameMapper: {
+    "^file-type$": "<rootDir>/tests/mocks/fileTypeMock.ts",
     "^#root/(.*)\\.js$": ["<rootDir>/$1.ts", "<rootDir>/$1.js", "<rootDir>/$1"],
     "^#root/(.*)$": ["<rootDir>/$1.ts", "<rootDir>/$1.js", "<rootDir>/$1"],
     "^#src/(.*)\\.js$": ["<rootDir>/src/$1.ts", "<rootDir>/src/$1.js", "<rootDir>/src/$1"],
