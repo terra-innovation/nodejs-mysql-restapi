@@ -1,15 +1,13 @@
-import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import * as factoringpropuestaDao from "#root/src/daos/factoringpropuesta.Dao.js";
-import * as factoringpropuestaestadoDao from "#root/src/daos/factoringpropuestaestado.Dao.js";
-import * as factoringpropuestahistorialestadoDao from "#root/src/daos/factoringpropuestahistorialestado.Dao.js";
-import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import { ESTADO } from "#src/constants/prisma.Constant.js";
-import { ClientError } from "#src/utils/CustomErrors.js";
+import * as factoringpropuestahistorialestadoService from "#root/src/services/admin/factoringpropuestahistorialestado.Service.js";
+import type {
+  CreateFactoringpropuestahistorialestadoDto,
+  FactoringpropuestahistorialestadoIdDto,
+  GetFactoringpropuestahistorialestadosByFactoringpropuestaidDto,
+  UpdateFactoringpropuestahistorialestadoDto,
+} from "#root/src/services/admin/factoringpropuestahistorialestado.Service.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
-
-import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
 export const updateFactoringpropuestahistorialestado = async (req: Request, res: Response) => {
@@ -22,36 +20,26 @@ export const updateFactoringpropuestahistorialestado = async (req: Request, res:
       comentario: yup.string().trim().required().min(2).max(65535),
     })
     .required();
-  const factoringpropuestahistorialestadoValidated = factoringpropuestahistorialestadoUpdateSchema.validateSync({ factoringpropuestahistorialestadoid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
+  const factoringpropuestahistorialestadoValidated =
+    factoringpropuestahistorialestadoUpdateSchema.validateSync(
+      { factoringpropuestahistorialestadoid: id, ...req.body },
+      { abortEarly: false, stripUnknown: true },
+    ) as UpdateFactoringpropuestahistorialestadoDto;
   log.debug(line(), "factoringpropuestahistorialestadoValidated:", factoringpropuestahistorialestadoValidated);
 
-  const resultado = await prismaFT.client.$transaction(
-    async (tx) => {
-      var factoringpropuestahistorialestado = await factoringpropuestahistorialestadoDao.getFactoringpropuestahistorialestadoByFactoringpropuestahistorialestadoid(tx, factoringpropuestahistorialestadoValidated.factoringpropuestahistorialestadoid);
-      if (!factoringpropuestahistorialestado) {
-        log.warn(line(), "Factoringpropuestahistorialestado no existe: [" + factoringpropuestahistorialestadoValidated.factoringpropuestahistorialestadoid + "]");
-        throw new ClientError("Datos no válidos", 404);
-      }
-
-      const factoringpropuestahistorialestadoToUpdate: Prisma.factoring_propuesta_historial_estadoUpdateInput = {
-        comentario: factoringpropuestahistorialestadoValidated.comentario,
-        idusuariomod: req.session_user.usuario.idusuario ?? 1,
-        fechamod: new Date(),
-      };
-
-      const factoringpropuestahistorialestadoUpdated = await factoringpropuestahistorialestadoDao.updateFactoringpropuestahistorialestado(tx, factoringpropuestahistorialestadoValidated.factoringpropuestahistorialestadoid, factoringpropuestahistorialestadoToUpdate);
-      log.debug(line(), "factoringpropuestahistorialestadoUpdated:", factoringpropuestahistorialestadoUpdated);
-
-      return {};
-    },
-    { timeout: prismaFT.transactionTimeout },
+  await factoringpropuestahistorialestadoService.updateFactoringpropuestahistorialestadoService(
+    factoringpropuestahistorialestadoValidated,
+    req.session_user.usuario.idusuario,
   );
+
   response(res, 200, { ...factoringpropuestahistorialestadoValidated });
 };
 
-export const getFactoringpropuestahistorialestadosByFactoringpropuestaid = async (req: Request, res: Response) => {
+export const getFactoringpropuestahistorialestadosByFactoringpropuestaid = async (
+  req: Request,
+  res: Response,
+) => {
   log.debug(line(), "controller::getFactoringpropuestahistorialestadosByFactoringpropuestaid");
-  //log.info(line(),req.session_user.usuario.idusuario);
   const { id } = req.params;
   const factoringpropuestahistorialestadoSchema = yup
     .object()
@@ -59,43 +47,28 @@ export const getFactoringpropuestahistorialestadosByFactoringpropuestaid = async
       factoringpropuestaid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  var factoringpropuestahistorialestadoValidated = factoringpropuestahistorialestadoSchema.validateSync({ factoringpropuestaid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
+  const factoringpropuestahistorialestadoValidated =
+    factoringpropuestahistorialestadoSchema.validateSync(
+      { factoringpropuestaid: id, ...req.body },
+      { abortEarly: false, stripUnknown: true },
+    ) as GetFactoringpropuestahistorialestadosByFactoringpropuestaidDto;
   log.debug(line(), "factoringpropuestahistorialestadoValidated:", factoringpropuestahistorialestadoValidated);
 
-  const factoringpropuestahistorialestadosJson = await prismaFT.client.$transaction(
-    async (tx) => {
-      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
+  const factoringpropuestahistorialestados =
+    await factoringpropuestahistorialestadoService.getFactoringpropuestahistorialestadosByFactoringpropuestaidService(
+      factoringpropuestahistorialestadoValidated,
+    );
 
-      var factoringpropuesta = await factoringpropuestaDao.getFactoringpropuestaByFactoringpropuestaid(tx, factoringpropuestahistorialestadoValidated.factoringpropuestaid);
-      if (!factoringpropuesta) {
-        log.warn(line(), "Factoringpropuesta no existe: [" + factoringpropuestahistorialestadoValidated.factoringpropuestaid + "]");
-        throw new ClientError("Datos no válidos", 404);
-      }
-
-      const factoringpropuestahistorialestados = await factoringpropuestahistorialestadoDao.getFactoringpropuestahistorialestadosByIdfactoringpropuesta(tx, factoringpropuesta.idfactoringpropuesta, filter_estado);
-
-      return factoringpropuestahistorialestados;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
-  response(res, 201, factoringpropuestahistorialestadosJson);
+  response(res, 201, factoringpropuestahistorialestados);
 };
 
 export const getFactoringpropuestahistorialestadoMaster = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFactoringpropuestahistorialestadoMaster");
-  const factoringpropuestahistorialestadosMasterFiltered = await prismaFT.client.$transaction(
-    async (tx) => {
-      const filter_estados = [ESTADO.ACTIVO];
-      const factoringpropuestaestados = await factoringpropuestaestadoDao.getFactoringpropuestaestados(tx, filter_estados);
 
-      var factoringpropuestahistorialestadosMaster: Record<string, any> = {};
-      factoringpropuestahistorialestadosMaster.factoringpropuestaestados = factoringpropuestaestados;
+  const masterData =
+    await factoringpropuestahistorialestadoService.getFactoringpropuestahistorialestadoMasterService();
 
-      return factoringpropuestahistorialestadosMaster;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
-  response(res, 201, factoringpropuestahistorialestadosMasterFiltered);
+  response(res, 201, masterData);
 };
 
 export const createFactoringpropuestahistorialestado = async (req: Request, res: Response) => {
@@ -109,57 +82,16 @@ export const createFactoringpropuestahistorialestado = async (req: Request, res:
       comentario: yup.string().trim().required().min(2).max(65535),
     })
     .required();
-  var factoringpropuestahistorialestadoValidated = factoringpropuestahistorialestadoSchema.validateSync({ ...req.body }, { abortEarly: false, stripUnknown: true });
+  const factoringpropuestahistorialestadoValidated =
+    factoringpropuestahistorialestadoSchema.validateSync(
+      { ...req.body },
+      { abortEarly: false, stripUnknown: true },
+    ) as CreateFactoringpropuestahistorialestadoDto;
   log.debug(line(), "factoringpropuestahistorialestadoValidated:", factoringpropuestahistorialestadoValidated);
 
-  const resultado = await prismaFT.client.$transaction(
-    async (tx) => {
-      const session_idusuario = req.session_user.usuario.idusuario;
-      const filter_estados = [ESTADO.ACTIVO];
-
-      var factoringpropuesta = await factoringpropuestaDao.getFactoringpropuestaByFactoringpropuestaid(tx, factoringpropuestahistorialestadoValidated.factoringpropuestaid);
-      if (!factoringpropuesta) {
-        log.warn(line(), "Factoringpropuesta no existe: [" + factoringpropuestahistorialestadoValidated.factoringpropuestaid + "]");
-        throw new ClientError("Datos no válidos", 404);
-      }
-
-      var factoringpropuestaestado = await factoringpropuestaestadoDao.getFactoringpropuestaestadoByFactoringpropuestaestadoid(tx, factoringpropuestahistorialestadoValidated.factoringpropuestaestadoid);
-      if (!factoringpropuestaestado) {
-        log.warn(line(), "Factoringpropuesta estado no existe: [" + factoringpropuestahistorialestadoValidated.factoringpropuestaestadoid + "]");
-        throw new ClientError("Datos no válidos", 404);
-      }
-
-      const factoringpropuestahistorialestadoToCreate: Prisma.factoring_propuesta_historial_estadoCreateInput = {
-        factoring_propuesta: { connect: { idfactoringpropuesta: factoringpropuesta.idfactoringpropuesta } },
-        factoring_propuesta_estado: { connect: { idfactoringpropuestaestado: factoringpropuestaestado.idfactoringpropuestaestado } },
-        usuario_modifica: { connect: { idusuario: req.session_user.usuario.idusuario } },
-
-        factoringpropuestahistorialestadoid: uuidv4(),
-        code: uuidv4().split("-")[0],
-        comentario: factoringpropuestahistorialestadoValidated.comentario,
-        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
-        fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario.idusuario ?? 1,
-        fechamod: new Date(),
-        estado: 1,
-      };
-
-      const factoringpropuestahistorialestadoCreated = await factoringpropuestahistorialestadoDao.insertFactoringpropuestahistorialestado(tx, factoringpropuestahistorialestadoToCreate);
-      log.debug(line(), "factoringpropuestahistorialestadoCreated:", factoringpropuestahistorialestadoCreated);
-
-      const factoringpropuestaToUpdate: Prisma.factoring_propuestaUpdateInput = {
-        factoring_propuesta_estado: { connect: { idfactoringpropuestaestado: factoringpropuestaestado.idfactoringpropuestaestado } },
-        idusuariomod: req.session_user.usuario.idusuario ?? 1,
-        fechamod: new Date(),
-      };
-
-      const factoringpropuestaUpdated = await factoringpropuestaDao.updateFactoringpropuesta(tx, factoringpropuestahistorialestadoValidated.factoringpropuestaid, factoringpropuestaToUpdate);
-
-      log.debug(line(), "factoringpropuestaUpdated:", factoringpropuestaUpdated);
-
-      return {};
-    },
-    { timeout: prismaFT.transactionTimeout },
+  await factoringpropuestahistorialestadoService.createFactoringpropuestahistorialestadoService(
+    factoringpropuestahistorialestadoValidated,
+    req.session_user.usuario.idusuario,
   );
 
   response(res, 201, { ...factoringpropuestahistorialestadoValidated });
@@ -174,24 +106,19 @@ export const activateFactoringpropuestahistorialestado = async (req: Request, re
       factoringpropuestahistorialestadoid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const factoringpropuestahistorialestadoValidated = factoringpropuestahistorialestadoSchema.validateSync({ factoringpropuestahistorialestadoid: id }, { abortEarly: false, stripUnknown: true });
+  const factoringpropuestahistorialestadoValidated =
+    factoringpropuestahistorialestadoSchema.validateSync(
+      { factoringpropuestahistorialestadoid: id },
+      { abortEarly: false, stripUnknown: true },
+    ) as FactoringpropuestahistorialestadoIdDto;
   log.debug(line(), "factoringpropuestahistorialestadoValidated:", factoringpropuestahistorialestadoValidated);
 
-  const factoringpropuestahistorialestadoActivated = await prismaFT.client.$transaction(
-    async (tx) => {
-      var factoringpropuestahistorialestado = await factoringpropuestahistorialestadoDao.getFactoringpropuestahistorialestadoByFactoringpropuestahistorialestadoid(tx, factoringpropuestahistorialestadoValidated.factoringpropuestahistorialestadoid);
-      if (!factoringpropuestahistorialestado) {
-        log.warn(line(), "Factoringpropuestahistorialestado no existe: [" + factoringpropuestahistorialestadoValidated.factoringpropuestahistorialestadoid + "]");
-        throw new ClientError("Datos no válidos", 404);
-      }
+  const factoringpropuestahistorialestadoActivated =
+    await factoringpropuestahistorialestadoService.activateFactoringpropuestahistorialestadoService(
+      factoringpropuestahistorialestadoValidated,
+      req.session_user.usuario.idusuario,
+    );
 
-      const factoringpropuestahistorialestadoActivated = await factoringpropuestahistorialestadoDao.activateFactoringpropuestahistorialestado(tx, factoringpropuestahistorialestadoValidated.factoringpropuestahistorialestadoid, req.session_user.usuario.idusuario);
-      log.debug(line(), "factoringpropuestahistorialestadoActivated:", factoringpropuestahistorialestadoActivated);
-
-      return factoringpropuestahistorialestadoActivated;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
   response(res, 204, factoringpropuestahistorialestadoActivated);
 };
 
@@ -204,39 +131,27 @@ export const deleteFactoringpropuestahistorialestado = async (req: Request, res:
       factoringpropuestahistorialestadoid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const factoringpropuestahistorialestadoValidated = factoringpropuestahistorialestadoSchema.validateSync({ factoringpropuestahistorialestadoid: id }, { abortEarly: false, stripUnknown: true });
+  const factoringpropuestahistorialestadoValidated =
+    factoringpropuestahistorialestadoSchema.validateSync(
+      { factoringpropuestahistorialestadoid: id },
+      { abortEarly: false, stripUnknown: true },
+    ) as FactoringpropuestahistorialestadoIdDto;
   log.debug(line(), "factoringpropuestahistorialestadoValidated:", factoringpropuestahistorialestadoValidated);
 
-  const factoringpropuestahistorialestadoDeleted = await prismaFT.client.$transaction(
-    async (tx) => {
-      var factoringpropuestahistorialestado = await factoringpropuestahistorialestadoDao.getFactoringpropuestahistorialestadoByFactoringpropuestahistorialestadoid(tx, factoringpropuestahistorialestadoValidated.factoringpropuestahistorialestadoid);
-      if (!factoringpropuestahistorialestado) {
-        log.warn(line(), "Factoringpropuestahistorialestado no existe: [" + factoringpropuestahistorialestadoValidated.factoringpropuestahistorialestadoid + "]");
-        throw new ClientError("Datos no válidos", 404);
-      }
+  const factoringpropuestahistorialestadoDeleted =
+    await factoringpropuestahistorialestadoService.deleteFactoringpropuestahistorialestadoService(
+      factoringpropuestahistorialestadoValidated,
+      req.session_user.usuario.idusuario,
+    );
 
-      const factoringpropuestahistorialestadoDeleted = await factoringpropuestahistorialestadoDao.deleteFactoringpropuestahistorialestado(tx, factoringpropuestahistorialestadoValidated.factoringpropuestahistorialestadoid, req.session_user.usuario.idusuario);
-      log.debug(line(), "factoringpropuestahistorialestadoDeleted:", factoringpropuestahistorialestadoDeleted);
-
-      return factoringpropuestahistorialestadoDeleted;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
   response(res, 204, factoringpropuestahistorialestadoDeleted);
 };
 
 export const getFactoringpropuestahistorialestados = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFactoringpropuestahistorialestados");
-  //log.info(line(),req.session_user.usuario.idusuario);
 
-  const factoringpropuestahistorialestadosJson = await prismaFT.client.$transaction(
-    async (tx) => {
-      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
-      const factoringpropuestahistorialestados = await factoringpropuestahistorialestadoDao.getFactoringpropuestahistorialestados(tx, filter_estado);
+  const factoringpropuestahistorialestados =
+    await factoringpropuestahistorialestadoService.getFactoringpropuestahistorialestadosService();
 
-      return factoringpropuestahistorialestados;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
-  response(res, 201, factoringpropuestahistorialestadosJson);
+  response(res, 201, factoringpropuestahistorialestados);
 };
