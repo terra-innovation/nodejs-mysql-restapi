@@ -1,29 +1,18 @@
-import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import * as archivoDao from "#root/src/daos/archivo.Dao.js";
-import * as archivofactoringtransferenciacedenteDao from "#root/src/daos/archivofactoringtransferenciacedente.Dao.js";
-import * as empresacuentabancariaDao from "#root/src/daos/empresacuentabancaria.Dao.js";
-import * as factorcuentabancariaDao from "#root/src/daos/factorcuentabancaria.Dao.js";
-import * as factoringDao from "#root/src/daos/factoring.Dao.js";
-import * as factoringtransferenciacedenteDao from "#root/src/daos/factoringtransferenciacedente.Dao.js";
-import * as factoringtransferenciaestadoDao from "#root/src/daos/factoringtransferenciaestado.Dao.js";
-import * as factoringtransferenciatipoDao from "#root/src/daos/factoringtransferenciatipo.Dao.js";
-import * as monedaDao from "#root/src/daos/moneda.Dao.js";
-import * as usuarioDao from "#root/src/daos/usuario.Dao.js";
-import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import * as emailService from "#root/src/providers/email/email.Provider.js";
-import { ESTADO } from "#src/constants/prisma.Constant.js";
-import { ClientError } from "#src/utils/CustomErrors.js";
+import * as factoringtransferenciacedenteService from "#root/src/services/admin/factoringtransferenciacedente.Service.js";
+import type {
+  CreateFactoringtransferenciacedenteDto,
+  FactoringtransferenciacedenteIdDto,
+  GetFactoringtransferenciacedenteMasterByFactoringidDto,
+  GetFactoringtransferenciacedentesByFactoringidDto,
+  UpdateFactoringtransferenciacedenteDto,
+} from "#root/src/services/admin/factoringtransferenciacedente.Service.js";
 import { response } from "#src/utils/CustomResponseOk.js";
-import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
-
-import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 
 export const sendCorreoFactoringtransferenciacedente = async (req: Request, res: Response) => {
   log.debug(line(), "controller::sendCorreoFactoringtransferenciacedente");
-  const session_idusuario = req.session_user.usuario.idusuario;
   const { id } = req.params;
   const factoringtransferenciacedenteUpdateSchema = yup
     .object()
@@ -31,34 +20,15 @@ export const sendCorreoFactoringtransferenciacedente = async (req: Request, res:
       factoringtransferenciacedenteid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const factoringtransferenciacedenteValidated = factoringtransferenciacedenteUpdateSchema.validateSync({ factoringtransferenciacedenteid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
+  const factoringtransferenciacedenteValidated =
+    factoringtransferenciacedenteUpdateSchema.validateSync(
+      { factoringtransferenciacedenteid: id, ...req.body },
+      { abortEarly: false, stripUnknown: true },
+    ) as FactoringtransferenciacedenteIdDto;
   log.debug(line(), "factoringtransferenciacedenteValidated:", factoringtransferenciacedenteValidated);
 
-  const factoringtransferenciacedenteSent = await prismaFT.client.$transaction(
-    async (tx) => {
-      const factoringtransferenciacedenteExisted = await factoringtransferenciacedenteDao.getFactoringtransferenciacedenteByFactoringtransferenciacedenteid(tx, factoringtransferenciacedenteValidated.factoringtransferenciacedenteid);
-      if (!factoringtransferenciacedenteExisted) {
-        log.warn(line(), "Factoringtransferenciacedente no existe: [" + factoringtransferenciacedenteValidated.factoringtransferenciacedenteid + "]");
-        throw new ClientError("Datos no válidos", 404);
-      }
-
-      // Enviamos correo electrónico
-      const factoring_for_email = await factoringDao.getFactoringByIdfactoring(tx, factoringtransferenciacedenteExisted.idfactoring);
-      const factoringtransferenciacedente_for_email = await factoringtransferenciacedenteDao.getFactoringtransferenciacedenteByIdfactoringtransferenciacedente(tx, factoringtransferenciacedenteExisted.idfactoringtransferenciacedente);
-      const usuario_for_email = await usuarioDao.getUsuarioByEmail(tx, factoring_for_email.contacto_cedente.email);
-
-      const factoringtransferenciacedenteObfuscated_for_email = jsonUtils.ofuscarAtributos(factoringtransferenciacedente_for_email, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
-
-      var paramsEmail = {
-        factoring: factoring_for_email,
-        factoringtransferenciacedente: factoringtransferenciacedenteObfuscated_for_email,
-        usuario: usuario_for_email,
-      };
-      await emailService.sendFactoringEmpresaServicioFactoringCedenteConfirmacionTransferencia(usuario_for_email.email, paramsEmail);
-
-      return {};
-    },
-    { timeout: prismaFT.transactionTimeout },
+  await factoringtransferenciacedenteService.sendCorreoFactoringtransferenciacedenteService(
+    factoringtransferenciacedenteValidated.factoringtransferenciacedenteid,
   );
 
   response(res, 200, {});
@@ -73,20 +43,19 @@ export const activateFactoringtransferenciacedente = async (req: Request, res: R
       factoringtransferenciacedenteid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const factoringtransferenciacedenteValidated = factoringtransferenciacedenteSchema.validateSync({ factoringtransferenciacedenteid: id }, { abortEarly: false, stripUnknown: true });
+  const factoringtransferenciacedenteValidated =
+    factoringtransferenciacedenteSchema.validateSync(
+      { factoringtransferenciacedenteid: id },
+      { abortEarly: false, stripUnknown: true },
+    ) as FactoringtransferenciacedenteIdDto;
   log.debug(line(), "factoringtransferenciacedenteValidated:", factoringtransferenciacedenteValidated);
 
-  const factoringtransferenciacedenteActivated = await prismaFT.client.$transaction(
-    async (tx) => {
-      const factoringtransferenciacedenteActivated = await factoringtransferenciacedenteDao.activateFactoringtransferenciacedente(tx, factoringtransferenciacedenteValidated.factoringtransferenciacedenteid, req.session_user.usuario.idusuario);
-      if (factoringtransferenciacedenteActivated[0] === 0) {
-        throw new ClientError("Factoringtransferenciacedente no existe", 404);
-      }
-      log.debug(line(), "factoringtransferenciacedenteActivated:", factoringtransferenciacedenteActivated);
-      return factoringtransferenciacedenteActivated;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
+  const factoringtransferenciacedenteActivated =
+    await factoringtransferenciacedenteService.activateFactoringtransferenciacedenteService(
+      factoringtransferenciacedenteValidated,
+      req.session_user.usuario.idusuario,
+    );
+
   response(res, 204, factoringtransferenciacedenteActivated);
 };
 
@@ -99,26 +68,24 @@ export const deleteFactoringtransferenciacedente = async (req: Request, res: Res
       factoringtransferenciacedenteid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const factoringtransferenciacedenteValidated = factoringtransferenciacedenteSchema.validateSync({ factoringtransferenciacedenteid: id }, { abortEarly: false, stripUnknown: true });
+  const factoringtransferenciacedenteValidated =
+    factoringtransferenciacedenteSchema.validateSync(
+      { factoringtransferenciacedenteid: id },
+      { abortEarly: false, stripUnknown: true },
+    ) as FactoringtransferenciacedenteIdDto;
   log.debug(line(), "factoringtransferenciacedenteValidated:", factoringtransferenciacedenteValidated);
 
-  const factoringtransferenciacedenteDeleted = await prismaFT.client.$transaction(
-    async (tx) => {
-      const factoringtransferenciacedenteDeleted = await factoringtransferenciacedenteDao.deleteFactoringtransferenciacedente(tx, factoringtransferenciacedenteValidated.factoringtransferenciacedenteid, req.session_user.usuario.idusuario);
-      if (factoringtransferenciacedenteDeleted[0] === 0) {
-        throw new ClientError("Factoringtransferenciacedente no existe", 404);
-      }
-      log.debug(line(), "factoringtransferenciacedenteDeleted:", factoringtransferenciacedenteDeleted);
-      return factoringtransferenciacedenteDeleted;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
+  const factoringtransferenciacedenteDeleted =
+    await factoringtransferenciacedenteService.deleteFactoringtransferenciacedenteService(
+      factoringtransferenciacedenteValidated,
+      req.session_user.usuario.idusuario,
+    );
+
   response(res, 204, factoringtransferenciacedenteDeleted);
 };
 
 export const updateFactoringtransferenciacedente = async (req: Request, res: Response) => {
   log.debug(line(), "controller::updateFactoringtransferenciacedente");
-  const session_idusuario = req.session_user.usuario.idusuario;
   const { id } = req.params;
   const factoringtransferenciacedenteUpdateSchema = yup
     .object()
@@ -127,35 +94,16 @@ export const updateFactoringtransferenciacedente = async (req: Request, res: Res
       factoringtransferenciaestadoid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const factoringtransferenciacedenteValidated = factoringtransferenciacedenteUpdateSchema.validateSync({ factoringtransferenciacedenteid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
+  const factoringtransferenciacedenteValidated =
+    factoringtransferenciacedenteUpdateSchema.validateSync(
+      { factoringtransferenciacedenteid: id, ...req.body },
+      { abortEarly: false, stripUnknown: true },
+    ) as UpdateFactoringtransferenciacedenteDto;
   log.debug(line(), "factoringtransferenciacedenteValidated:", factoringtransferenciacedenteValidated);
 
-  const factoringtransferenciacedenteUpdated = await prismaFT.client.$transaction(
-    async (tx) => {
-      var factoringtransferenciacedente = await factoringtransferenciacedenteDao.getFactoringtransferenciacedenteByFactoringtransferenciacedenteid(tx, factoringtransferenciacedenteValidated.factoringtransferenciacedenteid);
-      if (!factoringtransferenciacedente) {
-        log.warn(line(), "Factoringtransferenciacedente no existe: [" + factoringtransferenciacedenteValidated.factoringtransferenciacedenteid + "]");
-        throw new ClientError("Datos no válidos", 404);
-      }
-
-      var factoringtransferenciaestado = await factoringtransferenciaestadoDao.getFactoringtransferenciaestadoByFactoringtransferenciaestadoid(tx, factoringtransferenciacedenteValidated.factoringtransferenciaestadoid);
-      if (!factoringtransferenciaestado) {
-        log.warn(line(), "factoringtransferenciaestado no existe: [" + factoringtransferenciacedenteValidated.factoringtransferenciaestadoid + "]");
-        throw new ClientError("Datos no válidos", 404);
-      }
-
-      const factoringtransferenciacedenteToUpdate: Prisma.factoring_transferencia_cedenteUpdateInput = {
-        factoring_transferencia_estado: { connect: { idfactoringtransferenciaestado: factoringtransferenciaestado.idfactoringtransferenciaestado } },
-        idusuariomod: req.session_user.usuario.idusuario ?? 1,
-        fechamod: new Date(),
-      };
-
-      const factoringtransferenciacedenteUpdated = await factoringtransferenciacedenteDao.updateFactoringtransferenciacedente(tx, factoringtransferenciacedenteValidated.factoringtransferenciacedenteid, factoringtransferenciacedenteToUpdate);
-      log.debug(line(), "factoringtransferenciacedenteUpdated:", factoringtransferenciacedenteUpdated);
-
-      return factoringtransferenciacedenteUpdated;
-    },
-    { timeout: prismaFT.transactionTimeout },
+  await factoringtransferenciacedenteService.updateFactoringtransferenciacedenteService(
+    factoringtransferenciacedenteValidated,
+    req.session_user.usuario.idusuario,
   );
 
   response(res, 200, { ...factoringtransferenciacedenteValidated });
@@ -163,8 +111,6 @@ export const updateFactoringtransferenciacedente = async (req: Request, res: Res
 
 export const createFactoringtransferenciacedente = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createFactoringtransferenciacedente");
-  const session_idusuario = req.session_user.usuario.idusuario;
-  const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
   const factoringtransferenciacedenteSchema = yup
     .object()
     .shape({
@@ -179,7 +125,10 @@ export const createFactoringtransferenciacedente = async (req: Request, res: Res
       fecha: yup
         .string()
         .required()
-        .matches(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/, "Formato inválido: debe ser ISO UTC (YYYY-MM-DDTHH:mm:ssZ)")
+        .matches(
+          /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/,
+          "Formato inválido: debe ser ISO UTC (YYYY-MM-DDTHH:mm:ssZ)",
+        )
         .test("is-valid-date", "Fecha inválida", (value) => {
           const date = new Date(value);
           return !isNaN(date.getTime());
@@ -187,105 +136,26 @@ export const createFactoringtransferenciacedente = async (req: Request, res: Res
       archivo_constancia_transferencia: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  var factoringtransferenciacedenteValidated = factoringtransferenciacedenteSchema.validateSync({ ...req.body }, { abortEarly: false, stripUnknown: true });
-  //log.debug(line(),"factoringValidated:", factoringValidated);
+  const factoringtransferenciacedenteValidated =
+    factoringtransferenciacedenteSchema.validateSync(
+      { ...req.body },
+      { abortEarly: false, stripUnknown: true },
+    ) as CreateFactoringtransferenciacedenteDto;
 
-  const factoringtransferenciacedenteCreated = await prismaFT.client.$transaction(
-    async (tx) => {
-      const filter_estados = [ESTADO.ACTIVO];
-
-      var factoring = await factoringDao.getFactoringByFactoringid(tx, factoringtransferenciacedenteValidated.factoringid);
-      if (!factoring) {
-        log.warn(line(), "Factoring no existe: [" + factoringtransferenciacedenteValidated.factoringid + "]");
-        throw new ClientError("Datos no válidos", 404);
-      }
-
-      var factoringtransferenciatipo = await factoringtransferenciatipoDao.getFactoringtransferenciatipoByFactoringtransferenciatipoid(tx, factoringtransferenciacedenteValidated.factoringtransferenciatipoid);
-      if (!factoringtransferenciatipo) {
-        log.warn(line(), "Factoring tranferencia tipo no existe: [" + factoringtransferenciacedenteValidated.factoringtransferenciatipoid + "]");
-        throw new ClientError("Datos no válidos", 404);
-      }
-
-      var factoringtransferenciaestado = await factoringtransferenciaestadoDao.getFactoringtransferenciaestadoByFactoringtransferenciaestadoid(tx, factoringtransferenciacedenteValidated.factoringtransferenciaestadoid);
-      if (!factoringtransferenciaestado) {
-        log.warn(line(), "Factoring tranferencia tipo no existe: [" + factoringtransferenciacedenteValidated.factoringtransferenciaestadoid + "]");
-        throw new ClientError("Datos no válidos", 404);
-      }
-
-      var factorcuentabancaria = await factorcuentabancariaDao.getFactorcuentabancariaByFactorcuentabancariaid(tx, factoringtransferenciacedenteValidated.factorcuentabancariaid);
-      if (!factorcuentabancaria) {
-        log.warn(line(), "factorcuentabancaria no existe: [" + factoringtransferenciacedenteValidated.factorcuentabancariaid + "]");
-        throw new ClientError("Datos no válidos", 404);
-      }
-
-      var empresacuentabancaria = await empresacuentabancariaDao.getEmpresacuentabancariaByEmpresacuentabancariaid(tx, factoringtransferenciacedenteValidated.empresacuentabancariaid);
-      if (!empresacuentabancaria) {
-        log.warn(line(), "empresacuentabancaria no existe: [" + factoringtransferenciacedenteValidated.empresacuentabancariaid + "]");
-        throw new ClientError("Datos no válidos", 404);
-      }
-
-      var moneda = await monedaDao.getMonedaByMonedaid(tx, factoringtransferenciacedenteValidated.monedaid);
-      if (!moneda) {
-        log.warn(line(), "Moneda no existe: [" + factoringtransferenciacedenteValidated.monedaid + "]");
-        throw new ClientError("Datos no válidos", 404);
-      }
-
-      var archivo = await archivoDao.getArchivoByArchivoid(tx, factoringtransferenciacedenteValidated.archivo_constancia_transferencia);
-      if (!archivo) {
-        log.warn(line(), "Archivo no existe: [" + factoringtransferenciacedenteValidated.archivo_constancia_transferencia + "]");
-        throw new ClientError("Datos no válidos", 404);
-      }
-
-      const factoringtransferenciacedenteToCreate: Prisma.factoring_transferencia_cedenteCreateInput = {
-        factoring: { connect: { idfactoring: factoring.idfactoring } },
-        factoring_transferencia_tipo: { connect: { idfactoringtransferenciatipo: factoringtransferenciatipo.idfactoringtransferenciatipo } },
-        factoring_transferencia_estado: { connect: { idfactoringtransferenciaestado: factoringtransferenciaestado.idfactoringtransferenciaestado } },
-        factor_cuenta_bancaria: { connect: { idfactorcuentabancaria: factorcuentabancaria.idfactorcuentabancaria } },
-        empresa_cuenta_bancaria: { connect: { idempresacuentabancaria: empresacuentabancaria.idempresacuentabancaria } },
-        moneda: { connect: { idmoneda: moneda.idmoneda } },
-
-        factoringtransferenciacedenteid: uuidv4(),
-        code: uuidv4().split("-")[0],
-
-        numero_operacion: factoringtransferenciacedenteValidated.numero_operacion,
-        monto: factoringtransferenciacedenteValidated.monto,
-        fecha: factoringtransferenciacedenteValidated.fecha,
-
-        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
-        fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario.idusuario ?? 1,
-        fechamod: new Date(),
-        estado: 1,
-      };
-
-      const factoringtransferenciacedenteCreated = await factoringtransferenciacedenteDao.insertFactoringtransferenciacedente(tx, jsonUtils.omitNullAndUndefined(factoringtransferenciacedenteToCreate));
-      log.debug(line(), "factoringtransferenciacedenteCreated:", factoringtransferenciacedenteCreated);
-
-      const archivofactoringtransferenciacedenteToCreate: Prisma.archivo_factoring_transferencia_cedenteCreateInput = {
-        archivo: { connect: { idarchivo: archivo.idarchivo } },
-        factoring_transferencia_cedente: { connect: { idfactoringtransferenciacedente: factoringtransferenciacedenteCreated.idfactoringtransferenciacedente } },
-        idusuariocrea: req.session_user.usuario.idusuario ?? 1,
-        fechacrea: new Date(),
-        idusuariomod: req.session_user.usuario.idusuario ?? 1,
-        fechamod: new Date(),
-        estado: 1,
-      };
-
-      const archivofactoringtransferenciacedenteCreated = await archivofactoringtransferenciacedenteDao.insertArchivofactoringtransferenciacedente(tx, archivofactoringtransferenciacedenteToCreate);
-
-      log.debug(line(), "archivofactoringtransferenciacedenteCreated:", archivofactoringtransferenciacedenteCreated);
-
-      return factoringtransferenciacedenteCreated;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
+  const factoringtransferenciacedenteCreated =
+    await factoringtransferenciacedenteService.createFactoringtransferenciacedenteService(
+      factoringtransferenciacedenteValidated,
+      req.session_user.usuario.idusuario,
+    );
 
   response(res, 201, factoringtransferenciacedenteCreated);
 };
 
-export const getFactoringtransferenciacedentesByFactoringid = async (req: Request, res: Response) => {
+export const getFactoringtransferenciacedentesByFactoringid = async (
+  req: Request,
+  res: Response,
+) => {
   log.debug(line(), "controller::getFactoringtransferenciacedentesByFactoringid");
-  //log.info(line(),req.session_user.usuario.idusuario);
   const { id } = req.params;
   const factoringtransferenciacedenteSearchSchema = yup
     .object()
@@ -293,29 +163,25 @@ export const getFactoringtransferenciacedentesByFactoringid = async (req: Reques
       factoringid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const factoringtransferenciacedenteValidated = factoringtransferenciacedenteSearchSchema.validateSync({ factoringid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
+  const factoringtransferenciacedenteValidated =
+    factoringtransferenciacedenteSearchSchema.validateSync(
+      { factoringid: id, ...req.body },
+      { abortEarly: false, stripUnknown: true },
+    ) as GetFactoringtransferenciacedentesByFactoringidDto;
   log.debug(line(), "factoringtransferenciacedenteValidated:", factoringtransferenciacedenteValidated);
 
-  const factoringtransferenciacedentesJson = await prismaFT.client.$transaction(
-    async (tx) => {
-      const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
+  const factoringtransferenciacedentes =
+    await factoringtransferenciacedenteService.getFactoringtransferenciacedentesByFactoringidService(
+      factoringtransferenciacedenteValidated,
+    );
 
-      var factoring = await factoringDao.getFactoringByFactoringid(tx, factoringtransferenciacedenteValidated.factoringid);
-      if (!factoring) {
-        log.warn(line(), "Factoring no existe: [" + factoringtransferenciacedenteValidated.factoringid + "]");
-        throw new ClientError("Datos no válidos", 404);
-      }
-
-      const factoringtransferenciacedentes = await factoringtransferenciacedenteDao.getFactoringtransferenciacedentesByIdfactoring(tx, factoring.idfactoring, filter_estado);
-
-      return factoringtransferenciacedentes;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
-  response(res, 201, factoringtransferenciacedentesJson);
+  response(res, 201, factoringtransferenciacedentes);
 };
 
-export const getFactoringtransferenciacedenteMasterByFactoringid = async (req: Request, res: Response) => {
+export const getFactoringtransferenciacedenteMasterByFactoringid = async (
+  req: Request,
+  res: Response,
+) => {
   log.debug(line(), "controller::getFactoringtransferenciacedenteMaster");
   const { factoringid } = req.params;
   const factoringtransferenciacedenteSchema = yup
@@ -324,37 +190,17 @@ export const getFactoringtransferenciacedenteMasterByFactoringid = async (req: R
       factoringid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const factoringtransferenciacedenteValidated = factoringtransferenciacedenteSchema.validateSync({ factoringid: factoringid }, { abortEarly: false, stripUnknown: true });
+  const factoringtransferenciacedenteValidated =
+    factoringtransferenciacedenteSchema.validateSync(
+      { factoringid: factoringid },
+      { abortEarly: false, stripUnknown: true },
+    ) as GetFactoringtransferenciacedenteMasterByFactoringidDto;
   log.debug(line(), "factoringtransferenciacedenteValidated:", factoringtransferenciacedenteValidated);
 
-  const factoringtransferenciacedentesMasterFiltered = await prismaFT.client.$transaction(
-    async (tx) => {
-      const filter_estados = [ESTADO.ACTIVO];
+  const masterData =
+    await factoringtransferenciacedenteService.getFactoringtransferenciacedenteMasterByFactoringidService(
+      factoringtransferenciacedenteValidated,
+    );
 
-      var factoring = await factoringDao.getFactoringByFactoringid(tx, factoringtransferenciacedenteValidated.factoringid);
-      if (!factoring) {
-        log.warn(line(), "Factoring no existe: [" + factoringtransferenciacedenteValidated.factoringid + "]");
-        throw new ClientError("Datos no válidos", 404);
-      }
-
-      const factoringtransferenciatipos = await factoringtransferenciatipoDao.getFactoringtransferenciatipos(tx, filter_estados);
-      const factoringtransferenciaestados = await factoringtransferenciaestadoDao.getFactoringtransferenciaestados(tx, filter_estados);
-
-      const factorcuentasbancarias = await factorcuentabancariaDao.getFactorcuentabancariasByIdfactorIdmoneda(tx, factoring.idfactor, factoring.idmoneda, filter_estados);
-      const cedentecuentasbancarias = await empresacuentabancariaDao.getEmpresacuentabancariasByIdempresaIdmoneda(tx, factoring.idcedente, factoring.idmoneda, filter_estados);
-      const monedas = await monedaDao.getMonedas(tx, filter_estados);
-
-      var factoringtransferenciacedentesMaster: Record<string, any> = {};
-
-      factoringtransferenciacedentesMaster.factoringtransferenciatipos = factoringtransferenciatipos;
-      factoringtransferenciacedentesMaster.factoringtransferenciaestados = factoringtransferenciaestados;
-      factoringtransferenciacedentesMaster.factorcuentasbancarias = factorcuentasbancarias;
-      factoringtransferenciacedentesMaster.cedentecuentasbancarias = cedentecuentasbancarias;
-      factoringtransferenciacedentesMaster.monedas = monedas;
-
-      return factoringtransferenciacedentesMaster;
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
-  response(res, 201, factoringtransferenciacedentesMasterFiltered);
+  response(res, 201, masterData);
 };
