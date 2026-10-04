@@ -8,10 +8,10 @@
   "scripts": {
     "build_anterior": "tsc",
     "build": "tsc --noEmit && tsup",
-    "dev": "tsx watch --tsconfig ./tsconfig.json  src/index.ts",
+    "dev": "cross-env TZ=UTC tsx watch --tsconfig ./tsconfig.json  src/index.ts",
     "start": "node dist/index.js",
     "test_anterior": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
-    "test": "cross-env NODE_ENV=test jest --config jest.config.js",
+    "test": "cross-env TZ=UTC NODE_ENV=test jest --config jest.config.js",
     "pretest_anterior": "cross-env NODE_ENV=test jest --clearCache",
     "prisma-sync": "node scripts/prisma/generate-models.js",
     "list-unused-exports": "powershell -Command \"npx ts-prune | Select-String -NotMatch 'used in module' | Select-String '\\\\src\\\\controllers\\\\'\"",
@@ -26,7 +26,7 @@
     "#src/*": "./src/*"
   },
   "env": {
-    "TZ": "America/Lima"
+    "TZ": "UTC"
   },
   "keywords": [],
   "author": "",

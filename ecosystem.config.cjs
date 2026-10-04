@@ -14,6 +14,11 @@ module.exports = {
       //error_file: "logs/pm2/ft-api-backend-stderr.log", // Archivo para logs de error de console. (warn, error, fatal)
       //merge_logs: true, // Útil si usas múltiples instancias
       log_date_format: "YYYY-MM-DD HH:mm:ss.SSS",
+      env: {
+        NODE_ENV: "production",
+        TZ: "UTC",
+      },
+
     },
   ],
 };

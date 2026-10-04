@@ -11,7 +11,8 @@
       "skipFiles": ["<node_internals>/**"],
       "restart": true,
       "env": {
-        "NODE_ENV": "development"
+        "NODE_ENV": "development",
+        "TZ": "UTC"
       },
       "preLaunchTask": "tsc-watch"
     },
@@ -31,7 +32,8 @@
       "console": "integratedTerminal",
       "outputCapture": "std",
       "env": {
-        "NODE_ENV": "development"
+        "NODE_ENV": "development",
+        "TZ": "UTC"
       },
       "preLaunchTask": "tsc-watch"
     }
