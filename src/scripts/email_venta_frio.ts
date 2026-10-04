@@ -41,10 +41,10 @@ if (process.env.NODE_ENV !== "production") {
   dotenv.config();
 }
 
+import { sendEmailVentaFrioXlsxLogic } from "#root/src/services/admin/emailVentaFrio.Service.js";
+import * as df from "#src/utils/dateUtils.js";
 import fs from "fs";
 import path from "path";
-import * as df from "#src/utils/dateUtils.js";
-import { sendEmailVentaFrioXlsxLogic } from "#src/services/emailVentaFrio.Service.js";
 
 // El archivo puede pasarse como argumento o usa el valor por defecto
 const filePath = process.argv[2] ?? path.resolve(process.cwd(), "temporal", "20260127_BASE_2.xlsx");

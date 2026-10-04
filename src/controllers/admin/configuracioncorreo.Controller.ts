@@ -1,20 +1,9 @@
-import { Request, Response } from "express";
-import * as yup from "yup";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
+import { Request, Response } from "express";
+import * as yup from "yup";
 
-import {
-  activateConfiguracioncorreoService,
-  createConfiguracioncorreoService,
-  deleteConfiguracioncorreoService,
-  getConfiguracioncorreoMasterService,
-  getConfiguracioncorreosService,
-  testConfiguracioncorreoService,
-  updateConfiguracioncorreoService,
-  type ConfiguracionCorreoCreateDto,
-  type ConfiguracionCorreoUpdateDto,
-  type TestConfiguracionCorreoDto,
-} from "#src/services/configuracioncorreo.Service.js";
+import { activateConfiguracioncorreoService, createConfiguracioncorreoService, deleteConfiguracioncorreoService, getConfiguracioncorreoMasterService, getConfiguracioncorreosService, testConfiguracioncorreoService, updateConfiguracioncorreoService, type ConfiguracionCorreoCreateDto, type ConfiguracionCorreoUpdateDto, type TestConfiguracionCorreoDto } from "#root/src/services/admin/configuracioncorreo.Service.js";
 
 export const getConfiguracioncorreos = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getConfiguracioncorreos");
@@ -39,10 +28,7 @@ export const createConfiguracioncorreo = async (req: Request, res: Response) => 
     })
     .required();
 
-  const validated = schema.validateSync(
-    { ...req.body },
-    { abortEarly: false, stripUnknown: true },
-  ) as unknown as ConfiguracionCorreoCreateDto;
+  const validated = schema.validateSync({ ...req.body }, { abortEarly: false, stripUnknown: true }) as unknown as ConfiguracionCorreoCreateDto;
 
   const idusuario = req.session_user?.usuario?.idusuario ?? 1;
   const created = await createConfiguracioncorreoService(validated, idusuario);
@@ -68,10 +54,7 @@ export const updateConfiguracioncorreo = async (req: Request, res: Response) => 
     })
     .required();
 
-  const validated = schema.validateSync(
-    { configuracioncorreoid: id, ...req.body },
-    { abortEarly: false, stripUnknown: true },
-  ) as unknown as ConfiguracionCorreoUpdateDto;
+  const validated = schema.validateSync({ configuracioncorreoid: id, ...req.body }, { abortEarly: false, stripUnknown: true }) as unknown as ConfiguracionCorreoUpdateDto;
 
   const idusuario = req.session_user?.usuario?.idusuario ?? 1;
   await updateConfiguracioncorreoService(validated, idusuario);
@@ -111,10 +94,7 @@ export const testConfiguracioncorreo = async (req: Request, res: Response) => {
     })
     .required();
 
-  const validated = schema.validateSync(
-    { configuracioncorreoid: id, ...req.body },
-    { abortEarly: false, stripUnknown: true },
-  ) as unknown as TestConfiguracionCorreoDto;
+  const validated = schema.validateSync({ configuracioncorreoid: id, ...req.body }, { abortEarly: false, stripUnknown: true }) as unknown as TestConfiguracionCorreoDto;
 
   const result = await testConfiguracioncorreoService(validated);
   response(res, 200, result);

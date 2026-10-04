@@ -1,8 +1,8 @@
+import * as cuentabancariaestadoService from "#root/src/services/admin/cuentabancariaestado.Service.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
 import * as yup from "yup";
-import * as cuentabancariaestadoService from "#src/services/cuentabancariaestado.Service.js";
 
 export const activateCuentabancariaestado = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activateCuentabancariaestado");
@@ -13,10 +13,7 @@ export const activateCuentabancariaestado = async (req: Request, res: Response) 
       cuentabancariaestadoid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const cuentabancariaestadoValidated = cuentabancariaestadoSchema.validateSync(
-    { cuentabancariaestadoid: id },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const cuentabancariaestadoValidated = cuentabancariaestadoSchema.validateSync({ cuentabancariaestadoid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "cuentabancariaestadoValidated:", cuentabancariaestadoValidated);
 
   const cuentabancariaestadoActivated = await cuentabancariaestadoService.activateCuentabancariaestadoService({
@@ -36,10 +33,7 @@ export const deleteCuentabancariaestado = async (req: Request, res: Response) =>
       cuentabancariaestadoid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const cuentabancariaestadoValidated = cuentabancariaestadoSchema.validateSync(
-    { cuentabancariaestadoid: id },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const cuentabancariaestadoValidated = cuentabancariaestadoSchema.validateSync({ cuentabancariaestadoid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "cuentabancariaestadoValidated:", cuentabancariaestadoValidated);
 
   const cuentabancariaestadoDeleted = await cuentabancariaestadoService.deleteCuentabancariaestadoService({
@@ -62,10 +56,7 @@ export const updateCuentabancariaestado = async (req: Request, res: Response) =>
       color: yup.string().trim().required().max(50),
     })
     .required();
-  const cuentabancariaestadoValidated = cuentabancariaestadoUpdateSchema.validateSync(
-    { cuentabancariaestadoid: id, ...req.body },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const cuentabancariaestadoValidated = cuentabancariaestadoUpdateSchema.validateSync({ cuentabancariaestadoid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "cuentabancariaestadoValidated:", cuentabancariaestadoValidated);
 
   const cuentabancariaestadoFiltered = await cuentabancariaestadoService.updateCuentabancariaestadoService({
@@ -95,10 +86,7 @@ export const createCuentabancariaestado = async (req: Request, res: Response) =>
       color: yup.string().trim().required().max(50),
     })
     .required();
-  const cuentabancariaestadoValidated = cuentabancariaestadoCreateSchema.validateSync(
-    req.body,
-    { abortEarly: false, stripUnknown: true },
-  );
+  const cuentabancariaestadoValidated = cuentabancariaestadoCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "cuentabancariaestadoValidated:", cuentabancariaestadoValidated);
 
   const cuentabancariaestadoCreated = await cuentabancariaestadoService.createCuentabancariaestadoService({

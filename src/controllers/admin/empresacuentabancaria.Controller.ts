@@ -1,8 +1,8 @@
+import * as empresacuentabancariaService from "#root/src/services/admin/empresacuentabancaria.Service.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
 import * as yup from "yup";
-import * as empresacuentabancariaService from "#src/services/empresacuentabancaria.Service.js";
 
 export const activateEmpresacuentabancaria = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activateEmpresacuentabancaria");
@@ -13,10 +13,7 @@ export const activateEmpresacuentabancaria = async (req: Request, res: Response)
       empresacuentabancariaid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const empresacuentabancariaValidated = empresacuentabancariaSchema.validateSync(
-    { empresacuentabancariaid: id },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const empresacuentabancariaValidated = empresacuentabancariaSchema.validateSync({ empresacuentabancariaid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "empresacuentabancariaValidated:", empresacuentabancariaValidated);
 
   await empresacuentabancariaService.activateEmpresacuentabancariaService({
@@ -36,10 +33,7 @@ export const deleteEmpresacuentabancaria = async (req: Request, res: Response) =
       empresacuentabancariaid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const empresacuentabancariaValidated = empresacuentabancariaSchema.validateSync(
-    { empresacuentabancariaid: id },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const empresacuentabancariaValidated = empresacuentabancariaSchema.validateSync({ empresacuentabancariaid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "empresacuentabancariaValidated:", empresacuentabancariaValidated);
 
   await empresacuentabancariaService.deleteEmpresacuentabancariaService({
@@ -67,10 +61,7 @@ export const updateEmpresacuentabancariaOnlyAliasAndCuentaBancariaEstado = async
       alias: yup.string().required().max(50),
     })
     .required();
-  const empresacuentabancariaValidated = empresacuentabancariaUpdateSchema.validateSync(
-    { empresacuentabancariaid: id, ...req.body },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const empresacuentabancariaValidated = empresacuentabancariaUpdateSchema.validateSync({ empresacuentabancariaid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "empresacuentabancariaValidated:", empresacuentabancariaValidated);
 
   await empresacuentabancariaService.updateEmpresacuentabancariaOnlyAliasAndCuentaBancariaEstadoService({
@@ -103,10 +94,7 @@ export const createEmpresacuentabancaria = async (req: Request, res: Response) =
       alias: yup.string().required().max(50),
     })
     .required();
-  const empresacuentabancariaValidated = empresacuentabancariaCreateSchema.validateSync(
-    req.body,
-    { abortEarly: false, stripUnknown: true },
-  );
+  const empresacuentabancariaValidated = empresacuentabancariaCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "empresacuentabancariaValidated:", empresacuentabancariaValidated);
 
   const empresacuentabancaria = await empresacuentabancariaService.createEmpresacuentabancariaService({

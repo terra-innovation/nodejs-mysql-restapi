@@ -1,16 +1,9 @@
-import { Request, Response } from "express";
-import * as yup from "yup";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
+import { Request, Response } from "express";
+import * as yup from "yup";
 
-import {
-  activatePersonaService,
-  deletePersonaService,
-  getPersonaMasterService,
-  getPersonasService,
-  updatePersonaService,
-  type PersonaUpdateDto,
-} from "#src/services/persona.Service.js";
+import { activatePersonaService, deletePersonaService, getPersonaMasterService, getPersonasService, updatePersonaService, type PersonaUpdateDto } from "#root/src/services/admin/persona.Service.js";
 
 export const activatePersona = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activatePersona");
@@ -71,10 +64,7 @@ export const updatePersona = async (req: Request, res: Response) => {
       direccionreferencia: yup.string().trim().required().max(200),
     })
     .required();
-  const validated = personaUpdateSchema.validateSync(
-    { personaid: id, ...req.body },
-    { abortEarly: false, stripUnknown: true },
-  ) as unknown as PersonaUpdateDto;
+  const validated = personaUpdateSchema.validateSync({ personaid: id, ...req.body }, { abortEarly: false, stripUnknown: true }) as unknown as PersonaUpdateDto;
 
   const idusuario = req.session_user?.usuario?.idusuario ?? 1;
   await updatePersonaService(validated, idusuario);

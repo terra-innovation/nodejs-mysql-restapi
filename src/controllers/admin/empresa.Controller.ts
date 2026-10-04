@@ -1,18 +1,9 @@
-import { Request, Response } from "express";
-import * as yup from "yup";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
+import { Request, Response } from "express";
+import * as yup from "yup";
 
-import {
-  activateEmpresaService,
-  createEmpresaService,
-  deleteEmpresaService,
-  getEmpresasService,
-  getEmpresaMasterService,
-  updateEmpresaService,
-  type EmpresaCreateDto,
-  type EmpresaUpdateDto,
-} from "#src/services/empresa.Service.js";
+import { activateEmpresaService, createEmpresaService, deleteEmpresaService, getEmpresaMasterService, getEmpresasService, updateEmpresaService, type EmpresaCreateDto, type EmpresaUpdateDto } from "#root/src/services/admin/empresa.Service.js";
 
 export const activateEmpresa = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activateEmpresa");
@@ -129,10 +120,7 @@ export const updateEmpresa = async (req: Request, res: Response) => {
         .max(200),
     })
     .required();
-  const validated = empresaUpdateSchema.validateSync(
-    { empresaid: id, ...req.body },
-    { abortEarly: false, stripUnknown: true },
-  ) as unknown as EmpresaUpdateDto;
+  const validated = empresaUpdateSchema.validateSync({ empresaid: id, ...req.body }, { abortEarly: false, stripUnknown: true }) as unknown as EmpresaUpdateDto;
 
   const idusuario = req.session_user?.usuario?.idusuario ?? 1;
   await updateEmpresaService(validated, idusuario);
@@ -216,10 +204,7 @@ export const createEmpresa = async (req: Request, res: Response) => {
         .max(200),
     })
     .required();
-  const validated = empresaCreateSchema.validateSync(
-    req.body,
-    { abortEarly: false, stripUnknown: true },
-  ) as unknown as EmpresaCreateDto;
+  const validated = empresaCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true }) as unknown as EmpresaCreateDto;
 
   const data = await createEmpresaService(validated, session_idusuario);
   response(res, 201, data);

@@ -1,8 +1,8 @@
+import * as cedentelimiteService from "#root/src/services/admin/cedentelimite.Service.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
 import * as yup from "yup";
-import * as cedentelimiteService from "#src/services/cedentelimite.Service.js";
 
 export const getCedentelimites = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getCedentelimites");
@@ -23,10 +23,7 @@ export const createCedentelimite = async (req: Request, res: Response) => {
     })
     .required();
 
-  const cedentelimiteValidated = cedentelimiteCreateSchema.validateSync(
-    req.body,
-    { abortEarly: false, stripUnknown: true },
-  );
+  const cedentelimiteValidated = cedentelimiteCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "cedentelimiteValidated:", cedentelimiteValidated);
 
   const cedentelimiteCreated = await cedentelimiteService.createCedentelimiteService({
@@ -54,10 +51,7 @@ export const updateCedentelimite = async (req: Request, res: Response) => {
     })
     .required();
 
-  const cedentelimiteValidated = cedentelimiteUpdateSchema.validateSync(
-    { cedentelimiteid: id, ...req.body },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const cedentelimiteValidated = cedentelimiteUpdateSchema.validateSync({ cedentelimiteid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "cedentelimiteValidated:", cedentelimiteValidated);
 
   await cedentelimiteService.updateCedentelimiteService({
@@ -81,10 +75,7 @@ export const deleteCedentelimite = async (req: Request, res: Response) => {
     })
     .required();
 
-  const cedentelimiteValidated = cedentelimiteSchema.validateSync(
-    { cedentelimiteid: id },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const cedentelimiteValidated = cedentelimiteSchema.validateSync({ cedentelimiteid: id }, { abortEarly: false, stripUnknown: true });
 
   const result = await cedentelimiteService.deleteCedentelimiteService({
     cedentelimiteid: cedentelimiteValidated.cedentelimiteid,
@@ -104,10 +95,7 @@ export const activateCedentelimite = async (req: Request, res: Response) => {
     })
     .required();
 
-  const cedentelimiteValidated = cedentelimiteSchema.validateSync(
-    { cedentelimiteid: id },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const cedentelimiteValidated = cedentelimiteSchema.validateSync({ cedentelimiteid: id }, { abortEarly: false, stripUnknown: true });
 
   const result = await cedentelimiteService.activateCedentelimiteService({
     cedentelimiteid: cedentelimiteValidated.cedentelimiteid,

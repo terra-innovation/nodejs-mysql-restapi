@@ -1,14 +1,14 @@
 import { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import * as sunattipocambioDao from "#src/daos/sunattipocambio.Dao.js";
-import * as monedaDao from "#src/daos/moneda.Dao.js";
-import * as configuracionappDao from "#src/daos/configuracionapp.Dao.js";
-import * as tipocambioLogic from "#src/services/tipocambio.Service.js";
+import * as tipocambioLogic from "#root/src/services/admin/tipocambio.Service.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
+import * as configuracionappDao from "#src/daos/configuracionapp.Dao.js";
+import * as monedaDao from "#src/daos/moneda.Dao.js";
+import * as sunattipocambioDao from "#src/daos/sunattipocambio.Dao.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
+import * as df from "#src/utils/dateUtils.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { line, log } from "#src/utils/logger.pino.js";
-import * as df from "#src/utils/dateUtils.js";
 import { v4 as uuidv4 } from "uuid";
 
 export interface CreateSunatTipoCambioDto {
@@ -52,13 +52,7 @@ export const getSunatTipoCambioExactoPorFechaService = async (fecha: string) => 
       const { monedaBase, monedaCotizada } = await tipocambioLogic.resolverMonedas(tx, "USD", "PEN");
       const filter_estado = [ESTADO.ACTIVO];
 
-      const registro = await sunattipocambioDao.getSunatTipoCambioByFecha(
-        tx,
-        fechaParsed,
-        monedaBase.idmoneda,
-        monedaCotizada.idmoneda,
-        filter_estado,
-      );
+      const registro = await sunattipocambioDao.getSunatTipoCambioByFecha(tx, fechaParsed, monedaBase.idmoneda, monedaCotizada.idmoneda, filter_estado);
 
       if (!registro) {
         throw new ClientError("No existe tipo de cambio SUNAT registrado para la fecha seleccionada", 422);
@@ -75,12 +69,7 @@ export const getSunatTipoCambioHistorialService = async (fechaInicio?: string, f
   return await tipocambioLogic.obtenerHistorialSunatLogic(fechaInicio, fechaFin);
 };
 
-export const sincronizarSunatTipoCambioService = async (
-  fecha?: string,
-  mes?: number,
-  anio?: number,
-  serviciotipocambioid?: string,
-) => {
+export const sincronizarSunatTipoCambioService = async (fecha?: string, mes?: number, anio?: number, serviciotipocambioid?: string) => {
   log.debug(line(), "service::sincronizarSunatTipoCambioService");
   if (mes && anio) {
     return await tipocambioLogic.sincronizarSunatMesLogic(Number(mes), Number(anio), serviciotipocambioid);
@@ -90,24 +79,14 @@ export const sincronizarSunatTipoCambioService = async (
   return await tipocambioLogic.sincronizarSunatLogic(fechaSync, serviciotipocambioid);
 };
 
-export const sincronizarSunatMesTipoCambioService = async (
-  mes: number,
-  anio: number,
-  serviciotipocambioid?: string,
-) => {
+export const sincronizarSunatMesTipoCambioService = async (mes: number, anio: number, serviciotipocambioid?: string) => {
   log.debug(line(), "service::sincronizarSunatMesTipoCambioService");
   return await tipocambioLogic.sincronizarSunatMesLogic(mes, anio, serviciotipocambioid);
 };
 
 export const getSunatTipoCambiosListOrPaginatedService = async (params: any) => {
   log.debug(line(), "service::getSunatTipoCambiosListOrPaginatedService");
-  const hasPaginationParams =
-    params.page !== undefined ||
-    params.pageIndex !== undefined ||
-    params.limit !== undefined ||
-    params.pageSize !== undefined ||
-    params.offset !== undefined ||
-    params.skip !== undefined;
+  const hasPaginationParams = params.page !== undefined || params.pageIndex !== undefined || params.limit !== undefined || params.pageSize !== undefined || params.offset !== undefined || params.skip !== undefined;
 
   if (hasPaginationParams) {
     return await tipocambioLogic.obtenerSunatPaginadoLogic(params);
@@ -128,28 +107,21 @@ export const getSunatTipoCambiosPaginadoService = async (options: any) => {
   return await tipocambioLogic.obtenerSunatPaginadoLogic(options);
 };
 
-export const createSunatTipoCambioService = async (
-  idUsuario: number,
-  payload: CreateSunatTipoCambioDto,
-) => {
+export const createSunatTipoCambioService = async (idUsuario: number, payload: CreateSunatTipoCambioDto) => {
   log.debug(line(), "service::createSunatTipoCambioService");
   return await prismaFT.client.$transaction(
     async (tx) => {
       const fechaRegistro = tipocambioLogic.parseFechaLima(payload.fecha);
 
       // Resolver moneda base
-      const monedaBase = payload.monedabaseid
-        ? await monedaDao.getMonedaByMonedaid(tx, payload.monedabaseid)
-        : await monedaDao.getMonedaByCodigo(tx, payload.codigomonedabase || "USD");
+      const monedaBase = payload.monedabaseid ? await monedaDao.getMonedaByMonedaid(tx, payload.monedabaseid) : await monedaDao.getMonedaByCodigo(tx, payload.codigomonedabase || "USD");
 
       if (!monedaBase) {
         throw new ClientError("Moneda base no encontrada", 404);
       }
 
       // Resolver moneda cotizada
-      const monedaCotizada = payload.monedacotizadaid
-        ? await monedaDao.getMonedaByMonedaid(tx, payload.monedacotizadaid)
-        : await monedaDao.getMonedaByCodigo(tx, payload.codigomonedacotizada || "PEN");
+      const monedaCotizada = payload.monedacotizadaid ? await monedaDao.getMonedaByMonedaid(tx, payload.monedacotizadaid) : await monedaDao.getMonedaByCodigo(tx, payload.codigomonedacotizada || "PEN");
 
       if (!monedaCotizada) {
         throw new ClientError("Moneda cotizada no encontrada", 404);
@@ -157,13 +129,7 @@ export const createSunatTipoCambioService = async (
 
       // Verificar si ya existe para ese par y fecha
       const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
-      const existente = await sunattipocambioDao.getSunatTipoCambioByFecha(
-        tx,
-        fechaRegistro,
-        monedaBase.idmoneda,
-        monedaCotizada.idmoneda,
-        filter_estado,
-      );
+      const existente = await sunattipocambioDao.getSunatTipoCambioByFecha(tx, fechaRegistro, monedaBase.idmoneda, monedaCotizada.idmoneda, filter_estado);
 
       if (existente) {
         throw new ClientError("Ya existe un tipo de cambio SUNAT registrado para esta fecha y par de monedas", 400);
@@ -191,17 +157,11 @@ export const createSunatTipoCambioService = async (
   );
 };
 
-export const updateSunatTipoCambioService = async (
-  idUsuario: number,
-  payload: UpdateSunatTipoCambioDto,
-) => {
+export const updateSunatTipoCambioService = async (idUsuario: number, payload: UpdateSunatTipoCambioDto) => {
   log.debug(line(), "service::updateSunatTipoCambioService");
   return await prismaFT.client.$transaction(
     async (tx) => {
-      const registro = await sunattipocambioDao.getSunatTipoCambioBySunattipocambioid(
-        tx,
-        payload.sunattipocambioid,
-      );
+      const registro = await sunattipocambioDao.getSunatTipoCambioBySunattipocambioid(tx, payload.sunattipocambioid);
 
       if (!registro) {
         log.warn(line(), `Tipo de cambio SUNAT no existe: [${payload.sunattipocambioid}]`);
@@ -221,13 +181,7 @@ export const updateSunatTipoCambioService = async (
       }
       if (payload.fecha) {
         const nuevaFecha = tipocambioLogic.parseFechaLima(payload.fecha);
-        const existente = await sunattipocambioDao.getSunatTipoCambioByFecha(
-          tx,
-          nuevaFecha,
-          registro.idmonedabase,
-          registro.idmonedacotizada,
-          [ESTADO.ACTIVO, ESTADO.ELIMINADO],
-        );
+        const existente = await sunattipocambioDao.getSunatTipoCambioByFecha(tx, nuevaFecha, registro.idmonedabase, registro.idmonedacotizada, [ESTADO.ACTIVO, ESTADO.ELIMINADO]);
         if (existente && existente.sunattipocambioid !== payload.sunattipocambioid) {
           throw new ClientError("Ya existe otro tipo de cambio SUNAT registrado para esta fecha y par de monedas", 400);
         }
@@ -280,10 +234,7 @@ export const getSunatTipoCambioMasterService = async () => {
   return await prismaFT.client.$transaction(
     async (tx) => {
       const filter_estados = [ESTADO.ACTIVO];
-      const [monedas, servicios_tipo_cambio] = await Promise.all([
-        monedaDao.getMonedas(tx, filter_estados),
-        configuracionappDao.getServiciosTipoDeCambioParsed(tx),
-      ]);
+      const [monedas, servicios_tipo_cambio] = await Promise.all([monedaDao.getMonedas(tx, filter_estados), configuracionappDao.getServiciosTipoDeCambioParsed(tx)]);
 
       const sunatMaster: Record<string, any> = {
         monedas,

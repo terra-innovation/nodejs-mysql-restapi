@@ -3,10 +3,10 @@ import * as factoringDao from "#root/src/daos/factoring.Dao.js";
 import * as factoringestadoDao from "#root/src/daos/factoringestado.Dao.js";
 import * as factoringtipoDao from "#root/src/daos/factoringtipo.Dao.js";
 import * as riesgoDao from "#root/src/daos/riesgo.Dao.js";
-import * as sunattipocambioDao from "#src/daos/sunattipocambio.Dao.js";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
+import * as tipocambioLogic from "#root/src/services/admin/tipocambio.Service.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
-import * as tipocambioLogic from "#src/services/tipocambio.Service.js";
+import * as sunattipocambioDao from "#src/daos/sunattipocambio.Dao.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as df from "#src/utils/dateUtils.js";
 import { line, log } from "#src/utils/logger.pino.js";
@@ -64,10 +64,7 @@ export const getFactoringsService = async () => {
 export const getFactoringsPendientesFacturaCedenteService = async () => {
   log.debug(line(), "service::financiero::getFactoringsPendientesFacturaCedenteService");
 
-  return await prismaFT.client.$transaction(
-    async (tx) => factoringDao.getFactoringsPendientesFacturaCedente(tx),
-    { timeout: prismaFT.transactionTimeout },
-  );
+  return await prismaFT.client.$transaction(async (tx) => factoringDao.getFactoringsPendientesFacturaCedente(tx), { timeout: prismaFT.transactionTimeout });
 };
 
 /**
@@ -127,19 +124,10 @@ export const getPreFacturaCedenteService = async (dto: GetPreFacturaCedenteDto) 
 
       // 2. Resolver monedas y consultar T/C SUNAT exacto (sin fallback)
       const { monedaBase, monedaCotizada } = await tipocambioLogic.resolverMonedas(tx, "USD", "PEN");
-      const tipoCambio = await sunattipocambioDao.getSunatTipoCambioByFecha(
-        tx,
-        fechaParsed,
-        monedaBase.idmoneda,
-        monedaCotizada.idmoneda,
-        [ESTADO.ACTIVO],
-      );
+      const tipoCambio = await sunattipocambioDao.getSunatTipoCambioByFecha(tx, fechaParsed, monedaBase.idmoneda, monedaCotizada.idmoneda, [ESTADO.ACTIVO]);
 
       if (!tipoCambio) {
-        throw new ClientError(
-          "No se puede mostrar la pre-factura porque no existe un tipo de cambio de la SUNAT registrado para la fecha seleccionada.",
-          422,
-        );
+        throw new ClientError("No se puede mostrar la pre-factura porque no existe un tipo de cambio de la SUNAT registrado para la fecha seleccionada.", 422);
       }
 
       // 3. Extraer ítems gravados con IGV (Tipos 1: Comisión, 2: Costo, 3: Gasto)
@@ -249,9 +237,7 @@ export const getPreFacturaCedenteService = async (dto: GetPreFacturaCedenteDto) 
           campo_bd: isUsd ? "importe_total * sunat_tipo_cambio.precio_venta" : "importe_total",
           titulo: "Paso 4: Homologación a Moneda Nacional para Validación del SPOT",
           formula: isUsd ? "Importe Total Soles = Importe Total (USD) × Tipo de Cambio Venta SUNAT" : "Importe Total Soles = Importe Total (PEN)",
-          detalle: isUsd
-            ? `$ ${importe_total.toFixed(2)} × ${tipo_cambio_venta.toFixed(4)} = S/ ${importe_total_soles.toFixed(2)}`
-            : `S/ ${importe_total.toFixed(2)} = S/ ${importe_total_soles.toFixed(2)}`,
+          detalle: isUsd ? `$ ${importe_total.toFixed(2)} × ${tipo_cambio_venta.toFixed(4)} = S/ ${importe_total_soles.toFixed(2)}` : `S/ ${importe_total.toFixed(2)} = S/ ${importe_total_soles.toFixed(2)}`,
           resultado: Number(importe_total_soles.toFixed(2)),
         },
         paso5: {
@@ -259,10 +245,7 @@ export const getPreFacturaCedenteService = async (dto: GetPreFacturaCedenteDto) 
           campo_bd: "Redondear_Entero(importe_total_soles * 0.12)",
           titulo: "Paso 5: Evaluación y Cálculo de la Detracción (SPOT)",
           formula: "Umbral: S/ 700.00 | Tasa SPOT: 12% | Rubro: 037 - Demás servicios gravados con el IGV",
-          detalle:
-            estado_detraccion === "APLICA"
-              ? `S/ ${importe_total_soles.toFixed(2)} > S/ 700.00 → APLICA detracción. Redondear_Entero(S/ ${importe_total_soles.toFixed(2)} × 12%) = S/ ${monto_detraccion_soles}`
-              : `S/ ${importe_total_soles.toFixed(2)} ≤ S/ 700.00 → NO APLICA detracción. Monto = S/ 0`,
+          detalle: estado_detraccion === "APLICA" ? `S/ ${importe_total_soles.toFixed(2)} > S/ 700.00 → APLICA detracción. Redondear_Entero(S/ ${importe_total_soles.toFixed(2)} × 12%) = S/ ${monto_detraccion_soles}` : `S/ ${importe_total_soles.toFixed(2)} ≤ S/ 700.00 → NO APLICA detracción. Monto = S/ 0`,
           resultado: monto_detraccion_soles,
           aplica: estado_detraccion === "APLICA",
         },
@@ -270,18 +253,8 @@ export const getPreFacturaCedenteService = async (dto: GetPreFacturaCedenteDto) 
           numero: 6,
           campo_bd: isUsd ? "importe_total - (monto_detraccion_soles / precio_venta)" : "importe_total - monto_detraccion_soles",
           titulo: "Paso 6: Determinación del Monto Neto Pendiente de Pago",
-          formula:
-            estado_detraccion === "APLICA"
-              ? isUsd
-                ? "Neto = Importe Total (USD) - (Monto Detracción Soles / T/C Venta SUNAT)"
-                : "Neto = Importe Total (PEN) - Monto Detracción Soles"
-              : "Neto = Importe Total",
-          detalle:
-            estado_detraccion === "APLICA"
-              ? isUsd
-                ? `$ ${importe_total.toFixed(2)} - (S/ ${monto_detraccion_soles} / ${tipo_cambio_venta.toFixed(4)}) = $ ${neto_pendiente_pago.toFixed(2)}`
-                : `S/ ${importe_total.toFixed(2)} - S/ ${monto_detraccion_soles} = S/ ${neto_pendiente_pago.toFixed(2)}`
-              : `${monedaSimbolo} ${importe_total.toFixed(2)} = ${monedaSimbolo} ${neto_pendiente_pago.toFixed(2)}`,
+          formula: estado_detraccion === "APLICA" ? (isUsd ? "Neto = Importe Total (USD) - (Monto Detracción Soles / T/C Venta SUNAT)" : "Neto = Importe Total (PEN) - Monto Detracción Soles") : "Neto = Importe Total",
+          detalle: estado_detraccion === "APLICA" ? (isUsd ? `$ ${importe_total.toFixed(2)} - (S/ ${monto_detraccion_soles} / ${tipo_cambio_venta.toFixed(4)}) = $ ${neto_pendiente_pago.toFixed(2)}` : `S/ ${importe_total.toFixed(2)} - S/ ${monto_detraccion_soles} = S/ ${neto_pendiente_pago.toFixed(2)}`) : `${monedaSimbolo} ${importe_total.toFixed(2)} = ${monedaSimbolo} ${neto_pendiente_pago.toFixed(2)}`,
           resultado: Number(neto_pendiente_pago.toFixed(2)),
         },
       };

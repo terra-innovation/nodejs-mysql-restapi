@@ -1,6 +1,6 @@
-import { Request, Response } from "express";
 import * as healthService from "#root/src/services/health.Service.js";
 import { line, log } from "#src/utils/logger.pino.js";
+import { Request, Response } from "express";
 
 export const index = async (req: Request, res: Response) => {
   res.json(healthService.getWelcomeMessageService());

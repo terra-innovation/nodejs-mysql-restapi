@@ -1,8 +1,8 @@
+import * as servicioService from "#root/src/services/admin/servicio.Service.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
 import * as yup from "yup";
-import * as servicioService from "#src/services/servicio.Service.js";
 
 export const activateServicio = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activateServicio");
@@ -13,10 +13,7 @@ export const activateServicio = async (req: Request, res: Response) => {
       servicioid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const servicioValidated = servicioSchema.validateSync(
-    { servicioid: id },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const servicioValidated = servicioSchema.validateSync({ servicioid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "servicioValidated:", servicioValidated);
 
   await servicioService.activateServicioService({
@@ -36,10 +33,7 @@ export const deleteServicio = async (req: Request, res: Response) => {
       servicioid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const servicioValidated = servicioSchema.validateSync(
-    { servicioid: id },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const servicioValidated = servicioSchema.validateSync({ servicioid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "servicioValidated:", servicioValidated);
 
   const servicioDeleted = await servicioService.deleteServicioService({
@@ -70,10 +64,7 @@ export const updateServicio = async (req: Request, res: Response) => {
       pathroute: yup.string().trim().min(2).max(100),
     })
     .required();
-  const servicioValidated = servicioUpdateSchema.validateSync(
-    { servicioid: id, ...req.body },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const servicioValidated = servicioUpdateSchema.validateSync({ servicioid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "servicioValidated:", servicioValidated);
 
   const servicioUpdated = await servicioService.updateServicioService({
@@ -107,10 +98,7 @@ export const createServicio = async (req: Request, res: Response) => {
       pathroute: yup.string().trim().required().min(2).max(100),
     })
     .required();
-  const servicioValidated = servicioCreateSchema.validateSync(
-    req.body,
-    { abortEarly: false, stripUnknown: true },
-  );
+  const servicioValidated = servicioCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "servicioValidated:", servicioValidated);
 
   const servicioCreated = await servicioService.createServicioService({

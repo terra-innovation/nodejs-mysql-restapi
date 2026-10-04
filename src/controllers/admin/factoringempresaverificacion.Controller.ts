@@ -1,19 +1,9 @@
-import { Request, Response } from "express";
-import * as yup from "yup";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
+import { Request, Response } from "express";
+import * as yup from "yup";
 
-import {
-  activateFactoringempresaverificacionService,
-  createFactoringempresaverificacionService,
-  deleteFactoringempresaverificacionService,
-  getFactoringempresasByVerificacionService,
-  getFactoringempresaverificacionMasterService,
-  getServicioempresaverificacionsByServicioempresaidService,
-  updateFactoringempresaverificacionService,
-  type ServicioEmpresaVerificacionCreateDto,
-  type ServicioEmpresaVerificacionUpdateDto,
-} from "#src/services/factoringempresaverificacion.Service.js";
+import { activateFactoringempresaverificacionService, createFactoringempresaverificacionService, deleteFactoringempresaverificacionService, getFactoringempresasByVerificacionService, getFactoringempresaverificacionMasterService, getServicioempresaverificacionsByServicioempresaidService, updateFactoringempresaverificacionService, type ServicioEmpresaVerificacionCreateDto, type ServicioEmpresaVerificacionUpdateDto } from "#root/src/services/admin/factoringempresaverificacion.Service.js";
 
 export const getServicioempresaverificacionsByServicioempresaid = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getServicioempresaverificacionsByServicioempresaid");
@@ -24,10 +14,7 @@ export const getServicioempresaverificacionsByServicioempresaid = async (req: Re
       servicioempresaid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const validated = servicioempresaverificacionSchema.validateSync(
-    { servicioempresaid, ...req.body },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const validated = servicioempresaverificacionSchema.validateSync({ servicioempresaid, ...req.body }, { abortEarly: false, stripUnknown: true });
 
   const data = await getServicioempresaverificacionsByServicioempresaidService(validated.servicioempresaid);
   response(res, 201, data);
@@ -46,10 +33,7 @@ export const updateFactoringempresaverificacion = async (req: Request, res: Resp
       archivos: yup.array().of(yup.string().min(36).max(36)),
     })
     .required();
-  const validated = servicioempresaverificacionSchema.validateSync(
-    { servicioempresaverificacionid, ...req.body },
-    { abortEarly: false, stripUnknown: true },
-  ) as unknown as ServicioEmpresaVerificacionUpdateDto;
+  const validated = servicioempresaverificacionSchema.validateSync({ servicioempresaverificacionid, ...req.body }, { abortEarly: false, stripUnknown: true }) as unknown as ServicioEmpresaVerificacionUpdateDto;
 
   const idusuario = req.session_user?.usuario?.idusuario ?? 1;
   const data = await updateFactoringempresaverificacionService(validated, idusuario);
@@ -68,10 +52,7 @@ export const createFactoringempresaverificacion = async (req: Request, res: Resp
       archivos: yup.array().of(yup.string().min(36).max(36)),
     })
     .required();
-  const validated = servicioempresaverificacionCreateSchema.validateSync(
-    req.body,
-    { abortEarly: false, stripUnknown: true },
-  ) as unknown as ServicioEmpresaVerificacionCreateDto;
+  const validated = servicioempresaverificacionCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true }) as unknown as ServicioEmpresaVerificacionCreateDto;
 
   const idusuario = req.session_user?.usuario?.idusuario ?? 1;
   const data = await createFactoringempresaverificacionService(validated, idusuario);
@@ -99,10 +80,7 @@ export const activateFactoringempresaverificacion = async (req: Request, res: Re
       servicioempresaverificacionid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const validated = servicioempresaverificacionSchema.validateSync(
-    { servicioempresaverificacionid },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const validated = servicioempresaverificacionSchema.validateSync({ servicioempresaverificacionid }, { abortEarly: false, stripUnknown: true });
 
   const idusuario = req.session_user?.usuario?.idusuario ?? 1;
   const data = await activateFactoringempresaverificacionService(validated.servicioempresaverificacionid, idusuario);
@@ -118,10 +96,7 @@ export const deleteFactoringempresaverificacion = async (req: Request, res: Resp
       servicioempresaverificacionid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const validated = servicioempresaverificacionSchema.validateSync(
-    { servicioempresaverificacionid },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const validated = servicioempresaverificacionSchema.validateSync({ servicioempresaverificacionid }, { abortEarly: false, stripUnknown: true });
 
   const idusuario = req.session_user?.usuario?.idusuario ?? 1;
   const data = await deleteFactoringempresaverificacionService(validated.servicioempresaverificacionid, idusuario);

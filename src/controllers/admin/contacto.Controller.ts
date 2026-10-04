@@ -1,8 +1,8 @@
+import * as contactoService from "#root/src/services/admin/contacto.Service.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
 import * as yup from "yup";
-import * as contactoService from "#src/services/contacto.Service.js";
 
 export const getContactos = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getContactos");
@@ -24,10 +24,7 @@ export const createContacto = async (req: Request, res: Response) => {
       telefono: yup.string().trim().required().min(5).max(50),
     })
     .required();
-  const contactoValidated = contactoCreateSchema.validateSync(
-    { ...req.body },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const contactoValidated = contactoCreateSchema.validateSync({ ...req.body }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "contactoValidated:", contactoValidated);
 
   const contactoCreated = await contactoService.createContactoService({
@@ -60,10 +57,7 @@ export const updateContacto = async (req: Request, res: Response) => {
       telefono: yup.string().trim().required().min(5).max(50),
     })
     .required();
-  const contactoValidated = contactoUpdateSchema.validateSync(
-    { contactoid: id, ...req.body },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const contactoValidated = contactoUpdateSchema.validateSync({ contactoid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "contactoValidated:", contactoValidated);
 
   await contactoService.updateContactoService({
@@ -90,10 +84,7 @@ export const deleteContacto = async (req: Request, res: Response) => {
       contactoid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const contactoValidated = contactoSchema.validateSync(
-    { contactoid: id },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const contactoValidated = contactoSchema.validateSync({ contactoid: id }, { abortEarly: false, stripUnknown: true });
 
   const result = await contactoService.deleteContactoService({
     contactoid: contactoValidated.contactoid,
@@ -112,10 +103,7 @@ export const activateContacto = async (req: Request, res: Response) => {
       contactoid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const contactoValidated = contactoSchema.validateSync(
-    { contactoid: id },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const contactoValidated = contactoSchema.validateSync({ contactoid: id }, { abortEarly: false, stripUnknown: true });
 
   const result = await contactoService.activateContactoService({
     contactoid: contactoValidated.contactoid,

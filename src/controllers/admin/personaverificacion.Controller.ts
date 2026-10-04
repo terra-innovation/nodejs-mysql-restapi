@@ -1,8 +1,8 @@
+import * as personaverificacionService from "#root/src/services/admin/personaverificacion.Service.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
 import * as yup from "yup";
-import * as personaverificacionService from "#src/services/personaverificacion.Service.js";
 
 export const getPersonaverificacionsByPersonaid = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getPersonaverificacionsByPersonaid");
@@ -13,10 +13,7 @@ export const getPersonaverificacionsByPersonaid = async (req: Request, res: Resp
       personaid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const personaverificacionValidated = personaverificacionSchema.validateSync(
-    { personaid, ...req.body },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const personaverificacionValidated = personaverificacionSchema.validateSync({ personaid, ...req.body }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "personaverificacionValidated:", personaverificacionValidated);
 
   const personaverificacionsJson = await personaverificacionService.getPersonaverificacionsByPersonaidService({
@@ -35,10 +32,7 @@ export const activatePersonaverificacion = async (req: Request, res: Response) =
       personaverificacionid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const personaverificacionValidated = personaverificacionSchema.validateSync(
-    { personaverificacionid },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const personaverificacionValidated = personaverificacionSchema.validateSync({ personaverificacionid }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "personaverificacionValidated:", personaverificacionValidated);
 
   const personaverificacionActivated = await personaverificacionService.activatePersonaverificacionService({
@@ -58,10 +52,7 @@ export const deletePersonaverificacion = async (req: Request, res: Response) => 
       personaverificacionid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const personaverificacionValidated = personaverificacionSchema.validateSync(
-    { personaverificacionid },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const personaverificacionValidated = personaverificacionSchema.validateSync({ personaverificacionid }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "personaverificacionValidated:", personaverificacionValidated);
 
   const personaverificacionDeleted = await personaverificacionService.deletePersonaverificacionService({
@@ -91,10 +82,7 @@ export const updatePersonaverificacion = async (req: Request, res: Response) => 
       archivos: yup.array().of(yup.string().min(36).max(36)),
     })
     .required();
-  const personaverificacionValidated = personaverificacionUpdateSchema.validateSync(
-    { personaverificacionid, ...req.body },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const personaverificacionValidated = personaverificacionUpdateSchema.validateSync({ personaverificacionid, ...req.body }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "personaverificacionValidated:", personaverificacionValidated);
 
   const resultado = await personaverificacionService.updatePersonaverificacionService({
@@ -127,10 +115,7 @@ export const createPersonaverificacion = async (req: Request, res: Response) => 
       archivos: yup.array().of(yup.string().min(36).max(36)),
     })
     .required();
-  const personaverificacionValidated = personaverificacionCreateSchema.validateSync(
-    req.body,
-    { abortEarly: false, stripUnknown: true },
-  );
+  const personaverificacionValidated = personaverificacionCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
 
   const resultado = await personaverificacionService.createPersonaverificacionService({
     personaid: personaverificacionValidated.personaid,

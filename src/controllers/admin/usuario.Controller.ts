@@ -1,14 +1,9 @@
-import { Request, Response } from "express";
-import * as yup from "yup";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
+import { Request, Response } from "express";
+import * as yup from "yup";
 
-import {
-  activateUsuarioService,
-  deleteUsuarioService,
-  getUsuarioMasterService,
-  getUsuariosService,
-} from "#src/services/usuario.Service.js";
+import { activateUsuarioService, deleteUsuarioService, getUsuarioMasterService, getUsuariosService } from "#root/src/services/admin/usuario.Service.js";
 
 export const getUsuarios = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getUsuarios");

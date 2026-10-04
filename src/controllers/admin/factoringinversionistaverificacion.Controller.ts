@@ -1,19 +1,9 @@
-import { Request, Response } from "express";
-import * as yup from "yup";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
+import { Request, Response } from "express";
+import * as yup from "yup";
 
-import {
-  activateFactoringinversionistaverificacionService,
-  createFactoringinversionistaverificacionService,
-  deleteFactoringinversionistaverificacionService,
-  getFactoringinversionistasByVerificacionService,
-  getFactoringinversionistaverificacionMasterService,
-  getServicioinversionistaverificacionsByServicioinversionistaidService,
-  updateFactoringinversionistaverificacionService,
-  type ServicioInversionistaVerificacionCreateDto,
-  type ServicioInversionistaVerificacionUpdateDto,
-} from "#src/services/factoringinversionistaverificacion.Service.js";
+import { activateFactoringinversionistaverificacionService, createFactoringinversionistaverificacionService, deleteFactoringinversionistaverificacionService, getFactoringinversionistasByVerificacionService, getFactoringinversionistaverificacionMasterService, getServicioinversionistaverificacionsByServicioinversionistaidService, updateFactoringinversionistaverificacionService, type ServicioInversionistaVerificacionCreateDto, type ServicioInversionistaVerificacionUpdateDto } from "#root/src/services/admin/factoringinversionistaverificacion.Service.js";
 
 export const getServicioinversionistaverificacionsByServicioinversionistaid = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getServicioinversionistaverificacionsByServicioinversionistaid");
@@ -24,10 +14,7 @@ export const getServicioinversionistaverificacionsByServicioinversionistaid = as
       servicioinversionistaid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const validated = servicioinversionistaverificacionSchema.validateSync(
-    { servicioinversionistaid, ...req.body },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const validated = servicioinversionistaverificacionSchema.validateSync({ servicioinversionistaid, ...req.body }, { abortEarly: false, stripUnknown: true });
 
   const data = await getServicioinversionistaverificacionsByServicioinversionistaidService(validated.servicioinversionistaid);
   response(res, 201, data);
@@ -46,10 +33,7 @@ export const updateFactoringinversionistaverificacion = async (req: Request, res
       archivos: yup.array().of(yup.string().min(36).max(36)),
     })
     .required();
-  const validated = servicioinversionistaverificacionSchema.validateSync(
-    { servicioinversionistaverificacionid, ...req.body },
-    { abortEarly: false, stripUnknown: true },
-  ) as unknown as ServicioInversionistaVerificacionUpdateDto;
+  const validated = servicioinversionistaverificacionSchema.validateSync({ servicioinversionistaverificacionid, ...req.body }, { abortEarly: false, stripUnknown: true }) as unknown as ServicioInversionistaVerificacionUpdateDto;
 
   const idusuario = req.session_user?.usuario?.idusuario ?? 1;
   const data = await updateFactoringinversionistaverificacionService(validated, idusuario);
@@ -68,10 +52,7 @@ export const createFactoringinversionistaverificacion = async (req: Request, res
       archivos: yup.array().of(yup.string().min(36).max(36)),
     })
     .required();
-  const validated = servicioinversionistaverificacionCreateSchema.validateSync(
-    req.body,
-    { abortEarly: false, stripUnknown: true },
-  ) as unknown as ServicioInversionistaVerificacionCreateDto;
+  const validated = servicioinversionistaverificacionCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true }) as unknown as ServicioInversionistaVerificacionCreateDto;
 
   const idusuario = req.session_user?.usuario?.idusuario ?? 1;
   const data = await createFactoringinversionistaverificacionService(validated, idusuario);
@@ -99,10 +80,7 @@ export const activateFactoringinversionistaverificacion = async (req: Request, r
       servicioinversionistaverificacionid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const validated = servicioinversionistaverificacionSchema.validateSync(
-    { servicioinversionistaverificacionid },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const validated = servicioinversionistaverificacionSchema.validateSync({ servicioinversionistaverificacionid }, { abortEarly: false, stripUnknown: true });
 
   const idusuario = req.session_user?.usuario?.idusuario ?? 1;
   const data = await activateFactoringinversionistaverificacionService(validated.servicioinversionistaverificacionid, idusuario);
@@ -118,10 +96,7 @@ export const deleteFactoringinversionistaverificacion = async (req: Request, res
       servicioinversionistaverificacionid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const validated = servicioinversionistaverificacionSchema.validateSync(
-    { servicioinversionistaverificacionid },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const validated = servicioinversionistaverificacionSchema.validateSync({ servicioinversionistaverificacionid }, { abortEarly: false, stripUnknown: true });
 
   const idusuario = req.session_user?.usuario?.idusuario ?? 1;
   const data = await deleteFactoringinversionistaverificacionService(validated.servicioinversionistaverificacionid, idusuario);

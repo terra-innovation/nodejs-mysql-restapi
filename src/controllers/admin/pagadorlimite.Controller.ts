@@ -1,8 +1,8 @@
+import * as pagadorlimiteService from "#root/src/services/admin/pagadorlimite.Service.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
 import * as yup from "yup";
-import * as pagadorlimiteService from "#src/services/pagadorlimite.Service.js";
 
 export const getPagadorlimites = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getPagadorlimites");
@@ -23,10 +23,7 @@ export const createPagadorlimite = async (req: Request, res: Response) => {
     })
     .required();
 
-  const pagadorlimiteValidated = pagadorlimiteCreateSchema.validateSync(
-    req.body,
-    { abortEarly: false, stripUnknown: true },
-  );
+  const pagadorlimiteValidated = pagadorlimiteCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "pagadorlimiteValidated:", pagadorlimiteValidated);
 
   const pagadorlimiteCreated = await pagadorlimiteService.createPagadorlimiteService({
@@ -54,10 +51,7 @@ export const updatePagadorlimite = async (req: Request, res: Response) => {
     })
     .required();
 
-  const pagadorlimiteValidated = pagadorlimiteUpdateSchema.validateSync(
-    { pagadorlimiteid: id, ...req.body },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const pagadorlimiteValidated = pagadorlimiteUpdateSchema.validateSync({ pagadorlimiteid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "pagadorlimiteValidated:", pagadorlimiteValidated);
 
   await pagadorlimiteService.updatePagadorlimiteService({
@@ -81,10 +75,7 @@ export const deletePagadorlimite = async (req: Request, res: Response) => {
     })
     .required();
 
-  const pagadorlimiteValidated = pagadorlimiteSchema.validateSync(
-    { pagadorlimiteid: id },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const pagadorlimiteValidated = pagadorlimiteSchema.validateSync({ pagadorlimiteid: id }, { abortEarly: false, stripUnknown: true });
 
   const result = await pagadorlimiteService.deletePagadorlimiteService({
     pagadorlimiteid: pagadorlimiteValidated.pagadorlimiteid,
@@ -104,10 +95,7 @@ export const activatePagadorlimite = async (req: Request, res: Response) => {
     })
     .required();
 
-  const pagadorlimiteValidated = pagadorlimiteSchema.validateSync(
-    { pagadorlimiteid: id },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const pagadorlimiteValidated = pagadorlimiteSchema.validateSync({ pagadorlimiteid: id }, { abortEarly: false, stripUnknown: true });
 
   const result = await pagadorlimiteService.activatePagadorlimiteService({
     pagadorlimiteid: pagadorlimiteValidated.pagadorlimiteid,

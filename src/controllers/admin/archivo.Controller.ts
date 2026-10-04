@@ -1,8 +1,8 @@
+import * as archivoService from "#root/src/services/admin/archivo.Service.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
 import * as yup from "yup";
-import * as archivoService from "#src/services/archivo.Service.js";
 
 export const descargarArchivo = async (req: Request, res: Response) => {
   log.debug(line(), "controller::descargarArchivo");
@@ -13,10 +13,7 @@ export const descargarArchivo = async (req: Request, res: Response) => {
       archivoid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const archivoValidated = archivoSchema.validateSync(
-    { archivoid: id },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const archivoValidated = archivoSchema.validateSync({ archivoid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "archivoValidated:", archivoValidated);
 
   const rutaAbsoluta = await archivoService.getRutaAbsolutaArchivoService({
@@ -40,10 +37,7 @@ export const activateArchivo = async (req: Request, res: Response) => {
       archivoid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const archivoValidated = archivoSchema.validateSync(
-    { archivoid: id },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const archivoValidated = archivoSchema.validateSync({ archivoid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "archivoValidated:", archivoValidated);
 
   await archivoService.activateArchivoService({
@@ -63,10 +57,7 @@ export const deleteArchivo = async (req: Request, res: Response) => {
       archivoid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const archivoValidated = archivoSchema.validateSync(
-    { archivoid: id },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const archivoValidated = archivoSchema.validateSync({ archivoid: id }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "archivoValidated:", archivoValidated);
 
   await archivoService.deleteArchivoService({
@@ -94,10 +85,7 @@ export const updateArchivo = async (req: Request, res: Response) => {
       archivoestadoid: yup.string().trim().required().min(36).max(36),
     })
     .required();
-  const archivoValidated = archivoUpdateSchema.validateSync(
-    { archivoid: id, ...req.body },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const archivoValidated = archivoUpdateSchema.validateSync({ archivoid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "archivoValidated:", archivoValidated);
 
   await archivoService.updateArchivoService({

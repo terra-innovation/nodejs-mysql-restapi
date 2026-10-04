@@ -1,8 +1,8 @@
+import * as factorlimiteService from "#root/src/services/admin/factorlimite.Service.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
 import * as yup from "yup";
-import * as factorlimiteService from "#src/services/factorlimite.Service.js";
 
 export const getFactorlimites = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFactorlimites");
@@ -23,10 +23,7 @@ export const createFactorlimite = async (req: Request, res: Response) => {
     })
     .required();
 
-  const factorlimiteValidated = factorlimiteCreateSchema.validateSync(
-    req.body,
-    { abortEarly: false, stripUnknown: true },
-  );
+  const factorlimiteValidated = factorlimiteCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "factorlimiteValidated:", factorlimiteValidated);
 
   const factorlimiteCreated = await factorlimiteService.createFactorlimiteService({
@@ -54,10 +51,7 @@ export const updateFactorlimite = async (req: Request, res: Response) => {
     })
     .required();
 
-  const factorlimiteValidated = factorlimiteUpdateSchema.validateSync(
-    { factorlimiteid: id, ...req.body },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const factorlimiteValidated = factorlimiteUpdateSchema.validateSync({ factorlimiteid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
   log.debug(line(), "factorlimiteValidated:", factorlimiteValidated);
 
   await factorlimiteService.updateFactorlimiteService({
@@ -81,10 +75,7 @@ export const deleteFactorlimite = async (req: Request, res: Response) => {
     })
     .required();
 
-  const factorlimiteValidated = factorlimiteSchema.validateSync(
-    { factorlimiteid: id },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const factorlimiteValidated = factorlimiteSchema.validateSync({ factorlimiteid: id }, { abortEarly: false, stripUnknown: true });
 
   const result = await factorlimiteService.deleteFactorlimiteService({
     factorlimiteid: factorlimiteValidated.factorlimiteid,
@@ -104,10 +95,7 @@ export const activateFactorlimite = async (req: Request, res: Response) => {
     })
     .required();
 
-  const factorlimiteValidated = factorlimiteSchema.validateSync(
-    { factorlimiteid: id },
-    { abortEarly: false, stripUnknown: true },
-  );
+  const factorlimiteValidated = factorlimiteSchema.validateSync({ factorlimiteid: id }, { abortEarly: false, stripUnknown: true });
 
   const result = await factorlimiteService.activateFactorlimiteService({
     factorlimiteid: factorlimiteValidated.factorlimiteid,

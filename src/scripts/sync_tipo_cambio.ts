@@ -44,7 +44,7 @@ if (process.env.NODE_ENV !== "production") {
   dotenv.config();
 }
 
-import { sincronizarTipoCambioDelDiaLogic } from "#src/services/tipocambio.Service.js";
+import { sincronizarTipoCambioDelDiaLogic } from "#root/src/services/admin/tipocambio.Service.js";
 import * as df from "#src/utils/dateUtils.js";
 import { DateTime } from "luxon";
 
@@ -192,17 +192,9 @@ async function main() {
       console.log(`   🆔 ID Registro : ${resultado.sbs.idsbstipocambio}`);
     }
 
-    const sunatResumen = sunatMeta?.error || sunatMeta?.origen === "FALLO_EN_CASCADA"
-      ? `❌ ${sunatMeta.mensaje || "Todos los servicios de tipo de cambio SUNAT fallaron en cascada"}`
-      : sunatMeta?.origen === "CACHE_LOCAL"
-      ? "Caché Local (Sin llamadas externas)"
-      : `Sincronizado vía ${sunatMeta?.proveedor || "API externa"}`;
+    const sunatResumen = sunatMeta?.error || sunatMeta?.origen === "FALLO_EN_CASCADA" ? `❌ ${sunatMeta.mensaje || "Todos los servicios de tipo de cambio SUNAT fallaron en cascada"}` : sunatMeta?.origen === "CACHE_LOCAL" ? "Caché Local (Sin llamadas externas)" : `Sincronizado vía ${sunatMeta?.proveedor || "API externa"}`;
 
-    const sbsResumen = sbsMeta?.error || sbsMeta?.origen === "FALLO_EN_CASCADA"
-      ? `❌ ${sbsMeta.mensaje || "Todos los servicios de tipo de cambio SBS fallaron en cascada para la moneda USD"}`
-      : sbsMeta?.origen === "CACHE_LOCAL"
-      ? "Caché Local (Sin llamadas externas)"
-      : `Sincronizado vía ${sbsMeta?.proveedor || "API externa"}`;
+    const sbsResumen = sbsMeta?.error || sbsMeta?.origen === "FALLO_EN_CASCADA" ? `❌ ${sbsMeta.mensaje || "Todos los servicios de tipo de cambio SBS fallaron en cascada para la moneda USD"}` : sbsMeta?.origen === "CACHE_LOCAL" ? "Caché Local (Sin llamadas externas)" : `Sincronizado vía ${sbsMeta?.proveedor || "API externa"}`;
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(2);
     console.log("\n==================================================");
