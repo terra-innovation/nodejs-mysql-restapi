@@ -10,7 +10,7 @@ import * as riesgoDao from "#root/src/daos/riesgo.Dao.js";
 import * as usuarioDao from "#root/src/daos/usuario.Dao.js";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as emailService from "#root/src/providers/email/email.Provider.js";
-import { simulateFactoringLogicV4 } from "#root/src/services/factoring.Service.js";
+import { simulateFactoringLogicV4 } from "#root/src/services/admin/factoringCalculation.Service.js";
 import { Simulacion } from "#root/src/types/Simulacion.types.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
@@ -77,20 +77,13 @@ export const generateFactoringpropuestaPDFService = async (factoringpropuestaid:
 
   return await prismaFT.client.$transaction(
     async (tx) => {
-      const factoringpropuesta =
-        await factoringpropuestaDao.getFactoringpropuestaByFactoringpropuestaid(
-          tx,
-          factoringpropuestaid,
-        );
+      const factoringpropuesta = await factoringpropuestaDao.getFactoringpropuestaByFactoringpropuestaid(tx, factoringpropuestaid);
       if (!factoringpropuesta) {
         log.warn(line(), `Factoringpropuesta no existe: [${factoringpropuestaid}]`);
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const factoring = await factoringDao.getFactoringByIdfactoring(
-        tx,
-        factoringpropuesta.idfactoring,
-      );
+      const factoring = await factoringDao.getFactoringByIdfactoring(tx, factoringpropuesta.idfactoring);
       if (!factoring) {
         log.warn(line(), `Factoring no existe: [${factoringpropuesta.idfactoring}]`);
         throw new ClientError("Datos no válidos", 404);
@@ -98,11 +91,7 @@ export const generateFactoringpropuestaPDFService = async (factoringpropuestaid:
 
       const formattedDate = luxon.DateTime.now().toFormat("yyyyMMdd_HHmm");
       const filename = `${formattedDate}_factoring_propuesta_${factoring.empresa_cedente.ruc}_${factoringpropuesta.code}.pdf`;
-      const dirPath = path.join(
-        storageUtils.pathApp(),
-        storageUtils.STORAGE_PATH_PROCESAR,
-        storageUtils.pathDate(new Date()),
-      );
+      const dirPath = path.join(storageUtils.pathApp(), storageUtils.STORAGE_PATH_PROCESAR, storageUtils.pathDate(new Date()));
       const filePath = path.join(dirPath, filename);
       if (!fs.existsSync(dirPath)) {
         fs.mkdirSync(dirPath, { recursive: true });
@@ -125,34 +114,20 @@ export const generateFactoringpropuestaPDFService = async (factoringpropuestaid:
 /**
  * Actualiza el estado de una propuesta y despacha correo si pasa a estado DISPONIBLE (4).
  */
-export const updateFactoringpropuestaService = async (
-  dto: UpdateFactoringpropuestaDto,
-  idusuario: number,
-) => {
+export const updateFactoringpropuestaService = async (dto: UpdateFactoringpropuestaDto, idusuario: number) => {
   log.debug(line(), "service::admin::updateFactoringpropuestaService");
 
   return await prismaFT.client.$transaction(
     async (tx) => {
-      const factoringpropuesta =
-        await factoringpropuestaDao.getFactoringpropuestaByFactoringpropuestaid(
-          tx,
-          dto.factoringpropuestaid,
-        );
+      const factoringpropuesta = await factoringpropuestaDao.getFactoringpropuestaByFactoringpropuestaid(tx, dto.factoringpropuestaid);
       if (!factoringpropuesta) {
         log.warn(line(), `Factoringpropuesta no existe: [${dto.factoringpropuestaid}]`);
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const factoringpropuestaestado =
-        await factoringpropuestaestadoDao.getFactoringpropuestaestadoByFactoringpropuestaestadoid(
-          tx,
-          dto.factoringpropuestaestadoid,
-        );
+      const factoringpropuestaestado = await factoringpropuestaestadoDao.getFactoringpropuestaestadoByFactoringpropuestaestadoid(tx, dto.factoringpropuestaestadoid);
       if (!factoringpropuestaestado) {
-        log.warn(
-          line(),
-          `Factoringpropuestaestado no existe: [${dto.factoringpropuestaestadoid}]`,
-        );
+        log.warn(line(), `Factoringpropuestaestado no existe: [${dto.factoringpropuestaestadoid}]`);
         throw new ClientError("Datos no válidos", 404);
       }
 
@@ -172,16 +147,8 @@ export const updateFactoringpropuestaService = async (
         estado: 1,
       };
 
-      const factoringpropuestahistorialestadoCreated =
-        await factoringpropuestahistorialestadoDao.insertFactoringpropuestahistorialestado(
-          tx,
-          factoringpropuestahistorialestadoToCreate,
-        );
-      log.debug(
-        line(),
-        "factoringpropuestahistorialestadoCreated:",
-        factoringpropuestahistorialestadoCreated,
-      );
+      const factoringpropuestahistorialestadoCreated = await factoringpropuestahistorialestadoDao.insertFactoringpropuestahistorialestado(tx, factoringpropuestahistorialestadoToCreate);
+      log.debug(line(), "factoringpropuestahistorialestadoCreated:", factoringpropuestahistorialestadoCreated);
 
       const factoringpropuestaToUpdate: Prisma.factoring_propuestaUpdateInput = {
         factoring_propuesta_estado: {
@@ -191,37 +158,19 @@ export const updateFactoringpropuestaService = async (
         fechamod: new Date(),
       };
 
-      const factoringpropuestaUpdated = await factoringpropuestaDao.updateFactoringpropuesta(
-        tx,
-        dto.factoringpropuestaid,
-        factoringpropuestaToUpdate,
-      );
+      const factoringpropuestaUpdated = await factoringpropuestaDao.updateFactoringpropuesta(tx, dto.factoringpropuestaid, factoringpropuestaToUpdate);
       log.debug(line(), "factoringpropuestaUpdated:", factoringpropuestaUpdated);
 
       if (factoringpropuestaUpdated.idfactoringpropuestaestado === 4) {
-        const factoring_for_email = await factoringDao.getFactoringByIdfactoring(
-          tx,
-          factoringpropuestaUpdated.idfactoring,
-        );
-        const usuario_for_email = await usuarioDao.getUsuarioByEmail(
-          tx,
-          factoring_for_email.contacto_cedente.email,
-        );
-        const factoringpropuesta_for_email =
-          await factoringpropuestaDao.getFactoringpropuestaAceptadaByIdfactoringpropuesta(
-            tx,
-            factoringpropuestaUpdated.idfactoringpropuesta,
-            [1],
-          );
+        const factoring_for_email = await factoringDao.getFactoringByIdfactoring(tx, factoringpropuestaUpdated.idfactoring);
+        const usuario_for_email = await usuarioDao.getUsuarioByEmail(tx, factoring_for_email.contacto_cedente.email);
+        const factoringpropuesta_for_email = await factoringpropuestaDao.getFactoringpropuestaAceptadaByIdfactoringpropuesta(tx, factoringpropuestaUpdated.idfactoringpropuesta, [1]);
         const paramsEmail = {
           factoring: factoring_for_email,
           factoringpropuesta: factoringpropuesta_for_email,
           usuario: usuario_for_email,
         };
-        await emailService.sendFactoringEmpresaServicioFactoringPropuestaDisponible(
-          usuario_for_email.email,
-          paramsEmail,
-        );
+        await emailService.sendFactoringEmpresaServicioFactoringPropuestaDisponible(usuario_for_email.email, paramsEmail);
       }
 
       return factoringpropuestaUpdated;
@@ -244,10 +193,7 @@ export const simulateFactoringpropuestaService = async (dto: SimulateFactoringpr
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const factoringtipo = await factoringtipoDao.getFactoringtipoByFactoringtipoid(
-        tx,
-        dto.factoringtipoid,
-      );
+      const factoringtipo = await factoringtipoDao.getFactoringtipoByFactoringtipoid(tx, dto.factoringtipoid);
       if (!factoringtipo) {
         log.warn(line(), `Factoring tipo no existe: [${dto.factoringtipoid}]`);
         throw new ClientError("Datos no válidos", 404);
@@ -259,11 +205,7 @@ export const simulateFactoringpropuestaService = async (dto: SimulateFactoringpr
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const factoringestrategia =
-        await factoringestrategiaDao.getFactoringestrategiaByFactoringestrategiaid(
-          tx,
-          dto.factoringestrategiaid,
-        );
+      const factoringestrategia = await factoringestrategiaDao.getFactoringestrategiaByFactoringestrategiaid(tx, dto.factoringestrategiaid);
       if (!factoringestrategia) {
         log.warn(line(), `Factoring estategia no existe: [${dto.factoringestrategiaid}]`);
         throw new ClientError("Datos no válidos", 404);
@@ -273,19 +215,7 @@ export const simulateFactoringpropuestaService = async (dto: SimulateFactoringpr
       const fecha_fin = dateUtils.toLimaDate(dto.fecha_pago_estimado);
       const fecha_emision = dateUtils.toLimaDate(factoring.fecha_emision);
 
-      const simulacion: Partial<Simulacion> = await simulateFactoringLogicV4(
-        riesgooperacion.idriesgo,
-        factoring.cuenta_bancaria.idbanco,
-        factoring.cantidad_facturas,
-        new Decimal(dto.monto_neto),
-        fecha_ahora,
-        fecha_fin,
-        fecha_emision,
-        new Decimal(dto.porcentaje_financiado_estimado),
-        new Decimal(dto.tdm),
-        new Decimal(dto.porcentaje_comision_descuento),
-        factoring.moneda.idmoneda,
-      );
+      const simulacion: Partial<Simulacion> = await simulateFactoringLogicV4(riesgooperacion.idriesgo, factoring.cuenta_bancaria.idbanco, factoring.cantidad_facturas, new Decimal(dto.monto_neto), fecha_ahora, fecha_fin, fecha_emision, new Decimal(dto.porcentaje_financiado_estimado), new Decimal(dto.tdm), new Decimal(dto.porcentaje_comision_descuento), factoring.moneda.idmoneda);
 
       log.info(line(), "simulacion: ", simulacion);
 
@@ -298,10 +228,7 @@ export const simulateFactoringpropuestaService = async (dto: SimulateFactoringpr
 /**
  * Crea una propuesta de factoring con sus componentes financieros desglosados e historial inicial.
  */
-export const createFactoringpropuestaService = async (
-  dto: CreateFactoringpropuestaDto,
-  idusuario: number,
-) => {
+export const createFactoringpropuestaService = async (dto: CreateFactoringpropuestaDto, idusuario: number) => {
   log.debug(line(), "service::admin::createFactoringpropuestaService");
 
   return await prismaFT.client.$transaction(
@@ -312,10 +239,7 @@ export const createFactoringpropuestaService = async (
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const factoringtipo = await factoringtipoDao.getFactoringtipoByFactoringtipoid(
-        tx,
-        dto.factoringtipoid,
-      );
+      const factoringtipo = await factoringtipoDao.getFactoringtipoByFactoringtipoid(tx, dto.factoringtipoid);
       if (!factoringtipo) {
         log.warn(line(), `Factoring tipo no existe: [${dto.factoringtipoid}]`);
         throw new ClientError("Datos no válidos", 404);
@@ -339,24 +263,13 @@ export const createFactoringpropuestaService = async (
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const factoringpropuestaestado =
-        await factoringpropuestaestadoDao.getFactoringpropuestaestadoByFactoringpropuestaestadoid(
-          tx,
-          dto.factoringpropuestaestadoid,
-        );
+      const factoringpropuestaestado = await factoringpropuestaestadoDao.getFactoringpropuestaestadoByFactoringpropuestaestadoid(tx, dto.factoringpropuestaestadoid);
       if (!factoringpropuestaestado) {
-        log.warn(
-          line(),
-          `Factoring propuesta estado no existe: [${dto.factoringpropuestaestadoid}]`,
-        );
+        log.warn(line(), `Factoring propuesta estado no existe: [${dto.factoringpropuestaestadoid}]`);
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const factoringestrategia =
-        await factoringestrategiaDao.getFactoringestrategiaByFactoringestrategiaid(
-          tx,
-          dto.factoringestrategiaid,
-        );
+      const factoringestrategia = await factoringestrategiaDao.getFactoringestrategiaByFactoringestrategiaid(tx, dto.factoringestrategiaid);
       if (!factoringestrategia) {
         log.warn(line(), `Factoring estategia no existe: [${dto.factoringestrategiaid}]`);
         throw new ClientError("Datos no válidos", 404);
@@ -366,19 +279,7 @@ export const createFactoringpropuestaService = async (
       const fecha_fin = dateUtils.toLimaDate(dto.fecha_pago_estimado);
       const fecha_emision = dateUtils.toLimaDate(factoring.fecha_emision);
 
-      const simulacion: Partial<Simulacion> = await simulateFactoringLogicV4(
-        riesgooperacion.idriesgo,
-        factoring.cuenta_bancaria.idbanco,
-        factoring.cantidad_facturas,
-        new Decimal(dto.monto_neto),
-        fecha_ahora,
-        fecha_fin,
-        fecha_emision,
-        new Decimal(dto.porcentaje_financiado_estimado),
-        new Decimal(dto.tdm),
-        new Decimal(dto.porcentaje_comision_descuento),
-        factoring.moneda.idmoneda,
-      );
+      const simulacion: Partial<Simulacion> = await simulateFactoringLogicV4(riesgooperacion.idriesgo, factoring.cuenta_bancaria.idbanco, factoring.cantidad_facturas, new Decimal(dto.monto_neto), fecha_ahora, fecha_fin, fecha_emision, new Decimal(dto.porcentaje_financiado_estimado), new Decimal(dto.tdm), new Decimal(dto.porcentaje_comision_descuento), factoring.moneda.idmoneda);
 
       log.info(line(), "simulacion: ", simulacion);
 
@@ -441,10 +342,7 @@ export const createFactoringpropuestaService = async (
         estado: 1,
       };
 
-      const factoringpropuestaCreated = await factoringpropuestaDao.insertFactoringpropuesta(
-        tx,
-        jsonUtils.omitNullAndUndefined(factoringpropuestaToCreate),
-      );
+      const factoringpropuestaCreated = await factoringpropuestaDao.insertFactoringpropuesta(tx, jsonUtils.omitNullAndUndefined(factoringpropuestaToCreate));
       log.debug(line(), "factoringpropuestaCreated:", factoringpropuestaCreated);
 
       const factoringpropuestahistorialestadoToCreate: Prisma.factoring_propuesta_historial_estadoCreateInput = {
@@ -465,16 +363,8 @@ export const createFactoringpropuestaService = async (
         estado: 1,
       };
 
-      const factoringpropuestahistorialestadoCreated =
-        await factoringpropuestahistorialestadoDao.insertFactoringpropuestahistorialestado(
-          tx,
-          jsonUtils.omitNullAndUndefined(factoringpropuestahistorialestadoToCreate),
-        );
-      log.debug(
-        line(),
-        "factoringpropuestahistorialestadoCreated:",
-        factoringpropuestahistorialestadoCreated,
-      );
+      const factoringpropuestahistorialestadoCreated = await factoringpropuestahistorialestadoDao.insertFactoringpropuestahistorialestado(tx, jsonUtils.omitNullAndUndefined(factoringpropuestahistorialestadoToCreate));
+      log.debug(line(), "factoringpropuestahistorialestadoCreated:", factoringpropuestahistorialestadoCreated);
 
       const insertFinancieros = async (items: any[] | undefined) => {
         if (!items) return;
@@ -519,9 +409,7 @@ export const createFactoringpropuestaService = async (
 /**
  * Consulta las propuestas registradas para una operación de factoring.
  */
-export const getFactoringpropuestasByFactoringidService = async (
-  dto: GetFactoringpropuestasByFactoringidDto,
-) => {
+export const getFactoringpropuestasByFactoringidService = async (dto: GetFactoringpropuestasByFactoringidDto) => {
   log.debug(line(), "service::admin::getFactoringpropuestasByFactoringidService");
 
   return await prismaFT.client.$transaction(
@@ -534,11 +422,7 @@ export const getFactoringpropuestasByFactoringidService = async (
         throw new ClientError("Datos no válidos", 404);
       }
 
-      return await factoringpropuestaDao.getFactoringpropuestasByIdfactoring(
-        tx,
-        factoring.idfactoring,
-        filter_estado,
-      );
+      return await factoringpropuestaDao.getFactoringpropuestasByIdfactoring(tx, factoring.idfactoring, filter_estado);
     },
     { timeout: prismaFT.transactionTimeout },
   );
@@ -547,19 +431,12 @@ export const getFactoringpropuestasByFactoringidService = async (
 /**
  * Activa una propuesta de factoring.
  */
-export const activateFactoringpropuestaService = async (
-  dto: FactoringpropuestaIdDto,
-  idusuario: number,
-) => {
+export const activateFactoringpropuestaService = async (dto: FactoringpropuestaIdDto, idusuario: number) => {
   log.debug(line(), "service::admin::activateFactoringpropuestaService");
 
   return await prismaFT.client.$transaction(
     async (tx) => {
-      const activated = await factoringpropuestaDao.activateFactoringpropuesta(
-        tx,
-        dto.factoringpropuestaid,
-        idusuario,
-      );
+      const activated = await factoringpropuestaDao.activateFactoringpropuesta(tx, dto.factoringpropuestaid, idusuario);
       if (activated[0] === 0) {
         throw new ClientError("Factoringpropuesta no existe", 404);
       }
@@ -573,19 +450,12 @@ export const activateFactoringpropuestaService = async (
 /**
  * Elimina lógicamente una propuesta de factoring.
  */
-export const deleteFactoringpropuestaService = async (
-  dto: FactoringpropuestaIdDto,
-  idusuario: number,
-) => {
+export const deleteFactoringpropuestaService = async (dto: FactoringpropuestaIdDto, idusuario: number) => {
   log.debug(line(), "service::admin::deleteFactoringpropuestaService");
 
   return await prismaFT.client.$transaction(
     async (tx) => {
-      const deleted = await factoringpropuestaDao.deleteFactoringpropuesta(
-        tx,
-        dto.factoringpropuestaid,
-        idusuario,
-      );
+      const deleted = await factoringpropuestaDao.deleteFactoringpropuesta(tx, dto.factoringpropuestaid, idusuario);
       if (deleted[0] === 0) {
         throw new ClientError("Factoringpropuesta no existe", 404);
       }
@@ -608,8 +478,7 @@ export const getFactoringpropuestaMasterService = async () => {
       const riesgos = await riesgoDao.getRiesgos(tx, filter_estados);
       const factoringtipos = await factoringtipoDao.getFactoringtipos(tx, filter_estados);
       const factoringestrategias = await factoringestrategiaDao.getFactoringestrategias(tx, filter_estados);
-      const factoringpropuestaestados =
-        await factoringpropuestaestadoDao.getFactoringpropuestaestados(tx, filter_estados);
+      const factoringpropuestaestados = await factoringpropuestaestadoDao.getFactoringpropuestaestados(tx, filter_estados);
 
       return {
         riesgos,

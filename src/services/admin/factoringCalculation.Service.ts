@@ -1,5 +1,5 @@
-import { calculateFactoringPeriod, calculateFactoringV1, calculateFactoringV2, calculateFactoringV3 } from "#root/src/domain/factoring/factoring.Calculator.js";
 import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
+import { calculateFactoringPeriod, calculateFactoringV1, calculateFactoringV2, calculateFactoringV3 } from "#root/src/domain/factoring/factoring.Calculator.js";
 
 import * as configuracionappDao from "#root/src/daos/configuracionapp.Dao.js";
 import * as factoringconfigcomisionDao from "#root/src/daos/factoringconfigcomision.Dao.js";

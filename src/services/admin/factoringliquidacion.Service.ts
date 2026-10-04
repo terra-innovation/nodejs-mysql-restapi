@@ -10,7 +10,7 @@ import * as financierotipoDao from "#root/src/daos/financierotipo.Dao.js";
 import * as usuarioDao from "#root/src/daos/usuario.Dao.js";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as emailService from "#root/src/providers/email/email.Provider.js";
-import { simulateFactoringLogicV4 } from "#root/src/services/factoring.Service.js";
+import { simulateFactoringLogicV4 } from "#root/src/services/admin/factoringCalculation.Service.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as dateUtils from "#src/utils/dateUtils.js";
@@ -72,25 +72,13 @@ export interface GetFactoringliquidacionByFactoringidDto {
 
 // ─── Helpers Internos de Simulación ──────────────────────────────────────────
 
-const getFinancialData = async (
-  tx: any,
-  item: FactoringLiquidacionFinancieroInput,
-  constante_igv: any,
-  monto_neto: Decimal,
-  orden: number,
-) => {
-  const financiero_tipo = await financierotipoDao.getFinancierotipoByFinancierotipoid(
-    tx,
-    item.financierotipoid,
-  );
+const getFinancialData = async (tx: any, item: FactoringLiquidacionFinancieroInput, constante_igv: any, monto_neto: Decimal, orden: number) => {
+  const financiero_tipo = await financierotipoDao.getFinancierotipoByFinancierotipoid(tx, item.financierotipoid);
   if (!financiero_tipo) {
     throw new ClientError(`Financiero tipo no existe: [${item.financierotipoid}]`, 404);
   }
 
-  const financiero_concepto = await financieroconceptoDao.getFinancieroconceptoByFinancieroconceptoid(
-    tx,
-    item.financieroconceptoid,
-  );
+  const financiero_concepto = await financieroconceptoDao.getFinancieroconceptoByFinancieroconceptoid(tx, item.financieroconceptoid);
   if (!financiero_concepto) {
     throw new ClientError(`Financiero concepto no existe: [${item.financieroconceptoid}]`, 404);
   }
@@ -122,18 +110,12 @@ const getFinancialData = async (
 };
 
 const getFinancialDataById = async (tx: any, item: any, constante_igv: any) => {
-  const financiero_tipo = await financierotipoDao.getFinancierotipoByIdfinancierotipo(
-    tx,
-    item.idfinancierotipo,
-  );
+  const financiero_tipo = await financierotipoDao.getFinancierotipoByIdfinancierotipo(tx, item.idfinancierotipo);
   if (!financiero_tipo) {
     throw new ClientError(`Financiero tipo no existe: [${item.idfinancierotipo}]`, 404);
   }
 
-  const financiero_concepto = await financieroconceptoDao.getFinancieroconceptoByIdfinancieroconcepto(
-    tx,
-    item.idfinancieroconcepto,
-  );
+  const financiero_concepto = await financieroconceptoDao.getFinancieroconceptoByIdfinancieroconcepto(tx, item.idfinancieroconcepto);
   if (!financiero_concepto) {
     throw new ClientError(`Financiero concepto no existe: [${item.idfinancieroconcepto}]`, 404);
   }
@@ -164,14 +146,7 @@ const getFinancialDataById = async (tx: any, item: any, constante_igv: any) => {
   };
 };
 
-const runSimulation = async (
-  tx: any,
-  factoring: any,
-  fecha_liquidacion: any,
-  fecha_pago_efectivo_raw: any,
-  financieros_raw?: FactoringLiquidacionFinancieroInput[],
-  exonerar_gasto_interbancario: boolean = false,
-) => {
+const runSimulation = async (tx: any, factoring: any, fecha_liquidacion: any, fecha_pago_efectivo_raw: any, financieros_raw?: FactoringLiquidacionFinancieroInput[], exonerar_gasto_interbancario: boolean = false) => {
   if (!factoring.factoring_propuesta_aceptada) {
     log.warn(line(), "Factoring no tiene propuesta aceptada");
     throw new ClientError("El factoring no cuenta con una propuesta aceptada", 400);
@@ -185,24 +160,10 @@ const runSimulation = async (
   const fecha_emision = dateUtils.toLimaDate(factoring.fecha_emision);
 
   const acceptedProp = factoring.factoring_propuesta_aceptada;
-  const simBase = await simulateFactoringLogicV4(
-    acceptedProp.idriesgooperacion,
-    factoring.cuenta_bancaria.idbanco,
-    factoring.cantidad_facturas,
-    factoring.monto_neto,
-    fecha_operacion,
-    fecha_fin,
-    fecha_emision,
-    acceptedProp.porcentaje_financiado_estimado,
-    acceptedProp.tdm,
-    acceptedProp.porcentaje_comision_descuento,
-    factoring.moneda.idmoneda,
-  );
+  const simBase = await simulateFactoringLogicV4(acceptedProp.idriesgooperacion, factoring.cuenta_bancaria.idbanco, factoring.cantidad_facturas, factoring.monto_neto, fecha_operacion, fecha_fin, fecha_emision, acceptedProp.porcentaje_financiado_estimado, acceptedProp.tdm, acceptedProp.porcentaje_comision_descuento, factoring.moneda.idmoneda);
 
   const fecha_pago_estimado = luxon.DateTime.fromJSDate(acceptedProp.fecha_pago_estimado);
-  const diffDays = Math.floor(
-    fecha_fin.startOf("day").diff(fecha_pago_estimado.startOf("day"), "days").days,
-  );
+  const diffDays = Math.floor(fecha_fin.startOf("day").diff(fecha_pago_estimado.startOf("day"), "days").days);
 
   let dias_pago_efectivo = 0;
   let dias_mora_efectivo = 0;
@@ -280,12 +241,8 @@ const runSimulation = async (
   }
 
   if (!exonerar_gasto_interbancario) {
-    const gasto_interbantario_monto = new Decimal(
-      factoring.idmoneda === 1 ? constante_comison_bcp_pen.valor : constante_comison_bcp_usd.valor,
-    );
-    const monto_probable_a_reembolsar_al_cedente = new Decimal(acceptedProp.monto_garantia || 0)
-      .minus(monto_descuento_mora)
-      .minus(gasto_interbantario_monto);
+    const gasto_interbantario_monto = new Decimal(factoring.idmoneda === 1 ? constante_comison_bcp_pen.valor : constante_comison_bcp_usd.valor);
+    const monto_probable_a_reembolsar_al_cedente = new Decimal(acceptedProp.monto_garantia || 0).minus(monto_descuento_mora).minus(gasto_interbantario_monto);
 
     if (factoring.cuenta_bancaria.idbanco !== 1 && monto_probable_a_reembolsar_al_cedente.greaterThan(0)) {
       factoring_liquidacion_financieros.push(
@@ -344,18 +301,11 @@ const runSimulation = async (
     }
   }
 
-  const monto_total_neto_inafecto_igv = monto_total_neto_inafecto_igv_abono
-    .minus(monto_total_neto_inafecto_igv_cargo)
-    .toDecimalPlaces(2);
-  const monto_total_neto_afecto_igv = monto_total_neto_afecto_igv_abono
-    .minus(monto_total_neto_afecto_igv_cargo)
-    .toDecimalPlaces(2);
+  const monto_total_neto_inafecto_igv = monto_total_neto_inafecto_igv_abono.minus(monto_total_neto_inafecto_igv_cargo).toDecimalPlaces(2);
+  const monto_total_neto_afecto_igv = monto_total_neto_afecto_igv_abono.minus(monto_total_neto_afecto_igv_cargo).toDecimalPlaces(2);
   const monto_total_igv = igv_abonos.minus(igv_cargos).toDecimalPlaces(2);
 
-  const netTotal = monto_total_neto_inafecto_igv
-    .add(monto_total_neto_afecto_igv)
-    .add(monto_total_igv)
-    .toDecimalPlaces(2);
+  const netTotal = monto_total_neto_inafecto_igv.add(monto_total_neto_afecto_igv).add(monto_total_igv).toDecimalPlaces(2);
 
   let monto_total_a_favor = new Decimal(0);
   let monto_total_por_cobrar = new Decimal(0);
@@ -403,14 +353,7 @@ export const simulateFactoringliquidacionService = async (dto: SimulateFactoring
         throw new ClientError("Datos no válidos", 404);
       }
 
-      return await runSimulation(
-        tx,
-        factoring,
-        dto.fecha_liquidacion,
-        dto.fecha_pago_efectivo,
-        dto.factoring_liquidacion_financieros,
-        dto.exonerar_gasto_interbancario,
-      );
+      return await runSimulation(tx, factoring, dto.fecha_liquidacion, dto.fecha_pago_efectivo, dto.factoring_liquidacion_financieros, dto.exonerar_gasto_interbancario);
     },
     { timeout: prismaFT.transactionTimeout },
   );
@@ -419,10 +362,7 @@ export const simulateFactoringliquidacionService = async (dto: SimulateFactoring
 /**
  * Crea la liquidación definitiva y su desglose financiero en base a la simulación.
  */
-export const createFactoringliquidacionService = async (
-  dto: CreateFactoringliquidacionDto,
-  idusuario: number,
-) => {
+export const createFactoringliquidacionService = async (dto: CreateFactoringliquidacionDto, idusuario: number) => {
   log.debug(line(), "service::admin::createFactoringliquidacionService");
 
   return await prismaFT.client.$transaction(
@@ -433,24 +373,13 @@ export const createFactoringliquidacionService = async (
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const liqEstado =
-        await factoringliquidacionestadoDao.getFactoringliquidacionestadoByFactoringliquidacionestadoid(
-          tx,
-          dto.factoringliquidacionestadoid,
-        );
+      const liqEstado = await factoringliquidacionestadoDao.getFactoringliquidacionestadoByFactoringliquidacionestadoid(tx, dto.factoringliquidacionestadoid);
       if (!liqEstado) {
         log.warn(line(), `Estado liquidacion no existe: [${dto.factoringliquidacionestadoid}]`);
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const sim = await runSimulation(
-        tx,
-        factoring,
-        dto.fecha_liquidacion,
-        dto.fecha_pago_efectivo,
-        dto.factoring_liquidacion_financieros,
-        dto.exonerar_gasto_interbancario,
-      );
+      const sim = await runSimulation(tx, factoring, dto.fecha_liquidacion, dto.fecha_pago_efectivo, dto.factoring_liquidacion_financieros, dto.exonerar_gasto_interbancario);
 
       const toCreate: Prisma.factoring_liquidacionCreateInput = {
         factoring: { connect: { idfactoring: factoring.idfactoring } },
@@ -519,28 +448,18 @@ export const createFactoringliquidacionService = async (
 /**
  * Actualiza el estado y fecha de una liquidación.
  */
-export const updateFactoringliquidacionService = async (
-  dto: UpdateFactoringliquidacionDto,
-  idusuario: number,
-) => {
+export const updateFactoringliquidacionService = async (dto: UpdateFactoringliquidacionDto, idusuario: number) => {
   log.debug(line(), "service::admin::updateFactoringliquidacionService");
 
   return await prismaFT.client.$transaction(
     async (tx) => {
-      const liquidacion = await factoringliquidacionDao.getFactoringliquidacionByFactoringliquidacionid(
-        tx,
-        dto.factoringliquidacionid,
-      );
+      const liquidacion = await factoringliquidacionDao.getFactoringliquidacionByFactoringliquidacionid(tx, dto.factoringliquidacionid);
       if (!liquidacion) {
         log.warn(line(), `Factoringliquidacion no existe: [${dto.factoringliquidacionid}]`);
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const estado =
-        await factoringliquidacionestadoDao.getFactoringliquidacionestadoByFactoringliquidacionestadoid(
-          tx,
-          dto.factoringliquidacionestadoid,
-        );
+      const estado = await factoringliquidacionestadoDao.getFactoringliquidacionestadoByFactoringliquidacionestadoid(tx, dto.factoringliquidacionestadoid);
       if (!estado) {
         log.warn(line(), `Estado liquidacion no existe: [${dto.factoringliquidacionestadoid}]`);
         throw new ClientError("Datos no válidos", 404);
@@ -555,11 +474,7 @@ export const updateFactoringliquidacionService = async (
         fechamod: new Date(),
       };
 
-      return await factoringliquidacionDao.updateFactoringliquidacion(
-        tx,
-        dto.factoringliquidacionid,
-        toUpdate,
-      );
+      return await factoringliquidacionDao.updateFactoringliquidacion(tx, dto.factoringliquidacionid, toUpdate);
     },
     { timeout: prismaFT.transactionTimeout },
   );
@@ -568,19 +483,12 @@ export const updateFactoringliquidacionService = async (
 /**
  * Elimina lógicamente una liquidación.
  */
-export const deleteFactoringliquidacionService = async (
-  dto: FactoringliquidacionIdDto,
-  idusuario: number,
-) => {
+export const deleteFactoringliquidacionService = async (dto: FactoringliquidacionIdDto, idusuario: number) => {
   log.debug(line(), "service::admin::deleteFactoringliquidacionService");
 
   return await prismaFT.client.$transaction(
     async (tx) => {
-      return await factoringliquidacionDao.deleteFactoringliquidacion(
-        tx,
-        dto.factoringliquidacionid,
-        idusuario,
-      );
+      return await factoringliquidacionDao.deleteFactoringliquidacion(tx, dto.factoringliquidacionid, idusuario);
     },
     { timeout: prismaFT.transactionTimeout },
   );
@@ -589,19 +497,12 @@ export const deleteFactoringliquidacionService = async (
 /**
  * Activa una liquidación.
  */
-export const activateFactoringliquidacionService = async (
-  dto: FactoringliquidacionIdDto,
-  idusuario: number,
-) => {
+export const activateFactoringliquidacionService = async (dto: FactoringliquidacionIdDto, idusuario: number) => {
   log.debug(line(), "service::admin::activateFactoringliquidacionService");
 
   return await prismaFT.client.$transaction(
     async (tx) => {
-      return await factoringliquidacionDao.activateFactoringliquidacion(
-        tx,
-        dto.factoringliquidacionid,
-        idusuario,
-      );
+      return await factoringliquidacionDao.activateFactoringliquidacion(tx, dto.factoringliquidacionid, idusuario);
     },
     { timeout: prismaFT.transactionTimeout },
   );
@@ -615,40 +516,22 @@ export const sendCorreoFactoringliquidacionService = async (factoringliquidacion
 
   return await prismaFT.client.$transaction(
     async (tx) => {
-      const factoringliquidacionExisted =
-        await factoringliquidacionDao.getFactoringliquidacionByFactoringliquidacionid(
-          tx,
-          factoringliquidacionid,
-        );
+      const factoringliquidacionExisted = await factoringliquidacionDao.getFactoringliquidacionByFactoringliquidacionid(tx, factoringliquidacionid);
       if (!factoringliquidacionExisted) {
         log.warn(line(), `Factoringliquidacion no existe: [${factoringliquidacionid}]`);
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const factoring_for_email = await factoringDao.getFactoringByIdfactoring(
-        tx,
-        factoringliquidacionExisted.idfactoring,
-      );
+      const factoring_for_email = await factoringDao.getFactoringByIdfactoring(tx, factoringliquidacionExisted.idfactoring);
       if (!factoring_for_email) {
         log.warn(line(), `Factoring no existe: [${factoringliquidacionExisted.idfactoring}]`);
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const factoringliquidacion_for_email =
-        await factoringliquidacionDao.getFactoringliquidacionByIdfactoringliquidacion(
-          tx,
-          factoringliquidacionExisted.idfactoringliquidacion,
-        );
-      const usuario_for_email = await usuarioDao.getUsuarioByEmail(
-        tx,
-        factoring_for_email.contacto_cedente.email,
-      );
+      const factoringliquidacion_for_email = await factoringliquidacionDao.getFactoringliquidacionByIdfactoringliquidacion(tx, factoringliquidacionExisted.idfactoringliquidacion);
+      const usuario_for_email = await usuarioDao.getUsuarioByEmail(tx, factoring_for_email.contacto_cedente.email);
 
-      const factoringliquidacionObfuscated_for_email = jsonUtils.ofuscarAtributos(
-        factoringliquidacion_for_email,
-        ["numero", "cci"],
-        jsonUtils.PATRON_OFUSCAR_CUENTA,
-      );
+      const factoringliquidacionObfuscated_for_email = jsonUtils.ofuscarAtributos(factoringliquidacion_for_email, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
 
       const paramsEmail = {
         factoring: factoring_for_email,
@@ -658,33 +541,19 @@ export const sendCorreoFactoringliquidacionService = async (factoringliquidacion
 
       const formattedDate = luxon.DateTime.now().toFormat("yyyyMMdd_HHmm");
       const filename = `${formattedDate}_factoring_liquidacion_${factoring_for_email.empresa_cedente.ruc}_${factoring_for_email.code}_${factoringliquidacionExisted.code}_email.pdf`;
-      const dirPath = path.join(
-        storageUtils.pathApp(),
-        storageUtils.STORAGE_PATH_PROCESAR,
-        storageUtils.pathDate(new Date()),
-      );
+      const dirPath = path.join(storageUtils.pathApp(), storageUtils.STORAGE_PATH_PROCESAR, storageUtils.pathDate(new Date()));
       const filePath = path.join(dirPath, filename);
       if (!fs.existsSync(dirPath)) {
         fs.mkdirSync(dirPath, { recursive: true });
       }
 
       const IDFACFOR = 1;
-      const factorcuentasbancarias_for_pdf =
-        await factorcuentabancariaDao.getFactorcuentabancariasByIdfactorIdmoneda(
-          tx,
-          IDFACFOR,
-          factoring_for_email.idmoneda,
-          [ESTADO.ACTIVO],
-        );
+      const factorcuentasbancarias_for_pdf = await factorcuentabancariaDao.getFactorcuentabancariasByIdfactorIdmoneda(tx, IDFACFOR, factoring_for_email.idmoneda, [ESTADO.ACTIVO]);
 
       let pdfGenerated = false;
       try {
         const pdfGenerator = new PDFGenerator(filePath);
-        await pdfGenerator.generateFactoringliquidacion(
-          factoring_for_email,
-          factoringliquidacionExisted,
-          factorcuentasbancarias_for_pdf,
-        );
+        await pdfGenerator.generateFactoringliquidacion(factoring_for_email, factoringliquidacionExisted, factorcuentasbancarias_for_pdf);
         pdfGenerated = true;
 
         const attachmentName = `Factoring_Liquidacion_${factoring_for_email.empresa_cedente.ruc}_${factoring_for_email.code}_${factoringliquidacionExisted.code}.pdf`;
@@ -695,11 +564,7 @@ export const sendCorreoFactoringliquidacionService = async (factoringliquidacion
           },
         ];
 
-        await emailService.sendFactoringEmpresaServicioFactoringCedenteNotificacionLiquidacion(
-          usuario_for_email.email,
-          paramsEmail,
-          attachments,
-        );
+        await emailService.sendFactoringEmpresaServicioFactoringCedenteNotificacionLiquidacion(usuario_for_email.email, paramsEmail, attachments);
       } finally {
         if (pdfGenerated || fs.existsSync(filePath)) {
           await unlink(filePath);
@@ -715,9 +580,7 @@ export const sendCorreoFactoringliquidacionService = async (factoringliquidacion
 /**
  * Consulta catálogos maestros para la pantalla de liquidación en admin.
  */
-export const getFactoringliquidacionMasterByFactoringidService = async (
-  dto: GetFactoringliquidacionMasterByFactoringidDto,
-) => {
+export const getFactoringliquidacionMasterByFactoringidService = async (dto: GetFactoringliquidacionMasterByFactoringidDto) => {
   log.debug(line(), "service::admin::getFactoringliquidacionMasterByFactoringidService");
 
   return await prismaFT.client.$transaction(
@@ -733,15 +596,9 @@ export const getFactoringliquidacionMasterByFactoringidService = async (
       const idbanco_factor = 1;
       const idbanco_cedente = factoring.cuenta_bancaria.idbanco;
 
-      const estados = await factoringliquidacionestadoDao.getFactoringliquidacionestados(
-        tx,
-        filter_estados,
-      );
+      const estados = await factoringliquidacionestadoDao.getFactoringliquidacionestados(tx, filter_estados);
       const tipos = await financierotipoDao.getFinancierotipos(tx, filter_estados);
-      const conceptos = await financieroconceptoDao.getFinancieroconceptosForLiquidacion(
-        tx,
-        filter_estados,
-      );
+      const conceptos = await financieroconceptoDao.getFinancieroconceptosForLiquidacion(tx, filter_estados);
 
       return {
         factoringliquidacionestados: estados,
@@ -762,11 +619,7 @@ export const getFactoringliquidacionDetalleService = async (dto: Factoringliquid
 
   return await prismaFT.client.$transaction(
     async (tx) => {
-      const liquidacion =
-        await factoringliquidacionDao.getFactoringliquidacionByFactoringliquidacionid(
-          tx,
-          dto.factoringliquidacionid,
-        );
+      const liquidacion = await factoringliquidacionDao.getFactoringliquidacionByFactoringliquidacionid(tx, dto.factoringliquidacionid);
       if (!liquidacion) {
         throw new ClientError("La liquidación no existe", 404);
       }
@@ -780,9 +633,7 @@ export const getFactoringliquidacionDetalleService = async (dto: Factoringliquid
 /**
  * Consulta las liquidaciones asociadas a una operación de factoring.
  */
-export const getFactoringliquidacionByFactoringidService = async (
-  dto: GetFactoringliquidacionByFactoringidDto,
-) => {
+export const getFactoringliquidacionByFactoringidService = async (dto: GetFactoringliquidacionByFactoringidDto) => {
   log.debug(line(), "service::admin::getFactoringliquidacionByFactoringidService");
 
   return await prismaFT.client.$transaction(
@@ -795,11 +646,7 @@ export const getFactoringliquidacionByFactoringidService = async (
         throw new ClientError("Datos no válidos", 404);
       }
 
-      return await factoringliquidacionDao.getFactoringliquidacionsByIdfactoring(
-        tx,
-        factoring.idfactoring,
-        filter_estado,
-      );
+      return await factoringliquidacionDao.getFactoringliquidacionsByIdfactoring(tx, factoring.idfactoring, filter_estado);
     },
     { timeout: prismaFT.transactionTimeout },
   );
@@ -813,20 +660,13 @@ export const generateFactoringliquidacionPDFService = async (factoringliquidacio
 
   return await prismaFT.client.$transaction(
     async (tx) => {
-      const factoringliquidacion =
-        await factoringliquidacionDao.getFactoringliquidacionByFactoringliquidacionid(
-          tx,
-          factoringliquidacionid,
-        );
+      const factoringliquidacion = await factoringliquidacionDao.getFactoringliquidacionByFactoringliquidacionid(tx, factoringliquidacionid);
       if (!factoringliquidacion) {
         log.warn(line(), `Factoringliquidacion no existe: [${factoringliquidacionid}]`);
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const factoring = await factoringDao.getFactoringByIdfactoring(
-        tx,
-        factoringliquidacion.idfactoring,
-      );
+      const factoring = await factoringDao.getFactoringByIdfactoring(tx, factoringliquidacion.idfactoring);
       if (!factoring) {
         log.warn(line(), `Factoring no existe: [${factoringliquidacion.idfactoring}]`);
         throw new ClientError("Datos no válidos", 404);
@@ -834,31 +674,17 @@ export const generateFactoringliquidacionPDFService = async (factoringliquidacio
 
       const formattedDate = luxon.DateTime.now().toFormat("yyyyMMdd_HHmm");
       const filename = `${formattedDate}_factoring_liquidacion_${factoring.empresa_cedente.ruc}_${factoringliquidacion.code}.pdf`;
-      const dirPath = path.join(
-        storageUtils.pathApp(),
-        storageUtils.STORAGE_PATH_PROCESAR,
-        storageUtils.pathDate(new Date()),
-      );
+      const dirPath = path.join(storageUtils.pathApp(), storageUtils.STORAGE_PATH_PROCESAR, storageUtils.pathDate(new Date()));
       const filePath = path.join(dirPath, filename);
       if (!fs.existsSync(dirPath)) {
         fs.mkdirSync(dirPath, { recursive: true });
       }
 
       const IDFACFOR = 1;
-      const factorcuentasbancarias_for_pdf =
-        await factorcuentabancariaDao.getFactorcuentabancariasByIdfactorIdmoneda(
-          tx,
-          IDFACFOR,
-          factoring.idmoneda,
-          [ESTADO.ACTIVO],
-        );
+      const factorcuentasbancarias_for_pdf = await factorcuentabancariaDao.getFactorcuentabancariasByIdfactorIdmoneda(tx, IDFACFOR, factoring.idmoneda, [ESTADO.ACTIVO]);
 
       const pdfGenerator = new PDFGenerator(filePath);
-      await pdfGenerator.generateFactoringliquidacion(
-        factoring,
-        factoringliquidacion,
-        factorcuentasbancarias_for_pdf,
-      );
+      await pdfGenerator.generateFactoringliquidacion(factoring, factoringliquidacion, factorcuentasbancarias_for_pdf);
 
       const filenameDownload = `Factoring_Liquidacion_${factoring.empresa_cedente.ruc}_${factoringliquidacion.code}_${formattedDate}.pdf`;
 

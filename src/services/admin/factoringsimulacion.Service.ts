@@ -7,7 +7,7 @@ import * as factoringtipoDao from "#root/src/daos/factoringtipo.Dao.js";
 import * as monedaDao from "#root/src/daos/moneda.Dao.js";
 import * as riesgoDao from "#root/src/daos/riesgo.Dao.js";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
-import { simulateFactoringLogicV4 } from "#root/src/services/factoring.Service.js";
+import { simulateFactoringLogicV4 } from "#root/src/services/admin/factoringCalculation.Service.js";
 import { Simulacion } from "#root/src/types/Simulacion.types.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
@@ -125,19 +125,7 @@ export const createFactoringsimulacionService = async (session_idusuario: number
       const fecha_fin = dateUtils.toLimaDate(factoringValidated.fecha_pago_estimado);
       const fecha_emision = dateUtils.toLimaDate(factoringValidated.fecha_emision);
 
-      const simulacion: Partial<Simulacion> = await simulateFactoringLogicV4(
-        riesgooperacion.idriesgo,
-        banco.idbanco,
-        factoringValidated.cantidad_facturas,
-        new Decimal(factoringValidated.monto_neto),
-        fecha_ahora,
-        fecha_fin,
-        fecha_emision,
-        new Decimal(factoringValidated.porcentaje_financiado_estimado),
-        new Decimal(factoringValidated.tdm),
-        new Decimal(factoringValidated.porcentaje_comision_descuento),
-        moneda.idmoneda,
-      );
+      const simulacion: Partial<Simulacion> = await simulateFactoringLogicV4(riesgooperacion.idriesgo, banco.idbanco, factoringValidated.cantidad_facturas, new Decimal(factoringValidated.monto_neto), fecha_ahora, fecha_fin, fecha_emision, new Decimal(factoringValidated.porcentaje_financiado_estimado), new Decimal(factoringValidated.tdm), new Decimal(factoringValidated.porcentaje_comision_descuento), moneda.idmoneda);
 
       log.info(line(), "simulacion: ", simulacion);
 
@@ -341,19 +329,7 @@ export const simulateFactoringsimulacionService = async (factoringValidated: Sim
       const fecha_fin = dateUtils.toLimaDate(factoringValidated.fecha_pago_estimado);
       const fecha_emision = dateUtils.toLimaDate(factoringValidated.fecha_emision);
 
-      const simulacion = await simulateFactoringLogicV4(
-        riesgooperacion.idriesgo,
-        banco.idbanco,
-        factoringValidated.cantidad_facturas,
-        new Decimal(factoringValidated.monto_neto),
-        fecha_ahora,
-        fecha_fin,
-        fecha_emision,
-        new Decimal(factoringValidated.porcentaje_financiado_estimado),
-        new Decimal(factoringValidated.tdm),
-        new Decimal(factoringValidated.porcentaje_comision_descuento),
-        moneda.idmoneda,
-      );
+      const simulacion = await simulateFactoringLogicV4(riesgooperacion.idriesgo, banco.idbanco, factoringValidated.cantidad_facturas, new Decimal(factoringValidated.monto_neto), fecha_ahora, fecha_fin, fecha_emision, new Decimal(factoringValidated.porcentaje_financiado_estimado), new Decimal(factoringValidated.tdm), new Decimal(factoringValidated.porcentaje_comision_descuento), moneda.idmoneda);
 
       log.info(line(), "simulacion: ", simulacion);
       return simulacion;

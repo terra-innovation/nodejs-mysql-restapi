@@ -10,7 +10,8 @@ Este documento describe la arquitectura modular y por capas implementada en el b
 flowchart TD
     Client(["Cliente / Frontend (Web/Mobile)"]) --> Routes["routes/\n(Transporte: Endpoints, Middlewares & Seguridad)"]
     Routes --> Controllers["controllers/\n(Transporte: Parseo, Validación Yup & DTOs)"]
-    Controllers --> Services["services/\n(Dominio/Aplicación: Reglas de Negocio, Orquestación & Transacciones)"]
+    Controllers --> Services["services/\n(Aplicación: Orquestación & Transacciones)"]
+    Services --> Domain["domain/\n(Reglas y cálculos de negocio extraídos)"]
     
     subgraph Data & External Layer
         Services --> DAOs["daos/\n(Acceso a Datos: Consultas Prisma)"]
@@ -31,7 +32,8 @@ flowchart TD
 |---|---|---|---|---|
 | **`routes/`** | Transporte | Define rutas HTTP, asocia middlewares de autenticación (`isAuth`), autorización por rol (`isRole`) y envuelve handlers con `catchedAsync`. | `controllers/`, `middlewares/` | `services/`, `daos/`, `models/`, `providers/` |
 | **`controllers/`** | Transporte | **Capa delgada**: Extrae parámetros (`params`, `body`, `query`, `session_user`), valida esquemas Yup/DTOs, delega al servicio correspondiente y devuelve respuesta con `response(res, status, data)`. | `services/`, `utils/`, DTOs/esquemas | `daos/`, `models/prisma`, `providers/`, `integrations/`, llamadas a transacciones Prisma |
-| **`services/`** | Negocio / Aplicación | Contiene reglas de negocio puras, orquestación de casos de uso, transacciones (`$transaction`), llamadas a DAOs, providers e integraciones. Agnóstico al transporte HTTP. | `daos/`, `integrations/`, `providers/`, `models/`, `utils/`, `constants/` | `express` (`Request`, `Response`), `controllers/`, `routes/` |
+| **`services/`** | Aplicación | Orquesta casos de uso y transacciones (`$transaction`), obtiene datos mediante DAOs y delega los cálculos extraídos a `domain/`. Los módulos pendientes de extracción todavía contienen reglas de negocio. Agnóstico al transporte HTTP. | `domain/`, `daos/`, `integrations/`, `providers/`, `models/`, `utils/`, `constants/` | `express` (`Request`, `Response`), `controllers/`, `routes/` |
+| **`domain/`** | Dominio | Reglas y cálculos de negocio independientes de persistencia. Recibe parámetros y configuración como datos y devuelve resultados sin efectos secundarios. | Tipos compartidos mediante `import type`, librerías de cálculo y fechas | `services/`, `daos/`, `models/prisma`, `providers/`, `integrations/`, `controllers/`, `routes/` |
 | **`daos/`** | Acceso a Datos | Consultas y mutaciones directas a Prisma (`prismaFT` o cliente transaccional `tx`). No contiene reglas de negocio. | `models/`, `types/`, Prisma Client | `controllers/`, `services/`, `integrations/`, `providers/` |
 | **`integrations/`** | Servicios Externos | Adaptadores para APIs de terceros que alimentan el dominio (Decolecta, APIsPerú, SUNAT, SBS). | `utils/`, `config/`, `types/` | `controllers/`, `services/`, `daos/` |
 | **`providers/`** | Infraestructura | Clientes técnicos para canales de notificación (Email SMTP, Telegram). Efectos secundarios de entrega. | `utils/`, `config/`, `templates/` | `controllers/`, `routes/`, `daos/` |
@@ -45,7 +47,7 @@ flowchart TD
 El directorio `src/services/` se divide entre servicios **Core transversales** y servicios **Especializados por Rol/Actor**:
 
 ### 1. Servicios Core Transversales (`src/services/`)
-- `factoring.Service.ts`: Lógica matemática central de factoring (simulación v3/v4, tasas tda/tdd, cálculo de comisiones e importes).
+- `factoring.Service.ts`: Obtiene configuraciones y riesgo mediante DAOs dentro de transacciones y delega los cálculos a `domain/factoring/factoring.Calculator.ts`. Conserva las funciones públicas `simulateFactoringLogicV1/V2/V3/V4` para los servicios consumidores.
 - `tipocambio.Service.ts`: Sincronización y consulta del tipo de cambio SBS y SUNAT.
 - `archivo.Service.ts` / `archivofactura.Service.ts`: Gestión base de almacenamiento físico y metadatos de archivos.
 - `empresa.Service.ts` / `persona.Service.ts` / `contacto.Service.ts`: Mantenimiento y validación de entidades principales.
@@ -93,6 +95,16 @@ El directorio `src/services/` se divide entre servicios **Core transversales** y
 
 ---
 
+## Dominio de factoring (`src/domain/factoring/`)
+
+`factoring.Calculator.ts` contiene funciones síncronas para las fórmulas históricas V1/V2 y las fórmulas V3 usadas por V4, además del cálculo de días y fechas. Conserva los redondeos, porcentajes y diferencias entre versiones; no consulta DAOs, abre transacciones ni registra logs.
+
+El servicio recibe los identificadores de riesgo, consulta la configuración y entrega al calculador dos objetos tipados: los parámetros de la operación y la configuración financiera. El calculador puede probarse directamente sin mocks de Prisma o de DAOs.
+
+La extracción es incremental: los demás servicios conservan su estructura actual. Los tipos de salida `Simulacion` y sus conceptos financieros siguen siendo compartidos y están definidos a partir de tipos generados por Prisma; el dominio los importa solo como tipos. `Decimal` se conserva desde el runtime de Prisma para mantener la precisión y compatibilidad existentes, sin instanciar un cliente de base de datos.
+
+---
+
 ## 🛡️ Auditoría Arquitectónica y Estado de Desacoplamiento
 
 El sistema cuenta con una verificación estricta de separación de capas:
@@ -112,6 +124,7 @@ La arquitectura está respaldada por una suite de pruebas automatizadas con Jest
 - **`tests/unit/services/admin/factoringpropuesta.Service.test.ts`**: Verificación de cálculos de propuesta y simulación financiera.
 - **`tests/unit/services/admin/factoringliquidacion.Service.test.ts`**: Precisión de fórmulas financieras para pronto pago y mora.
 - **`tests/unit/services/factoring.Service.test.ts`**: Simulación de tasas efectivas y condiciones contractuales.
+- **`tests/unit/domain/factoring/factoring.Calculator.test.ts`**: Cálculos sin base de datos, cargos por moneda y banco, descuentos, redondeos históricos y fechas.
 - **`tests/unit/services/tipocambio.Service.test.ts`**: Normalización de fechas Lima UTC y generadores de código.
 
 ---
@@ -130,3 +143,8 @@ La arquitectura está respaldada por una suite de pruebas automatizadas con Jest
 
 3. **Capa de Notificaciones en Providers:**
    - Ningún controlador invoca directamente proveedores de mensajería (Telegram, SendGrid, SMTP). La notificación es parte de la orquestación del caso de uso en el servicio.
+
+4. **El dominio recibe datos y calcula:**
+   - Las fórmulas extraídas a `domain/` no consultan DAOs ni abren transacciones.
+   - Los servicios obtienen la configuración y delegan el cálculo; no duplican las fórmulas.
+   - Las utilidades genéricas permanecen en `utils/`; las reglas propias de factoring pertenecen a `domain/factoring/`.
