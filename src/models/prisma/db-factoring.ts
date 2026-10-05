@@ -1,8 +1,8 @@
 //import { PrismaClient, Prisma } from "#src/models/prisma/ft_factoring/client.js";
-import { PrismaClient, Prisma } from "#root/generated/prisma/ft_factoring/client.js";
+import { Prisma, PrismaClient } from "#root/generated/prisma/ft_factoring/client.js";
 import { env, isProduction } from "#src/config.js";
-import { log, line } from "#src/utils/logger.pino.js";
 import { getContext } from "#src/utils/context/loggerContext.js";
+import { line, log } from "#src/utils/logger.pino.js";
 
 type InitOptions = {
   retries?: number;
@@ -30,10 +30,10 @@ export class PrismaFTManager {
       (level): Prisma.LogDefinition => ({
         level,
         emit: "event",
-      })
+      }),
     );
 
-    const client = isProduction ? new PrismaClient({ log: logDefs }) : global.clientFT ?? (global.clientFT = new PrismaClient({ log: logDefs }));
+    const client = isProduction ? new PrismaClient({ log: logDefs }) : (global.clientFT ?? (global.clientFT = new PrismaClient({ log: logDefs })));
 
     return client;
   }
@@ -61,7 +61,7 @@ export class PrismaFTManager {
         const printLogQuery = env.PRISMA_DATABASE_FACTORING_LOG_QUERY ? true : env.PRISMA_DATABASE_FACTORING_LOG_SLOW_QUERIES && isSlow ? true : false;
 
         if (printLogQuery) {
-          log.debug(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] ${msgQuery}`, {
+          log.debug(line(), `[Prisma] [${env.PRISMA_DATABASE_FACTORING_NICKNAME}] ${msgQuery}`, {
             query: e.query,
             params: e.params,
             duration,
@@ -71,13 +71,13 @@ export class PrismaFTManager {
       });
     }
     if (this.logLevels.includes("warn")) {
-      client.$on("warn" as never, (e: Prisma.LogEvent) => log.warn(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] ${e.message}`));
+      client.$on("warn" as never, (e: Prisma.LogEvent) => log.warn(line(), `[Prisma] [${env.PRISMA_DATABASE_FACTORING_NICKNAME}] ${e.message}`));
     }
     if (this.logLevels.includes("info")) {
-      client.$on("info" as never, (e: Prisma.LogEvent) => log.info(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] ${e.message}`));
+      client.$on("info" as never, (e: Prisma.LogEvent) => log.info(line(), `[Prisma] [${env.PRISMA_DATABASE_FACTORING_NICKNAME}] ${e.message}`));
     }
     if (this.logLevels.includes("error")) {
-      client.$on("error" as never, (e: Prisma.LogEvent) => log.error(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] ${e.message}`));
+      client.$on("error" as never, (e: Prisma.LogEvent) => log.error(line(), `[Prisma] [${env.PRISMA_DATABASE_FACTORING_NICKNAME}] ${e.message}`));
     }
   }
 
@@ -85,15 +85,15 @@ export class PrismaFTManager {
     let attempt = 0;
     while (attempt < retries) {
       try {
-        log.info(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] Connecting to the database...`);
+        log.info(line(), `[Prisma] [${env.PRISMA_DATABASE_FACTORING_NICKNAME}] Connecting to the database...`);
         await this.client.$connect();
-        log.info(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] Database successful connection.`);
+        log.info(line(), `[Prisma] [${env.PRISMA_DATABASE_FACTORING_NICKNAME}] Database successful connection.`);
         return;
       } catch (error) {
         attempt++;
-        log.warn(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] Connection failed:`, error);
+        log.warn(line(), `[Prisma] [${env.PRISMA_DATABASE_FACTORING_NICKNAME}] Connection failed:`, error);
         if (attempt >= retries) {
-          log.error(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] Max retries reached.`, error);
+          log.error(line(), `[Prisma] [${env.PRISMA_DATABASE_FACTORING_NICKNAME}] Max retries reached.`, error);
           throw error;
         }
         const delay = baseDelayMs * 2 ** (attempt - 1);
@@ -105,11 +105,11 @@ export class PrismaFTManager {
 
   public static async disconnect() {
     try {
-      log.info(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] Disconnecting...`);
+      log.info(line(), `[Prisma] [${env.PRISMA_DATABASE_FACTORING_NICKNAME}] Disconnecting...`);
       await this.client.$disconnect();
-      log.info(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] Disconnected.`);
+      log.info(line(), `[Prisma] [${env.PRISMA_DATABASE_FACTORING_NICKNAME}] Disconnected.`);
     } catch (error) {
-      log.error(line(), `[Prisma] [${env.DB_FACTORING_NICKNAME}] Error during disconnection:`, error);
+      log.error(line(), `[Prisma] [${env.PRISMA_DATABASE_FACTORING_NICKNAME}] Error during disconnection:`, error);
     }
   }
 

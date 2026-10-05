@@ -13,22 +13,6 @@ const envSchema = z.object({
   WEB_SITE: z.string().url(),
   WEB_SITE_PORT: z.coerce.number().default(0),
 
-  // Base de datos Factoring
-  DB_FACTORING_NICKNAME: z.string(),
-  DB_FACTORING_HOST: z.string(),
-  DB_FACTORING_USER: z.string(),
-  DB_FACTORING_PASSWORD: z.string(),
-  DB_FACTORING_DATABASE: z.string(),
-  DB_FACTORING_PORT: z.coerce.number(),
-
-  // Base de datos Big Data
-  DB_BIGDATA_NICKNAME: z.string(),
-  DB_BIGDATA_HOST: z.string(),
-  DB_BIGDATA_USER: z.string(),
-  DB_BIGDATA_PASSWORD: z.string(),
-  DB_BIGDATA_DATABASE: z.string(),
-  DB_BIGDATA_PORT: z.coerce.number(),
-
   // Tokens
   TOKEN_KEY_JWT: z.string(),
   TOKEN_KEY_OTP: z.string(),
@@ -47,7 +31,8 @@ const envSchema = z.object({
   TELEGRAM_ERROR_TOKEN: z.string(),
   TELEGRAM_ERROR_CHATID: z.string(),
 
-  // Prisma
+  // Prisma - Base de datos Factoring
+  PRISMA_DATABASE_FACTORING_NICKNAME: z.string(),
   PRISMA_DATABASE_FACTORING_URL: z.string().url(),
   PRISMA_DATABASE_FACTORING_TRANSACTION_TIMEOUT: z.coerce.number(),
 
