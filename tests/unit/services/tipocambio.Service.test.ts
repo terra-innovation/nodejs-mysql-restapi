@@ -1,4 +1,4 @@
-import { parseFechaLima, generateCode } from "#root/src/services/tipocambio.Service.js";
+import { parseFechaLima, generateCode } from "#root/src/services/admin/tipocambio.Service.js";
 
 describe("tipocambio.Service - Unit Tests", () => {
   describe("parseFechaLima", () => {

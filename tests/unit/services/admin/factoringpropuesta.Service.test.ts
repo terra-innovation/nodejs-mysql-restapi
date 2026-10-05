@@ -62,13 +62,13 @@ jest.mock("#root/src/providers/email/email.Provider.js", () => ({
   sendFactoringEmpresaServicioFactoringPropuestaDisponible: jest.fn(),
 }));
 
-jest.mock("#root/src/services/factoring.Service.js", () => ({
+jest.mock("#root/src/services/admin/factoringCalculation.Service.js", () => ({
   simulateFactoringLogicV4: jest.fn(),
 }));
 
 import * as factoringDao from "#root/src/daos/factoring.Dao.js";
 import * as factoringpropuestaDao from "#root/src/daos/factoringpropuesta.Dao.js";
-import { simulateFactoringLogicV4 } from "#root/src/services/factoring.Service.js";
+import { simulateFactoringLogicV4 } from "#root/src/services/admin/factoringCalculation.Service.js";
 import {
   activateFactoringpropuestaService,
   createFactoringpropuestaService,

@@ -44,7 +44,7 @@ jest.mock("#root/src/daos/financieroconcepto.Dao.js", () => ({
   getGastoInterbancario: jest.fn().mockResolvedValue({ idfinancieroconcepto: 4 }),
 }));
 
-import { simulateFactoringLogicV4 } from "#root/src/services/factoring.Service.js";
+import { simulateFactoringLogicV4 } from "#root/src/services/admin/factoringCalculation.Service.js";
 
 describe("factoring.Service - Unit Tests", () => {
   it("debe calcular correctamente las tasas tda y tdd y los montos de financiamiento", async () => {

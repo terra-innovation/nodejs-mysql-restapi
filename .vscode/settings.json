@@ -14,5 +14,7 @@
   "html.validate.scripts": false,
   "html.validate.styles": false,
   "html.suggest.html5": false,
-  "typescript.tsserver.experimental.enableProjectDiagnostics": true
+  "typescript.tsserver.experimental.enableProjectDiagnostics": true,
+  "js/ts.implicitProjectConfig.target": "ESNext",
+  "js/ts.implicitProjectConfig.module": "ESNext"
 }

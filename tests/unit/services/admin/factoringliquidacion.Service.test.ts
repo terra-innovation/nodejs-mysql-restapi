@@ -43,12 +43,12 @@ jest.mock("#root/src/daos/financieroconcepto.Dao.js", () => ({
   getFinancieroconceptosForLiquidacion: jest.fn().mockResolvedValue([]),
 }));
 
-jest.mock("#root/src/services/factoring.Service.js", () => ({
+jest.mock("#root/src/services/admin/factoringCalculation.Service.js", () => ({
   simulateFactoringLogicV4: jest.fn(),
 }));
 
 import * as factoringDao from "#root/src/daos/factoring.Dao.js";
-import { simulateFactoringLogicV4 } from "#root/src/services/factoring.Service.js";
+import { simulateFactoringLogicV4 } from "#root/src/services/admin/factoringCalculation.Service.js";
 import { simulateFactoringliquidacionService } from "#root/src/services/admin/factoringliquidacion.Service.js";
 
 describe("admin/factoringliquidacion.Service - Unit Tests", () => {

@@ -1,4 +1,4 @@
-jest.mock("#src/services/factura.Service.js", () => ({
+jest.mock("#root/src/services/admin/factura.Service.js", () => ({
   subirFacturaFactorService: jest.fn(),
   getFacturasByFactoringidService: jest.fn(),
   activateFacturaService: jest.fn(),
@@ -7,7 +7,7 @@ jest.mock("#src/services/factura.Service.js", () => ({
   getFacturasService: jest.fn(),
 }));
 
-import * as facturaCore from "#src/services/factura.Service.js";
+import * as facturaCore from "#root/src/services/admin/factura.Service.js";
 import {
   activateFacturaService,
   deleteFacturaService,
