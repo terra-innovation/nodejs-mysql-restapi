@@ -320,10 +320,7 @@ class PDFGenerator {
 
       factoringliquidacion.factoring_liquidacion_financieros.forEach((financiero) => {
         const factorText = financiero.financiero_concepto.factor === 1 ? "(+)" : financiero.financiero_concepto.factor === -1 ? "(-)" : "(NE)";
-        let descText = `${factorText} ${financiero.financiero_concepto.nombre}`;
-        if (factoring.factoring_propuesta_aceptada && Number(factoring.factoring_propuesta_aceptada.porcentaje_comision_descuento || 0) > 0) {
-          descText += ` (${nf.formatPercentage(factoring.factoring_propuesta_aceptada.porcentaje_comision_descuento)} de descuento)`;
-        }
+        const descText = `${factorText} ${financiero.financiero_concepto.nombre}`;
         datas.push({
           concepto: descText,
           descripcion: factoring.moneda.simbolo + " " + nf.formatNumber(financiero.monto, 2),
