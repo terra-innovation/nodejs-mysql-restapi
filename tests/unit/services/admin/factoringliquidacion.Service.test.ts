@@ -16,6 +16,18 @@ jest.mock("#root/src/daos/factoring.Dao.js", () => ({
   getFactoringByIdfactoring: jest.fn(),
 }));
 
+jest.mock("#root/src/daos/factoringliquidacion.Dao.js", () => ({
+  insertFactoringliquidacion: jest.fn().mockResolvedValue({ idfactoringliquidacion: 20 }),
+}));
+
+jest.mock("#root/src/daos/factoringliquidacionestado.Dao.js", () => ({
+  getFactoringliquidacionestadoByFactoringliquidacionestadoid: jest.fn().mockResolvedValue({ idfactoringliquidacionestado: 1 }),
+}));
+
+jest.mock("#root/src/daos/factoringliquidacionfinanciero.Dao.js", () => ({
+  insertFactoringliquidacionfinanciero: jest.fn(),
+}));
+
 jest.mock("#root/src/daos/configuracionapp.Dao.js", () => ({
   getComisionBCPPen: jest.fn().mockResolvedValue({ valor: "7.50" }),
   getComisionBCPUsd: jest.fn().mockResolvedValue({ valor: "2.50" }),
@@ -48,8 +60,12 @@ jest.mock("#root/src/services/admin/factoringCalculation.Service.js", () => ({
 }));
 
 import * as factoringDao from "#root/src/daos/factoring.Dao.js";
+import * as factoringliquidacionDao from "#root/src/daos/factoringliquidacion.Dao.js";
+import * as factoringliquidacionfinancieroDao from "#root/src/daos/factoringliquidacionfinanciero.Dao.js";
+import * as configuracionappDao from "#root/src/daos/configuracionapp.Dao.js";
 import { simulateFactoringLogicV4 } from "#root/src/services/admin/factoringCalculation.Service.js";
-import { simulateFactoringliquidacionService } from "#root/src/services/admin/factoringliquidacion.Service.js";
+import { createFactoringliquidacionService, simulateFactoringliquidacionService } from "#root/src/services/admin/factoringliquidacion.Service.js";
+import { ClientError } from "#src/utils/CustomErrors.js";
 
 describe("admin/factoringliquidacion.Service - Unit Tests", () => {
   beforeEach(() => {
@@ -75,6 +91,90 @@ describe("admin/factoringliquidacion.Service - Unit Tests", () => {
       monto_garantia: new Decimal(4000), // 20%
     },
   };
+
+  describe("validación de requisitos de liquidación", () => {
+    const dto = {
+      factoringid: "factoring-uuid-1",
+      fecha_liquidacion: new Date("2026-09-26T12:00:00.000Z"),
+      fecha_pago_efectivo: new Date("2026-09-26T12:00:00.000Z"),
+    };
+    const mensaje = "La operación no tiene fecha de inicio. No es posible calcular la liquidación";
+
+    it.each([
+      { propuesta: null, fecha_operacion: mockFactoring.fecha_operacion },
+      { propuesta: undefined, fecha_operacion: mockFactoring.fecha_operacion },
+      { propuesta: null, fecha_operacion: null },
+    ])("debe rechazar la simulación sin propuesta aceptada: %p", async ({ propuesta, fecha_operacion }) => {
+      (factoringDao.getFactoringByFactoringid as jest.Mock).mockResolvedValue({
+        ...mockFactoring,
+        factoring_propuesta_aceptada: propuesta,
+        fecha_operacion,
+      });
+
+      const simulation = simulateFactoringliquidacionService(dto);
+
+      await expect(simulation).rejects.toBeInstanceOf(ClientError);
+      await expect(simulation).rejects.toMatchObject({ statusCode: 400, message: "El factoring no cuenta con una propuesta aceptada" });
+      expect(simulateFactoringLogicV4).not.toHaveBeenCalled();
+      expect(configuracionappDao.getIGV).not.toHaveBeenCalled();
+    });
+
+    it.each([
+      { propuesta: null, fecha_operacion: mockFactoring.fecha_operacion },
+      { propuesta: undefined, fecha_operacion: mockFactoring.fecha_operacion },
+      { propuesta: null, fecha_operacion: null },
+    ])("debe rechazar la creación sin propuesta aceptada sin guardar datos: %p", async ({ propuesta, fecha_operacion }) => {
+      (factoringDao.getFactoringByFactoringid as jest.Mock).mockResolvedValue({
+        ...mockFactoring,
+        factoring_propuesta_aceptada: propuesta,
+        fecha_operacion,
+      });
+
+      const creation = createFactoringliquidacionService({ ...dto, factoringliquidacionestadoid: "estado-uuid-1" }, 1);
+
+      await expect(creation).rejects.toBeInstanceOf(ClientError);
+      await expect(creation).rejects.toMatchObject({ statusCode: 400, message: "El factoring no cuenta con una propuesta aceptada" });
+      expect(simulateFactoringLogicV4).not.toHaveBeenCalled();
+      expect(factoringliquidacionDao.insertFactoringliquidacion).not.toHaveBeenCalled();
+      expect(factoringliquidacionfinancieroDao.insertFactoringliquidacionfinanciero).not.toHaveBeenCalled();
+    });
+
+    it.each([null, undefined, ""])("debe rechazar la simulación con fecha de inicio %p antes de calcular", async (fecha_operacion) => {
+      (factoringDao.getFactoringByFactoringid as jest.Mock).mockResolvedValue({ ...mockFactoring, fecha_operacion });
+
+      const simulation = simulateFactoringliquidacionService(dto);
+
+      await expect(simulation).rejects.toBeInstanceOf(ClientError);
+      await expect(simulation).rejects.toMatchObject({ statusCode: 400, message: mensaje });
+      expect(simulateFactoringLogicV4).not.toHaveBeenCalled();
+      expect(configuracionappDao.getIGV).not.toHaveBeenCalled();
+    });
+
+    it.each([null, undefined, ""])("debe rechazar la creación con fecha de inicio %p sin guardar datos", async (fecha_operacion) => {
+      (factoringDao.getFactoringByFactoringid as jest.Mock).mockResolvedValue({ ...mockFactoring, fecha_operacion });
+
+      const creation = createFactoringliquidacionService({ ...dto, factoringliquidacionestadoid: "estado-uuid-1" }, 1);
+
+      await expect(creation).rejects.toBeInstanceOf(ClientError);
+      await expect(creation).rejects.toMatchObject({ statusCode: 400, message: mensaje });
+      expect(simulateFactoringLogicV4).not.toHaveBeenCalled();
+      expect(factoringliquidacionDao.insertFactoringliquidacion).not.toHaveBeenCalled();
+      expect(factoringliquidacionfinancieroDao.insertFactoringliquidacionfinanciero).not.toHaveBeenCalled();
+    });
+
+    it("debe crear la liquidación usando la fecha de inicio almacenada cuando es válida", async () => {
+      (factoringDao.getFactoringByFactoringid as jest.Mock).mockResolvedValue(mockFactoring);
+      (simulateFactoringLogicV4 as jest.Mock).mockResolvedValue({ dias_pago_estimado: 25, monto_descuento: new Decimal(320) });
+
+      const result = await createFactoringliquidacionService({ ...dto, factoringliquidacionestadoid: "estado-uuid-1" }, 1);
+
+      expect(result).toEqual({ idfactoringliquidacion: 20 });
+      const fechaInicio = (simulateFactoringLogicV4 as jest.Mock).mock.calls[0][4];
+      expect(fechaInicio.toJSDate()).toEqual(mockFactoring.fecha_operacion);
+      expect(factoringliquidacionDao.insertFactoringliquidacion).toHaveBeenCalledTimes(1);
+      expect(factoringliquidacionfinancieroDao.insertFactoringliquidacionfinanciero).toHaveBeenCalled();
+    });
+  });
 
   it("debe calcular descuento a favor cuando el pago se realiza antes o en la fecha estimada", async () => {
     (factoringDao.getFactoringByFactoringid as jest.Mock).mockResolvedValue(mockFactoring);
