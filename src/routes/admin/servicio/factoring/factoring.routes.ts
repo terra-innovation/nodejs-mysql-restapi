@@ -7,6 +7,7 @@ const router = Router();
 
 //Empresario
 router.get("/admin/servicio/factoring/factoring/listar", isAuth, isRole([2]), catchedAsync(factoringController.getFactorings));
+router.get("/admin/servicio/factoring/factoring/empresa/:empresaid", isAuth, isRole([2]), catchedAsync(factoringController.getFactoringEmpresaDetalle));
 //router.post("/admin/servicio/factoring/factoring/crear", isAuth, isRole([2]), catchedAsync(factoringController.createFactoring));
 router.patch("/admin/servicio/factoring/factoring/actualizar/:id", isAuth, isRole([2]), catchedAsync(factoringController.updateFactoring));
 router.get("/admin/servicio/factoring/factoring/master", isAuth, isRole([2]), catchedAsync(factoringController.getFactoringMaster));

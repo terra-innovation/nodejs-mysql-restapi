@@ -3,6 +3,7 @@ import * as factoringDao from "#root/src/daos/factoring.Dao.js";
 import * as factoringestadoDao from "#root/src/daos/factoringestado.Dao.js";
 import * as factoringtipoDao from "#root/src/daos/factoringtipo.Dao.js";
 import * as riesgoDao from "#root/src/daos/riesgo.Dao.js";
+import * as empresaDao from "#root/src/daos/empresa.Dao.js";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as tipocambioLogic from "#root/src/services/admin/tipocambio.Service.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
@@ -53,6 +54,18 @@ export const getFactoringsService = async () => {
     async (tx) => {
       const filter_estados = [1, 2];
       return await factoringDao.getFactoringsByEstados(tx, filter_estados);
+    },
+    { timeout: prismaFT.transactionTimeout },
+  );
+};
+
+export const getFactoringEmpresaDetalleService = async (empresaid: string) => {
+  log.debug(line(), "service::financiero::getFactoringEmpresaDetalleService");
+  return await prismaFT.client.$transaction(
+    async (tx) => {
+      const empresa = await empresaDao.getEmpresaDetalleEnFactoring(tx, empresaid, [1, 2]);
+      if (!empresa) throw new ClientError("Empresa no encontrada en las operaciones de factoring", 404);
+      return empresa;
     },
     { timeout: prismaFT.transactionTimeout },
   );

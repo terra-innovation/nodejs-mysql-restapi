@@ -138,6 +138,46 @@ export const getEmpresas = async (tx: TxClient, estados: number[]) => {
   }
 };
 
+/** Ficha de lectura de una empresa vinculada a las operaciones visibles del rol. */
+export const getEmpresaDetalleEnFactoring = async (tx: TxClient, empresaid: string, estados: number[]) => {
+  try {
+    return await tx.empresa.findFirst({
+      where: {
+        empresaid,
+        OR: [
+          { factoring_cedentes: { some: { estado: { in: estados } } } },
+          { factoring_aceptantes: { some: { estado: { in: estados } } } },
+        ],
+      },
+      select: {
+        idempresa: true,
+        empresaid: true,
+        code: true,
+        ruc: true,
+        razon_social: true,
+        nombre_comercial: true,
+        domicilio_fiscal: true,
+        fecha_inscripcion: true,
+        direccion_sede: true,
+        direccion_sede_referencia: true,
+        riesgo: { select: { alias: true } },
+        pais_sede: { select: { nombrepais: true } },
+        distrito_sede: { select: { nombredistrito: true } },
+        provincia_sede: { select: { nombreprovincia: true } },
+        departamento_sede: { select: { nombredepartamento: true } },
+        idusuariocrea: true,
+        fechacrea: true,
+        idusuariomod: true,
+        fechamod: true,
+        estado: true,
+      },
+    });
+  } catch (error) {
+    log.error(line(), "", error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getEmpresaByIdempresa = async (tx: TxClient, idempresa: number) => {
   try {
     const empresa = await tx.empresa.findUnique({

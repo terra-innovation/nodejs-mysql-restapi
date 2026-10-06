@@ -1,10 +1,12 @@
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
+import * as yup from "yup";
 import {
   getFactoringMasterService,
   getFactoringsPendientesFacturaCedenteService,
   getFactoringsService,
+  getFactoringEmpresaDetalleService,
   getPreFacturaCedenteService,
 } from "#src/services/financiero/factoring.Service.js";
 
@@ -18,6 +20,15 @@ export const getFactorings = async (_req: Request, res: Response) => {
   log.debug(line(), "controller::getFactorings");
   const data = await getFactoringsService();
   response(res, 201, data);
+};
+
+export const getFactoringEmpresaDetalle = async (req: Request, res: Response) => {
+  const { empresaid } = yup.object({ empresaid: yup.string().trim().required().uuid() }).validateSync(req.params, {
+    abortEarly: false,
+    stripUnknown: true,
+  });
+  const data = await getFactoringEmpresaDetalleService(empresaid);
+  response(res, 200, data);
 };
 
 export const getFactoringsPendientesFacturaCedente = async (_req: Request, res: Response) => {
