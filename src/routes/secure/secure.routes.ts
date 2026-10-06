@@ -2,8 +2,13 @@ import * as secureController from "#root/src/controllers/secure/secure.Controlle
 import { rateLimiterLoginMiddleware } from "#src/middlewares/ratelimiterMiddleware";
 import { catchedAsync } from "#src/utils/catchedAsync.js";
 import { Router } from "express";
+import { isAuth } from "#src/middlewares/authMiddleware.js";
+import { rateLimiterAccesosMiddleware } from "#src/middlewares/ratelimiterMiddleware.js";
+import { actualizarAccesos } from "#src/controllers/secure/accesos.Controller.js";
 
 const router = Router();
+
+router.post("/secure/actualizar-accesos", isAuth, rateLimiterAccesosMiddleware, catchedAsync(actualizarAccesos));
 
 // Register
 router.post("/secure/register", rateLimiterLoginMiddleware, catchedAsync(secureController.registerUsuario));

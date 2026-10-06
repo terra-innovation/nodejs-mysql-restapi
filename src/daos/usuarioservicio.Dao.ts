@@ -8,6 +8,17 @@ import { ESTADO } from "#src/constants/prisma.Constant.js";
 
 import { v4 as uuidv4 } from "uuid";
 
+export const getEstadoUsuarioservicioPropio = (tx: TxClient, idusuario: number, usuarioservicioid: string) =>
+  tx.usuario_servicio.findFirst({
+    where: { usuarioservicioid, idusuario, estado: ESTADO.ACTIVO, usuario: { estado: ESTADO.ACTIVO } },
+    select: {
+      usuarioservicioid: true,
+      idservicio: true,
+      idusuarioservicioestado: true,
+      usuario_servicio_estado: { select: { code: true, alias: true, color: true } },
+    },
+  });
+
 export const getUsuarioserviciosByIdusuario = async (tx: TxClient, idusuario, estados: number[]) => {
   try {
     const usuarioservicios = await tx.usuario_servicio.findMany({
