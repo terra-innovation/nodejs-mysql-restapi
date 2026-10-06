@@ -69,7 +69,7 @@ class PDFGenerator {
           { concepto: "Factura", descripcion: facturas },
           { concepto: "Valor neto", descripcion: factoringsimulacion.moneda.simbolo + " " + nf.formatNumber(factoringsimulacion.monto_neto) },
           { concepto: "Moneda", descripcion: factoringsimulacion.moneda.codigo + " (" + factoringsimulacion.moneda.nombre + ")" },
-          { concepto: "Fecha de pago (estimada)", descripcion: df.formatDateUTC(factoringsimulacion.fecha_pago_estimado) },
+          { concepto: "Fecha de pago (estimada)", descripcion: df.formatDateLocale(factoringsimulacion.fecha_pago_estimado) },
 
           { concepto: "Días (estimados)", descripcion: factoringsimulacion.dias_pago_estimado },
           { concepto: "Tasa mensual", descripcion: nf.formatPercentage(factoringsimulacion.tdm) },
@@ -182,7 +182,7 @@ class PDFGenerator {
           { concepto: "Factura", descripcion: facturas },
           { concepto: "Valor neto", descripcion: factoring.moneda.simbolo + " " + nf.formatNumber(factoringpropuesta.monto_neto) },
           { concepto: "Moneda", descripcion: factoring.moneda.codigo + " (" + factoring.moneda.nombre + ")" },
-          { concepto: "Fecha de pago (estimada)", descripcion: df.formatDateUTC(factoringpropuesta.fecha_pago_estimado) },
+          { concepto: "Fecha de pago (estimada)", descripcion: df.formatDateLocale(factoringpropuesta.fecha_pago_estimado) },
 
           { concepto: "Días (estimados)", descripcion: factoringpropuesta.dias_pago_estimado },
           { concepto: "Tasa mensual", descripcion: nf.formatPercentage(factoringpropuesta.tdm) },
@@ -283,8 +283,8 @@ class PDFGenerator {
         // Plazos y Fechas
         { concepto: "bold:PLAZOS Y FECHAS", descripcion: "" },
         { concepto: "Fecha operación (inicio)", descripcion: factoring.fecha_operacion ? df.formatDateLocale(factoring.fecha_operacion) : "" },
-        { concepto: "Fecha proyectada de cobro", descripcion: factoring.factoring_propuesta_aceptada?.fecha_pago_estimado ? df.formatDateUTC(factoring.factoring_propuesta_aceptada.fecha_pago_estimado) : "" },
-        { concepto: "Fecha efectiva de cobro (fin)", descripcion: factoringliquidacion.fecha_pago_efectivo ? df.formatDateUTC(factoringliquidacion.fecha_pago_efectivo) : "" },
+        { concepto: "Fecha proyectada de cobro", descripcion: factoring.factoring_propuesta_aceptada?.fecha_pago_estimado ? df.formatDateLocale(factoring.factoring_propuesta_aceptada.fecha_pago_estimado) : "" },
+        { concepto: "Fecha efectiva de cobro (fin)", descripcion: factoringliquidacion.fecha_pago_efectivo ? df.formatDateLocale(factoringliquidacion.fecha_pago_efectivo) : "" },
         { concepto: "Días proyectados", descripcion: factoring.factoring_propuesta_aceptada ? nf.formatNumber(factoring.factoring_propuesta_aceptada.dias_pago_estimado, 0) : "" },
         { concepto: "Días reales", descripcion: nf.formatNumber(factoringliquidacion.dias_pago_efectivo, 0) },
       ];

@@ -85,6 +85,10 @@ export const getNowLima = () => {
   return DateTime.now().setZone(defaultConfig.zone);
 };
 
+/** Cuenta días calendario de Perú sin alterar los instantes almacenados en UTC. */
+export const calculateCalendarDaysInLima = (inicio: DateTime, fin: DateTime): number =>
+  Math.floor(fin.setZone("America/Lima").startOf("day").diff(inicio.setZone("America/Lima").startOf("day"), "days").days);
+
 /**
  * Convierte una fecha (Date, ISO string o DateTime) a la zona horaria de Lima,
  * manteniendo el tiempo local si viene de la DB (UTC 00:00).

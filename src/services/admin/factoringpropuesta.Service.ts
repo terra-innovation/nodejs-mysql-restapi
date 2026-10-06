@@ -212,7 +212,7 @@ export const simulateFactoringpropuestaService = async (dto: SimulateFactoringpr
       }
 
       const fecha_ahora = dateUtils.getNowLima();
-      const fecha_fin = dateUtils.toLimaDate(dto.fecha_pago_estimado);
+      const fecha_fin = dateUtils.toLimaDateTime(dto.fecha_pago_estimado);
       const fecha_emision = dateUtils.toLimaDate(factoring.fecha_emision);
 
       const simulacion: Partial<Simulacion> = await simulateFactoringLogicV4(riesgooperacion.idriesgo, factoring.cuenta_bancaria.idbanco, factoring.cantidad_facturas, new Decimal(dto.monto_neto), fecha_ahora, fecha_fin, fecha_emision, new Decimal(dto.porcentaje_financiado_estimado), new Decimal(dto.tdm), new Decimal(dto.porcentaje_comision_descuento), factoring.moneda.idmoneda);
@@ -276,7 +276,7 @@ export const createFactoringpropuestaService = async (dto: CreateFactoringpropue
       }
 
       const fecha_ahora = dateUtils.getNowLima();
-      const fecha_fin = dateUtils.toLimaDate(dto.fecha_pago_estimado);
+      const fecha_fin = dateUtils.toLimaDateTime(dto.fecha_pago_estimado);
       const fecha_emision = dateUtils.toLimaDate(factoring.fecha_emision);
 
       const simulacion: Partial<Simulacion> = await simulateFactoringLogicV4(riesgooperacion.idriesgo, factoring.cuenta_bancaria.idbanco, factoring.cantidad_facturas, new Decimal(dto.monto_neto), fecha_ahora, fecha_fin, fecha_emision, new Decimal(dto.porcentaje_financiado_estimado), new Decimal(dto.tdm), new Decimal(dto.porcentaje_comision_descuento), factoring.moneda.idmoneda);

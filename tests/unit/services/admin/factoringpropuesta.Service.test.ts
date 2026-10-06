@@ -115,6 +115,29 @@ describe("admin/factoringpropuesta.Service - Unit Tests", () => {
     expect(result.monto_efectivo?.toNumber()).toBe(8000);
     expect(result.monto_garantia?.toNumber()).toBe(2000);
     expect(simulateFactoringLogicV4).toHaveBeenCalled();
+    const fechaFin = (simulateFactoringLogicV4 as jest.Mock).mock.calls[0][5];
+    expect(fechaFin.zoneName).toBe("America/Lima");
+    expect(fechaFin.toISODate()).toBe("2026-09-30");
+    expect(fechaFin.toJSDate()).toEqual(new Date("2026-10-01T00:00:00.000Z"));
+  });
+
+  it.each([
+    ["2026-10-01T05:00:00.000Z", "2026-10-01"],
+    [new Date("2026-10-01T05:00:00.000Z"), "2026-10-01"],
+    ["2026-10-01T00:00:00.000Z", "2026-09-30"],
+    [new Date("2026-10-01T00:00:00.000Z"), "2026-09-30"],
+  ])("interpreta el vencimiento %p en Perú sin alterar su instante", async (fecha_pago_estimado, fechaPeru) => {
+    (factoringDao.getFactoringByFactoringid as jest.Mock).mockResolvedValue(mockFactoring);
+    (simulateFactoringLogicV4 as jest.Mock).mockResolvedValue({});
+    await simulateFactoringpropuestaService({
+      factoringid: "factoring-uuid-1", factoringtipoid: "tipo-uuid-1", riesgooperacionid: "riesgo-uuid-1",
+      factoringestrategiaid: "estrategia-uuid-1", tdm: 0.02, porcentaje_financiado_estimado: 0.8,
+      porcentaje_comision_descuento: 0, fecha_pago_estimado, monto_neto: 10000,
+    });
+    const fechaFin = (simulateFactoringLogicV4 as jest.Mock).mock.calls[0][5];
+    expect(fechaFin.zoneName).toBe("America/Lima");
+    expect(fechaFin.toISODate()).toBe(fechaPeru);
+    expect(fechaFin.toJSDate()).toEqual(new Date(fecha_pago_estimado));
   });
 
   it("createFactoringpropuestaService debe persistir propuesta y su desglose", async () => {
@@ -158,6 +181,10 @@ describe("admin/factoringpropuesta.Service - Unit Tests", () => {
 
     expect(result.monto_efectivo?.toNumber()).toBe(8000);
     expect(factoringpropuestaDao.insertFactoringpropuesta).toHaveBeenCalled();
+    const fechaFin = (simulateFactoringLogicV4 as jest.Mock).mock.calls[0][5];
+    expect(fechaFin.zoneName).toBe("America/Lima");
+    expect(fechaFin.toISODate()).toBe("2026-09-30");
+    expect((factoringpropuestaDao.insertFactoringpropuesta as jest.Mock).mock.calls[0][1].fecha_pago_estimado).toEqual(new Date("2026-10-01T00:00:00.000Z"));
   });
 
   it("activateFactoringpropuestaService debe arrojar 404 si el registro no existe", async () => {

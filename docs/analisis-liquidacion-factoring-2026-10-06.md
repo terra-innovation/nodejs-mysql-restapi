@@ -1,5 +1,7 @@
 # Informe ejecutivo: auditoría del cálculo de liquidación de factoring
 
+> Este informe conserva los resultados anteriores a la corrección. La implementación aprobada y sus resultados posteriores están en [Unificación de fechas de factoring](unificacion-fechas-factoring-2026-10-06.md).
+
 **Fecha:** 6 de octubre de 2026. **Alcance:** análisis y pruebas; sin cambios al cálculo de producción ni propuestas de solución.
 
 ## Resultado ejecutivo

@@ -1,4 +1,5 @@
 import type { Comision, Costo, Gasto_excento_igv, Simulacion } from "#root/src/types/Simulacion.types.js";
+import { calculateCalendarDaysInLima } from "#src/utils/dateUtils.js";
 import { Decimal } from "@prisma/client/runtime/library";
 import type { DateTime } from "luxon";
 
@@ -37,8 +38,8 @@ export interface FactoringCalculationConfigV3 extends FactoringCalculationConfig
 }
 
 export const calculateFactoringPeriod = (fecha_ahora: DateTime, fecha_fin: DateTime, fecha_emision: DateTime) => ({
-  dias_pago_estimado: Math.floor(fecha_fin.startOf("day").diff(fecha_ahora.startOf("day"), "days").days),
-  dias_antiguedad_estimado: Math.floor(fecha_ahora.startOf("day").diff(fecha_emision.startOf("day"), "days").days),
+  dias_pago_estimado: calculateCalendarDaysInLima(fecha_ahora, fecha_fin),
+  dias_antiguedad_estimado: calculateCalendarDaysInLima(fecha_emision, fecha_ahora),
   fecha_pago_estimado: fecha_fin.toJSDate(),
   fecha_propuesta: fecha_ahora.toJSDate(),
   fecha_simulacion: fecha_ahora.toJSDate(),

@@ -171,7 +171,7 @@ async function execute(input: Case) {
     const rate = input.rate || "0.02";
     const acceptedStart = input.proposalStart ? dateUtils.toLimaDateTime(peruISO(input.proposalStart, "10:00:00")) : startDate;
     const emission = dateUtils.toLimaDate("2026-01-01");
-    const quote = await simulateFactoringLogicV4(1, input.bank || 1, 2, principal, acceptedStart, dateUtils.toLimaDate(new Date(dueISO)), emission, financed, new Decimal(rate), new Decimal(0), input.currency || 1);
+    const quote = await simulateFactoringLogicV4(1, input.bank || 1, 2, principal, acceptedStart, dateUtils.toLimaDateTime(new Date(dueISO)), emission, financed, new Decimal(rate), new Decimal(0), input.currency || 1);
     const factoring = {
       idfactoring: 10, factoringid: "11111111-1111-1111-1111-111111111111", cantidad_facturas: 2,
       monto_neto: principal, fecha_operacion: new Date(startISO), fecha_emision: new Date("2026-01-01T00:00:00Z"),
@@ -189,7 +189,7 @@ async function execute(input: Case) {
     const record: any = {
       ...input, serverZone: input.serverZone || "UTC", net: principal.toString(), financed: financed.toString(), rate,
       bank: input.bank || 1, currency: input.currency || 1, exempt: input.exempt || false,
-      startISO, dueISO, paymentISO, startCivil: startDate.toISODate(), dueDisplayed: new Date(dueISO).toISOString().slice(0, 10),
+      startISO, dueISO, paymentISO, startCivil: startDate.toISODate(), dueUTC: new Date(dueISO).toISOString().slice(0, 10), dueDisplayed: dateUtils.toLimaDateTime(new Date(dueISO)).toISODate(),
       originalDiscount: quote.monto_descuento.toString(), guarantee: quote.monto_garantia.toString(), financedAmount: quote.monto_financiado.toString(),
       quoteDays: quote.dias_pago_estimado, quoteCoverage: Number.isFinite(quote.dias_cobertura_garantia_estimado) ? quote.dias_cobertura_garantia_estimado : String(quote.dias_cobertura_garantia_estimado),
       issues, observations,
@@ -306,10 +306,10 @@ afterAll(() => {
     total[row.group] = group;
     return total;
   }, {});
-  const folder = join(process.cwd(), "temporal/liquidacion-audit");
+  const folder = join(process.cwd(), "temporal/liquidacion-audit-fechas-lima");
   mkdirSync(folder, { recursive: true });
   const report = {
-    date: "2026-10-06", assumptions: ["Regla principal: días calendario; inicio, fecha pactada y cobro interpretados por fecha civil de Lima.", "Referencia adicional: fecha pactada que actualmente muestra React (UTC yyyy-MM-dd); no se presume que sustituya la fecha contractual.", "Solo infraestructura y catálogos sustituidos; no base de datos ni servicios externos.", "Redondeos, cobro interbancario y diferencias entre inicio/propuesta se registran como observaciones, no como conclusiones contractuales."],
+    date: "2026-10-06", assumptions: ["Regla principal: días calendario; inicio, fecha pactada y cobro interpretados por fecha civil de Lima.", "Presentación React en Lima; se conserva dueUTC para distinguir los instantes históricos.", "Solo infraestructura y catálogos sustituidos; no base de datos ni servicios externos.", "Redondeos, cobro interbancario y diferencias entre inicio/propuesta se registran como observaciones, no como conclusiones contractuales."],
     summary: { total: records.length, groups, issueCounts: countCodes("issues"), observationCounts: countCodes("observations"), displayedDateDiscrepancies: records.filter((row) => row.displayIssues?.length).length }, records,
   };
   writeFileSync(join(folder, "resultados.json"), JSON.stringify(report, null, 2) + "\n", "utf8");

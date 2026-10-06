@@ -20,5 +20,9 @@ vm.runInNewContext(compiled, {
   console
 });
 const selectedDate = process.argv[2];
-const iso = exported.toIsoUtc(selectedDate);
-process.stdout.write(JSON.stringify({ zone: process.env.TZ, selectedDate, iso, recoveredDate: exported.toDateInputValue(iso) }));
+const iso = exported.toIsoUtcFromLima(selectedDate);
+const invoiceDate = process.argv[3];
+process.stdout.write(JSON.stringify({
+  zone: process.env.TZ, selectedDate, iso, recoveredDate: exported.toDateInputValueLima(iso),
+  ...(invoiceDate ? { invoiceInput: exported.toDateInputValue(invoiceDate), invoiceLabel: exported.formatDateUTC(invoiceDate) } : {})
+}));

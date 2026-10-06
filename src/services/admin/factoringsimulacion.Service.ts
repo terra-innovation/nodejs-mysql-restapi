@@ -35,8 +35,8 @@ export interface CreateFactoringsimulacionPayload {
   ruc_aceptante: string;
   razon_social_cedente: string;
   razon_social_aceptante: string;
-  fecha_pago_estimado: Date;
-  fecha_emision: Date;
+  fecha_pago_estimado: Date | string;
+  fecha_emision: Date | string;
   cantidad_facturas: number;
   monto_neto: number;
 }
@@ -49,8 +49,8 @@ export interface SimulateFactoringsimulacionPayload {
   monedaid: string;
   tdm: number;
   porcentaje_financiado_estimado: number;
-  fecha_pago_estimado: Date;
-  fecha_emision: Date;
+  fecha_pago_estimado: Date | string;
+  fecha_emision: Date | string;
   cantidad_facturas: number;
   monto_neto: number;
   porcentaje_comision_descuento: number;
@@ -122,7 +122,7 @@ export const createFactoringsimulacionService = async (session_idusuario: number
       }
 
       const fecha_ahora = dateUtils.getNowLima();
-      const fecha_fin = dateUtils.toLimaDate(factoringValidated.fecha_pago_estimado);
+      const fecha_fin = dateUtils.toLimaDateTime(factoringValidated.fecha_pago_estimado);
       const fecha_emision = dateUtils.toLimaDate(factoringValidated.fecha_emision);
 
       const simulacion: Partial<Simulacion> = await simulateFactoringLogicV4(riesgooperacion.idriesgo, banco.idbanco, factoringValidated.cantidad_facturas, new Decimal(factoringValidated.monto_neto), fecha_ahora, fecha_fin, fecha_emision, new Decimal(factoringValidated.porcentaje_financiado_estimado), new Decimal(factoringValidated.tdm), new Decimal(factoringValidated.porcentaje_comision_descuento), moneda.idmoneda);
@@ -152,7 +152,8 @@ export const createFactoringsimulacionService = async (session_idusuario: number
         tda_mora: simulacion.tda_mora,
         tdm_mora: simulacion.tdm_mora,
         tdd_mora: simulacion.tdd_mora,
-        fecha_emision: factoringValidated.fecha_emision,
+        // La emisión representa una fecha civil, aunque se almacene en un timestamp.
+        fecha_emision: dateUtils.parseDateUtcMidnight(factoringValidated.fecha_emision),
         fecha_pago_estimado: factoringValidated.fecha_pago_estimado,
         dias_pago_estimado: simulacion.dias_pago_estimado,
         dias_antiguedad_estimado: simulacion.dias_antiguedad_estimado,
@@ -326,7 +327,7 @@ export const simulateFactoringsimulacionService = async (factoringValidated: Sim
       }
 
       const fecha_ahora = dateUtils.getNowLima();
-      const fecha_fin = dateUtils.toLimaDate(factoringValidated.fecha_pago_estimado);
+      const fecha_fin = dateUtils.toLimaDateTime(factoringValidated.fecha_pago_estimado);
       const fecha_emision = dateUtils.toLimaDate(factoringValidated.fecha_emision);
 
       const simulacion = await simulateFactoringLogicV4(riesgooperacion.idriesgo, banco.idbanco, factoringValidated.cantidad_facturas, new Decimal(factoringValidated.monto_neto), fecha_ahora, fecha_fin, fecha_emision, new Decimal(factoringValidated.porcentaje_financiado_estimado), new Decimal(factoringValidated.tdm), new Decimal(factoringValidated.porcentaje_comision_descuento), moneda.idmoneda);

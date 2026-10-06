@@ -167,8 +167,8 @@ const runSimulation = async (tx: any, factoring: any, fecha_liquidacion: any, fe
   const acceptedProp = factoring.factoring_propuesta_aceptada;
   const simBase = await simulateFactoringLogicV4(acceptedProp.idriesgooperacion, factoring.cuenta_bancaria.idbanco, factoring.cantidad_facturas, factoring.monto_neto, fecha_operacion, fecha_fin, fecha_emision, acceptedProp.porcentaje_financiado_estimado, acceptedProp.tdm, acceptedProp.porcentaje_comision_descuento, factoring.moneda.idmoneda);
 
-  const fecha_pago_estimado = luxon.DateTime.fromJSDate(acceptedProp.fecha_pago_estimado);
-  const diffDays = Math.floor(fecha_fin.startOf("day").diff(fecha_pago_estimado.startOf("day"), "days").days);
+  const fecha_pago_estimado = dateUtils.toLimaDateTime(acceptedProp.fecha_pago_estimado);
+  const diffDays = dateUtils.calculateCalendarDaysInLima(fecha_pago_estimado, fecha_fin);
 
   let dias_pago_efectivo = 0;
   let dias_mora_efectivo = 0;
