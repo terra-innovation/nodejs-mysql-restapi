@@ -12,6 +12,18 @@
     "start": "node dist/index.js",
     "test_anterior": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "test": "cross-env TZ=UTC NODE_ENV=test jest --config jest.config.js",
+    "test:vitest": "cross-env TZ=UTC NODE_ENV=test vitest run --config vitest.config.ts",
+    "test:vitest:unit": "npm run test:vitest -- tests/vitest/unit",
+    "test:vitest:http": "npm run test:vitest -- tests/vitest/http",
+    "test:vitest:watch": "cross-env TZ=UTC NODE_ENV=test vitest --config vitest.config.ts",
+    "test:vitest:coverage": "cross-env TZ=UTC NODE_ENV=test vitest run --config vitest.config.ts --coverage",
+    "test:vitest:ci": "cross-env CI=true TZ=UTC NODE_ENV=test vitest run --config vitest.config.ts --coverage --reporter=default --reporter=junit --outputFile.junit=coverage/vitest/junit.xml",
+    "test:vitest:typecheck": "tsc --project tests/vitest/tsconfig.json --noEmit",
+    "test:all": "npm test -- --runInBand && npm run test:vitest:typecheck && npm run test:vitest",
+    "test:integration:schema": "node scripts/integration/export-schema.mjs",
+    "test:integration:doctor": "node scripts/integration/doctor.mjs",
+    "test:integration": "node scripts/integration/run-mariadb.mjs",
+    "test:integration:typecheck": "tsc --project tests/mariadb/tsconfig.json --noEmit",
     "pretest_anterior": "cross-env NODE_ENV=test jest --clearCache",
     "prisma-sync": "node scripts/prisma/generate-models.js",
     "list-unused-exports": "powershell -Command \"npx ts-prune | Select-String -NotMatch 'used in module' | Select-String '\\\\src\\\\controllers\\\\'\"",
@@ -73,6 +85,7 @@
     "@types/supertest": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^8.31.1",
     "@typescript-eslint/parser": "^8.31.1",
+    "@vitest/coverage-v8": "4.1.11",
     "cross-env": "^7.0.3",
     "dotenv-cli": "^8.0.0",
     "eslint": "^9.27.0",
@@ -93,6 +106,8 @@
     "tsconfig-paths": "^4.2.0",
     "tsup": "^8.5.0",
     "tsx": "^4.19.4",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vite": "7.3.7",
+    "vitest": "4.1.11"
   }
 }
