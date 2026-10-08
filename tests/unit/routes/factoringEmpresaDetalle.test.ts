@@ -21,6 +21,7 @@ import { errorHandlerMiddleware } from "#src/middlewares/errorHandlerMiddleware.
 const empresaid = "9fa953df-0f65-4387-bedb-2132c59e2612";
 const pagadorid = "3bb053ee-ad14-4111-86a9-2de464ed51f5";
 const unrelatedid = "66c3965f-aa37-4d2e-b0e0-8a07f58e1063";
+const excludedOperationCompanyId = "77777777-7777-4777-8777-777777777777";
 const empresa = {
   idempresa: 146,
   empresaid,
@@ -52,6 +53,7 @@ const records = [
   empresa,
   { ...empresa, empresaid: pagadorid, razon_social: "EMPRESA PAGADORA SAC", factoring_cedentes: [], factoring_aceptantes: [{ estado: 2 }] },
   { ...empresa, empresaid: unrelatedid, factoring_cedentes: [], factoring_aceptantes: [] },
+  { ...empresa, empresaid: excludedOperationCompanyId, factoring_cedentes: [{ estado: 0 }], factoring_aceptantes: [] },
 ];
 const project = (record: any, select: any): any =>
   Object.fromEntries(Object.entries(select).map(([key, selection]: [string, any]) => [key, selection === true ? record[key] : record[key] ? project(record[key], selection.select) : null]));
@@ -70,11 +72,15 @@ app.use("/api/v1", adminRoutes, financieroRoutes);
 app.use(errorHandlerMiddleware);
 
 const token = (role: number) => jwt.sign({ usuario: { idusuario: 10, usuario_roles: [{ idrol: role }] } }, "empresa-detalle-test-key");
+const updateFactoring = jest.fn();
+const updateEmpresa = jest.fn();
 
 beforeEach(() => {
   (prismaFT.client.usuario.findFirst as jest.Mock).mockResolvedValue({ idusuario: 10, estado: 1, usuario_roles: [2,6].map(idrol => ({ idrol, estado: 1, rol: { estado: 1 } })) });
   jest.clearAllMocks();
-  (prismaFT.client.$transaction as jest.Mock).mockImplementation(async (callback) => callback({ empresa: { findFirst } }));
+  (prismaFT.client.$transaction as jest.Mock).mockImplementation(async (callback) => callback({
+    empresa: { findFirst, update: updateEmpresa }, factoring: { update: updateFactoring },
+  }));
 });
 
 describe.each([["admin", 2, 6], ["financiero", 6, 2]])("Ficha empresa en operaciones: %s", (rolePath, role, wrongRole) => {
@@ -120,6 +126,21 @@ describe.each([["admin", 2, 6], ["financiero", 6, 2]])("Ficha empresa en operaci
   it("valida el identificador antes de consultar", async () => {
     expect((await request(app).get(url("no-valido")).set("Authorization", `Bearer ${token(Number(role))}`)).status).toBe(400);
     expect(findFirst).not.toHaveBeenCalled();
+  });
+
+  it("consultar cedente y pagador desde edición no modifica la operación ni las empresas", async () => {
+    for (const id of [empresaid, pagadorid, empresaid]) {
+      const result = await request(app).get(url(id)).set("Authorization", `Bearer ${token(Number(role))}`);
+      expect(result.status).toBe(200);
+      expect(result.body.data.empresaid).toBe(id);
+    }
+    expect(findFirst).toHaveBeenCalledTimes(3);
+    expect(updateFactoring).not.toHaveBeenCalled();
+    expect(updateEmpresa).not.toHaveBeenCalled();
+  });
+
+  it("no devuelve fichas vinculadas únicamente a operaciones fuera de los estados consultables", async () => {
+    expect((await request(app).get(url(excludedOperationCompanyId)).set("Authorization", `Bearer ${token(Number(role))}`)).status).toBe(404);
   });
 
   it("devuelve un error controlado si falla la consulta", async () => {

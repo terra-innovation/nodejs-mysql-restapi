@@ -3,6 +3,22 @@ import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
 import * as yup from "yup";
 import * as factoringpropuestaService from "#src/services/empresario/factoringpropuesta.Service.js";
+import { sendFileAsync, setDownloadHeaders } from "#src/utils/httpUtils.js";
+import { unlink } from "fs/promises";
+
+export const downloadFactoringpropuestaPDF = async (req: Request, res: Response) => {
+  const factoringpropuestaid = yup.string().trim().required().min(36).max(36).validateSync(req.params.id);
+  const { filePath, filenameDownload } = await factoringpropuestaService.generateFactoringpropuestaPDFService({
+    factoringpropuestaid,
+    idusuario: req.session_user.usuario.idusuario,
+  });
+  try {
+    setDownloadHeaders(res, filenameDownload);
+    await sendFileAsync(req, res, filePath);
+  } finally {
+    await unlink(filePath);
+  }
+};
 
 export const acceptFactoringpropuesta = async (req: Request, res: Response) => {
   log.debug(line(), "controller::acceptFactoringpropuesta");

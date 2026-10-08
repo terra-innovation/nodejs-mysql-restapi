@@ -8,6 +8,7 @@ const router = Router();
 const protectEmpresario = [isAuth, isRole([3])];
 
 //Empresario
+router.get("/empresario/servicio/factoring/factoringpropuesta/descargar/:id", ...protectEmpresario, catchedAsync(factoringpropuestaController.downloadFactoringpropuestaPDF));
 router.get("/empresario/servicio/factoring/factoringpropuesta/vigente/:factoringid", ...protectEmpresario, catchedAsync(factoringpropuestaController.getFactoringpropuestaVigente));
 router.patch("/empresario/servicio/factoring/factoringpropuesta/aceptar/:factoringid", ...protectEmpresario, catchedAsync(factoringpropuestaController.acceptFactoringpropuesta));
 //router.get("/empresario/servicio/factoring/factoringpropuesta/listar", ...protectEmpresario, catchedAsync(factoringpropuestaController.getFactorings));

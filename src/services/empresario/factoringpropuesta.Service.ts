@@ -10,6 +10,11 @@ import { ESTADO } from "#src/constants/prisma.Constant.js";
 import * as telegramService from "#src/providers/telegram/telegram.Provider.js";
 import { buildFactoringPropuestaAceptadaMessage } from "#src/templates/telegram/factoringpropuesta.Template.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
+import PDFGenerator from "#src/utils/document/PDFgenerator.js";
+import * as storageUtils from "#src/utils/storageUtils.js";
+import { mkdir, unlink } from "fs/promises";
+import * as luxon from "luxon";
+import path from "path";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { v4 as uuidv4 } from "uuid";
@@ -28,6 +33,47 @@ export interface GetFactoringpropuestaVigenteDto {
 }
 
 // ─── Services ────────────────────────────────────────────────────────────────
+
+export interface DownloadFactoringpropuestaPDFDto {
+  factoringpropuestaid: string;
+  idusuario: number;
+}
+
+export const generateFactoringpropuestaPDFService = async (dto: DownloadFactoringpropuestaPDFDto) => {
+  return prismaFT.client.$transaction(
+    async (tx) => {
+      const propuesta = await factoringpropuestaDao.getFactoringpropuestaByFactoringpropuestaid(tx, dto.factoringpropuestaid);
+      if (!propuesta || propuesta.estado !== ESTADO.ACTIVO) throw new ClientError("Datos no válidos", 404);
+
+      const ownedFactoring = await factoringDao.getFactoringByIdfactoringIdempresario(
+        tx, propuesta.idfactoring, dto.idusuario, [ESTADO.ACTIVO],
+      );
+      if (!ownedFactoring || ownedFactoring.idfactoringpropuestaaceptada !== propuesta.idfactoringpropuesta) {
+        throw new ClientError("Datos no válidos", 404);
+      }
+
+      const factoring = await factoringDao.getFactoringByIdfactoring(tx, propuesta.idfactoring);
+      if (!factoring) throw new ClientError("Datos no válidos", 404);
+
+      const formattedDate = luxon.DateTime.now().toFormat("yyyyMMdd_HHmm");
+      const dirPath = path.join(storageUtils.pathApp(), storageUtils.STORAGE_PATH_PROCESAR, storageUtils.pathDate(new Date()));
+      await mkdir(dirPath, { recursive: true });
+      // Cada solicitud tiene su propio archivo temporal, incluso si se descarga simultáneamente.
+      const filePath = path.join(dirPath, `${uuidv4()}_factoring_propuesta.pdf`);
+      try {
+        await new PDFGenerator(filePath).generateFactoringPropuesta(factoring, propuesta);
+      } catch (error) {
+        await unlink(filePath).catch(() => undefined);
+        throw error;
+      }
+      return {
+        filePath,
+        filenameDownload: `Factoring_Propuesta_${factoring.empresa_cedente.ruc}_${propuesta.code}_${formattedDate}.pdf`,
+      };
+    },
+    { timeout: prismaFT.transactionTimeout },
+  );
+};
 
 export const acceptFactoringpropuestaService = async (dto: AcceptFactoringpropuestaDto) => {
   log.debug(line(), "service::empresario::acceptFactoringpropuestaService");

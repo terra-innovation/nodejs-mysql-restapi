@@ -241,6 +241,8 @@ export const getFactoringpropuestaByFactoringpropuestaid = async (tx: TxClient, 
       },
     });
 
+    if (!factoringpropuesta) return null;
+
     const comisiones = factoringpropuesta.factoring_propuesta_financieros.filter((financiero) => financiero.financiero_tipo.idfinancierotipo === 1);
     const costos = factoringpropuesta.factoring_propuesta_financieros.filter((financiero) => financiero.financiero_tipo.idfinancierotipo === 2);
     const gastos = factoringpropuesta.factoring_propuesta_financieros.filter((financiero) => financiero.financiero_tipo.idfinancierotipo === 3);
