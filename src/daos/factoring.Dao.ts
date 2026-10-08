@@ -7,6 +7,21 @@ import * as configuracionappDao from "#root/src/daos/configuracionapp.Dao.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { line, log } from "#src/utils/logger.pino.js";
 
+// Escritura condicional: serializa las aprobaciones de una misma operación,
+// incluso cuando las solicitudes intentan aceptar propuestas distintas.
+export const claimFactoringApproval = async (tx: TxClient, idfactoring: number, idfactoringpropuesta: number) => {
+  try {
+    const result = await tx.factoring.updateMany({
+      where: { idfactoring, estado: ESTADO.ACTIVO, idfactoringpropuestaaceptada: null },
+      data: { idfactoringpropuestaaceptada: idfactoringpropuesta },
+    });
+    return result.count === 1;
+  } catch (error) {
+    log.error(line(), "", error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const getFactoringByIdfactoringIdempresario = async (tx: TxClient, idfactoring: number, idempresario: number, estados: number[]) => {
   try {
     const factoring = await tx.factoring.findFirst({

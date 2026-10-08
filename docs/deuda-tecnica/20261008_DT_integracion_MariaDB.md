@@ -4,7 +4,7 @@ Fecha: 2026-10-08. Suite: `tests/mariadb/business.test.ts`.
 Datos y archivos sintéticos; estructura exportada previamente de desarrollo.
 No se consultan ni modifican desarrollo/producción al ejecutar las pruebas.
 
-## DT-IT-01 — Aprobación concurrente duplicada (abierto)
+## DT-IT-01 — Aprobación concurrente duplicada (corregido)
 
 El servicio `acceptFactoringpropuestaService` verifica propuesta vigente
 (estado 4) mediante una lectura y después escribe el historial y actualiza
@@ -20,27 +20,39 @@ dos historiales de factoring y dos invocaciones de cada proveedor de notificaci�
 No se enviaron mensajes reales: email y Telegram están sustituidos por spies.
 La repetición secuencial sí se rechaza, pero no protege la carrera concurrente.
 
-La prueba exige una sola aprobación y un registro por historial. Permanece activa
-y falla: no se usa `skip`, `todo`, `fails` ni una expectativa de duplicación para
-hacer pasar el diagnóstico. `npm run test:integration` retorna código 1 hasta
-resolver el defecto. El JUnit y `last-run.json` reflejan el fallo y la limpieza.
+Corrección autorizada: `claimFactoringApproval` reserva la operación mediante
+un UPDATE condicional (`estado=1` y propuesta aceptada NULL). El bloqueo de fila
+permanece hasta commit/rollback. Una segunda solicitud no puede sobrescribir
+la aceptación, aunque intente una propuesta distinta: devuelve conflicto 409.
+La reserva, los estados y ambos historiales están en la misma transacción.
 
-Próximo cambio recomendado: hacer indivisible la validación de vigencia y la
-actualización (por ejemplo actualización condicional o bloqueo/revalidación),
-antes de generar historiales/notificaciones. Validar también dos propuestas
-distintas de la misma operación al diseñar la protección. Esta entrega incorpora
-pruebas y diagnóstico; no cambia el servicio ni define nuevas transiciones.
+`approveFactoringpropuestaVigente` utiliza otro UPDATE condicional en SQL
+(propuesta correcta, operación correcta, estado de propuesta 4 y registro activo)
+antes de leer el resultado. No depende de una lectura de snapshot para decidir
+vigencia. Si no afecta una fila, devuelve 409 y revierte también la reserva.
+Una prueba real invalida la propuesta desde otra conexión después de leerla.
 
-## DT-IT-02 — Importación confirmada antes del enriquecimiento (abierto)
+Las pruebas originales siguen activas con aprobación única. Se añaden dos
+propuestas distintas de la misma operación y solicitudes simultáneas sin
+coordinador. La repetición secuencial conserva el rechazo 404 existente.
+No se modifican esquemas, registros históricos ni cálculos financieros.
 
-La importación administrativa usa una transacción para cabecera, detalles y
+## DT-IT-02 — Importación confirmada antes del enriquecimiento (corregido en administración/financiero)
+
+Antes de la corrección, la importación administrativa usaba una transacción para cabecera, detalles y
 vínculos, seguida de otra para consultar el maestro de moneda. Con XML EUR
 sintético y sin maestro EUR, la segunda etapa falla, pero la factura, el ítem
-y sus dos vínculos ya permanecen guardados. La prueba caracteriza esta frontera
-actual; no la declara política comercial aprobada ni atomicidad completa.
+y sus dos vínculos permanecían guardados.
 
-Próximo paso: decidir si validar la moneda antes de guardar o integrar la consulta
-en la primera transacción; cubrir también errores posteriores del flujo empresario.
+La consulta y enriquecimiento de moneda ahora ocurren dentro de la misma
+transacción que cabecera, detalles y vínculos. Si falta el maestro se responde
+422 con mensaje explícito y se revierte todo; también se propagan errores SQL
+para provocar rollback. El perfil financiero delega en este mismo servicio.
+La prueba EUR exige cero facturas/ítems/vínculos persistidos y conserva los
+archivos previamente subidos. No se borran archivos ni se toca información histórica.
+
+Pendiente fuera de este alcance: validar con fixtures reales y revisar las dos
+etapas propias de `subirFacturaService` del empresario (elegibilidad y empresas).
 
 ## Comprobaciones aprobadas
 
@@ -59,7 +71,13 @@ Los fallos SQL se provocan mediante triggers temporales en la base exclusiva;
 se eliminan en `finally`. Las FK permanecen activas durante las pruebas y limpieza.
 Las fixtures se eliminan entre casos y el runner elimina el contenedor al terminar.
 
-Resultado: **16 pruebas reales: 15 aprobadas y 1 fallida (DT-IT-01)**.
-Tipos de integración aprobados. Contenedor eliminado aun con la suite fallida.
+Evidencia inicial: 16 pruebas, 15 aprobadas y 1 fallida (DT-IT-01).
+Después de corregir y ampliar regresión: **19 pruebas reales aprobadas**.
+La suite rápida tiene 344 casos aprobados y 8 criterios pendientes de decisión.
+Tipos de integración/backend aprobados y contenedor eliminado al finalizar.
 No es una prueba completa de subida HTTP/Multer ni de entrega real de mensajes,
 elegibilidad empresarial, liquidación, transferencias o todas las transiciones.
+
+Las notificaciones externas permanecen en el punto actual dentro de la
+transacción. Esto no ofrece atomicidad entre mensajes externos y commit SQL;
+una futura cola/outbox requeriría un diseño y pruebas específicos.

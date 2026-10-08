@@ -1,6 +1,6 @@
 # Matriz de regresión de negocio antes de migraciones
 
-Estado al 2026-10-08: 342 casos activos aprobados en Vitest rápido y 8 criterios
+Estado al 2026-10-08: 344 casos activos aprobados en Vitest rápido y 8 criterios
 pendientes. Jest continúa disponible. DT-XML-01 fue corregido por el usuario y
 DT-XML-02 se corrigió con regresión PEN/USD. Se conservan fórmulas, contratos
 HTTP, permisos y empaquetado.
@@ -70,11 +70,11 @@ verifican relaciones algebraicas entre cabecera, impuesto y detalles.
   interrupción de escrituras y propagación de errores. El recálculo utiliza
   callbacks de transacción anidados; el mock tampoco certifica su aislamiento real.
   El [entorno exclusivo](../mariadb/README.md) ya tiene snapshot de desarrollo,
-  comandos y 16 casos reales: 15 aprobados y 1 fallo de aprobación concurrente.
+  comandos y 19 casos reales aprobados.
   Ya verifica XML, lectura, rollback SQL, permisos y aceptación secuencial.
-  La carrera duplica aprobación, historiales y llamadas de notificación;
+  Se corrigieron carrera de aprobación y atomicidad de importación administrativa;
   [DT-IT-01/02](../../docs/deuda-tecnica/20261008_DT_integracion_MariaDB.md)
-  documentan este defecto y la importación confirmada antes del enriquecimiento.
+  documentan las correcciones y su evidencia previa.
   Liquidación, transferencias y el recálculo siguen sin integración SQL real.
 - Registro administrativo XML, asociación de facturas, aceptación del empresario
   y cambios de estado ya tienen casos de servicios y/o HTTP. Falta el recorrido
@@ -83,7 +83,8 @@ verifican relaciones algebraicas entre cabecera, impuesto y detalles.
 - Falta una matriz aprobada de transiciones origen/destino, si se requieren
   restricciones adicionales. Las pruebas comprueban existencia del estado destino
   y efectos actuales. La repetición secuencial de aprobación sí está probada
-  en MariaDB; las aprobaciones simultáneas fallan el criterio de unicidad.
+  en MariaDB; las aprobaciones simultáneas también cumplen unicidad, incluso
+  con propuestas diferentes de la misma operación.
 - PDF, correo, Telegram y proveedores externos: comprobar contenido/contratos,
   timeouts y fallos en suites específicas. La detección MIME real no equivale a
   probar todo el middleware de subida Multer.

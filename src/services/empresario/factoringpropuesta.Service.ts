@@ -83,6 +83,11 @@ export const acceptFactoringpropuestaService = async (dto: AcceptFactoringpropue
 
       const idfactoringpropuestaestado = 6; // Aprobada
 
+      // La lectura de vigencia puede quedar obsoleta. Reservar la operación
+      // mediante una escritura condicional antes de historiales/notificaciones.
+      const claimed = await factoringDao.claimFactoringApproval(tx, factoring.idfactoring, factoringpropuesta.idfactoringpropuesta);
+      if (!claimed) throw new ClientError("La operación ya tiene una propuesta aceptada", 409);
+
       const factoringpropuestahistorialestadoToCreate: Prisma.factoring_propuesta_historial_estadoCreateInput = {
         factoring_propuesta: { connect: { idfactoringpropuesta: factoringpropuesta.idfactoringpropuesta } },
         factoring_propuesta_estado: { connect: { idfactoringpropuestaestado: idfactoringpropuestaestado } },
@@ -105,16 +110,11 @@ export const acceptFactoringpropuestaService = async (dto: AcceptFactoringpropue
         );
       log.debug(line(), "factoringpropuestahistorialestadoCreated:", factoringpropuestahistorialestadoCreated);
 
-      const factoringpropuestaToUpdate: Prisma.factoring_propuestaUpdateInput = {
-        factoring_propuesta_estado: { connect: { idfactoringpropuestaestado: idfactoringpropuestaestado } },
-        idusuariomod: dto.idusuario ?? 1,
-        fechamod: new Date(),
-      };
-
-      const factoringpropuestaUpdated = await factoringpropuestaDao.updateFactoringpropuesta(
+      const factoringpropuestaUpdated = await factoringpropuestaDao.approveFactoringpropuestaVigente(
         tx,
         factoringpropuesta.factoringpropuestaid,
-        factoringpropuestaToUpdate,
+        factoring.idfactoring,
+        dto.idusuario ?? 1,
       );
       log.debug(line(), "factoringpropuestaUpdated", factoringpropuestaUpdated);
 

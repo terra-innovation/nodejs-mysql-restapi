@@ -63,7 +63,7 @@ rechazar pruebas marcadas `.only`.
   Las futuras integraciones reales necesitan una base desechable con una
   protección que rechace conexiones a producción.
 
-## Alcance actual: 342 casos activos y 8 pendientes
+## Alcance actual: 344 casos activos y 8 pendientes
 
 | Suite | Casos | Contrato comprobado |
 | --- | ---: | --- |
@@ -79,7 +79,7 @@ rechazar pruebas marcadas `.only`.
 | `unit/facturaXML.business.test.ts` | 26 | XML real, codificaciones/prefijos, fechas/impuestos, cuotas, neto, detracción PEN/USD, retención y persistencia de vencimiento/moneda |
 | `unit/facturaRegistro.business.test.ts` | 18 | Tipos de archivo, cabecera/detalles/vínculos, actor, moneda PEN/USD y vencimiento enviados al DAO, enriquecimiento y errores |
 | `unit/factoringfactura.business.test.ts` | 21 | Asociar factura, estados de factura/detracción, constancia, fechas UTC, actualizar, activar/eliminar y errores |
-| `unit/factoringaprobacion.business.test.ts` | 13 | Pertenencia/vigencia, DAOs reales, propuesta aprobada 6 y operación 4, ambos historiales, vínculo aceptado y notificaciones |
+| `unit/factoringaprobacion.business.test.ts` | 15 | Pertenencia/vigencia, reserva condicional, propuesta aprobada 6 y operación 4, ambos historiales, vínculo aceptado, conflicto y notificaciones |
 | `unit/factoringestado.business.test.ts` | 26 | Estado actual e historial, adjuntos, estados 29/10/36, fecha de inicio, edición/baja lógica y errores |
 | `http/facturaXML.business.test.ts` | 13 | Router de registro XML, permisos, validación, actor desde JWT, respuesta y errores |
 | `http/factoringestado.business.test.ts` | 29 | Routers de aceptación e historial, permisos separados, validación, auditoría y errores |
@@ -116,7 +116,7 @@ Reportes ignorados por Git: `coverage/vitest/index.html`, `lcov.info` y
 `coverage-summary.json`; el comando CI agrega `junit.xml`. El CI se valida como
 comando local, sin crear todavía un workflow de un proveedor externo.
 
-Validación actual (Windows, Node 20.20.2, 2026-10-08): 17 suites / 342
+Validación actual (Windows, Node 20.20.2, 2026-10-08): 17 suites / 344
 casos aprobados, 8 criterios `todo`, modo CI con JUnit y umbrales aprobados,
 64.68% de líneas en los 21 archivos seleccionados. Comprobación de tipos de
 Vitest y `tsc --noEmit` del backend aprobadas. El caso que genera y verifica
@@ -127,10 +127,10 @@ Se añaden 15 pruebas rápidas de protección del nuevo entorno de integración.
 Las cuatro comprobaciones reales de MariaDB son una suite separada y pasaron
 tras el reinicio de Windows: restauración de 127 tablas, relaciones/collations,
 MariaDB 11.4.10 en UTC y lectura mediante Prisma. El contenedor fue eliminado.
-La suite separada ahora incluye 12 casos de negocio y 4 de entorno: 15 pasan
-y 1 detecta aprobación concurrente duplicada. XML PEN/USD, lectura y rollback
-se prueban con servicios/DAOs/Prisma reales. El comando de integración falla
-hasta resolver la carrera; las suites rápidas siguen independientes.
+La suite separada ahora incluye 15 casos de negocio y 4 de entorno, todos
+aprobados. XML PEN/USD, lectura y rollback se prueban con servicios/DAOs/Prisma
+reales. La aprobación concurrente y la importación administrativa atómica se
+corrigieron con regresión real. Las suites rápidas siguen independientes.
 Ver [hallazgos](../../docs/deuda-tecnica/20261008_DT_integracion_MariaDB.md).
 Fuente, requisitos y comandos:
 [`tests/mariadb/README.md`](../mariadb/README.md).

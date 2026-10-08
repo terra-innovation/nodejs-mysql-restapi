@@ -98,7 +98,7 @@ export const subirFacturaFactorService = async (dto: SubirFacturaFactorDto, idus
   const facturaFinal = facturaUtils.buildFacturaJson(facturaJson, archivo_xml.codigo, idusuario);
   const facturaToCreate = facturaUtils.getFacturaToCreate(facturaFinal, idusuario);
 
-  await prismaFT.client.$transaction(
+  const facturaFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const facturaCreated = await facturaDao.insertFactura(tx, facturaToCreate);
 
@@ -117,14 +117,9 @@ export const subirFacturaFactorService = async (dto: SubirFacturaFactorDto, idus
       await vincularFacturaArchivo(tx, archivo_xml, facturaCreated, idusuario);
       await vincularFacturaArchivo(tx, archivo_pdf, facturaCreated, idusuario);
 
-      return {};
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
-
-  const facturaFiltered = await prismaFT.client.$transaction(
-    async (tx) => {
+      // El enriquecimiento forma parte del mismo commit que cabecera/detalles.
       const moneda = await monedaDao.getMonedaByCodigo(tx, facturaToCreate.codigo_tipo_moneda);
+      if (!moneda) throw new ClientError("La moneda de la factura no está configurada", 422);
       facturaFinal.monedaid = moneda.monedaid;
       facturaFinal.moneda_alias = moneda.alias;
       facturaFinal.moneda_simbolo = moneda.simbolo;

@@ -78,13 +78,13 @@ describe("XML: guardado, lectura y rollback reales", () => {
     expect(await db.factura_item.count()).toBe(0);
     expect(await db.archivo_factura.count()).toBe(0);
   });
-  it("caracteriza el límite actual: un fallo de moneda posterior no revierte la importación ya confirmada", async () => {
+  it("moneda sin maestro revierte toda la importación", async () => {
     const f = await files(invoiceXml({ currency: "EUR" })); // Sin maestro EUR sintético.
-    await expect(upload(f.dto, user.idusuario)).rejects.toThrow();
-    expect(await db.factura.count()).toBe(1);
-    expect(await db.factura_item.count()).toBe(1);
-    expect(await db.archivo_factura.count()).toBe(2);
-    // Documentar comportamiento existente; no declararlo política aprobada.
+    await expect(upload(f.dto, user.idusuario)).rejects.toMatchObject({ statusCode: 422 });
+    expect(await db.factura.count()).toBe(0);
+    expect(await db.factura_item.count()).toBe(0);
+    expect(await db.archivo_factura.count()).toBe(0);
+    expect(await db.archivo.count()).toBe(2);
   });
 });
 
@@ -106,6 +106,33 @@ describe("Aprobación: estados, rollback y concurrencia reales", () => {
     expect(await db.factoring_historial_estado.count()).toBe(0);
     expect(await db.factoring_propuesta_historial_estado.count()).toBe(0);
   });
+  it("si la propuesta pierde vigencia después de leerla, revierte la reserva y el historial", async () => {
+    const f = await seedApproval(user.idusuario);
+    const original = propuestaDao.getFactoringpropuestaVigenteByIdfactoringpropuestaIdfactoring;
+    vi.spyOn(propuestaDao, "getFactoringpropuestaVigenteByIdfactoringpropuestaIdfactoring").mockImplementationOnce(async (...args) => {
+      const row = await original(...args);
+      expect(row).not.toBeNull();
+      await db.factoring_propuesta.update({ where: { idfactoringpropuesta: f.propuesta.idfactoringpropuesta }, data: { estado: 0 } });
+      return row;
+    });
+    await expect(accept(f.dto)).rejects.toMatchObject({ statusCode: 409 });
+    expect(await db.factoring.findUniqueOrThrow({ where: { idfactoring: f.factoring.idfactoring } })).toMatchObject({ idfactoringestado: 3, idfactoringpropuestaaceptada: null });
+    expect(await db.factoring_historial_estado.count()).toBe(0);
+    expect(await db.factoring_propuesta_historial_estado.count()).toBe(0);
+    expect(boundary.email).not.toHaveBeenCalled();
+    expect(boundary.telegram).not.toHaveBeenCalled();
+  });
+  it("solicitudes simultáneas sin coordinador dejan una sola aprobación", async () => {
+    const f = await seedApproval(user.idusuario);
+    const results = await Promise.allSettled([accept(f.dto), accept(f.dto)]);
+    expect(results.filter(result => result.status === "fulfilled")).toHaveLength(1);
+    const rejected = results.find(result => result.status === "rejected") as PromiseRejectedResult;
+    expect([404, 409]).toContain(rejected.reason.statusCode);
+    expect(await db.factoring_historial_estado.count()).toBe(1);
+    expect(await db.factoring_propuesta_historial_estado.count()).toBe(1);
+    expect(boundary.email).toHaveBeenCalledTimes(1);
+    expect(boundary.telegram).toHaveBeenCalledTimes(1);
+  });
   it("error de proveedor de email revierte estados, vínculo y ambos historiales", async () => {
     const f = await seedApproval(user.idusuario);
     const failure = new Error("synthetic email failure"); boundary.email.mockRejectedValueOnce(failure);
@@ -118,7 +145,7 @@ describe("Aprobación: estados, rollback y concurrencia reales", () => {
   });
   it("fallo SQL al actualizar factoring revierte el cambio de propuesta y ambos historiales", async () => {
     const f = await seedApproval(user.idusuario);
-    await db.$executeRawUnsafe("CREATE TRIGGER it_reject_approval BEFORE UPDATE ON factoring FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='synthetic approval failure'");
+    await db.$executeRawUnsafe("CREATE TRIGGER it_reject_approval BEFORE UPDATE ON factoring FOR EACH ROW BEGIN IF NEW._idfactoringestado=4 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='synthetic approval failure'; END IF; END");
     try {
       await expect(accept(f.dto)).rejects.toMatchObject({ statusCode: 500 });
       expect(await db.factoring.findUniqueOrThrow({ where: { idfactoring: f.factoring.idfactoring } })).toMatchObject({ idfactoringestado: 3, idfactoringpropuestaaceptada: null });
@@ -128,8 +155,13 @@ describe("Aprobación: estados, rollback y concurrencia reales", () => {
       expect(boundary.email).not.toHaveBeenCalled();
     } finally { await db.$executeRawUnsafe("DROP TRIGGER it_reject_approval"); }
   });
-  it("dos solicitudes que leen la misma propuesta vigente solo deberían aprobar una vez", async () => {
+  it.each([false, true])("dos solicitudes concurrentes aprueban una sola vez (propuestas distintas: %s)", async differentProposal => {
     const f = await seedApproval(user.idusuario);
+    const competing = differentProposal ? await db.factoring_propuesta.create({ data: {
+      code: "IT-PROPUESTA-2", idfactoring: f.factoring.idfactoring, idfactoringpropuestaestado: 4,
+      fecha_propuesta: f.propuesta.fecha_propuesta, fecha_pago_estimado: f.propuesta.fecha_pago_estimado,
+      dias_pago_estimado: 30, dias_antiguedad_estimado: 0, monto_neto: 1180,
+    } }) : f.propuesta;
     const original = propuestaDao.getFactoringpropuestaVigenteByIdfactoringpropuestaIdfactoring;
     let readCount = 0;
     let firstRead!: () => void; const started = new Promise<void>(resolve => { firstRead = resolve; });
@@ -149,7 +181,7 @@ describe("Aprobación: estados, rollback y concurrencia reales", () => {
     // Registrar inmediatamente el resultado para evitar rechazos sin consumidor si cambia el flujo.
     const firstResult = Promise.allSettled([first]);
     await started;
-    const second = accept(f.dto);
+    const second = accept({ ...f.dto, factoringpropuestaid: competing.factoringpropuestaid });
     const secondResult = Promise.allSettled([second]);
     const results = [...await firstResult, ...await secondResult];
     expect(readCount).toBe(2);
@@ -161,5 +193,9 @@ describe("Aprobación: estados, rollback y concurrencia reales", () => {
       telegram: boundary.telegram.mock.calls.length,
     };
     expect(observed).toEqual({ aprobaciones: 1, historialFactoring: 1, historialPropuesta: 1, emails: 1, telegram: 1 });
+    expect(results[0].status).toBe("fulfilled");
+    expect(results[1]).toMatchObject({ status: "rejected", reason: { statusCode: 409 } });
+    expect(await db.factoring.findUniqueOrThrow({ where: { idfactoring: f.factoring.idfactoring } })).toMatchObject({ idfactoringestado: 4, idfactoringpropuestaaceptada: f.propuesta.idfactoringpropuesta });
+    if (differentProposal) expect(await db.factoring_propuesta.findUniqueOrThrow({ where: { idfactoringpropuesta: competing.idfactoringpropuesta } })).toMatchObject({ idfactoringpropuestaestado: 4 });
   });
 });

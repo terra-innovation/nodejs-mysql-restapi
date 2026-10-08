@@ -9,11 +9,12 @@ actual de Jest. Configuración, comandos y alcance: [Guía de Vitest](vitest/REA
 El entorno de integración real con MariaDB tiene comandos separados y una
 [guía propia](mariadb/README.md). Usa una instancia desechable y estructura
 exportada de desarrollo. Docker/WSL están funcionando. La suite real ampliada
-tiene 16 casos: 15 aprobados y 1 fallo reproducible de aprobación concurrente.
+tiene 19 casos aprobados; se corrigieron aprobación concurrente y atomicidad
+del registro administrativo/financiero.
 XML PEN/USD, lectura, rollback y aprobación normal ya se comprueban en MariaDB.
 Ver [hallazgos](../docs/deuda-tecnica/20261008_DT_integracion_MariaDB.md).
 
-Al 2026-10-08, Vitest rápido tiene 342 casos activos y 8 criterios pendientes.
+Al 2026-10-08, Vitest rápido tiene 344 casos activos y 8 criterios pendientes.
 La ampliación cubre XML, asociación de facturas, aprobación y estados.
 Contratos y límites: [Matriz de negocio](vitest/MATRIZ_NEGOCIO.md).
 

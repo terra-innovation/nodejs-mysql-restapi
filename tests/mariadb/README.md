@@ -99,18 +99,19 @@ en cada ejecución ni copiar producción automáticamente.
 3. Claves foráneas y collation de tablas conservadas.
 4. Lecturas de factura e ítems a través del cliente Prisma real.
 
-`business.test.ts` agrega 12 casos con parser, servicios, DAOs, Prisma y
+`business.test.ts` agrega 15 casos con parser, servicios, DAOs, Prisma y
 transacciones reales: XML PEN/USD, fechas y detalles, rechazos, rollback SQL
 de importación/aprobación, permisos, repetición y aprobación concurrente.
 Se aíslan almacenamiento/configuración y proveedores externos; no se envían
 correos ni Telegram. Las fixtures se eliminan con FK activas entre casos.
 
-Resultado actual: **16 casos, 15 aprobados y 1 fallido**. La carrera concurrente
-produce dos aprobaciones y duplica ambos historiales y las invocaciones de
-notificación. La prueba sigue activa y exige aprobación única; el comando
-devuelve código 1 por este defecto, aunque el entorno funciona y se limpia.
-También se caracteriza la importación ya confirmada cuando falla la consulta
-posterior de moneda; no se afirma atomicidad entre sus dos transacciones.
+Resultado actual: **19 casos aprobados**. La aprobación se reserva mediante
+una escritura condicional por operación y la propuesta se actualiza solo si
+sigue vigente. Se comprueban misma propuesta, propuestas distintas, solicitudes
+sin coordinador y pérdida de vigencia desde otra conexión. Conflicto concurrente:
+409; repetición secuencial: 404 existente.
+La consulta de moneda administrativa/financiera comparte transacción con la
+importación: si falta el maestro, devuelve 422 y revierte todas las escrituras.
 Ver [hallazgos y próximos cambios](../../docs/deuda-tecnica/20261008_DT_integracion_MariaDB.md).
 
 Para ejecutar solamente estos escenarios, conservando el runner protegido:
@@ -149,8 +150,9 @@ Las suites rápidas mantienen sus comandos existentes y no necesitan Docker.
   para futuras ejecuciones; no se detienen otros contenedores.
 - Evidencia local ignorada por Git: `coverage/mariadb/windows-wsl-setup.json`
   (registro histórico del reinicio requerido). El primer diagnóstico fue
-  `passed` con 4 casos. Tras ampliar negocio, `last-run.json` registra `failed`,
-  limpieza `removed`, y `junit.xml` muestra 16 casos y 1 fallo por DT-IT-01.
+  `passed` con 4 casos. La ampliación inicial registró 16 casos y 1 fallo por
+  DT-IT-01. Después de corregir, `last-run.json` registra `passed`, limpieza
+  `removed`, y `junit.xml` muestra 19 casos sin fallos.
 
 ## Primer inicio en otro equipo Windows
 

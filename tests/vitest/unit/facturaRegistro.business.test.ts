@@ -36,9 +36,8 @@ describe("Registro real de factura a partir de XML y PDF", () => {
     expect(b.termino.insertFacturaterminopago).toHaveBeenCalledTimes(3);
     expect(b.nota.insertFacturanota).toHaveBeenCalledTimes(2);
     expect(b.vinculo.insertArchivoFactura.mock.calls.map(call => call[1].archivo.connect.idarchivo)).toEqual([50, 51]);
-    expect(b.transaction).toHaveBeenCalledTimes(2);
-    expect(b.moneda.getMonedaByCodigo.mock.calls[0][0]).not.toBe(persistenceTx);
-    expect(b.moneda.getMonedaByCodigo).toHaveBeenCalledWith({ testTransaction: 2 }, "PEN");
+    expect(b.transaction).toHaveBeenCalledTimes(1);
+    expect(b.moneda.getMonedaByCodigo).toHaveBeenCalledWith(persistenceTx, "PEN");
   });
   it.each([1, 2])("archivo requerido %s inexistente no abre transacción", async (position) => {
     if (position === 2) b.archivo.getArchivoByArchivoidAndIdarchivotipo.mockResolvedValueOnce({ idarchivo: 50 });
@@ -78,8 +77,8 @@ describe("Registro real de factura a partir de XML y PDF", () => {
     await expect(upload(invoiceDto(), 42)).rejects.toBe(error);
     expect(b.factura.insertFactura).toHaveBeenCalledOnce();
     expect(b.vinculo.insertArchivoFactura).toHaveBeenCalledTimes(2);
-    expect(b.transaction).toHaveBeenCalledTimes(2);
-    // No certifica atomicidad: el enriquecimiento ocurre en una segunda transacción.
+    expect(b.transaction).toHaveBeenCalledTimes(1);
+    expect(b.moneda.getMonedaByCodigo.mock.calls[0][0]).toBe(b.factura.insertFactura.mock.calls[0][0]);
   });
 });
 function expectClient() { return { $transaction: b.transaction }; }

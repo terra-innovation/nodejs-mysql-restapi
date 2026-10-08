@@ -5,7 +5,7 @@ import { Decimal } from "@prisma/client/runtime/library";
 const boundary = vi.hoisted(() => ({
   tx: { testTransaction: true },
   transaction: vi.fn(),
-  factoring: { getFactoringByFactoringid: vi.fn(), getFactoringByIdfactoring: vi.fn(), getFactoringByIdfactoringIdempresario: vi.fn(), updateFactoring: vi.fn() },
+  factoring: { getFactoringByFactoringid: vi.fn(), getFactoringByIdfactoring: vi.fn(), getFactoringByIdfactoringIdempresario: vi.fn(), updateFactoring: vi.fn(), claimFactoringApproval: vi.fn() },
   estado: { getFactoringestadoByFactoringestadoid: vi.fn() },
   historial: { insertFactoringhistorialestado: vi.fn(), getFactoringhistorialestadoByFactoringhistorialestadoid: vi.fn(), updateFactoringhistorialestado: vi.fn(), activateFactoringhistorialestado: vi.fn(), deleteFactoringhistorialestado: vi.fn() },
   historialArchivo: { insertArchivofactoringhistorialestado: vi.fn() },
@@ -16,7 +16,7 @@ const boundary = vi.hoisted(() => ({
   comision: { getFactoringconfigcomisionByIdriesgo: vi.fn() },
   financieroTipo: { getComision: vi.fn(), getCosto: vi.fn(), getGasto: vi.fn(), getGasto_excento_igv: vi.fn(), getFinancierotipoByIdfinancierotipo: vi.fn(), getFinancierotipoByFinancierotipoid: vi.fn() },
   concepto: { getComisionFinanzaTech: vi.fn(), getCostoCAVALIPen: vi.fn(), getCostoTransaccion: vi.fn(), getGastoInterbancario: vi.fn(), getFinancieroconceptoByIdfinancieroconcepto: vi.fn(), getFinancieroconceptoByFinancieroconceptoid: vi.fn() },
-  propuesta: { insertFactoringpropuesta: vi.fn(), getFactoringpropuestaByFactoringpropuestaid: vi.fn(), updateFactoringpropuesta: vi.fn(), getFactoringpropuestaAceptadaByIdfactoringpropuesta: vi.fn(), activateFactoringpropuesta: vi.fn(), deleteFactoringpropuesta: vi.fn(), getFactoringpropuestaVigenteByIdfactoringpropuestaIdfactoring: vi.fn() },
+  propuesta: { insertFactoringpropuesta: vi.fn(), getFactoringpropuestaByFactoringpropuestaid: vi.fn(), updateFactoringpropuesta: vi.fn(), approveFactoringpropuestaVigente: vi.fn(), getFactoringpropuestaAceptadaByIdfactoringpropuesta: vi.fn(), activateFactoringpropuesta: vi.fn(), deleteFactoringpropuesta: vi.fn(), getFactoringpropuestaVigenteByIdfactoringpropuestaIdfactoring: vi.fn() },
   propuestaEstado: { getFactoringpropuestaestadoByFactoringpropuestaestadoid: vi.fn() },
   propuestaHistorial: { insertFactoringpropuestahistorialestado: vi.fn() },
   propuestaFinanciero: { insertFactoringpropuestafinanciero: vi.fn() },
@@ -139,6 +139,7 @@ export function resetFactoringBoundary(moneda = 1, banco = 1) {
   boundary.factoring.getFactoringByFactoringid.mockResolvedValue(factoring);
   boundary.factoring.getFactoringByIdfactoring.mockResolvedValue(factoring);
   boundary.factoring.getFactoringByIdfactoringIdempresario.mockResolvedValue(factoring);
+  boundary.factoring.claimFactoringApproval.mockResolvedValue(true);
   boundary.factoring.updateFactoring.mockImplementation(async (_tx, _id, data) => ({ ...factoring, idfactoringestado: data.factoring_estado?.connect.idfactoringestado }));
   boundary.estado.getFactoringestadoByFactoringestadoid.mockResolvedValue({ idfactoringestado: 4 });
   boundary.historial.insertFactoringhistorialestado.mockResolvedValue({ idfactoringhistorialestado: 400 });
@@ -176,6 +177,7 @@ export function resetFactoringBoundary(moneda = 1, banco = 1) {
   boundary.propuesta.getFactoringpropuestaVigenteByIdfactoringpropuestaIdfactoring.mockResolvedValue({ idfactoringpropuesta: 100 });
   boundary.propuesta.getFactoringpropuestaAceptadaByIdfactoringpropuesta.mockResolvedValue(factoring.factoring_propuesta_aceptada);
   boundary.propuesta.updateFactoringpropuesta.mockResolvedValue({ idfactoringpropuesta: 100, idfactoring: 10, idfactoringpropuestaestado: 1 });
+  boundary.propuesta.approveFactoringpropuestaVigente.mockResolvedValue({ idfactoringpropuesta: 100, idfactoring: 10, idfactoringpropuestaestado: 6 });
   boundary.propuesta.activateFactoringpropuesta.mockResolvedValue([1]);
   boundary.propuesta.deleteFactoringpropuesta.mockResolvedValue([1]);
   boundary.propuestaHistorial.insertFactoringpropuestahistorialestado.mockResolvedValue({});

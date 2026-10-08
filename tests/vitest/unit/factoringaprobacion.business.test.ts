@@ -3,7 +3,7 @@ import { boundary as b, ids, resetFactoringBoundary } from "../support/factoring
 import { acceptFactoringpropuestaService as accept } from "#src/services/empresario/factoringpropuesta.Service.js";
 
 const dto = () => ({ factoringid: ids.factoring, factoringpropuestaid: ids.propuesta, idusuario: 42 });
-const writes = () => [b.propuestaHistorial.insertFactoringpropuestahistorialestado, b.propuesta.updateFactoringpropuesta, b.historial.insertFactoringhistorialestado, b.factoring.updateFactoring];
+const writes = () => [b.factoring.claimFactoringApproval, b.propuestaHistorial.insertFactoringpropuestahistorialestado, b.propuesta.approveFactoringpropuestaVigente, b.historial.insertFactoringhistorialestado, b.factoring.updateFactoring];
 beforeEach(() => { resetFactoringBoundary(); });
 
 describe("Aprobación real de propuesta por su empresario", () => {
@@ -17,9 +17,8 @@ describe("Aprobación real de propuesta por su empresario", () => {
       factoring_propuesta_estado: { connect: { idfactoringpropuestaestado: 6 } },
       usuario_modifica: { connect: { idusuario: 42 } }, idusuariocrea: 42, estado: 1,
     }));
-    expect(b.propuesta.updateFactoringpropuesta).toHaveBeenCalledWith(b.tx, ids.propuesta, expect.objectContaining({
-      factoring_propuesta_estado: { connect: { idfactoringpropuestaestado: 6 } }, idusuariomod: 42,
-    }));
+    expect(b.factoring.claimFactoringApproval).toHaveBeenCalledWith(b.tx, 10, 100);
+    expect(b.propuesta.approveFactoringpropuestaVigente).toHaveBeenCalledWith(b.tx, ids.propuesta, 10, 42);
     expect(b.historial.insertFactoringhistorialestado).toHaveBeenCalledWith(b.tx, expect.objectContaining({
       factoring: { connect: { idfactoring: 10 } }, factoring_estado: { connect: { idfactoringestado: 4 } },
       usuario_modifica: { connect: { idusuario: 42 } },
@@ -48,11 +47,19 @@ describe("Aprobación real de propuesta por su empresario", () => {
     expect(b.telegram.sendMessageImportant).not.toHaveBeenCalled();
   });
 
-  it.each([0, 1, 2, 3])("error en escritura %s detiene el flujo y propaga el error", async (index) => {
+  it.each([0, 1, 2, 3, 4])("error en escritura %s detiene el flujo y propaga el error", async (index) => {
     const error = new Error(`write-${index}`);
     writes()[index].mockRejectedValueOnce(error);
     await expect(accept(dto())).rejects.toBe(error);
     for (const write of writes().slice(index + 1)) expect(write).not.toHaveBeenCalled();
+    expect(b.email.sendFactoringEmpresaServicioFactoringPropuestaAceptada).not.toHaveBeenCalled();
+    expect(b.telegram.sendMessageImportant).not.toHaveBeenCalled();
+  });
+
+  it("reserva perdida devuelve 409 sin historiales ni notificaciones", async () => {
+    b.factoring.claimFactoringApproval.mockResolvedValueOnce(false);
+    await expect(accept(dto())).rejects.toMatchObject({ statusCode: 409 });
+    for (const write of writes().slice(1)) expect(write).not.toHaveBeenCalled();
     expect(b.email.sendFactoringEmpresaServicioFactoringPropuestaAceptada).not.toHaveBeenCalled();
     expect(b.telegram.sendMessageImportant).not.toHaveBeenCalled();
   });

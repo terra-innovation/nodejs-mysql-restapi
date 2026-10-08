@@ -305,6 +305,23 @@ export const updateFactoringpropuesta = async (tx: TxClient, factoringpropuestai
   }
 };
 
+export const approveFactoringpropuestaVigente = async (tx: TxClient, factoringpropuestaid: string, idfactoring: number, idusuario: number) => {
+  try {
+    // UPDATE con el predicado en SQL: una lectura previa (incluso la que
+    // Prisma usa para updates relacionales) puede pertenecer a un snapshot viejo.
+    const result = await tx.factoring_propuesta.updateMany({
+      where: { factoringpropuestaid, idfactoring, idfactoringpropuestaestado: 4, estado: ESTADO.ACTIVO },
+      data: { idfactoringpropuestaestado: 6, idusuariomod: idusuario, fechamod: new Date() },
+    });
+    if (result.count !== 1) throw new ClientError("La propuesta ya no está vigente", 409);
+    return await tx.factoring_propuesta.findUniqueOrThrow({ where: { factoringpropuestaid } });
+  } catch (error) {
+    if (error instanceof ClientError) throw error;
+    log.error(line(), "", error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 export const deleteFactoringpropuesta = async (tx: TxClient, factoringpropuestaid: string, idusuariomod: number) => {
   try {
     const result = await tx.factoring_propuesta.update({
