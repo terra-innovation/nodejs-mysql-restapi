@@ -23,7 +23,7 @@ const boundary = vi.hoisted(() => ({
   liquidacion: { insertFactoringliquidacion: vi.fn(), getFactoringliquidacionByFactoringliquidacionid: vi.fn(), updateFactoringliquidacion: vi.fn() },
   liquidacionEstado: { getFactoringliquidacionestadoByFactoringliquidacionestadoid: vi.fn() },
   liquidacionFinanciero: { insertFactoringliquidacionfinanciero: vi.fn() },
-  usuario: { getUsuarioByEmail: vi.fn(), getUsuarioByIdusuario: vi.fn() },
+  usuario: { getUsuarioByEmail: vi.fn(), getUsuarioByIdusuario: vi.fn(), getUsuarioAccesosByIdusuario: vi.fn() },
   archivo: { getArchivoByArchivoid: vi.fn(), getArchivoByArchivoidAndIdarchivotipo: vi.fn() },
   factura: { getFacturaByFacturaid: vi.fn() },
   facturaEstado: { getFacturaestadoByFacturaestadoid: vi.fn() },
@@ -134,6 +134,7 @@ const conceptos = {
 
 export function resetFactoringBoundary(moneda = 1, banco = 1) {
   vi.resetAllMocks();
+  boundary.usuario.getUsuarioAccesosByIdusuario.mockResolvedValue({ idusuario: 42, estado: 1, usuario_roles: [2,3,4,5,6].map(idrol => ({ idrol, estado: 1, rol: { estado: 1 } })) });
   const factoring = createFactoringFixture(moneda, banco);
   boundary.transaction.mockImplementation(async (callback) => callback(boundary.tx));
   boundary.factoring.getFactoringByFactoringid.mockResolvedValue(factoring);

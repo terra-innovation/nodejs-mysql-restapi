@@ -9,12 +9,46 @@ actual de Jest. Configuración, comandos y alcance: [Guía de Vitest](vitest/REA
 El entorno de integración real con MariaDB tiene comandos separados y una
 [guía propia](mariadb/README.md). Usa una instancia desechable y estructura
 exportada de desarrollo. Docker/WSL están funcionando. La suite real ampliada
-tiene 19 casos aprobados; se corrigieron aprobación concurrente y atomicidad
-del registro administrativo/financiero.
+reúne 496 casos en dieciséis archivos: 494 de negocio/entorno y dos del backend
+compilado, validados en ejecuciones generales y focalizadas. Se corrigieron aprobación concurrente y atomicidad
+del registro administrativo/financiero y del empresario.
+Para validar compilación, arranque HTTP/Prisma, cierre y conexión rechazada:
+`npm run test:runtime`. Ver [alcance y límites](../docs/deuda-tecnica/20261008_regresion_backend_compilado.md).
 XML PEN/USD, lectura, rollback y aprobación normal ya se comprueban en MariaDB.
+La generación/descarga de propuesta y liquidación reúne 104 casos con PDFs reales,
+facturas vinculadas, anticipación/mora, paginación y concurrencia. Los nombres
+largos y veinte facturas añaden cobertura de contenido y diagnósticos de la
+superposición nombre/RUC pendiente en propuesta (DT-PDF-05). Los casos del
+mismo documento reproducen una interferencia de limpieza pendiente (DT-PDF-04):
+[alcance y límites](../docs/deuda-tecnica/20261008_integracion_PDF.md).
+Dieciséis cancelaciones TCP reales comprueban limpieza, ausencia de cambios SQL
+y reintento completo antes del cuerpo; no cubren interrupción a mitad del PDF.
+Dieciséis fallos de escritura comprueban rechazo antes de crear el PDF y
+archivo parcial huérfano (DT-PDF-01), cierre del stream y reintento completo.
+El montaje real de `src/app.ts` añade 29 casos de rutas, sesión/roles, CORS, IP,
+Helmet, limitador global, errores y liquidación PEN/USD con rollback. Ver
+[alcance y límites](../docs/deuda-tecnica/20261008_integracion_montaje_global.md).
+Login y refresco reúnen 36 casos con bcrypt/JWT reales y MariaDB. Verifican
+cuentas/credenciales activas, JWT de 24 horas en producción y bloqueo de roles
+retirados para tokens anteriores: [correcciones y límites](../docs/deuda-tecnica/20261008_correccion_autenticacion.md).
 Ver [hallazgos](../docs/deuda-tecnica/20261008_DT_integracion_MariaDB.md).
+El [registro del empresario](../docs/deuda-tecnica/20261008_DT_XML_empresario_integracion.md)
+cubre elegibilidad, líneas, empresas, duplicados y rollback.
+La [creación de factoring](../docs/deuda-tecnica/20261008_DT_creacion_factoring_integracion.md)
+cubre asociaciones, sumas Decimal, concurrencia y saldos administrativos;
+crear la operación conserva el comportamiento sin consumo automático de líneas.
+Liquidaciones y transferencias tienen 36 casos SQL reales; la auditoría histórica
+tiene cinco regresiones sintéticas. Ver [alcance y auditoría](../docs/deuda-tecnica/20261008_integracion_liquidaciones_transferencias_auditoria.md).
+El [cálculo y creación de propuestas](../docs/deuda-tecnica/20261008_integracion_propuestas_calculo.md)
+añade 19 casos de persistencia, rollback, aislamiento y coincidencia con aprobación.
+No existe actualización de importes de una propuesta ya creada en el flujo actual.
+La [concurrencia de liquidaciones y transferencias](../docs/deuda-tecnica/20261008_integracion_concurrencia_liquidaciones_transferencias.md)
+añade 12 casos de repetición, registros completos y rollback aislado; no introduce idempotencia.
+El [recorrido HTTP/Multer de facturas](../docs/deuda-tecnica/20261008_integracion_HTTP_Multer_facturas.md)
+reúne 83 casos con carga, registro, descarga, permisos, frontera de 20 MiB y SQL reales, incluidos
+dos limitaciones conocidas de limpieza de archivos, sin corrección autorizada ni programada.
 
-Al 2026-10-08, Vitest rápido tiene 344 casos activos y 8 criterios pendientes.
+Al 2026-10-08, Vitest rápido tiene 346 casos activos y 8 criterios pendientes.
 La ampliación cubre XML, asociación de facturas, aprobación y estados.
 Contratos y límites: [Matriz de negocio](vitest/MATRIZ_NEGOCIO.md).
 

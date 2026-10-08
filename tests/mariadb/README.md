@@ -105,7 +105,65 @@ de importación/aprobación, permisos, repetición y aprobación concurrente.
 Se aíslan almacenamiento/configuración y proveedores externos; no se envían
 correos ni Telegram. Las fixtures se eliminan con FK activas entre casos.
 
-Resultado actual: **19 casos aprobados**. La aprobación se reserva mediante
+`entrepreneur.test.ts` agrega 27 casos reales: elegibilidad por asociación,
+cuotas/plazo, líneas de factor/cedente/pagador, duplicados activos, PEN/USD,
+reutilización de empresas y rollback SQL. También comprueba creación, unicidad
+y rollback del DAO de empresas por separado: el flujo XML exige que las empresas
+ya existan y sean elegibles. Se unificaron las etapas del empresario para que
+un rechazo o fallo posterior revierta también la importación.
+Ver [evidencia y alcance](../../docs/deuda-tecnica/20261008_DT_XML_empresario_integracion.md).
+
+`operation.test.ts` agrega 27 casos de creación de factoring, asociaciones,
+sumas Decimal, rollback, duplicados y actualización administrativa de líneas.
+Se corrigieron concatenación de importes y doble creación concurrente. Por
+decisión del usuario, crear una operación no reserva ni consume las líneas.
+Ver [evidencia y límites](../../docs/deuda-tecnica/20261008_DT_creacion_factoring_integracion.md).
+
+`settlement.test.ts` agrega 36 casos de liquidaciones y transferencias al cedente:
+PEN/USD, reintegro/mora, IGV, gasto interbancario, adicionales, lectura, estados,
+constancias y rollback provocado por errores SQL. Servicios, DAOs y calculador reales.
+`historicalAudit.test.ts` agrega cinco regresiones SQL de la consulta del auditor.
+
+`proposal.test.ts` agrega 19 casos de cálculo/creación de propuestas, lectura,
+rollback SQL, concurrencia y snapshot del calculador. No se implementa recálculo
+de importes de una propuesta existente. Ver [alcance y hallazgos](../../docs/deuda-tecnica/20261008_integracion_propuestas_calculo.md).
+
+`settlementConcurrency.test.ts` agrega 12 casos de repetición, concurrencia y
+rollback aislado de liquidaciones/transferencias. Las solicitudes repetidas
+actualmente guardan dos registros completos; no se agrega deduplicación.
+Ver [resultados y límites](../../docs/deuda-tecnica/20261008_integracion_concurrencia_liquidaciones_transferencias.md).
+
+`invoiceHttp.test.ts` reúne 83 casos del recorrido HTTP/Multer con SQL y disco
+reales: XML/PDF, JWT, roles, registro y descarga, rechazos, rollback y frontera
+de 20 MiB. Se acepta un byte menos; exactamente 20 MiB y un byte más se rechazan.
+Incluye 30 casos de JWT expirados y sesiones sin usuario o roles válidos en carga,
+registro y descarga: sin nuevos datos/archivos y con las cargas previas intactas.
+Se agregan 14 pruebas de eliminación: permisos, estado lógico, actor de sesión,
+repetición, rollback SQL, archivos ajenos/vinculados y descarga posterior.
+La eliminación actual conserva el contenido y no comprueba pertenencia ni vínculos;
+estos comportamientos quedan documentados como límites, sin cambiar servicios.
+Para repetir únicamente esta ampliación:
+
+```powershell
+npm run test:integration -- tests/mariadb/invoiceHttp.test.ts -t "JWT expirados y sesiones sin roles válidos"
+npm run test:integration -- tests/mariadb/invoiceHttp.test.ts -t "Eliminación de archivos por HTTP"
+```
+
+Ver [alcance y límites de limpieza](../../docs/deuda-tecnica/20261008_integracion_HTTP_Multer_facturas.md).
+
+Negocio y entorno: **494 casos aprobados en quince archivos**. Incluye caracterizaciones
+de límites pendientes como DT-PDF-04; no certifica descargas concurrentes seguras.
+La validación actual combina 493 aprobados en la ejecución general y la repetición
+83/83 de HTTP de facturas tras completar un permiso SQL del fixture. Esa repetición
+generó un JUnit de 83 casos; ver [evidencia exacta](../../docs/deuda-tecnica/20261008_correccion_autenticacion.md).
+El backend compilado agrega dos casos en `runtime.test.ts`: **496 casos en
+dieciséis archivos** en total, sin una nueva ejecución general de esa matriz.
+`npm run test:runtime` compila en una salida exclusiva y valida un proceso real
+contra MariaDB desechable: HTTP/SQL, cierre y conexión rechazada. Ver
+[comando, reportes y límites](../../docs/deuda-tecnica/20261008_regresion_backend_compilado.md).
+El JUnit y `last-run.json` se reemplazan en cada ejecución; comprobar fecha,
+runId y cantidad de casos para distinguir el comando focalizado de la suite completa.
+La aprobación se reserva mediante
 una escritura condicional por operación y la propuesta se actualiza solo si
 sigue vigente. Se comprueban misma propuesta, propuestas distintas, solicitudes
 sin coordinador y pérdida de vigencia desde otra conexión. Conflicto concurrente:
@@ -119,6 +177,14 @@ Para ejecutar solamente estos escenarios, conservando el runner protegido:
 ```powershell
 npm run test:integration -- tests/mariadb/business.test.ts
 npm run test:integration -- tests/mariadb/business.test.ts -t "dos solicitudes"
+npm run test:integration -- tests/mariadb/entrepreneur.test.ts
+npm run test:integration -- tests/mariadb/operation.test.ts
+npm run test:integration -- tests/mariadb/settlement.test.ts
+npm run test:integration -- tests/mariadb/historicalAudit.test.ts
+npm run test:integration -- tests/mariadb/proposal.test.ts
+npm run test:integration -- tests/mariadb/settlementConcurrency.test.ts
+npm run test:integration -- tests/mariadb/invoiceHttp.test.ts
+npm run test:integration -- tests/mariadb/invoiceHttp.test.ts -t "límite global 20 MiB"
 ```
 
 Reportes: `coverage/mariadb/junit.xml`, `last-run.json` y un JSON por ejecución.
@@ -152,7 +218,148 @@ Las suites rápidas mantienen sus comandos existentes y no necesitan Docker.
   (registro histórico del reinicio requerido). El primer diagnóstico fue
   `passed` con 4 casos. La ampliación inicial registró 16 casos y 1 fallo por
   DT-IT-01. Después de corregir, `last-run.json` registra `passed`, limpieza
-  `removed`, y `junit.xml` muestra 19 casos sin fallos.
+  `removed`. La matriz actual reúne 494 casos, incluyendo empresario,
+  operaciones, líneas, liquidaciones, transferencias, auditoría, propuestas, HTTP/Multer y PDF.
+  El JUnit se reemplaza en cada ejecución: una repetición focalizada contiene
+  únicamente sus casos, no la matriz completa.
+
+`operationState.test.ts` incorpora 27 casos reales de estados/historial: PEN/USD,
+29/10/36, fecha de inicio, actor, adjuntos, edición, baja/reactivación y rollback
+SQL o fallo de notificación. Ver
+[alcance y evidencia](../../docs/deuda-tecnica/20261008_integracion_estados_historial_operacion.md).
+
+```powershell
+npm run test:integration -- tests/mariadb/operationState.test.ts
+```
+
+`financialHttp.test.ts` añade 60 casos HTTP de propuestas, liquidaciones y
+transferencias: roles 2/6, PEN/USD, actor desde JWT, Yup, creación/consulta,
+simulación, actualización, baja/activación y rollback SQL.
+Los 60 casos HTTP se validaron inicialmente dentro de 315 casos en once archivos. Ver
+[alcance y límites](../../docs/deuda-tecnica/20261008_integracion_HTTP_financiero.md).
+
+```powershell
+npm run test:integration -- tests/mariadb/financialHttp.test.ts
+```
+
+`connectedFlow.test.ts` añade diez recorridos de servicios reales PEN/USD:
+carga XML/PDF, factura, operación, propuesta, disponibilidad, aprobación, inicio
+y liquidación. Comprueba pago anticipado/puntual/mora, rechazo previo y
+rollback/reintento tardío, sin insertar resultados intermedios como fixtures.
+Antes del bloque PDF, el total era 325 casos en doce archivos. Ver
+[recorrido y límites](../../docs/deuda-tecnica/20261008_integracion_recorrido_conectado.md).
+
+```powershell
+npm run test:integration -- tests/mariadb/connectedFlow.test.ts
+```
+
+## Montaje global de la aplicación
+
+`appHttp.test.ts` importa `src/app.ts` y agrega 29 casos: rutas representativas
+de los seis perfiles/grupos, autenticación, permisos, CORS, IP, Helmet, trazabilidad,
+limitador global real, errores y creación/lectura de liquidación PEN/USD con rollback.
+Configura producción sintética y conexión a la base desechable; no sustituye routers
+ni middleware. Correo/Telegram y configuración de listas IP se aíslan. Ver [montaje global y límites](../../docs/deuda-tecnica/20261008_integracion_montaje_global.md).
+
+```powershell
+npm run test:integration -- tests/mariadb/appHttp.test.ts
+```
+
+No prueba todas las rutas ni Nginx/HTTPS/arranque. CORS de producción rechaza
+`/ping` sin Origin; se caracteriza sin cambiar configuración. La carga de archivos
+no forma parte de este bloque.
+
+## Login y actualización de accesos
+
+`authHttp.test.ts` reúne 36 casos con la aplicación completa, bcrypt real, JWT
+y MariaDB: login por roles, credenciales inválidas, perfil/menú actualizado,
+exp/iat conservados, cambios de roles, fallos y cuotas de login/refresco. Ver [correcciones y límites](../../docs/deuda-tecnica/20261008_correccion_autenticacion.md): solo cuentas/credenciales activas, JWT de 24 horas en producción y permisos SQL vigentes.
+
+```powershell
+npm run test:integration -- tests/mariadb/authHttp.test.ts
+```
+
+Los casos de cuentas inactivas, vigencia de 200 000 horas y JWT anteriores
+caracterizan deudas pendientes. No certifican que estén corregidas.
+
+## Próximas ampliaciones
+
+`pdfHttp.test.ts` reúne 104 casos de generación y descarga real: ambos perfiles,
+PEN/USD, dos facturas vinculadas, importes/fechas frente a SQL, anticipación/mora,
+60 conceptos con paginación, permisos y limpieza de temporales. Añade 12 casos
+que reproducen la colisión de descargas del mismo documento y cuatro controles
+de documentos distintos. Doce casos adicionales cubren nombres largos y veinte
+facturas; DT-PDF-05 caracteriza la superposición nombre/RUC en propuesta y el
+criterio visual pendiente. DT-PDF-04 sigue diferida por decisión del usuario: la primera descarga borra
+el temporal compartido y la segunda falla (404 administrativo/500 financiero).
+Documenta el archivo huérfano ante fallo previo al `finally` y el 500 de propuesta
+inexistente y el IGV de cargos sin desglose como límites actuales. Conserva dieciséis PDFs sintéticos locales en
+`coverage/mariadb/pdf-samples/` para revisión visual. Ver
+[alcance, comandos y deuda PDF](../../docs/deuda-tecnica/20261008_integracion_PDF.md).
+
+```powershell
+npm run test:integration -- tests/mariadb/pdfHttp.test.ts
+```
+
+Para repetir solo las dieciséis cancelaciones TCP reales:
+
+```powershell
+npm run test:integration -- tests/mariadb/pdfHttp.test.ts -t "cancelación TCP"
+```
+
+Cubren cierre antes de cabeceras y después de cabeceras antes del cuerpo,
+limpieza del temporal, conservación de SQL y reintento completo. No cubren
+cancelación a mitad del cuerpo. No se cambia producción ni se corrige DT-PDF-04/05.
+
+Para repetir los dieciséis fallos de escritura:
+
+```powershell
+npm run test:integration -- tests/mariadb/pdfHttp.test.ts -t "fallo de escritura"
+```
+
+La apertura fallida usa un directorio bloqueador exclusivo y obtiene `EISDIR`
+del sistema operativo. La escritura parcial conserva un stream real y 64 bytes
+escritos en disco; después inyecta `ENOSPC`, sin llenar el disco. Comprueba 500
+JSON, ausencia de envío/cambios SQL y cierre del descriptor. El parcial permanece
+(DT-PDF-01); un reintento completo lo sobrescribe y limpia. No se implementó
+limpieza de generación en producción.
+
+Para repetir solo la concurrencia, con generación y envío reales:
+
+```powershell
+npm run test:integration -- tests/mariadb/pdfHttp.test.ts -t "colisión|documentos distintos"
+```
+
+Los casos de caracterización aprobados reproducen el fallo actual; el resultado
+deseado de dos respuestas 200 para el mismo documento sigue pendiente de corrección.
+
+La [revisión de ampliaciones](PLAN_AMPLIACION.md) registra estados/historial,
+HTTP financiero y recorrido conectado como implementados, separados de la
+[deuda de autorización y ciclo de vida de archivos](../../docs/deuda-tecnica/20261008_DT_ciclo_vida_archivos.md).
+
+## Auditoría histórica de solo lectura
+
+```powershell
+npm run audit:factoring:historical
+```
+
+Este comando separado de las pruebas consulta exclusivamente la conexión de
+`.env.development`, usando una transacción READ ONLY con snapshot consistente.
+No requiere Docker. Compara factura/bruto, neto, detracción y retención contra
+SUM DECIMAL de las facturas vinculadas, sin excluir registros eliminados.
+Incluye operaciones cuya cantidad declarada o vinculada es mayor que uno;
+marca diferencias de importes, asociaciones incompletas y monedas incompatibles.
+No repara datos ni atribuye automáticamente una causa a las diferencias.
+
+El informe local `coverage/audit/historical-factoring.json` contiene fecha, versión,
+alcance, limitaciones y casos por revisar (IDs/códigos e importes, sin RUC ni
+credenciales). Está ignorado por Git; tratarlo como información interna. Un fallo
+produce código de salida distinto de cero; comprobar siempre la fecha del informe,
+porque puede conservarse uno anterior. No admite argumentos para cambiar de fuente.
+
+El 2026-10-08 la fuente tenía 35 operaciones y ninguna con varias facturas;
+no había casos históricos dentro del alcance. Esto no certifica producción.
+Ver [evidencia y pendientes](../../docs/deuda-tecnica/20261008_integracion_liquidaciones_transferencias_auditoria.md).
 
 ## Primer inicio en otro equipo Windows
 

@@ -135,7 +135,7 @@ export const getUsuarioByIdusuario = async (tx: TxClient, idusuario: number) => 
 
 export const autenticarUsuario = async (tx: TxClient, email: string) => {
   try {
-    const usuario = await tx.usuario.findUnique({
+    const usuario = await tx.usuario.findFirst({
       select: {
         idusuario: true,
         usuarioid: true,
@@ -148,6 +148,8 @@ export const autenticarUsuario = async (tx: TxClient, email: string) => {
       },
       where: {
         email: email,
+        estado: ESTADO.ACTIVO,
+        credencial: { is: { estado: ESTADO.ACTIVO } },
       },
     });
 
@@ -163,6 +165,7 @@ export const getUsuarioAndRolesByEmail = async (tx: TxClient, email: string) => 
     const usuario = await tx.usuario.findFirst({
       include: {
         usuario_roles: {
+          where: { estado: ESTADO.ACTIVO, rol: { estado: ESTADO.ACTIVO } },
           include: {
             rol: true,
           },
@@ -170,6 +173,7 @@ export const getUsuarioAndRolesByEmail = async (tx: TxClient, email: string) => 
       },
       where: {
         email: email,
+        estado: ESTADO.ACTIVO,
       },
     });
 

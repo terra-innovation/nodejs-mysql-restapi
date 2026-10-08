@@ -129,7 +129,7 @@ export const subirFacturaService = async (dto: SubirFacturaDto) => {
   const facturaFinal = facturaUtils.buildFacturaJson(facturaJson, archivo_xml.codigo, session_idusuario);
   const facturaToCreate = facturaUtils.getFacturaToCreate(facturaFinal, session_idusuario);
 
-  await prismaFT.client.$transaction(
+  const facturaFiltered = await prismaFT.client.$transaction(
     async (tx) => {
       const facturaCreated = await facturaDao.insertFactura(tx, facturaToCreate);
 
@@ -160,13 +160,8 @@ export const subirFacturaService = async (dto: SubirFacturaDto) => {
       await vincularFacturaArchivo(tx, archivo_xml, facturaCreated, session_idusuario);
       await vincularFacturaArchivo(tx, archivo_pdf, facturaCreated, session_idusuario);
 
-      return {};
-    },
-    { timeout: prismaFT.transactionTimeout },
-  );
-
-  const facturaFiltered = await prismaFT.client.$transaction(
-    async (tx) => {
+      // Elegibilidad, empresas y enriquecimiento deben poder revertir también
+      // cabecera, detalles y vínculos; confirmar solo cuando termina todo el flujo.
       if (isProduction) {
         const filter_estados_factoring = [ESTADO.ACTIVO];
         const factoring_existe = await factoringDao.getFactoringByRucCedenteAndCodigoFactura(

@@ -7,6 +7,17 @@ import * as configuracionappDao from "#root/src/daos/configuracionapp.Dao.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { line, log } from "#src/utils/logger.pino.js";
 
+// Serializar solicitudes por cedente: protege incluso copias de un XML con
+// distintos IDs de factura. Debe ejecutarse dentro de la transacción de creación.
+export const lockFactoringCedente = async (tx: TxClient, idcedente: number) => {
+  try {
+    await tx.$queryRaw`SELECT _idempresa FROM empresa WHERE _idempresa = ${idcedente} FOR UPDATE`;
+  } catch (error) {
+    log.error(line(), "", error);
+    throw new ClientError("Ocurrio un error", 500);
+  }
+};
+
 // Escritura condicional: serializa las aprobaciones de una misma operación,
 // incluso cuando las solicitudes intentan aceptar propuestas distintas.
 export const claimFactoringApproval = async (tx: TxClient, idfactoring: number, idfactoringpropuesta: number) => {

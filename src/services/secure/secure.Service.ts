@@ -14,7 +14,7 @@ import { newLoginMessage, newUsuarioRegistradoMessage } from "#src/templates/tel
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { line, log } from "#src/utils/logger.pino.js";
-import { env } from "#src/config.js";
+import { env, isProduction } from "#src/config.js";
 import * as cryptoUtils from "#src/utils/cryptoUtils.js";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
@@ -77,16 +77,17 @@ export const loginUserService = async (payload: LoginUserDto) => {
 
       if (
         usuario_login.email &&
-        usuario_login.credencial.password &&
+        usuario_login.credencial?.password &&
         bcrypt.compareSync(payload.password, usuario_login.credencial.password)
       ) {
         const usuario_autenticado = await usuarioDao.getUsuarioAndRolesByEmail(tx, payload.email);
+        if (!usuario_autenticado) throw new ClientError("Usuario y/o contraseña no válida.", 404);
         const jwtPayload: UsuarioSession = {
           usuario: usuario_autenticado,
         };
 
         const token = jwt.sign(jwtPayload, env.TOKEN_KEY_JWT, {
-          expiresIn: "200000h",
+          expiresIn: isProduction ? "24h" : "200000h",
         });
         log.info(line(), "Usuario autenticado", {
           idusuario: usuario_autenticado.idusuario,

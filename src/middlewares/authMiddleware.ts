@@ -5,6 +5,8 @@ import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { log, line } from "#src/utils/logger.pino.js";
 import { updateContext } from "#src/utils/context/loggerContext.js";
 import { UsuarioSession } from "#root/src/types/UsuarioSession.types.js";
+import { getUsuarioAccesosByIdusuario } from "#src/daos/usuario.Dao.js";
+import { prismaFT } from "#src/models/prisma/db-factoring.js";
 
 export const isAuth = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.body.token || req.query.token || req.params.token || req.headers["authorization"];
@@ -50,7 +52,7 @@ export const isAuth = (req: Request, res: Response, next: NextFunction) => {
 
 // Middleware para verificar si el usuario tiene alguno de los roles especificados
 export const isRole = (roles: number[]) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
     // Verifica si req.user existe y tiene la propiedad 'roles'
     if (req.session_user && req.session_user.usuario.usuario_roles) {
       //jsonUtils.prettyPrint(session_user);
@@ -58,8 +60,28 @@ export const isRole = (roles: number[]) => {
       const rolesUsuario = req.session_user.usuario.usuario_roles.map((role) => role.idrol);
       const tieneRol = roles.some((rol) => rolesUsuario.includes(rol));
       if (tieneRol) {
-        // Si el usuario tiene al menos uno de los roles especificados, continúa con la siguiente función de middleware o ruta
-        next();
+        const idusuario = req.session_user.usuario.idusuario;
+        if (!Number.isInteger(idusuario) || idusuario <= 0) {
+          res.status(401).json({ error: true, message: "Sesión no válida." });
+          return;
+        }
+        try {
+          // Una lectura vigente por solicitud; no amplía los roles que traía el JWT.
+          const actual = await getUsuarioAccesosByIdusuario(prismaFT.client, idusuario);
+          if (!actual) {
+            res.status(401).json({ error: true, message: "Sesión no válida." });
+            return;
+          }
+          const vigentes = new Set(actual.usuario_roles.map(role => role.idrol));
+          req.session_user.usuario.usuario_roles = req.session_user.usuario.usuario_roles.filter(role => vigentes.has(role.idrol));
+          if (!roles.some(role => req.session_user.usuario.usuario_roles.some(current => current.idrol === role))) {
+            res.status(403).json({ error: true, message: "Acceso denegado" });
+            return;
+          }
+          next();
+        } catch (error) {
+          next(error); // Nunca autorizar con el JWT si falla la lectura vigente.
+        }
       } else {
         // Si el usuario no tiene ninguno de los roles especificados, devuelve un error de acceso denegado
         log.warn(line(), "Acceso denegado");

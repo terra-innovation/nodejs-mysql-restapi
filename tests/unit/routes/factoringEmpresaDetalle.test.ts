@@ -6,7 +6,7 @@ jest.mock("#src/config.js", () => ({ env: { TOKEN_KEY_JWT: "empresa-detalle-test
 jest.mock("#src/utils/logger.pino.js", () => ({ line: () => "test", log: { debug: jest.fn(), warn: jest.fn(), error: jest.fn(), info: jest.fn() } }));
 jest.mock("#root/src/models/prisma/db-factoring.js", () => ({
   prismaFT: {
-    client: { $transaction: jest.fn() },
+    client: { $transaction: jest.fn(), usuario: { findFirst: jest.fn() } },
     transactionTimeout: 5000,
   },
 }));
@@ -72,6 +72,7 @@ app.use(errorHandlerMiddleware);
 const token = (role: number) => jwt.sign({ usuario: { idusuario: 10, usuario_roles: [{ idrol: role }] } }, "empresa-detalle-test-key");
 
 beforeEach(() => {
+  (prismaFT.client.usuario.findFirst as jest.Mock).mockResolvedValue({ idusuario: 10, estado: 1, usuario_roles: [2,6].map(idrol => ({ idrol, estado: 1, rol: { estado: 1 } })) });
   jest.clearAllMocks();
   (prismaFT.client.$transaction as jest.Mock).mockImplementation(async (callback) => callback({ empresa: { findFirst } }));
 });

@@ -1,4 +1,4 @@
-import type { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
+import { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import { isProduction } from "#src/config.js";
 import * as colaboradorDao from "#root/src/daos/colaborador.Dao.js";
@@ -126,6 +126,21 @@ export const createFactoringService = async (dto: CreateFactoringDto) => {
         throw new ClientError("Datos no válidos", 404);
       }
 
+      if (isProduction) {
+        // La comprobación previa puede quedar obsoleta. El bloqueo del cedente
+        // dura hasta commit/rollback; repetir la consulta tras adquirirlo.
+        await factoringDao.lockFactoringCedente(tx, cedente.idempresa);
+        for (const factura of facturas) {
+          const existing = await factoringDao.getFactoringByRucCedenteAndCodigoFactura(
+            tx, factura.proveedor_ruc, factura.serie, factura.numero_comprobante, [ESTADO.ACTIVO],
+          );
+          if (existing) throw new ClientError(
+            "La factura seleccionada ya está vinculada a una operación de factoring activa. Por favor, elija otra factura para continuar con el proceso.",
+            404,
+          );
+        }
+      }
+
       const aceptante = await empresaDao.findEmpresaPk(tx, dto.aceptanteid);
       if (!aceptante) {
         log.warn(line(), "Aceptante no existe: [" + dto.aceptanteid + "]");
@@ -187,10 +202,10 @@ export const createFactoringService = async (dto: CreateFactoringDto) => {
           null,
         ),
         cantidad_facturas: dto.facturas.length,
-        monto_factura: facturas.reduce((acc, item) => acc + (item.importe_bruto ? item.importe_bruto : 0), 0),
-        monto_detraccion: facturas.reduce((acc, item) => acc + (item.detraccion_monto ? item.detraccion_monto : 0), 0),
-        monto_retencion: facturas.reduce((acc, item) => acc + (item.retencion_monto ? item.retencion_monto : 0), 0),
-        monto_neto: facturas.reduce((acc, item) => acc + (item.importe_neto ? item.importe_neto : 0), 0),
+        monto_factura: facturas.reduce((acc, item) => acc.plus(item.importe_bruto ?? 0), new Prisma.Decimal(0)),
+        monto_detraccion: facturas.reduce((acc, item) => acc.plus(item.detraccion_monto ?? 0), new Prisma.Decimal(0)),
+        monto_retencion: facturas.reduce((acc, item) => acc.plus(item.retencion_monto ?? 0), new Prisma.Decimal(0)),
+        monto_neto: facturas.reduce((acc, item) => acc.plus(item.importe_neto ?? 0), new Prisma.Decimal(0)),
         idusuariocrea: dto.idusuario ?? 1,
         fechacrea: new Date(),
         idusuariomod: dto.idusuario ?? 1,
@@ -254,6 +269,8 @@ export const createFactoringService = async (dto: CreateFactoringDto) => {
 
       return factoringCreated;
     },
-    { timeout: prismaFT.transactionTimeout },
+    // Una solicitud que espera el bloqueo debe ver el commit de la anterior,
+    // no el snapshot creado por su primera consulta de facturas.
+    { timeout: prismaFT.transactionTimeout, isolationLevel: "ReadCommitted" },
   );
 };

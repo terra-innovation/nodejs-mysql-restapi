@@ -6,9 +6,9 @@ const h = vi.hoisted(() => ({
   transaction: vi.fn(), findUsuario: vi.fn(), findSuscripcion: vi.fn(),
   authenticate: vi.fn(), getRoles: vi.fn(), getHash: vi.fn(),
   getValidation: vi.fn(), updateValidation: vi.fn(), getCredential: vi.fn(), updateCredential: vi.fn(),
-  notify: vi.fn(),
+  notify: vi.fn(), production: true,
 }));
-vi.mock("#src/config.js", () => ({ env: { TOKEN_KEY_JWT: "business-jwt-key", TOKEN_KEY_OTP: "business-otp-key" }, isProduction: true }));
+vi.mock("#src/config.js", () => ({ env: { TOKEN_KEY_JWT: "business-jwt-key", TOKEN_KEY_OTP: "business-otp-key" }, get isProduction() { return h.production; } }));
 vi.mock("#src/models/prisma/db-factoring.js", () => ({ prismaFT: { client: { $transaction: h.transaction, usuario: { findFirst: h.findUsuario }, usuario_servicio: { findFirst: h.findSuscripcion } }, transactionTimeout: 5000 } }));
 vi.mock("#src/utils/logger.pino.js", () => ({ line: () => "test", log: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() } }));
 vi.mock("#src/providers/email/email.Provider.js", () => ({}));
@@ -40,7 +40,7 @@ const validation = () => ({ validacionid: "validation-test", otp: "123456", veri
 const resetDto = () => ({ hash: "hash-test", codigo: "reset-password", token: encryptText("123456", "business-otp-key"), password: "New-fixture-password-123" });
 
 beforeEach(() => {
-  vi.resetAllMocks();
+  vi.resetAllMocks(); h.production = true;
   vi.useFakeTimers({ toFake: ["Date"] });
   vi.setSystemTime(new Date(fixtureTime));
   h.transaction.mockImplementation(async (callback) => callback(prismaFT.client));
@@ -61,10 +61,17 @@ describe("Login con bcrypt y JWT reales", () => {
     const result = await loginUserService({ email: "user@example.test", password });
     const payload = jwt.verify(result.token, "business-jwt-key") as jwt.JwtPayload;
     expect(payload.usuario.idusuario).toBe(42);
+    expect(payload.exp! - payload.iat!).toBe(24 * 3600);
     expect(payload.usuario.usuario_roles.map((item) => item.idrol)).toEqual([5, 3]);
     expect(result.usuarioid).toBe(user().usuarioid);
     expect(h.getRoles).toHaveBeenCalledWith(prismaFT.client, "user@example.test");
     expect(h.notify).toHaveBeenCalledOnce();
+  });
+  it.each(["development", "test"])("%s conserva 200000 horas fuera de producción", async () => {
+    h.production = false;
+    const result = await loginUserService({ email: "user@example.test", password });
+    const payload = jwt.verify(result.token, "business-jwt-key") as jwt.JwtPayload;
+    expect(payload.exp! - payload.iat!).toBe(200000 * 3600);
   });
   it.each(["inexistente", "contraseña", "sin contraseña"])("rechaza usuario/credencial %s sin emitir notificación", async (kind) => {
     if (kind === "inexistente") h.authenticate.mockResolvedValue(null);

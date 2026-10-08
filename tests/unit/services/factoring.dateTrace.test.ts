@@ -40,9 +40,11 @@ jest.mock("#root/src/daos/factoring.Dao.js", () => ({
   getFactoringByFactoringid: jest.fn(), getFactoringByIdfactoring: jest.fn(),
   getFactoringByRucCedenteAndCodigoFactura: jest.fn(async () => null),
   getFactoringByIdfactoringIdempresario: jest.fn(), insertFactoring: jest.fn(), updateFactoring: jest.fn(),
+  lockFactoringCedente: jest.fn(), claimFactoringApproval: jest.fn(async () => true),
 }));
 jest.mock("#root/src/daos/factoringpropuesta.Dao.js", () => ({
   insertFactoringpropuesta: jest.fn(), updateFactoringpropuesta: jest.fn(),
+  approveFactoringpropuestaVigente: jest.fn(),
   getFactoringpropuestaByFactoringpropuestaid: jest.fn(),
   getFactoringpropuestaVigenteByIdfactoringpropuestaIdfactoring: jest.fn(),
   getFactoringpropuestaAceptadaByIdfactoringpropuesta: jest.fn(),
@@ -143,6 +145,12 @@ describe("Trazabilidad factura → operación → propuesta → aceptación → 
       const proposal = proposals.find(p => p.factoringpropuestaid === id);
       Object.assign(proposal, data);
       proposal.idfactoringpropuestaestado = data.factoring_propuesta_estado.connect.idfactoringpropuestaestado;
+      return proposal;
+    });
+    (propuestaDao.approveFactoringpropuestaVigente as jest.Mock).mockImplementation(async (_tx, id, _factoringId, actor) => {
+      const proposal = proposals.find(p => p.factoringpropuestaid === id);
+      proposal.idfactoringpropuestaestado = 6;
+      proposal.idusuariomod = actor;
       return proposal;
     });
     (propuestaDao.getFactoringpropuestaVigenteByIdfactoringpropuestaIdfactoring as jest.Mock).mockImplementation(async (_tx, id, factoringId) =>

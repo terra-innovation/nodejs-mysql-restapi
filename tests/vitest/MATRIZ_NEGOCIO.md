@@ -1,6 +1,6 @@
 # Matriz de regresión de negocio antes de migraciones
 
-Estado al 2026-10-08: 344 casos activos aprobados en Vitest rápido y 8 criterios
+Estado al 2026-10-08: 346 casos activos aprobados en Vitest rápido y 8 criterios
 pendientes. Jest continúa disponible. DT-XML-01 fue corregido por el usuario y
 DT-XML-02 se corrigió con regresión PEN/USD. Se conservan fórmulas, contratos
 HTTP, permisos y empaquetado.
@@ -22,7 +22,7 @@ HTTP, permisos y empaquetado.
 | Persistencia de liquidación | Cabecera y detalles asociados con el actor; operación/estado/propuesta/inicio ausente no escribe; falla de detalle no devuelve éxito | Callback transaccional simulado; sin afirmar rollback SQL |
 | Secuencia propuesta-liquidación | Una propuesta generada alimenta una liquidación puntual manteniendo capital/garantía/descuento | Aprobación tiene ahora su propia suite; este recorrido continúa usando fixture y no lectura posterior en BD |
 | Transferencia | Relaciones requeridas con cuentas, moneda, tipo, estado y constancia; monto y actor; archivo vinculado al ID creado; fallo de cabecera detiene vínculo | DAOs simulados; no transferencia bancaria real |
-| Login | Password correcto/incorrecto/ausente; usuario inexistente; fallo de lectura; identidad y roles del JWT | bcrypt y JWT reales; notificación simulada |
+| Login | Password correcto/incorrecto/ausente; usuario inexistente; fallo de lectura; identidad y roles del JWT; 24 horas en producción y 200 000 horas fuera de producción | bcrypt y JWT reales; notificación simulada; estados activos comprobados también en MariaDB |
 | Recuperación | OTP correcto/incorrecto/usado/vencido; usuario/credencial ausente; nuevo hash verificable; validación consumida después de actualizar credencial; fallos de escritura | Cifrado y bcrypt reales, reloj fijo; no correo ni BD reales |
 | Accesos | Roles retirados; sesión vigente/expirada/inválida; expiración durante consulta; exp/iat conservados; secretos eliminados; filtros de roles/cuenta activos | Servicio y DAO de consulta reales sobre cliente Prisma simulado |
 | Suscripción | Filtro por usuario y registro activo; pendiente/aprobada/otro estado; servicio no integrado; suscripción ajena/inexistente | Se verifica el filtro enviado, no la integridad del motor de BD; `acceso` es metadato de ruta, no concede por sí mismo el rol |
@@ -67,34 +67,106 @@ verifican relaciones algebraicas entre cabecera, impuesto y detalles.
 - Integración con MariaDB 11.4: restricciones, commit/rollback, concurrencia,
   dobles solicitudes, aislamiento y precisión al guardar/leer Decimals.
   Las pruebas rápidas verifican payloads, referencias transaccionales,
-  interrupción de escrituras y propagación de errores. El recálculo utiliza
-  callbacks de transacción anidados; el mock tampoco certifica su aislamiento real.
+  interrupción de escrituras y propagación de errores. El cálculo de propuestas
+  usa una transacción independiente dentro de la del servicio llamador; la
+  integración SQL ahora comprueba sus conexiones y snapshots distintos.
   El [entorno exclusivo](../mariadb/README.md) ya tiene snapshot de desarrollo,
-  comandos y 19 casos reales aprobados.
+  comandos y 494 casos reales aprobados en quince archivos, incluidos límites
+  caracterizados como la colisión de temporales PDF pendiente de corrección.
   Ya verifica XML, lectura, rollback SQL, permisos y aceptación secuencial.
-  Se corrigieron carrera de aprobación y atomicidad de importación administrativa;
+  Se corrigieron carrera de aprobación y atomicidad de importación administrativa
+  y del empresario;
   [DT-IT-01/02](../../docs/deuda-tecnica/20261008_DT_integracion_MariaDB.md)
   documentan las correcciones y su evidencia previa.
-  Liquidación, transferencias y el recálculo siguen sin integración SQL real.
-- Registro administrativo XML, asociación de facturas, aceptación del empresario
-  y cambios de estado ya tienen casos de servicios y/o HTTP. Falta el recorrido
-  completo por HTTP con MariaDB y la carga específica del empresario
-  (duplicados, empresa, elegibilidad y creación de operación).
+  Liquidación y transferencias incorporan 36 casos SQL reales; el auditor histórico
+  incorpora cinco regresiones. Cálculo y creación de propuestas añaden 19 casos
+  reales de guardado/lectura, rollback y concurrencia con aprobación:
+  [alcance y hallazgos](../../docs/deuda-tecnica/20261008_integracion_propuestas_calculo.md).
+  No existe un servicio de recálculo de importes sobre propuestas existentes.
+  Por decisión del usuario, la transacción independiente del calculador queda
+  como límite conocido, sin cambio autorizado ni programado. La política de
+  creación de propuestas en operaciones ya aprobadas sigue pendiente de decisión.
+- La carga específica del empresario ya tiene 27 casos reales de elegibilidad,
+  límites, duplicados, reutilización de empresas y rollback; creación de empresas
+  y rollback del DAO se verifican por separado, porque el servicio exige empresas
+  preexistentes. Ver [alcance](../../docs/deuda-tecnica/20261008_DT_XML_empresario_integracion.md).
+  La creación de operación, asociaciones y actualización administrativa de
+  líneas ya tienen 27 casos reales. Se corrigieron concatenación Decimal y
+  duplicados concurrentes. Por decisión del usuario, no se implementa consumo
+  automático de líneas. Ver [alcance](../../docs/deuda-tecnica/20261008_DT_creacion_factoring_integracion.md).
+  Liquidaciones/transferencias añaden 12 casos SQL de repetición, concurrencia y
+  rollback aislado: [resultados](../../docs/deuda-tecnica/20261008_integracion_concurrencia_liquidaciones_transferencias.md).
+  Las solicitudes repetidas guardan dos registros; la política de deduplicación
+  sigue pendiente de decisión, sin implementación autorizada.
+  El recorrido HTTP/Multer de facturas reúne 83 casos con MariaDB: carga XML/PDF,
+  registro, lectura/descarga, JWT, roles, rechazos, rollback SQL y frontera de
+  20 MiB (exclusiva en la versión actual). Los rechazos de
+  autenticación se comprueban con firmas reales: JWT expirados y sesiones sin
+  usuario o roles válidos, en carga, registro y descarga. Los dos límites de
+  limpieza de disco quedan como limitaciones conocidas, sin corrección autorizada
+  ni programada: [DT-HTTP-01/02](../../docs/deuda-tecnica/20261008_integracion_HTTP_Multer_facturas.md).
+  No se efectúan transferencias bancarias reales ni se certifica toda la aplicación HTTP.
+  La eliminación incluye 14 casos: permisos, rollback, repetición y archivos ajenos
+  o vinculados. Es lógica, conserva contenido y permite descarga posterior;
+  no comprueba pertenencia ni bloquea vínculos (límites DT-HTTP-03/04/05).
+  La definición de permisos y ciclo de vida se mantiene como
+  [deuda técnica](../../docs/deuda-tecnica/20261008_DT_ciclo_vida_archivos.md),
+  sin corrección autorizada ni programada. La
+  [revisión de próximas suites SQL/HTTP](../mariadb/PLAN_AMPLIACION.md)
+  registra 27 casos de estados/historial ya implementados en SQL real:
+  [alcance](../../docs/deuda-tecnica/20261008_integracion_estados_historial_operacion.md).
+  PEN/USD, 29/10/36, fecha de inicio, adjuntos, actor, edición, baja/reactivación
+  y rollback SQL/notificación; no se afirma una matriz de transiciones aprobada.
+  Propuestas/liquidaciones/transferencias agregan 60 casos HTTP con MariaDB:
+  creación administrativa, consulta por ambos perfiles, PEN/USD, actor de sesión,
+  validación, simulación sin escritura, ciclo de estado lógico y rollback SQL.
+  Los routers financieros no ofrecen creación. Ver
+  [alcance y exclusiones](../../docs/deuda-tecnica/20261008_integracion_HTTP_financiero.md).
+  Diez casos conectan XML, operación, propuesta, disponibilidad, aceptación,
+  inicio y liquidación con IDs reales: PEN/USD y tres fechas de pago, rechazo
+  de propuesta no disponible y rollback/reintento tardío. No se insertan
+  resultados de etapas en la preparación. Ver
+  [recorrido](../../docs/deuda-tecnica/20261008_integracion_recorrido_conectado.md).
 - Falta una matriz aprobada de transiciones origen/destino, si se requieren
   restricciones adicionales. Las pruebas comprueban existencia del estado destino
   y efectos actuales. La repetición secuencial de aprobación sí está probada
   en MariaDB; las aprobaciones simultáneas también cumplen unicidad, incluso
   con propuestas diferentes de la misma operación.
-- PDF, correo, Telegram y proveedores externos: comprobar contenido/contratos,
-  timeouts y fallos en suites específicas. La detección MIME real no equivale a
+- PDF: 104 casos MariaDB con generador real y lectura del documento descargado;
+  PEN/USD, propuesta/liquidación, ambos perfiles, importes/fechas, permisos y
+  temporales, dos facturas vinculadas, anticipación/mora y 60 conceptos con
+  paginación. Ver [límites y cobertura](../../docs/deuda-tecnica/20261008_integracion_PDF.md).
+  Doce concurrencias del mismo documento caracterizan el temporal compartido
+  y una respuesta fallida por la limpieza de otra solicitud (DT-PDF-04); cuatro
+  controles de documentos distintos descargan correctamente. No se declara
+  resuelta la concurrencia. Doce casos adicionales cubren nombres largos y veinte
+  facturas, incluidos cuatro diagnósticos del criterio visual incumplido DT-PDF-05.
+  Quedan pendientes otros volúmenes, interrupciones a mitad del cuerpo y escrituras simultáneas sin coordinación.
+  Dieciséis cancelaciones TCP antes del cuerpo comprueban limpieza, SQL sin cambios
+  y reintento completo; el error de transporte viene del envío real.
+  Dieciséis fallos de escritura exigen 500 JSON sin envío ni cambios SQL, cierre
+  del stream y reintento correcto. La apertura devuelve `EISDIR` real; `ENOSPC`
+  se inyecta tras 64 bytes reales y deja un parcial huérfano (DT-PDF-01).
+  El IGV de cargos en liquidación se incluye en el total y no se desglosa en el PDF.
+  Correo, Telegram y proveedores externos:
+  comprobar timeouts/fallos reales en suites específicas. La detección MIME real no equivale a
   probar todo el middleware de subida Multer.
-- Montaje global de `src/app.ts`, filtros IP/CORS/rate limit, arranque, compilación
-  y ejecución en Ubuntu ARM64 siguen fuera de esta ampliación. Hay pruebas
+- Montaje global de `src/app.ts`: 29 casos MariaDB de rutas representativas,
+  sesión/roles, IP, CORS, Helmet, limitador real, errores y liquidación PEN/USD
+  con rollback. Ver [montaje global y límites](../../docs/deuda-tecnica/20261008_integracion_montaje_global.md).
+  La ejecución en Ubuntu ARM64 sigue fuera; arranque y compilación cuentan con
+  la ampliación `runtime.test.ts` descrita abajo. Hay pruebas
   parciales anteriores en Jest para algunas de estas áreas; no se migraron aquí.
 - La suite Vitest no cubre todas las funciones de los 21 archivos instrumentados
   ni representa un porcentaje global del repositorio.
 
 ## Uso durante una migración
+
+El arranque del backend compilado ya incorpora dos casos en MariaDB mediante
+`npm run test:runtime`: configuración/Prisma reales, HTTP, cierre y rechazo de
+credenciales SQL. La matriz de integración total reúne 496 casos en 16 archivos;
+esta ampliación ejecutó solo los dos nuevos. No certifica Linux ARM64 ni drenaje
+de solicitudes durante el cierre. Ver [alcance y evidencia](../../docs/deuda-tecnica/20261008_regresion_backend_compilado.md).
 
 1. En el estado previo: ejecutar `npm run test:vitest:typecheck`,
    `npx tsc --noEmit`, `npm run test:vitest:ci` y las suites correspondientes
@@ -110,3 +182,8 @@ verifican relaciones algebraicas entre cabecera, impuesto y detalles.
    de producción y limpiar únicamente fixtures propios.
 5. Subir cobertura y umbrales cuando se incorporen nuevos contratos; un
    porcentaje alto no sustituye permisos, saldos, cronología y errores reales.
+
+- Login/refresco global: 36 casos MariaDB con bcrypt y JWT reales, menús,
+  exp/iat, cambios de roles y cuotas. Regresiones para cuentas/credenciales activas,
+  vigencia de 24 horas en producción y bloqueo del JWT anterior al retirar roles.
+  Ver [correcciones y límites](../../docs/deuda-tecnica/20261008_correccion_autenticacion.md).

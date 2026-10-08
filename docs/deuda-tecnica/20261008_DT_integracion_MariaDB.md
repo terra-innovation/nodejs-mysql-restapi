@@ -51,8 +51,9 @@ para provocar rollback. El perfil financiero delega en este mismo servicio.
 La prueba EUR exige cero facturas/ítems/vínculos persistidos y conserva los
 archivos previamente subidos. No se borran archivos ni se toca información histórica.
 
-Pendiente fuera de este alcance: validar con fixtures reales y revisar las dos
-etapas propias de `subirFacturaService` del empresario (elegibilidad y empresas).
+Ampliación posterior: `subirFacturaService` del empresario también se unificó
+y se validó con 27 casos reales de elegibilidad, empresas, duplicados y rollback.
+Ver [DT-IT-03](20261008_DT_XML_empresario_integracion.md).
 
 ## Comprobaciones aprobadas
 
@@ -72,11 +73,15 @@ se eliminan en `finally`. Las FK permanecen activas durante las pruebas y limpie
 Las fixtures se eliminan entre casos y el runner elimina el contenedor al terminar.
 
 Evidencia inicial: 16 pruebas, 15 aprobadas y 1 fallida (DT-IT-01).
-Después de corregir y ampliar regresión: **19 pruebas reales aprobadas**.
+Después de corregir: 19 pruebas reales aprobadas. La ampliación al empresario
+elevó el total a 46. Con creación de factoring/líneas administrativas hay
+**73 pruebas reales aprobadas**; ver [DT-IT-04/05](20261008_DT_creacion_factoring_integracion.md).
 La suite rápida tiene 344 casos aprobados y 8 criterios pendientes de decisión.
 Tipos de integración/backend aprobados y contenedor eliminado al finalizar.
-No es una prueba completa de subida HTTP/Multer ni de entrega real de mensajes,
-elegibilidad empresarial, liquidación, transferencias o todas las transiciones.
+La ampliación posterior llega a **114 pruebas**, incluidas 36 de liquidaciones y
+transferencias y cinco del auditor histórico: [alcance posterior](20261008_integracion_liquidaciones_transferencias_auditoria.md).
+No es una prueba completa de subida HTTP/Multer, entrega real de mensajes,
+transferencias bancarias ni todas las transiciones.
 
 Las notificaciones externas permanecen en el punto actual dentro de la
 transacción. Esto no ofrece atomicidad entre mensajes externos y commit SQL;
