@@ -5,7 +5,7 @@ import type { NextFunction, Request, Response } from "express";
 import { fileTypeFromFile } from "file-type";
 import * as fs from "fs";
 import * as luxon from "luxon";
-import multer, { FileFilterCallback, Multer } from "multer";
+import multer, { type FileFilterCallback } from "multer";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import { corregirNombreArchivo } from "#src/utils/multerUtils.js";
@@ -32,7 +32,7 @@ const MIMETYPES_NO_PERMITIDOS: string[] = [
 const EXTENSIONES_SIN_FIRMA_PERMITIDAS: string[] = [".csv", ".txt", ".log", ".md", ".json", ".xml", ".yml", ".yaml", ".tsv", ".eml"];
 
 let storage_usuarioservicio = multer.diskStorage({
-  destination: (req: Request, file: Multer.File, cb: (error: Error | null, destination: string) => void) => {
+  destination: (req: Request, file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => {
     const anio_upload = luxon.DateTime.now().toFormat("yyyy");
     const mes_upload = luxon.DateTime.now().toFormat("MM");
     const dia_upload = luxon.DateTime.now().toFormat("dd");
@@ -42,7 +42,7 @@ let storage_usuarioservicio = multer.diskStorage({
 
     cb(null, rutaDestino);
   },
-  filename: (req: Request, file: Multer.File, cb: (error: Error | null, filename: string) => void) => {
+  filename: (req: Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {
     corregirNombreArchivo(file);
     const extension = path.extname(file.originalname).slice(1) || "";
     const anio_upload = luxon.DateTime.now().toFormat("yyyy");
@@ -68,7 +68,7 @@ export const upload_archivo = multer({
     fieldSize: 0.5 * 1024 * 1024, //Tamaño máximo de los valores para cada campo (en bytes)
     fields: 1, // Número máximo de campos que no son archivos
   },
-  fileFilter: async function (req: Request, file: Multer.File, cb: FileFilterCallback) {
+  fileFilter: async function (req: Request, file: Express.Multer.File, cb: FileFilterCallback) {
     corregirNombreArchivo(file);
     // Seguridad básica
     const ext = path.extname(file.originalname).toLowerCase();
@@ -109,7 +109,7 @@ export const upload = (req: Request, res: Response, next: NextFunction) => {
 
     // Seguridad avanzada
     // Revisa el minetype real del archivo
-    let file: Multer.file | undefined;
+    let file: Express.Multer.File | undefined;
     if (req.files && !Array.isArray(req.files) && "archivo" in req.files) {
       file = req.files.archivo?.[0];
     }
