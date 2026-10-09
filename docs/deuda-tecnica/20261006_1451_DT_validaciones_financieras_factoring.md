@@ -1,7 +1,7 @@
 # Deuda técnica: validaciones y consistencia financiera de factoring
 
 - **Registro:** 2026-10-06 14:51 — America/Lima (UTC−05:00).
-- **Estado:** pendiente de solución; este documento no implementa correcciones.
+- **Estado al 09/10/2026:** DT-LIQ-01 corregida en backend con pruebas focalizadas; las demás deudas siguen pendientes.
 - **Origen:** auditoría de propuesta y liquidación de factoring del 06/10/2026 y revisión del código al registrar esta deuda.
 - **Ámbito:** backend; las futuras correcciones que cambien el contrato de datos también deberán considerar formulario, presentación y persistencia.
 - **Configuración acordada:** base de datos y backend en UTC; navegador en Lima. Las reglas de plazos usan días calendario de Perú, incluidos sábados y domingos.
@@ -12,13 +12,13 @@ Registrar los seis hallazgos solicitados para su posterior solución. Todo halla
 
 Cada deuda debe conservar causa, ejemplo reproducible, impacto, propuesta de solución, decisiones pendientes y criterios de aceptación. Para cerrarla se requiere resolver las decisiones necesarias, implementar la corrección y verificar esos criterios. Documentar una propuesta no equivale a autorizar su implementación.
 
-Los importes, conteos e identificadores de escenarios citados proceden de la auditoría anterior con datos controlados. No se reejecutó esa batería para crear este documento ni se presupone que su resultado completo describa el estado actual del repositorio. Se revisaron las causas de los seis puntos en el código actual.
+Los importes, conteos e identificadores de escenarios citados proceden de la auditoría anterior con datos controlados. No se reejecutó esa batería para crear este documento ni se presupone que su resultado completo describa el estado actual del repositorio. Se revisaron las causas de los seis puntos al registrar la deuda; las actualizaciones posteriores se indican en cada sección.
 
 ## Resumen de deudas solicitadas
 
 | ID | Hallazgo | Causa | Estado de evidencia | Solución profesional propuesta |
 |---|---|---|---|---|
-| DT-LIQ-01 | Pago anterior al inicio | Falta validación cronológica antes del cálculo | Reproducido en auditoría; ausencia del control revisada en código | Rechazar días de pago anteriores al día de inicio en Perú, al simular y al guardar |
+| DT-LIQ-01 | Pago anterior al inicio | Faltaba validación cronológica antes del cálculo | Corregida el 09/10/2026; regresión focalizada con calculador real y DAOs simulados | Se rechazan días de pago anteriores al día de inicio en Perú, al simular y al guardar |
 | DT-LIQ-02 | Cargos convertidos en abonos | Se aceptan cantidades e importes negativos | Aceptación e inversión del saldo reproducidas; política de ajustes negativos pendiente | Validar límites y dejar la dirección cargo/abono al concepto financiero |
 | DT-LIQ-03 | IGV inconsistente | Una ruta usa el tipo y otra `afecto_igv` | Criterios diferentes confirmados; combinaciones reales pendientes de revisión | Confirmar combinaciones válidas y aplicar una única regla al cálculo y desglose |
 | DT-LIQ-04 | Diferencia de un centavo en capital | Financiamiento y garantía se redondean por separado | Diferencia reproducida; conciliación contable pendiente de definición | Conservar el neto en propuestas nuevas y respetar los importes ya aceptados |
@@ -34,6 +34,8 @@ La auditoría ejercita controlador, servicio y calculadores reales con `Decimal`
 Las pruebas con servidor Madrid o navegador Madrid/Tokio están fuera de la configuración operativa acordada. Sus resultados no fundamentan las seis deudas aquí registradas. El desfase de fechas UTC/Lima tiene seguimiento separado y no se declara como nueva deuda pendiente en este archivo.
 
 ## DT-LIQ-01 — Pago anterior al inicio de operación
+
+**Estado:** corregida en backend el 09/10/2026, por autorización de implementar la Opción Alfa 1. Las evidencias de la auditoría que siguen describen el comportamiento anterior.
 
 **Ubicación:** [runSimulation y creación de liquidación](../../src/services/admin/factoringliquidacion.Service.ts), [validaciones del controlador](../../src/controllers/admin/servicio/factoring/factoringliquidacion.Controller.ts).
 
@@ -58,6 +60,19 @@ Las pruebas con servidor Madrid o navegador Madrid/Tokio están fuera de la conf
 - Verificar equivalencia de representaciones UTC y con desplazamiento −05:00 del mismo instante.
 - Comprobar el rechazo tanto al simular como al crear; no limitar el control al formulario.
 
+**Implementación y verificación actual:** `runSimulation`, compartida por simulación y creación, compara ambos instantes mediante `calculateCalendarDaysInLima` antes de consultar tarifas o invocar el calculador. Si el resultado es negativo, lanza `ClientError` 400 con el mensaje «La fecha de pago no puede ser anterior al día de inicio de la operación». Se conservan los instantes UTC, las fórmulas y los importes aceptados.
+
+La regresión activa está en [factoringliquidacion.business.test.ts](../../tests/vitest/unit/factoringliquidacion.business.test.ts), bloque `DT-LIQ-01`. Cubre ambas operaciones: rechazo uno y diez días antes; frontera de medianoche peruana aunque UTC indique el día de inicio; equivalencia UTC/−05:00 y entradas `Date`; mismo día con hora de pago anterior al inicio y cero días/descuento; pagos anticipados válidos, puntuales y tardíos. Antes del cambio fallaron los diez casos de rechazo porque se aceptaba la entrada. Después aprobaron los 22 casos del bloque y las regresiones de liquidación, fechas y calculador seleccionadas. Se retiró el `todo` correspondiente de criterios pendientes sin cambiar las expectativas de las otras deudas.
+
+**Límite:** las pruebas usan servicios y calculador reales, con DAOs y transacción simulados. Verifican que el rechazo ocurre antes del cálculo y sin llamadas a inserción de cabecera o detalles; no constituyen una prueba de persistencia o rollback en MariaDB. No se ejecutaron la suite completa, navegador ni empaquetado de producción.
+
+Comprobaciones focalizadas del 09/10/2026:
+
+- `npm run test:vitest -- tests/vitest/unit/factoringliquidacion.business.test.ts tests/vitest/unit/dateUtils.test.ts tests/vitest/unit/factoring.Calculator.test.ts`: aprobadas.
+- `npx --no-install tsc --noEmit` y `npm run test:vitest:typecheck`: aprobadas.
+- Jest: aprobada la suite `factoringliquidacion.Service.test.ts` y los escenarios `pago-dia-antes-inicio` y `pago-diez-dias-antes-inicio` de `factoringliquidacion.audit.test.ts`, sin modificar sus expectativas. La selección restante de la auditoría se omitió mediante filtro; la prueba de auditoría seleccionada atraviesa el controlador de simulación real.
+- La lectura de rutas de Vite encontró `EPERM` dentro del sandbox; la ejecución focalizada fuera de esa restricción aprobó sin cambios de configuración.
+
 ## DT-LIQ-02 — Cantidades o importes negativos invierten cargos
 
 **Ubicación:** [esquemas de simulación y creación](../../src/controllers/admin/servicio/factoring/factoringliquidacion.Controller.ts), [getFinancialData y agregación del saldo](../../src/services/admin/factoringliquidacion.Service.ts).
@@ -74,6 +89,8 @@ Las pruebas con servidor Madrid o navegador Madrid/Tokio están fuera de la conf
 **Impacto:** el signo de un dato de entrada modifica la naturaleza cargo/abono del concepto seleccionado.
 
 **Decisión pendiente:** confirmar si existen ajustes negativos autorizados y cómo deben identificarse. La inversión está comprobada; su legitimidad contractual no se presume.
+
+**Revisión del flujo actual (09/10/2026):** los controladores de simulación y creación siguen aceptando `cantidad` y `monto_unitario` sin restricción de signo. `getFinancialData` multiplica ambos y el desglose clasifica el movimiento por `financiero_concepto.factor`; por ello, un cargo de monto negativo aumenta el saldo y un abono negativo lo reduce. El DTO de conceptos adicionales contiene tipo, concepto, cantidad, importe unitario y descripción opcional; no declara un campo específico para vincular una reversión con un movimiento original ni una marca de reversión autorizada. Esto describe el contrato revisado, no demuestra cómo se usan los conceptos en operaciones reales. No se consultó una base compartida ni se ejecutaron nuevas pruebas en esta revisión. No se modificaron validaciones: permanece pendiente confirmar si el negocio permite corregir cargos o abonos mediante entradas negativas, y definir cantidad/importe cero y límites antes de implementar el rechazo.
 
 **Propuesta:** para conceptos ordinarios, exigir cantidad positiva e importe unitario no negativo, con límites definidos y validación en backend. Si existen reversos, modelarlos como un ajuste explícito y trazable. El factor del concepto debe determinar la dirección del movimiento.
 

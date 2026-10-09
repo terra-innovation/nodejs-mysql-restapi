@@ -77,6 +77,59 @@ describe("Liquidación con calculador real y valores independientes", () => {
   });
 });
 
+describe("DT-LIQ-01: cronología por día calendario de Lima", () => {
+  for (const modo of ["simular", "crear"] as const) {
+    const ejecutar = (pago: string | Date) => {
+      const dto = { ...liquidationDto(), fecha_pago_efectivo: pago };
+      return modo === "simular" ? simulateFactoringliquidacionService(dto) : createFactoringliquidacionService(dto, 42);
+    };
+
+    it.each([
+      "2026-08-31T12:00:00-05:00",
+      "2026-08-21T12:00:00-05:00",
+      "2026-09-01T04:59:59Z",
+      "2026-08-31T23:59:59-05:00",
+      new Date("2026-09-01T04:59:59Z"),
+    ])(`${modo}: rechaza pago anterior %s antes del cálculo y sin escrituras`, async (pago) => {
+      await expect(ejecutar(pago)).rejects.toMatchObject({
+        statusCode: 400,
+        message: "La fecha de pago no puede ser anterior al día de inicio de la operación",
+      });
+      expect(b.config.getIGV).not.toHaveBeenCalled();
+      expect(b.riesgo.getRiesgoByIdriesgo).not.toHaveBeenCalled();
+      expect(b.liquidacion.insertFactoringliquidacion).not.toHaveBeenCalled();
+      expect(b.liquidacionFinanciero.insertFactoringliquidacionfinanciero).not.toHaveBeenCalled();
+    });
+
+    it.each([
+      "2026-09-01T05:00:00Z",
+      "2026-09-01T00:00:00-05:00",
+      new Date("2026-09-01T05:00:00Z"),
+    ])(`${modo}: admite el mismo día con hora anterior al inicio %s`, async (pago) => {
+      const factoring = resetFactoringBoundary();
+      factoring.fecha_operacion = new Date("2026-09-01T23:00:00Z");
+      const result = await ejecutar(pago);
+      expect(result.dias_pago_efectivo).toBe(0);
+      expect(result.monto_descuento_efectivo.toString()).toBe("0");
+      expect(result.monto_descuento_a_favor.toString()).toBe("320");
+      expect(result.fecha_pago_efectivo).toEqual(new Date(pago));
+      if (modo === "crear") expect(b.liquidacion.insertFactoringliquidacion).toHaveBeenCalledTimes(1);
+      else expect(b.liquidacion.insertFactoringliquidacion).not.toHaveBeenCalled();
+    });
+
+    it.each([
+      ["anticipado", "2026-09-16T05:00:00Z", 15, 0],
+      ["puntual", "2026-10-01T05:00:00Z", 30, 0],
+      ["tardío", "2026-10-31T05:00:00Z", 60, 30],
+    ] as const)(`${modo}: conserva pago %s posterior al inicio`, async (_label, pago, dias, mora) => {
+      const result = await ejecutar(pago);
+      expect(result.dias_pago_efectivo).toBe(dias);
+      expect(result.dias_mora_efectivo).toBe(mora);
+      if (modo === "crear") expect(b.liquidacion.insertFactoringliquidacion).toHaveBeenCalledTimes(1);
+    });
+  }
+});
+
 describe("Liquidaciones: validación, persistencia y errores", () => {
   it.each(["operación", "propuesta", "inicio"])("sin %s rechaza tanto simulación como creación sin escrituras", async (missing) => {
     const factoring = resetFactoringBoundary();

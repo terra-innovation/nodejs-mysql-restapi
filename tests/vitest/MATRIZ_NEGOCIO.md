@@ -55,7 +55,10 @@ verifican relaciones algebraicas entre cabecera, impuesto y detalles.
 
 ## Pendientes y límites que siguen abiertos
 
-- Ocho criterios `todo`: DT-LIQ-01 a DT-LIQ-06 y DT-TEST-01/02. Referencias:
+- Criterios `todo`: DT-LIQ-02 a DT-LIQ-06 y DT-TEST-01/02. DT-LIQ-01 fue
+  corregido el 09/10/2026 y cuenta con regresión activa de simulación y creación
+  por día calendario de Lima en `factoringliquidacion.business.test.ts`.
+  Referencias:
   [deuda financiera](../../docs/deuda-tecnica/20261006_1451_DT_validaciones_financieras_factoring.md)
   [hallazgos iniciales](../../docs/deuda-tecnica/20261007_DT_hallazgos_pruebas_negocio.md)
   y [hallazgos XML](../../docs/deuda-tecnica/20261008_DT_hallazgos_XML_regresion.md).

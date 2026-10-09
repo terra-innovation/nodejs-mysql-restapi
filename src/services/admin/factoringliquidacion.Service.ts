@@ -157,11 +157,15 @@ const runSimulation = async (tx: any, factoring: any, fecha_liquidacion: any, fe
     throw new ClientError("La operación no tiene fecha de inicio. No es posible calcular la liquidación", 400);
   }
 
+  const fecha_operacion = dateUtils.toLimaDateTime(factoring.fecha_operacion);
+  const fecha_fin = dateUtils.toLimaDateTime(fecha_pago_efectivo_raw);
+  if (dateUtils.calculateCalendarDaysInLima(fecha_operacion, fecha_fin) < 0) {
+    throw new ClientError("La fecha de pago no puede ser anterior al día de inicio de la operación", 400);
+  }
+
   const constante_comison_bcp_pen = await configuracionappDao.getComisionBCPPen(tx);
   const constante_comison_bcp_usd = await configuracionappDao.getComisionBCPUsd(tx);
   const constante_igv = await configuracionappDao.getIGV(tx);
-  const fecha_operacion = dateUtils.toLimaDateTime(factoring.fecha_operacion);
-  const fecha_fin = dateUtils.toLimaDateTime(fecha_pago_efectivo_raw);
   const fecha_emision = dateUtils.toLimaDate(factoring.fecha_emision);
 
   const acceptedProp = factoring.factoring_propuesta_aceptada;
