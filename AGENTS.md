@@ -30,7 +30,9 @@
 
 - Responder en español, con cambios, validación y cierre de próximos pasos. Mantener la salida breve y enlazar informes completos cuando sean necesarios.
 - **Cierre y próximos pasos obligatorios**:
-  - Si hay un plan de implementación activo o en curso: indicar el **siguiente paso inmediato y concreto** a ejecutar.
-  - Si no hay un plan en curso (consultas, análisis completados, tareas puntuales o abiertas): sugerir **dos o más opciones/alternativas** para continuar.
+  - Si hay un **plan de implementación activo o en curso**: usar estrictamente el término **Siguiente paso del plan** e indicar la acción inmediata y concreta a ejecutar.
+  - Si **no** hay un plan en curso (consultas, análisis completados, tareas puntuales o abiertas): sugerir dos o más alternativas bajo el título **Opciones para continuar**.
+  - **Formato fonético antiambigüedad y apto para dictado por voz**: cada opción para continuar debe identificarse con una palabra fonética seguida de un número secuencial del turno actual (ej. `[Opción Alfa 1]`, `[Opción Bravo 1]`; en la siguiente respuesta `[Opción Alfa 2]`, `[Opción Bravo 2]`). Esto evita confusiones con opciones de mensajes anteriores en el hilo y facilita el dictado por voz.
 - Documentar decisiones o limitaciones nuevas en `docs/`; usar `docs/deuda-tecnica/` para deuda relevante. Evitar duplicar guías o guardar conteos que pronto queden desactualizados.
+
 
