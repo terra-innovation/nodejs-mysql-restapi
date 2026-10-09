@@ -23,7 +23,7 @@ export const updateCredencial = async (req: Request, res: Response) => {
         .matches(/[a-z]/, "Debe contener al menos una letra minúscula")
         .matches(/[A-Z]/, "Debe contener al menos una letra mayúscula")
         .matches(/\d/, "Debe contener al menos un número")
-        .matches(/[@$!%*?&#^()_+\-=\[\]{};':"\\|,.<>\/?]/, "Debe contener al menos un carácter especial"),
+        .matches(new RegExp("[@$!%*?&#^()_+\\-=\\[\\]{};':\"\\\\|,.<>/?]"), "Debe contener al menos un carácter especial"),
       confirm: yup
         .string()
         .required("La confirmación de la contraseña es obligatoria")
