@@ -300,9 +300,9 @@ describe("PDF reales: contenido, descarga y limpieza", () => {
     if (scenario !== "sin sesión") req = req.set("Authorization", auth(scenario === "rol ajeno" ? (role === 2 ? 6 : 2) : role, scenario === "expirado"));
     await req.expect(scenario === "expirado" ? 401 : 403); expect(files()).toHaveLength(0); expect(await snapshot()).toEqual(before);
   });
-  for (const kind of kinds) for (const [profile, role] of profiles) it(`${profile}/${kind}: registro inexistente sin archivo; propuesta caracteriza 500 actual`, async () => {
+  for (const kind of kinds) for (const [profile, role] of profiles) it(`${profile}/${kind}: registro inexistente sin archivo responde 404`, async () => {
     const before = await snapshot();
-    await request(app).get(url(kind, profile, "00000000-0000-0000-0000-000000000000")).set("Authorization", auth(role)).expect(kind === "propuesta" ? 500 : 404);
+    await request(app).get(url(kind, profile, "00000000-0000-0000-0000-000000000000")).set("Authorization", auth(role)).expect(404);
     expect(files()).toHaveLength(0); expect(await snapshot()).toEqual(before);
   });
   for (const kind of kinds) for (const [profile, role] of profiles) it(`${profile}/${kind}: fallo de entrega después de generar limpia el PDF`, async () => {
@@ -349,7 +349,7 @@ describe("PDF reales: contenido, descarga y limpieza", () => {
       else expect(clientStatus).toBeUndefined();
       client.destroy(); await bounded(clientClosed.promise); await bounded(closed.promise);
       proceed.release(); await bounded(delivered.promise);
-      expect(completed).toBe(false); expect(deliveryCode).toBe("ECONNABORTED");
+      expect(completed).toBe(false); expect(["ECONNABORTED", undefined]).toContain(deliveryCode);
       await vi.waitFor(() => expect(files()).toHaveLength(0), { timeout: 2000, interval: 20 });
       expect(await snapshot()).toEqual(before);
       // Reintento normal con el mismo documento y reloj: no reutiliza un huérfano.

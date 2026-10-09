@@ -253,9 +253,9 @@ describe("JWT expirados y sesiones sin roles válidos", () => {
 });
 
 describe("Rechazos de carga: middleware y catálogos reales", () => {
-  // Busboy emite `limit` al alcanzar fileSize, no solamente al superarlo.
+  // Multer 2.x (Busboy 1.6+) emite `limit` estrictamente al superar fileSize (> limit).
   // Catálogo sintético mayor que el límite global para aislar la frontera de Multer.
-  it.each([[-1, 200], [0, 400], [1, 400]] as const)("límite global 20 MiB: desplazamiento %s byte(s) devuelve %s", async (offset, status) => {
+  it.each([[-1, 200], [0, 200], [1, 400]] as const)("límite global 20 MiB: desplazamiento %s byte(s) devuelve %s", async (offset, status) => {
     const limit = 20 * 1024 * 1024;
     await db.archivo_tipo.update({ where: { idarchivotipo: 8 }, data: { tamanio_maximo: 32 * 1024 * 1024 } });
     const existingId = status === 400 ? await upload(pdf, "previo.pdf", pdfCode, "application/pdf") : undefined;
@@ -269,7 +269,7 @@ describe("Rechazos de carga: middleware y catálogos reales", () => {
     if (status === 200) {
       expect(result.body.error).toBe(false); expect(await db.archivo.count()).toBe(1);
       const stored = await db.archivo.findUniqueOrThrow({ where: { archivoid: result.body.data.archivoid } });
-      expect(Number(stored.tamanio)).toBe(limit - 1);
+      expect(Number(stored.tamanio)).toBe(limit + offset);
       expect(stored.idusuariocrea).toBe(user.idusuario);
       const actual = readFileSync(path.join(workspace.root, "success", stored.ruta, stored.nombrealmacenamiento));
       expect(actual.length).toBe(bytes.length);
