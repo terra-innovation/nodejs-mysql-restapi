@@ -57,7 +57,7 @@
     "html-to-text": "^9.0.5",
     "ip-range-check": "^0.2.0",
     "jsonwebtoken": "^9.0.3",
-    "luxon": "^3.4.4",
+    "luxon": "^3.7.2",
     "mariadb": "^3.4.0",
     "multer": "^2.4.0",
     "nodemailer": "^10.0.16",
