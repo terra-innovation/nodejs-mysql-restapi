@@ -92,7 +92,52 @@ describe("Validación HTTP de entrada antes de persistir", () => {
   });
 });
 
+describe("DT-LIQ-02: validación HTTP de cantidades e importes", () => {
+  for (const path of [paths.simLiquidacion, paths.liquidacion]) {
+    it.each([["1.00000000001", 100], [1, "100.00000000001"], [1, 100000000], [1, "99999999.99000000001"]])(`DT-LIQ-02-RANGO: ${path} rechaza entrada %s/%s`, async (cantidad, monto_unitario) => {
+      const dto = { ...liquidationDto(), factoring_liquidacion_financieros: [{ financierotipoid: ids.tipo, financieroconceptoid: ids.concepto, cantidad, monto_unitario }] };
+      await request(app).post(path).set("Authorization", `Bearer ${token()}`).send(dto).expect(400);
+      expect(b.transaction).not.toHaveBeenCalled();
+      expect(b.liquidacion.insertFactoringliquidacion).not.toHaveBeenCalled();
+    });
+    it(`DT-LIQ-02-RANGO: ${path} preserva el texto decimal sin conversión a Number`, async () => {
+      const dto = { ...liquidationDto(), factoring_liquidacion_financieros: [{ financierotipoid: ids.tipo, financieroconceptoid: ids.concepto, cantidad: "0.0000000001", monto_unitario: "99999999.9999999999" }] };
+      const result = await request(app).post(path).set("Authorization", `Bearer ${token()}`).send(dto).expect(201);
+      expect(result.body.data.monto_total_a_favor).toBe("3999.99");
+      if (path === paths.liquidacion) {
+        const detalle = b.liquidacionFinanciero.insertFactoringliquidacionfinanciero.mock.calls[1][1];
+        expect(detalle.monto_unitario.toString()).toBe("99999999.9999999999");
+        expect(detalle.cantidad.toString()).toBe("1e-10");
+        expect(detalle.monto.toString()).toBe("0.01");
+      }
+    });
+    it.each([[-1, 100], [1, -100], [-1, -100], [1, -0.01]])(`${path}: rechaza %s/%s antes de abrir transacción`, async (cantidad, monto_unitario) => {
+      const dto = { ...liquidationDto(), factoring_liquidacion_financieros: [{ financierotipoid: ids.tipo, financieroconceptoid: ids.concepto, cantidad, monto_unitario }] };
+      const result = await request(app).post(path).set("Authorization", `Bearer ${token()}`).send(dto).expect(400);
+      expect(result.body).toEqual({ error: true, message: "Datos no válidos" });
+      expect(b.transaction).not.toHaveBeenCalled();
+      expect(b.liquidacion.insertFactoringliquidacion).not.toHaveBeenCalled();
+      expect(b.liquidacionFinanciero.insertFactoringliquidacionfinanciero).not.toHaveBeenCalled();
+      expect(b.telegram.sendMessageException).not.toHaveBeenCalled();
+    });
+    it.each([[0, 100], [1, 0], [0, 0]])(`${path}: conserva aceptación de ceros %s/%s`, async (cantidad, monto_unitario) => {
+      const dto = { ...liquidationDto(), factoring_liquidacion_financieros: [{ financierotipoid: ids.tipo, financieroconceptoid: ids.concepto, cantidad, monto_unitario }] };
+      const result = await request(app).post(path).set("Authorization", `Bearer ${token()}`).send(dto).expect(201);
+      expect(result.body.data.monto_total_a_favor).toBe("4000");
+    });
+  }
+});
+
 describe("Contrato HTTP hasta servicios y calculadores reales", () => {
+  for (const path of [paths.simPropuesta, paths.propuesta]) {
+    it.each([0.8, 1])(`DT-LIQ-05: ${path} serializa cobertura null con tasa cero y financiamiento %s`, async (porcentaje_financiado_estimado) => {
+      const dto = { ...proposalDto(), tdm: 0, porcentaje_financiado_estimado };
+      const result = await request(app).post(path).set("Authorization", `Bearer ${token()}`).send(dto).expect(201);
+      expect(result.body.data.dias_cobertura_garantia_estimado).toBeNull();
+      expect(result.body.data.monto_descuento).toBe("0");
+      if (path === paths.propuesta) expect(b.propuesta.insertFactoringpropuesta.mock.calls[0][1].dias_cobertura_garantia_estimado).toBeNull();
+    });
+  }
   it("simular y crear propuesta concilian importes y usan actor de la sesión", async () => {
     const simulated = await request(app).post(paths.simPropuesta).set("Authorization", `Bearer ${token()}`).send(proposalDto()).expect(201);
     expect(simulated.body.data).toMatchObject({ monto_financiado: "16000", monto_garantia: "4000", monto_descuento: "320", monto_adelanto: "15420.4" });

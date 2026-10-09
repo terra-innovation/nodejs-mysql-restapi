@@ -11,6 +11,7 @@ import * as usuarioDao from "#root/src/daos/usuario.Dao.js";
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import * as emailService from "#root/src/providers/email/email.Provider.js";
 import { simulateFactoringLogicV4 } from "#root/src/services/admin/factoringCalculation.Service.js";
+import { assertLiquidacionDecimal, assertLiquidacionInput, calculateLiquidacionAmount } from "#src/domain/factoring/liquidacionLimits.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as dateUtils from "#src/utils/dateUtils.js";
@@ -30,8 +31,8 @@ import { v4 as uuidv4 } from "uuid";
 export interface FactoringLiquidacionFinancieroInput {
   financierotipoid: string;
   financieroconceptoid: string;
-  cantidad?: number;
-  monto_unitario?: number;
+  cantidad?: number | string;
+  monto_unitario?: number | string;
   descripcion?: string;
 }
 
@@ -85,10 +86,10 @@ const getFinancialData = async (tx: any, item: FactoringLiquidacionFinancieroInp
 
   const cantidad = new Decimal(item.cantidad ?? 1);
   const monto_unitario = new Decimal(item.monto_unitario ?? 0);
-  const monto = cantidad.mul(monto_unitario).toDecimalPlaces(2);
+  const monto = calculateLiquidacionAmount(cantidad, monto_unitario);
 
   let igv = new Decimal(0);
-  if (financiero_tipo.idfinancierotipo !== 4) {
+  if (financiero_concepto.afecto_igv) {
     igv = monto.mul(constante_igv.valor).toDecimalPlaces(2);
   }
 
@@ -122,7 +123,7 @@ const getFinancialDataById = async (tx: any, item: any, constante_igv: any) => {
 
   const cantidad = new Decimal(item.cantidad ?? 1);
   const monto_unitario = new Decimal(item.monto_unitario ?? 0);
-  const monto = cantidad.mul(monto_unitario).toDecimalPlaces(2);
+  const monto = calculateLiquidacionAmount(cantidad, monto_unitario);
 
   let igv = new Decimal(0);
   if (financiero_concepto.afecto_igv) {
@@ -161,6 +162,17 @@ const runSimulation = async (tx: any, factoring: any, fecha_liquidacion: any, fe
   const fecha_fin = dateUtils.toLimaDateTime(fecha_pago_efectivo_raw);
   if (dateUtils.calculateCalendarDaysInLima(fecha_operacion, fecha_fin) < 0) {
     throw new ClientError("La fecha de pago no puede ser anterior al día de inicio de la operación", 400);
+  }
+
+  for (const item of financieros_raw ?? []) {
+    assertLiquidacionInput(item.cantidad ?? 1, "La cantidad");
+    assertLiquidacionInput(item.monto_unitario ?? 0, "El monto unitario");
+  }
+
+  const requierePrecisionAmpliada = (financieros_raw ?? []).some((item) =>
+    new Decimal(item.cantidad ?? 1).decimalPlaces() > 2 || new Decimal(item.monto_unitario ?? 0).decimalPlaces() > 2);
+  if (requierePrecisionAmpliada && !await factoringliquidacionfinancieroDao.hasLiquidacionExtendedPrecision(tx)) {
+    throw new ClientError("Para usar más de dos decimales debe actualizarse primero el almacenamiento de liquidaciones", 400);
   }
 
   const constante_comison_bcp_pen = await configuracionappDao.getComisionBCPPen(tx);
@@ -249,32 +261,46 @@ const runSimulation = async (tx: any, factoring: any, fecha_liquidacion: any, fe
     );
   }
 
-  if (!exonerar_gasto_interbancario) {
-    const gasto_interbantario_monto = new Decimal(factoring.idmoneda === 1 ? constante_comison_bcp_pen.valor : constante_comison_bcp_usd.valor);
-    const monto_probable_a_reembolsar_al_cedente = new Decimal(acceptedProp.monto_garantia || 0).minus(monto_descuento_mora).minus(gasto_interbantario_monto);
-
-    if (factoring.cuenta_bancaria.idbanco !== 1 && monto_probable_a_reembolsar_al_cedente.greaterThan(0)) {
-      factoring_liquidacion_financieros.push(
-        await getFinancialDataById(
-          tx,
-          {
-            idfinancierotipo: 2,
-            idfinancieroconcepto: 3,
-            cantidad: 1,
-            monto_unitario: gasto_interbantario_monto || 0,
-            descripcion: "",
-            orden: orden++,
-          },
-          constante_igv,
-        ),
-      );
-    }
-  }
-
   if (financieros_raw && financieros_raw.length > 0) {
     for (const item of financieros_raw) {
       const parsed = await getFinancialData(tx, item, constante_igv, factoring.monto_neto, orden++);
       factoring_liquidacion_financieros.push(parsed);
+    }
+  }
+
+  // Los adicionales forman parte del saldo sobre el que se decide la transferencia.
+  // Un gasto ingresado explícitamente evita añadir el mismo concepto automáticamente.
+  const gastosIngresados = factoring_liquidacion_financieros.filter((fin) => fin.financiero_concepto.idfinancieroconcepto === 3);
+  if (gastosIngresados.length > 1) {
+    throw new ClientError("El gasto interbancario solo puede ingresarse una vez", 400);
+  }
+  if (!exonerar_gasto_interbancario && factoring.cuenta_bancaria.idbanco !== 1 && gastosIngresados.length === 0) {
+    const saldoAntesDelGasto = factoring_liquidacion_financieros.reduce((saldo, fin) => fin.financiero_concepto.factor === 1 ? saldo.add(fin.total) : saldo.minus(fin.total), new Decimal(0));
+    if (saldoAntesDelGasto.greaterThan(0)) {
+      const gasto = await getFinancialDataById(tx, {
+        idfinancierotipo: 2,
+        idfinancieroconcepto: 3,
+        cantidad: 1,
+        monto_unitario: factoring.idmoneda === 1 ? constante_comison_bcp_pen.valor : constante_comison_bcp_usd.valor,
+        descripcion: "",
+        orden: Math.max(...factoring_liquidacion_financieros.map((fin) => fin.orden)) + 1,
+      }, constante_igv);
+      if (gasto.financiero_concepto.factor !== 1 && gasto.total.greaterThan(0) && saldoAntesDelGasto.greaterThan(gasto.total)) {
+        factoring_liquidacion_financieros.push(gasto);
+      }
+    }
+  }
+
+  for (const fin of factoring_liquidacion_financieros) {
+    for (const field of ["cantidad", "monto_unitario"] as const) {
+      assertLiquidacionDecimal(new Decimal(fin[field]), `El campo ${field} del movimiento ${fin.orden}`, 18, 10);
+    }
+    for (const field of ["monto", "igv", "total"] as const) {
+      assertLiquidacionDecimal(new Decimal(fin[field]), `El campo ${field} del movimiento ${fin.orden}`);
+    }
+    assertLiquidacionDecimal(new Decimal(fin.porcentaje_monto), `La proporción del movimiento ${fin.orden}`, 10, 5);
+    if (!Number.isInteger(fin.orden) || fin.orden < 1 || fin.orden > 32767) {
+      throw new ClientError("La cantidad de movimientos excede la capacidad de guardado de la liquidación", 400);
     }
   }
 
@@ -323,6 +349,16 @@ const runSimulation = async (tx: any, factoring: any, fecha_liquidacion: any, fe
     monto_total_a_favor = netTotal;
   } else if (netTotal.lessThan(0)) {
     monto_total_por_cobrar = netTotal.neg();
+  }
+
+  const importesCabecera = {
+    monto_descuento_efectivo, monto_descuento_a_favor, monto_descuento_mora,
+    monto_total_neto_inafecto_igv_abono, monto_total_neto_inafecto_igv_cargo, monto_total_neto_inafecto_igv,
+    monto_total_neto_afecto_igv_abono, monto_total_neto_afecto_igv_cargo, monto_total_neto_afecto_igv,
+    monto_total_igv, monto_total_a_favor, monto_total_por_cobrar,
+  };
+  for (const [field, value] of Object.entries(importesCabecera)) {
+    assertLiquidacionDecimal(value, `El campo ${field}`);
   }
 
   return {

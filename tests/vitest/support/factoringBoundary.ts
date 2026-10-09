@@ -22,7 +22,7 @@ const boundary = vi.hoisted(() => ({
   propuestaFinanciero: { insertFactoringpropuestafinanciero: vi.fn() },
   liquidacion: { insertFactoringliquidacion: vi.fn(), getFactoringliquidacionByFactoringliquidacionid: vi.fn(), updateFactoringliquidacion: vi.fn() },
   liquidacionEstado: { getFactoringliquidacionestadoByFactoringliquidacionestadoid: vi.fn() },
-  liquidacionFinanciero: { insertFactoringliquidacionfinanciero: vi.fn() },
+  liquidacionFinanciero: { insertFactoringliquidacionfinanciero: vi.fn(), hasLiquidacionExtendedPrecision: vi.fn() },
   usuario: { getUsuarioByEmail: vi.fn(), getUsuarioByIdusuario: vi.fn(), getUsuarioAccesosByIdusuario: vi.fn() },
   archivo: { getArchivoByArchivoid: vi.fn(), getArchivoByArchivoidAndIdarchivotipo: vi.fn() },
   factura: { getFacturaByFacturaid: vi.fn() },
@@ -188,6 +188,7 @@ export function resetFactoringBoundary(moneda = 1, banco = 1) {
   boundary.liquidacion.getFactoringliquidacionByFactoringliquidacionid.mockResolvedValue({ idfactoringliquidacion: 200 });
   boundary.liquidacion.updateFactoringliquidacion.mockResolvedValue({ idfactoringliquidacion: 200 });
   boundary.liquidacionFinanciero.insertFactoringliquidacionfinanciero.mockResolvedValue({});
+  boundary.liquidacionFinanciero.hasLiquidacionExtendedPrecision.mockResolvedValue(true);
   boundary.usuario.getUsuarioByEmail.mockResolvedValue({ email: "cedente@example.test" });
   boundary.usuario.getUsuarioByIdusuario.mockResolvedValue({ idusuario: 42, email: "cedente@example.test" });
   boundary.archivo.getArchivoByArchivoid.mockResolvedValue({ idarchivo: 50 });

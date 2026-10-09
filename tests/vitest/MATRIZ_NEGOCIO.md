@@ -55,9 +55,13 @@ verifican relaciones algebraicas entre cabecera, impuesto y detalles.
 
 ## Pendientes y límites que siguen abiertos
 
-- Criterios `todo`: DT-LIQ-02 a DT-LIQ-06 y DT-TEST-01/02. DT-LIQ-01 fue
+- Criterios `todo`: DT-LIQ-02-RANGO, DT-LIQ-03/04/06 y DT-TEST-01/02. DT-LIQ-01 fue
   corregido el 09/10/2026 y cuenta con regresión activa de simulación y creación
   por día calendario de Lima en `factoringliquidacion.business.test.ts`.
+  DT-LIQ-02 rechaza negativos desde el 09/10/2026 con regresión de servicio y HTTP;
+  su criterio pendiente se limita a definir precisión/rango. Los ceros se conservan.
+  DT-LIQ-01/02/05 cerraron su alcance aprobado con validación conjunta el 09/10/2026;
+  ver `docs/validacion-final-deudas-factoring-20261009.md`. DT-LIQ-02-RANGO queda pendiente.
   Referencias:
   [deuda financiera](../../docs/deuda-tecnica/20261006_1451_DT_validaciones_financieras_factoring.md)
   [hallazgos iniciales](../../docs/deuda-tecnica/20261007_DT_hallazgos_pruebas_negocio.md)

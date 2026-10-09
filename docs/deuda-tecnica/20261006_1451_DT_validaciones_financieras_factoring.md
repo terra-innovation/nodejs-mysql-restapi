@@ -1,7 +1,7 @@
 # Deuda técnica: validaciones y consistencia financiera de factoring
 
 - **Registro:** 2026-10-06 14:51 — America/Lima (UTC−05:00).
-- **Estado al 09/10/2026:** DT-LIQ-01 corregida en backend con pruebas focalizadas; las demás deudas siguen pendientes.
+- **Estado final al 09/10/2026:** DT-LIQ-01, DT-LIQ-02, DT-LIQ-02-RANGO, DT-LIQ-03, DT-LIQ-04, DT-LIQ-05 y DT-LIQ-06 cerradas en el alcance aprobado tras validación conjunta. DT-LIQ-07/08 cerradas por decisión expresa de conservar las reglas actuales. DT-LIQ-09 diferida por decisión de mantener el comportamiento actual, sin acreditar cumplimiento normativo. [Evidencia final y límites](../validacion-conjunta-liquidacion-cierre-20261009.md). Las menciones posteriores a validación pendiente conservan la trazabilidad previa y quedan sustituidas por este cierre.
 - **Origen:** auditoría de propuesta y liquidación de factoring del 06/10/2026 y revisión del código al registrar esta deuda.
 - **Ámbito:** backend; las futuras correcciones que cambien el contrato de datos también deberán considerar formulario, presentación y persistencia.
 - **Configuración acordada:** base de datos y backend en UTC; navegador en Lima. Las reglas de plazos usan días calendario de Perú, incluidos sábados y domingos.
@@ -18,12 +18,13 @@ Los importes, conteos e identificadores de escenarios citados proceden de la aud
 
 | ID | Hallazgo | Causa | Estado de evidencia | Solución profesional propuesta |
 |---|---|---|---|---|
-| DT-LIQ-01 | Pago anterior al inicio | Faltaba validación cronológica antes del cálculo | Corregida el 09/10/2026; regresión focalizada con calculador real y DAOs simulados | Se rechazan días de pago anteriores al día de inicio en Perú, al simular y al guardar |
-| DT-LIQ-02 | Cargos convertidos en abonos | Se aceptan cantidades e importes negativos | Aceptación e inversión del saldo reproducidas; política de ajustes negativos pendiente | Validar límites y dejar la dirección cargo/abono al concepto financiero |
-| DT-LIQ-03 | IGV inconsistente | Una ruta usa el tipo y otra `afecto_igv` | Criterios diferentes confirmados; combinaciones reales pendientes de revisión | Confirmar combinaciones válidas y aplicar una única regla al cálculo y desglose |
-| DT-LIQ-04 | Diferencia de un centavo en capital | Financiamiento y garantía se redondean por separado | Diferencia reproducida; conciliación contable pendiente de definición | Conservar el neto en propuestas nuevas y respetar los importes ya aceptados |
-| DT-LIQ-05 | Cobertura infinita con tasa cero | División entre cero en la cobertura de garantía | Infinity y NaN reproducidos en cálculo; guardado real no probado | Representar explícitamente la cobertura sin límite o el caso no aplicable, sin valores numéricos no finitos |
-| DT-LIQ-06 | Reintegro sin gasto interbancario | La condición omite el reintegro y se evalúa antes de conceptos adicionales | Omisión reproducida; política de cobro pendiente | Si se cobra por transferencia realizada, evaluar el saldo final reembolsable |
+| DT-LIQ-01 | Pago anterior al inicio | Faltaba validación cronológica antes del cálculo | Cerrada el 09/10/2026; servicio y ausencia de registros en MariaDB verificados | Se rechazan días de pago anteriores al día de inicio en Perú, al simular y al guardar |
+| DT-LIQ-02 | Cargos convertidos en abonos | Se aceptaban cantidades e importes negativos | Cerrado el rechazo de negativos el 09/10/2026; backend, frontend y MariaDB verificados | Conservar factor y ceros. Máximos/precisión separados en DT-LIQ-02-RANGO |
+| DT-LIQ-02-RANGO | Precisión y capacidad de entradas/resultados | Cantidad y unitario solo se guardaban con dos decimales | Cerrada el 09/10/2026; precisión diez/dos, límites y guardado/lectura reales verificados | Mantener importe/IGV a dos; impedir precisión ampliada sobre base antigua |
+| DT-LIQ-03 | IGV inconsistente | Las dos rutas usan ahora `afecto_igv` | Cerrada: regla aprobada, pruebas rápidas y persistencia real verificadas | Conservar importes históricos |
+| DT-LIQ-04 | Diferencia de un centavo en capital | Se redondeaban ambas partes por separado | Cerrada el 09/10/2026; cálculo y guardado verificados | Financiamiento redondeado y garantía por diferencia; conservar aceptadas |
+| DT-LIQ-05 | Cobertura infinita con tasa cero | División entre cero en la cobertura de garantía | Cerrada el 09/10/2026; API, presentación y guardado/lectura real verificados | Guardar null y mostrar «No calculable con tasa cero» en todos los casos de tasa cero |
+| DT-LIQ-06 | Reintegro sin gasto interbancario | La condición omitía el reintegro y los adicionales | Cerrada el 09/10/2026; saldo, gasto y persistencia verificados | Evaluar saldo completo y dejar reembolso positivo; banco propio/exoneración sin gasto automático |
 
 ## Evidencia común y límites
 
@@ -36,6 +37,8 @@ Las pruebas con servidor Madrid o navegador Madrid/Tokio están fuera de la conf
 ## DT-LIQ-01 — Pago anterior al inicio de operación
 
 **Estado:** corregida en backend el 09/10/2026, por autorización de implementar la Opción Alfa 1. Las evidencias de la auditoría que siguen describen el comportamiento anterior.
+
+**Cierre:** validación conjunta aprobada, incluida ausencia de registros en MariaDB desechable. [Informe final](../validacion-final-deudas-factoring-20261009.md). Las limitaciones de las pruebas iniciales descritas abajo corresponden a esa etapa, no al cierre actual.
 
 **Ubicación:** [runSimulation y creación de liquidación](../../src/services/admin/factoringliquidacion.Service.ts), [validaciones del controlador](../../src/controllers/admin/servicio/factoring/factoringliquidacion.Controller.ts).
 
@@ -75,6 +78,10 @@ Comprobaciones focalizadas del 09/10/2026:
 
 ## DT-LIQ-02 — Cantidades o importes negativos invierten cargos
 
+**Actualización del 09/10/2026:** el usuario confirmó que `factor` ya define la dirección y autorizó implementar el rechazo de cantidades e importes negativos en backend y formulario (Opción Bravo 4), conservando el comportamiento actual del cero. No se introduce un mecanismo de reversión ni se recalculan registros históricos. La evidencia y la revisión anteriores que siguen describen el estado previo a esta corrección.
+
+**Cierre del alcance aprobado:** el rechazo de negativos aprobó la validación de formulario, HTTP, servicio y ausencia de registros en MariaDB. Los límites máximos/precisión no se dan por resueltos: se trasladan a [DT-LIQ-02-RANGO](20261009_DT_limites_entrada_financiera.md). [Informe final](../validacion-final-deudas-factoring-20261009.md). Las menciones a ejecución pendiente abajo conservan la trazabilidad de la etapa de implementación y quedan sustituidas por este cierre.
+
 **Ubicación:** [esquemas de simulación y creación](../../src/controllers/admin/servicio/factoring/factoringliquidacion.Controller.ts), [getFinancialData y agregación del saldo](../../src/services/admin/factoringliquidacion.Service.ts).
 
 **Causa:** los esquemas aceptan cualquier número para cantidad e importe unitario. El servicio multiplica ambos, calcula el IGV y aplica el factor del concepto al saldo. Un resultado negativo en un concepto de cargo produce el efecto económico de un abono.
@@ -102,7 +109,21 @@ Comprobaciones focalizadas del 09/10/2026:
 - Validar entradas numéricas no válidas y límites de precisión/rango del contrato.
 - Si se admiten reversos, probar autorización, motivo y dirección resultante.
 
+**Cambio implementado:** los esquemas de simulación y creación validan `cantidad >= 0` y `monto_unitario >= 0`, conservando sus valores predeterminados. El punto compartido `runSimulation` también comprueba el signo antes de consultar tarifas o calcular importes, para proteger llamadas directas al servicio. El rechazo ocurre sin insertar cabecera ni detalles. No cambia la clasificación por `factor` ni el contrato del manejador HTTP: las validaciones Yup conservan respuesta 400 «Datos no válidos».
+
+Los formularios de alta de Administración y Financiero muestran el mensaje junto al campo negativo, bloquean cálculo/creación y protegen el envío directo del formulario. Introducir un negativo descarta la simulación visible y exige recalcular después de corregirlo. Se conserva el filtro de filas incompletas, la conversión del payload y las restricciones nativas previas del formulario (incluido `min: 1` de cantidad); no se unifica la política de ceros entre navegador y backend en este cambio.
+
+**Validación actual:** aprobadas las suites focalizadas `tests/vitest/unit/factoringliquidacion.business.test.ts` y `tests/vitest/http/factoring.business.test.ts`, con servicios, calculadores, rutas, autenticación y validación reales y DAOs simulados. Los casos nuevos cubren negativos individuales y dobles, decimales negativos, ceros, valores predeterminados, dirección de cargos/abonos y ausencia de inserciones; por HTTP se comprueba además que los negativos no abren transacción. `npx --no-install tsc --noEmit` y `npm run test:vitest:typecheck` aprobados.
+
+También aprobó la selección Jest de `factoringliquidacion.Service.test.ts` y los escenarios originales `cargo-negativo` y `cantidad-negativa` de `factoringliquidacion.audit.test.ts`, sin modificar sus expectativas. Se usó filtro por nombre; los demás casos de auditoría no se ejecutaron.
+
+**Límites y pendientes:** no se probó persistencia/rollback real en MariaDB ni navegador. La regresión del frontend está preparada en `src/test-utils/factoringPropuestaLiquidacion.business.test.js` del repositorio frontend, pero no ejecutada por el modelo: su `AGENTS.md` y skill `frontend-validation` exigen ejecución manual. El procedimiento está en `docs/pruebas/FACTORING_PROPUESTA_LIQUIDACION.md` de ese repositorio. Permanecen sin definir límites máximos de rango/precisión; el `todo` de DT-LIQ-02 se acota a esa decisión y no al control de signo ya implementado.
+
 ## DT-LIQ-03 — Dos reglas distintas para IGV
+
+**Regla aprobada e implementada el 2026-10-09 (Opción Alfa 6):** `financiero_concepto.afecto_igv` determina el impuesto para conceptos internos y adicionales, independientemente del tipo financiero. Afecto aplica la tasa IGV configurada; inafecto aplica cero. Se mantienen redondeos, `factor`, contratos y permisos. La excepción del tipo 4 se elimina en los cálculos nuevos. No se migran ni recalculan liquidaciones guardadas. La evidencia siguiente describe el comportamiento anterior; las decisiones pendientes descritas en la revisión quedaron resueltas por esta aprobación.
+
+**Cierre:** 192 casos Vitest aprobados (incluidos 48 nuevos), tres casos originales de auditoría Jest aprobados sin cambiar expectativas, 49 casos MariaDB aprobados (incluidos ocho nuevos) y tipos de backend/Vitest/integración correctos. [Evidencia y límites](../validacion-igv-liquidaciones-20261009.md).
 
 **Ubicación:** [getFinancialData, getFinancialDataById y desglose](../../src/services/admin/factoringliquidacion.Service.ts).
 
@@ -122,6 +143,12 @@ Las combinaciones tipo 2 afecto y tipo 4 inafecto coinciden con la bandera.
 
 **Decisión pendiente:** revisar catálogo real y relaciones permitidas, y establecer qué dato determina la afectación. No se afirma que las tres combinaciones sintéticas estén disponibles en producción.
 
+**Revisión estática del 2026-10-09:** el esquema `prisma/ft_factoring/schema.prisma` define `afecto_igv` en `financiero_concepto`; `financiero_tipo` no tiene esa bandera ni una relación que restrinja los conceptos seleccionables. `financiero_concepto_liquidacion` habilita conceptos para liquidación, sin vincularlos a un tipo. En los formularios de nueva liquidación de administrador y financiero se muestran todos los conceptos habilitados, independientemente del tipo seleccionado, y su etiqueta de afectación usa `afecto_igv`. El servicio busca tipo y concepto por separado, sin validar una combinación permitida. Por tanto, el flujo revisado no impide las combinaciones divergentes; esto no demuestra que existan actualmente en el catálogo de producción.
+
+**Recomendación pendiente de aprobación:** usar `financiero_concepto.afecto_igv` también para los conceptos adicionales, con la tasa IGV configurada y el redondeo existente. Así, un concepto inafecto tendría IGV cero con cualquier tipo, y uno afecto tendría el impuesto configurado con cualquier tipo. `factor` seguiría determinando cargo o abono. La excepción actual del tipo 4 desaparecería para cálculos nuevos; no se modificarían liquidaciones guardadas. Si el tipo 4 debe imponer una excepción de negocio, primero debe especificarse esa regla y su compatibilidad con la bandera del concepto.
+
+Esta revisión no modifica cálculos ni consulta bases compartidas. No se ejecutaron pruebas nuevas: la decisión financiera sigue pendiente y DT-LIQ-03 permanece abierta.
+
 **Propuesta:** centralizar la regla autorizada para cálculo, clasificación y presentación; validar coherencia entre tipo y concepto. Respetar los datos históricos ya aceptados y separar cualquier revisión de registros existentes.
 
 **Criterios de aceptación:**
@@ -133,6 +160,10 @@ Las combinaciones tipo 2 afecto y tipo 4 inafecto coinciden con la bandera.
 - Cubrir IGV cero y la tasa configurada, sin fijar la tasa de la auditoría como constante nueva.
 
 ## DT-LIQ-04 — Financiamiento más garantía no conserva el neto
+
+**Implementación autorizada el 09/10/2026:** V2/V3 calculan primero `monto_efectivo = redondear(neto × porcentaje, 2)` (financiamiento) y luego `monto_garantia = redondear(neto − monto_efectivo, 2)`. Con neto monetario 100,01 y 50 %, se obtiene 50,01 financiado y 50,00 de garantía. Se conserva el modo de redondeo vigente, intereses y comisiones. La liquidación continúa usando la garantía aceptada; no se migran importes existentes. No se cambió el rango de porcentajes ni se normalizaron entradas de neto fuera de dos decimales; esos contratos no forman parte de esta corrección. Preparadas pruebas V2/V3, servicio con garantía histórica y guardado de propuesta en MariaDB. **No ejecutadas; pendiente del cierre conjunto.** [Detalle](../precision-sunat-y-residual-garantia-20261009.md). Las decisiones siguientes describen el antecedente previo a esta aprobación.
+
+**Revisión del 09/10/2026:** [propuesta concreta y decisiones](../revision-pendientes-liquidacion-20261009.md). Se recomienda conservar el financiamiento redondeado y calcular la garantía por diferencia respecto del neto monetario para cálculos nuevos. Pendiente de aprobación; no se cambió código financiero ni se ejecutaron validaciones en esta revisión.
 
 **Ubicación:** [calculateFactoringV3 y calculateFactoringV2](../../src/domain/factoring/factoring.Calculator.ts).
 
@@ -155,6 +186,8 @@ Las combinaciones tipo 2 afecto y tipo 4 inafecto coinciden con la bandera.
 - Mantener las liquidaciones de propuestas aceptadas sujetas a sus importes originales.
 
 ## DT-LIQ-05 — Cobertura no finita con tasa mensual cero
+
+**Estado al 09/10/2026:** cerrada tras la validación conjunta. El usuario eligió «No calculable con tasa cero» para todos los casos de tasa cero, conservando `null` en API/persistencia. Se verificó guardado y lectura real de propuestas y simulaciones, además de cálculo, HTTP y presentación. [Informe final](../validacion-final-deudas-factoring-20261009.md). Las causas, evidencias anteriores y menciones a pruebas preparadas que siguen conservan la trazabilidad previa al cierre.
 
 **Ubicación:** [fórmula de cobertura V2/V3](../../src/domain/factoring/factoring.Calculator.ts), [validación de tasa de propuesta](../../src/controllers/admin/servicio/factoring/factoringpropuesta.Controller.ts), [guardado de propuesta](../../src/services/admin/factoringpropuesta.Service.ts), [esquema Prisma](../../prisma/ft_factoring/schema.prisma).
 
@@ -182,7 +215,17 @@ Con tasa cero el denominador es cero. Con garantía positiva aparece Infinity; c
 - Mantener descuento e interés cero cuando corresponda.
 - Conservar la cobertura actual para tasas positivas válidas.
 
+**Implementación:** V2 y V3 omiten la fórmula de cobertura si la tasa mensual usada por esa fórmula es cero y devuelven `null`. Se comprueba la tasa ya redondeada a cinco decimales, igual que en el denominador anterior; por ello una tasa de entrada muy pequeña que se redondee a cero también tendrá cobertura nula. No cambian los cálculos de descuento, intereses, cargos ni redondeos. En altas de propuestas y simulaciones se conserva explícitamente el `null` al preparar la escritura, sin modificar el esquema nullable ni registros existentes.
+
+El frontend usa `src/utils/factoringCoverage.js` para mostrar el texto elegido en alta, detalle, edición, listas, resúmenes y propuesta aceptada de Administración/Financiero, y las pantallas de simulaciones administrativas. Con tasa positiva mantiene los días, incluido cero; con dato ausente o no finito y tasa desconocida/positiva muestra «No disponible», sin inventar una cantidad de días.
+
+**Pruebas preparadas, no ejecutadas en este cambio:** calculador V2/V3 (garantía positiva/cero y financiamiento cero), serialización/respuesta HTTP y payload de propuesta, payload de simulación, guardado y lectura de propuestas con Prisma/MariaDB desechable, utilidad de presentación y formularios de alta de propuesta de ambos roles. Retirado el criterio `todo` de decisión de negocio: la semántica ya fue elegida; esto no declara las pruebas aprobadas. Procedimiento completo y límites en [corrección de cobertura](../correccion-cobertura-tasa-cero-factoring.md).
+
 ## DT-LIQ-06 — No se considera reintegro al decidir gasto interbancario
+
+**Implementación autorizada el 09/10/2026:** el gasto automático se decide después de garantía, reintegro/mora y adicionales, usando totales con IGV y dirección por concepto. Solo se añade si banco distinto, sin exoneración, gasto positivo de cargo y saldo previo estrictamente superior al gasto total. Saldo igual/inferior no genera gasto automático. Un gasto explícito evita otro automático; repetir el concepto se rechaza con mensaje, sin borrar movimientos silenciosamente. Banco propio y exoneración conservan el control del gasto automático; un movimiento explícito mantiene su importe ingresado. Se conserva el ID del concepto usado por el servicio, las tarifas configuradas y registros históricos. Implementado, **pendiente de validación conjunta**, sin cierre. [Detalle de cambios y normativa](../implementacion-gasto-limites-liquidacion-20261009.md). Las causas y decisiones siguientes conservan la trazabilidad previa a esta autorización.
+
+**Revisión del 09/10/2026:** [propuesta concreta y decisiones](../revision-pendientes-liquidacion-20261009.md). Se recomienda decidir el gasto sobre el saldo completo anterior al propio gasto y cobrarlo una sola vez únicamente si deja un reembolso positivo, manteniendo banco propio y exoneración. Pendiente de aprobación; no se cambió código financiero ni se ejecutaron validaciones en esta revisión.
 
 **Ubicación:** [condición del gasto y agregación posterior](../../src/services/admin/factoringliquidacion.Service.ts).
 
@@ -217,17 +260,19 @@ Se registran por el acuerdo de tratar como deuda técnica los hallazgos que qued
 
 ### DT-LIQ-07 — Política de redondeo de la tasa diaria
 
-**Estado:** pendiente de definición y evaluación de compatibilidad.
+**Estado:** cerrada por definición de política el 09/10/2026. El usuario decidió conservar la precisión tal como está: tasa diaria equivalente redondeada a diez decimales antes de calcular el interés compuesto, con importes monetarios a dos decimales. Se mantienen fórmula, modo de redondeo y tratamiento actual de propuestas aceptadas. No requiere modificación de código ni recálculo histórico. Las pruebas conjuntas de las demás implementaciones siguen pendientes.
+
+**Consulta oficial del 09/10/2026:** SUNAT especifica cinco decimales para TIM tributaria; SBS calcula determinados factores oficiales con ocho y publica cinco. Sus alcances no establecen por sí solos una precisión obligatoria para este factoring. BBVA publica una fórmula directa de descuento por plazo sin especificar precisión diaria interna; no se encontró una política explícita de decimales diarios para factoring BCP en las páginas revisadas. Mantener la política vigente hasta aprobar cualquier cambio. [Fuentes, fórmulas, límites y recomendación](../precision-tasa-diaria-fuentes-peru-20261009.md).
 
 La tasa diaria equivalente se redondea a diez decimales antes de calcular el interés compuesto. La referencia independiente, sin ese redondeo intermedio, presentó diferencias mayores de 0,01 en 360 escenarios. El máximo observado fue 0,18: neto 99.999.999,99, financiamiento 100 %, tasa mensual 1,5 % y pago diez días tarde; descuento actual 2.004.983,62 frente a 2.004.983,44 en la referencia.
 
 La diferencia es de descuento acumulado, no del cargo adicional aislado. Es un comportamiento histórico: la referencia matemática no demuestra por sí sola que el contrato exija otro resultado.
 
-**Trabajo pendiente y cierre:** documentar precisión y momentos de redondeo autorizados, verificar equivalencia con importes históricos y definir tolerancias. Mantener la fórmula vigente hasta aprobar una política diferente; si se cambia, distinguir cálculos nuevos de importes aceptados.
+**Cierre:** la decisión expresa resuelve la definición pendiente conservando el comportamiento actual. Las diferencias de la referencia anterior quedan como evidencia histórica de sensibilidad al redondeo, no como una corrección a implementar. Este cierre documental no representa una nueva ejecución de pruebas ni certificación normativa integral.
 
 ### DT-LIQ-08 — Inicio de propuesta distinto del inicio real
 
-**Estado:** pendiente de interpretación del descuento aceptado y del desembolso.
+**Estado:** cerrada por definición de política el 09/10/2026. El usuario confirmó conservar el comportamiento actual: el descuento se ajusta desde el desembolso efectivo, representado en el cálculo por `factoring.fecha_operacion`, hasta el pago real. Se conserva como referencia el descuento de la propuesta aceptada, sin sobrescribirlo ni recalcular registros históricos.
 
 El descuento aceptado puede haberse calculado desde la fecha de propuesta, mientras que la liquidación recalcula desde el inicio real. La decisión de generar reintegro o cargo también depende de si el pago se hizo antes o después del vencimiento.
 
@@ -240,7 +285,13 @@ Ejemplos anteriores, inicio real 01/09, pago puntual 01/10, capital financiado 1
 
 El segundo ejemplo es una secuencia sintética cuya validez operativa debe verificarse. Se observaron cuatro casos con comportamientos que requieren interpretación, dentro de cinco desfases probados.
 
-**Trabajo pendiente y cierre:** definir si el descuento aceptado es fijo o ajustable al desembolso, validar la secuencia permitida propuesta/aceptación/inicio y documentar el resultado esperado para pagos puntuales, anticipados y tardíos. No alterar propuestas aceptadas mientras esa política siga pendiente.
+**Cierre y regla conservada:** si el pago es anticipado o puntual respecto del vencimiento, se devuelve solo la diferencia positiva entre descuento aceptado y efectivo; si el pago es tardío, se cobra solo la diferencia positiva entre efectivo y aceptado. No se introduce un ajuste simétrico ni un cargo adicional por pago puntual. En el ejemplo de propuesta 27/08, inicio 01/09 y pago puntual 01/10, se conserva el reintegro de 53,95. El ejemplo sintético con propuesta posterior al inicio permanece como antecedente, sin autorizar cambios de cronología. No se modifica código ni se ejecutan pruebas; el cierre resuelve la política pendiente y no acredita una nueva validación funcional.
+
+**Alcance de la fecha:** el código registra `fecha_operacion` al pasar al estado 36 (Inicio de Operación de Factoring), con la fecha/hora de esa transición. La decisión del usuario establece su interpretación de negocio como desembolso efectivo; esta lectura de código no verifica que el instante registrado coincida con una transferencia bancaria. No se modifica el registro de fechas ni se añade conciliación bancaria en este cierre.
+
+## DT-LIQ-09 — Control normativo de tasas por fecha y moneda
+
+**Estado al 09/10/2026:** mantener el comportamiento actual por decisión expresa del usuario. No implementar en este plan el control automático de topes BCRP, ni alterar tasas, validaciones actuales o contratos aceptados. La decisión de alcance queda resuelta; el control ausente se conserva como deuda diferida/riesgo aceptado, no como cumplimiento normativo acreditado ni como incumplimiento reproducido. No se modificó código financiero ni se ejecutaron pruebas. El análisis que sigue conserva el antecedente y los criterios para una eventual revisión futura. El usuario confirmó empresa de factoring fuera del ámbito de la Ley General. La búsqueda de máximos para cantidades/importes no identificó un máximo universal de esos campos en las fuentes consultadas; sí identificó topes de tasas del BCRP. No trasladar esos porcentajes a un límite monetario ni aplicar un valor actual a contratos aceptados de otra fecha. Revisar política de intereses/descuento, moneda, fecha contractual, historial de topes y conversión anual/mensual antes de implementar controles. [Fuentes oficiales y alcance](../implementacion-gasto-limites-liquidacion-20261009.md).
 
 ## Referencias y trazabilidad
 

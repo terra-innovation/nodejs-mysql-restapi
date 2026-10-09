@@ -6,6 +6,17 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { line, log } from "#src/utils/logger.pino.js";
 
+export const hasLiquidacionExtendedPrecision = async (tx: TxClient): Promise<boolean> => {
+  const columns = await tx.$queryRaw<Array<{ name: string; digits: number; scale: number }>>`
+    SELECT COLUMN_NAME AS name, NUMERIC_PRECISION AS digits, NUMERIC_SCALE AS scale
+    FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'factoring_liquidacion_financiero'
+      AND COLUMN_NAME IN ('cantidad', 'monto_unitario') AND DATA_TYPE = 'decimal'
+  `;
+  return ["cantidad", "monto_unitario"].every((name) => columns.some((column) =>
+    column.name === name && Number(column.scale) >= 10 && Number(column.digits) - Number(column.scale) >= 8));
+};
+
 export const getFactoringliquidacionfinancieros = async (tx: TxClient, estados: number[]) => {
   try {
     const factoringliquidacionfinancieros = await tx.factoring_liquidacion_financiero.findMany({

@@ -13,6 +13,7 @@ import { createFactoringpropuestaService as create, simulateFactoringpropuestaSe
 import { acceptFactoringpropuestaService as accept } from "#src/services/empresario/factoringpropuesta.Service.js";
 import * as strategyDao from "#src/daos/factoringestrategia.Dao.js";
 import * as configDao from "#src/daos/configuracionapp.Dao.js";
+import { createFactoringsimulacionService } from "#src/services/admin/factoringsimulacion.Service.js";
 
 let user: Awaited<ReturnType<typeof seedMasters>>;
 const originalNow = Settings.now;
@@ -41,6 +42,42 @@ async function snapshot() {
 }
 
 describe("Cálculo y creación de propuestas con Prisma/MariaDB reales", () => {
+  it("DT-LIQ-04: guarda financiamiento más garantía igual al neto con centavo impar", async () => {
+    const f = await arrange();
+    const dto = { ...f.dto, monto_neto: 100.01, porcentaje_financiado_estimado: 0.5, tdm: 0 };
+    const simulated = await simulate(dto);
+    await create(dto, user.idusuario);
+    const stored = await db.factoring_propuesta.findFirstOrThrow({ where: { idfactoring: f.factoring.idfactoring, idfactoringpropuesta: { not: f.propuesta.idfactoringpropuesta } } });
+    expect(stored.monto_financiado!.toString()).toBe("50.01");
+    expect(stored.monto_garantia!.toString()).toBe("50");
+    expect(stored.monto_financiado!.plus(stored.monto_garantia!).equals(stored.monto_neto)).toBe(true);
+    expect(stored.monto_garantia!.equals(simulated.monto_garantia!)).toBe(true);
+  });
+  it.each([0.8, 1])("DT-LIQ-05: guarda y lee simulación con cobertura null y financiamiento %s", async (porcentaje_financiado_estimado) => {
+    const f = await arrange();
+    const banco = await db.banco.findUniqueOrThrow({ where: { idbanco: 1 } });
+    const moneda = await db.moneda.findFirstOrThrow({ where: { codigo: "PEN" } });
+    await createFactoringsimulacionService(user.idusuario, {
+      bancoid: banco.bancoid, monedaid: moneda.monedaid, factoringtipoid: f.dto.factoringtipoid, riesgooperacionid: f.dto.riesgooperacionid, factoringestrategiaid: f.dto.factoringestrategiaid,
+      tdm: 0, porcentaje_financiado_estimado, porcentaje_comision_descuento: 0, monto_neto: 20000, cantidad_facturas: 2,
+      fecha_emision: "2026-09-01T00:00:00Z", fecha_pago_estimado: f.dto.fecha_pago_estimado,
+      ruc_cedente: "20111111111", ruc_aceptante: "20222222222", razon_social_cedente: "Cedente sintetico", razon_social_aceptante: "Aceptante sintetico",
+    });
+    const stored = await db.factoring_simulacion.findFirstOrThrow();
+    expect(stored.dias_cobertura_garantia_estimado).toBeNull();
+    expect(stored.monto_descuento!.toString()).toBe("0");
+  });
+  it.each([0.8, 1])("DT-LIQ-05: guarda y lee cobertura null con tasa cero y financiamiento %s", async (porcentaje_financiado_estimado) => {
+    const f = await arrange();
+    const dto = { ...f.dto, tdm: 0, porcentaje_financiado_estimado };
+    const simulated = await simulate(dto);
+    expect(simulated.dias_cobertura_garantia_estimado).toBeNull();
+    await create(dto, user.idusuario);
+    const stored = await db.factoring_propuesta.findFirstOrThrow({ where: { idfactoringpropuesta: { not: f.propuesta.idfactoringpropuesta } } });
+    expect(stored.dias_cobertura_garantia_estimado).toBeNull();
+    expect(stored.monto_descuento!.toString()).toBe("0");
+    expect(stored.monto_dia_interes_estimado!.toString()).toBe("0");
+  });
   for (const currency of ["PEN", "USD"]) for (const bank of [1, 2]) it(`${currency}, banco ${bank}: simula sin escrituras y guarda cabecera, historial y detalles conciliados`, async () => {
     const f = await arrange(currency, bank);
     const before = await snapshot();

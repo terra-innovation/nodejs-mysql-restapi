@@ -53,6 +53,8 @@ export async function cleanFixtures() {
   await db.rol.deleteMany({});
   // Solo la base exclusiva verificada arriba; conservar FK activas y eliminar en orden.
   await db.factoring.updateMany({ data: { idfactoringpropuestaaceptada: null } });
+  await db.factoring_simulacion_financiero.deleteMany({});
+  await db.factoring_simulacion.deleteMany({});
   await db.factoring_propuesta_financiero.deleteMany({});
   await db.archivo_factoring_historial_estado.deleteMany({});
   for (const table of ["archivo_factoring_transferencia_cedente", "factoring_transferencia_cedente", "factoring_liquidacion_financiero", "factoring_liquidacion", "factor_cuenta_bancaria", "empresa_cuenta_bancaria", "factoring_transferencia_estado", "factoring_transferencia_tipo", "factoring_liquidacion_estado", "financiero_tipo", "financiero_concepto", "configuracion_app", "factoring_config_comision"]) await db.$executeRawUnsafe(`DELETE FROM ${quoteIdentifier(table)}`);

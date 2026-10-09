@@ -153,6 +153,19 @@ describe("Simulación y propuesta comparten interpretación, cálculo y persiste
   });
 });
 
+describe("DT-LIQ-05: simulaciones guardadas con tasa cero", () => {
+  it.each([0, 0.8, 1])("simula y guarda cobertura null con financiamiento %s", async (porcentaje_financiado_estimado) => {
+    configure("2026-10-01");
+    const dto = { ...payload("2026-10-01", "2026-10-30T05:00:00Z"), tdm: 0, porcentaje_financiado_estimado };
+    const simulated = await simulateFactoringsimulacionService(dto);
+    const created = await createFactoringsimulacionService(1, dto);
+    expect(simulated.dias_cobertura_garantia_estimado).toBeNull();
+    expect(created.dias_cobertura_garantia_estimado).toBeNull();
+    expect(created.monto_descuento.toString()).toBe("0");
+    expect((simulacionDao.insertFactoringsimulacion as jest.Mock).mock.calls[0][1].dias_cobertura_garantia_estimado).toBeNull();
+  });
+});
+
 describe("Contrato HTTP: fecha civil de emisión e instante de vencimiento", () => {
   it.each(["2026-10-30T00:00:00Z", "2026-10-30T04:59:59Z", "2026-10-30T05:00:00Z", "2026-12-31T05:00:00Z", "2028-02-29T05:00:00Z"])(
     "valida, simula y guarda %s con el mismo día de Perú", async iso => {

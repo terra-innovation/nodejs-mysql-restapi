@@ -342,7 +342,10 @@ export const createFactoringpropuestaService = async (dto: CreateFactoringpropue
         estado: 1,
       };
 
-      const factoringpropuestaCreated = await factoringpropuestaDao.insertFactoringpropuesta(tx, jsonUtils.omitNullAndUndefined(factoringpropuestaToCreate));
+      const factoringpropuestaCreated = await factoringpropuestaDao.insertFactoringpropuesta(tx, {
+        ...jsonUtils.omitNullAndUndefined(factoringpropuestaToCreate),
+        dias_cobertura_garantia_estimado: simulacion.dias_cobertura_garantia_estimado,
+      });
       log.debug(line(), "factoringpropuestaCreated:", factoringpropuestaCreated);
 
       const factoringpropuestahistorialestadoToCreate: Prisma.factoring_propuesta_historial_estadoCreateInput = {

@@ -8,12 +8,22 @@ import type {
   UpdateFactoringliquidacionDto,
 } from "#root/src/services/admin/factoringliquidacion.Service.js";
 import { response } from "#src/utils/CustomResponseOk.js";
+import { getLiquidacionInputError } from "#src/domain/factoring/liquidacionLimits.js";
 import { sendFileAsync, setDownloadHeaders } from "#src/utils/httpUtils.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
 import * as fs from "fs";
 import { unlink } from "fs/promises";
 import * as yup from "yup";
+
+// Se preserva el texto decimal enviado por el formulario; Number perdería precisión.
+const liquidacionNumberSchema = (label: string, defaultValue: number) => yup.mixed<number | string>()
+  .transform((value) => typeof value === "string" ? value.trim() : value)
+  .test("precision-liquidacion", function (value) {
+    const error = getLiquidacionInputError(value, label);
+    return error ? this.createError({ message: error }) : true;
+  })
+  .optional().default(defaultValue);
 
 export const sendCorreoFactoringliquidacion = async (req: Request, res: Response) => {
   log.debug(line(), "controller::sendCorreoFactoringliquidacion");
@@ -53,8 +63,8 @@ export const simulateFactoringliquidacion = async (req: Request, res: Response) 
           yup.object().shape({
             financierotipoid: yup.string().trim().required().min(36).max(36),
             financieroconceptoid: yup.string().trim().required().min(36).max(36),
-            cantidad: yup.number().optional().default(1),
-            monto_unitario: yup.number().optional().default(0),
+            cantidad: liquidacionNumberSchema("La cantidad", 1),
+            monto_unitario: liquidacionNumberSchema("El monto unitario", 0),
             descripcion: yup.string().optional(),
           }),
         )
@@ -88,8 +98,8 @@ export const createFactoringliquidacion = async (req: Request, res: Response) =>
           yup.object().shape({
             financierotipoid: yup.string().trim().required().min(36).max(36),
             financieroconceptoid: yup.string().trim().required().min(36).max(36),
-            cantidad: yup.number().optional().default(1),
-            monto_unitario: yup.number().optional().default(0),
+            cantidad: liquidacionNumberSchema("La cantidad", 1),
+            monto_unitario: liquidacionNumberSchema("El monto unitario", 0),
             descripcion: yup.string().optional(),
           }),
         )

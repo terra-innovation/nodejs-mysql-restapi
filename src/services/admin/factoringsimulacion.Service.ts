@@ -190,7 +190,10 @@ export const createFactoringsimulacionService = async (session_idusuario: number
         estado: 1,
       };
 
-      const factoringsimulacionCreated = await factoringsimulacionDao.insertFactoringsimulacion(tx, jsonUtils.omitNullAndUndefined(factoringsimulacionToCreate));
+      const factoringsimulacionCreated = await factoringsimulacionDao.insertFactoringsimulacion(tx, {
+        ...jsonUtils.omitNullAndUndefined(factoringsimulacionToCreate),
+        dias_cobertura_garantia_estimado: simulacion.dias_cobertura_garantia_estimado,
+      });
       log.debug(line(), "factoringsimulacionCreated:", factoringsimulacionCreated);
 
       for (let i = 0; i < (simulacion?.comisiones?.length ?? 0); i++) {

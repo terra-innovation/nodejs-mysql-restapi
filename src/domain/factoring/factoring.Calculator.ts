@@ -64,9 +64,9 @@ export const calculateFactoringV3 = (input: FactoringCalculationInputV3, config:
   simulacion.tdd_mora = new Decimal(0);
   simulacion.monto_neto = monto_neto;
 
-  simulacion.monto_garantia = monto_neto.mul(new Decimal(1).minus(porcentaje_financiado)).toDecimalPlaces(2);
-
   simulacion.monto_efectivo = monto_neto.mul(porcentaje_financiado).toDecimalPlaces(2);
+
+  simulacion.monto_garantia = monto_neto.minus(simulacion.monto_efectivo).toDecimalPlaces(2);
 
   simulacion.monto_financiado = simulacion.monto_efectivo;
 
@@ -186,7 +186,7 @@ export const calculateFactoringV3 = (input: FactoringCalculationInputV3, config:
 
   simulacion.porcentaje_comision_estimado = simulacion.monto_comision.div(simulacion.monto_neto).toDecimalPlaces(5);
 
-  simulacion.dias_cobertura_garantia_estimado = Decimal.ln(simulacion.monto_financiado.add(simulacion.monto_garantia).div(simulacion.monto_financiado))
+  simulacion.dias_cobertura_garantia_estimado = simulacion.tdm.isZero() ? null : Decimal.ln(simulacion.monto_financiado.add(simulacion.monto_garantia).div(simulacion.monto_financiado))
     .div(Decimal.ln(simulacion.tdm.add(1)))
     .mul(30)
     .floor()
@@ -214,9 +214,9 @@ export const calculateFactoringV2 = (input: FactoringCalculationInput, config: F
   simulacion.tdd_mora = new Decimal(0);
   simulacion.monto_neto = monto_neto;
 
-  simulacion.monto_garantia = monto_neto.mul(new Decimal(1).minus(porcentaje_financiado)).toDecimalPlaces(2);
-
   simulacion.monto_efectivo = monto_neto.mul(porcentaje_financiado).toDecimalPlaces(2);
+
+  simulacion.monto_garantia = monto_neto.minus(simulacion.monto_efectivo).toDecimalPlaces(2);
 
   simulacion.monto_financiado = simulacion.monto_efectivo;
 
@@ -299,7 +299,7 @@ export const calculateFactoringV2 = (input: FactoringCalculationInput, config: F
 
   simulacion.porcentaje_comision_estimado = simulacion.monto_comision.div(simulacion.monto_neto).toDecimalPlaces(5);
 
-  simulacion.dias_cobertura_garantia_estimado = Decimal.ln(simulacion.monto_financiado.add(simulacion.monto_garantia).div(simulacion.monto_financiado))
+  simulacion.dias_cobertura_garantia_estimado = simulacion.tdm.isZero() ? null : Decimal.ln(simulacion.monto_financiado.add(simulacion.monto_garantia).div(simulacion.monto_financiado))
     .div(Decimal.ln(simulacion.tdm.add(1)))
     .mul(30)
     .floor()
