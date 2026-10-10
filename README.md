@@ -27,4 +27,6 @@ Ejecución completa aprobada en GitHub, diagnóstico y tiempos: [validación rem
 
 Política activa de `master`, checks obligatorios y trabajo mediante PR: [flujo diario y protecciones](docs/ci/flujo-diario-y-protecciones.md).
 
+Actualizaciones mediante Dependabot, auditoría periódica y revisión de dependencias en PR: [mantenimiento y seguridad](docs/ci/mantenimiento-y-seguridad.md).
+
 
