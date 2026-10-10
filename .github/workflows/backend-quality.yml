@@ -104,6 +104,9 @@ jobs:
         env:
           LIQUIDACION_FRONTEND_ROOT: ${{ github.workspace }}/tests/fixtures/frontend-date-contract
         run: |
+          set -a
+          source tests/fixtures/ci-quick.env
+          set +a
           node scripts/quality/verify-frontend-date-contract.mjs 2>&1 | tee coverage/ci/frontend-contract.log
           npm test -- --ci --runInBand --json --outputFile=coverage/ci/jest-results.json 2>&1 | tee coverage/ci/jest.log
 
@@ -111,7 +114,11 @@ jobs:
         id: vitest
         if: ${{ !cancelled() && steps.install.outcome == 'success' && steps.prisma.outcome == 'success' }}
         timeout-minutes: 5
-        run: npm run test:vitest:ci 2>&1 | tee coverage/ci/vitest.log
+        run: |
+          set -a
+          source tests/fixtures/ci-quick.env
+          set +a
+          npm run test:vitest:ci 2>&1 | tee coverage/ci/vitest.log
 
       - name: Compile backend
         id: build
