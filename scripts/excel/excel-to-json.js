@@ -1,7 +1,10 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import xlsx from "xlsx";
+import * as xlsx from "xlsx";
+
+// SheetJS ESM requiere registrar el acceso a archivos de Node.js.
+xlsx.set_fs(fs);
 
 const __filename = fileURLToPath(import.meta.url);
 const scriptName = path.basename(__filename);

@@ -1,9 +1,12 @@
 import { DateTime } from "luxon";
-import xlsx from "xlsx";
+import * as xlsx from "xlsx";
 import fs from "fs";
 
 import * as emailService from "#src/providers/email/email.Provider.js";
 import { line, log } from "#src/utils/logger.pino.js";
+
+// SheetJS ESM requiere registrar el acceso a archivos de Node.js.
+xlsx.set_fs(fs);
 
 // ============================================================================
 // Tipos
