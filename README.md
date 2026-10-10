@@ -15,9 +15,8 @@ Usar Node 24.21.0 y npm 11.19.0 como referencia. Instalar con `npm ci` y generar
 - [ ] complete the tests
 - [ ] docker for production
 
-### ESLint
+### Controles de calidad
 
-npx eslint --init  / genera el archivo ce configuración
-npx eslint .  // revisa los problemas en el código
+Ejecutar `npm run typecheck:all`, `npm run lint` y `npm run format:check` de forma independiente. No ejecutan pruebas ni corrigen archivos. Alcance, preparación y limitaciones: [comandos de calidad](docs/ci/comandos-calidad.md).
 
 

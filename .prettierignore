@@ -1,0 +1,13 @@
+node_modules/
+generated/
+dist/
+coverage/
+.history/
+src/daos - copia/
+tests/mariadb/schema/
+storage/
+logs/
+temporal/
+pases_a_produccion/
+package-lock.json
+.env*
