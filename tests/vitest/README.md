@@ -1,11 +1,14 @@
 # Vitest en el backend
 
-Instalación inicial del 2026-10-07: `vitest@4.1.11`, `vite@7.3.7` y
-`@vitest/coverage-v8@4.1.11` como dependencias de desarrollo con versiones
-exactas y `package-lock.json` actualizado. Se validó en Node.js 20.20.2.
-Vite 7.3.7 declara Node `^20.19.0 || >=22.12.0`; Vitest 4.1.11 declara
-Node `^20.0.0 || ^22.0.0 || >=24.0.0`. Para instalaciones reproducibles,
-usar `npm ci` con las dependencias de desarrollo habilitadas.
+Versiones actuales desde el 2026-10-09: `vitest@5.0.3`, `vite@7.3.7` y
+`@vitest/coverage-v8@5.0.3` como dependencias de desarrollo con versiones
+exactas y `package-lock.json` actualizado. Vitest 5.0.3 declara Node
+`^22.12.0 || ^24.0.0 || >=26.0.0`; Vite 7.3.7 satisface su requisito de Vite.
+En este Windows se usa Node 24.21.0 portable, según `AGENTS.md`.
+Para instalaciones reproducibles, usar `npm ci` con las dependencias de
+desarrollo habilitadas. La migración a Vitest 5 se verificó mediante compilación
+y comprobación de tipos, sin ejecutar pruebas; ver
+[alcance y límites](../../docs/migracion-vitest5-20261009.md).
 
 Vitest utiliza Vite para transformar las pruebas TypeScript/ESM. El desarrollo
 del servidor continúa con `tsx` y su compilación con `tsup`. No se requiere un
@@ -224,5 +227,6 @@ de dos a veintiún archivos.
    financiera documentada no es una regla aprobada; resolver las expectativas
    de esos casos antes de convertirlas en criterios de aceptación.
 
-Referencias: [configuración oficial de Vitest 4](https://v4.vitest.dev/config/),
-[migración desde Jest](https://v4.vitest.dev/guide/migration.html).
+Referencias: [configuración oficial de Vitest](https://vitest.dev/config/),
+[migración a Vitest 5](https://vitest.dev/guide/migration/),
+[migración desde Jest](https://vitest.dev/guide/migration/jest).
