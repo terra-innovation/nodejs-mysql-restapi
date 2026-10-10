@@ -28,7 +28,7 @@ jobs:
   quality:
     name: Backend quality
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     defaults:
       run:
         shell: bash
@@ -47,6 +47,7 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Select npm and verify runtime
+        id: runtime
         run: |
           npm install --global "$(node --print 'require("./package.json").packageManager')" --no-audit --no-fund
           node --version
@@ -71,15 +72,22 @@ jobs:
         id: prisma
         run: npm run prisma:generate:ci
 
+      - name: Prepare reports directory
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: mkdir -p coverage/ci
+
       - name: Check types
+        id: types
         if: ${{ !cancelled() && steps.install.outcome == 'success' && steps.prisma.outcome == 'success' }}
-        run: npm run typecheck:all
+        run: npm run typecheck:all 2>&1 | tee coverage/ci/types.log
 
       - name: Lint
+        id: lint
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
-        run: npm run lint
+        run: npm run lint 2>&1 | tee coverage/ci/lint.log
 
       - name: Check changed files formatting
+        id: format
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         env:
           FORMAT_BASE: ${{ github.event.pull_request.base.sha || github.event.before || inputs.format_base }}
@@ -87,7 +95,7 @@ jobs:
           if [[ -z "$FORMAT_BASE" || "$FORMAT_BASE" =~ ^0+$ ]]; then
             FORMAT_BASE="$(git rev-parse --verify HEAD^)"
           fi
-          npm run format:changed -- --base "$FORMAT_BASE"
+          npm run format:changed -- --base "$FORMAT_BASE" 2>&1 | tee coverage/ci/format.log
 
       - name: Jest quick tests
         id: jest
@@ -96,11 +104,68 @@ jobs:
         env:
           LIQUIDACION_FRONTEND_ROOT: ${{ github.workspace }}/tests/fixtures/frontend-date-contract
         run: |
-          node scripts/quality/verify-frontend-date-contract.mjs
-          npm test -- --ci --runInBand
+          node scripts/quality/verify-frontend-date-contract.mjs 2>&1 | tee coverage/ci/frontend-contract.log
+          npm test -- --ci --runInBand --json --outputFile=coverage/ci/jest-results.json 2>&1 | tee coverage/ci/jest.log
 
       - name: Vitest quick tests
         id: vitest
         if: ${{ !cancelled() && steps.install.outcome == 'success' && steps.prisma.outcome == 'success' }}
         timeout-minutes: 5
-        run: npm run test:vitest
+        run: npm run test:vitest:ci 2>&1 | tee coverage/ci/vitest.log
+
+      - name: Compile backend
+        id: build
+        if: ${{ !cancelled() && steps.install.outcome == 'success' && steps.prisma.outcome == 'success' }}
+        timeout-minutes: 5
+        env:
+          NODE_ENV: production
+        run: npm run build 2>&1 | tee coverage/ci/build.log
+
+      - name: Write quality summary
+        id: summary
+        if: ${{ !cancelled() && steps.runtime.outcome == 'success' }}
+        env:
+          CI_COMMIT_SHA: ${{ github.sha }}
+          CI_STATUS_install: ${{ steps.install.outcome }}
+          CI_STATUS_prisma: ${{ steps.prisma.outcome }}
+          CI_STATUS_types: ${{ steps.types.outcome }}
+          CI_STATUS_lint: ${{ steps.lint.outcome }}
+          CI_STATUS_format: ${{ steps.format.outcome }}
+          CI_STATUS_jest: ${{ steps.jest.outcome }}
+          CI_STATUS_vitest: ${{ steps.vitest.outcome }}
+          CI_STATUS_build: ${{ steps.build.outcome }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { appendFileSync, mkdirSync, writeFileSync } from 'node:fs';
+          import { execFileSync } from 'node:child_process';
+          const controls = ['install', 'prisma', 'types', 'lint', 'format', 'jest', 'vitest', 'build'];
+          const outcomes = Object.fromEntries(controls.map(name => [name, process.env[`CI_STATUS_${name}`] || 'skipped']));
+          const result = { commit: process.env.CI_COMMIT_SHA, node: process.versions.node,
+            npm: execFileSync('npm', ['--version'], { encoding: 'utf8' }).trim(), outcomes };
+          mkdirSync('coverage/ci', { recursive: true });
+          writeFileSync('coverage/ci/summary.json', JSON.stringify(result, null, 2) + '\n');
+          const rows = controls.map(name => `| ${name} | ${outcomes[name]} |`).join('\n');
+          appendFileSync(process.env.GITHUB_STEP_SUMMARY, `## Backend quality\n\n| Control | Resultado |\n| --- | --- |\n${rows}\n\nLos estados skipped no representan comprobaciones aprobadas.\n`);
+          NODE
+
+      - name: Upload quality reports
+        if: ${{ !cancelled() && steps.summary.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: backend-reports-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            coverage/ci/
+            coverage/vitest/
+          retention-days: 14
+          if-no-files-found: error
+
+      - name: Upload validated compilation
+        if: ${{ success() && steps.build.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: backend-dist-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            dist/
+            coverage/ci/summary.json
+          retention-days: 7
+          if-no-files-found: error
