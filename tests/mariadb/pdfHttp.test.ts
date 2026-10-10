@@ -148,7 +148,7 @@ async function bounded(promise: Promise<void>) {
 }
 async function inspectPdf(bytes: Buffer) {
   expect(bytes.subarray(0, 5).toString()).toBe("%PDF-");
-  const task = getDocument({ data: new Uint8Array(bytes), useSystemFonts: true, isEvalSupported: false });
+  const task = getDocument({ data: new Uint8Array(bytes), useSystemFonts: true });
   const doc = await task.promise;
   try {
     const pages: { text: string; items: { str: string; x: number; y: number; width: number; height: number }[] }[] = [];

@@ -145,10 +145,14 @@ describe("Backend compilado: proceso real y MariaDB exclusiva", () => {
     const port = await freePort();
     const url = new URL(databaseURL);
     url.password = "runtime-deliberately-invalid-password";
+    // Acotar la espera del pool exclusivo, manteniendo los cinco intentos reales.
+    url.searchParams.set("connect_timeout", "1");
+    url.searchParams.set("pool_timeout", "2");
     const instance = launch({ ...environment(port), PRISMA_DATABASE_FACTORING_URL: url.href });
     expect(await deadline(instance.exited, 45000)).toEqual({ code: 1, signal: null });
     expect(instance.output()).toContain("Max retries reached.");
     expect(instance.output()).toContain("Error starting server:");
+    expect(instance.output()).not.toContain("Database successful connection.");
     expect(instance.output()).not.toContain("Server running at");
     await expect(fetch(`http://127.0.0.1:${port}/ping`, { signal: AbortSignal.timeout(1000) })).rejects.toThrow();
     (evidence.cases as unknown[]).push({ case: "database-rejected-startup", passed: true });

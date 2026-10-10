@@ -90,6 +90,12 @@ test("suscripción pendiente y servicio no integrado no conceden accesos", async
   expect(await getEstadoSuscripcionService(42, subscriptionId)).toMatchObject({ suscrito: false, acceso: null });
 });
 
+test.each(["get", "post"] as const)("HTTP: %s sin cuerpo ni token devuelve 403 sin consultar datos", async method => {
+  await request(app)[method](method === "get" ? "/protected" : "/access").expect(403);
+  expect(client.usuario.findFirst).not.toHaveBeenCalled();
+  expect(client.$transaction).not.toHaveBeenCalled();
+});
+
 test("HTTP: solo el token actualizado permite usar la API protegida; ignora roles e identidad del cuerpo", async () => {
   const sourceToken = jwt.sign(session(), key);
   await request(app).get("/protected").set("Authorization", `Bearer ${sourceToken}`).expect(403);

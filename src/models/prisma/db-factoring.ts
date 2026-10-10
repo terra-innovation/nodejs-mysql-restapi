@@ -92,6 +92,8 @@ export class PrismaFTManager {
       try {
         log.info(line(), `[Prisma] [${env.PRISMA_DATABASE_FACTORING_NICKNAME}] Connecting to the database...`);
         await this.client.$connect();
+        // El adaptador puede inicializar el pool sin autenticar una conexión real.
+        await this.client.$queryRaw`SELECT 1`;
         log.info(line(), `[Prisma] [${env.PRISMA_DATABASE_FACTORING_NICKNAME}] Database successful connection.`);
         return;
       } catch (error) {

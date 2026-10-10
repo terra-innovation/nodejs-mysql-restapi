@@ -9,7 +9,7 @@ import { getUsuarioAccesosByIdusuario } from "#src/daos/usuario.Dao.js";
 import { prismaFT } from "#src/models/prisma/db-factoring.js";
 
 export const isAuth = (req: Request, res: Response, next: NextFunction) => {
-  const authHeader = req.body.token || req.query.token || req.params.token || req.headers["authorization"];
+  const authHeader = req.body?.token || req.query.token || req.params.token || req.headers["authorization"];
 
   if (!authHeader) {
     log.warn(line(), "Se requiere un token para la autenticación");

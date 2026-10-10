@@ -2,7 +2,7 @@ import { Decimal } from "@prisma/client/runtime/client";
 import { mkdirSync, readFileSync } from "fs";
 import { join } from "path";
 import { Settings } from "luxon";
-import PDFDocument from "pdfkit-table";
+import PDFDocument, { type Table } from "pdfkit-table";
 import PDFGenerator from "#src/utils/document/PDFgenerator.js";
 
 // Se generan archivos reales; el espía conserva el renderizador y permite comprobar sus datos.
@@ -46,13 +46,16 @@ describe.each(["UTC", "America/Lima"])("PDF real de simulación y propuesta; zon
     await expect(new PDFGenerator(simulationPath).generateFactoringSimulacion(data)).resolves.toBe(simulationPath);
     await expect(new PDFGenerator(proposalPath).generateFactoringPropuesta(factoring, data)).resolves.toBe(proposalPath);
     expect(table).toHaveBeenCalledTimes(2);
-    const simulationRows = table.mock.calls[0][0].datas;
-    const proposalRows = table.mock.calls[1][0].datas;
+    const simulationTable = table.mock.calls[0][0] as Table;
+    const proposalTable = table.mock.calls[1][0] as Table;
+    const simulationRows = simulationTable.datas;
+    const proposalRows = proposalTable.datas;
     for (const rows of [simulationRows, proposalRows]) {
       expect(rows.find(row => row.concepto === "Fecha de pago (estimada)").descripcion).toBe(label);
       expect(rows.find(row => row.concepto === "Días (estimados)").descripcion).toBe(days);
       expect(rows.find(row => row.concepto === "(-) Valor descuento (1)").descripcion).toBe("$ 789.12");
-      expect(rows.find(row => row.concepto === "bold:(=) Valor adelanto").descripcion).toBe("bold:$ 53286.12");
+      // formatNumber usa es-PE y agrupación de miles, igual que los PDF de integración.
+      expect(rows.find(row => row.concepto === "bold:(=) Valor adelanto").descripcion).toBe("bold:$ 53,286.12");
     }
     for (const file of [simulationPath, proposalPath]) {
       const bytes = readFileSync(file);

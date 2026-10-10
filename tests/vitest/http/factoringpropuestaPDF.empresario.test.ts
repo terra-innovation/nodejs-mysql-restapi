@@ -52,7 +52,7 @@ function files(folder = path.join(b.root, "storage", "procesar")): string[] {
   return readdirSync(folder, { withFileTypes: true }).flatMap(entry => entry.isDirectory() ? files(path.join(folder, entry.name)) : [path.join(folder, entry.name)]);
 }
 async function pdfText(data: Buffer) {
-  const task = getDocument({ data: new Uint8Array(data), useSystemFonts: true, isEvalSupported: false });
+  const task = getDocument({ data: new Uint8Array(data), useSystemFonts: true });
   const doc = await task.promise;
   try {
     const pages: string[] = [];

@@ -3,7 +3,12 @@ export default {
   testEnvironment: "node",
   coveragePathIgnorePatterns: ["/node_modules/", "/dist/"],
   transform: {
-    "^.+\\.(ts|js)$": "ts-jest",
+    // Prisma 7 conserva ESM; las suites existentes mantienen jest.mock en CommonJS.
+    "[/\\\\]generated[/\\\\]prisma[/\\\\].+\\.ts$": [
+      "<rootDir>/tests/transformers/prismaEsm.cjs",
+      { tsconfig: "<rootDir>/tests/tsconfig.jest.json", useESM: true },
+    ],
+    "^.+\\.(ts|js)$": ["ts-jest", { tsconfig: "<rootDir>/tests/tsconfig.jest.json", useESM: true }],
   },
   moduleNameMapper: {
     "^file-type$": "<rootDir>/tests/mocks/fileTypeMock.ts",
