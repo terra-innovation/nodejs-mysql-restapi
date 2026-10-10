@@ -55,7 +55,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "5.3.0",
-    "file-type": "^20.4.1",
+    "file-type": "22.1.1",
     "helmet": "8.3.0",
     "html-to-text": "^9.0.5",
     "ip-range-check": "^0.2.0",
