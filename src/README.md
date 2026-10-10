@@ -115,17 +115,17 @@ El sistema cuenta con una verificación estricta de separación de capas:
 
 ---
 
-## 🧪 Pruebas Unitarias Automatizadas (`tests/unit/`)
+## 🧪 Pruebas Unitarias Automatizadas (`tests/vitest/migrated/unit/`)
 
-La arquitectura está respaldada por una suite de pruebas automatizadas con Jest y TypeScript (`ts-jest`), libre de dependencias de bases de datos vivas mediante mocking de DAOs y Prisma:
+La arquitectura está respaldada por una suite de pruebas automatizadas con Vitest y TypeScript, libre de dependencias de bases de datos vivas mediante mocking de DAOs y Prisma:
 
-- **`tests/unit/services/usuario/archivo.Service.test.ts`**: Pruebas de validación de extensiones, límites de peso, detección MIME real y borrado seguro.
-- **`tests/unit/services/financiero/factura.Service.test.ts`**: Verificación de delegación correcta de consultas, altas y bajas de facturas.
-- **`tests/unit/services/admin/factoringpropuesta.Service.test.ts`**: Verificación de cálculos de propuesta y simulación financiera.
-- **`tests/unit/services/admin/factoringliquidacion.Service.test.ts`**: Precisión de fórmulas financieras para pronto pago y mora.
-- **`tests/unit/services/factoring.Service.test.ts`**: Simulación de tasas efectivas y condiciones contractuales.
-- **`tests/unit/domain/factoring/factoring.Calculator.test.ts`**: Cálculos sin base de datos, cargos por moneda y banco, descuentos, redondeos históricos y fechas.
-- **`tests/unit/services/tipocambio.Service.test.ts`**: Normalización de fechas Lima UTC y generadores de código.
+- **`tests/vitest/migrated/unit/services/usuario/archivo.Service.test.ts`**: Pruebas de validación de extensiones, límites de peso, detección MIME real y borrado seguro.
+- **`tests/vitest/migrated/unit/services/financiero/factura.Service.test.ts`**: Verificación de delegación correcta de consultas, altas y bajas de facturas.
+- **`tests/vitest/migrated/unit/services/admin/factoringpropuesta.Service.test.ts`**: Verificación de cálculos de propuesta y simulación financiera.
+- **`tests/vitest/migrated/unit/services/admin/factoringliquidacion.Service.test.ts`**: Precisión de fórmulas financieras para pronto pago y mora.
+- **`tests/vitest/migrated/unit/services/factoring.Service.test.ts`**: Simulación de tasas efectivas y condiciones contractuales.
+- **`tests/vitest/migrated/unit/domain/factoring/factoring.Calculator.test.ts`**: Cálculos sin base de datos, cargos por moneda y banco, descuentos, redondeos históricos y fechas.
+- **`tests/vitest/migrated/unit/services/tipocambio.Service.test.ts`**: Normalización de fechas Lima UTC y generadores de código.
 
 ---
 

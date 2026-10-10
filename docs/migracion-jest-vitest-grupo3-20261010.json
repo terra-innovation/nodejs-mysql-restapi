@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "source": "tests/unit/routes/factoringEmpresaDetalle.test.ts",
+      "target": "tests/vitest/migrated/unit/routes/factoringEmpresaDetalle.test.ts",
+      "cases": 24,
+      "sameCasesAndStatuses": true,
+      "sourceMatchesOriginalWithOnlyVitestImportsMockAPIFileTypeLocalMockAndPrettier": true
+    },
+    {
+      "source": "tests/unit/services/usuario/archivo.Service.test.ts",
+      "target": "tests/vitest/migrated/unit/services/usuario/archivo.Service.test.ts",
+      "cases": 8,
+      "sameCasesAndStatuses": true,
+      "sourceMatchesOriginalWithOnlyVitestImportsMockAPIFileTypeLocalMockAndPrettier": true
+    }
+  ]
+}

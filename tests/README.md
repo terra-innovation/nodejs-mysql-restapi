@@ -2,9 +2,8 @@
 
 Este documento describe la organización, convención de nombres y forma de ejecución de las pruebas en el proyecto.
 
-Vitest está instalado junto con Jest para una adopción gradual. Las nuevas pruebas
-de Vitest se encuentran en `tests/vitest/unit/` y `tests/vitest/http/`; `npm test` mantiene la selección
-actual de Jest. Configuración, comandos y alcance: [Guía de Vitest](vitest/README.md).
+Vitest es el runner de `npm test`. La selección rápida incluye `tests/vitest/unit/`,
+`http/`, `pending/` y las suites originales adaptadas en `migrated/`. Configuración, comandos y alcance: [Guía de Vitest](vitest/README.md).
 
 El entorno de integración real con MariaDB tiene comandos separados y una
 [guía propia](mariadb/README.md). Usa una instancia desechable y estructura
@@ -58,16 +57,11 @@ Contratos y límites: [Matriz de negocio](vitest/MATRIZ_NEGOCIO.md).
 
 ```
 tests/
-├── unit/                         # Pruebas unitarias automatizadas (Jest)
-│   ├── services/                 # Tests de servicios de dominio (mockeando DAOs y providers)
-│   └── utils/                    # Tests de utilidades puras (sin IO ni BD)
+├── vitest/migrated/              # Suites migradas con equivalencia verificada
 ├── vitest/unit/                  # Pruebas automatizadas nuevas (Vitest)
 ├── vitest/http/                  # Rutas y controladores reales con DAOs simulados
 ├── vitest/pending/               # Criterios pendientes de decisión (todo)
-├── integration/                  # Pruebas de integración con base de datos real
-├── e2e/                          # Pruebas End-to-End contra la API Express (Supertest)
-│   ├── public/                   # Endpoints públicos (login, registro, health)
-│   └── private/                  # Endpoints protegidos (con sesión / token JWT)
+├── mariadb/                      # Integración real y runtime con MariaDB desechable
 ├── manual/                       # Scripts de exploración y verificación manual (NO automatizados)
 │   └── integrations/             # Scripts de prueba de APIs externas (ApisPeru, Decolecta)
 ├── email/                        # Pruebas de envío y renderizado de templates de correo
@@ -81,13 +75,13 @@ tests/
 
 | Carpeta | Tipo de Prueba | Qué Debe Probar | Cómo Ejecutar |
 |---|---|---|---|
-| **`tests/unit/services/`** | Unitario Automatizado | Lógica de negocio, cálculos financieros (`tdd`, `tda`), reglas de validación. Se aíslan con mocks de Prisma/DAOs. | `npm test` |
-| **`tests/unit/utils/`** | Unitario Automatizado | Funciones utilitarias puras (conversión de fechas Lima, manipulación JSON, formato de moneda). | `npm test` |
+| **`tests/vitest/migrated/unit/services/`** | Unitario Automatizado | Lógica de negocio, cálculos financieros (`tdd`, `tda`), reglas de validación. Se aíslan con mocks de Prisma/DAOs. | `npm test` |
+| **`tests/vitest/migrated/unit/utils/`** | Unitario Automatizado | Funciones utilitarias puras (conversión de fechas Lima, manipulación JSON, formato de moneda). | `npm test` |
 | **`tests/vitest/unit/`** | Unitario Automatizado | Cálculos, propuestas, liquidaciones, transferencias, autenticación y archivos. | `npm run test:vitest:unit` |
 | **`tests/vitest/http/`** | HTTP Automatizado | Rutas Express, autenticación, roles, validación, servicios reales y respuestas de error, con DAOs simulados. | `npm run test:vitest:http` |
 | **`tests/vitest/pending/`** | Seguimiento | Criterios marcados `todo`; no son pruebas aprobadas. | Incluidos en `npm run test:vitest` |
-| **`tests/integration/`** | Integración futura | Interacción real con MariaDB/Prisma en una base desechable y exclusiva para pruebas. | Pendiente; no forma parte de `npm test` |
-| **`tests/e2e/`** | End-to-End HTTP | Flujos completos desde la ruta Express hasta la respuesta HTTP usando Supertest. | `npm test` |
+| **`tests/mariadb/`** | Integración real | MariaDB/Prisma en una base desechable exclusiva. | `npm run test:integration`; separado de `npm test` |
+| **`tests/vitest/migrated/e2e/`** | Ejemplo básico | `example.test.ts`; `index.test.ts` permanece excluido. No acredita E2E. | `npm test` |
 | **`tests/manual/integrations/`** | Exploratorio Manual | Verificación en vivo de conectividad, cuotas y respuestas de APIs externas. | `npx tsx tests/manual/...` |
 | **`tests/email/`** | Manual / Específico | Verificación visual de templates HTML y prueba de entrega SMTP. | `npx tsx tests/email/...` |
 | **`tests/telegram/`** | Manual / Específico | Entrega de alertas y formato markdown de mensajes al bot de Telegram. | `npx tsx tests/telegram/...` |
@@ -97,21 +91,21 @@ tests/
 
 ## 🚀 Comandos de Ejecución
 
-### 1. Ejecutar Suite Automatizada (Jest)
+### 1. Ejecutar Suite Automatizada (Vitest)
 ```bash
-# Ejecutar todas las pruebas unitarias y e2e configuradas en Jest
+# Ejecutar todas las pruebas rápidas configuradas en Vitest
 npm test
 
 # Ejecutar tests en modo observador (watch mode)
-npm test -- --watch
+npm run test:vitest:watch
 
 # Ejecutar un archivo o patrón específico
-npm test -- tests/unit/services/tipocambio.Service.test.ts
+npm test -- tests/vitest/migrated/unit/services/tipocambio.Service.test.ts
 ```
 
-`jest.config.js` selecciona `tests/unit/` y `tests/e2e/`, y excluye
-`tests/e2e/index.test.ts`. No ejecuta `tests/integration/`, scripts manuales
-ni pruebas de Vitest. Las pruebas HTTP con DAOs simulados verifican rutas y
+`vitest.config.ts` selecciona las suites rápidas en `tests/vitest/` y excluye
+`tests/vitest/migrated/e2e/index.test.ts`. No ejecuta scripts manuales
+ni pruebas MariaDB. Las pruebas HTTP con DAOs simulados verifican rutas y
 permisos; no equivalen a un flujo completo con persistencia real.
 
 ### Ejecutar Vitest
@@ -123,7 +117,7 @@ npm run test:vitest:coverage
 npm run test:vitest:typecheck
 npm run test:vitest:ci
 
-# Selección completa de Jest, tipos de Vitest y pruebas de Vitest, en ese orden
+# Tipos de Vitest y selección rápida completa una sola vez
 npm run test:all
 ```
 
@@ -146,8 +140,8 @@ npx tsx tests/manual/integrations/decolecta/connectivity.ts
 ## 📝 Buenas Prácticas de Testing
 
 1. **Aislamiento en Tests Unitarios:**
-   - En `tests/unit/services/`, **nunca** conectarse a una base de datos real.
-   - Utilizar `jest.mock()` para simular las respuestas de los DAOs (`#root/src/daos/*`) y de `prismaFT`.
+   - En `tests/vitest/migrated/unit/services/`, **nunca** conectarse a una base de datos real.
+   - Utilizar `vi.mock()` para simular las respuestas de los DAOs (`#root/src/daos/*`) y de `prismaFT`.
 2. **Determinismo:**
    - Todo test automatizado debe ser idempotente y no depender del estado dejado por pruebas previas.
 3. **Limpieza de Recursos:**

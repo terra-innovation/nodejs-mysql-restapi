@@ -12,8 +12,8 @@ El job `Backend quality` usa un runner `ubuntu-24.04`, con un límite de 20 minu
 2. Selecciona Node desde `.node-version` y npm desde `packageManager`; verifica ambas versiones.
 3. Restaura la caché de descargas npm asociada al lockfile y ejecuta `npm ci --include=dev --no-audit --no-fund`. No reutiliza `node_modules`. Omite únicamente la generación Prisma implícita del postinstall.
 4. Genera Prisma explícitamente con `prisma:generate:ci`, sin archivos `.env` ni conexión a bases.
-5. Comprueba los cuatro proyectos de tipos, lint y formato gradual mediante los scripts existentes.
-6. Ejecuta las selecciones rápidas completas de Jest y Vitest en pasos independientes, con JSON de Jest y cobertura/JUnit de Vitest.
+5. Comprueba los tres proyectos de tipos, lint y formato gradual mediante los scripts existentes.
+6. Ejecuta la selección rápida completa de Vitest, incluidas las suites migradas, con cobertura y JUnit.
 7. Compila el backend con `npm run build`, usando el target Node 24.
 8. Genera un resumen y conserva reportes y, cuando todos los controles aprueban, el compilado como artefactos descargables.
 
@@ -25,30 +25,29 @@ Los controles de lint y formato se ejecutan si la instalación fue satisfactoria
 
 | Paso | Comando | Selección conservada |
 | --- | --- | --- |
-| Jest | `npm test -- --ci --runInBand --json --outputFile=coverage/ci/jest-results.json` | `jest.config.js`: roots `tests/unit` y `tests/e2e`, con sus patrones y exclusiones existentes |
-| Vitest | `npm run test:vitest:ci` | `vitest.config.ts`: `tests/vitest/unit`, `http` y `pending` |
+| Vitest | `npm run test:vitest:ci` | `vitest.config.ts`: `tests/vitest/unit`, `http`, `pending` y `migrated` |
 
-Ambos pasos requieren instalación y generación Prisma aprobadas, pero se ejecutan aunque fallen tipos, lint, formato o el otro runner. Cada runner dispone de cinco minutos, dentro del límite de veinte minutos del job. Una cancelación del workflow sí detiene las comprobaciones restantes.
+El paso requiere instalación y generación Prisma aprobadas, pero se ejecuta aunque fallen tipos, lint o formato. Dispone de cinco minutos dentro del límite del job. Una cancelación detiene las comprobaciones restantes.
 
-Los scripts existentes fijan `TZ=UTC` y `NODE_ENV=test`; el workflow añade `CI=true`. Jest usa `--ci` para impedir actualizar snapshots automáticamente y `--runInBand` para evitar workers adicionales. Vitest ya usa `run`, rechaza `.only` con `CI=true` y falla si no encuentra pruebas. Jest conserva su comportamiento de fallo ante ausencia de pruebas. No se añaden `--forceExit`, `--passWithNoTests`, filtros de selección ni regeneración de snapshots.
+Los scripts existentes fijan `TZ=UTC` y `NODE_ENV=test`; el workflow añade `CI=true`. Vitest usa `run`, rechaza `.only` con `CI=true` y falla si no encuentra pruebas. No se añaden `--forceExit`, `--passWithNoTests`, filtros de selección ni regeneración de snapshots.
 
-Estas suites usan infraestructura simulada; las pruebas HTTP de Vitest no equivalen al arranque completo ni a persistencia real. Se conserva la exclusión histórica de `tests/e2e/index.test.ts`. Los `todo` de Vitest siguen pendientes: no representan pruebas aprobadas. No se alteran aserciones, mocks ni configuraciones de selección.
+Estas suites usan infraestructura simulada; las pruebas HTTP de Vitest no equivalen al arranque completo ni a persistencia real. Se conserva la exclusión histórica de `tests/vitest/migrated/e2e/index.test.ts`. Los `todo` de Vitest siguen pendientes: no representan pruebas aprobadas. No se alteran aserciones, mocks ni configuraciones de selección.
 
-**Referencia de fechas para Jest:** `tests/unit/services/factoring.dateTrace.test.ts` y `tests/unit/services/admin/factoringliquidacion.audit.test.ts` invocan `scripts/analisis/fecha-liquidacion-frontend.cjs`. CI fija `LIQUIDACION_FRONTEND_ROOT` a `tests/fixtures/frontend-date-contract`, una copia exacta versionada del helper del frontend con procedencia y SHA-256 registrados. Antes de Jest, `verify-frontend-date-contract.mjs` verifica integridad sin ejecutar el helper. Esto elimina el requisito de una carpeta externa en Ubuntu. El ayudante conserva localmente su ruta predeterminada al frontend real; no se excluyen suites ni se cambian expectativas. La sincronización futura queda abierta como [DT-CI-01](../deuda-tecnica/20261010_DT_CI_01_contrato_fechas_frontend.md).
+**Referencia de fechas para las suites migradas:** `tests/vitest/migrated/unit/services/factoring.dateTrace.test.ts` y `tests/vitest/migrated/unit/services/admin/factoringliquidacion.audit.test.ts` invocan `scripts/analisis/fecha-liquidacion-frontend.cjs`. CI fija `LIQUIDACION_FRONTEND_ROOT` a `tests/fixtures/frontend-date-contract`, una copia exacta versionada del helper del frontend con procedencia y SHA-256 registrados. Antes de Vitest, `verify-frontend-date-contract.mjs` verifica integridad sin ejecutar el helper. Esto elimina el requisito de una carpeta externa en Ubuntu. El ayudante conserva localmente su ruta predeterminada al frontend real; no se excluyen suites ni se cambian expectativas. La sincronización futura queda abierta como [DT-CI-01](../deuda-tecnica/20261010_DT_CI_01_contrato_fechas_frontend.md).
 
-Se reutilizan `test` y `test:vitest:ci` para que los resultados de ambos queden visibles. `test:all` se detiene ante el primer fallo y no se utiliza como agregado del workflow. El punto 7 activa la cobertura y los umbrales ya definidos en Vitest, sin modificarlos ni ampliar la selección de suites.
+CI utiliza `test:vitest:ci`; `npm test` ejecuta la misma selección sin cobertura. `test:all` comprueba tipos de Vitest y ejecuta pruebas una vez; no equivale a todos los controles del workflow. El punto 7 activa la cobertura y los umbrales ya definidos en Vitest, sin modificar los umbrales; la selección incluye ahora las suites migradas.
 
 ## Compilación, reportes y artefactos: punto 7
 
 La compilación reutiliza `npm run build` (prebuild Prisma, tipos y tsdown), con `NODE_ENV=production` limitado al paso para no cargar `.env`. No ejecuta el servidor. `tsdown.config.ts` pasa de target `node18` a `node24`, coherente con el runtime declarado del proyecto; se conserva ESM, entradas, mapas y todo el directorio `dist`. El paso tiene cinco minutos y puede ejecutarse aunque fallen pruebas u otros controles, para aportar diagnóstico.
 
-Tipos, lint, formato, contrato del frontend, Jest, Vitest y compilación conservan salida mediante `tee`. El shell Bash de Actions aplica `-e` y `pipefail`, de modo que un fallo del comando no se oculta por el éxito de `tee`. La instalación y generación inicial Prisma permanecen en los logs de Actions.
+Tipos, lint, formato, contrato del frontend, Vitest y compilación conservan salida mediante `tee`. El shell Bash de Actions aplica `-e` y `pipefail`, de modo que un fallo del comando no se oculta por el éxito de `tee`. La instalación y generación inicial Prisma permanecen en los logs de Actions.
 
 Un resumen Markdown en la página de ejecución y `coverage/ci/summary.json` registran estados de los controles, commit y versiones Node/npm. `skipped` no se interpreta como aprobado. El resumen describe los controles anteriores; no certifica una subida de artefactos que todavía no haya ocurrido.
 
 | Artefacto | Contenido | Cuándo se conserva | Retención |
 | --- | --- | --- | --- |
-| `backend-reports-<run_id>-<run_attempt>` | `coverage/ci/`: logs, JSON de Jest y resumen; `coverage/vitest/`: JUnit y reportes de cobertura | Aunque falle un control, si se pudo generar el resumen y no se canceló la ejecución | 14 días |
+| `backend-reports-<run_id>-<run_attempt>` | `coverage/ci/`: logs y resumen; `coverage/vitest/`: JUnit y reportes de cobertura | Aunque falle un control, si se pudo generar el resumen y no se canceló la ejecución | 14 días |
 | `backend-dist-<run_id>-<run_attempt>` | Todo `dist/`, incluidos chunks y sourcemaps, junto con `coverage/ci/summary.json` | Solo si los pasos anteriores y la compilación aprobaron | 7 días |
 
 Los reportes pueden estar incompletos ante fallos tempranos, timeouts o cancelación; un archivo ausente no significa una suite aprobada. Los logs originales siguen disponibles en Actions. Una subida fallida hace fallar el job. Se usa [upload-artifact v7.0.2](https://github.com/actions/upload-artifact/releases/tag/v7.0.2), fijada por SHA verificado el 10 de octubre de 2026.

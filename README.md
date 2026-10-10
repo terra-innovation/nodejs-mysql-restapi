@@ -19,7 +19,7 @@ Usar Node 24.21.0 y npm 11.19.0 como referencia. Instalar con `npm ci` y generar
 
 Ejecutar `npm run typecheck:all`, `npm run lint` y `npm run format:check` de forma independiente. No ejecutan pruebas ni corrigen archivos. Alcance, preparación y limitaciones: [comandos de calidad](docs/ci/comandos-calidad.md).
 
-GitHub Actions: [workflow rápido del backend](docs/ci/workflow-rapido.md), con tipos, lint, formato gradual, pruebas Jest/Vitest, compilación y artefactos para PR y pushes a `master`.
+GitHub Actions: [workflow rápido del backend](docs/ci/workflow-rapido.md), con tipos, lint, formato gradual, pruebas Vitest, compilación y artefactos para PR y pushes a `master`.
 
 Tras aprobar los controles rápidos, se ejecuta [integración MariaDB y runtime compilado](docs/ci/integracion-runtime.md) con el runner desechable existente.
 

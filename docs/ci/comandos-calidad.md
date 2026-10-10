@@ -22,10 +22,9 @@ npm.cmd run format:check
 | Comando | Alcance | Resultado esperado |
 | --- | --- | --- |
 | `npm run typecheck` | Tipos del backend, sin emitir archivos | Código de salida 0 si no hay errores de tipos |
-| `npm run typecheck:jest` | Tipos de las suites Jest | No ejecuta Jest |
 | `npm run typecheck:vitest` | Reutiliza `test:vitest:typecheck` | No ejecuta Vitest |
 | `npm run typecheck:integration` | Reutiliza `test:integration:typecheck` | No arranca MariaDB ni Docker |
-| `npm run typecheck:all` | Los cuatro controles de tipos, en secuencia | Se detiene en el primero que falle |
+| `npm run typecheck:all` | Los tres controles de tipos, en secuencia | Se detiene en el primero que falle |
 | `npm run lint` | `src`, con la configuración ESLint existente | Falla ante errores; las advertencias siguen siendo visibles |
 | `npm run lint:fix` | Mismo alcance de lint | Aplica las correcciones que ESLint considera automáticas; revisar el diff |
 | `npm run format:check` | Código de `src`, `tests`, `scripts` y configuraciones JSON/JavaScript de la raíz | Falla si hay diferencias de formato; no escribe archivos |

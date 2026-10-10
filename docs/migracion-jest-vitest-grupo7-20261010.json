@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "source": "tests/unit/services/admin/factoringliquidacion.audit.test.ts",
+      "target": "tests/vitest/migrated/unit/services/admin/factoringliquidacion.audit.test.ts",
+      "cases": 2262,
+      "sameCasesAndStatuses": true,
+      "sourceTokensMatchVitestImportsMockAPIAndAsyncImportActual": true,
+      "sameFreshJestCasesAndAuditReport": true,
+      "auditRecords": 2281,
+      "issueCounts": {},
+      "observationCounts": {
+        "REDONDEO_DIARIO": 360,
+        "DESCUENTO_MAYOR_SIN_CARGO_POR_INICIO_DISTINTO": 2,
+        "ABONO_PUNTUAL_POR_INICIO_DISTINTO": 2
+      }
+    }
+  ]
+}

@@ -23,7 +23,7 @@ Los ejemplos usan archivos reales. Sustituir el archivo por la suite afectada; `
 | Tipos del backend | `npx --no-install tsc --noEmit` |
 | Tipos de Vitest | `npm run test:vitest:typecheck` |
 | Vitest focalizado | `npm run test:vitest -- tests/vitest/unit/dateUtils.test.ts` |
-| Jest focalizado | `npm test -- --runInBand --runTestsByPath tests/unit/utils/dateUtils.test.ts` |
+| Vitest migrado focalizado | `npm test -- tests/vitest/migrated/unit/utils/dateUtils.test.ts` |
 | Vitest completo, si corresponde | `npm run test:vitest` |
 | Tipos de integración | `npm run test:integration:typecheck` |
 | Requisitos de MariaDB desechable | `npm run test:integration:doctor` |
@@ -31,7 +31,7 @@ Los ejemplos usan archivos reales. Sustituir el archivo por la suite afectada; `
 | Proceso compilado y conexión real | `npm run test:runtime` |
 
 - Los scripts de pruebas establecen `TZ=UTC` y `NODE_ENV=test`. En automatización, establecer `CI=true` temporalmente para rechazar `.only` en Vitest; restaurar el valor previo al terminar. Evitar modos watch.
-- `npm test` no ejecuta Vitest, y Vitest transforma TypeScript sin comprobar tipos. Conservar ambos runners y sus selecciones actuales.
+- `npm test` y `npm run test:vitest` ejecutan la misma selección rápida de Vitest. Vitest transforma TypeScript sin comprobar tipos; conservar la comprobación independiente de tipos. Jest y sus soportes exclusivos fueron retirados.
 - La cobertura es una comprobación adicional cuando la tarea la requiere: `npm run test:vitest:coverage`. Los conteos de casos, incluidos los parametrizados, no representan cobertura.
 
 ## Elegir referencias según el riesgo

@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-10",
+  "localMigrationPlan": "completed",
+  "node": "v24.21.0",
+  "platform": "win32",
+  "arch": "x64",
+  "integration": {
+    "files": 16,
+    "passedTests": 523,
+    "failedTests": 0,
+    "runId": "ad54b443af591c9e9847e40d",
+    "image": "mariadb:11.4.10",
+    "startedAt": "2026-10-10T19:50:10.708Z",
+    "status": "passed",
+    "cleanup": "removed",
+    "schemaHash": "31b61aab8b125fbf00fea9e499b84c24d33324ed96e7ec85473c96b5aa24898f",
+    "tables": 127,
+    "sourceVersion": "11.4.2-MariaDB",
+    "finishedAt": "2026-10-10T19:56:42.142Z"
+  },
+  "runtime": {
+    "runId": "ad54b443af591c9e9847e40d",
+    "startedAt": "2026-10-10T19:54:56.338Z",
+    "node": "v24.21.0",
+    "platform": "win32",
+    "arch": "x64",
+    "cases": [
+      {
+        "case": "startup-http-shutdown",
+        "passed": true,
+        "signalDelivery": "IPC-to-real-SIGTERM-hook"
+      },
+      {
+        "case": "database-rejected-startup",
+        "passed": true
+      }
+    ],
+    "compilation": {
+      "sourceTypecheck": "passed",
+      "config": "tsdown.config.ts",
+      "isolatedOutput": true
+    },
+    "finishedAt": "2026-10-10T19:55:24.527Z",
+    "status": "passed"
+  },
+  "limits": ["GitHub Actions no ejecutado para esta revision", "Linux ARM64 no ejecutado", "Tres todo de negocio conservados"]
+}

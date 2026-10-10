@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "source": "tests/unit/services/factoring.dateTrace.test.ts",
+      "target": "tests/vitest/migrated/unit/services/factoring.dateTrace.test.ts",
+      "cases": 14,
+      "sameCasesAndStatuses": true,
+      "sourceTokensMatchVitestImportsMockAPIAndAsyncImportActual": true
+    },
+    {
+      "source": "tests/unit/services/admin/factoringsimulacion.dates.test.ts",
+      "target": "tests/vitest/migrated/unit/services/admin/factoringsimulacion.dates.test.ts",
+      "cases": 494,
+      "sameCasesAndStatuses": true,
+      "sourceTokensMatchVitestImportsMockAPIAndAsyncImportActual": true
+    }
+  ]
+}

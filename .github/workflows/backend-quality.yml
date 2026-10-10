@@ -97,8 +97,8 @@ jobs:
           fi
           npm run format:changed -- --base "$FORMAT_BASE" 2>&1 | tee coverage/ci/format.log
 
-      - name: Jest quick tests
-        id: jest
+      - name: Vitest quick tests
+        id: vitest
         if: ${{ !cancelled() && steps.install.outcome == 'success' && steps.prisma.outcome == 'success' }}
         timeout-minutes: 5
         env:
@@ -108,16 +108,6 @@ jobs:
           source tests/fixtures/ci-quick.env
           set +a
           node scripts/quality/verify-frontend-date-contract.mjs 2>&1 | tee coverage/ci/frontend-contract.log
-          npm test -- --ci --runInBand --json --outputFile=coverage/ci/jest-results.json 2>&1 | tee coverage/ci/jest.log
-
-      - name: Vitest quick tests
-        id: vitest
-        if: ${{ !cancelled() && steps.install.outcome == 'success' && steps.prisma.outcome == 'success' }}
-        timeout-minutes: 5
-        run: |
-          set -a
-          source tests/fixtures/ci-quick.env
-          set +a
           npm run test:vitest:ci 2>&1 | tee coverage/ci/vitest.log
 
       - name: Compile backend
@@ -138,14 +128,13 @@ jobs:
           CI_STATUS_types: ${{ steps.types.outcome }}
           CI_STATUS_lint: ${{ steps.lint.outcome }}
           CI_STATUS_format: ${{ steps.format.outcome }}
-          CI_STATUS_jest: ${{ steps.jest.outcome }}
           CI_STATUS_vitest: ${{ steps.vitest.outcome }}
           CI_STATUS_build: ${{ steps.build.outcome }}
         run: |
           node --input-type=module <<'NODE'
           import { appendFileSync, mkdirSync, writeFileSync } from 'node:fs';
           import { execFileSync } from 'node:child_process';
-          const controls = ['install', 'prisma', 'types', 'lint', 'format', 'jest', 'vitest', 'build'];
+          const controls = ['install', 'prisma', 'types', 'lint', 'format', 'vitest', 'build'];
           const outcomes = Object.fromEntries(controls.map(name => [name, process.env[`CI_STATUS_${name}`] || 'skipped']));
           const result = { commit: process.env.CI_COMMIT_SHA, node: process.versions.node,
             npm: execFileSync('npm', ['--version'], { encoding: 'utf8' }).trim(), outcomes };
