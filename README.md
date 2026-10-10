@@ -19,4 +19,6 @@ Usar Node 24.21.0 y npm 11.19.0 como referencia. Instalar con `npm ci` y generar
 
 Ejecutar `npm run typecheck:all`, `npm run lint` y `npm run format:check` de forma independiente. No ejecutan pruebas ni corrigen archivos. Alcance, preparación y limitaciones: [comandos de calidad](docs/ci/comandos-calidad.md).
 
+GitHub Actions: [workflow rápido del backend](docs/ci/workflow-rapido.md), con tipos, lint y formato gradual para PR y pushes a `master`.
+
 
