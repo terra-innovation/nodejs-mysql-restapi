@@ -19,9 +19,16 @@ import usuarioRoutes from "#root/src/routes/usuario/index.js";
 
 const app = express();
 
+// Conservar el análisis de parámetros de consulta utilizado en Express 4.
+app.set("query parser", "extended");
 app.set("trust proxy", "::1"); // Para obtener la IP del proxy inverso local X-Real-IP
 app.set("trust proxy", "127.0.0.1"); // Para obtener la IP del proxy inverso local X-Real-IP
 app.use(express.json()); // Convierte los request a json
+// Express 5 deja req.body sin definir cuando no hay un cuerpo que analizar.
+app.use((req, res, next) => {
+  req.body ??= {};
+  next();
+});
 app.use(ipFilterMiddleware); // Restringue el acceso por IP
 app.use(rateLimiterGlobalMiddleware); // Limita la cantidad de solicitudes global en un tiempo establecido
 app.use(blockSuspiciousUAMiddleware); //Bloquea User-Agents sospechosos
