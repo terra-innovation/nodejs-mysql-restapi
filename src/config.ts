@@ -58,7 +58,7 @@ try {
   env = envSchema.parse(process.env);
 } catch (error) {
   if (error instanceof z.ZodError) {
-    error.errors.forEach((err) => {
+    error.issues.forEach((err) => {
       console.error(`Environment variable validation failed: ${err.path.join(".")}: ${err.message}`);
     });
     process.exit(1); // Exit the process with an error code
