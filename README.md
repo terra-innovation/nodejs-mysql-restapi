@@ -23,4 +23,6 @@ GitHub Actions: [workflow rápido del backend](docs/ci/workflow-rapido.md), con 
 
 Tras aprobar los controles rápidos, se ejecuta [integración MariaDB y runtime compilado](docs/ci/integracion-runtime.md) con el runner desechable existente.
 
+Ejecución completa aprobada en GitHub, diagnóstico y tiempos: [validación remota de CI](docs/ci/validacion-remota-20261010.md).
+
 

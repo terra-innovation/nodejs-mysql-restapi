@@ -73,6 +73,8 @@ El formato histórico pendiente y las advertencias de lint se mantienen visibles
 
 ## Publicación y validación
 
+Estado actualizado al cerrar el punto 9: el [PR en borrador #1](https://github.com/terra-innovation/nodejs-mysql-restapi/pull/1) ejecutó el workflow completo en GitHub con ambos jobs aprobados. Diagnóstico, corrección del entorno sintético, tiempos y artefactos descargados: [validación remota del 10 de octubre](validacion-remota-20261010.md). Los párrafos siguientes conservan la evidencia histórica de los puntos 5–7; sus pendientes de ejecución remota quedaron resueltos en el punto 9.
+
 El workflow se entrega como cambio local. GitHub podrá ejecutarlo cuando se confirme y publique en una rama con un PR hacia `master`, o se publique en `master`. La ejecución manual aparece cuando el archivo está disponible en la rama predeterminada. Las políticas de Actions de la organización pueden requerir permitir las acciones oficiales utilizadas.
 
 La revisión local del YAML y sus referencias no equivale a una ejecución en Ubuntu/GitHub Actions. La primera ejecución remota y la medición de tiempos siguen pendientes hasta publicar los cambios; no se ha realizado push ni activado una ejecución remota como parte de este punto.

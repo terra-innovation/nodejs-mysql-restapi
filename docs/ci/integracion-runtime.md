@@ -40,7 +40,7 @@ Para las protecciones de rama del punto 10, revisar los resultados de ambos jobs
 
 ## Validación local y límites
 
-Este punto configura las ejecuciones futuras. Por la restricción vigente del usuario, no se ejecutan pruebas ni se crean contenedores localmente. Se revisan YAML, condiciones, sintaxis Bash/JavaScript, formato y diff. La ejecución real en GitHub, restauración SQL, pruebas, limpieza efectiva y descarga de artefactos quedan pendientes de publicar el workflow y completarlo en el punto 9.
+En el punto 8 se configuraron las ejecuciones futuras sin ejecutar pruebas ni crear contenedores localmente. Se revisaron YAML, condiciones, sintaxis Bash/JavaScript, formato y diff. La ejecución real en GitHub, restauración SQL, pruebas, limpieza efectiva y descarga de artefactos se completaron en el punto 9: [evidencia remota aprobada](validacion-remota-20261010.md). La validación corresponde a Linux x64; no certifica Linux ARM64.
 
 Validación local del 10 de octubre de 2026 con Node portable 24.21.0: actionlint sin incidencias, YAML y estructura aprobados, sintaxis de Bash y JavaScript inline de ambos jobs aprobada, sintaxis del validador de evidencia aprobada, Prettier y `git diff --check` aprobados. Los registros quedan en `coverage/ci-step8/`, ignorado por Git. No se ejecutó el validador contra reportes históricos para presentarlos como evidencia actual. No cambiaron dependencias, suites, fuentes de negocio, snapshot ni runner de MariaDB.
 
