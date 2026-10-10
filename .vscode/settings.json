@@ -1,4 +1,7 @@
 {
+  "terminal.integrated.env.windows": {
+    "Path": "D:\\Herramientas\\node-v24.21.0-win-x64;${env:Path}"
+  },
   "html.format.wrapLineLength": 0,
   "html.format.wrapAttributes": "preserve",
   "html.format.unformatted": "td, th, span, a, i, b, strong, em",

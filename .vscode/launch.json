@@ -2,6 +2,26 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Launch via NPM - Node 24",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "D:/Herramientas/node-v24.21.0-win-x64/node.exe",
+      "runtimeArgs": [
+        "D:/Herramientas/node-v24.21.0-win-x64/node_modules/npm/bin/npm-cli.js",
+        "run",
+        "dev"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "outputCapture": "std",
+      "env": {
+        "Path": "D:\\Herramientas\\node-v24.21.0-win-x64;${env:Path}",
+        "NODE_ENV": "development",
+        "TZ": "UTC"
+      },
+      "preLaunchTask": "tsc-watch"
+    },
+    {
       "name": "Debug (Direct TS with tsx)",
       "type": "node",
       "request": "launch",

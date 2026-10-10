@@ -3,6 +3,7 @@
 ## Alcance y mapa
 
 - Backend Node.js/TypeScript ESM, Express y Prisma sobre MariaDB. Usar npm y conservar `package-lock.json`.
+- En este Windows, ejecutar comandos, pruebas y herramientas del backend con Node 24.21.0 portable de `D:\Herramientas\node-v24.21.0-win-x64`. Anteponer esa carpeta al `Path` de cada sesión de comandos y verificar `node --version` y `node -p "process.execPath"` antes de validar. Usar `npm.cmd` y `npx.cmd` en PowerShell. No asumir que las herramientas del agente heredan la configuración de terminal de VS Code; no recurrir silenciosamente a Node 20 si falta el portable.
 - Mantener el alcance solicitado; trabajar en frontend solo cuando la tarea lo incluya.
 - Flujo: `src/routes` → `src/controllers` → `src/services` → `src/daos`. Cálculos extraídos en `src/domain/factoring`; utilidades compartidas en `src/utils`.
 - Consultar [arquitectura](src/README.md) solo para las capas o roles afectados. Conservar imports ESM con `.js` y aliases `#src/` y `#root/`.
