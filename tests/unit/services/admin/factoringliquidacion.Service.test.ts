@@ -1,4 +1,4 @@
-import { Decimal } from "@prisma/client/runtime/library";
+import { Decimal } from "@prisma/client/runtime/client";
 
 // Mocking prismaFT
 jest.mock("#root/src/models/prisma/db-factoring.js", () => ({

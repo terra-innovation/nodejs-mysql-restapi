@@ -1,6 +1,6 @@
 import type { FactoringCalculationConfigV3, FactoringCalculationInputV3 } from "#root/src/domain/factoring/factoring.Calculator.js";
 import { calculateFactoringPeriod, calculateFactoringV1, calculateFactoringV2, calculateFactoringV3 } from "#root/src/domain/factoring/factoring.Calculator.js";
-import { Decimal } from "@prisma/client/runtime/library";
+import { Decimal } from "@prisma/client/runtime/client";
 import { DateTime } from "luxon";
 
 const createConfig = (): FactoringCalculationConfigV3 => ({

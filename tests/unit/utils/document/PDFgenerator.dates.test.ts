@@ -1,4 +1,4 @@
-import { Decimal } from "@prisma/client/runtime/library";
+import { Decimal } from "@prisma/client/runtime/client";
 import { mkdirSync, readFileSync } from "fs";
 import { join } from "path";
 import { Settings } from "luxon";

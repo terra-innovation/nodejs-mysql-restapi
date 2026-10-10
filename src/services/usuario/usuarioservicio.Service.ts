@@ -44,7 +44,7 @@ import { newEmpresaVerificationMessage } from "#src/templates/telegram/usuariose
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { line, log } from "#src/utils/logger.pino.js";
-import { Decimal } from "@prisma/client/runtime/library";
+import { Decimal } from "@prisma/client/runtime/client";
 import { v4 as uuidv4 } from "uuid";
 
 export interface SuscribirInversionistaPayload {

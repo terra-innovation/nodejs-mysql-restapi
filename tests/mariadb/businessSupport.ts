@@ -1,4 +1,5 @@
 import { PrismaClient } from "#root/generated/prisma/ft_factoring/client.js";
+import { createMariaDbAdapter } from "#src/models/prisma/mariadbAdapter.js";
 import { assertTestTarget, connect, guardTable, loadBaseline, quoteIdentifier } from "../../scripts/integration/mariadb-common.mjs";
 
 // Validar identidad antes de permitir que los servicios importados obtengan el cliente.
@@ -11,7 +12,7 @@ try {
   const rows = await connection.query(`SELECT * FROM ${quoteIdentifier(guardTable)} WHERE run_id=?`, [runId]);
   if (rows.length !== 1 || rows[0].schema_hash !== baseline.sha256) throw new Error("Base ajena o estructura incorrecta.");
 } finally { await connection.end(); }
-export const db = new PrismaClient({ datasources: { db: { url } } });
+export const db = new PrismaClient({ adapter: createMariaDbAdapter(url) });
 
 export async function seedMasters() {
   await db.documento_tipo.create({ data: { iddocumentotipo: 1, nombre: "Prueba", alias: "PRUEBA" } });

@@ -16,7 +16,7 @@ import PDFGenerator from "#src/utils/document/PDFgenerator.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import * as storageUtils from "#src/utils/storageUtils.js";
-import { Decimal } from "@prisma/client/runtime/library";
+import { Decimal } from "@prisma/client/runtime/client";
 import * as fs from "fs";
 import * as luxon from "luxon";
 import path from "path";

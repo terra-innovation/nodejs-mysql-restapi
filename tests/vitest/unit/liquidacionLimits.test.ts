@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Decimal } from "@prisma/client/runtime/library";
+import { Decimal } from "@prisma/client/runtime/client";
 import { assertLiquidacionDecimal, calculateLiquidacionAmount, getLiquidacionInputError } from "#src/domain/factoring/liquidacionLimits.js";
 
 describe("DT-LIQ-02-RANGO: precisión y capacidad técnica, no máximo legal", () => {

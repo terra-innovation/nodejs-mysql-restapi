@@ -1,4 +1,4 @@
-import { Decimal } from "@prisma/client/runtime/library";
+import { Decimal } from "@prisma/client/runtime/client";
 import { ClientError } from "#src/utils/CustomErrors.js";
 
 // Capacidad del esquema vigente, no un límite comercial ni normativo.

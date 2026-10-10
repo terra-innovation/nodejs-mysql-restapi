@@ -2,10 +2,11 @@ import fs from "fs";
 import path from "path";
 import pluralize from "pluralize-esm";
 import { fileURLToPath } from "url";
+import { createSchemaBackup } from "./schema-backup.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const scriptName = path.basename(__filename);
-const schemaFilePath = path.resolve("prisma/ft_factoring", "schema.prisma");
+const schemaFilePath = fileURLToPath(new URL("../../prisma/ft_factoring/schema.prisma", import.meta.url));
 
 const configurarPluralizacionEspanol = (p) => {
   p.addPluralRule(/([aeiouáéíóú])$/, "$1s");
@@ -19,21 +20,6 @@ const configurarPluralizacionEspanol = (p) => {
   p.addUncountableRule("análisis");
   p.addUncountableRule("crisis");
   p.addUncountableRule("series");
-};
-
-const getDateFormatted = () => {
-  const d = new Date();
-  return `${d.getFullYear()}${`${d.getMonth() + 1}`.padStart(2, "0")}${`${d.getDate()}`.padStart(2, "0")}_${`${d.getHours()}`.padStart(2, "0")}${`${d.getMinutes()}`.padStart(2, "0")}`;
-};
-
-const createBackup = (filePath) => {
-  const backupDir = path.join(path.dirname(filePath), "backup");
-  if (!fs.existsSync(backupDir)) {
-    fs.mkdirSync(backupDir, { recursive: true });
-  }
-  const backupFile = path.join(backupDir, `schema.${getDateFormatted()}.prisma.bak`);
-  fs.copyFileSync(filePath, backupFile);
-  console.log(`✅ Copia de seguridad creada: ${backupFile}`);
 };
 
 const pluralizeLastPartFromType = (typeName) => {
@@ -120,7 +106,7 @@ const run = (filePath) => {
   console.log(`📂 Procesando archivo: ${filePath}`);
 
   configurarPluralizacionEspanol(pluralize);
-  createBackup(filePath);
+  createSchemaBackup(filePath, "antes-pluralizar");
 
   const summary = pluralizeSchema(filePath);
   appendExecutionLog(filePath, summary);

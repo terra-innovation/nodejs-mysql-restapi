@@ -25,5 +25,6 @@ export default defineConfig({
   shims: true,      // Polyfills para __dirname, __filename en ESM
   splitting: false, // Sin code splitting (ideal para Node.js backend)
   treeshake: true,
-  external: ["fs", "path", "@prisma/client", "#root/generated/prisma/ft_factoring"],
+  // El cliente Prisma 7 se genera en TypeScript y se incluye en cada entrada compilada.
+  external: ["fs", "path", "@prisma/client"],
 });

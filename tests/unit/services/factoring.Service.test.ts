@@ -1,4 +1,4 @@
-import { Decimal } from "@prisma/client/runtime/library";
+import { Decimal } from "@prisma/client/runtime/client";
 import { DateTime } from "luxon";
 
 jest.mock("#root/src/models/prisma/db-factoring.js", () => ({

@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { PrismaClient } from "#root/generated/prisma/ft_factoring/client.js";
+import { createMariaDbAdapter } from "#src/models/prisma/mariadbAdapter.js";
 import { assertTestTarget, connect, loadBaseline, guardTable, quoteIdentifier } from "../../scripts/integration/mariadb-common.mjs";
 
 // Fallar antes de abrir una conexión si se intenta ejecutar esta suite directamente.
@@ -7,7 +8,7 @@ const runId = process.env.FT_INTEGRATION_RUN_ID;
 const url = process.env.FT_INTEGRATION_DATABASE_URL;
 const options = assertTestTarget(url, runId);
 const baseline = await loadBaseline();
-const prisma = new PrismaClient({ datasources: { db: { url } } });
+const prisma = new PrismaClient({ adapter: createMariaDbAdapter(url) });
 let connection: Awaited<ReturnType<typeof connect>>;
 
 beforeAll(async () => {

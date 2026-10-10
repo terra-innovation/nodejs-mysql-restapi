@@ -1,6 +1,6 @@
 import type { Comision, Costo, Gasto_excento_igv, Simulacion } from "#root/src/types/Simulacion.types.js";
 import { calculateCalendarDaysInLima } from "#src/utils/dateUtils.js";
-import { Decimal } from "@prisma/client/runtime/library";
+import { Decimal } from "@prisma/client/runtime/client";
 import type { DateTime } from "luxon";
 
 /** Datos necesarios para calcular; no contiene acceso a persistencia. */

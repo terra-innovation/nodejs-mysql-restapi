@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Decimal } from "@prisma/client/runtime/library";
+import { Decimal } from "@prisma/client/runtime/client";
 import { calculateFactoringV2, calculateFactoringV3 } from "#root/src/domain/factoring/factoring.Calculator.js";
 import type { FactoringCalculationConfigV3, FactoringCalculationInputV3 } from "#root/src/domain/factoring/factoring.Calculator.js";
 

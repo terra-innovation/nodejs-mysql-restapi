@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { Decimal } from "@prisma/client/runtime/library";
+import { Decimal } from "@prisma/client/runtime/client";
 import { boundary as b, ids, liquidationDto, proposalDto, resetFactoringBoundary } from "../support/factoringBoundary.js";
 import { createFactoringliquidacionService, simulateFactoringliquidacionService, updateFactoringliquidacionService } from "#src/services/admin/factoringliquidacion.Service.js";
 import { createFactoringpropuestaService } from "#src/services/admin/factoringpropuesta.Service.js";

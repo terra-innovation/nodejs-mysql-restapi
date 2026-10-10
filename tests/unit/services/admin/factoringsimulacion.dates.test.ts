@@ -1,4 +1,4 @@
-import { Decimal } from "@prisma/client/runtime/library";
+import { Decimal } from "@prisma/client/runtime/client";
 import { Settings } from "luxon";
 import { mkdirSync, writeFileSync } from "fs";
 import { join } from "path";
@@ -29,7 +29,7 @@ jest.mock("#root/src/daos/configuracionapp.Dao.js", () => ({
 jest.mock("#root/src/daos/riesgo.Dao.js", () => ({ getRiesgoByIdriesgo: jest.fn(async () => ({ idriesgo: 1 })), getRiesgoByRiesgoid: jest.fn() }));
 jest.mock("#root/src/daos/factoringconfigcomision.Dao.js", () => ({
   getFactoringconfigcomisionByIdriesgo: jest.fn(async () => {
-    const { Decimal } = jest.requireActual("@prisma/client/runtime/library");
+    const { Decimal } = jest.requireActual("@prisma/client/runtime/client");
     return { factor1: new Decimal("0.01"), factor2: new Decimal(100), factor3: new Decimal(1) };
   }),
 }));

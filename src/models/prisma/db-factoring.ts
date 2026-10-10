@@ -3,6 +3,7 @@ import { Prisma, PrismaClient } from "#root/generated/prisma/ft_factoring/client
 import { env, isProduction } from "#src/config.js";
 import { getContext } from "#src/utils/context/loggerContext.js";
 import { line, log } from "#src/utils/logger.pino.js";
+import { createMariaDbAdapter } from "#src/models/prisma/mariadbAdapter.js";
 
 type InitOptions = {
   retries?: number;
@@ -33,7 +34,11 @@ export class PrismaFTManager {
       }),
     );
 
-    const client = isProduction ? new PrismaClient({ log: logDefs }) : (global.clientFT ?? (global.clientFT = new PrismaClient({ log: logDefs })));
+    const createClient = () => new PrismaClient({
+      adapter: createMariaDbAdapter(env.PRISMA_DATABASE_FACTORING_URL),
+      log: logDefs,
+    });
+    const client = isProduction ? createClient() : (global.clientFT ?? (global.clientFT = createClient()));
 
     return client;
   }
