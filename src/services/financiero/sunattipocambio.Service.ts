@@ -9,7 +9,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import * as df from "#src/utils/dateUtils.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { line, log } from "#src/utils/logger.pino.js";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 export interface CreateSunatTipoCambioDto {
   fecha: string;
@@ -136,7 +136,7 @@ export const createSunatTipoCambioService = async (idUsuario: number, payload: C
       }
 
       const sunatToCreate: Prisma.sunat_tipo_cambioUncheckedCreateInput = {
-        sunattipocambioid: uuidv4(),
+        sunattipocambioid: randomUUID(),
         code: tipocambioLogic.generateCode(),
         idmonedabase: monedaBase.idmoneda,
         idmonedacotizada: monedaCotizada.idmoneda,

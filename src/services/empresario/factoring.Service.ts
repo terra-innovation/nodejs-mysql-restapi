@@ -19,7 +19,7 @@ import { newFactoringMessage } from "#src/templates/telegram/factoring.Template.
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { line, log } from "#src/utils/logger.pino.js";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 // ─── DTOs ────────────────────────────────────────────────────────────────────
 
@@ -90,30 +90,10 @@ export const createFactoringService = async (dto: CreateFactoringDto) => {
         // Validar si el factoring ya existe en producción
         if (isProduction) {
           const filter_estados_factoring = [ESTADO.ACTIVO];
-          const factoring_existe = await factoringDao.getFactoringByRucCedenteAndCodigoFactura(
-            tx,
-            factura.proveedor_ruc,
-            factura.serie,
-            factura.numero_comprobante,
-            filter_estados_factoring,
-          );
+          const factoring_existe = await factoringDao.getFactoringByRucCedenteAndCodigoFactura(tx, factura.proveedor_ruc, factura.serie, factura.numero_comprobante, filter_estados_factoring);
           if (factoring_existe) {
-            log.warn(
-              line(),
-              "Factoring ya existe: [" +
-                factura.proveedor_ruc +
-                ", " +
-                factura.serie +
-                ", " +
-                factura.numero_comprobante +
-                ", " +
-                filter_estados_factoring +
-                "]",
-            );
-            throw new ClientError(
-              "La factura seleccionada ya está vinculada a una operación de factoring activa. Por favor, elija otra factura para continuar con el proceso.",
-              404,
-            );
+            log.warn(line(), "Factoring ya existe: [" + factura.proveedor_ruc + ", " + factura.serie + ", " + factura.numero_comprobante + ", " + filter_estados_factoring + "]");
+            throw new ClientError("La factura seleccionada ya está vinculada a una operación de factoring activa. Por favor, elija otra factura para continuar con el proceso.", 404);
           }
         }
 
@@ -131,13 +111,8 @@ export const createFactoringService = async (dto: CreateFactoringDto) => {
         // dura hasta commit/rollback; repetir la consulta tras adquirirlo.
         await factoringDao.lockFactoringCedente(tx, cedente.idempresa);
         for (const factura of facturas) {
-          const existing = await factoringDao.getFactoringByRucCedenteAndCodigoFactura(
-            tx, factura.proveedor_ruc, factura.serie, factura.numero_comprobante, [ESTADO.ACTIVO],
-          );
-          if (existing) throw new ClientError(
-            "La factura seleccionada ya está vinculada a una operación de factoring activa. Por favor, elija otra factura para continuar con el proceso.",
-            404,
-          );
+          const existing = await factoringDao.getFactoringByRucCedenteAndCodigoFactura(tx, factura.proveedor_ruc, factura.serie, factura.numero_comprobante, [ESTADO.ACTIVO]);
+          if (existing) throw new ClientError("La factura seleccionada ya está vinculada a una operación de factoring activa. Por favor, elija otra factura para continuar con el proceso.", 404);
         }
       }
 
@@ -171,11 +146,7 @@ export const createFactoringService = async (dto: CreateFactoringDto) => {
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const colaborador = await colaboradorDao.getColaboradorByIdEmpresaAndIdpersona(
-        tx,
-        cedente.idempresa,
-        persona.idpersona,
-      );
+      const colaborador = await colaboradorDao.getColaboradorByIdEmpresaAndIdpersona(tx, cedente.idempresa, persona.idpersona);
       if (!colaborador) {
         log.warn(line(), "Contacto cedente no existe: [" + cedente.idempresa + ", " + persona.idpersona + "]");
         throw new ClientError("Datos no válidos", 404);
@@ -194,13 +165,10 @@ export const createFactoringService = async (dto: CreateFactoringDto) => {
 
         fecha_pago_estimado: dto.fecha_pago_estimado ? new Date(dto.fecha_pago_estimado) : null,
 
-        factoringid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        factoringid: randomUUID(),
+        code: randomUUID().split("-")[0],
         fecha_registro: new Date(),
-        fecha_emision: facturas.reduce(
-          (min, item) => (!min || new Date(item.fecha_emision) < new Date(min) ? item.fecha_emision : min),
-          null,
-        ),
+        fecha_emision: facturas.reduce((min, item) => (!min || new Date(item.fecha_emision) < new Date(min) ? item.fecha_emision : min), null),
         cantidad_facturas: dto.facturas.length,
         monto_factura: facturas.reduce((acc, item) => acc.plus(item.importe_bruto ?? 0), new Prisma.Decimal(0)),
         monto_detraccion: facturas.reduce((acc, item) => acc.plus(item.detraccion_monto ?? 0), new Prisma.Decimal(0)),
@@ -217,8 +185,8 @@ export const createFactoringService = async (dto: CreateFactoringDto) => {
       log.debug(line(), "factoringCreated:", factoringCreated);
 
       const factoringhistorialestadoToCreate: Prisma.factoring_historial_estadoCreateInput = {
-        factoringhistorialestadoid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        factoringhistorialestadoid: randomUUID(),
+        code: randomUUID().split("-")[0],
         factoring: { connect: { idfactoring: factoringCreated.idfactoring } },
         factoring_estado: { connect: { idfactoringestado: idfactoringestado } },
         usuario_modifica: { connect: { idusuario: dto.idusuario } },
@@ -229,10 +197,7 @@ export const createFactoringService = async (dto: CreateFactoringDto) => {
         fechamod: new Date(),
         estado: 1,
       };
-      const factoringhistorialestadoCreated = await factoringhistorialestadoDao.insertFactoringhistorialestado(
-        tx,
-        factoringhistorialestadoToCreate,
-      );
+      const factoringhistorialestadoCreated = await factoringhistorialestadoDao.insertFactoringhistorialestado(tx, factoringhistorialestadoToCreate);
       log.debug(line(), "factoringhistorialestadoCreated:", factoringhistorialestadoCreated);
 
       for (const factura of facturas) {
@@ -245,10 +210,7 @@ export const createFactoringService = async (dto: CreateFactoringDto) => {
           fechamod: new Date(),
           estado: 1,
         };
-        const factoringfacturaCreated = await factoringfacturaDao.insertFactoringfactura(
-          tx,
-          factoringfacturaToCreate,
-        );
+        const factoringfacturaCreated = await factoringfacturaDao.insertFactoringfactura(tx, factoringfacturaToCreate);
         log.debug(line(), "factoringfacturaCreated:", factoringfacturaCreated);
       }
 

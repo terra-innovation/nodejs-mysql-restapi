@@ -20,7 +20,7 @@ import { Decimal } from "@prisma/client/runtime/client";
 import * as fs from "fs";
 import * as luxon from "luxon";
 import path from "path";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 export interface CreateFactoringsimulacionPayload {
   bancoid: string;
@@ -136,8 +136,8 @@ export const createFactoringsimulacionService = async (session_idusuario: number
         riesgo_operacion: { connect: { idriesgo: riesgooperacion.idriesgo } },
         factoring_estrategia: { connect: { idfactoringestrategia: factoringestrategia.idfactoringestrategia } },
 
-        factoringsimulacionid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        factoringsimulacionid: randomUUID(),
+        code: randomUUID().split("-")[0],
         ruc_cedente: factoringValidated.ruc_cedente,
         ruc_aceptante: factoringValidated.ruc_aceptante,
         razon_social_cedente: factoringValidated.razon_social_cedente,
@@ -202,8 +202,8 @@ export const createFactoringsimulacionService = async (session_idusuario: number
           factoring_simulacion: { connect: { idfactoringsimulacion: factoringsimulacionCreated.idfactoringsimulacion } },
           financiero_tipo: { connect: { idfinancierotipo: comision.financiero_tipo.idfinancierotipo } },
           financiero_concepto: { connect: { idfinancieroconcepto: comision.financiero_concepto.idfinancieroconcepto } },
-          factoringsimulacionfinancieroid: uuidv4(),
-          code: uuidv4().split("-")[0],
+          factoringsimulacionfinancieroid: randomUUID(),
+          code: randomUUID().split("-")[0],
           cantidad: comision.cantidad,
           monto_unitario: comision.monto_unitario,
           monto: comision.monto,
@@ -225,8 +225,8 @@ export const createFactoringsimulacionService = async (session_idusuario: number
           factoring_simulacion: { connect: { idfactoringsimulacion: factoringsimulacionCreated.idfactoringsimulacion } },
           financiero_tipo: { connect: { idfinancierotipo: costo.financiero_tipo.idfinancierotipo } },
           financiero_concepto: { connect: { idfinancieroconcepto: costo.financiero_concepto.idfinancieroconcepto } },
-          factoringsimulacionfinancieroid: uuidv4(),
-          code: uuidv4().split("-")[0],
+          factoringsimulacionfinancieroid: randomUUID(),
+          code: randomUUID().split("-")[0],
           cantidad: costo.cantidad,
           monto_unitario: costo.monto_unitario,
           monto: costo.monto,
@@ -248,8 +248,8 @@ export const createFactoringsimulacionService = async (session_idusuario: number
           factoring_simulacion: { connect: { idfactoringsimulacion: factoringsimulacionCreated.idfactoringsimulacion } },
           financiero_tipo: { connect: { idfinancierotipo: gasto.financiero_tipo.idfinancierotipo } },
           financiero_concepto: { connect: { idfinancieroconcepto: gasto.financiero_concepto.idfinancieroconcepto } },
-          factoringsimulacionfinancieroid: uuidv4(),
-          code: uuidv4().split("-")[0],
+          factoringsimulacionfinancieroid: randomUUID(),
+          code: randomUUID().split("-")[0],
           cantidad: gasto.cantidad,
           monto_unitario: gasto.monto_unitario,
           monto: gasto.monto,
@@ -271,8 +271,8 @@ export const createFactoringsimulacionService = async (session_idusuario: number
           factoring_simulacion: { connect: { idfactoringsimulacion: factoringsimulacionCreated.idfactoringsimulacion } },
           financiero_tipo: { connect: { idfinancierotipo: gasto_excento_igv.financiero_tipo.idfinancierotipo } },
           financiero_concepto: { connect: { idfinancieroconcepto: gasto_excento_igv.financiero_concepto.idfinancieroconcepto } },
-          factoringsimulacionfinancieroid: uuidv4(),
-          code: uuidv4().split("-")[0],
+          factoringsimulacionfinancieroid: randomUUID(),
+          code: randomUUID().split("-")[0],
           cantidad: gasto_excento_igv.cantidad,
           monto_unitario: gasto_excento_igv.monto_unitario,
           monto: gasto_excento_igv.monto,

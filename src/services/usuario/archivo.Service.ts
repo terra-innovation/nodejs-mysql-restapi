@@ -11,7 +11,7 @@ import { unlink } from "fs/promises";
 import path from "path";
 
 import { fileTypeFromFile } from "file-type";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 // ─── DTOs ────────────────────────────────────────────────────────────────────
 
@@ -102,7 +102,7 @@ export const cargarArchivoService = async (dto: CargarArchivoDto): Promise<{ arc
 
         // 4. Registro en Base de Datos
         const archivoNuevo: Prisma.archivoCreateInput = {
-          archivoid: uuidv4(),
+          archivoid: randomUUID(),
           archivo_tipo: { connect: { idarchivotipo: archivotipo.idarchivotipo } },
           archivo_estado: { connect: { idarchivoestado: 1 } },
           codigo: codigo_archivo,

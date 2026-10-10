@@ -11,7 +11,7 @@ import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { line, log } from "#src/utils/logger.pino.js";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 // ─── DTOs ────────────────────────────────────────────────────────────────────
 
@@ -45,40 +45,24 @@ export interface CreateInversionistacuentabancariaDto {
 
 // ─── Services ────────────────────────────────────────────────────────────────
 
-export const updateInversionistacuentabancariaOnlyAliasAndCuentaBancariaEstadoService = async (
-  dto: UpdateInversionistacuentabancariaAliasAndEstadoDto,
-) => {
+export const updateInversionistacuentabancariaOnlyAliasAndCuentaBancariaEstadoService = async (dto: UpdateInversionistacuentabancariaAliasAndEstadoDto) => {
   log.debug(line(), "service::updateInversionistacuentabancariaOnlyAliasAndCuentaBancariaEstadoService");
 
   return prismaFT.client.$transaction(
     async (tx) => {
-      const inversionistacuentabancariaestado =
-        await cuentabancariaestadoDao.getCuentabancariaestadoByCuentabancariaestadoid(
-          tx,
-          dto.cuentabancariaestadoid,
-        );
+      const inversionistacuentabancariaestado = await cuentabancariaestadoDao.getCuentabancariaestadoByCuentabancariaestadoid(tx, dto.cuentabancariaestadoid);
       if (!inversionistacuentabancariaestado) {
         log.warn(line(), "Cuenta bancaria estado no existe: [" + dto.cuentabancariaestadoid + "]");
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const inversionistacuentabancaria =
-        await inversionistacuentabancariaDao.getInversionistacuentabancariaByInversionistacuentabancariaid(
-          tx,
-          dto.inversionistacuentabancariaid,
-        );
+      const inversionistacuentabancaria = await inversionistacuentabancariaDao.getInversionistacuentabancariaByInversionistacuentabancariaid(tx, dto.inversionistacuentabancariaid);
       if (!inversionistacuentabancaria) {
-        log.warn(
-          line(),
-          "Inversionista cuenta bancaria no existe: [" + dto.inversionistacuentabancariaid + "]",
-        );
+        log.warn(line(), "Inversionista cuenta bancaria no existe: [" + dto.inversionistacuentabancariaid + "]");
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const cuentabancaria = await cuentabancariaDao.getCuentabancariaByIdcuentabancaria(
-        tx,
-        inversionistacuentabancaria.idcuentabancaria,
-      );
+      const cuentabancaria = await cuentabancariaDao.getCuentabancariaByIdcuentabancaria(tx, inversionistacuentabancaria.idcuentabancaria);
       if (!cuentabancaria) {
         log.warn(line(), "Cuenta bancaria no existe: [" + inversionistacuentabancaria.idcuentabancaria + "]");
         throw new ClientError("Datos no válidos", 404);
@@ -93,11 +77,7 @@ export const updateInversionistacuentabancariaOnlyAliasAndCuentaBancariaEstadoSe
         fechamod: new Date(),
       };
 
-      const cuentabancariaUpdated = await cuentabancariaDao.updateCuentabancaria(
-        tx,
-        cuentabancaria.cuentabancariaid,
-        cuentabancariaToUpdate,
-      );
+      const cuentabancariaUpdated = await cuentabancariaDao.updateCuentabancaria(tx, cuentabancaria.cuentabancariaid, cuentabancariaToUpdate);
       log.debug(line(), "cuentabancariaUpdated", cuentabancariaUpdated);
 
       return {};
@@ -112,10 +92,7 @@ export const getInversionistacuentabancariasService = async () => {
   return prismaFT.client.$transaction(
     async (tx) => {
       const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
-      const cuentasbancarias = await inversionistacuentabancariaDao.getInversionistacuentabancarias(
-        tx,
-        filter_estado,
-      );
+      const cuentasbancarias = await inversionistacuentabancariaDao.getInversionistacuentabancarias(tx, filter_estado);
       return cuentasbancarias;
     },
     { timeout: prismaFT.transactionTimeout },
@@ -127,33 +104,19 @@ export const activateInversionistacuentabancariaService = async (dto: ActivateIn
 
   return prismaFT.client.$transaction(
     async (tx) => {
-      const inversionistacuentabancaria =
-        await inversionistacuentabancariaDao.getInversionistacuentabancariaByInversionistacuentabancariaid(
-          tx,
-          dto.inversionistacuentabancariaid,
-        );
+      const inversionistacuentabancaria = await inversionistacuentabancariaDao.getInversionistacuentabancariaByInversionistacuentabancariaid(tx, dto.inversionistacuentabancariaid);
       if (!inversionistacuentabancaria) {
-        log.warn(
-          line(),
-          "Inversionista cuenta bancaria no existe: [" + dto.inversionistacuentabancariaid + "]",
-        );
+        log.warn(line(), "Inversionista cuenta bancaria no existe: [" + dto.inversionistacuentabancariaid + "]");
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const cuentabancaria = await cuentabancariaDao.getCuentabancariaByIdcuentabancaria(
-        tx,
-        inversionistacuentabancaria.idcuentabancaria,
-      );
+      const cuentabancaria = await cuentabancariaDao.getCuentabancariaByIdcuentabancaria(tx, inversionistacuentabancaria.idcuentabancaria);
       if (!cuentabancaria) {
         log.warn(line(), "Cuenta bancaria no existe: [" + inversionistacuentabancaria.idcuentabancaria + "]");
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const camposCuentaBancariaActivated = await cuentabancariaDao.activateCuentabancaria(
-        tx,
-        cuentabancaria.cuentabancariaid,
-        dto.idusuario,
-      );
+      const camposCuentaBancariaActivated = await cuentabancariaDao.activateCuentabancaria(tx, cuentabancaria.cuentabancariaid, dto.idusuario);
       log.debug(line(), "camposCuentaBancariaActivated:", camposCuentaBancariaActivated);
 
       return {};
@@ -167,33 +130,19 @@ export const deleteInversionistacuentabancariaService = async (dto: DeleteInvers
 
   return prismaFT.client.$transaction(
     async (tx) => {
-      const inversionistacuentabancaria =
-        await inversionistacuentabancariaDao.getInversionistacuentabancariaByInversionistacuentabancariaid(
-          tx,
-          dto.inversionistacuentabancariaid,
-        );
+      const inversionistacuentabancaria = await inversionistacuentabancariaDao.getInversionistacuentabancariaByInversionistacuentabancariaid(tx, dto.inversionistacuentabancariaid);
       if (!inversionistacuentabancaria) {
-        log.warn(
-          line(),
-          "Inversionista cuenta bancaria no existe: [" + dto.inversionistacuentabancariaid + "]",
-        );
+        log.warn(line(), "Inversionista cuenta bancaria no existe: [" + dto.inversionistacuentabancariaid + "]");
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const cuentabancaria = await cuentabancariaDao.getCuentabancariaByIdcuentabancaria(
-        tx,
-        inversionistacuentabancaria.idcuentabancaria,
-      );
+      const cuentabancaria = await cuentabancariaDao.getCuentabancariaByIdcuentabancaria(tx, inversionistacuentabancaria.idcuentabancaria);
       if (!cuentabancaria) {
         log.warn(line(), "Cuenta bancaria no existe: [" + inversionistacuentabancaria.idcuentabancaria + "]");
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const cuentabancariaDeleted = await cuentabancariaDao.deleteCuentabancaria(
-        tx,
-        cuentabancaria.cuentabancariaid,
-        dto.idusuario,
-      );
+      const cuentabancariaDeleted = await cuentabancariaDao.deleteCuentabancaria(tx, cuentabancaria.cuentabancariaid, dto.idusuario);
       log.debug(line(), "cuentabancariaDeleted:", cuentabancariaDeleted);
 
       return {};
@@ -259,36 +208,16 @@ export const createInversionistacuentabancariaService = async (dto: CreateInvers
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const cuentasbancarias_por_numero = await cuentabancariaDao.getCuentasbancariasByIdbancoAndNumero(
-        tx,
-        banco.idbanco,
-        dto.numero,
-        filter_estado,
-      );
+      const cuentasbancarias_por_numero = await cuentabancariaDao.getCuentasbancariasByIdbancoAndNumero(tx, banco.idbanco, dto.numero, filter_estado);
       if (cuentasbancarias_por_numero && cuentasbancarias_por_numero.length > 0) {
-        log.warn(
-          line(),
-          "El número de cuenta [" + dto.numero + "] se encuentra registrado. Ingrese un número de cuenta diferente.",
-        );
-        throw new ClientError(
-          "El número de cuenta [" + dto.numero + "] se encuentra registrado. Ingrese un número de cuenta diferente.",
-          404,
-        );
+        log.warn(line(), "El número de cuenta [" + dto.numero + "] se encuentra registrado. Ingrese un número de cuenta diferente.");
+        throw new ClientError("El número de cuenta [" + dto.numero + "] se encuentra registrado. Ingrese un número de cuenta diferente.", 404);
       }
 
-      const cuentasbancarias_por_alias =
-        await inversionistacuentabancariaDao.getInversionistacuentabancariasByIdinversionistaAndAlias(
-          tx,
-          inversionista.idinversionista,
-          dto.alias,
-          filter_estado,
-        );
+      const cuentasbancarias_por_alias = await inversionistacuentabancariaDao.getInversionistacuentabancariasByIdinversionistaAndAlias(tx, inversionista.idinversionista, dto.alias, filter_estado);
       if (cuentasbancarias_por_alias && cuentasbancarias_por_alias.length > 0) {
         log.warn(line(), "El alias [" + dto.alias + "] se encuentra registrado. Ingrese un alias diferente.");
-        throw new ClientError(
-          "El alias [" + dto.alias + "] se encuentra registrado. Ingrese un alias diferente.",
-          404,
-        );
+        throw new ClientError("El alias [" + dto.alias + "] se encuentra registrado. Ingrese un alias diferente.", 404);
       }
 
       const cuentabancariaToCreate: Prisma.cuenta_bancariaCreateInput = {
@@ -306,8 +235,8 @@ export const createInversionistacuentabancariaService = async (dto: CreateInvers
             idcuentabancariaestado: 1, // Por defecto
           },
         },
-        cuentabancariaid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        cuentabancariaid: randomUUID(),
+        code: randomUUID().split("-")[0],
         numero: dto.numero,
         cci: dto.cci,
         alias: dto.alias,
@@ -328,8 +257,8 @@ export const createInversionistacuentabancariaService = async (dto: CreateInvers
         cuenta_bancaria: {
           connect: { idcuentabancaria: cuentabancariaCreated.idcuentabancaria },
         },
-        inversionistacuentabancariaid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        inversionistacuentabancariaid: randomUUID(),
+        code: randomUUID().split("-")[0],
         idusuariocrea: dto.idusuario ?? 1,
         fechacrea: new Date(),
         idusuariomod: dto.idusuario ?? 1,
@@ -337,16 +266,10 @@ export const createInversionistacuentabancariaService = async (dto: CreateInvers
         estado: 1,
       };
 
-      const inversionistacuentabancariaCreated =
-        await inversionistacuentabancariaDao.insertInversionistacuentabancaria(
-          tx,
-          inversionistacuentabancariaToCreate,
-        );
+      const inversionistacuentabancariaCreated = await inversionistacuentabancariaDao.insertInversionistacuentabancaria(tx, inversionistacuentabancariaToCreate);
       log.debug(line(), "inversionistacuentabancariaCreated:", inversionistacuentabancariaCreated);
 
-      const inversionistacuentabancariaFiltered = jsonUtils.removeAttributesPrivates(
-        inversionistacuentabancariaToCreate,
-      );
+      const inversionistacuentabancariaFiltered = jsonUtils.removeAttributesPrivates(inversionistacuentabancariaToCreate);
       return inversionistacuentabancariaFiltered;
     },
     { timeout: prismaFT.transactionTimeout },

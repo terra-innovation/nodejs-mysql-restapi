@@ -6,7 +6,7 @@ import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as df from "#src/utils/dateUtils.js";
 import { line, log } from "#src/utils/logger.pino.js";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 import * as archivoDao from "#root/src/daos/archivo.Dao.js";
 import * as archivoservicioempresaverificacionDao from "#root/src/daos/archivoservicioempresaverificacion.Dao.js";
@@ -189,7 +189,7 @@ const darAccesoAlUsuarioServicio = async (tx: any, dto: ServicioEmpresaVerificac
       usuario_servicio: { connect: { idusuarioservicio: usuarioservicio.idusuarioservicio } },
       usuario_servicio_estado: { connect: { idusuarioservicioestado: usuarioservicioestado.idusuarioservicioestado } },
       usuario_verifica: { connect: { idusuario: idusuario } },
-      usuarioservicioverificacionid: uuidv4(),
+      usuarioservicioverificacionid: randomUUID(),
       comentariousuario: dto.comentariousuario,
       comentariointerno: dto.comentariointerno + " // Proceso automático. Se concedió acceso por la verificación de la empresa: " + empresa.code + " - " + empresa.ruc + " - " + empresa.razon_social,
       idusuariocrea: idusuario ?? 1,
@@ -322,8 +322,8 @@ export const createFactoringempresaverificacionService = async (dto: ServicioEmp
         usuario_verifica: { connect: { idusuario: idusuario } },
         comentariointerno: dto.comentariointerno,
         comentariousuario: dto.comentariousuario,
-        servicioempresaverificacionid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        servicioempresaverificacionid: randomUUID(),
+        code: randomUUID().split("-")[0],
         idusuariocrea: idusuario ?? 1,
         fechacrea: new Date(),
         idusuariomod: idusuario ?? 1,
@@ -399,12 +399,7 @@ export const getFactoringempresasByVerificacionService = async () => {
     async (tx) => {
       const filter_estadologico = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
       const filter_idservicio = [SERVICIO.FACTORING_EMPRESAS];
-      const filter_idarchivotipos = [
-        ARCHIVO_TIPO.FICHA_RUC,
-        ARCHIVO_TIPO.REPORTE_TRIBUTARIO_PARA_TERCEROS,
-        ARCHIVO_TIPO.VIGENCIA_DE_PODER_REPRESENTANTE_LEGAL,
-        ARCHIVO_TIPO.ENCABEZADO_DEL_EECC_DE_LA_CUENTA_BANCARIA,
-      ];
+      const filter_idarchivotipos = [ARCHIVO_TIPO.FICHA_RUC, ARCHIVO_TIPO.REPORTE_TRIBUTARIO_PARA_TERCEROS, ARCHIVO_TIPO.VIGENCIA_DE_PODER_REPRESENTANTE_LEGAL, ARCHIVO_TIPO.ENCABEZADO_DEL_EECC_DE_LA_CUENTA_BANCARIA];
       return await servicioempresaDao.getFactoringempresasByVerificacion(tx, filter_estadologico, filter_idservicio, filter_idarchivotipos);
     },
     { timeout: prismaFT.transactionTimeout },

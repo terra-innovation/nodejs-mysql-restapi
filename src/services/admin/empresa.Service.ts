@@ -3,7 +3,7 @@ import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { line, log } from "#src/utils/logger.pino.js";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 import * as distritoDao from "#root/src/daos/distrito.Dao.js";
 import * as empresaDao from "#root/src/daos/empresa.Dao.js";
@@ -271,8 +271,8 @@ export const createEmpresaService = async (dto: EmpresaCreateDto, idusuario: num
       }
 
       const empresaCreate: Prisma.empresaCreateInput = {
-        empresaid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        empresaid: randomUUID(),
+        code: randomUUID().split("-")[0],
         ruc: dto.ruc,
         razon_social: dto.razon_social,
         nombre_comercial: dto.nombre_comercial ?? null,

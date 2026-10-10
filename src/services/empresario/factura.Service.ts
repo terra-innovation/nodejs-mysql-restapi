@@ -30,7 +30,7 @@ import * as facturaUtils from "#src/utils/facturaUtils.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { formatNumber } from "#src/utils/numberUtils.js";
 import * as storageUtils from "#src/utils/storageUtils.js";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 // ─── DTOs ────────────────────────────────────────────────────────────────────
 
@@ -250,8 +250,8 @@ export const subirFacturaService = async (dto: SubirFacturaDto) => {
         const empresaToCreate: Prisma.empresaCreateInput = {
           ruc: facturaFinal.cliente.ruc,
           razon_social: facturaFinal.cliente.razon_social,
-          empresaid: uuidv4(),
-          code: uuidv4().split("-")[0],
+          empresaid: randomUUID(),
+          code: randomUUID().split("-")[0],
           idusuariocrea: session_idusuario,
           fechacrea: new Date(),
           idusuariomod: session_idusuario,
@@ -267,8 +267,8 @@ export const subirFacturaService = async (dto: SubirFacturaDto) => {
         const empresaToCreate: Prisma.empresaCreateInput = {
           ruc: facturaFinal.proveedor.ruc,
           razon_social: facturaFinal.proveedor.razon_social,
-          empresaid: uuidv4(),
-          code: uuidv4().split("-")[0],
+          empresaid: randomUUID(),
+          code: randomUUID().split("-")[0],
           idusuariocrea: session_idusuario,
           fechacrea: new Date(),
           idusuariomod: session_idusuario,

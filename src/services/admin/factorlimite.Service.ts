@@ -7,7 +7,7 @@ import { line, log } from "#root/src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 // ─── DTOs ────────────────────────────────────────────────────────────────────
 
@@ -71,12 +71,7 @@ export const createFactorlimiteService = async (dto: CreateFactorlimiteDto) => {
       }
 
       const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
-      const factorlimiteExistente = await factorlimiteDao.getFactorlimiteByIdfactorAndIdmoneda(
-        tx,
-        factor.idfactor,
-        moneda.idmoneda,
-        filter_estado,
-      );
+      const factorlimiteExistente = await factorlimiteDao.getFactorlimiteByIdfactorAndIdmoneda(tx, factor.idfactor, moneda.idmoneda, filter_estado);
 
       if (factorlimiteExistente) {
         log.warn(line(), "Ya existe un límite para el Factor [" + dto.factorid + "] y Moneda [" + dto.monedaid + "]");
@@ -88,8 +83,8 @@ export const createFactorlimiteService = async (dto: CreateFactorlimiteDto) => {
       const disponible = dto.disponible ?? total - usado;
 
       const factorlimiteToCreate: Prisma.factor_limiteCreateInput = {
-        factorlimiteid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        factorlimiteid: randomUUID(),
+        code: randomUUID().split("-")[0],
         factor: { connect: { idfactor: factor.idfactor } },
         moneda: { connect: { idmoneda: moneda.idmoneda } },
         usado: usado,
@@ -134,11 +129,7 @@ export const updateFactorlimiteService = async (dto: UpdateFactorlimiteDto) => {
         fechamod: new Date(),
       };
 
-      const factorlimiteUpdated = await factorlimiteDao.updateFactorlimite(
-        tx,
-        factorlimite.factorlimiteid,
-        factorlimiteToUpdate,
-      );
+      const factorlimiteUpdated = await factorlimiteDao.updateFactorlimite(tx, factorlimite.factorlimiteid, factorlimiteToUpdate);
       log.debug(line(), "factorlimiteUpdated:", factorlimiteUpdated);
 
       return {};

@@ -1,5 +1,5 @@
 import pinoHttp from "pino-http";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 import { AsyncLocalStorage } from "node:async_hooks";
 import { loggerInstance } from "#src/utils/logger.pino.js";
 import { Request, Response, NextFunction } from "express";
@@ -15,7 +15,7 @@ export const loggerMiddleware = (req: Request, res: Response, next: NextFunction
 
 export const httpLogger = pinoHttp({
   logger: loggerInstance,
-  genReqId: (req: Request) => req.get("X-Correlation-Id") || uuidv4(),
+  genReqId: (req: Request) => req.get("X-Correlation-Id") || randomUUID(),
   customLogLevel(req, res, err) {
     if (res.statusCode >= 500 || err) return "error";
     if (res.statusCode >= 400) return "warn";

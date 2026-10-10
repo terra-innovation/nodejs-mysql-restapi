@@ -6,7 +6,7 @@ import { line, log } from "#root/src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 // ─── DTOs ────────────────────────────────────────────────────────────────────
 
@@ -70,12 +70,7 @@ export const createContactoService = async (dto: CreateContactoDto) => {
       }
 
       const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
-      const contacto_por_email = await contactoDao.getContactosByIdempresaAndEmail(
-        tx,
-        empresa.idempresa,
-        dto.email,
-        filter_estado,
-      );
+      const contacto_por_email = await contactoDao.getContactosByIdempresaAndEmail(tx, empresa.idempresa, dto.email, filter_estado);
       if (contacto_por_email && contacto_por_email.length > 0) {
         log.warn(line(), "El email [" + dto.email + "] se encuentra registrado para esta empresa.");
         throw new ClientError("El email [" + dto.email + "] se encuentra registrado para esta empresa.", 400);
@@ -83,8 +78,8 @@ export const createContactoService = async (dto: CreateContactoDto) => {
 
       const contactoToCreate: Prisma.contactoCreateInput = {
         empresa: { connect: { idempresa: empresa.idempresa } },
-        contactoid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        contactoid: randomUUID(),
+        code: randomUUID().split("-")[0],
         nombrecontacto: dto.nombrecontacto,
         apellidocontacto: dto.apellidocontacto,
         cargo: dto.cargo,

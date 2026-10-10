@@ -2,7 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 import { line, log } from "#src/utils/logger.pino.js";
 
 /**
@@ -13,7 +13,7 @@ import { line, log } from "#src/utils/logger.pino.js";
  */
 export const saveTempHtml = (htmlContent: string): string => {
   const tempDir = os.tmpdir();
-  const fileName = `email_preview_${Date.now()}_${uuidv4().substring(0, 8)}.html`;
+  const fileName = `email_preview_${Date.now()}_${randomUUID().substring(0, 8)}.html`;
   const filePath = path.join(tempDir, fileName);
   fs.writeFileSync(filePath, htmlContent, "utf-8");
   return filePath;
@@ -48,7 +48,7 @@ export const logHtmlLink = (htmlContent: string): void => {
  */
 export const saveTempTxt = (txtContent: string): string => {
   const tempDir = os.tmpdir();
-  const fileName = `txt_preview_${Date.now()}_${uuidv4().substring(0, 8)}.txt`;
+  const fileName = `txt_preview_${Date.now()}_${randomUUID().substring(0, 8)}.txt`;
   const filePath = path.join(tempDir, fileName);
   fs.writeFileSync(filePath, txtContent, "utf-8");
   return filePath;

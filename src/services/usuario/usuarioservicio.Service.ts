@@ -45,7 +45,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Decimal } from "@prisma/client/runtime/client";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 export interface SuscribirInversionistaPayload {
   idusuario: number;
@@ -92,10 +92,7 @@ export interface SuscribirEmpresaPayload {
   declaracion_datos_reales: boolean;
 }
 
-export const suscribirUsuarioServicioFactoringInversionistaService = async (
-  session_idusuario: number,
-  usuarioservicioValidated: SuscribirInversionistaPayload,
-) => {
+export const suscribirUsuarioServicioFactoringInversionistaService = async (session_idusuario: number, usuarioservicioValidated: SuscribirInversionistaPayload) => {
   log.debug(line(), "service::suscribirUsuarioServicioFactoringInversionistaService");
   const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
 
@@ -173,8 +170,8 @@ export const suscribirUsuarioServicioFactoringInversionistaService = async (
       /* Creamos al Inversionista */
       const inversionistaToCreate: Prisma.inversionistaCreateInput = {
         persona: { connect: { idpersona: persona.idpersona } },
-        inversionistaid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        inversionistaid: randomUUID(),
+        code: randomUUID().split("-")[0],
         idusuariocrea: session_idusuario ?? 1,
         fechacrea: new Date(),
         idusuariomod: session_idusuario ?? 1,
@@ -191,8 +188,8 @@ export const suscribirUsuarioServicioFactoringInversionistaService = async (
         cuenta_tipo: { connect: { idcuentatipo: cuentatipo.idcuentatipo } },
         moneda: { connect: { idmoneda: moneda.idmoneda } },
         cuenta_bancaria_estado: { connect: { idcuentabancariaestado: cuentabancariaestado.idcuentabancariaestado } },
-        cuentabancariaid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        cuentabancariaid: randomUUID(),
+        code: randomUUID().split("-")[0],
         numero: usuarioservicioValidated.numero,
         cci: usuarioservicioValidated.cci,
         alias: usuarioservicioValidated.alias,
@@ -209,8 +206,8 @@ export const suscribirUsuarioServicioFactoringInversionistaService = async (
       const inversionistacuentabancariaToCreate: Prisma.inversionista_cuenta_bancariaCreateInput = {
         inversionista: { connect: { idinversionista: inversionistaCreated.idinversionista } },
         cuenta_bancaria: { connect: { idcuentabancaria: cuentabancariaCreated.idcuentabancaria } },
-        inversionistacuentabancariaid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        inversionistacuentabancariaid: randomUUID(),
+        code: randomUUID().split("-")[0],
         idusuariocrea: session_idusuario ?? 1,
         fechacrea: new Date(),
         idusuariomod: session_idusuario ?? 1,
@@ -226,8 +223,8 @@ export const suscribirUsuarioServicioFactoringInversionistaService = async (
         inversionista: { connect: { idinversionista: inversionistaCreated.idinversionista } },
         usuario_suscriptor: { connect: { idusuario: usuarioConected.idusuario } },
         servicio_inversionista_estado: { connect: { idservicioinversionistaestado: servicioinversionistaestado.idservicioinversionistaestado } },
-        servicioinversionistaid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        servicioinversionistaid: randomUUID(),
+        code: randomUUID().split("-")[0],
         idusuariocrea: session_idusuario ?? 1,
         fechacrea: new Date(),
         idusuariomod: session_idusuario ?? 1,
@@ -245,8 +242,8 @@ export const suscribirUsuarioServicioFactoringInversionistaService = async (
         usuario_verifica: { connect: { idusuario: session_idusuario } },
         comentariointerno: "",
         comentariousuario: "",
-        servicioinversionistaverificacionid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        servicioinversionistaverificacionid: randomUUID(),
+        code: randomUUID().split("-")[0],
         idusuariocrea: session_idusuario ?? 1,
         fechacrea: new Date(),
         idusuariomod: session_idusuario ?? 1,
@@ -262,7 +259,7 @@ export const suscribirUsuarioServicioFactoringInversionistaService = async (
         usuario_servicio: { connect: { idusuarioservicio: usuarioservicio.idusuarioservicio } },
         usuario_servicio_estado: { connect: { idusuarioservicioestado: usuarioservicioestado.idusuarioservicioestado } },
         usuario_verifica: { connect: { idusuario: session_idusuario } },
-        usuarioservicioverificacionid: uuidv4(),
+        usuarioservicioverificacionid: randomUUID(),
         comentariousuario: "",
         comentariointerno: "",
         idusuariocrea: session_idusuario ?? 1,
@@ -291,10 +288,7 @@ export const suscribirUsuarioServicioFactoringInversionistaService = async (
   );
 };
 
-export const suscribirUsuarioServicioFactoringEmpresaService = async (
-  session_idusuario: number,
-  usuarioservicioValidated: SuscribirEmpresaPayload,
-) => {
+export const suscribirUsuarioServicioFactoringEmpresaService = async (session_idusuario: number, usuarioservicioValidated: SuscribirEmpresaPayload) => {
   log.debug(line(), "service::suscribirUsuarioServicioFactoringEmpresaService");
   const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
 
@@ -437,8 +431,8 @@ export const suscribirUsuarioServicioFactoringEmpresaService = async (
         razon_social: usuarioservicioValidated.razon_social,
         direccion_sede: usuarioservicioValidated.direccion_sede,
         direccion_sede_referencia: usuarioservicioValidated.direccion_sede_referencia,
-        empresaid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        empresaid: randomUUID(),
+        code: randomUUID().split("-")[0],
         idusuariocrea: session_idusuario ?? 1,
         fechacrea: new Date(),
         idusuariomod: session_idusuario ?? 1,
@@ -452,7 +446,7 @@ export const suscribirUsuarioServicioFactoringEmpresaService = async (
       /* Registramos las declaraciones de la Empresa */
       const empresadeclaracionToCreate: Prisma.empresa_declaracionCreateInput = {
         empresa: { connect: { idempresa: empresaCreated.idempresa } },
-        empresadeclaracionid: uuidv4(),
+        empresadeclaracionid: randomUUID(),
         declaracion_conformidad_contrato: usuarioservicioValidated.declaracion_conformidad_contrato,
         declaracion_datos_reales: usuarioservicioValidated.declaracion_datos_reales,
         declaracion_accionistas_autorizacion_datos: usuarioservicioValidated.declaracion_accionistas_autorizacion_datos,
@@ -488,8 +482,8 @@ export const suscribirUsuarioServicioFactoringEmpresaService = async (
         persona: { connect: { idpersona: personaConected.idpersona } },
         colaborador_tipo: { connect: { idcolaboradortipo: colaboradorttipo.idcolaboradortipo } },
         documento_tipo: { connect: { iddocumentotipo: personaConected.iddocumentotipo } },
-        colaboradorid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        colaboradorid: randomUUID(),
+        code: randomUUID().split("-")[0],
         documentonumero: personaConected.documentonumero,
         nombrecolaborador: personaConected.personanombres,
         apellidocolaborador: personaConected.apellidopaterno + " " + personaConected.apellidomaterno,
@@ -514,8 +508,8 @@ export const suscribirUsuarioServicioFactoringEmpresaService = async (
         cuenta_tipo: { connect: { idcuentatipo: cuentatipo.idcuentatipo } },
         moneda: { connect: { idmoneda: moneda.idmoneda } },
         cuenta_bancaria_estado: { connect: { idcuentabancariaestado: cuentabancariaestado.idcuentabancariaestado } },
-        cuentabancariaid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        cuentabancariaid: randomUUID(),
+        code: randomUUID().split("-")[0],
         numero: usuarioservicioValidated.numero,
         cci: usuarioservicioValidated.cci,
         alias: usuarioservicioValidated.alias,
@@ -532,8 +526,8 @@ export const suscribirUsuarioServicioFactoringEmpresaService = async (
       const empresacuentabancariaToCreate: Prisma.empresa_cuenta_bancariaCreateInput = {
         empresa: { connect: { idempresa: empresaCreated.idempresa } },
         cuenta_bancaria: { connect: { idcuentabancaria: cuentabancariaCreated.idcuentabancaria } },
-        empresacuentabancariaid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        empresacuentabancariaid: randomUUID(),
+        code: randomUUID().split("-")[0],
         idusuariocrea: session_idusuario ?? 1,
         fechacrea: new Date(),
         idusuariomod: session_idusuario ?? 1,
@@ -550,8 +544,8 @@ export const suscribirUsuarioServicioFactoringEmpresaService = async (
         empresa: { connect: { idempresa: empresaCreated.idempresa } },
         usuario_suscriptor: { connect: { idusuario: usuarioConected.idusuario } },
         servicio_empresa_estado: { connect: { idservicioempresaestado: servicioempresaestado.idservicioempresaestado } },
-        servicioempresaid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        servicioempresaid: randomUUID(),
+        code: randomUUID().split("-")[0],
         idusuariocrea: session_idusuario ?? 1,
         fechacrea: new Date(),
         idusuariomod: session_idusuario ?? 1,
@@ -569,8 +563,8 @@ export const suscribirUsuarioServicioFactoringEmpresaService = async (
         empresa: { connect: { idempresa: empresaCreated.idempresa } },
         usuario_servicio_empresa_estado: { connect: { idusuarioservicioempresaestado: usuarioservicioempresaestado.idusuarioservicioempresaestado } },
         usuario_servicio_empresa_rol: { connect: { idusuarioservicioempresarol: usuarioservicioempresarol.idusuarioservicioempresarol } },
-        usuarioservicioempresaid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        usuarioservicioempresaid: randomUUID(),
+        code: randomUUID().split("-")[0],
         idusuariocrea: session_idusuario ?? 1,
         fechacrea: new Date(),
         idusuariomod: session_idusuario ?? 1,
@@ -600,8 +594,8 @@ export const suscribirUsuarioServicioFactoringEmpresaService = async (
         usuario_verifica: { connect: { idusuario: session_idusuario } },
         comentariointerno: "",
         comentariousuario: "",
-        servicioempresaverificacionid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        servicioempresaverificacionid: randomUUID(),
+        code: randomUUID().split("-")[0],
         idusuariocrea: session_idusuario ?? 1,
         fechacrea: new Date(),
         idusuariomod: session_idusuario ?? 1,
@@ -619,7 +613,7 @@ export const suscribirUsuarioServicioFactoringEmpresaService = async (
           usuario_servicio: { connect: { idusuarioservicio: usuarioservicio.idusuarioservicio } },
           usuario_servicio_estado: { connect: { idusuarioservicioestado: usuarioservicioestado.idusuarioservicioestado } },
           usuario_verifica: { connect: { idusuario: session_idusuario } },
-          usuarioservicioverificacionid: uuidv4(),
+          usuarioservicioverificacionid: randomUUID(),
           comentariousuario: "",
           comentariointerno: "",
           idusuariocrea: session_idusuario ?? 1,
@@ -770,8 +764,8 @@ const crearAccionistasRecursivo = async (idusuario: number, tx: any, empresaCrea
     const accionistaToCreate: any = {
       empresa: { connect: { idempresa: empresaCreated.idempresa } },
       pais: { connect: { idpais: pais.idpais } },
-      accionistaid: uuidv4(),
-      code: uuidv4().split("-")[0],
+      accionistaid: randomUUID(),
+      code: randomUUID().split("-")[0],
       tipo: acc.tipo,
       porcentaje_acciones: new Decimal(acc.porcentaje_acciones),
 
@@ -828,8 +822,8 @@ const crearFuncionarios = async (idusuario: number, tx: any, empresaCreated: any
       empresa: { connect: { idempresa: empresaCreated.idempresa } },
       pais: { connect: { idpais: pais.idpais } },
       documento_tipo: { connect: { iddocumentotipo: documentotipo.iddocumentotipo } },
-      funcionarioid: uuidv4(),
-      code: uuidv4().split("-")[0],
+      funcionarioid: randomUUID(),
+      code: randomUUID().split("-")[0],
       nombres: fun.nombres,
       apellidos: fun.apellidos,
       documento_numero: fun.documentonumero,

@@ -7,7 +7,7 @@ import { line, log } from "#root/src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 // ─── DTOs ────────────────────────────────────────────────────────────────────
 
@@ -71,12 +71,7 @@ export const createPagadorlimiteService = async (dto: CreatePagadorlimiteDto) =>
       }
 
       const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
-      const pagadorlimiteExistente = await pagadorlimiteDao.getPagadorlimiteByIdpagadorAndIdmoneda(
-        tx,
-        empresa.idempresa,
-        moneda.idmoneda,
-        filter_estado,
-      );
+      const pagadorlimiteExistente = await pagadorlimiteDao.getPagadorlimiteByIdpagadorAndIdmoneda(tx, empresa.idempresa, moneda.idmoneda, filter_estado);
 
       if (pagadorlimiteExistente) {
         log.warn(line(), "Ya existe un límite para el Pagador [" + dto.empresaid + "] y Moneda [" + dto.monedaid + "]");
@@ -88,8 +83,8 @@ export const createPagadorlimiteService = async (dto: CreatePagadorlimiteDto) =>
       const disponible = dto.disponible ?? total - usado;
 
       const pagadorlimiteToCreate: Prisma.pagador_limiteCreateInput = {
-        pagadorlimiteid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        pagadorlimiteid: randomUUID(),
+        code: randomUUID().split("-")[0],
         empresa: { connect: { idempresa: empresa.idempresa } },
         moneda: { connect: { idmoneda: moneda.idmoneda } },
         usado: usado,
@@ -134,11 +129,7 @@ export const updatePagadorlimiteService = async (dto: UpdatePagadorlimiteDto) =>
         fechamod: new Date(),
       };
 
-      const pagadorlimiteUpdated = await pagadorlimiteDao.updatePagadorlimite(
-        tx,
-        pagadorlimite.pagadorlimiteid,
-        pagadorlimiteToUpdate,
-      );
+      const pagadorlimiteUpdated = await pagadorlimiteDao.updatePagadorlimite(tx, pagadorlimite.pagadorlimiteid, pagadorlimiteToUpdate);
       log.debug(line(), "pagadorlimiteUpdated:", pagadorlimiteUpdated);
 
       return {};

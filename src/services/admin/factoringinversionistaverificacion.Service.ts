@@ -4,7 +4,7 @@ import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as df from "#src/utils/dateUtils.js";
 import { line, log } from "#src/utils/logger.pino.js";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 import * as archivoDao from "#root/src/daos/archivo.Dao.js";
 import * as archivoservicioinversionistaverificacionDao from "#root/src/daos/archivoservicioinversionistaverificacion.Dao.js";
@@ -146,7 +146,7 @@ const darAccesoAlUsuarioServicio = async (tx: any, dto: ServicioInversionistaVer
     usuario_servicio: { connect: { idusuarioservicio: usuarioservicio.idusuarioservicio } },
     usuario_servicio_estado: { connect: { idusuarioservicioestado: usuarioservicioestado.idusuarioservicioestado } },
     usuario_verifica: { connect: { idusuario: idusuario } },
-    usuarioservicioverificacionid: uuidv4(),
+    usuarioservicioverificacionid: randomUUID(),
     comentariousuario: dto.comentariousuario,
     comentariointerno: dto.comentariointerno + " // Proceso automático. Se concedió acceso por la verificación del inversionista: " + inversionista.code,
     idusuariocrea: idusuario ?? 1,
@@ -189,7 +189,7 @@ const rechazarAccesoAlUsuarioServicio = async (tx: any, dto: ServicioInversionis
     usuario_servicio: { connect: { idusuarioservicio: usuarioservicio.idusuarioservicio } },
     usuario_servicio_estado: { connect: { idusuarioservicioestado: usuarioservicioestado.idusuarioservicioestado } },
     usuario_verifica: { connect: { idusuario: idusuario } },
-    usuarioservicioverificacionid: uuidv4(),
+    usuarioservicioverificacionid: randomUUID(),
     comentariousuario: dto.comentariousuario,
     comentariointerno: dto.comentariointerno + " // Proceso automático. Se rechazó acceso por la verificación del inversionista: " + inversionista.code,
     idusuariocrea: idusuario ?? 1,
@@ -313,8 +313,8 @@ export const createFactoringinversionistaverificacionService = async (dto: Servi
         usuario_verifica: { connect: { idusuario: idusuario } },
         comentariointerno: dto.comentariointerno,
         comentariousuario: dto.comentariousuario,
-        servicioinversionistaverificacionid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        servicioinversionistaverificacionid: randomUUID(),
+        code: randomUUID().split("-")[0],
         idusuariocrea: idusuario ?? 1,
         fechacrea: new Date(),
         idusuariomod: idusuario ?? 1,
