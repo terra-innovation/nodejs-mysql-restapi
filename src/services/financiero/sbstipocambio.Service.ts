@@ -30,23 +30,23 @@ export interface UpdateSbsTipoCambioDto {
   fecha?: string;
 }
 
-export const getSbsTipoCambioHoyService = async (moneda: string = "USD") => {
+export const getSbsTipoCambioHoyService = async (moneda = "USD") => {
   log.debug(line(), "service::getSbsTipoCambioHoyService");
   const fecha = df.formatDateToYMD(df.getNowLima());
   return await tipocambioLogic.obtenerSbsLogic(moneda, fecha);
 };
 
-export const getSbsTipoCambioPorFechaService = async (moneda: string = "USD", fecha: string, serviciotipocambioid?: string) => {
+export const getSbsTipoCambioPorFechaService = async (moneda = "USD", fecha: string, serviciotipocambioid?: string) => {
   log.debug(line(), "service::getSbsTipoCambioPorFechaService");
   return await tipocambioLogic.obtenerSbsLogic(moneda, fecha, serviciotipocambioid);
 };
 
-export const getSbsTipoCambioHistorialService = async (moneda: string = "USD", fechaInicio?: string, fechaFin?: string) => {
+export const getSbsTipoCambioHistorialService = async (moneda = "USD", fechaInicio?: string, fechaFin?: string) => {
   log.debug(line(), "service::getSbsTipoCambioHistorialService");
   return await tipocambioLogic.obtenerHistorialSbsLogic(moneda, fechaInicio, fechaFin);
 };
 
-export const sincronizarSbsTipoCambioService = async (moneda: string = "USD", fecha?: string, mes?: number, anio?: number, serviciotipocambioid?: string) => {
+export const sincronizarSbsTipoCambioService = async (moneda = "USD", fecha?: string, mes?: number, anio?: number, serviciotipocambioid?: string) => {
   log.debug(line(), "service::sincronizarSbsTipoCambioService");
   if (mes && anio) {
     return await tipocambioLogic.sincronizarSbsMesLogic(moneda, Number(mes), Number(anio), serviciotipocambioid);
@@ -56,7 +56,7 @@ export const sincronizarSbsTipoCambioService = async (moneda: string = "USD", fe
   return await tipocambioLogic.sincronizarSbsLogic(moneda, fechaSync, serviciotipocambioid);
 };
 
-export const sincronizarSbsMesTipoCambioService = async (moneda: string = "USD", mes: number, anio: number, serviciotipocambioid?: string) => {
+export const sincronizarSbsMesTipoCambioService = async (moneda = "USD", mes: number, anio: number, serviciotipocambioid?: string) => {
   log.debug(line(), "service::sincronizarSbsMesTipoCambioService");
   return await tipocambioLogic.sincronizarSbsMesLogic(moneda, mes, anio, serviciotipocambioid);
 };

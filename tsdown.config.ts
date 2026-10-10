@@ -7,7 +7,7 @@ export default defineConfig({
   outDir: "dist",
   format: ["esm"],
   platform: "node",
-  target: "node18",
+  target: "node24",
   outExtensions: () => ({ js: ".js" }),
   sourcemap: true,
   clean: true,

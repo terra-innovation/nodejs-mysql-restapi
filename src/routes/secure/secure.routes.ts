@@ -1,9 +1,8 @@
 import * as secureController from "#root/src/controllers/secure/secure.Controller.js";
-import { rateLimiterLoginMiddleware } from "#src/middlewares/ratelimiterMiddleware";
+import { rateLimiterLoginMiddleware, rateLimiterAccesosMiddleware } from "#src/middlewares/ratelimiterMiddleware.js";
 import { catchedAsync } from "#src/utils/catchedAsync.js";
 import { Router } from "express";
 import { isAuth } from "#src/middlewares/authMiddleware.js";
-import { rateLimiterAccesosMiddleware } from "#src/middlewares/ratelimiterMiddleware.js";
 import { actualizarAccesos } from "#src/controllers/secure/accesos.Controller.js";
 
 const router = Router();
