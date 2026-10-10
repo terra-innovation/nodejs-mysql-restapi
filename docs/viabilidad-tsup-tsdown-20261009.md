@@ -1,5 +1,48 @@
 # Viabilidad de migrar tsup 8.5.0 a tsdown
 
+## Migración aplicada: 2026-10-09
+
+Se sustituyó tsup por `tsdown@0.23.0` exacto en devDependencies y se actualizó
+`package-lock.json`, conservando su formato versión 2. Las versiones de los
+paquetes preexistentes que permanecen en el lockfile no cambiaron.
+
+El estado actual ya incluye Prisma 7.10.0 y generación del cliente TypeScript
+mediante `prebuild`; las observaciones sobre Prisma 6 y Node 20 de las secciones
+posteriores corresponden al análisis histórico, no al estado de esta migración.
+
+`npm run build` conserva `tsc --noEmit` y utiliza `tsdown.config.ts`. Se mantienen
+las entradas automáticas `src/index.ts` y `src/scripts/*.ts`, ESM con extensión
+`.js`, target `node18`, sourcemaps, shims, limpieza y tree shaking. El cliente
+Prisma local se compila con las fuentes; las dependencias de runtime permanecen
+externas. Se actualizó la invocación del compilador en la prueba runtime existente
+sin modificar sus expectativas ni ejecutarla.
+
+**Entrega:** tsdown genera archivos compartidos entre las entradas. Transferir
+siempre todo `dist` de una misma compilación, incluidos los archivos con hash;
+no copiar únicamente `index.js` o un cron. El empaquetador existente ya copia
+recursivamente `dist`, por lo que no se modificó ni se ejecutó.
+
+**Validación realizada:** `npm run build` antes y después de la migración,
+ambos aprobados en Windows x64 con Node portable 24.21.0. El build posterior
+generó `dist/index.js`, `dist/scripts/sync_tipo_cambio.js` y
+`dist/scripts/email_venta_frio.js`, sus mapas y archivos compartidos, sin errores
+ni advertencias del compilador. `prebuild` regeneró el cliente Prisma sin
+operaciones sobre la base de datos.
+
+La instalación se ejecutó con scripts y auditoría desactivados. npm emitió avisos
+de obsolescencia de las dependencias transitivas
+`@yuku-codegen/binding-win32-x64@0.10.2` y
+`@yuku-parser/binding-win32-x64@0.10.2`; no impidieron la compilación y no se
+forzaron overrides ajenos al compilador publicado.
+
+**Límites:** por solicitud del usuario no se ejecutaron pruebas, servidor, cron,
+conexiones de base de datos, empaquetado de producción ni despliegue. El target
+se conserva para acotar el cambio; no certifica soporte de toda la aplicación en
+Node 18 ni funcionamiento en Linux o producción. No se afirma una mejora de
+rendimiento en ejecución.
+
+## Análisis histórico previo
+
 Fecha de revisión: 2026-10-09. Alcance: análisis estático del backend y consulta de fuentes oficiales; no constituye una migración ni una validación de ejecución.
 
 ## Dictamen

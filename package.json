@@ -8,7 +8,7 @@
   "scripts": {
     "build_anterior": "tsc",
     "prebuild": "npm run prisma:generate",
-    "build": "tsc --noEmit && tsup",
+    "build": "tsc --noEmit && tsdown",
     "dev": "cross-env TZ=UTC tsx watch --tsconfig ./tsconfig.json  src/index.ts",
     "start": "node dist/index.js",
     "test_anterior": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
@@ -102,7 +102,7 @@
     "supertest": "^7.1.4",
     "ts-jest": "29.4.14",
     "ts-prune": "^0.10.3",
-    "tsup": "^8.5.0",
+    "tsdown": "0.23.0",
     "tsx": "^4.19.4",
     "typescript": "npm:@typescript/typescript6@6.0.2",
     "vite": "7.3.7",

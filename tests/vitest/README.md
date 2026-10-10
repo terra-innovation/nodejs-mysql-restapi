@@ -11,7 +11,7 @@ y comprobación de tipos, sin ejecutar pruebas; ver
 [alcance y límites](../../docs/migracion-vitest5-20261009.md).
 
 Vitest utiliza Vite para transformar las pruebas TypeScript/ESM. El desarrollo
-del servidor continúa con `tsx` y su compilación con `tsup`. No se requiere un
+del servidor continúa con `tsx` y su compilación con `tsdown`. No se requiere un
 servidor Vite, navegador, puerto adicional, base de datos ni `.env.test` para
 estas pruebas unitarias y HTTP. La carga de archivos usa carpetas desechables
 creadas con `mkdtemp` y las elimina tras cada caso.
