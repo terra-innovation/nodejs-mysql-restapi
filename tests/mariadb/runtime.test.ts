@@ -101,7 +101,7 @@ beforeAll(async () => {
   await mkdir(path.join(workspace, "security/ip"), { recursive: true });
   await writeFile(path.join(workspace, "security/ip/whitelist.txt"), "127.0.0.1\n::1\n");
   await writeFile(path.join(workspace, "security/ip/blacklist.txt"), "");
-  await execute(process.execPath, [path.join(root, "node_modules/typescript/bin/tsc"), "--noEmit"], { cwd: root, timeout: 90000, windowsHide: true });
+  await execute(process.execPath, [path.join(root, "node_modules/@typescript/native/bin/tsc"), "--noEmit"], { cwd: root, timeout: 90000, windowsHide: true });
   // Configuración de compilación existente; cambiar únicamente la salida, nunca dist/ZIP.
   await execute(process.execPath, [path.join(root, "node_modules/tsup/dist/cli-default.js"), "--out-dir", buildDir], { cwd: root, timeout: 90000, windowsHide: true });
   evidence.compilation = { sourceTypecheck: "passed", config: "tsup.config.ts", isolatedOutput: true };

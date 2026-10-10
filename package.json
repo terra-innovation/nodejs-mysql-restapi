@@ -87,6 +87,7 @@
     "@types/supertest": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "8.71.1",
     "@typescript-eslint/parser": "8.71.1",
+    "@typescript/native": "npm:typescript@7.0.2",
     "@vitest/coverage-v8": "5.0.3",
     "cross-env": "^7.0.3",
     "dotenv-cli": "^11.0.0",
@@ -99,11 +100,11 @@
     "pluralize-esm": "^9.0.5",
     "prisma": "7.10.0",
     "supertest": "^7.1.4",
-    "ts-jest": "^29.4.6",
+    "ts-jest": "29.4.14",
     "ts-prune": "^0.10.3",
     "tsup": "^8.5.0",
     "tsx": "^4.19.4",
-    "typescript": "^5.8.3",
+    "typescript": "npm:@typescript/typescript6@6.0.2",
     "vite": "7.3.7",
     "vitest": "5.0.3"
   }
