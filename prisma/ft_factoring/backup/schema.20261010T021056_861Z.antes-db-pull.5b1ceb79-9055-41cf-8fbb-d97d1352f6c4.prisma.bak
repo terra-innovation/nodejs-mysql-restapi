@@ -2843,7 +2843,7 @@ model sunat_tipo_cambio {
 }
 
 /// --- INICIO LOG SCRIPT: pluralizar-schema.js ---
-/// Fecha de ejecución: 9/10/2026, 9:10:58 p. m.
+/// Fecha de ejecución: 9/10/2026, 8:20:45 p. m.
 /// Total líneas con relaciones tipo '[]': 191
 /// Modificaciones realizadas: 0
 /// Sin modificar (ya pluralizadas): 191
@@ -3043,7 +3043,7 @@ model sunat_tipo_cambio {
 
 
 /// --- INICIO LOG DE SCRIPT: renombrar-atributos-especiales.js ---
-/// Fecha de ejecución: 9/10/2026, 9:10:58 p. m.
+/// Fecha de ejecución: 9/10/2026, 8:20:45 p. m.
 /// ✔️ Línea 32: (relation-field) archivo_estado ya coincide con 'archivoestado'
 /// ✔️ Línea 33: (relation-field) archivo_tipo ya coincide con 'archivotipo'
 /// ✔️ Línea 59: (relation-field) archivo ya coincide con 'archivo'
