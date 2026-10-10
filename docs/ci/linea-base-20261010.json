@@ -1,0 +1,445 @@
+{
+  "capturedAt": "2026-10-10T11:45:44.251Z",
+  "node": "v24.21.0",
+  "execPath": "D:\\Herramientas\\node-v24.21.0-win-x64\\node.exe",
+  "commit": "b2825bb9538258b4afe40aa5dbd0f9ab704462c2",
+  "files": {
+    "package.json": "6f65f5ee71d6dbfae9249bea50772f7755f8706c7819f1152e52210a7bbffde5",
+    "package-lock.json": "16596b306cea41f205772ea6abf50c1cb78fa8c7da0b33b971bbb03df2b216bb",
+    "tsconfig.json": "f500cce89e3bf7b58b7e8477ef61a4ecbc8c99df9abce5190075633f0a19b08a",
+    "tests/tsconfig.jest.json": "60c9087441cad836f82cad9d5c7a5f1847c50f39d48205a48d6cab7911151a93",
+    "tests/vitest/tsconfig.json": "3fafe071f7c6ba1a61e1cff23dec0f028e99475e51b5d19c1c1204fd9206bbed",
+    "tests/mariadb/tsconfig.json": "5571448b12edbb5ba2e06a49c152f1c3c4ceb335202bb7700016257d1538f451",
+    "jest.config.js": "581ba03ba5d18baf732a12a94df7ca88db31b65d4c6445acef4e7feb87ea7726",
+    "vitest.config.ts": "483fab682e29aa5a4551e930afd4b39958438207815f84a135de6110515dea3e",
+    "tests/mariadb/vitest.config.ts": "db23f523913c77ebe0c80d7caacef86e2a272b46b36bcceef6c12a17464ae76a",
+    "eslint.config.js": "d8eb88dc02f94705691bd01ecd17eaeadf1977214264a6f48cc697aecfdeefa1",
+    ".prettierrc": "2dc14070897ccb0d7c199814b3572f7f700ea067804fc3757fdb59e56a834060",
+    ".prettierignore": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tsdown.config.ts": "4b941ab176ae562273b544d72e6b99af08d3956c0511474ffddfc76a3af74b21"
+  },
+  "checks": [
+    {
+      "name": "types-backend",
+      "exitCode": 0,
+      "durationMs": 894,
+      "error": null,
+      "command": "node node_modules/@typescript/native/bin/tsc --noEmit --pretty false",
+      "log": "coverage\\ci-baseline\\20261010\\types-backend.log"
+    },
+    {
+      "name": "types-jest",
+      "exitCode": 0,
+      "durationMs": 835,
+      "error": null,
+      "command": "node node_modules/@typescript/native/bin/tsc --project tests/tsconfig.jest.json --noEmit --pretty false",
+      "log": "coverage\\ci-baseline\\20261010\\types-jest.log"
+    },
+    {
+      "name": "types-vitest",
+      "exitCode": 0,
+      "durationMs": 660,
+      "error": null,
+      "command": "node node_modules/@typescript/native/bin/tsc --project tests/vitest/tsconfig.json --noEmit --pretty false",
+      "log": "coverage\\ci-baseline\\20261010\\types-vitest.log"
+    },
+    {
+      "name": "types-mariadb",
+      "exitCode": 0,
+      "durationMs": 943,
+      "error": null,
+      "command": "node node_modules/@typescript/native/bin/tsc --project tests/mariadb/tsconfig.json --noEmit --pretty false",
+      "log": "coverage\\ci-baseline\\20261010\\types-mariadb.log"
+    },
+    {
+      "name": "lint-src",
+      "exitCode": 1,
+      "durationMs": 7525,
+      "error": null,
+      "command": "node node_modules/eslint/bin/eslint.js src --format json",
+      "files": 384,
+      "errors": 13,
+      "warnings": 357,
+      "rules": {
+        "@typescript-eslint/no-explicit-any": {
+          "errors": 0,
+          "warnings": 198
+        },
+        "@typescript-eslint/no-unused-vars": {
+          "errors": 0,
+          "warnings": 148
+        },
+        "no-undef": {
+          "errors": 5,
+          "warnings": 0
+        },
+        "import-x/no-duplicates": {
+          "errors": 0,
+          "warnings": 4
+        },
+        "@typescript-eslint/no-inferrable-types": {
+          "errors": 0,
+          "warnings": 7
+        },
+        "no-useless-assignment": {
+          "errors": 8,
+          "warnings": 0
+        }
+      }
+    }
+  ],
+  "testsExecuted": false,
+  "prettier": {
+    "installed": false,
+    "declared": false
+  },
+  "scope": "Point 1: current static/type/lint baseline; tests not executed",
+  "npm": "11.19.0",
+  "testManifest": {
+    "jest": [
+      {
+        "path": "tests/e2e/example.test.ts",
+        "sha256": "bbd0a70fd4bf4b30146a61851cf9202360f3b1982901dd2d3a32485ca4e8caba"
+      },
+      {
+        "path": "tests/unit/domain/factoring/factoring.Calculator.test.ts",
+        "sha256": "2a569abf1b3e3ed8dfe5629c0b6b2c20d00ec1f351fdfea32087d04d826f3b69"
+      },
+      {
+        "path": "tests/unit/routes/factoringEmpresaDetalle.test.ts",
+        "sha256": "b90da8541d7e91f9d7c5ef1d750387040e3512b2535ac95baad2ad13ee16cf2a"
+      },
+      {
+        "path": "tests/unit/services/admin/factoringliquidacion.audit.test.ts",
+        "sha256": "ef7f2a706984f86deaa9d205fa3af3254a56ff370dad71a2d884346b3b08c516"
+      },
+      {
+        "path": "tests/unit/services/admin/factoringliquidacion.Service.test.ts",
+        "sha256": "c0c0a866081ff692f56c36063a1c16712cd67718cedf6c38cab57cd9bd16b1e1"
+      },
+      {
+        "path": "tests/unit/services/admin/factoringpropuesta.Service.test.ts",
+        "sha256": "a590084e0dbc6ca693a50c142806f629baea415d0b011cb8fa0faab4b2c9a9b9"
+      },
+      {
+        "path": "tests/unit/services/admin/factoringsimulacion.dates.test.ts",
+        "sha256": "7b1f9fbfa331b34bf1527cb637e703482ec680d0ca4c3cf08332f1ffeac71684"
+      },
+      {
+        "path": "tests/unit/services/factoring.dateTrace.test.ts",
+        "sha256": "7de277ca4f27ac52ba5602260f8aba1d019e4c6350d9930588d649a358af3a85"
+      },
+      {
+        "path": "tests/unit/services/factoring.Service.test.ts",
+        "sha256": "031ca49a767d09fef3cf1e1cb97a361a3913a7bebac33d0a2fe97a409a9a6761"
+      },
+      {
+        "path": "tests/unit/services/financiero/factura.Service.test.ts",
+        "sha256": "182ea38e94d5255cadc95119af0f70d45f1bb7814b7e6da58530f33bc4d4ff4b"
+      },
+      {
+        "path": "tests/unit/services/secure/accesos.Service.test.ts",
+        "sha256": "edc00fa4759510b091e7fc5f886fccc2b88609c3e232d35a45687c4ca40d78f6"
+      },
+      {
+        "path": "tests/unit/services/tipocambio.Service.test.ts",
+        "sha256": "2c36b60de443dfd5916b810418f26f6991e53dcdf3d0c02d7c5cef3b1c5b9518"
+      },
+      {
+        "path": "tests/unit/services/usuario/archivo.Service.test.ts",
+        "sha256": "4b6938db2a4dd6197c9423ca513f638f067d77acf506424317ab749770910564"
+      },
+      {
+        "path": "tests/unit/utils/dateUtils.test.ts",
+        "sha256": "0a10ec862a1769bf8e8a26dba9090d2eadd066b657aff60651a83c38e9673e92"
+      },
+      {
+        "path": "tests/unit/utils/document/PDFgenerator.dates.test.ts",
+        "sha256": "ab7a136a4964b14a6d7d2a5def8421d8c1ccc4d6625a44009e0c44be8db4eb5e"
+      }
+    ],
+    "vitest": [
+      {
+        "path": "tests/vitest/http/factoring.business.test.ts",
+        "sha256": "057f23f8ad7a6646c464efb1b52932708beabbcbfe7ec6989a41465695d51e75"
+      },
+      {
+        "path": "tests/vitest/http/factoringestado.business.test.ts",
+        "sha256": "2176029d7ee977fd5ec20edb712dd83c5086b561121eed35a8d5b5e85990e7aa"
+      },
+      {
+        "path": "tests/vitest/http/factoringpropuestaPDF.empresario.test.ts",
+        "sha256": "daf48385253410af650d399c3b237801c240df6fee603e38b8f7fdb618bcfde6"
+      },
+      {
+        "path": "tests/vitest/http/facturaXML.business.test.ts",
+        "sha256": "3a23e5ecd9a915ad5dbf777a3edfa3a25c749e137102dfbba758658877fd6823"
+      },
+      {
+        "path": "tests/vitest/pending/business-decisions.test.ts",
+        "sha256": "9d26b14ef45c97cdc9fcc421a7038185ff8b43663d1ef2a64b83d459877c8ba0"
+      },
+      {
+        "path": "tests/vitest/unit/archivo.business.test.ts",
+        "sha256": "626476b7172fe4a613a7137434705e68facd63356b7650ded8b7096993171d68"
+      },
+      {
+        "path": "tests/vitest/unit/archivoMiddleware.test.ts",
+        "sha256": "99134ae56ec7eea198cbe30829bc201a8c9ea184b8eeaf297d96f90ea15aa245"
+      },
+      {
+        "path": "tests/vitest/unit/dateUtils.test.ts",
+        "sha256": "e600212345ab39e516185f0cb01219ab86377acdf775e64f5c86f5d9dc9f14cf"
+      },
+      {
+        "path": "tests/vitest/unit/emailSender.test.ts",
+        "sha256": "d8b8aef614e9837c0472f334120c5fead1be0697fa3702a15a93b8055104a3aa"
+      },
+      {
+        "path": "tests/vitest/unit/factoring.Calculator.test.ts",
+        "sha256": "e90f8b30e6098c93a655fc58adf93e323b008cb7dcb47529703ee6b8379511fa"
+      },
+      {
+        "path": "tests/vitest/unit/factoringaprobacion.business.test.ts",
+        "sha256": "056d3fa9efd1b0f6b233d4098d0200a076d2eccbf243334d763a7f5c2aab1a73"
+      },
+      {
+        "path": "tests/vitest/unit/factoringestado.business.test.ts",
+        "sha256": "b7c2e646fdea2af361001b7f4dfa5ab94d4242ffdd0465def634a567a6681c86"
+      },
+      {
+        "path": "tests/vitest/unit/factoringfactura.business.test.ts",
+        "sha256": "19b1c20ece77de954357dadc7c5ed873e87b31dad4f57abadd7a06398612e5d0"
+      },
+      {
+        "path": "tests/vitest/unit/factoringliquidacion.business.test.ts",
+        "sha256": "74969d09a3cbf80684ff7fa5a8a4d3b5fecce2c26dda87e7761c91e33fb9a07a"
+      },
+      {
+        "path": "tests/vitest/unit/factoringpropuesta.business.test.ts",
+        "sha256": "055037c7799b94d7be899497d493215f2472325d2b4fb1fd1afb2e1264d724e0"
+      },
+      {
+        "path": "tests/vitest/unit/factoringtransferencia.business.test.ts",
+        "sha256": "ad4da3e23ec5829c2abe79f8f432c6b5f421240a764715aefdb1e8c2a4b99f54"
+      },
+      {
+        "path": "tests/vitest/unit/facturaRegistro.business.test.ts",
+        "sha256": "54980411102c986b41d624991a8844d0c878f43e346eb9bf933ce1e2ecc992bc"
+      },
+      {
+        "path": "tests/vitest/unit/facturaXML.business.test.ts",
+        "sha256": "b5df58d1303fcfc1b86cf64dd40c2c0a9a6b160d2e09b6fa493b60baddcd4b0b"
+      },
+      {
+        "path": "tests/vitest/unit/fileType.test.ts",
+        "sha256": "db55569470915aea7bbf246ec9090e09aae7751a068b87fc0b91d79bfdec13d7"
+      },
+      {
+        "path": "tests/vitest/unit/liquidacionLimits.test.ts",
+        "sha256": "2fbcf09dc3bd38a547cde434e5aabb27f438901fa75a8ba3e2677f3bcd72c94c"
+      },
+      {
+        "path": "tests/vitest/unit/mariadbEnvironment.test.ts",
+        "sha256": "6b8147d4c6800c37141f86cfa4e38fbd76ec8e240365b50cd7526e4316529561"
+      },
+      {
+        "path": "tests/vitest/unit/secure.business.test.ts",
+        "sha256": "ed20a5d3cb2405089c2ca30154a8fe155ca3438c8d8d96678ef8fb12ba18a121"
+      }
+    ],
+    "mariadb": [
+      {
+        "path": "tests/mariadb/appHttp.test.ts",
+        "sha256": "33a37596fc927d60b88010e1c0fa885a54338c28c2cfc92e1e88fb11395e0beb"
+      },
+      {
+        "path": "tests/mariadb/authHttp.test.ts",
+        "sha256": "c8138b38b0e135c19d8232b3a42e2a145aa939f3fc6265ea68b6a439a0398729"
+      },
+      {
+        "path": "tests/mariadb/business.test.ts",
+        "sha256": "950b57090a85b68aafc58167dbe8321f06113890939182b995b53bc03cd17648"
+      },
+      {
+        "path": "tests/mariadb/connectedFlow.test.ts",
+        "sha256": "a94712363a1c18906d73485cc5f22f1e71de94bac9ed61d4cb99c79685786197"
+      },
+      {
+        "path": "tests/mariadb/entrepreneur.test.ts",
+        "sha256": "5d255b810d9aab2f67c220301c7dd04699b22faa571a01010c13f4d6da815d6c"
+      },
+      {
+        "path": "tests/mariadb/environment.test.ts",
+        "sha256": "4889e24291fe70c2fedc1f338bb3542b66c11e68d4ab31e8ff72c8aa2f3dc7af"
+      },
+      {
+        "path": "tests/mariadb/financialHttp.test.ts",
+        "sha256": "f49aa0efaacc5df9ead6c2057d7446f7492f3fe6cdf66ec1effbcd37454bebec"
+      },
+      {
+        "path": "tests/mariadb/historicalAudit.test.ts",
+        "sha256": "5d7c6737ab5c032fabf3caa7aa5dea0f1d24596dea523072735d65c24cf8168c"
+      },
+      {
+        "path": "tests/mariadb/invoiceHttp.test.ts",
+        "sha256": "8e511ad2b5b81f0d0ac2e3dbb7cf1134f9f9c1e50fa10c39e431c34c414b3b36"
+      },
+      {
+        "path": "tests/mariadb/operation.test.ts",
+        "sha256": "b63d7d740c51b8699a117e4b450a257710ad3e46a5e355c3fd9499766ba01cc0"
+      },
+      {
+        "path": "tests/mariadb/operationState.test.ts",
+        "sha256": "4a02effe1dc57a2f4e5f8e897ed06ea5ebd63eb0254dda795d2fe9b11c2f4c28"
+      },
+      {
+        "path": "tests/mariadb/pdfHttp.test.ts",
+        "sha256": "bfd4074a93ce02762456a683ded5c06d8f526c5c8879142b781a5d0f90bfd1f5"
+      },
+      {
+        "path": "tests/mariadb/proposal.test.ts",
+        "sha256": "017990c93db74806c6bffcaaded9980ae5fde35ebe9e663ce79e682b41f8e454"
+      },
+      {
+        "path": "tests/mariadb/runtime.test.ts",
+        "sha256": "71ab86d6cd4dea620fa4dcc923039464c24f7553367b62e6e9f7093b5d493687"
+      },
+      {
+        "path": "tests/mariadb/settlement.test.ts",
+        "sha256": "7a2f1583d9dd40ab1a9e8fedcda3418020861361a4f81b8d1c961ad2465ad298"
+      },
+      {
+        "path": "tests/mariadb/settlementConcurrency.test.ts",
+        "sha256": "69e2f2970109de998bed09abc202c10bdfca86f735b16b8d7af692aea485f73b"
+      }
+    ]
+  },
+  "testMarkers": [
+    {
+      "runner": "vitest",
+      "path": "tests/vitest/pending/business-decisions.test.ts",
+      "line": 4,
+      "kind": "todo"
+    },
+    {
+      "runner": "vitest",
+      "path": "tests/vitest/pending/business-decisions.test.ts",
+      "line": 5,
+      "kind": "todo"
+    },
+    {
+      "runner": "vitest",
+      "path": "tests/vitest/pending/business-decisions.test.ts",
+      "line": 6,
+      "kind": "todo"
+    }
+  ],
+  "lintErrors": [
+    {
+      "path": "src/middlewares/archivoMiddleware.ts",
+      "line": 35,
+      "column": 37,
+      "rule": "no-undef",
+      "message": "'Express' is not defined."
+    },
+    {
+      "path": "src/middlewares/archivoMiddleware.ts",
+      "line": 45,
+      "column": 34,
+      "rule": "no-undef",
+      "message": "'Express' is not defined."
+    },
+    {
+      "path": "src/middlewares/archivoMiddleware.ts",
+      "line": 71,
+      "column": 51,
+      "rule": "no-undef",
+      "message": "'Express' is not defined."
+    },
+    {
+      "path": "src/middlewares/archivoMiddleware.ts",
+      "line": 112,
+      "column": 15,
+      "rule": "no-undef",
+      "message": "'Express' is not defined."
+    },
+    {
+      "path": "src/services/admin/factoringliquidacion.Service.ts",
+      "line": 189,
+      "column": 7,
+      "rule": "no-useless-assignment",
+      "message": "The value assigned to 'dias_pago_efectivo' is not used in subsequent statements."
+    },
+    {
+      "path": "src/services/admin/factoringliquidacion.Service.ts",
+      "line": 190,
+      "column": 7,
+      "rule": "no-useless-assignment",
+      "message": "The value assigned to 'dias_mora_efectivo' is not used in subsequent statements."
+    },
+    {
+      "path": "src/services/admin/factoringliquidacion.Service.ts",
+      "line": 191,
+      "column": 7,
+      "rule": "no-useless-assignment",
+      "message": "The value assigned to 'monto_descuento_efectivo' is not used in subsequent statements."
+    },
+    {
+      "path": "src/services/admin/factoringliquidacion.Service.ts",
+      "line": 192,
+      "column": 7,
+      "rule": "no-useless-assignment",
+      "message": "The value assigned to 'monto_descuento_a_favor' is not used in subsequent statements."
+    },
+    {
+      "path": "src/services/admin/factoringliquidacion.Service.ts",
+      "line": 193,
+      "column": 7,
+      "rule": "no-useless-assignment",
+      "message": "The value assigned to 'monto_descuento_mora' is not used in subsequent statements."
+    },
+    {
+      "path": "src/services/admin/tipocambio.Service.ts",
+      "line": 768,
+      "column": 7,
+      "rule": "no-useless-assignment",
+      "message": "The value assigned to 'sunat' is not used in subsequent statements."
+    },
+    {
+      "path": "src/services/admin/tipocambio.Service.ts",
+      "line": 785,
+      "column": 7,
+      "rule": "no-useless-assignment",
+      "message": "The value assigned to 'sbs' is not used in subsequent statements."
+    },
+    {
+      "path": "src/services/empresario/factura.Service.ts",
+      "line": 439,
+      "column": 11,
+      "rule": "no-useless-assignment",
+      "message": "The value assigned to 'filtered' is not used in subsequent statements."
+    },
+    {
+      "path": "src/types/express.d.ts",
+      "line": 4,
+      "column": 37,
+      "rule": "no-undef",
+      "message": "'Express' is not defined."
+    }
+  ],
+  "historicalMariaDB": {
+    "runId": "ab009eee81884a56a73b8959",
+    "startedAt": "2026-10-10T04:17:56.945Z",
+    "finishedAt": "2026-10-10T04:18:38.710Z",
+    "status": "passed",
+    "cleanup": "removed",
+    "schemaHash": "31b61aab8b125fbf00fea9e499b84c24d33324ed96e7ec85473c96b5aa24898f"
+  },
+  "limitations": [
+    "Existing local dependencies and generated Prisma client; clean installation not checked",
+    "No tests, coverage, build, Prisma generation, install, audit or database access",
+    "Previous test reports do not prove current functional status",
+    "Textual test inventory is not runner discovery or test case count"
+  ]
+}

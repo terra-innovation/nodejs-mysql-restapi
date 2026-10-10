@@ -11,6 +11,8 @@ El backend usa Node 24.21.0 portable ubicado en `D:\Herramientas\node-v24.21.0-w
 
 ## Alcance y mantenimiento
 
+Las versiones admitidas de Node/npm, la instalación con lockfile y la diferencia entre `prisma-sync` y la generación del cliente para CI se documentan en [instalación reproducible](ci/instalacion-reproducible.md).
+
 La configuración de terminal corresponde al workspace de VS Code. Para mantenerla acotada al backend, abrir este repositorio en su propia ventana. No configura PowerShell externo, las herramientas del agente ni producción. Las herramientas del agente siguen la instrucción de `AGENTS.md` de activar y verificar Node 24 en cada sesión de comandos.
 
 La ruta es local a este equipo. Si se mueve la carpeta o se actualiza Node 24, actualizar las referencias en `.vscode/launch.json`, `.vscode/settings.json`, `.vscode/tasks.json` y `AGENTS.md`. Conservar juntos todos los archivos del ZIP, incluido npm.

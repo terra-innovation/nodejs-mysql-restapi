@@ -2,13 +2,9 @@
 
 ### Installation
 
-```
-git clone https://github.com/fazt/nodejs-mysql-restapi
-cd nodejs-mysql-restapi
-docker-compose up
-npm install
-npm run dev
-```
+Usar Node 24.21.0 y npm 11.19.0 como referencia. Instalar con `npm ci` y generar el cliente Prisma antes de arrancar. Procedimiento para Windows y CI: [instalación reproducible](docs/ci/instalacion-reproducible.md).
+
+`npm run prisma-sync` conserva el flujo manual de introspección y transformación del esquema desde la base de desarrollo; no se ejecuta para instalar ni preparar CI.
 
 ### TODO
 

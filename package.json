@@ -5,6 +5,11 @@
   "description": "A powerfull REST API with Node.js, Express and MySQL",
   "main": "dist/src/index.js",
   "type": "module",
+  "packageManager": "npm@11.19.0",
+  "engines": {
+    "node": "^24.21.0",
+    "npm": "^11.19.0"
+  },
   "scripts": {
     "build_anterior": "tsc",
     "prebuild": "npm run prisma:generate",
@@ -29,6 +34,7 @@
     "test:integration:typecheck": "tsc --project tests/mariadb/tsconfig.json --noEmit",
     "pretest_anterior": "cross-env NODE_ENV=test jest --clearCache",
     "prisma:generate": "prisma generate",
+    "prisma:generate:ci": "cross-env NODE_ENV=production prisma generate",
     "prisma-sync": "node scripts/prisma/generate-models.js",
     "list-unused-exports": "powershell -Command \"npx ts-prune | Select-String -NotMatch 'used in module' | Select-String '\\\\src\\\\controllers\\\\'\"",
     "build-prod": "node scripts/produccion/build-prod.js",
