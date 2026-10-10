@@ -147,7 +147,7 @@ const getFinancialDataById = async (tx: any, item: any, constante_igv: any) => {
   };
 };
 
-const runSimulation = async (tx: any, factoring: any, fecha_liquidacion: any, fecha_pago_efectivo_raw: any, financieros_raw?: FactoringLiquidacionFinancieroInput[], exonerar_gasto_interbancario: boolean = false) => {
+const runSimulation = async (tx: any, factoring: any, fecha_liquidacion: any, fecha_pago_efectivo_raw: any, financieros_raw?: FactoringLiquidacionFinancieroInput[], exonerar_gasto_interbancario = false) => {
   if (!factoring.factoring_propuesta_aceptada) {
     log.warn(line(), "Factoring no tiene propuesta aceptada");
     throw new ClientError("El factoring no cuenta con una propuesta aceptada", 400);
@@ -169,9 +169,8 @@ const runSimulation = async (tx: any, factoring: any, fecha_liquidacion: any, fe
     assertLiquidacionInput(item.monto_unitario ?? 0, "El monto unitario");
   }
 
-  const requierePrecisionAmpliada = (financieros_raw ?? []).some((item) =>
-    new Decimal(item.cantidad ?? 1).decimalPlaces() > 2 || new Decimal(item.monto_unitario ?? 0).decimalPlaces() > 2);
-  if (requierePrecisionAmpliada && !await factoringliquidacionfinancieroDao.hasLiquidacionExtendedPrecision(tx)) {
+  const requierePrecisionAmpliada = (financieros_raw ?? []).some((item) => new Decimal(item.cantidad ?? 1).decimalPlaces() > 2 || new Decimal(item.monto_unitario ?? 0).decimalPlaces() > 2);
+  if (requierePrecisionAmpliada && !(await factoringliquidacionfinancieroDao.hasLiquidacionExtendedPrecision(tx))) {
     throw new ClientError("Para usar más de dos decimales debe actualizarse primero el almacenamiento de liquidaciones", 400);
   }
 
@@ -186,11 +185,11 @@ const runSimulation = async (tx: any, factoring: any, fecha_liquidacion: any, fe
   const fecha_pago_estimado = dateUtils.toLimaDateTime(acceptedProp.fecha_pago_estimado);
   const diffDays = dateUtils.calculateCalendarDaysInLima(fecha_pago_estimado, fecha_fin);
 
-  let dias_pago_efectivo = 0;
-  let dias_mora_efectivo = 0;
-  let monto_descuento_efectivo = new Decimal(0);
-  let monto_descuento_a_favor = new Decimal(0);
-  let monto_descuento_mora = new Decimal(0);
+  let dias_pago_efectivo: number;
+  let dias_mora_efectivo: number;
+  let monto_descuento_efectivo: Decimal;
+  let monto_descuento_a_favor: Decimal;
+  let monto_descuento_mora: Decimal;
 
   const originalMontoDescuento = new Decimal(acceptedProp.monto_descuento);
   const simulatedMontoDescuento = new Decimal(simBase.monto_descuento || 0);
@@ -275,16 +274,20 @@ const runSimulation = async (tx: any, factoring: any, fecha_liquidacion: any, fe
     throw new ClientError("El gasto interbancario solo puede ingresarse una vez", 400);
   }
   if (!exonerar_gasto_interbancario && factoring.cuenta_bancaria.idbanco !== 1 && gastosIngresados.length === 0) {
-    const saldoAntesDelGasto = factoring_liquidacion_financieros.reduce((saldo, fin) => fin.financiero_concepto.factor === 1 ? saldo.add(fin.total) : saldo.minus(fin.total), new Decimal(0));
+    const saldoAntesDelGasto = factoring_liquidacion_financieros.reduce((saldo, fin) => (fin.financiero_concepto.factor === 1 ? saldo.add(fin.total) : saldo.minus(fin.total)), new Decimal(0));
     if (saldoAntesDelGasto.greaterThan(0)) {
-      const gasto = await getFinancialDataById(tx, {
-        idfinancierotipo: 2,
-        idfinancieroconcepto: 3,
-        cantidad: 1,
-        monto_unitario: factoring.idmoneda === 1 ? constante_comison_bcp_pen.valor : constante_comison_bcp_usd.valor,
-        descripcion: "",
-        orden: Math.max(...factoring_liquidacion_financieros.map((fin) => fin.orden)) + 1,
-      }, constante_igv);
+      const gasto = await getFinancialDataById(
+        tx,
+        {
+          idfinancierotipo: 2,
+          idfinancieroconcepto: 3,
+          cantidad: 1,
+          monto_unitario: factoring.idmoneda === 1 ? constante_comison_bcp_pen.valor : constante_comison_bcp_usd.valor,
+          descripcion: "",
+          orden: Math.max(...factoring_liquidacion_financieros.map((fin) => fin.orden)) + 1,
+        },
+        constante_igv,
+      );
       if (gasto.financiero_concepto.factor !== 1 && gasto.total.greaterThan(0) && saldoAntesDelGasto.greaterThan(gasto.total)) {
         factoring_liquidacion_financieros.push(gasto);
       }
@@ -352,10 +355,18 @@ const runSimulation = async (tx: any, factoring: any, fecha_liquidacion: any, fe
   }
 
   const importesCabecera = {
-    monto_descuento_efectivo, monto_descuento_a_favor, monto_descuento_mora,
-    monto_total_neto_inafecto_igv_abono, monto_total_neto_inafecto_igv_cargo, monto_total_neto_inafecto_igv,
-    monto_total_neto_afecto_igv_abono, monto_total_neto_afecto_igv_cargo, monto_total_neto_afecto_igv,
-    monto_total_igv, monto_total_a_favor, monto_total_por_cobrar,
+    monto_descuento_efectivo,
+    monto_descuento_a_favor,
+    monto_descuento_mora,
+    monto_total_neto_inafecto_igv_abono,
+    monto_total_neto_inafecto_igv_cargo,
+    monto_total_neto_inafecto_igv,
+    monto_total_neto_afecto_igv_abono,
+    monto_total_neto_afecto_igv_cargo,
+    monto_total_neto_afecto_igv,
+    monto_total_igv,
+    monto_total_a_favor,
+    monto_total_por_cobrar,
   };
   for (const [field, value] of Object.entries(importesCabecera)) {
     assertLiquidacionDecimal(value, `El campo ${field}`);

@@ -34,7 +34,7 @@ export const generateCode = (): string => {
 /**
  * Resuelve las monedas base y cotizada desde la BD por su código ISO (ej: USD y PEN).
  */
-export const resolverMonedas = async (tx: any, codigoBase: string, codigoCotizada: string = "PEN") => {
+export const resolverMonedas = async (tx: any, codigoBase: string, codigoCotizada = "PEN") => {
   const [monedaBase, monedaCotizada] = await Promise.all([monedaDao.getMonedaByCodigo(tx, codigoBase), monedaDao.getMonedaByCodigo(tx, codigoCotizada)]);
 
   if (!monedaBase) {
@@ -765,7 +765,7 @@ export const sincronizarTipoCambioDelDiaLogic = async (fechaIso: string, forzarS
   log.info(line(), `Iniciando sincronización conjunta de tipo de cambio (SUNAT + SBS) con Cache-Aside [fecha: ${fechaIso}, forzar: ${forzarSincronizacion}]...`);
 
   // 1. Consultar SUNAT
-  let sunat: any = null;
+  let sunat: any;
   try {
     sunat = forzarSincronizacion ? await sincronizarSunatLogic(fechaIso) : await obtenerSunatLogic(fechaIso);
   } catch (err: any) {
@@ -782,7 +782,7 @@ export const sincronizarTipoCambioDelDiaLogic = async (fechaIso: string, forzarS
   await new Promise((resolve) => setTimeout(resolve, 300));
 
   // 2. Consultar SBS
-  let sbs: any = null;
+  let sbs: any;
   try {
     sbs = forzarSincronizacion ? await sincronizarSbsLogic("USD", fechaIso) : await obtenerSbsLogic("USD", fechaIso);
   } catch (err: any) {

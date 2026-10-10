@@ -31,9 +31,7 @@ export default [
     },
     settings: {
       // Los aliases #root y #src se resuelven desde paths en tsconfig.json.
-      "import-x/resolver-next": [
-        createTypeScriptImportResolver({ project: path.join(__dirname, "tsconfig.json") }),
-      ],
+      "import-x/resolver-next": [createTypeScriptImportResolver({ project: path.join(__dirname, "tsconfig.json") })],
     },
     rules: {
       // Copiadas de @typescript-eslint/recommended
@@ -53,5 +51,10 @@ export default [
       // Tus reglas personalizadas
       semi: "error", // exige punto y coma al final de cada sentencia,
     },
+  },
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    // TypeScript comprueba nombres y namespaces de tipos; no-undef no los interpreta.
+    rules: { "no-undef": "off" },
   },
 ];

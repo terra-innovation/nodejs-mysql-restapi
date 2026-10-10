@@ -89,23 +89,13 @@ export const subirFacturaService = async (dto: SubirFacturaDto) => {
   const filter_estado = [ESTADO.ACTIVO];
   const filter_estado_archivo = isProduction ? [ESTADO.ACTIVO] : [ESTADO.ACTIVO, ESTADO.ELIMINADO];
 
-  const archivo_xml = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(
-    prismaFT.client,
-    dto.factura_xml,
-    ARCHIVO_TIPO.FACTURA_XML,
-    filter_estado_archivo,
-  );
+  const archivo_xml = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(prismaFT.client, dto.factura_xml, ARCHIVO_TIPO.FACTURA_XML, filter_estado_archivo);
   if (!archivo_xml) {
     log.warn(line(), "Factura XML no existe o tipo no coincide: [" + dto.factura_xml + "]");
     throw new ClientError("Datos no válidos", 404);
   }
 
-  const archivo_pdf = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(
-    prismaFT.client,
-    dto.factura_pdf,
-    ARCHIVO_TIPO.FACTURA_PDF,
-    filter_estado_archivo,
-  );
+  const archivo_pdf = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(prismaFT.client, dto.factura_pdf, ARCHIVO_TIPO.FACTURA_PDF, filter_estado_archivo);
   if (!archivo_pdf) {
     log.warn(line(), "Factura PDF no existe o tipo no coincide: [" + dto.factura_pdf + "]");
     throw new ClientError("Datos no válidos", 404);
@@ -134,21 +124,9 @@ export const subirFacturaService = async (dto: SubirFacturaDto) => {
       const facturaCreated = await facturaDao.insertFactura(tx, facturaToCreate);
 
       const itemsToCreate = facturaUtils.getItemsToCreate(facturaFinal, facturaCreated.idfactura, session_idusuario);
-      const mediosdepagoToCreate = facturaUtils.getMediosdepagoToCreate(
-        facturaFinal,
-        facturaCreated.idfactura,
-        session_idusuario,
-      );
-      const terminosdepagoToCreate = facturaUtils.getTerminosdepagoToCreate(
-        facturaFinal,
-        facturaCreated.idfactura,
-        session_idusuario,
-      );
-      const impuestosToCreate = facturaUtils.getImpuestosToCreate(
-        facturaFinal,
-        facturaCreated.idfactura,
-        session_idusuario,
-      );
+      const mediosdepagoToCreate = facturaUtils.getMediosdepagoToCreate(facturaFinal, facturaCreated.idfactura, session_idusuario);
+      const terminosdepagoToCreate = facturaUtils.getTerminosdepagoToCreate(facturaFinal, facturaCreated.idfactura, session_idusuario);
+      const impuestosToCreate = facturaUtils.getImpuestosToCreate(facturaFinal, facturaCreated.idfactura, session_idusuario);
       const notasToCreate = facturaUtils.getNotasToCreate(facturaFinal, facturaCreated.idfactura, session_idusuario);
 
       await procesarDatos(tx, itemsToCreate, facturaitemDao.insertFacturaitem);
@@ -164,53 +142,17 @@ export const subirFacturaService = async (dto: SubirFacturaDto) => {
       // cabecera, detalles y vínculos; confirmar solo cuando termina todo el flujo.
       if (isProduction) {
         const filter_estados_factoring = [ESTADO.ACTIVO];
-        const factoring_existe = await factoringDao.getFactoringByRucCedenteAndCodigoFactura(
-          tx,
-          facturaToCreate.proveedor_ruc,
-          facturaToCreate.serie,
-          facturaToCreate.numero_comprobante,
-          filter_estados_factoring,
-        );
+        const factoring_existe = await factoringDao.getFactoringByRucCedenteAndCodigoFactura(tx, facturaToCreate.proveedor_ruc, facturaToCreate.serie, facturaToCreate.numero_comprobante, filter_estados_factoring);
         if (factoring_existe) {
-          log.warn(
-            line(),
-            "Factoring ya existe: [" +
-              facturaToCreate.proveedor_ruc +
-              ", " +
-              facturaToCreate.serie +
-              ", " +
-              facturaToCreate.numero_comprobante +
-              ", " +
-              filter_estados_factoring +
-              "]",
-          );
-          throw new ClientError(
-            "La factura (" +
-              facturaToCreate.serie +
-              "-" +
-              facturaToCreate.numero_comprobante +
-              ") seleccionada ya está vinculada a una operación de factoring activa. Por favor, elija otra factura para continuar con el proceso.",
-            404,
-          );
+          log.warn(line(), "Factoring ya existe: [" + facturaToCreate.proveedor_ruc + ", " + facturaToCreate.serie + ", " + facturaToCreate.numero_comprobante + ", " + filter_estados_factoring + "]");
+          throw new ClientError("La factura (" + facturaToCreate.serie + "-" + facturaToCreate.numero_comprobante + ") seleccionada ya está vinculada a una operación de factoring activa. Por favor, elija otra factura para continuar con el proceso.", 404);
         }
       }
 
-      const empresa = await empresaDao.getEmpresaByIdusuarioAndRuc(
-        tx,
-        session_idusuario,
-        facturaToCreate.proveedor_ruc,
-        filter_estado,
-      );
+      const empresa = await empresaDao.getEmpresaByIdusuarioAndRuc(tx, session_idusuario, facturaToCreate.proveedor_ruc, filter_estado);
       if (!empresa) {
         log.warn(line(), "RUC no asociado al usuario: [" + session_idusuario + ", " + facturaToCreate.proveedor_ruc + "]");
-        throw new ClientError(
-          "Seleccione una factura perteneciente a una de las empresas asociadas a su cuenta. La empresa [" +
-            facturaToCreate.proveedor_razon_social +
-            " (" +
-            facturaToCreate.proveedor_ruc +
-            ")] no está asociada a su cuenta.",
-          404,
-        );
+        throw new ClientError("Seleccione una factura perteneciente a una de las empresas asociadas a su cuenta. La empresa [" + facturaToCreate.proveedor_razon_social + " (" + facturaToCreate.proveedor_ruc + ")] no está asociada a su cuenta.", 404);
       }
 
       if (!facturaToCreate.codigo_tipo_documento || facturaToCreate.codigo_tipo_documento != "01") {
@@ -220,47 +162,25 @@ export const subirFacturaService = async (dto: SubirFacturaDto) => {
 
       if (!facturaToCreate.pago_cantidad_cuotas || facturaToCreate.pago_cantidad_cuotas <= 0) {
         log.warn(line(), "Seleccione una factura que cuya forma de pago sea al Crédito. La factura que ha seleccionado es de pago al Contado.");
-        throw new ClientError(
-          "Seleccione una factura que cuya forma de pago sea al Crédito. La factura que ha seleccionado es de pago al Contado.",
-          404,
-        );
+        throw new ClientError("Seleccione una factura que cuya forma de pago sea al Crédito. La factura que ha seleccionado es de pago al Contado.", 404);
       }
 
       if (!facturaToCreate.pago_cantidad_cuotas || facturaToCreate.pago_cantidad_cuotas != 1) {
-        log.warn(
-          line(),
-          "Seleccione una factura que sea al Crédito y de una sola cuota. La factura que ha seleccionado es de " +
-            facturaToCreate.pago_cantidad_cuotas +
-            " cuotas.",
-        );
-        throw new ClientError(
-          "Seleccione una factura que sea al Crédito y de una sola cuota. La factura que ha seleccionado es de " +
-            facturaToCreate.pago_cantidad_cuotas +
-            " cuotas.",
-          404,
-        );
+        log.warn(line(), "Seleccione una factura que sea al Crédito y de una sola cuota. La factura que ha seleccionado es de " + facturaToCreate.pago_cantidad_cuotas + " cuotas.");
+        throw new ClientError("Seleccione una factura que sea al Crédito y de una sola cuota. La factura que ha seleccionado es de " + facturaToCreate.pago_cantidad_cuotas + " cuotas.", 404);
       }
 
       const REGLA_MINIMO_DE_DIAS_PARA_PAGO = 5;
       if (facturaToCreate.dias_estimados_para_pago <= REGLA_MINIMO_DE_DIAS_PARA_PAGO) {
-        log.warn(
-          line(),
-          "Seleccione una factura cuya fecha de vencimiento sea superior a " + REGLA_MINIMO_DE_DIAS_PARA_PAGO + " días.",
-        );
-        throw new ClientError(
-          "Seleccione una factura cuya fecha de vencimiento sea superior a " + REGLA_MINIMO_DE_DIAS_PARA_PAGO + " días.",
-          404,
-        );
+        log.warn(line(), "Seleccione una factura cuya fecha de vencimiento sea superior a " + REGLA_MINIMO_DE_DIAS_PARA_PAGO + " días.");
+        throw new ClientError("Seleccione una factura cuya fecha de vencimiento sea superior a " + REGLA_MINIMO_DE_DIAS_PARA_PAGO + " días.", 404);
       }
 
       /* Límites: Reglas de negocio del factor, cedente y pagador */
       const dbMoneda = await monedaDao.getMonedaByCodigo(tx, facturaToCreate.codigo_tipo_moneda);
       if (!dbMoneda) {
         log.warn(line(), `Moneda no configurada en el sistema: ${facturaToCreate.codigo_tipo_moneda}`);
-        throw new ClientError(
-          `La moneda especificada en la factura (${facturaToCreate.codigo_tipo_moneda}) no se encuentra registrada o habilitada en nuestra plataforma. Por favor, comuníquese con su asesor asignado para gestionar su registro.`,
-          404,
-        );
+        throw new ClientError(`La moneda especificada en la factura (${facturaToCreate.codigo_tipo_moneda}) no se encuentra registrada o habilitada en nuestra plataforma. Por favor, comuníquese con su asesor asignado para gestionar su registro.`, 404);
       }
       const idmoneda = dbMoneda.idmoneda;
       const monedaSimbolo = dbMoneda.simbolo ?? facturaToCreate.codigo_tipo_moneda;
@@ -272,129 +192,57 @@ export const subirFacturaService = async (dto: SubirFacturaDto) => {
       const limitFactor = await factorlimiteDao.getFactorlimiteByIdfactorAndIdmoneda(tx, 1, idmoneda, filter_estado);
       if (!limitFactor) {
         log.warn(line(), `No se encontró límite de factor configurado para Factor ID 1, idmoneda: ${idmoneda} - ${monedaNombre}`);
-        const msnTelegram = limitMessage(
-          `No se ha registrado una línea de factoring configurada para nuestra entidad en ${monedaNombre}. Por favor, póngase en contacto con su asesor.`,
-          "Factor",
-          facturaFinal,
-          facturaToCreate,
-        );
+        const msnTelegram = limitMessage(`No se ha registrado una línea de factoring configurada para nuestra entidad en ${monedaNombre}. Por favor, póngase en contacto con su asesor.`, "Factor", facturaFinal, facturaToCreate);
         telegramService.sendMessageImportant(msnTelegram);
-        throw new ClientError(
-          `No se ha registrado una línea de factoring configurada para nuestra entidad en ${monedaNombre}. Por favor, póngase en contacto con su asesor.`,
-          422,
-        );
+        throw new ClientError(`No se ha registrado una línea de factoring configurada para nuestra entidad en ${monedaNombre}. Por favor, póngase en contacto con su asesor.`, 422);
       }
       const dispFactor = Number(limitFactor.disponible);
       if (importeNeto > dispFactor) {
         log.warn(line(), `Importe neto supera límite de factor: ${importeNeto} > ${dispFactor}`);
-        const msnTelegram = limitMessage(
-          `El importe neto de la factura (${monedaSimbolo} ${formatNumber(importeNeto)}) supera el límite disponible. Le invitamos a contactar a su asesor para evaluar la viabilidad de una excepción comercial.`,
-          "Factor",
-          facturaFinal,
-          facturaToCreate,
-          limitFactor,
-        );
+        const msnTelegram = limitMessage(`El importe neto de la factura (${monedaSimbolo} ${formatNumber(importeNeto)}) supera el límite disponible. Le invitamos a contactar a su asesor para evaluar la viabilidad de una excepción comercial.`, "Factor", facturaFinal, facturaToCreate, limitFactor);
         telegramService.sendMessageImportant(msnTelegram);
-        throw new ClientError(
-          `El importe neto de la factura (${monedaSimbolo} ${formatNumber(importeNeto)}) supera el límite disponible. Le invitamos a contactar a su asesor para evaluar la viabilidad de una excepción comercial.`,
-          422,
-        );
+        throw new ClientError(`El importe neto de la factura (${monedaSimbolo} ${formatNumber(importeNeto)}) supera el límite disponible. Le invitamos a contactar a su asesor para evaluar la viabilidad de una excepción comercial.`, 422);
       }
 
       // 2. Validar límite del Cedente
       const idcedente = empresa.idempresa;
-      const limitCedente = await cedentelimiteDao.getCedentelimiteByIdcedenteAndIdmoneda(
-        tx,
-        idcedente,
-        idmoneda,
-        filter_estado,
-      );
+      const limitCedente = await cedentelimiteDao.getCedentelimiteByIdcedenteAndIdmoneda(tx, idcedente, idmoneda, filter_estado);
       if (!limitCedente) {
-        log.warn(
-          line(),
-          `No se encontró límite de cedente para idcedente: ${idcedente} - ${empresa.razon_social} (${facturaFinal.cliente.ruc}), idmoneda: ${idmoneda} - ${monedaNombre}`,
-        );
-        const msnTelegram = limitMessage(
-          `La empresa (${empresa.razon_social}) no cuenta con una línea disponible asignada en ${monedaNombre} en nuestra plataforma. Para iniciar el proceso de asignación de línea, por favor póngase en contacto con su asesor.`,
-          "Cedente",
-          facturaFinal,
-          facturaToCreate,
-        );
+        log.warn(line(), `No se encontró límite de cedente para idcedente: ${idcedente} - ${empresa.razon_social} (${facturaFinal.cliente.ruc}), idmoneda: ${idmoneda} - ${monedaNombre}`);
+        const msnTelegram = limitMessage(`La empresa (${empresa.razon_social}) no cuenta con una línea disponible asignada en ${monedaNombre} en nuestra plataforma. Para iniciar el proceso de asignación de línea, por favor póngase en contacto con su asesor.`, "Cedente", facturaFinal, facturaToCreate);
         telegramService.sendMessageImportant(msnTelegram);
-        throw new ClientError(
-          `La empresa (${empresa.razon_social}) no cuenta con una línea disponible asignada en ${monedaNombre} en nuestra plataforma. Para iniciar el proceso de asignación de línea, por favor póngase en contacto con su asesor.`,
-          422,
-        );
+        throw new ClientError(`La empresa (${empresa.razon_social}) no cuenta con una línea disponible asignada en ${monedaNombre} en nuestra plataforma. Para iniciar el proceso de asignación de línea, por favor póngase en contacto con su asesor.`, 422);
       }
       const dispCedente = Number(limitCedente.disponible);
       if (importeNeto > dispCedente) {
         log.warn(line(), `Importe neto supera límite de cedente: ${importeNeto} > ${dispCedente}`);
-        const msnTelegram = limitMessage(
-          `El importe neto de la factura (${monedaSimbolo} ${formatNumber(importeNeto)}) supera el límite disponible. Le invitamos a contactar a su asesor para evaluar la viabilidad de una excepción comercial.`,
-          "Cedente",
-          facturaFinal,
-          facturaToCreate,
-          limitCedente,
-        );
+        const msnTelegram = limitMessage(`El importe neto de la factura (${monedaSimbolo} ${formatNumber(importeNeto)}) supera el límite disponible. Le invitamos a contactar a su asesor para evaluar la viabilidad de una excepción comercial.`, "Cedente", facturaFinal, facturaToCreate, limitCedente);
         telegramService.sendMessageImportant(msnTelegram);
-        throw new ClientError(
-          `El importe neto de la factura (${monedaSimbolo} ${formatNumber(importeNeto)}) supera el límite disponible. Le invitamos a contactar a su asesor para evaluar la viabilidad de una excepción comercial.`,
-          422,
-        );
+        throw new ClientError(`El importe neto de la factura (${monedaSimbolo} ${formatNumber(importeNeto)}) supera el límite disponible. Le invitamos a contactar a su asesor para evaluar la viabilidad de una excepción comercial.`, 422);
       }
 
       // 3. Validar límite del Pagador
       const pagador = await empresaDao.getEmpresaByRuc(tx, facturaFinal.cliente.ruc);
       if (!pagador) {
         log.warn(line(), `Empresa pagadora no registrada en la base de datos: RUC ${facturaFinal.cliente.ruc}`);
-        const msnTelegram = limitMessage(
-          `La empresa pagadora (${facturaFinal.cliente.razon_social}, RUC: ${facturaFinal.cliente.ruc}) no registra una línea disponible asignada en la moneda ${monedaNombre}. Le invitamos a contactar a su asesor para iniciar la evaluación crediticia.`,
-          "Pagador",
-          facturaFinal,
-          facturaToCreate,
-        );
+        const msnTelegram = limitMessage(`La empresa pagadora (${facturaFinal.cliente.razon_social}, RUC: ${facturaFinal.cliente.ruc}) no registra una línea disponible asignada en la moneda ${monedaNombre}. Le invitamos a contactar a su asesor para iniciar la evaluación crediticia.`, "Pagador", facturaFinal, facturaToCreate);
         telegramService.sendMessageImportant(msnTelegram);
-        throw new ClientError(
-          `La empresa pagadora (${facturaFinal.cliente.razon_social}, RUC: ${facturaFinal.cliente.ruc}) no registra una línea disponible asignada en la moneda ${monedaNombre}. Le invitamos a contactar a su asesor para iniciar la evaluación crediticia.`,
-          422,
-        );
+        throw new ClientError(`La empresa pagadora (${facturaFinal.cliente.razon_social}, RUC: ${facturaFinal.cliente.ruc}) no registra una línea disponible asignada en la moneda ${monedaNombre}. Le invitamos a contactar a su asesor para iniciar la evaluación crediticia.`, 422);
       }
       const idpagador = pagador.idempresa;
-      const limitPagador = await pagadorlimiteDao.getPagadorlimiteByIdpagadorAndIdmoneda(
-        tx,
-        idpagador,
-        idmoneda,
-        filter_estado,
-      );
+      const limitPagador = await pagadorlimiteDao.getPagadorlimiteByIdpagadorAndIdmoneda(tx, idpagador, idmoneda, filter_estado);
       if (!limitPagador) {
         log.warn(line(), `No se encontró límite de pagador para idpagador: ${idpagador}, idmoneda: ${idmoneda}`);
-        const msnTelegram = limitMessage(
-          `La empresa pagadora (${pagador.razon_social}, RUC: ${pagador.ruc}) no registra una línea disponible asignada para la moneda ${monedaNombre} en nuestra plataforma. Le invitamos a contactar a su asesor para iniciar la evaluación crediticia.`,
-          "Pagador",
-          facturaFinal,
-          facturaToCreate,
-        );
+        const msnTelegram = limitMessage(`La empresa pagadora (${pagador.razon_social}, RUC: ${pagador.ruc}) no registra una línea disponible asignada para la moneda ${monedaNombre} en nuestra plataforma. Le invitamos a contactar a su asesor para iniciar la evaluación crediticia.`, "Pagador", facturaFinal, facturaToCreate);
         telegramService.sendMessageImportant(msnTelegram);
-        throw new ClientError(
-          `La empresa pagadora (${pagador.razon_social}, RUC: ${pagador.ruc}) no registra una línea disponible asignada para la moneda ${monedaNombre} en nuestra plataforma. Le invitamos a contactar a su asesor para iniciar la evaluación crediticia.`,
-          422,
-        );
+        throw new ClientError(`La empresa pagadora (${pagador.razon_social}, RUC: ${pagador.ruc}) no registra una línea disponible asignada para la moneda ${monedaNombre} en nuestra plataforma. Le invitamos a contactar a su asesor para iniciar la evaluación crediticia.`, 422);
       }
       const dispPagador = Number(limitPagador.disponible);
       if (importeNeto > dispPagador) {
         log.warn(line(), `Importe neto supera límite de pagador: ${importeNeto} > ${dispPagador}`);
-        const msnTelegram = limitMessage(
-          `El importe neto de la factura (${monedaSimbolo} ${formatNumber(importeNeto)}) supera la línea disponible asignada para la empresa pagadora (${pagador.razon_social}, RUC: ${pagador.ruc}). Le invitamos a contactar a su asesor para evaluar la viabilidad de una excepción comercial.`,
-          "Pagador",
-          facturaFinal,
-          facturaToCreate,
-          limitPagador,
-        );
+        const msnTelegram = limitMessage(`El importe neto de la factura (${monedaSimbolo} ${formatNumber(importeNeto)}) supera la línea disponible asignada para la empresa pagadora (${pagador.razon_social}, RUC: ${pagador.ruc}). Le invitamos a contactar a su asesor para evaluar la viabilidad de una excepción comercial.`, "Pagador", facturaFinal, facturaToCreate, limitPagador);
         telegramService.sendMessageImportant(msnTelegram);
-        throw new ClientError(
-          `El importe neto de la factura (${monedaSimbolo} ${formatNumber(importeNeto)}) supera la línea disponible asignada para la empresa pagadora (${pagador.razon_social}, RUC: ${pagador.ruc}). Le invitamos a contactar a su asesor para evaluar la viabilidad de una excepción comercial.`,
-          422,
-        );
+        throw new ClientError(`El importe neto de la factura (${monedaSimbolo} ${formatNumber(importeNeto)}) supera la línea disponible asignada para la empresa pagadora (${pagador.razon_social}, RUC: ${pagador.ruc}). Le invitamos a contactar a su asesor para evaluar la viabilidad de una excepción comercial.`, 422);
       }
 
       let cliente = await empresaDao.getEmpresaByRuc(tx, facturaFinal.cliente.ruc);
@@ -436,8 +284,7 @@ export const subirFacturaService = async (dto: SubirFacturaDto) => {
       facturaFinal.moneda_alias = moneda.alias;
       facturaFinal.moneda_simbolo = moneda.simbolo;
 
-      let filtered = jsonUtils.removeAttributesPrivates(facturaFinal);
-      filtered = jsonUtils.removeAttributes(facturaFinal, ["items", "terminos_pago", "notas", "medios_pago"]);
+      let filtered = jsonUtils.removeAttributes(facturaFinal, ["items", "terminos_pago", "notas", "medios_pago"]);
       filtered = jsonUtils.removeAttributesPrivates(filtered);
 
       const msnTelegram = newFacturaCargadaMessage(facturaToCreate);
