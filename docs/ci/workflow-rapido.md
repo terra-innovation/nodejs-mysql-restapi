@@ -1,12 +1,12 @@
 # Workflow rápido del backend
 
-Puntos 5, 6 y 7 del plan. Archivo: [backend-quality.yml](../../.github/workflows/backend-quality.yml).
+Puntos 5 a 8 del plan. Archivo: [backend-quality.yml](../../.github/workflows/backend-quality.yml).
 
 ## Cuándo y qué ejecuta
 
 Se activa en pull requests hacia `master`, pushes a `master` y manualmente desde Actions. `origin/HEAD` apunta actualmente a `origin/master`. No hay filtros de rutas: un cambio documental también obtiene un resultado del job `Backend quality`.
 
-En un único runner `ubuntu-24.04`, con un límite de 20 minutos:
+El job `Backend quality` usa un runner `ubuntu-24.04`, con un límite de 20 minutos:
 
 1. Descarga el checkout y la historia completa para comparar cambios.
 2. Selecciona Node desde `.node-version` y npm desde `packageManager`; verifica ambas versiones.
@@ -16,6 +16,8 @@ En un único runner `ubuntu-24.04`, con un límite de 20 minutos:
 6. Ejecuta las selecciones rápidas completas de Jest y Vitest en pasos independientes, con JSON de Jest y cobertura/JUnit de Vitest.
 7. Compila el backend con `npm run build`, usando el target Node 24.
 8. Genera un resumen y conserva reportes y, cuando todos los controles aprueban, el compilado como artefactos descargables.
+
+Después de aprobar `Backend quality`, el job independiente `Backend integration` ejecuta MariaDB desechable y runtime compilado, con otro runner Ubuntu y un límite de 30 minutos. [Procedimiento, aislamiento y evidencias del punto 8](integracion-runtime.md). Si falla calidad, integración queda omitida; no representa un resultado aprobado. El artefacto `backend-dist` acredita los controles del job de calidad, no el resultado posterior de integración.
 
 Los controles de lint y formato se ejecutan si la instalación fue satisfactoria, aunque falle Prisma o tipos. Tipos necesita también Prisma aprobado. Ningún fallo se convierte en éxito con `continue-on-error`; el job falla si falla cualquiera de sus pasos.
 
@@ -66,7 +68,7 @@ El formato histórico pendiente y las advertencias de lint se mantienen visibles
 - Acciones oficiales fijadas por SHA: [checkout v7.0.1](https://github.com/actions/checkout/releases/tag/v7.0.1) y [setup-node v7.1.0](https://github.com/actions/setup-node/releases/tag/v7.1.0), verificadas el 10 de octubre de 2026. Actualizarlas requiere revisar y cambiar el SHA.
 - Token con `contents: read` y credenciales Git no persistidas. No usa secretos de aplicación ni conexiones compartidas; no requiere configurar variables de la base de datos.
 - Cancela ejecuciones anteriores del mismo workflow y referencia cuando llega otra actualización.
-- Ejecuta las pruebas rápidas y la compilación anteriores; no ejecuta MariaDB, `prisma-sync`, empaquetado de producción ni despliegues. Integración y runtime corresponden al punto 8.
+- Ejecuta pruebas rápidas, compilación e integración con MariaDB desechable y proceso compilado. No ejecuta `prisma-sync`, exportación de esquema, empaquetado de producción ni despliegues.
 - Este archivo no cambia las protecciones de rama. Hacer obligatorio el resultado corresponde al punto 10, después de validar el flujo remoto.
 
 ## Publicación y validación

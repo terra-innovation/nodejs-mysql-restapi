@@ -21,4 +21,6 @@ Ejecutar `npm run typecheck:all`, `npm run lint` y `npm run format:check` de for
 
 GitHub Actions: [workflow rápido del backend](docs/ci/workflow-rapido.md), con tipos, lint, formato gradual, pruebas Jest/Vitest, compilación y artefactos para PR y pushes a `master`.
 
+Tras aprobar los controles rápidos, se ejecuta [integración MariaDB y runtime compilado](docs/ci/integracion-runtime.md) con el runner desechable existente.
+
 

@@ -169,3 +169,109 @@ jobs:
             coverage/ci/summary.json
           retention-days: 7
           if-no-files-found: error
+
+  integration:
+    name: Backend integration
+    needs: quality
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Select npm and verify runtime
+        id: runtime
+        run: |
+          npm install --global "$(node --print 'require("./package.json").packageManager')" --no-audit --no-fund
+          node --version
+          node --print process.execPath
+          npm --version
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { readFileSync } from 'node:fs';
+          import { execFileSync } from 'node:child_process';
+          const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
+          assert.equal(process.versions.node, readFileSync('.node-version', 'utf8').trim());
+          assert.equal(execFileSync('npm', ['--version'], { encoding: 'utf8' }).trim(), pkg.packageManager.slice(4));
+          NODE
+
+      - name: Install locked dependencies
+        id: install
+        env:
+          PRISMA_SKIP_POSTINSTALL_GENERATE: "true"
+        run: npm ci --include=dev --no-audit --no-fund
+
+      - name: Generate Prisma client
+        id: prisma
+        run: npm run prisma:generate:ci
+
+      - name: Prepare integration reports directory
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: mkdir -p coverage/ci-integration
+
+      - name: Check Docker Linux and schema baseline
+        id: doctor
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        timeout-minutes: 2
+        run: npm run test:integration:doctor 2>&1 | tee coverage/ci-integration/doctor.log
+
+      - name: MariaDB integration including compiled runtime
+        id: integration
+        if: ${{ !cancelled() && steps.prisma.outcome == 'success' && steps.doctor.outcome == 'success' }}
+        timeout-minutes: 20
+        run: |
+          echo "started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
+          npm run test:integration 2>&1 | tee coverage/ci-integration/runner.log
+
+      - name: Verify integration evidence and container cleanup
+        id: evidence
+        if: ${{ !cancelled() && (steps.integration.outcome == 'success' || steps.integration.outcome == 'failure') }}
+        env:
+          CI_INTEGRATION_STARTED_AT: ${{ steps.integration.outputs.started_at }}
+        run: node scripts/quality/verify-integration-report.mjs 2>&1 | tee coverage/ci-integration/evidence.log
+
+      - name: Write integration summary
+        id: summary
+        if: ${{ !cancelled() && steps.runtime.outcome == 'success' }}
+        env:
+          CI_COMMIT_SHA: ${{ github.sha }}
+          CI_STATUS_install: ${{ steps.install.outcome }}
+          CI_STATUS_prisma: ${{ steps.prisma.outcome }}
+          CI_STATUS_doctor: ${{ steps.doctor.outcome }}
+          CI_STATUS_integration: ${{ steps.integration.outcome }}
+          CI_STATUS_evidence: ${{ steps.evidence.outcome }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { appendFileSync, mkdirSync, writeFileSync } from 'node:fs';
+          const controls = ['install', 'prisma', 'doctor', 'integration', 'evidence'];
+          const outcomes = Object.fromEntries(controls.map(name => [name, process.env[`CI_STATUS_${name}`] || 'skipped']));
+          mkdirSync('coverage/ci-integration', { recursive: true });
+          writeFileSync('coverage/ci-integration/summary.json', JSON.stringify({ commit: process.env.CI_COMMIT_SHA, node: process.versions.node, outcomes }, null, 2) + '\n');
+          const rows = controls.map(name => `| ${name} | ${outcomes[name]} |`).join('\n');
+          appendFileSync(process.env.GITHUB_STEP_SUMMARY, `## Backend integration\n\n| Control | Resultado |\n| --- | --- |\n${rows}\n\nIntegración incluye el runtime compilado; skipped no significa aprobado.\n`);
+          NODE
+
+      - name: Upload integration reports
+        if: ${{ !cancelled() && steps.summary.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: backend-integration-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            coverage/ci-integration/
+            coverage/mariadb/*.json
+            coverage/mariadb/junit.xml
+            coverage/mariadb/runtime/result-*.json
+          retention-days: 14
+          if-no-files-found: error
