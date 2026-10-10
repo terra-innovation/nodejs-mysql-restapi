@@ -11,3 +11,5 @@ temporal/
 pases_a_produccion/
 package-lock.json
 .env*
+# Copia exacta del frontend: no reformatear ni editar de forma independiente.
+tests/fixtures/frontend-date-contract/src/utils/dateUtils.js

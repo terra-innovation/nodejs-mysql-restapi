@@ -88,3 +88,19 @@ jobs:
             FORMAT_BASE="$(git rev-parse --verify HEAD^)"
           fi
           npm run format:changed -- --base "$FORMAT_BASE"
+
+      - name: Jest quick tests
+        id: jest
+        if: ${{ !cancelled() && steps.install.outcome == 'success' && steps.prisma.outcome == 'success' }}
+        timeout-minutes: 5
+        env:
+          LIQUIDACION_FRONTEND_ROOT: ${{ github.workspace }}/tests/fixtures/frontend-date-contract
+        run: |
+          node scripts/quality/verify-frontend-date-contract.mjs
+          npm test -- --ci --runInBand
+
+      - name: Vitest quick tests
+        id: vitest
+        if: ${{ !cancelled() && steps.install.outcome == 'success' && steps.prisma.outcome == 'success' }}
+        timeout-minutes: 5
+        run: npm run test:vitest

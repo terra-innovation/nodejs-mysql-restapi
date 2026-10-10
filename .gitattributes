@@ -1,0 +1,2 @@
+# Conservar los bytes de esta referencia de contrato entre Windows y Linux.
+tests/fixtures/frontend-date-contract/src/utils/dateUtils.js -text
