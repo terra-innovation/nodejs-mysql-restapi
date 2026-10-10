@@ -25,4 +25,6 @@ Tras aprobar los controles rápidos, se ejecuta [integración MariaDB y runtime 
 
 Ejecución completa aprobada en GitHub, diagnóstico y tiempos: [validación remota de CI](docs/ci/validacion-remota-20261010.md).
 
+Política activa de `master`, checks obligatorios y trabajo mediante PR: [flujo diario y protecciones](docs/ci/flujo-diario-y-protecciones.md).
+
 

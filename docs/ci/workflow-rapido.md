@@ -69,7 +69,7 @@ El formato histórico pendiente y las advertencias de lint se mantienen visibles
 - Token con `contents: read` y credenciales Git no persistidas. No usa secretos de aplicación ni conexiones compartidas; no requiere configurar variables de la base de datos.
 - Cancela ejecuciones anteriores del mismo workflow y referencia cuando llega otra actualización.
 - Ejecuta pruebas rápidas, compilación e integración con MariaDB desechable y proceso compilado. No ejecuta `prisma-sync`, exportación de esquema, empaquetado de producción ni despliegues.
-- Este archivo no cambia las protecciones de rama. Hacer obligatorio el resultado corresponde al punto 10, después de validar el flujo remoto.
+- Este workflow no configura protecciones de rama por sí mismo. En el punto 10 se activaron ambos jobs como controles obligatorios de `master`: [política y flujo diario](flujo-diario-y-protecciones.md).
 
 ## Publicación y validación
 
