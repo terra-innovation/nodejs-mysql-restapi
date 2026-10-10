@@ -1,6 +1,7 @@
 import globals from "globals";
 import pluginJs from "@eslint/js";
-import pluginImport from "eslint-plugin-import";
+import pluginImport from "eslint-plugin-import-x";
+import { createTypeScriptImportResolver } from "eslint-import-resolver-typescript";
 import tsParser from "@typescript-eslint/parser";
 import tsPlugin from "@typescript-eslint/eslint-plugin";
 import path from "path";
@@ -8,7 +9,6 @@ import { fileURLToPath } from "url";
 
 // ESM-compatible __dirname
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const resolve = (dir) => path.resolve(__dirname, dir);
 
 export default [
   pluginJs.configs.recommended, // Base JS rules from ESLint
@@ -26,39 +26,29 @@ export default [
     },
     ignores: ["**/*.config.js", "!**/eslint.config.js", "dist/**/*"],
     plugins: {
-      import: pluginImport,
+      "import-x": pluginImport,
       "@typescript-eslint": tsPlugin,
     },
     settings: {
-      "import/resolver": {
-        typescript: {
-          project: "./tsconfig.json",
-        },
-        alias: {
-          map: [
-            ["#root", resolve("")],
-            ["#src", resolve("src")],
-          ],
-          extensions: [".js", ".jsx", ".ts", ".tsx"],
-        },
-        node: {
-          extensions: [".js", ".jsx", ".ts", ".tsx"],
-        },
-      },
+      // Los aliases #root y #src se resuelven desde paths en tsconfig.json.
+      "import-x/resolver-next": [
+        createTypeScriptImportResolver({ project: path.join(__dirname, "tsconfig.json") }),
+      ],
     },
     rules: {
       // Copiadas de @typescript-eslint/recommended
       "@typescript-eslint/adjacent-overload-signatures": "error",
       "@typescript-eslint/ban-ts-comment": "error",
-      "@typescript-eslint/no-empty-interface": "error",
+      // Sustituye no-empty-interface sin ampliar la regla a tipos objeto vacíos.
+      "@typescript-eslint/no-empty-object-type": ["error", { allowInterfaces: "never", allowObjectTypes: "always" }],
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-inferrable-types": "warn",
       "@typescript-eslint/no-unused-vars": "warn",
       "no-unused-vars": "off", // Desactiva la regla JS nativa para no duplicar con @typescript-eslint/no-unused-vars
 
       // Plugin de imports
-      "import/no-unresolved": "error",
-      "import/no-duplicates": "warn",
+      "import-x/no-unresolved": "error",
+      "import-x/no-duplicates": "warn",
 
       // Tus reglas personalizadas
       semi: "error", // exige punto y coma al final de cada sentencia,
