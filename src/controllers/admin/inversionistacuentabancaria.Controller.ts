@@ -2,20 +2,39 @@ import * as inversionistacuentabancariaService from "#root/src/services/admin/in
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
-import * as yup from "yup";
+import { z } from "zod";
+import { objectInput, stringInput } from "#src/utils/validationInputs.js";
 
 export const updateInversionistacuentabancariaOnlyAliasAndCuentaBancariaEstado = async (req: Request, res: Response) => {
   log.debug(line(), "controller::updateInversionistacuentabancariaOnlyAliasAndCuentaBancariaEstado");
   const { id } = req.params;
-  const inversionistacuentabancariaUpdateSchema = yup
-    .object()
-    .shape({
-      inversionistacuentabancariaid: yup.string().trim().required().min(36).max(36),
-      cuentabancariaestadoid: yup.string().trim().required().min(36).max(36),
-      alias: yup.string().required().max(50),
-    })
-    .required();
-  const inversionistacuentabancariaValidated = inversionistacuentabancariaUpdateSchema.validateSync({ inversionistacuentabancariaid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
+  const inversionistacuentabancariaUpdateSchema = objectInput(
+    z.object({
+      inversionistacuentabancariaid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      cuentabancariaestadoid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      alias: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 50, "Debe tener como máximo 50 caracteres"),
+      ),
+    }),
+  );
+  const inversionistacuentabancariaValidated = inversionistacuentabancariaUpdateSchema.parse({ inversionistacuentabancariaid: id, ...req.body });
   log.debug(line(), "inversionistacuentabancariaValidated:", inversionistacuentabancariaValidated);
 
   await inversionistacuentabancariaService.updateInversionistacuentabancariaOnlyAliasAndCuentaBancariaEstadoService({
@@ -37,13 +56,19 @@ export const getInversionistacuentabancarias = async (req: Request, res: Respons
 export const activateInversionistacuentabancaria = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activateInversionistacuentabancaria");
   const { id } = req.params;
-  const inversionistacuentabancariaSchema = yup
-    .object()
-    .shape({
-      inversionistacuentabancariaid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
-  const inversionistacuentabancariaValidated = inversionistacuentabancariaSchema.validateSync({ inversionistacuentabancariaid: id }, { abortEarly: false, stripUnknown: true });
+  const inversionistacuentabancariaSchema = objectInput(
+    z.object({
+      inversionistacuentabancariaid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
+  const inversionistacuentabancariaValidated = inversionistacuentabancariaSchema.parse({ inversionistacuentabancariaid: id });
   log.debug(line(), "inversionistacuentabancariaValidated:", inversionistacuentabancariaValidated);
 
   await inversionistacuentabancariaService.activateInversionistacuentabancariaService({
@@ -57,13 +82,19 @@ export const activateInversionistacuentabancaria = async (req: Request, res: Res
 export const deleteInversionistacuentabancaria = async (req: Request, res: Response) => {
   log.debug(line(), "controller::deleteInversionistacuentabancaria");
   const { id } = req.params;
-  const inversionistacuentabancariaSchema = yup
-    .object()
-    .shape({
-      inversionistacuentabancariaid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
-  const inversionistacuentabancariaValidated = inversionistacuentabancariaSchema.validateSync({ inversionistacuentabancariaid: id }, { abortEarly: false, stripUnknown: true });
+  const inversionistacuentabancariaSchema = objectInput(
+    z.object({
+      inversionistacuentabancariaid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
+  const inversionistacuentabancariaValidated = inversionistacuentabancariaSchema.parse({ inversionistacuentabancariaid: id });
   log.debug(line(), "inversionistacuentabancariaValidated:", inversionistacuentabancariaValidated);
 
   await inversionistacuentabancariaService.deleteInversionistacuentabancariaService({
@@ -82,19 +113,61 @@ export const getInversionistacuentabancariaMaster = async (req: Request, res: Re
 
 export const createInversionistacuentabancaria = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createInversionistacuentabancaria");
-  const inversionistacuentabancariaCreateSchema = yup
-    .object()
-    .shape({
-      inversionistaid: yup.string().trim().required().min(36).max(36),
-      bancoid: yup.string().trim().required().min(36).max(36),
-      cuentatipoid: yup.string().trim().required().min(36).max(36),
-      monedaid: yup.string().trim().required().min(36).max(36),
-      numero: yup.string().required().max(20),
-      cci: yup.string().required().max(20),
-      alias: yup.string().required().max(50),
-    })
-    .required();
-  const inversionistacuentabancariaValidated = inversionistacuentabancariaCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
+  const inversionistacuentabancariaCreateSchema = objectInput(
+    z.object({
+      inversionistaid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      bancoid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      cuentatipoid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      monedaid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      numero: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 20, "Debe tener como máximo 20 caracteres"),
+      ),
+      cci: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 20, "Debe tener como máximo 20 caracteres"),
+      ),
+      alias: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 50, "Debe tener como máximo 50 caracteres"),
+      ),
+    }),
+  );
+  const inversionistacuentabancariaValidated = inversionistacuentabancariaCreateSchema.parse(req.body);
   log.debug(line(), "inversionistacuentabancariaValidated:", inversionistacuentabancariaValidated);
 
   const inversionistacuentabancaria = await inversionistacuentabancariaService.createInversionistacuentabancariaService({

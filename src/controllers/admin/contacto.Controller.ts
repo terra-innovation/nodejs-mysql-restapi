@@ -2,7 +2,8 @@ import * as contactoService from "#root/src/services/admin/contacto.Service.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
-import * as yup from "yup";
+import { z } from "zod";
+import { objectInput, stringInput, inputEmailPattern } from "#src/utils/validationInputs.js";
 
 export const getContactos = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getContactos");
@@ -12,19 +13,65 @@ export const getContactos = async (req: Request, res: Response) => {
 
 export const createContacto = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createContacto");
-  const contactoCreateSchema = yup
-    .object()
-    .shape({
-      empresaid: yup.string().trim().required().min(36).max(36),
-      nombrecontacto: yup.string().trim().required().max(100),
-      apellidocontacto: yup.string().trim().required().max(100),
-      cargo: yup.string().trim().required().max(100),
-      email: yup.string().trim().required().email().min(5).max(100),
-      celular: yup.string().trim().required().min(5).max(20),
-      telefono: yup.string().trim().required().min(5).max(50),
-    })
-    .required();
-  const contactoValidated = contactoCreateSchema.validateSync({ ...req.body }, { abortEarly: false, stripUnknown: true });
+  const contactoCreateSchema = objectInput(
+    z.object({
+      empresaid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      nombrecontacto: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 100, "Debe tener como máximo 100 caracteres"),
+        { trim: true },
+      ),
+      apellidocontacto: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 100, "Debe tener como máximo 100 caracteres"),
+        { trim: true },
+      ),
+      cargo: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 100, "Debe tener como máximo 100 caracteres"),
+        { trim: true },
+      ),
+      email: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value === "" || inputEmailPattern.test(value), "Debe ser un correo válido")
+          .refine((value) => value.length >= 5, "Debe tener al menos 5 caracteres")
+          .refine((value) => value.length <= 100, "Debe tener como máximo 100 caracteres"),
+        { trim: true },
+      ),
+      celular: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 5, "Debe tener al menos 5 caracteres")
+          .refine((value) => value.length <= 20, "Debe tener como máximo 20 caracteres"),
+        { trim: true },
+      ),
+      telefono: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 5, "Debe tener al menos 5 caracteres")
+          .refine((value) => value.length <= 50, "Debe tener como máximo 50 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
+  const contactoValidated = contactoCreateSchema.parse({ ...req.body });
   log.debug(line(), "contactoValidated:", contactoValidated);
 
   const contactoCreated = await contactoService.createContactoService({
@@ -44,20 +91,73 @@ export const createContacto = async (req: Request, res: Response) => {
 export const updateContacto = async (req: Request, res: Response) => {
   log.debug(line(), "controller::updateContacto");
   const { id } = req.params;
-  const contactoUpdateSchema = yup
-    .object()
-    .shape({
-      contactoid: yup.string().trim().required().min(36).max(36),
-      empresaid: yup.string().trim().min(36).max(36),
-      nombrecontacto: yup.string().trim().required().max(100),
-      apellidocontacto: yup.string().trim().required().max(100),
-      cargo: yup.string().trim().required().max(100),
-      email: yup.string().trim().required().email().min(5).max(100),
-      celular: yup.string().trim().required().min(5).max(20),
-      telefono: yup.string().trim().required().min(5).max(50),
-    })
-    .required();
-  const contactoValidated = contactoUpdateSchema.validateSync({ contactoid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
+  const contactoUpdateSchema = objectInput(
+    z.object({
+      contactoid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      empresaid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres")
+          .optional(),
+        { trim: true },
+      ),
+      nombrecontacto: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 100, "Debe tener como máximo 100 caracteres"),
+        { trim: true },
+      ),
+      apellidocontacto: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 100, "Debe tener como máximo 100 caracteres"),
+        { trim: true },
+      ),
+      cargo: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 100, "Debe tener como máximo 100 caracteres"),
+        { trim: true },
+      ),
+      email: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value === "" || inputEmailPattern.test(value), "Debe ser un correo válido")
+          .refine((value) => value.length >= 5, "Debe tener al menos 5 caracteres")
+          .refine((value) => value.length <= 100, "Debe tener como máximo 100 caracteres"),
+        { trim: true },
+      ),
+      celular: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 5, "Debe tener al menos 5 caracteres")
+          .refine((value) => value.length <= 20, "Debe tener como máximo 20 caracteres"),
+        { trim: true },
+      ),
+      telefono: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 5, "Debe tener al menos 5 caracteres")
+          .refine((value) => value.length <= 50, "Debe tener como máximo 50 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
+  const contactoValidated = contactoUpdateSchema.parse({ contactoid: id, ...req.body });
   log.debug(line(), "contactoValidated:", contactoValidated);
 
   await contactoService.updateContactoService({
@@ -78,13 +178,19 @@ export const updateContacto = async (req: Request, res: Response) => {
 export const deleteContacto = async (req: Request, res: Response) => {
   log.debug(line(), "controller::deleteContacto");
   const { id } = req.params;
-  const contactoSchema = yup
-    .object()
-    .shape({
-      contactoid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
-  const contactoValidated = contactoSchema.validateSync({ contactoid: id }, { abortEarly: false, stripUnknown: true });
+  const contactoSchema = objectInput(
+    z.object({
+      contactoid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
+  const contactoValidated = contactoSchema.parse({ contactoid: id });
 
   const result = await contactoService.deleteContactoService({
     contactoid: contactoValidated.contactoid,
@@ -97,13 +203,19 @@ export const deleteContacto = async (req: Request, res: Response) => {
 export const activateContacto = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activateContacto");
   const { id } = req.params;
-  const contactoSchema = yup
-    .object()
-    .shape({
-      contactoid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
-  const contactoValidated = contactoSchema.validateSync({ contactoid: id }, { abortEarly: false, stripUnknown: true });
+  const contactoSchema = objectInput(
+    z.object({
+      contactoid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
+  const contactoValidated = contactoSchema.parse({ contactoid: id });
 
   const result = await contactoService.activateContactoService({
     contactoid: contactoValidated.contactoid,

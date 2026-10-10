@@ -2,7 +2,7 @@
 
 ## Responsabilidades
 ✅ Parsear y extraer datos de `req.params`, `req.body`, `req.query`, `req.session_user`
-✅ Validar input con Yup o Zod
+✅ Validar input con Zod
 ✅ Llamar al servicio de negocio correspondiente (`src/services/`)
 ✅ Responder con `response(res, statusCode, data)` o manejar errores de validación HTTP
 

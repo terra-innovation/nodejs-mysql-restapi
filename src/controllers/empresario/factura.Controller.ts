@@ -1,22 +1,26 @@
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
-import * as yup from "yup";
+import { z } from "zod";
+import { objectInput, stringInput } from "#src/utils/validationInputs.js";
 import * as facturaService from "#src/services/empresario/factura.Service.js";
 
 export const getFacturasByFactoringid = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFacturasByFactoringid");
   const { id } = req.params;
-  const facturaSearchSchema = yup
-    .object()
-    .shape({
-      factoringid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
-  const facturaValidated = facturaSearchSchema.validateSync(
-    { factoringid: id, ...req.body },
-    { abortEarly: false, stripUnknown: true },
+  const facturaSearchSchema = objectInput(
+    z.object({
+      factoringid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
   );
+  const facturaValidated = facturaSearchSchema.parse({ factoringid: id, ...req.body });
   log.debug(line(), "facturaValidated:", facturaValidated);
 
   const facturasJson = await facturaService.getFacturasByFactoringidService({
@@ -29,16 +33,19 @@ export const getFacturasByFactoringid = async (req: Request, res: Response) => {
 export const activateFactura = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activateFactura");
   const { id } = req.params;
-  const facturaSchema = yup
-    .object()
-    .shape({
-      facturaid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
-  const facturaValidated = facturaSchema.validateSync(
-    { facturaid: id },
-    { abortEarly: false, stripUnknown: true },
+  const facturaSchema = objectInput(
+    z.object({
+      facturaid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
   );
+  const facturaValidated = facturaSchema.parse({ facturaid: id });
   log.debug(line(), "facturaValidated:", facturaValidated);
 
   const facturaActivated = await facturaService.activateFacturaService({
@@ -52,16 +59,19 @@ export const activateFactura = async (req: Request, res: Response) => {
 export const deleteFactura = async (req: Request, res: Response) => {
   log.debug(line(), "controller::deleteFactura");
   const { id } = req.params;
-  const facturaSchema = yup
-    .object()
-    .shape({
-      facturaid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
-  const facturaValidated = facturaSchema.validateSync(
-    { facturaid: id },
-    { abortEarly: false, stripUnknown: true },
+  const facturaSchema = objectInput(
+    z.object({
+      facturaid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
   );
+  const facturaValidated = facturaSchema.parse({ facturaid: id });
   log.debug(line(), "facturaValidated:", facturaValidated);
 
   const facturaDeleted = await facturaService.deleteFacturaService({

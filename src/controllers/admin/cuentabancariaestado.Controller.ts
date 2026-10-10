@@ -2,18 +2,25 @@ import * as cuentabancariaestadoService from "#root/src/services/admin/cuentaban
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
-import * as yup from "yup";
+import { z } from "zod";
+import { objectInput, stringInput } from "#src/utils/validationInputs.js";
 
 export const activateCuentabancariaestado = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activateCuentabancariaestado");
   const { id } = req.params;
-  const cuentabancariaestadoSchema = yup
-    .object()
-    .shape({
-      cuentabancariaestadoid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
-  const cuentabancariaestadoValidated = cuentabancariaestadoSchema.validateSync({ cuentabancariaestadoid: id }, { abortEarly: false, stripUnknown: true });
+  const cuentabancariaestadoSchema = objectInput(
+    z.object({
+      cuentabancariaestadoid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
+  const cuentabancariaestadoValidated = cuentabancariaestadoSchema.parse({ cuentabancariaestadoid: id });
   log.debug(line(), "cuentabancariaestadoValidated:", cuentabancariaestadoValidated);
 
   const cuentabancariaestadoActivated = await cuentabancariaestadoService.activateCuentabancariaestadoService({
@@ -27,13 +34,19 @@ export const activateCuentabancariaestado = async (req: Request, res: Response) 
 export const deleteCuentabancariaestado = async (req: Request, res: Response) => {
   log.debug(line(), "controller::deleteCuentabancariaestado");
   const { id } = req.params;
-  const cuentabancariaestadoSchema = yup
-    .object()
-    .shape({
-      cuentabancariaestadoid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
-  const cuentabancariaestadoValidated = cuentabancariaestadoSchema.validateSync({ cuentabancariaestadoid: id }, { abortEarly: false, stripUnknown: true });
+  const cuentabancariaestadoSchema = objectInput(
+    z.object({
+      cuentabancariaestadoid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
+  const cuentabancariaestadoValidated = cuentabancariaestadoSchema.parse({ cuentabancariaestadoid: id });
   log.debug(line(), "cuentabancariaestadoValidated:", cuentabancariaestadoValidated);
 
   const cuentabancariaestadoDeleted = await cuentabancariaestadoService.deleteCuentabancariaestadoService({
@@ -47,16 +60,40 @@ export const deleteCuentabancariaestado = async (req: Request, res: Response) =>
 export const updateCuentabancariaestado = async (req: Request, res: Response) => {
   log.debug(line(), "controller::updateCuentabancariaestado");
   const { id } = req.params;
-  const cuentabancariaestadoUpdateSchema = yup
-    .object()
-    .shape({
-      cuentabancariaestadoid: yup.string().trim().required().min(36).max(36),
-      nombre: yup.string().trim().required().max(50),
-      alias: yup.string().trim().required().max(50),
-      color: yup.string().trim().required().max(50),
-    })
-    .required();
-  const cuentabancariaestadoValidated = cuentabancariaestadoUpdateSchema.validateSync({ cuentabancariaestadoid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
+  const cuentabancariaestadoUpdateSchema = objectInput(
+    z.object({
+      cuentabancariaestadoid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      nombre: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 50, "Debe tener como máximo 50 caracteres"),
+        { trim: true },
+      ),
+      alias: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 50, "Debe tener como máximo 50 caracteres"),
+        { trim: true },
+      ),
+      color: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 50, "Debe tener como máximo 50 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
+  const cuentabancariaestadoValidated = cuentabancariaestadoUpdateSchema.parse({ cuentabancariaestadoid: id, ...req.body });
   log.debug(line(), "cuentabancariaestadoValidated:", cuentabancariaestadoValidated);
 
   const cuentabancariaestadoFiltered = await cuentabancariaestadoService.updateCuentabancariaestadoService({
@@ -78,15 +115,32 @@ export const getCuentasbancarias = async (req: Request, res: Response) => {
 
 export const createCuentabancariaestado = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createCuentabancariaestado");
-  const cuentabancariaestadoCreateSchema = yup
-    .object()
-    .shape({
-      nombre: yup.string().trim().required().max(50),
-      alias: yup.string().trim().required().max(50),
-      color: yup.string().trim().required().max(50),
-    })
-    .required();
-  const cuentabancariaestadoValidated = cuentabancariaestadoCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
+  const cuentabancariaestadoCreateSchema = objectInput(
+    z.object({
+      nombre: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 50, "Debe tener como máximo 50 caracteres"),
+        { trim: true },
+      ),
+      alias: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 50, "Debe tener como máximo 50 caracteres"),
+        { trim: true },
+      ),
+      color: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 50, "Debe tener como máximo 50 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
+  const cuentabancariaestadoValidated = cuentabancariaestadoCreateSchema.parse(req.body);
   log.debug(line(), "cuentabancariaestadoValidated:", cuentabancariaestadoValidated);
 
   const cuentabancariaestadoCreated = await cuentabancariaestadoService.createCuentabancariaestadoService({

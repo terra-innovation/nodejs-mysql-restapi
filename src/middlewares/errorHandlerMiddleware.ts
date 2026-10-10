@@ -3,22 +3,21 @@ import { ArchivoError, AuthClientError, ClientError, ConexionError, CORSError } 
 import { customResponseError } from "#src/utils/CustomResponseError.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { type NextFunction, type Request, type Response } from "express";
-import { ValidationError } from "yup";
+import { ZodError } from "zod";
 
 export function errorHandlerMiddleware(err: any, req: Request, res: Response, next: NextFunction): void {
   let { statusCode, message } = err;
 
-  if (err instanceof ValidationError) {
+  if (err instanceof ZodError) {
     statusCode = 400;
     message = "Datos no válidos";
 
-    const mensajeError = err.inner.map((dato) => ({
+    const mensajeError = err.issues.map((dato) => ({
       message: dato.message,
-      originalValue: dato.value,
-      path: dato.path,
+      path: dato.path.join("."),
     }));
 
-    log.error(line(), "ValidationError:", mensajeError);
+    log.error(line(), "ZodError:", mensajeError);
   }
 
   if (statusCode === undefined) {
@@ -26,7 +25,7 @@ export function errorHandlerMiddleware(err: any, req: Request, res: Response, ne
     message = "Ocurrió un error";
   }
 
-  const esErrorConocido = err instanceof CORSError || err instanceof ArchivoError || err instanceof ClientError || err instanceof ConexionError || err instanceof AuthClientError || err instanceof ValidationError;
+  const esErrorConocido = err instanceof CORSError || err instanceof ArchivoError || err instanceof ClientError || err instanceof ConexionError || err instanceof AuthClientError || err instanceof ZodError;
 
   if (!esErrorConocido) {
     //log.error(line(), "Uncaught Error:", util.inspect(err, { colors: true, depth: null }));

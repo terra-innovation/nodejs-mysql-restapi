@@ -1,23 +1,34 @@
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
-import * as yup from "yup";
+import { z } from "zod";
+import { objectInput, stringInput } from "#src/utils/validationInputs.js";
 import * as facturaService from "#src/services/empresario/factura.Service.js";
 
 export const subirFactura = async (req: Request, res: Response) => {
   log.debug(line(), "controller::subirFactura");
 
-  const facturaVerifySchema = yup
-    .object()
-    .shape({
-      factura_xml: yup.string().trim().required().min(36).max(36),
-      factura_pdf: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
-  const facturaValidated = facturaVerifySchema.validateSync(
-    { ...req.files, ...req.body },
-    { abortEarly: false, stripUnknown: true },
+  const facturaVerifySchema = objectInput(
+    z.object({
+      factura_xml: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      factura_pdf: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
   );
+  const facturaValidated = facturaVerifySchema.parse({ ...req.files, ...req.body });
   log.debug(line(), "facturaValidated:", facturaValidated);
 
   const facturaFiltered = await facturaService.subirFacturaService({

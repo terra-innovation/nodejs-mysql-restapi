@@ -2,18 +2,25 @@ import * as archivoService from "#root/src/services/admin/archivo.Service.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
-import * as yup from "yup";
+import { z } from "zod";
+import { objectInput, stringInput } from "#src/utils/validationInputs.js";
 
 export const descargarArchivo = async (req: Request, res: Response) => {
   log.debug(line(), "controller::descargarArchivo");
   const { id } = req.params;
-  const archivoSchema = yup
-    .object()
-    .shape({
-      archivoid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
-  const archivoValidated = archivoSchema.validateSync({ archivoid: id }, { abortEarly: false, stripUnknown: true });
+  const archivoSchema = objectInput(
+    z.object({
+      archivoid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
+  const archivoValidated = archivoSchema.parse({ archivoid: id });
   log.debug(line(), "archivoValidated:", archivoValidated);
 
   const rutaAbsoluta = await archivoService.getRutaAbsolutaArchivoService({
@@ -31,13 +38,19 @@ export const descargarArchivo = async (req: Request, res: Response) => {
 export const activateArchivo = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activateArchivo");
   const { id } = req.params;
-  const archivoSchema = yup
-    .object()
-    .shape({
-      archivoid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
-  const archivoValidated = archivoSchema.validateSync({ archivoid: id }, { abortEarly: false, stripUnknown: true });
+  const archivoSchema = objectInput(
+    z.object({
+      archivoid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
+  const archivoValidated = archivoSchema.parse({ archivoid: id });
   log.debug(line(), "archivoValidated:", archivoValidated);
 
   await archivoService.activateArchivoService({
@@ -51,13 +64,19 @@ export const activateArchivo = async (req: Request, res: Response) => {
 export const deleteArchivo = async (req: Request, res: Response) => {
   log.debug(line(), "controller::deleteArchivo");
   const { id } = req.params;
-  const archivoSchema = yup
-    .object()
-    .shape({
-      archivoid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
-  const archivoValidated = archivoSchema.validateSync({ archivoid: id }, { abortEarly: false, stripUnknown: true });
+  const archivoSchema = objectInput(
+    z.object({
+      archivoid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
+  const archivoValidated = archivoSchema.parse({ archivoid: id });
   log.debug(line(), "archivoValidated:", archivoValidated);
 
   await archivoService.deleteArchivoService({
@@ -77,15 +96,35 @@ export const getArchivoMaster = async (req: Request, res: Response) => {
 export const updateArchivo = async (req: Request, res: Response) => {
   log.debug(line(), "controller::updateArchivo");
   const { id } = req.params;
-  const archivoUpdateSchema = yup
-    .object()
-    .shape({
-      archivoid: yup.string().trim().required().min(36).max(36),
-      archivotipoid: yup.string().trim().required().min(36).max(36),
-      archivoestadoid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
-  const archivoValidated = archivoUpdateSchema.validateSync({ archivoid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
+  const archivoUpdateSchema = objectInput(
+    z.object({
+      archivoid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      archivotipoid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      archivoestadoid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
+  const archivoValidated = archivoUpdateSchema.parse({ archivoid: id, ...req.body });
   log.debug(line(), "archivoValidated:", archivoValidated);
 
   await archivoService.updateArchivoService({

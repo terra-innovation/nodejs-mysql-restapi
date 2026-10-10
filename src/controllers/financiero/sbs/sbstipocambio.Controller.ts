@@ -1,23 +1,9 @@
 import { Request, Response } from "express";
 import { line, log } from "#root/src/utils/logger.pino.js";
 import { response } from "#src/utils/CustomResponseOk.js";
-import * as yup from "yup";
-import {
-  getSbsTipoCambioHoyService,
-  getSbsTipoCambioPorFechaService,
-  getSbsTipoCambioHistorialService,
-  sincronizarSbsTipoCambioService,
-  sincronizarSbsMesTipoCambioService,
-  getSbsTipoCambiosListOrPaginatedService,
-  getSbsTipoCambiosPaginadoService,
-  createSbsTipoCambioService,
-  updateSbsTipoCambioService,
-  deleteSbsTipoCambioService,
-  activateSbsTipoCambioService,
-  getSbsTipoCambioMasterService,
-  CreateSbsTipoCambioDto,
-  UpdateSbsTipoCambioDto,
-} from "#root/src/services/financiero/sbstipocambio.Service.js";
+import { z } from "zod";
+import { objectInput, stringInput, numberInput } from "#src/utils/validationInputs.js";
+import { getSbsTipoCambioHoyService, getSbsTipoCambioPorFechaService, getSbsTipoCambioHistorialService, sincronizarSbsTipoCambioService, sincronizarSbsMesTipoCambioService, getSbsTipoCambiosListOrPaginatedService, getSbsTipoCambiosPaginadoService, createSbsTipoCambioService, updateSbsTipoCambioService, deleteSbsTipoCambioService, activateSbsTipoCambioService, getSbsTipoCambioMasterService, CreateSbsTipoCambioDto, UpdateSbsTipoCambioDto } from "#root/src/services/financiero/sbstipocambio.Service.js";
 
 /**
  * Obtiene el tipo de cambio SBS del día de hoy (o más reciente) con estrategia Fallback en cascada.
@@ -68,13 +54,7 @@ export const sincronizarSbsTipoCambio = async (req: Request, res: Response) => {
   const serviciotipocambioid = (req.body.serviciotipocambioid || req.query.serviciotipocambioid) as string | undefined;
   const fecha = (req.body.fecha || req.query.fecha) as string | undefined;
 
-  const data = await sincronizarSbsTipoCambioService(
-    moneda,
-    fecha,
-    mes ? Number(mes) : undefined,
-    anio ? Number(anio) : undefined,
-    serviciotipocambioid,
-  );
+  const data = await sincronizarSbsTipoCambioService(moneda, fecha, mes ? Number(mes) : undefined, anio ? Number(anio) : undefined, serviciotipocambioid);
   response(res, 201, data);
 };
 
@@ -128,28 +108,31 @@ export const getSbsTipoCambiosPaginado = async (req: Request, res: Response) => 
  */
 export const createSbsTipoCambio = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createSbsTipoCambio");
-  const sbsCreateSchema = yup
-    .object()
-    .shape({
-      fecha: yup
-        .string()
-        .trim()
-        .required("La fecha es requerida (YYYY-MM-DD)")
-        .matches(/^\d{4}-\d{2}-\d{2}/, "El formato de fecha debe ser YYYY-MM-DD o ISO"),
-      precio_compra: yup.number().required("El precio de compra es requerido").positive(),
-      precio_venta: yup.number().required("El precio de venta es requerido").positive(),
-      precio_contable: yup.number().optional().positive(),
-      monedabaseid: yup.string().trim().optional(),
-      monedacotizadaid: yup.string().trim().optional(),
-      codigomonedabase: yup.string().trim().optional().default("USD"),
-      codigomonedacotizada: yup.string().trim().optional().default("PEN"),
-    })
-    .required();
+  const sbsCreateSchema = objectInput(
+    z.object({
+      fecha: stringInput(
+        z
+          .string({ error: "La fecha es requerida (YYYY-MM-DD)" })
+          .refine((value) => value.length > 0, "La fecha es requerida (YYYY-MM-DD)")
+          .regex(/^\d{4}-\d{2}-\d{2}/, "El formato de fecha debe ser YYYY-MM-DD o ISO"),
+        { trim: true },
+      ),
+      precio_compra: numberInput(z.custom<number>((value) => typeof value === "number" && !Number.isNaN(value), { error: "El precio de compra es requerido" }).refine((value) => value > 0, "Debe ser un número positivo")),
+      precio_venta: numberInput(z.custom<number>((value) => typeof value === "number" && !Number.isNaN(value), { error: "El precio de venta es requerido" }).refine((value) => value > 0, "Debe ser un número positivo")),
+      precio_contable: numberInput(
+        z
+          .custom<number>((value) => typeof value === "number" && !Number.isNaN(value))
+          .refine((value) => value > 0, "Debe ser un número positivo")
+          .optional(),
+      ),
+      monedabaseid: stringInput(z.string().optional(), { trim: true }),
+      monedacotizadaid: stringInput(z.string().optional(), { trim: true }),
+      codigomonedabase: stringInput(z.string().optional().prefault("USD"), { trim: true }),
+      codigomonedacotizada: stringInput(z.string().optional().prefault("PEN"), { trim: true }),
+    }),
+  );
 
-  const validated = sbsCreateSchema.validateSync(req.body, {
-    abortEarly: false,
-    stripUnknown: true,
-  }) as CreateSbsTipoCambioDto;
+  const validated = sbsCreateSchema.parse(req.body) as CreateSbsTipoCambioDto;
   log.debug(line(), "sbsValidated:", validated);
 
   const idUsuario = req.session_user?.usuario?.idusuario ?? 1;
@@ -165,25 +148,45 @@ export const updateSbsTipoCambio = async (req: Request, res: Response) => {
   log.debug(line(), "controller::updateSbsTipoCambio");
   const { id } = req.params;
 
-  const sbsUpdateSchema = yup
-    .object()
-    .shape({
-      sbstipocambioid: yup.string().trim().required().min(36).max(36),
-      precio_compra: yup.number().optional().positive(),
-      precio_venta: yup.number().optional().positive(),
-      precio_contable: yup.number().optional().positive(),
-      fecha: yup
-        .string()
-        .trim()
-        .optional()
-        .matches(/^\d{4}-\d{2}-\d{2}/, "El formato de fecha debe ser YYYY-MM-DD o ISO"),
-    })
-    .required();
+  const sbsUpdateSchema = objectInput(
+    z.object({
+      sbstipocambioid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      precio_compra: numberInput(
+        z
+          .custom<number>((value) => typeof value === "number" && !Number.isNaN(value))
+          .refine((value) => value > 0, "Debe ser un número positivo")
+          .optional(),
+      ),
+      precio_venta: numberInput(
+        z
+          .custom<number>((value) => typeof value === "number" && !Number.isNaN(value))
+          .refine((value) => value > 0, "Debe ser un número positivo")
+          .optional(),
+      ),
+      precio_contable: numberInput(
+        z
+          .custom<number>((value) => typeof value === "number" && !Number.isNaN(value))
+          .refine((value) => value > 0, "Debe ser un número positivo")
+          .optional(),
+      ),
+      fecha: stringInput(
+        z
+          .string()
+          .regex(/^\d{4}-\d{2}-\d{2}/, "El formato de fecha debe ser YYYY-MM-DD o ISO")
+          .optional(),
+        { trim: true },
+      ),
+    }),
+  );
 
-  const validated = sbsUpdateSchema.validateSync(
-    { sbstipocambioid: id, ...req.body },
-    { abortEarly: false, stripUnknown: true },
-  ) as UpdateSbsTipoCambioDto;
+  const validated = sbsUpdateSchema.parse({ sbstipocambioid: id, ...req.body }) as UpdateSbsTipoCambioDto;
   log.debug(line(), "sbsUpdateValidated:", validated);
 
   const idUsuario = req.session_user?.usuario?.idusuario ?? 1;
@@ -199,14 +202,20 @@ export const deleteSbsTipoCambio = async (req: Request, res: Response) => {
   log.debug(line(), "controller::deleteSbsTipoCambio");
   const { id } = req.params;
 
-  const schema = yup
-    .object()
-    .shape({
-      sbstipocambioid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
+  const schema = objectInput(
+    z.object({
+      sbstipocambioid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
 
-  const validated = schema.validateSync({ sbstipocambioid: id }, { abortEarly: false, stripUnknown: true });
+  const validated = schema.parse({ sbstipocambioid: id });
 
   const idUsuario = req.session_user?.usuario?.idusuario ?? 1;
   const result = await deleteSbsTipoCambioService(idUsuario, validated.sbstipocambioid);
@@ -221,14 +230,20 @@ export const activateSbsTipoCambio = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activateSbsTipoCambio");
   const { id } = req.params;
 
-  const schema = yup
-    .object()
-    .shape({
-      sbstipocambioid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
+  const schema = objectInput(
+    z.object({
+      sbstipocambioid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
 
-  const validated = schema.validateSync({ sbstipocambioid: id }, { abortEarly: false, stripUnknown: true });
+  const validated = schema.parse({ sbstipocambioid: id });
 
   const idUsuario = req.session_user?.usuario?.idusuario ?? 1;
   const result = await activateSbsTipoCambioService(idUsuario, validated.sbstipocambioid);

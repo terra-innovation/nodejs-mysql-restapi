@@ -67,7 +67,7 @@ describe("Montaje global real de Express con MariaDB", () => {
     if (scenario !== "ausente") req = req.set("Authorization", scenario === "formato" ? "Token incorrecto" : scenario === "firma" ? `Bearer ${jwt.sign({ usuario: {} }, "wrong")}` : token(scenario === "rol" ? 6 : 2, scenario === "expirado" ? { expiresIn: -1 } : {}));
     await req.send({}).expect(scenario === "ausente" || scenario === "rol" ? 403 : 401); expect(await snapshot()).toEqual(before);
   });
-  it("Yup devuelve 400 a través del manejador global, sin escrituras", async () => {
+  it("Zod devuelve 400 a través del manejador global, sin escrituras", async () => {
     const before = await snapshot(); const result = await headers(request(app).post(`${path}/crear`)).set("Authorization", token()).send({}).expect(400);
     expect(result.body.error).toBe(true); expect(boundary.telegram).not.toHaveBeenCalled(); expect(await snapshot()).toEqual(before);
   });

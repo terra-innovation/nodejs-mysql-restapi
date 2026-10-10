@@ -2,18 +2,25 @@ import * as servicioService from "#root/src/services/admin/servicio.Service.js";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
-import * as yup from "yup";
+import { z } from "zod";
+import { objectInput, stringInput } from "#src/utils/validationInputs.js";
 
 export const activateServicio = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activateServicio");
   const { id } = req.params;
-  const servicioSchema = yup
-    .object()
-    .shape({
-      servicioid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
-  const servicioValidated = servicioSchema.validateSync({ servicioid: id }, { abortEarly: false, stripUnknown: true });
+  const servicioSchema = objectInput(
+    z.object({
+      servicioid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
+  const servicioValidated = servicioSchema.parse({ servicioid: id });
   log.debug(line(), "servicioValidated:", servicioValidated);
 
   await servicioService.activateServicioService({
@@ -27,13 +34,19 @@ export const activateServicio = async (req: Request, res: Response) => {
 export const deleteServicio = async (req: Request, res: Response) => {
   log.debug(line(), "controller::deleteServicio");
   const { id } = req.params;
-  const servicioSchema = yup
-    .object()
-    .shape({
-      servicioid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
-  const servicioValidated = servicioSchema.validateSync({ servicioid: id }, { abortEarly: false, stripUnknown: true });
+  const servicioSchema = objectInput(
+    z.object({
+      servicioid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
+  const servicioValidated = servicioSchema.parse({ servicioid: id });
   log.debug(line(), "servicioValidated:", servicioValidated);
 
   const servicioDeleted = await servicioService.deleteServicioService({
@@ -53,18 +66,59 @@ export const getServicioMaster = async (req: Request, res: Response) => {
 export const updateServicio = async (req: Request, res: Response) => {
   log.debug(line(), "controller::updateServicio");
   const { id } = req.params;
-  const servicioUpdateSchema = yup
-    .object()
-    .shape({
-      servicioid: yup.string().trim().required().min(36).max(36),
-      nombre: yup.string().trim().required().min(2).max(50),
-      alias: yup.string().trim().required().min(2).max(50),
-      descripcion: yup.string().trim().min(2).max(500),
-      urlcontrato: yup.string().trim().min(2).max(500),
-      pathroute: yup.string().trim().min(2).max(100),
-    })
-    .required();
-  const servicioValidated = servicioUpdateSchema.validateSync({ servicioid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
+  const servicioUpdateSchema = objectInput(
+    z.object({
+      servicioid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      nombre: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 2, "Debe tener al menos 2 caracteres")
+          .refine((value) => value.length <= 50, "Debe tener como máximo 50 caracteres"),
+        { trim: true },
+      ),
+      alias: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 2, "Debe tener al menos 2 caracteres")
+          .refine((value) => value.length <= 50, "Debe tener como máximo 50 caracteres"),
+        { trim: true },
+      ),
+      descripcion: stringInput(
+        z
+          .string()
+          .refine((value) => value.length >= 2, "Debe tener al menos 2 caracteres")
+          .refine((value) => value.length <= 500, "Debe tener como máximo 500 caracteres")
+          .optional(),
+        { trim: true },
+      ),
+      urlcontrato: stringInput(
+        z
+          .string()
+          .refine((value) => value.length >= 2, "Debe tener al menos 2 caracteres")
+          .refine((value) => value.length <= 500, "Debe tener como máximo 500 caracteres")
+          .optional(),
+        { trim: true },
+      ),
+      pathroute: stringInput(
+        z
+          .string()
+          .refine((value) => value.length >= 2, "Debe tener al menos 2 caracteres")
+          .refine((value) => value.length <= 100, "Debe tener como máximo 100 caracteres")
+          .optional(),
+        { trim: true },
+      ),
+    }),
+  );
+  const servicioValidated = servicioUpdateSchema.parse({ servicioid: id, ...req.body });
   log.debug(line(), "servicioValidated:", servicioValidated);
 
   const servicioUpdated = await servicioService.updateServicioService({
@@ -88,17 +142,51 @@ export const getServicios = async (req: Request, res: Response) => {
 
 export const createServicio = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createServicio");
-  const servicioCreateSchema = yup
-    .object()
-    .shape({
-      nombre: yup.string().trim().required().min(2).max(50),
-      alias: yup.string().trim().required().min(2).max(50),
-      descripcion: yup.string().trim().required().min(2).max(500),
-      urlcontrato: yup.string().trim().required().min(2).max(500),
-      pathroute: yup.string().trim().required().min(2).max(100),
-    })
-    .required();
-  const servicioValidated = servicioCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
+  const servicioCreateSchema = objectInput(
+    z.object({
+      nombre: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 2, "Debe tener al menos 2 caracteres")
+          .refine((value) => value.length <= 50, "Debe tener como máximo 50 caracteres"),
+        { trim: true },
+      ),
+      alias: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 2, "Debe tener al menos 2 caracteres")
+          .refine((value) => value.length <= 50, "Debe tener como máximo 50 caracteres"),
+        { trim: true },
+      ),
+      descripcion: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 2, "Debe tener al menos 2 caracteres")
+          .refine((value) => value.length <= 500, "Debe tener como máximo 500 caracteres"),
+        { trim: true },
+      ),
+      urlcontrato: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 2, "Debe tener al menos 2 caracteres")
+          .refine((value) => value.length <= 500, "Debe tener como máximo 500 caracteres"),
+        { trim: true },
+      ),
+      pathroute: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 2, "Debe tener al menos 2 caracteres")
+          .refine((value) => value.length <= 100, "Debe tener como máximo 100 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
+  const servicioValidated = servicioCreateSchema.parse(req.body);
   log.debug(line(), "servicioValidated:", servicioValidated);
 
   const servicioCreated = await servicioService.createServicioService({

@@ -1,13 +1,21 @@
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
-import * as yup from "yup";
+import { z } from "zod";
+import { objectInput, stringInput } from "#src/utils/validationInputs.js";
 import * as factoringpropuestaService from "#src/services/empresario/factoringpropuesta.Service.js";
 import { sendFileAsync, setDownloadHeaders } from "#src/utils/httpUtils.js";
 import { unlink } from "fs/promises";
 
 export const downloadFactoringpropuestaPDF = async (req: Request, res: Response) => {
-  const factoringpropuestaid = yup.string().trim().required().min(36).max(36).validateSync(req.params.id);
+  const factoringpropuestaid = stringInput(
+    z
+      .string()
+      .refine((value) => value.length > 0, "Campo requerido")
+      .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+      .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+    { trim: true },
+  ).parse(req.params.id);
   const { filePath, filenameDownload } = await factoringpropuestaService.generateFactoringpropuestaPDFService({
     factoringpropuestaid,
     idusuario: req.session_user.usuario.idusuario,
@@ -23,17 +31,27 @@ export const downloadFactoringpropuestaPDF = async (req: Request, res: Response)
 export const acceptFactoringpropuesta = async (req: Request, res: Response) => {
   log.debug(line(), "controller::acceptFactoringpropuesta");
   const { factoringid } = req.params;
-  const factoringpropuestaUpdateSchema = yup
-    .object()
-    .shape({
-      factoringid: yup.string().trim().required().min(36).max(36),
-      factoringpropuestaid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
-  const factoringpropuestaValidated = factoringpropuestaUpdateSchema.validateSync(
-    { factoringid, ...req.body },
-    { abortEarly: false, stripUnknown: true },
+  const factoringpropuestaUpdateSchema = objectInput(
+    z.object({
+      factoringid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      factoringpropuestaid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
   );
+  const factoringpropuestaValidated = factoringpropuestaUpdateSchema.parse({ factoringid, ...req.body });
   log.debug(line(), "factoringpropuestaValidated:", factoringpropuestaValidated);
 
   await factoringpropuestaService.acceptFactoringpropuestaService({
@@ -48,16 +66,19 @@ export const acceptFactoringpropuesta = async (req: Request, res: Response) => {
 export const getFactoringpropuestaVigente = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFactoringpropuestaVigente");
   const { factoringid } = req.params;
-  const factoringpropuestaSchema = yup
-    .object()
-    .shape({
-      factoringid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
-  const factoringpropuestaValidated = factoringpropuestaSchema.validateSync(
-    { factoringid, ...req.body },
-    { abortEarly: false, stripUnknown: true },
+  const factoringpropuestaSchema = objectInput(
+    z.object({
+      factoringid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
   );
+  const factoringpropuestaValidated = factoringpropuestaSchema.parse({ factoringid, ...req.body });
 
   const factoringpropuesta = await factoringpropuestaService.getFactoringpropuestaVigenteService({
     factoringid: factoringpropuestaValidated.factoringid,

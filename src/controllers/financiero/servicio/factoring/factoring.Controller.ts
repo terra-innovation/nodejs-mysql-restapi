@@ -1,14 +1,9 @@
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
-import * as yup from "yup";
-import {
-  getFactoringMasterService,
-  getFactoringsPendientesFacturaCedenteService,
-  getFactoringsService,
-  getFactoringEmpresaDetalleService,
-  getPreFacturaCedenteService,
-} from "#src/services/financiero/factoring.Service.js";
+import { z } from "zod";
+import { objectInput, stringInput, inputUuidPattern } from "#src/utils/validationInputs.js";
+import { getFactoringMasterService, getFactoringsPendientesFacturaCedenteService, getFactoringsService, getFactoringEmpresaDetalleService, getPreFacturaCedenteService } from "#src/services/financiero/factoring.Service.js";
 
 export const getFactoringMaster = async (_req: Request, res: Response) => {
   log.debug(line(), "controller::getFactoringsMaster");
@@ -23,10 +18,17 @@ export const getFactorings = async (_req: Request, res: Response) => {
 };
 
 export const getFactoringEmpresaDetalle = async (req: Request, res: Response) => {
-  const { empresaid } = yup.object({ empresaid: yup.string().trim().required().uuid() }).validateSync(req.params, {
-    abortEarly: false,
-    stripUnknown: true,
-  });
+  const { empresaid } = objectInput(
+    z.object({
+      empresaid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .regex(inputUuidPattern),
+        { trim: true },
+      ),
+    }),
+  ).parse(req.params);
   const data = await getFactoringEmpresaDetalleService(empresaid);
   response(res, 200, data);
 };

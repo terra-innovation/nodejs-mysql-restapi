@@ -1,43 +1,73 @@
 import { Request, Response } from "express";
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
-import * as yup from "yup";
-import {
-  createInversionistacuentabancariaService,
-  updateInversionistacuentabancariaOnlyAliasService,
-  getInversionistacuentabancariasService,
-  getInversionistacuentabancariaMasterService,
-  CreateInversionistacuentabancariaDto,
-  UpdateInversionistacuentabancariaOnlyAliasDto,
-} from "#root/src/services/inversionista/inversionistacuentabancaria.Service.js";
+import { z } from "zod";
+import { objectInput, stringInput } from "#src/utils/validationInputs.js";
+import { createInversionistacuentabancariaService, updateInversionistacuentabancariaOnlyAliasService, getInversionistacuentabancariasService, getInversionistacuentabancariaMasterService, CreateInversionistacuentabancariaDto, UpdateInversionistacuentabancariaOnlyAliasDto } from "#root/src/services/inversionista/inversionistacuentabancaria.Service.js";
 
 export const createInversionistacuentabancaria = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createInversionistacuentabancaria");
   const session_idusuario = req.session_user.usuario.idusuario;
 
-  const inversionistacuentabancariaCreateSchema = yup
-    .object()
-    .shape({
-      inversionistaid: yup.string().trim().required().min(36).max(36),
-      bancoid: yup.string().trim().required().min(36).max(36),
-      cuentatipoid: yup.string().trim().required().min(36).max(36),
-      monedaid: yup.string().trim().required().min(36).max(36),
-      numero: yup.string().required().max(20),
-      cci: yup.string().required().max(20),
-      alias: yup.string().required().max(50),
-    })
-    .required();
+  const inversionistacuentabancariaCreateSchema = objectInput(
+    z.object({
+      inversionistaid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      bancoid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      cuentatipoid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      monedaid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      numero: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 20, "Debe tener como máximo 20 caracteres"),
+      ),
+      cci: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 20, "Debe tener como máximo 20 caracteres"),
+      ),
+      alias: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 50, "Debe tener como máximo 50 caracteres"),
+      ),
+    }),
+  );
 
-  const inversionistacuentabancariaValidated = inversionistacuentabancariaCreateSchema.validateSync(
-    { ...req.body },
-    { abortEarly: false, stripUnknown: true },
-  ) as CreateInversionistacuentabancariaDto;
+  const inversionistacuentabancariaValidated = inversionistacuentabancariaCreateSchema.parse({ ...req.body }) as CreateInversionistacuentabancariaDto;
   log.debug(line(), "inversionistacuentabancariaValidated:", inversionistacuentabancariaValidated);
 
-  const inversionistacuentabancariaFiltered = await createInversionistacuentabancariaService(
-    session_idusuario,
-    inversionistacuentabancariaValidated,
-  );
+  const inversionistacuentabancariaFiltered = await createInversionistacuentabancariaService(session_idusuario, inversionistacuentabancariaValidated);
 
   response(res, 201, { ...inversionistacuentabancariaFiltered });
 };
@@ -47,24 +77,29 @@ export const updateInversionistacuentabancariaOnlyAlias = async (req: Request, r
   const { id } = req.params;
   const session_idusuario = req.session_user.usuario.idusuario;
 
-  const inversionistacuentabancariaUpdateSchema = yup
-    .object()
-    .shape({
-      inversionistacuentabancariaid: yup.string().trim().required().min(36).max(36),
-      alias: yup.string().required().max(50),
-    })
-    .required();
+  const inversionistacuentabancariaUpdateSchema = objectInput(
+    z.object({
+      inversionistacuentabancariaid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      alias: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 50, "Debe tener como máximo 50 caracteres"),
+      ),
+    }),
+  );
 
-  const inversionistacuentabancariaValidated = inversionistacuentabancariaUpdateSchema.validateSync(
-    { inversionistacuentabancariaid: id, ...req.body },
-    { abortEarly: false, stripUnknown: true },
-  ) as UpdateInversionistacuentabancariaOnlyAliasDto;
+  const inversionistacuentabancariaValidated = inversionistacuentabancariaUpdateSchema.parse({ inversionistacuentabancariaid: id, ...req.body }) as UpdateInversionistacuentabancariaOnlyAliasDto;
   log.debug(line(), "inversionistacuentabancariaValidated:", inversionistacuentabancariaValidated);
 
-  const resultado = await updateInversionistacuentabancariaOnlyAliasService(
-    session_idusuario,
-    inversionistacuentabancariaValidated,
-  );
+  const resultado = await updateInversionistacuentabancariaOnlyAliasService(session_idusuario, inversionistacuentabancariaValidated);
 
   response(res, 200, resultado);
 };

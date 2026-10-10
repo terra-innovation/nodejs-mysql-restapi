@@ -3,7 +3,8 @@ import { line, log } from "#src/utils/logger.pino.js";
 import fs from "fs/promises";
 import { htmlToText } from "html-to-text";
 import path from "path";
-import * as yup from "yup";
+import { z } from "zod";
+import { objectInput, stringInput, numberInput, inputEmailPattern } from "#src/utils/validationInputs.js";
 
 class TemplaceManager {
   private templateDir: string;
@@ -232,18 +233,24 @@ class TemplaceManager {
 
   async templateEmailingVentaEnFrio(params) {
     try {
-      const paramsSchema = yup
-        .object()
-        .shape({
-          cabecera: yup
-            .object({
-              fecha_actual: yup.string().trim().required().min(1).max(200),
-            })
-            .required(),
-          random_subject: yup.string().trim(),
-        })
-        .required();
-      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+      const paramsSchema = objectInput(
+        z.object({
+          cabecera: objectInput(
+            z.object({
+              fecha_actual: stringInput(
+                z
+                  .string()
+                  .refine((value) => value.length > 0, "Campo requerido")
+                  .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+                  .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+                { trim: true },
+              ),
+            }),
+          ),
+          random_subject: stringInput(z.string().optional(), { trim: true }),
+        }),
+      );
+      var paramsValidated = paramsSchema.parse(params);
 
       // Lista de asuntos
       let subjectList = [];
@@ -274,65 +281,77 @@ class TemplaceManager {
 
   async templateFactoringEmpresaServicioFactoringCedenteNotificacionLiquidacion(params) {
     try {
-      const paramsSchema = yup
-        .object()
-        .shape({
-          usuario: yup
-            .object({
-              usuarionombres: yup.string().required(),
-              email: yup.string().required(),
-            })
-            .required(),
-          cabecera: yup
-            .object({
-              fecha_actual: yup.string().trim().required().min(1).max(200),
-            })
-            .required(),
-          factoring: yup
-            .object({
-              code: yup.string().required(),
-              fecha_registro: yup.string().required(),
-              monto_factura: yup.string().required(),
-              monto_detraccion: yup.string().required(),
-              monto_retencion: yup.string().required(),
-              monto_neto: yup.string().required(),
-              fecha_pago_estimado: yup.string().required(),
-              empresa_cedente: yup.object({
-                ruc: yup.string().required(),
-                razon_social: yup.string().required(),
-              }),
-              empresa_aceptante: yup.object({
-                ruc: yup.string().required(),
-                razon_social: yup.string().required(),
-              }),
-              moneda: yup.object({
-                codigo: yup.string().required(),
-                nombre: yup.string().required(),
-                simbolo: yup.string().required(),
-              }),
-            })
-            .required(),
-          factoring_formateado: yup
-            .object({
-              factura: yup.string().required(),
-            })
-            .required(),
-          factoringliquidacion: yup
-            .object({
-              code: yup.string().required(),
-              fecha_liquidacion: yup.string().required(),
-              monto_total_por_cobrar: yup.number().required(),
-              monto_total_a_favor: yup.number().required(),
-            })
-            .required(),
-          factoringliquidacion_formateado: yup
-            .object({
-              fecha_liquidacion: yup.string().required(),
-            })
-            .required(),
-        })
-        .required();
-      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+      const paramsSchema = objectInput(
+        z.object({
+          usuario: objectInput(
+            z.object({
+              usuarionombres: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              email: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+            }),
+          ),
+          cabecera: objectInput(
+            z.object({
+              fecha_actual: stringInput(
+                z
+                  .string()
+                  .refine((value) => value.length > 0, "Campo requerido")
+                  .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+                  .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+                { trim: true },
+              ),
+            }),
+          ),
+          factoring: objectInput(
+            z.object({
+              code: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_registro: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_factura: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_detraccion: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_retencion: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_neto: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_pago_estimado: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              empresa_cedente: objectInput(
+                z.object({
+                  ruc: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  razon_social: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                }),
+              ),
+              empresa_aceptante: objectInput(
+                z.object({
+                  ruc: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  razon_social: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                }),
+              ),
+              moneda: objectInput(
+                z.object({
+                  codigo: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  nombre: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  simbolo: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                }),
+              ),
+            }),
+          ),
+          factoring_formateado: objectInput(
+            z.object({
+              factura: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+            }),
+          ),
+          factoringliquidacion: objectInput(
+            z.object({
+              code: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_liquidacion: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_total_por_cobrar: numberInput(z.custom<number>((value) => typeof value === "number" && !Number.isNaN(value))),
+              monto_total_a_favor: numberInput(z.custom<number>((value) => typeof value === "number" && !Number.isNaN(value))),
+            }),
+          ),
+          factoringliquidacion_formateado: objectInput(
+            z.object({
+              fecha_liquidacion: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+            }),
+          ),
+        }),
+      );
+      var paramsValidated = paramsSchema.parse(params);
 
       const bodyEmailTHTML = await this.renderTemplate("factoring-empresa-servicio-factoring-cedente-notificacion-liquidacion.html", paramsValidated);
       const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
@@ -352,116 +371,150 @@ class TemplaceManager {
 
   async templateFactoringEmpresaServicioFactoringCedenteNotificacionInicioOperacion(params) {
     try {
-      const paramsSchema = yup
-        .object()
-        .shape({
-          cabecera: yup
-            .object({
-              fecha_actual: yup.string().trim().required().min(1).max(200),
-            })
-            .required(),
-          factoring: yup
-            .object({
-              code: yup.string().required(),
-              fecha_registro: yup.string().required(),
-              monto_factura: yup.string().required(),
-              monto_detraccion: yup.string().required(),
-              monto_retencion: yup.string().required(),
-              monto_neto: yup.string().required(),
-              fecha_pago_estimado: yup.string().required(),
-              empresa_cedente: yup.object({
-                ruc: yup.string().required(),
-                razon_social: yup.string().required(),
-              }),
-              empresa_aceptante: yup.object({
-                ruc: yup.string().required(),
-                razon_social: yup.string().required(),
-              }),
-              moneda: yup.object({
-                codigo: yup.string().required(),
-                nombre: yup.string().required(),
-                simbolo: yup.string().required(),
-              }),
-              factoring_facturas: yup
-                .array()
-                .of(
-                  yup.object().shape({
-                    factura: yup.object({
-                      serie: yup.string().required(),
-                      numero_comprobante: yup.string().required(),
+      const paramsSchema = objectInput(
+        z.object({
+          cabecera: objectInput(
+            z.object({
+              fecha_actual: stringInput(
+                z
+                  .string()
+                  .refine((value) => value.length > 0, "Campo requerido")
+                  .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+                  .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+                { trim: true },
+              ),
+            }),
+          ),
+          factoring: objectInput(
+            z.object({
+              code: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_registro: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_factura: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_detraccion: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_retencion: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_neto: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_pago_estimado: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              empresa_cedente: objectInput(
+                z.object({
+                  ruc: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  razon_social: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                }),
+              ),
+              empresa_aceptante: objectInput(
+                z.object({
+                  ruc: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  razon_social: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                }),
+              ),
+              moneda: objectInput(
+                z.object({
+                  codigo: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  nombre: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  simbolo: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                }),
+              ),
+              factoring_facturas: z
+                .array(
+                  objectInput(
+                    z.object({
+                      factura: objectInput(
+                        z.object({
+                          serie: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                          numero_comprobante: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                        }),
+                      ),
                     }),
-                  }),
+                  ),
                 )
-                .min(1)
-                .required(),
-            })
-            .required(),
-          factoringpropuesta: yup
-            .object({
-              code: yup.string().required(),
-              fecha_propuesta: yup.string().required(),
-              dias_pago_estimado: yup.string().required(),
-              factoring_tipo: yup.object({
-                nombre: yup.string().required(),
-              }),
-              costos: yup.array().of(
-                yup.object({
-                  monto: yup.mixed().required(),
-                  financiero_concepto: yup.object({
-                    alias: yup.string().required(),
-                  }),
+                .min(1),
+            }),
+          ),
+          factoringpropuesta: objectInput(
+            z.object({
+              code: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_propuesta: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              dias_pago_estimado: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              factoring_tipo: objectInput(
+                z.object({
+                  nombre: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
                 }),
               ),
-              gastos: yup.array().of(
-                yup.object({
-                  monto: yup.mixed().required(),
-                  financiero_concepto: yup.object({
-                    alias: yup.string().required(),
-                  }),
-                }),
-              ),
-              gastos_excento_igv: yup.array().of(
-                yup.object({
-                  monto: yup.mixed().required(),
-                  financiero_concepto: yup.object({
-                    alias: yup.string().required(),
-                  }),
-                }),
-              ),
-            })
-            .required(),
-          usuario: yup
-            .object({
-              usuarionombres: yup.string().required(),
-              email: yup.string().required(),
-            })
-            .required(),
-          factoring_formateado: yup
-            .object({
-              factura: yup.string().required(),
-              fecha_registro: yup.string().required(),
-              fecha_operacion: yup.string().required(),
-            })
-            .required(),
-          factoringpropuesta_formateado: yup
-            .object({
-              fecha_propuesta: yup.string().required(),
-              monto_neto: yup.string().required(),
-              fecha_pago_estimado: yup.string().required(),
-              tdm: yup.string().required(),
-              porcentaje_financiado_estimado: yup.string().required(),
-              monto_garantia: yup.string().required(),
-              monto_financiado: yup.string().required(),
-              monto_descuento: yup.string().required(),
-              monto_comision: yup.string().required(),
-              monto_costo_estimado: yup.string().required(),
-              monto_total_igv: yup.string().required(),
-              monto_adelanto: yup.string().required(),
-            })
-            .required(),
-        })
-        .required();
-      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+              costos: z
+                .array(
+                  objectInput(
+                    z.object({
+                      monto: z.custom<any>((value) => value !== null && value !== undefined),
+                      financiero_concepto: objectInput(
+                        z.object({
+                          alias: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                        }),
+                      ),
+                    }),
+                  ),
+                )
+                .optional(),
+              gastos: z
+                .array(
+                  objectInput(
+                    z.object({
+                      monto: z.custom<any>((value) => value !== null && value !== undefined),
+                      financiero_concepto: objectInput(
+                        z.object({
+                          alias: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                        }),
+                      ),
+                    }),
+                  ),
+                )
+                .optional(),
+              gastos_excento_igv: z
+                .array(
+                  objectInput(
+                    z.object({
+                      monto: z.custom<any>((value) => value !== null && value !== undefined),
+                      financiero_concepto: objectInput(
+                        z.object({
+                          alias: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                        }),
+                      ),
+                    }),
+                  ),
+                )
+                .optional(),
+            }),
+          ),
+          usuario: objectInput(
+            z.object({
+              usuarionombres: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              email: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+            }),
+          ),
+          factoring_formateado: objectInput(
+            z.object({
+              factura: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_registro: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_operacion: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+            }),
+          ),
+          factoringpropuesta_formateado: objectInput(
+            z.object({
+              fecha_propuesta: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_neto: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_pago_estimado: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              tdm: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              porcentaje_financiado_estimado: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_garantia: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_financiado: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_descuento: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_comision: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_costo_estimado: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_total_igv: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_adelanto: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+            }),
+          ),
+        }),
+      );
+      var paramsValidated = paramsSchema.parse(params);
 
       const bodyEmailTHTML = await this.renderTemplate("factoring-empresa-servicio-factoring-cedente-confirmacion-inicio-operacion.html", paramsValidated);
       const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
@@ -481,133 +534,177 @@ class TemplaceManager {
 
   async templateFactoringEmpresaServicioFactoringDeudorNotificacionTransferencia(params) {
     try {
-      const paramsSchema = yup
-        .object()
-        .shape({
-          cabecera: yup
-            .object({
-              fecha_actual: yup.string().trim().required().min(1).max(200),
-            })
-            .required(),
-          factoring: yup
-            .object({
-              code: yup.string().required(),
-              fecha_registro: yup.string().required(),
-              monto_factura: yup.string().required(),
-              monto_detraccion: yup.string().required(),
-              monto_retencion: yup.string().required(),
-              monto_neto: yup.string().required(),
-              fecha_pago_estimado: yup.string().required(),
-              empresa_cedente: yup.object({
-                ruc: yup.string().required(),
-                razon_social: yup.string().required(),
-              }),
-              empresa_aceptante: yup.object({
-                ruc: yup.string().required(),
-                razon_social: yup.string().required(),
-              }),
-              moneda: yup.object({
-                codigo: yup.string().required(),
-                nombre: yup.string().required(),
-                simbolo: yup.string().required(),
-              }),
-              factoring_facturas: yup
-                .array()
-                .of(
-                  yup.object().shape({
-                    factura: yup.object({
-                      serie: yup.string().required(),
-                      numero_comprobante: yup.string().required(),
+      const paramsSchema = objectInput(
+        z.object({
+          cabecera: objectInput(
+            z.object({
+              fecha_actual: stringInput(
+                z
+                  .string()
+                  .refine((value) => value.length > 0, "Campo requerido")
+                  .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+                  .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+                { trim: true },
+              ),
+            }),
+          ),
+          factoring: objectInput(
+            z.object({
+              code: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_registro: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_factura: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_detraccion: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_retencion: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_neto: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_pago_estimado: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              empresa_cedente: objectInput(
+                z.object({
+                  ruc: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  razon_social: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                }),
+              ),
+              empresa_aceptante: objectInput(
+                z.object({
+                  ruc: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  razon_social: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                }),
+              ),
+              moneda: objectInput(
+                z.object({
+                  codigo: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  nombre: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  simbolo: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                }),
+              ),
+              factoring_facturas: z
+                .array(
+                  objectInput(
+                    z.object({
+                      factura: objectInput(
+                        z.object({
+                          serie: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                          numero_comprobante: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                        }),
+                      ),
                     }),
-                  }),
+                  ),
                 )
-                .min(1)
-                .required(),
-            })
-            .required(),
-          factoringpropuesta: yup
-            .object({
-              code: yup.string().required(),
-              fecha_propuesta: yup.string().required(),
-              dias_pago_estimado: yup.string().required(),
-              factoring_tipo: yup.object({
-                nombre: yup.string().required(),
-              }),
-              costos: yup.array().of(
-                yup.object({
-                  monto: yup.mixed().required(),
-                  financiero_concepto: yup.object({
-                    alias: yup.string().required(),
-                  }),
+                .min(1),
+            }),
+          ),
+          factoringpropuesta: objectInput(
+            z.object({
+              code: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_propuesta: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              dias_pago_estimado: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              factoring_tipo: objectInput(
+                z.object({
+                  nombre: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
                 }),
               ),
-              gastos: yup.array().of(
-                yup.object({
-                  monto: yup.mixed().required(),
-                  financiero_concepto: yup.object({
-                    alias: yup.string().required(),
-                  }),
+              costos: z
+                .array(
+                  objectInput(
+                    z.object({
+                      monto: z.custom<any>((value) => value !== null && value !== undefined),
+                      financiero_concepto: objectInput(
+                        z.object({
+                          alias: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                        }),
+                      ),
+                    }),
+                  ),
+                )
+                .optional(),
+              gastos: z
+                .array(
+                  objectInput(
+                    z.object({
+                      monto: z.custom<any>((value) => value !== null && value !== undefined),
+                      financiero_concepto: objectInput(
+                        z.object({
+                          alias: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                        }),
+                      ),
+                    }),
+                  ),
+                )
+                .optional(),
+              gastos_excento_igv: z
+                .array(
+                  objectInput(
+                    z.object({
+                      monto: z.custom<any>((value) => value !== null && value !== undefined),
+                      financiero_concepto: objectInput(
+                        z.object({
+                          alias: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                        }),
+                      ),
+                    }),
+                  ),
+                )
+                .optional(),
+            }),
+          ),
+          factoring_formateado: objectInput(
+            z.object({
+              factura: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_factura: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_neto: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_pago_estimado: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+            }),
+          ),
+          factoringpropuesta_formateado: objectInput(
+            z.object({
+              fecha_propuesta: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_neto: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_pago_estimado: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              tdm: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              porcentaje_financiado_estimado: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_garantia: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_financiado: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_descuento: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_comision: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_costo_estimado: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_total_igv: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_adelanto: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+            }),
+          ),
+          factorcuentabancaria: objectInput(
+            z.object({
+              factor: objectInput(
+                z.object({
+                  razon_social: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
                 }),
               ),
-              gastos_excento_igv: yup.array().of(
-                yup.object({
-                  monto: yup.mixed().required(),
-                  financiero_concepto: yup.object({
-                    alias: yup.string().required(),
-                  }),
+              cuenta_bancaria: objectInput(
+                z.object({
+                  numero: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  cci: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  banco: objectInput(
+                    z.object({
+                      nombre: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                    }),
+                  ),
+                  cuenta_tipo: objectInput(
+                    z.object({
+                      nombre: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                    }),
+                  ),
+                  moneda: objectInput(
+                    z.object({
+                      codigo: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                      nombre: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                      simbolo: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                    }),
+                  ),
                 }),
               ),
-            })
-            .required(),
-          factoring_formateado: yup
-            .object({
-              factura: yup.string().required(),
-              monto_factura: yup.string().required(),
-              monto_neto: yup.string().required(),
-              fecha_pago_estimado: yup.string().required(),
-            })
-            .required(),
-          factoringpropuesta_formateado: yup
-            .object({
-              fecha_propuesta: yup.string().required(),
-              monto_neto: yup.string().required(),
-              fecha_pago_estimado: yup.string().required(),
-              tdm: yup.string().required(),
-              porcentaje_financiado_estimado: yup.string().required(),
-              monto_garantia: yup.string().required(),
-              monto_financiado: yup.string().required(),
-              monto_descuento: yup.string().required(),
-              monto_comision: yup.string().required(),
-              monto_costo_estimado: yup.string().required(),
-              monto_total_igv: yup.string().required(),
-              monto_adelanto: yup.string().required(),
-            })
-            .required(),
-          factorcuentabancaria: yup
-            .object({
-              factor: yup.object({
-                razon_social: yup.string().required(),
-              }),
-              cuenta_bancaria: yup.object({
-                numero: yup.string().required(),
-                cci: yup.string().required(),
-                banco: yup.object({
-                  nombre: yup.string().required(),
-                }),
-                cuenta_tipo: yup.object({
-                  nombre: yup.string().required(),
-                }),
-                moneda: yup.object({
-                  codigo: yup.string().required(),
-                  nombre: yup.string().required(),
-                  simbolo: yup.string().required(),
-                }),
-              }),
-            })
-            .required(),
-        })
-        .required();
-      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+            }),
+          ),
+        }),
+      );
+      var paramsValidated = paramsSchema.parse(params);
 
       const bodyEmailTHTML = await this.renderTemplate("factoring-empresa-servicio-factoring-deudor-notificacion-transferencia.html", paramsValidated);
       const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
@@ -628,93 +725,123 @@ class TemplaceManager {
 
   async templateFactoringEmpresaServicioFactoringCedenteConfirmacionTransferencia(params) {
     try {
-      const paramsSchema = yup
-        .object()
-        .shape({
-          usuario: yup
-            .object({
-              usuarionombres: yup.string().required(),
-              email: yup.string().required(),
-            })
-            .required(),
-          cabecera: yup
-            .object({
-              fecha_actual: yup.string().trim().required().min(1).max(200),
-            })
-            .required(),
-          factoring: yup
-            .object({
-              code: yup.string().required(),
-              fecha_registro: yup.string().required(),
-              monto_factura: yup.string().required(),
-              monto_detraccion: yup.string().required(),
-              monto_retencion: yup.string().required(),
-              monto_neto: yup.string().required(),
-              fecha_pago_estimado: yup.string().required(),
-              empresa_cedente: yup.object({
-                ruc: yup.string().required(),
-                razon_social: yup.string().required(),
-              }),
-              empresa_aceptante: yup.object({
-                ruc: yup.string().required(),
-                razon_social: yup.string().required(),
-              }),
-              moneda: yup.object({
-                codigo: yup.string().required(),
-                nombre: yup.string().required(),
-                simbolo: yup.string().required(),
-              }),
-            })
-            .required(),
-          factoring_formateado: yup
-            .object({
-              factura: yup.string().required(),
-            })
-            .required(),
-          factoringtransferenciacedente: yup
-            .object({
-              code: yup.string().required(),
-              fecha: yup.string().required(),
-              monto: yup.string().required(),
-              numero_operacion: yup.string().required(),
-              factoring_transferencia_estado: yup.object({
-                nombre: yup.string().required(),
-              }),
-              factoring_transferencia_tipo: yup.object({
-                nombre: yup.string().required(),
-              }),
-              factor_cuenta_bancaria: yup.object({
-                cuenta_bancaria: yup.object({
-                  numero: yup.string().required(),
-                  banco: yup.object({
-                    nombre: yup.string().required(),
-                  }),
+      const paramsSchema = objectInput(
+        z.object({
+          usuario: objectInput(
+            z.object({
+              usuarionombres: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              email: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+            }),
+          ),
+          cabecera: objectInput(
+            z.object({
+              fecha_actual: stringInput(
+                z
+                  .string()
+                  .refine((value) => value.length > 0, "Campo requerido")
+                  .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+                  .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+                { trim: true },
+              ),
+            }),
+          ),
+          factoring: objectInput(
+            z.object({
+              code: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_registro: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_factura: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_detraccion: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_retencion: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_neto: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_pago_estimado: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              empresa_cedente: objectInput(
+                z.object({
+                  ruc: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  razon_social: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
                 }),
-              }),
-              empresa_cuenta_bancaria: yup.object({
-                cuenta_bancaria: yup.object({
-                  numero: yup.string().required(),
-                  banco: yup.object({
-                    nombre: yup.string().required(),
-                  }),
+              ),
+              empresa_aceptante: objectInput(
+                z.object({
+                  ruc: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  razon_social: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
                 }),
-              }),
-              moneda: yup.object({
-                codigo: yup.string().required(),
-                nombre: yup.string().required(),
-                simbolo: yup.string().required(),
-              }),
-            })
-            .required(),
-          factoringtransferenciacedente_formateado: yup
-            .object({
-              fecha: yup.string().required(),
-              monto: yup.string().required(),
-            })
-            .required(),
-        })
-        .required();
-      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+              ),
+              moneda: objectInput(
+                z.object({
+                  codigo: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  nombre: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  simbolo: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                }),
+              ),
+            }),
+          ),
+          factoring_formateado: objectInput(
+            z.object({
+              factura: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+            }),
+          ),
+          factoringtransferenciacedente: objectInput(
+            z.object({
+              code: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              numero_operacion: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              factoring_transferencia_estado: objectInput(
+                z.object({
+                  nombre: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                }),
+              ),
+              factoring_transferencia_tipo: objectInput(
+                z.object({
+                  nombre: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                }),
+              ),
+              factor_cuenta_bancaria: objectInput(
+                z.object({
+                  cuenta_bancaria: objectInput(
+                    z.object({
+                      numero: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                      banco: objectInput(
+                        z.object({
+                          nombre: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                        }),
+                      ),
+                    }),
+                  ),
+                }),
+              ),
+              empresa_cuenta_bancaria: objectInput(
+                z.object({
+                  cuenta_bancaria: objectInput(
+                    z.object({
+                      numero: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                      banco: objectInput(
+                        z.object({
+                          nombre: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                        }),
+                      ),
+                    }),
+                  ),
+                }),
+              ),
+              moneda: objectInput(
+                z.object({
+                  codigo: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  nombre: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  simbolo: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                }),
+              ),
+            }),
+          ),
+          factoringtransferenciacedente_formateado: objectInput(
+            z.object({
+              fecha: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+            }),
+          ),
+        }),
+      );
+      var paramsValidated = paramsSchema.parse(params);
 
       const bodyEmailTHTML = await this.renderTemplate("factoring-empresa-servicio-factoring-cedente-confirmacion-transferencia.html", paramsValidated);
       const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
@@ -734,60 +861,74 @@ class TemplaceManager {
 
   async templateFactoringEmpresaServicioFactoringDeudorSolicitudConfirmacion(params) {
     try {
-      const paramsSchema = yup
-        .object()
-        .shape({
-          cabecera: yup
-            .object({
-              fecha_actual: yup.string().trim().required().min(1).max(200),
-            })
-            .required(),
-          factoring: yup
-            .object({
-              code: yup.string().required(),
-              fecha_registro: yup.string().required(),
-              monto_factura: yup.string().required(),
-              monto_detraccion: yup.string().required(),
-              monto_retencion: yup.string().required(),
-              monto_neto: yup.string().required(),
-              fecha_pago_estimado: yup.string().required(),
-              empresa_cedente: yup.object({
-                ruc: yup.string().required(),
-                razon_social: yup.string().required(),
-              }),
-              empresa_aceptante: yup.object({
-                ruc: yup.string().required(),
-                razon_social: yup.string().required(),
-              }),
-              moneda: yup.object({
-                codigo: yup.string().required(),
-                nombre: yup.string().required(),
-                simbolo: yup.string().required(),
-              }),
-              factoring_facturas: yup
-                .array()
-                .of(
-                  yup.object().shape({
-                    factura: yup.object({
-                      serie: yup.string().required(),
-                      numero_comprobante: yup.string().required(),
+      const paramsSchema = objectInput(
+        z.object({
+          cabecera: objectInput(
+            z.object({
+              fecha_actual: stringInput(
+                z
+                  .string()
+                  .refine((value) => value.length > 0, "Campo requerido")
+                  .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+                  .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+                { trim: true },
+              ),
+            }),
+          ),
+          factoring: objectInput(
+            z.object({
+              code: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_registro: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_factura: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_detraccion: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_retencion: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_neto: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_pago_estimado: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              empresa_cedente: objectInput(
+                z.object({
+                  ruc: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  razon_social: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                }),
+              ),
+              empresa_aceptante: objectInput(
+                z.object({
+                  ruc: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  razon_social: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                }),
+              ),
+              moneda: objectInput(
+                z.object({
+                  codigo: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  nombre: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  simbolo: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                }),
+              ),
+              factoring_facturas: z
+                .array(
+                  objectInput(
+                    z.object({
+                      factura: objectInput(
+                        z.object({
+                          serie: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                          numero_comprobante: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                        }),
+                      ),
                     }),
-                  }),
+                  ),
                 )
-                .min(1)
-                .required(),
-            })
-            .required(),
-          factoring_formateado: yup
-            .object({
-              factura: yup.string().required(),
-              monto_neto: yup.string().required(),
-              fecha_pago_estimado: yup.string().required(),
-            })
-            .required(),
-        })
-        .required();
-      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+                .min(1),
+            }),
+          ),
+          factoring_formateado: objectInput(
+            z.object({
+              factura: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_neto: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_pago_estimado: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+            }),
+          ),
+        }),
+      );
+      var paramsValidated = paramsSchema.parse(params);
 
       const bodyEmailTHTML = await this.renderTemplate("factoring-empresa-servicio-factoring-deudor-solicitud-confirmacion.html", paramsValidated);
       const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
@@ -807,114 +948,148 @@ class TemplaceManager {
 
   async templateFactoringEmpresaServicioFactoringPropuestaAceptada(params) {
     try {
-      const paramsSchema = yup
-        .object()
-        .shape({
-          cabecera: yup
-            .object({
-              fecha_actual: yup.string().trim().required().min(1).max(200),
-            })
-            .required(),
-          factoring: yup
-            .object({
-              code: yup.string().required(),
-              fecha_registro: yup.string().required(),
-              monto_factura: yup.string().required(),
-              monto_detraccion: yup.string().required(),
-              monto_retencion: yup.string().required(),
-              monto_neto: yup.string().required(),
-              fecha_pago_estimado: yup.string().required(),
-              empresa_cedente: yup.object({
-                ruc: yup.string().required(),
-                razon_social: yup.string().required(),
-              }),
-              empresa_aceptante: yup.object({
-                ruc: yup.string().required(),
-                razon_social: yup.string().required(),
-              }),
-              moneda: yup.object({
-                codigo: yup.string().required(),
-                nombre: yup.string().required(),
-                simbolo: yup.string().required(),
-              }),
-              factoring_facturas: yup
-                .array()
-                .of(
-                  yup.object().shape({
-                    factura: yup.object({
-                      serie: yup.string().required(),
-                      numero_comprobante: yup.string().required(),
+      const paramsSchema = objectInput(
+        z.object({
+          cabecera: objectInput(
+            z.object({
+              fecha_actual: stringInput(
+                z
+                  .string()
+                  .refine((value) => value.length > 0, "Campo requerido")
+                  .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+                  .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+                { trim: true },
+              ),
+            }),
+          ),
+          factoring: objectInput(
+            z.object({
+              code: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_registro: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_factura: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_detraccion: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_retencion: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_neto: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_pago_estimado: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              empresa_cedente: objectInput(
+                z.object({
+                  ruc: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  razon_social: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                }),
+              ),
+              empresa_aceptante: objectInput(
+                z.object({
+                  ruc: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  razon_social: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                }),
+              ),
+              moneda: objectInput(
+                z.object({
+                  codigo: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  nombre: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  simbolo: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                }),
+              ),
+              factoring_facturas: z
+                .array(
+                  objectInput(
+                    z.object({
+                      factura: objectInput(
+                        z.object({
+                          serie: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                          numero_comprobante: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                        }),
+                      ),
                     }),
-                  }),
+                  ),
                 )
-                .min(1)
-                .required(),
-            })
-            .required(),
-          factoringpropuesta: yup
-            .object({
-              code: yup.string().required(),
-              fecha_propuesta: yup.string().required(),
-              dias_pago_estimado: yup.string().required(),
-              factoring_tipo: yup.object({
-                nombre: yup.string().required(),
-              }),
-              costos: yup.array().of(
-                yup.object({
-                  monto: yup.mixed().required(),
-                  financiero_concepto: yup.object({
-                    alias: yup.string().required(),
-                  }),
+                .min(1),
+            }),
+          ),
+          factoringpropuesta: objectInput(
+            z.object({
+              code: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_propuesta: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              dias_pago_estimado: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              factoring_tipo: objectInput(
+                z.object({
+                  nombre: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
                 }),
               ),
-              gastos: yup.array().of(
-                yup.object({
-                  monto: yup.mixed().required(),
-                  financiero_concepto: yup.object({
-                    alias: yup.string().required(),
-                  }),
-                }),
-              ),
-              gastos_excento_igv: yup.array().of(
-                yup.object({
-                  monto: yup.mixed().required(),
-                  financiero_concepto: yup.object({
-                    alias: yup.string().required(),
-                  }),
-                }),
-              ),
-            })
-            .required(),
-          usuario: yup
-            .object({
-              usuarionombres: yup.string().required(),
-              email: yup.string().required(),
-            })
-            .required(),
-          factoring_formateado: yup
-            .object({
-              fecha_registro: yup.string().required(),
-            })
-            .required(),
-          factoringpropuesta_formateado: yup
-            .object({
-              fecha_propuesta: yup.string().required(),
-              monto_neto: yup.string().required(),
-              fecha_pago_estimado: yup.string().required(),
-              tdm: yup.string().required(),
-              porcentaje_financiado_estimado: yup.string().required(),
-              monto_garantia: yup.string().required(),
-              monto_financiado: yup.string().required(),
-              monto_descuento: yup.string().required(),
-              monto_comision: yup.string().required(),
-              monto_costo_estimado: yup.string().required(),
-              monto_total_igv: yup.string().required(),
-              monto_adelanto: yup.string().required(),
-            })
-            .required(),
-        })
-        .required();
-      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+              costos: z
+                .array(
+                  objectInput(
+                    z.object({
+                      monto: z.custom<any>((value) => value !== null && value !== undefined),
+                      financiero_concepto: objectInput(
+                        z.object({
+                          alias: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                        }),
+                      ),
+                    }),
+                  ),
+                )
+                .optional(),
+              gastos: z
+                .array(
+                  objectInput(
+                    z.object({
+                      monto: z.custom<any>((value) => value !== null && value !== undefined),
+                      financiero_concepto: objectInput(
+                        z.object({
+                          alias: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                        }),
+                      ),
+                    }),
+                  ),
+                )
+                .optional(),
+              gastos_excento_igv: z
+                .array(
+                  objectInput(
+                    z.object({
+                      monto: z.custom<any>((value) => value !== null && value !== undefined),
+                      financiero_concepto: objectInput(
+                        z.object({
+                          alias: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                        }),
+                      ),
+                    }),
+                  ),
+                )
+                .optional(),
+            }),
+          ),
+          usuario: objectInput(
+            z.object({
+              usuarionombres: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              email: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+            }),
+          ),
+          factoring_formateado: objectInput(
+            z.object({
+              fecha_registro: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+            }),
+          ),
+          factoringpropuesta_formateado: objectInput(
+            z.object({
+              fecha_propuesta: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_neto: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_pago_estimado: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              tdm: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              porcentaje_financiado_estimado: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_garantia: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_financiado: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_descuento: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_comision: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_costo_estimado: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_total_igv: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_adelanto: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+            }),
+          ),
+        }),
+      );
+      var paramsValidated = paramsSchema.parse(params);
 
       const bodyEmailTHTML = await this.renderTemplate("factoring-empresa-servicio-factoring-propuesta-aceptada.html", paramsValidated);
       const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
@@ -934,75 +1109,89 @@ class TemplaceManager {
 
   async templateFactoringEmpresaServicioFactoringPropuestaDisponible(params) {
     try {
-      const paramsSchema = yup
-        .object()
-        .shape({
-          cabecera: yup
-            .object({
-              fecha_actual: yup.string().trim().required().min(1).max(200),
-            })
-            .required(),
-          factoring: yup
-            .object({
-              code: yup.string().required(),
-              fecha_registro: yup.string().required(),
-              monto_factura: yup.string().required(),
-              monto_detraccion: yup.string().required(),
-              monto_retencion: yup.string().required(),
-              monto_neto: yup.string().required(),
-              fecha_pago_estimado: yup.string().required(),
-              empresa_cedente: yup.object({
-                ruc: yup.string().required(),
-                razon_social: yup.string().required(),
-              }),
-              empresa_aceptante: yup.object({
-                ruc: yup.string().required(),
-                razon_social: yup.string().required(),
-              }),
-              moneda: yup.object({
-                codigo: yup.string().required(),
-                nombre: yup.string().required(),
-                simbolo: yup.string().required(),
-              }),
-              factoring_facturas: yup
-                .array()
-                .of(
-                  yup.object().shape({
-                    factura: yup.object({
-                      serie: yup.string().required(),
-                      numero_comprobante: yup.string().required(),
+      const paramsSchema = objectInput(
+        z.object({
+          cabecera: objectInput(
+            z.object({
+              fecha_actual: stringInput(
+                z
+                  .string()
+                  .refine((value) => value.length > 0, "Campo requerido")
+                  .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+                  .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+                { trim: true },
+              ),
+            }),
+          ),
+          factoring: objectInput(
+            z.object({
+              code: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_registro: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_factura: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_detraccion: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_retencion: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_neto: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_pago_estimado: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              empresa_cedente: objectInput(
+                z.object({
+                  ruc: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  razon_social: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                }),
+              ),
+              empresa_aceptante: objectInput(
+                z.object({
+                  ruc: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  razon_social: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                }),
+              ),
+              moneda: objectInput(
+                z.object({
+                  codigo: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  nombre: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  simbolo: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                }),
+              ),
+              factoring_facturas: z
+                .array(
+                  objectInput(
+                    z.object({
+                      factura: objectInput(
+                        z.object({
+                          serie: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                          numero_comprobante: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                        }),
+                      ),
                     }),
-                  }),
+                  ),
                 )
-                .min(1)
-                .required(),
-            })
-            .required(),
-          factoringpropuesta: yup
-            .object({
-              code: yup.string().required(),
-              fecha_propuesta: yup.string().required(),
-            })
-            .required(),
-          usuario: yup
-            .object({
-              usuarionombres: yup.string().required(),
-              email: yup.string().required(),
-            })
-            .required(),
-          factoring_formateado: yup
-            .object({
-              fecha_registro: yup.string().required(),
-            })
-            .required(),
-          factoringpropuesta_formateado: yup
-            .object({
-              fecha_propuesta: yup.string().required(),
-            })
-            .required(),
-        })
-        .required();
-      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+                .min(1),
+            }),
+          ),
+          factoringpropuesta: objectInput(
+            z.object({
+              code: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_propuesta: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+            }),
+          ),
+          usuario: objectInput(
+            z.object({
+              usuarionombres: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              email: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+            }),
+          ),
+          factoring_formateado: objectInput(
+            z.object({
+              fecha_registro: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+            }),
+          ),
+          factoringpropuesta_formateado: objectInput(
+            z.object({
+              fecha_propuesta: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+            }),
+          ),
+        }),
+      );
+      var paramsValidated = paramsSchema.parse(params);
 
       const bodyEmailTHTML = await this.renderTemplate("factoring-empresa-servicio-factoring-propuesta-disponible.html", paramsValidated);
       const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
@@ -1022,69 +1211,83 @@ class TemplaceManager {
 
   async templateFactoringEmpresaServicioFactoringSolicitud(params) {
     try {
-      const paramsSchema = yup
-        .object()
-        .shape({
-          cabecera: yup
-            .object({
-              fecha_actual: yup.string().trim().required().min(1).max(200),
-            })
-            .required(),
-          factoring: yup
-            .object({
-              code: yup.string().required(),
-              fecha_registro: yup.string().required(),
-              monto_factura: yup.string().required(),
-              monto_detraccion: yup.string().required(),
-              monto_retencion: yup.string().required(),
-              monto_neto: yup.string().required(),
-              fecha_pago_estimado: yup.string().required(),
-              empresa_cedente: yup.object({
-                ruc: yup.string().required(),
-                razon_social: yup.string().required(),
-              }),
-              empresa_aceptante: yup.object({
-                ruc: yup.string().required(),
-                razon_social: yup.string().required(),
-              }),
-              moneda: yup.object({
-                codigo: yup.string().required(),
-                nombre: yup.string().required(),
-                simbolo: yup.string().required(),
-              }),
-              factoring_facturas: yup
-                .array()
-                .of(
-                  yup.object().shape({
-                    factura: yup.object({
-                      serie: yup.string().required(),
-                      numero_comprobante: yup.string().required(),
+      const paramsSchema = objectInput(
+        z.object({
+          cabecera: objectInput(
+            z.object({
+              fecha_actual: stringInput(
+                z
+                  .string()
+                  .refine((value) => value.length > 0, "Campo requerido")
+                  .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+                  .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+                { trim: true },
+              ),
+            }),
+          ),
+          factoring: objectInput(
+            z.object({
+              code: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_registro: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_factura: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_detraccion: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_retencion: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_neto: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_pago_estimado: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              empresa_cedente: objectInput(
+                z.object({
+                  ruc: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  razon_social: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                }),
+              ),
+              empresa_aceptante: objectInput(
+                z.object({
+                  ruc: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  razon_social: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                }),
+              ),
+              moneda: objectInput(
+                z.object({
+                  codigo: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  nombre: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                  simbolo: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                }),
+              ),
+              factoring_facturas: z
+                .array(
+                  objectInput(
+                    z.object({
+                      factura: objectInput(
+                        z.object({
+                          serie: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                          numero_comprobante: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+                        }),
+                      ),
                     }),
-                  }),
+                  ),
                 )
-                .min(1)
-                .required(),
-            })
-            .required(),
-          usuario: yup
-            .object({
-              usuarionombres: yup.string().required(),
-              email: yup.string().required(),
-            })
-            .required(),
-          factoring_formateado: yup
-            .object({
-              fecha_registro: yup.string().required(),
-              monto_factura: yup.string().required(),
-              monto_detraccion: yup.string().required(),
-              monto_retencion: yup.string().required(),
-              monto_neto: yup.string().required(),
-              fecha_pago_estimado: yup.string().required(),
-            })
-            .required(),
-        })
-        .required();
-      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+                .min(1),
+            }),
+          ),
+          usuario: objectInput(
+            z.object({
+              usuarionombres: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              email: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+            }),
+          ),
+          factoring_formateado: objectInput(
+            z.object({
+              fecha_registro: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_factura: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_detraccion: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_retencion: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              monto_neto: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+              fecha_pago_estimado: stringInput(z.string().refine((value) => value.length > 0, "Campo requerido")),
+            }),
+          ),
+        }),
+      );
+      var paramsValidated = paramsSchema.parse(params);
 
       const bodyEmailTHTML = await this.renderTemplate("factoring-empresa-servicio-factoring-solicitud.html", paramsValidated);
       const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
@@ -1104,16 +1307,43 @@ class TemplaceManager {
 
   async templateFactoringInversionistaVerificacionMasInformacion(params) {
     try {
-      const paramsSchema = yup
-        .object()
-        .shape({
-          codigo_servicio_inversionista: yup.string().trim().required().min(1).max(20),
-          nombres: yup.string().trim().required().min(1).max(100),
-          fecha_actual: yup.string().trim().required().min(1).max(200),
-          razon_no_aceptada: yup.string().trim().required().min(1).max(20000),
-        })
-        .required();
-      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+      const paramsSchema = objectInput(
+        z.object({
+          codigo_servicio_inversionista: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 20, "Debe tener como máximo 20 caracteres"),
+            { trim: true },
+          ),
+          nombres: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 100, "Debe tener como máximo 100 caracteres"),
+            { trim: true },
+          ),
+          fecha_actual: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+            { trim: true },
+          ),
+          razon_no_aceptada: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 20000, "Debe tener como máximo 20000 caracteres"),
+            { trim: true },
+          ),
+        }),
+      );
+      var paramsValidated = paramsSchema.parse(params);
       const bodyEmailTHTML = await this.renderTemplate("factoring-inversionista-verificacion-mas-informacion.html", paramsValidated);
       const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
       const subjectEmailText = await this.renderSubject("Información adicional requerida para su suscripción al servicio de Inversión en Facturas de Factoring [{{codigo_servicio_inversionista}}]", paramsValidated);
@@ -1132,15 +1362,35 @@ class TemplaceManager {
 
   async templateFactoringInversionistaVerificacionRechazado(params) {
     try {
-      const paramsSchema = yup
-        .object()
-        .shape({
-          codigo_servicio_inversionista: yup.string().trim().required().min(1).max(20),
-          nombres: yup.string().trim().required().min(1).max(100),
-          fecha_actual: yup.string().trim().required().min(1).max(200),
-        })
-        .required();
-      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+      const paramsSchema = objectInput(
+        z.object({
+          codigo_servicio_inversionista: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 20, "Debe tener como máximo 20 caracteres"),
+            { trim: true },
+          ),
+          nombres: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 100, "Debe tener como máximo 100 caracteres"),
+            { trim: true },
+          ),
+          fecha_actual: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+            { trim: true },
+          ),
+        }),
+      );
+      var paramsValidated = paramsSchema.parse(params);
       const bodyEmailTHTML = await this.renderTemplate("factoring-inversionista-verificacion-rechazado.html", paramsValidated);
       const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
       const subjectEmailText = await this.renderSubject("Actualización sobre su solicitud de suscripción al servicio de Inversión en Facturas de Factoring [{{codigo_servicio_inversionista}}]", paramsValidated);
@@ -1159,15 +1409,35 @@ class TemplaceManager {
 
   async templateFactoringInversionistaVerificacionAprobado(params) {
     try {
-      const paramsSchema = yup
-        .object()
-        .shape({
-          codigo_servicio_inversionista: yup.string().trim().required().min(1).max(20),
-          nombres: yup.string().trim().required().min(1).max(100),
-          fecha_actual: yup.string().trim().required().min(1).max(200),
-        })
-        .required();
-      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+      const paramsSchema = objectInput(
+        z.object({
+          codigo_servicio_inversionista: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 20, "Debe tener como máximo 20 caracteres"),
+            { trim: true },
+          ),
+          nombres: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 100, "Debe tener como máximo 100 caracteres"),
+            { trim: true },
+          ),
+          fecha_actual: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+            { trim: true },
+          ),
+        }),
+      );
+      var paramsValidated = paramsSchema.parse(params);
       const bodyEmailTHTML = await this.renderTemplate("factoring-inversionista-verificacion-aprobado.html", paramsValidated);
       const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
       const subjectEmailText = await this.renderSubject("¡Bienvenido a Inversión en Facturas de Factoring! [{{codigo_servicio_inversionista}}]", paramsValidated);
@@ -1186,18 +1456,59 @@ class TemplaceManager {
 
   async templateFactoringEmpresaVerificacionMasInformacion(params) {
     try {
-      const paramsSchema = yup
-        .object()
-        .shape({
-          codigo_servicio_empresa: yup.string().trim().required().min(1).max(20),
-          nombres: yup.string().trim().required().min(1).max(100),
-          fecha_actual: yup.string().trim().required().min(1).max(200),
-          empresa_razon_social: yup.string().trim().required().min(1).max(500),
-          empresa_ruc: yup.string().trim().required().min(1).max(20),
-          razon_no_aceptada: yup.string().trim().required().min(1).max(20000),
-        })
-        .required();
-      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+      const paramsSchema = objectInput(
+        z.object({
+          codigo_servicio_empresa: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 20, "Debe tener como máximo 20 caracteres"),
+            { trim: true },
+          ),
+          nombres: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 100, "Debe tener como máximo 100 caracteres"),
+            { trim: true },
+          ),
+          fecha_actual: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+            { trim: true },
+          ),
+          empresa_razon_social: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 500, "Debe tener como máximo 500 caracteres"),
+            { trim: true },
+          ),
+          empresa_ruc: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 20, "Debe tener como máximo 20 caracteres"),
+            { trim: true },
+          ),
+          razon_no_aceptada: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 20000, "Debe tener como máximo 20000 caracteres"),
+            { trim: true },
+          ),
+        }),
+      );
+      var paramsValidated = paramsSchema.parse(params);
       const bodyEmailTHTML = await this.renderTemplate("factoring-empresa-verificacion-mas-informacion.html", paramsValidated);
       const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
       const subjectEmailText = await this.renderSubject("Información adicional requerida para su suscripción al Factoring Electrónico [{{codigo_servicio_empresa}}]", paramsValidated);
@@ -1216,17 +1527,51 @@ class TemplaceManager {
 
   async templateFactoringEmpresaVerificacionRechazado(params) {
     try {
-      const paramsSchema = yup
-        .object()
-        .shape({
-          codigo_servicio_empresa: yup.string().trim().required().min(1).max(20),
-          nombres: yup.string().trim().required().min(1).max(100),
-          fecha_actual: yup.string().trim().required().min(1).max(200),
-          empresa_razon_social: yup.string().trim().required().min(1).max(500),
-          empresa_ruc: yup.string().trim().required().min(1).max(20),
-        })
-        .required();
-      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+      const paramsSchema = objectInput(
+        z.object({
+          codigo_servicio_empresa: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 20, "Debe tener como máximo 20 caracteres"),
+            { trim: true },
+          ),
+          nombres: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 100, "Debe tener como máximo 100 caracteres"),
+            { trim: true },
+          ),
+          fecha_actual: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+            { trim: true },
+          ),
+          empresa_razon_social: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 500, "Debe tener como máximo 500 caracteres"),
+            { trim: true },
+          ),
+          empresa_ruc: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 20, "Debe tener como máximo 20 caracteres"),
+            { trim: true },
+          ),
+        }),
+      );
+      var paramsValidated = paramsSchema.parse(params);
       const bodyEmailTHTML = await this.renderTemplate("factoring-empresa-verificacion-rechazado.html", paramsValidated);
       const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
       const subjectEmailText = await this.renderSubject("Actualización sobre su solicitud de suscripción al servicio de Factoring Electrónico [{{codigo_servicio_empresa}}]", paramsValidated);
@@ -1245,17 +1590,51 @@ class TemplaceManager {
 
   async templateFactoringEmpresaVerificacionAprobado(params) {
     try {
-      const paramsSchema = yup
-        .object()
-        .shape({
-          codigo_servicio_empresa: yup.string().trim().required().min(1).max(20),
-          nombres: yup.string().trim().required().min(1).max(100),
-          fecha_actual: yup.string().trim().required().min(1).max(200),
-          empresa_razon_social: yup.string().trim().required().min(1).max(500),
-          empresa_ruc: yup.string().trim().required().min(1).max(20),
-        })
-        .required();
-      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+      const paramsSchema = objectInput(
+        z.object({
+          codigo_servicio_empresa: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 20, "Debe tener como máximo 20 caracteres"),
+            { trim: true },
+          ),
+          nombres: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 100, "Debe tener como máximo 100 caracteres"),
+            { trim: true },
+          ),
+          fecha_actual: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+            { trim: true },
+          ),
+          empresa_razon_social: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 500, "Debe tener como máximo 500 caracteres"),
+            { trim: true },
+          ),
+          empresa_ruc: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 20, "Debe tener como máximo 20 caracteres"),
+            { trim: true },
+          ),
+        }),
+      );
+      var paramsValidated = paramsSchema.parse(params);
       const bodyEmailTHTML = await this.renderTemplate("factoring-empresa-verificacion-aprobado.html", paramsValidated);
       const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
       const subjectEmailText = await this.renderSubject("¡Bienvenido a Factoring Electrónico! [{{codigo_servicio_empresa}}]", paramsValidated);
@@ -1274,15 +1653,33 @@ class TemplaceManager {
 
   async templateCodigoVerificacion(params) {
     try {
-      const paramsSchema = yup
-        .object()
-        .shape({
-          otp: yup.string().trim().required().min(1).max(100),
-          duracion_minutos: yup.number().required().min(1).max(200),
-          fecha_actual: yup.string().trim().required().min(1).max(200),
-        })
-        .required();
-      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+      const paramsSchema = objectInput(
+        z.object({
+          otp: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 100, "Debe tener como máximo 100 caracteres"),
+            { trim: true },
+          ),
+          duracion_minutos: numberInput(
+            z
+              .custom<number>((value) => typeof value === "number" && !Number.isNaN(value))
+              .refine((value) => value >= 1, "Debe ser mayor o igual que 1")
+              .refine((value) => value <= 200, "Debe ser menor o igual que 200"),
+          ),
+          fecha_actual: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+            { trim: true },
+          ),
+        }),
+      );
+      var paramsValidated = paramsSchema.parse(params);
       const bodyEmailTHTML = await this.renderTemplate("codigo-verificacion.html", paramsValidated);
       const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
       const subjectEmailText = await this.renderSubject("Código de verificación de Finanza Tech", paramsValidated);
@@ -1301,16 +1698,43 @@ class TemplaceManager {
 
   async templateCuentaUsarioVerificadaMasInformacion(params) {
     try {
-      const paramsSchema = yup
-        .object()
-        .shape({
-          codigo_usuario: yup.string().trim().required().min(1).max(20),
-          nombres: yup.string().trim().required().min(1).max(100),
-          razon_no_aceptada: yup.string().trim().required().min(1).max(20000),
-          fecha_actual: yup.string().trim().required().min(1).max(200),
-        })
-        .required();
-      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+      const paramsSchema = objectInput(
+        z.object({
+          codigo_usuario: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 20, "Debe tener como máximo 20 caracteres"),
+            { trim: true },
+          ),
+          nombres: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 100, "Debe tener como máximo 100 caracteres"),
+            { trim: true },
+          ),
+          razon_no_aceptada: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 20000, "Debe tener como máximo 20000 caracteres"),
+            { trim: true },
+          ),
+          fecha_actual: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+            { trim: true },
+          ),
+        }),
+      );
+      var paramsValidated = paramsSchema.parse(params);
       const bodyEmailTHTML = await this.renderTemplate("cuenta-usuario-verificada-mas-informacion.html", paramsValidated);
       const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
       const subjectEmailText = await this.renderSubject("Información importante sobre sus documentos [{{codigo_usuario}}]", paramsValidated);
@@ -1329,15 +1753,35 @@ class TemplaceManager {
 
   async templateCuentaUsarioVerificadaExito(params) {
     try {
-      const paramsSchema = yup
-        .object()
-        .shape({
-          codigo_usuario: yup.string().trim().required().min(1).max(20),
-          nombres: yup.string().trim().required().min(1).max(100),
-          fecha_actual: yup.string().trim().required().min(1).max(200),
-        })
-        .required();
-      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+      const paramsSchema = objectInput(
+        z.object({
+          codigo_usuario: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 20, "Debe tener como máximo 20 caracteres"),
+            { trim: true },
+          ),
+          nombres: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 100, "Debe tener como máximo 100 caracteres"),
+            { trim: true },
+          ),
+          fecha_actual: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+            { trim: true },
+          ),
+        }),
+      );
+      var paramsValidated = paramsSchema.parse(params);
       const bodyEmailTHTML = await this.renderTemplate("cuenta-usuario-verificada-exito.html", paramsValidated);
       const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
       const subjectEmailText = await this.renderSubject("¡Tu cuenta de usuario ha sido verificada con éxito! [{{codigo_usuario}}]", paramsValidated);
@@ -1356,15 +1800,33 @@ class TemplaceManager {
 
   async templateRecuperarContrasena(params) {
     try {
-      const paramsSchema = yup
-        .object()
-        .shape({
-          url: yup.string().trim().required().min(1).max(2000),
-          duracion_minutos: yup.number().required().min(1).max(10080),
-          fecha_actual: yup.string().trim().required().min(1).max(200),
-        })
-        .required();
-      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+      const paramsSchema = objectInput(
+        z.object({
+          url: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 2000, "Debe tener como máximo 2000 caracteres"),
+            { trim: true },
+          ),
+          duracion_minutos: numberInput(
+            z
+              .custom<number>((value) => typeof value === "number" && !Number.isNaN(value))
+              .refine((value) => value >= 1, "Debe ser mayor o igual que 1")
+              .refine((value) => value <= 10080, "Debe ser menor o igual que 10080"),
+          ),
+          fecha_actual: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+            { trim: true },
+          ),
+        }),
+      );
+      var paramsValidated = paramsSchema.parse(params);
       const bodyEmailTHTML = await this.renderTemplate("recuperar-contrasena.html", paramsValidated);
       const bodyEmailText = await this.convertirHTMLaTextoPlano(bodyEmailTHTML);
       const subjectEmailText = await this.renderSubject("Recuperación de contraseña", paramsValidated);
@@ -1384,15 +1846,36 @@ class TemplaceManager {
   async templateEjemplo(params) {
     const methodName = "templateEjemplo";
     try {
-      const paramsSchema = yup
-        .object()
-        .shape({
-          name: yup.string().trim().required().min(1).max(100),
-          email: yup.string().trim().email().required().min(1).max(200),
-          fechacrea: yup.string().trim().required().min(1).max(200),
-        })
-        .required();
-      var paramsValidated = paramsSchema.validateSync(params, { abortEarly: false, stripUnknown: true });
+      const paramsSchema = objectInput(
+        z.object({
+          name: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 100, "Debe tener como máximo 100 caracteres"),
+            { trim: true },
+          ),
+          email: stringInput(
+            z
+              .string()
+              .refine((value) => value === "" || inputEmailPattern.test(value), "Debe ser un correo válido")
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+            { trim: true },
+          ),
+          fechacrea: stringInput(
+            z
+              .string()
+              .refine((value) => value.length > 0, "Campo requerido")
+              .refine((value) => value.length >= 1, "Debe tener al menos 1 caracteres")
+              .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+            { trim: true },
+          ),
+        }),
+      );
+      var paramsValidated = paramsSchema.parse(params);
       const ejemploEmail = await this.renderTemplate("ejemplo.html", paramsValidated);
 
       const ejemploMailOptions = {
