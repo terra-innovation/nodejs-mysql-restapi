@@ -2,7 +2,8 @@ import * as cedentelimiteService from "#root/src/services/admin/cedentelimite.Se
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
-import * as yup from "yup";
+import { z } from "zod";
+import { objectInput, stringInput, numberInput } from "#src/utils/validationInputs.js";
 
 export const getCedentelimites = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getCedentelimites");
@@ -12,18 +13,42 @@ export const getCedentelimites = async (req: Request, res: Response) => {
 
 export const createCedentelimite = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createCedentelimite");
-  const cedentelimiteCreateSchema = yup
-    .object()
-    .shape({
-      empresaid: yup.string().trim().required().min(36).max(36),
-      monedaid: yup.string().trim().required().min(36).max(36),
-      total: yup.number().required().positive(),
-      usado: yup.number().min(0).default(0),
-      disponible: yup.number().min(0),
-    })
-    .required();
+  const cedentelimiteCreateSchema = objectInput(
+    z.object({
+      empresaid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      monedaid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      total: numberInput(z.custom<number>((value) => typeof value === "number" && !Number.isNaN(value)).refine((value) => value > 0, "Debe ser un número positivo")),
+      usado: numberInput(
+        z
+          .custom<number>((value) => typeof value === "number" && !Number.isNaN(value))
+          .refine((value) => value >= 0, "Debe ser mayor o igual que 0")
+          .optional()
+          .prefault(0),
+      ),
+      disponible: numberInput(
+        z
+          .custom<number>((value) => typeof value === "number" && !Number.isNaN(value))
+          .refine((value) => value >= 0, "Debe ser mayor o igual que 0")
+          .optional(),
+      ),
+    }),
+  );
 
-  const cedentelimiteValidated = cedentelimiteCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
+  const cedentelimiteValidated = cedentelimiteCreateSchema.parse(req.body);
   log.debug(line(), "cedentelimiteValidated:", cedentelimiteValidated);
 
   const cedentelimiteCreated = await cedentelimiteService.createCedentelimiteService({
@@ -41,17 +66,34 @@ export const createCedentelimite = async (req: Request, res: Response) => {
 export const updateCedentelimite = async (req: Request, res: Response) => {
   log.debug(line(), "controller::updateCedentelimite");
   const { id } = req.params;
-  const cedentelimiteUpdateSchema = yup
-    .object()
-    .shape({
-      cedentelimiteid: yup.string().trim().required().min(36).max(36),
-      total: yup.number().required().positive(),
-      usado: yup.number().min(0).default(0),
-      disponible: yup.number().min(0),
-    })
-    .required();
+  const cedentelimiteUpdateSchema = objectInput(
+    z.object({
+      cedentelimiteid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      total: numberInput(z.custom<number>((value) => typeof value === "number" && !Number.isNaN(value)).refine((value) => value > 0, "Debe ser un número positivo")),
+      usado: numberInput(
+        z
+          .custom<number>((value) => typeof value === "number" && !Number.isNaN(value))
+          .refine((value) => value >= 0, "Debe ser mayor o igual que 0")
+          .optional()
+          .prefault(0),
+      ),
+      disponible: numberInput(
+        z
+          .custom<number>((value) => typeof value === "number" && !Number.isNaN(value))
+          .refine((value) => value >= 0, "Debe ser mayor o igual que 0")
+          .optional(),
+      ),
+    }),
+  );
 
-  const cedentelimiteValidated = cedentelimiteUpdateSchema.validateSync({ cedentelimiteid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
+  const cedentelimiteValidated = cedentelimiteUpdateSchema.parse({ cedentelimiteid: id, ...req.body });
   log.debug(line(), "cedentelimiteValidated:", cedentelimiteValidated);
 
   await cedentelimiteService.updateCedentelimiteService({
@@ -68,14 +110,20 @@ export const updateCedentelimite = async (req: Request, res: Response) => {
 export const deleteCedentelimite = async (req: Request, res: Response) => {
   log.debug(line(), "controller::deleteCedentelimite");
   const { id } = req.params;
-  const cedentelimiteSchema = yup
-    .object()
-    .shape({
-      cedentelimiteid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
+  const cedentelimiteSchema = objectInput(
+    z.object({
+      cedentelimiteid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
 
-  const cedentelimiteValidated = cedentelimiteSchema.validateSync({ cedentelimiteid: id }, { abortEarly: false, stripUnknown: true });
+  const cedentelimiteValidated = cedentelimiteSchema.parse({ cedentelimiteid: id });
 
   const result = await cedentelimiteService.deleteCedentelimiteService({
     cedentelimiteid: cedentelimiteValidated.cedentelimiteid,
@@ -88,14 +136,20 @@ export const deleteCedentelimite = async (req: Request, res: Response) => {
 export const activateCedentelimite = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activateCedentelimite");
   const { id } = req.params;
-  const cedentelimiteSchema = yup
-    .object()
-    .shape({
-      cedentelimiteid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
+  const cedentelimiteSchema = objectInput(
+    z.object({
+      cedentelimiteid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
 
-  const cedentelimiteValidated = cedentelimiteSchema.validateSync({ cedentelimiteid: id }, { abortEarly: false, stripUnknown: true });
+  const cedentelimiteValidated = cedentelimiteSchema.parse({ cedentelimiteid: id });
 
   const result = await cedentelimiteService.activateCedentelimiteService({
     cedentelimiteid: cedentelimiteValidated.cedentelimiteid,

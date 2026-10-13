@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-10",
+  "passed": true,
+  "node": "v24.21.0",
+  "files": 37,
+  "passedTests": 3505,
+  "pendingTests": 0,
+  "failedTests": 0,
+  "sameCasesAndStatusesAsBeforeUninstall": true,
+  "excludedIndexExecuted": false,
+  "todoTests": 3
+}

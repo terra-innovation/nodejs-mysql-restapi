@@ -21,7 +21,7 @@
 ## Validación
 
 - Usar la skill [backend-validation](.agents/skills/backend-validation/SKILL.md) para seleccionar y ejecutar comprobaciones del backend.
-- `npm test` ejecuta Jest; `npm run test:vitest` ejecuta otra selección. Vitest no sustituye la comprobación de tipos.
+- `npm test` y `npm run test:vitest` ejecutan la misma selección rápida de Vitest, incluidas las suites migradas. Vitest no sustituye la comprobación de tipos.
 - Preferir pruebas afectadas; ampliar según el riesgo de negocio, seguridad, persistencia o runtime. Consultar [Vitest](tests/vitest/README.md), [matriz de negocio](tests/vitest/MATRIZ_NEGOCIO.md) o [MariaDB](tests/mariadb/README.md) según corresponda.
 - Ejecutar integración mediante el runner existente de MariaDB desechable. No regenerar snapshots ni acceder a bases compartidas como preparación rutinaria.
 - `npm run build-prod` empaqueta producción: ejecutarlo solo con autorización explícita para esa operación.

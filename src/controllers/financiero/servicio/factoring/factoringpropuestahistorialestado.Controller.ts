@@ -1,30 +1,27 @@
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
-import * as yup from "yup";
-import {
-  getFactoringpropuestahistorialestadoMasterService,
-  getFactoringpropuestahistorialestadosByFactoringpropuestaidService,
-  getFactoringpropuestahistorialestadosService,
-} from "#src/services/financiero/factoringpropuestahistorialestado.Service.js";
+import { z } from "zod";
+import { objectInput, stringInput } from "#src/utils/validationInputs.js";
+import { getFactoringpropuestahistorialestadoMasterService, getFactoringpropuestahistorialestadosByFactoringpropuestaidService, getFactoringpropuestahistorialestadosService } from "#src/services/financiero/factoringpropuestahistorialestado.Service.js";
 
-export const getFactoringpropuestahistorialestadosByFactoringpropuestaid = async (
-  req: Request,
-  res: Response,
-) => {
+export const getFactoringpropuestahistorialestadosByFactoringpropuestaid = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFactoringpropuestahistorialestadosByFactoringpropuestaid");
   const { id } = req.params;
-  const factoringpropuestahistorialestadoSchema = yup
-    .object()
-    .shape({
-      factoringpropuestaid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
-
-  const validated = factoringpropuestahistorialestadoSchema.validateSync(
-    { factoringpropuestaid: id, ...req.body },
-    { abortEarly: false, stripUnknown: true },
+  const factoringpropuestahistorialestadoSchema = objectInput(
+    z.object({
+      factoringpropuestaid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
   );
+
+  const validated = factoringpropuestahistorialestadoSchema.parse({ factoringpropuestaid: id, ...req.body });
   log.debug(line(), "factoringpropuestahistorialestadoValidated:", validated);
 
   const data = await getFactoringpropuestahistorialestadosByFactoringpropuestaidService({

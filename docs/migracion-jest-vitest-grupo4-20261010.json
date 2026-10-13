@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "source": "tests/unit/services/factoring.Service.test.ts",
+      "target": "tests/vitest/migrated/unit/services/factoring.Service.test.ts",
+      "cases": 1,
+      "sameCasesAndStatuses": true,
+      "sourceTokensMatchExplicitRunnerAndTitleAdaptation": true
+    },
+    {
+      "source": "tests/unit/services/admin/factoringpropuesta.Service.test.ts",
+      "target": "tests/vitest/migrated/unit/services/admin/factoringpropuesta.Service.test.ts",
+      "cases": 8,
+      "sameCasesAndStatuses": true,
+      "sourceTokensMatchExplicitRunnerAndTitleAdaptation": true
+    }
+  ]
+}

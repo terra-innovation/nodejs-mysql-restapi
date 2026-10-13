@@ -3,9 +3,13 @@ module.exports = {
     {
       name: "ft-api-backend",
       script: "dist/index.js",
+      cwd: __dirname,
       instances: 1, // puedes cambiar a 'max' para cluster mode
       autorestart: true,
       max_restarts: 3,
+      min_uptime: 130000,
+      wait_ready: true,
+      listen_timeout: 125000,
       watch: false, // desactiva watch en producción
       max_memory_restart: "512M",
       //Los logs se escribirán en la ruta por defecto del PM2 para realizar copia automatizada
@@ -17,8 +21,16 @@ module.exports = {
       env: {
         NODE_ENV: "production",
         TZ: "UTC",
+        APP_ENV_FILE: ".env",
       },
-
+      env_development: {
+        NODE_ENV: "development",
+        APP_ENV_FILE: ".env.development",
+      },
+      env_production: {
+        NODE_ENV: "production",
+        APP_ENV_FILE: ".env",
+      },
     },
   ],
 };

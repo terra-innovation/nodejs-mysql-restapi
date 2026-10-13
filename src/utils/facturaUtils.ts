@@ -3,7 +3,7 @@ import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import * as fs from "fs";
 import * as luxon from "luxon";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 import { parseStringPromise } from "xml2js";
 import type { FacturaXML } from "../types/FacturaXML.types";
 
@@ -227,8 +227,8 @@ export const getFactura = (json) => {
   }
 
   var facturaJson: Partial<FacturaXML> = {
-    facturaid: uuidv4(),
-    code: uuidv4().split("-")[0],
+    facturaid: randomUUID(),
+    code: randomUUID().split("-")[0],
     serie: (json.Invoice.ID[0]._ ? json.Invoice.ID[0]._ : json.Invoice.ID[0]).split("-")[0],
     numero_comprobante: (json.Invoice.ID[0]._ ? json.Invoice.ID[0]._ : json.Invoice.ID[0]).split("-")[1],
     fecha_emision: json.Invoice.IssueDate[0]._ ?? json.Invoice.IssueDate[0] ?? null,
@@ -273,7 +273,7 @@ export const getFactura = (json) => {
       }
 
       var nota = {
-        facturanotaid: uuidv4(),
+        facturanotaid: randomUUID(),
         id,
         descripcion,
       };
@@ -283,7 +283,7 @@ export const getFactura = (json) => {
     medios_pago: (json.Invoice.PaymentMeans || []).map(function (item) {
       var medio_pago = {
         //item: item,
-        facturamediopagoid: uuidv4(),
+        facturamediopagoid: randomUUID(),
         id: item.ID[0] ?? null,
         medio_pago_codigo: item.PaymentMeansCode[0]._ ?? item.PaymentMeansCode[0] ?? null,
         cuenta_bancaria: item.PayeeFinancialAccount?.[0].ID[0] ?? null,
@@ -295,7 +295,7 @@ export const getFactura = (json) => {
     terminos_pago: (json.Invoice.PaymentTerms || []).map(function (item) {
       var termino_pago = {
         //item: item,
-        facturaterminopagoid: uuidv4(),
+        facturaterminopagoid: randomUUID(),
         id: item.ID?.[0]?._ ?? item.ID?.[0] ?? null,
         forma_pago: item.PaymentMeansID?.[0]?._ ?? item.PaymentMeansID?.[0] ?? null,
         monto: item.Amount?.[0]?._ ?? item.Amount?.[0] ?? null,
@@ -309,7 +309,7 @@ export const getFactura = (json) => {
     items: (json.Invoice.InvoiceLine || []).map(function (item) {
       var item_invoice = {
         //item: item,
-        facturaitemid: uuidv4(),
+        facturaitemid: randomUUID(),
         id: item.ID[0] ?? null,
         codigo_producto_sunat: item.Item[0].CommodityClassification?.[0].ItemClassificationCode[0]._ ? item.Item[0].CommodityClassification?.[0].ItemClassificationCode[0]._ : (item.Item[0].CommodityClassification?.[0].ItemClassificationCode[0] ?? null),
         codigo_producto_vendedor: item.Item[0].SellersItemIdentification?.[0].ID[0] ?? null,
@@ -336,7 +336,7 @@ export const getFactura = (json) => {
         // var info = { orderName: order.name, orderDesc: order.description };
         var impuesto_invoice = {
           //impuesto: taxsubtotal,
-          facturaimpuestoid: uuidv4(),
+          facturaimpuestoid: randomUUID(),
           id: taxsubtotal.TaxCategory[0]?.ID?.[0]._ ?? null,
           codigo_sunat: taxsubtotal.TaxCategory[0].TaxScheme[0].ID?.[0]._ ?? taxsubtotal.TaxCategory[0].TaxScheme[0].ID?.[0] ?? null,
           nombre: taxsubtotal.TaxCategory[0].TaxScheme[0].Name?.[0] ?? null,

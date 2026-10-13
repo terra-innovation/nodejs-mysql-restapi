@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "source": "tests/unit/utils/dateUtils.test.ts",
+      "target": "tests/vitest/migrated/unit/utils/dateUtils.test.ts",
+      "cases": 45,
+      "sameCasesAndStatuses": true,
+      "sameSourceTokensExceptVitestImportAndFormatting": true
+    },
+    {
+      "source": "tests/unit/domain/factoring/factoring.Calculator.test.ts",
+      "target": "tests/vitest/migrated/unit/domain/factoring/factoring.Calculator.test.ts",
+      "cases": 10,
+      "sameCasesAndStatuses": true,
+      "sameSourceTokensExceptVitestImportAndFormatting": true
+    }
+  ]
+}

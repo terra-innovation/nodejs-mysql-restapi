@@ -19,7 +19,7 @@ import * as cryptoUtils from "#src/utils/cryptoUtils.js";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 import * as df from "#src/utils/dateUtils.js";
 import EmailSender from "#src/providers/email/emailSender.js";
 import TemplateManager from "#src/providers/email/TemplateManager.js";
@@ -75,11 +75,7 @@ export const loginUserService = async (payload: LoginUserDto) => {
         throw new ClientError("Usuario y/o contraseña no válida.", 404);
       }
 
-      if (
-        usuario_login.email &&
-        usuario_login.credencial?.password &&
-        bcrypt.compareSync(payload.password, usuario_login.credencial.password)
-      ) {
+      if (usuario_login.email && usuario_login.credencial?.password && bcrypt.compareSync(payload.password, usuario_login.credencial.password)) {
         const usuario_autenticado = await usuarioDao.getUsuarioAndRolesByEmail(tx, payload.email);
         if (!usuario_autenticado) throw new ClientError("Usuario y/o contraseña no válida.", 404);
         const jwtPayload: UsuarioSession = {
@@ -121,12 +117,7 @@ export const resetPasswordService = async (idUsuarioSession: number, payload: Re
         throw new ClientError("El código de verificación no es válido o ha expidado", 404);
       }
 
-      const validacion = await validacionDao.getValidacionByIdusuarioAndCodigo(
-        tx,
-        usuario.idusuario,
-        payload.codigo,
-        filter_estado,
-      );
+      const validacion = await validacionDao.getValidacionByIdusuarioAndCodigo(tx, usuario.idusuario, payload.codigo, filter_estado);
       if (!validacion) {
         log.warn(line(), "Validación no existe: ", payload);
         throw new ClientError("El código de verificación no es válido o ha expidado", 404);
@@ -157,11 +148,7 @@ export const resetPasswordService = async (idUsuarioSession: number, payload: Re
               fechamod: new Date(),
             };
 
-            const credencialUpdated = await credencialDao.updateCredencial(
-              tx,
-              credencial.credencialid,
-              credencialToUpdate,
-            );
+            const credencialUpdated = await credencialDao.updateCredencial(tx, credencial.credencialid, credencialToUpdate);
             if (credencialUpdated[0] === 0) {
               log.warn(line(), "No fue posible actualizar el usuario: ", credencialUpdated);
               throw new ClientError("El código de verificación no es válido o ha expidado", 404);
@@ -205,12 +192,7 @@ export const validateRestorePasswordService = async (payload: ValidateRestorePas
         throw new ClientError("El código de verificación no es válido o ha expidado", 404);
       }
 
-      const validacion = await validacionDao.getValidacionByIdusuarioAndCodigo(
-        tx,
-        usuario.idusuario,
-        payload.codigo,
-        filter_estado,
-      );
+      const validacion = await validacionDao.getValidacionByIdusuarioAndCodigo(tx, usuario.idusuario, payload.codigo, filter_estado);
       if (!validacion) {
         log.warn(line(), "Validación no existe: ", payload);
         throw new ClientError("El código de verificación no es válido o ha expidado", 404);
@@ -258,12 +240,7 @@ export const sendTokenPasswordService = async (idUsuarioSession: number, email: 
         const constante_url_expira = await configuracionappDao.getRecuperarClaveExpiraURL(tx);
         const idvalidaciontipo = 3;
         const resetpasswordvalidationcode = String(Math.floor(100000 + Math.random() * 900000));
-        const validacionPrev = await validacionDao.getValidacionByIdusuarioAndIdvalidaciontipo(
-          tx,
-          usuario.idusuario,
-          idvalidaciontipo,
-          filter_estado,
-        );
+        const validacionPrev = await validacionDao.getValidacionByIdusuarioAndIdvalidaciontipo(tx, usuario.idusuario, idvalidaciontipo, filter_estado);
 
         if (!validacionPrev) {
           const validacionToCreate: Prisma.validacionCreateInput = {
@@ -296,24 +273,11 @@ export const sendTokenPasswordService = async (idUsuarioSession: number, email: 
           await validacionDao.updateValidacion(tx, validacionPrev.validacionid, validacionToUpdate);
         }
 
-        const validacionNext = await validacionDao.getValidacionByIdusuarioAndIdvalidaciontipo(
-          tx,
-          usuario.idusuario,
-          idvalidaciontipo,
-          filter_estado,
-        );
+        const validacionNext = await validacionDao.getValidacionByIdusuarioAndIdvalidaciontipo(tx, usuario.idusuario, idvalidaciontipo, filter_estado);
         if (validacionNext) {
           const otp_encriptado = cryptoUtils.encryptText(resetpasswordvalidationcode, env.TOKEN_KEY_OTP);
           const port = env.WEB_SITE_PORT > 0 ? ":" + env.WEB_SITE_PORT : "";
-          const url =
-            env.WEB_SITE +
-            port +
-            "/token-verification-password?hash=" +
-            usuario.hash +
-            "&codigo=" +
-            validacionNext.codigo +
-            "&token=" +
-            otp_encriptado;
+          const url = env.WEB_SITE + port + "/token-verification-password?hash=" + usuario.hash + "&codigo=" + validacionNext.codigo + "&token=" + otp_encriptado;
           log.debug(line(), "url", url);
 
           await emailService.sendRecuperarContrasena(email, {
@@ -330,10 +294,7 @@ export const sendTokenPasswordService = async (idUsuarioSession: number, email: 
   );
 };
 
-export const sendVerificactionCodeService = async (
-  idUsuarioSession: number,
-  payload: SendVerificationCodeDto,
-) => {
+export const sendVerificactionCodeService = async (idUsuarioSession: number, payload: SendVerificationCodeDto) => {
   log.debug(line(), "service::sendVerificactionCodeService");
   const filter_estado = [ESTADO.ACTIVO];
 
@@ -345,12 +306,7 @@ export const sendVerificactionCodeService = async (
         throw new ClientError("Información no válida", 404);
       }
 
-      const validacion = await validacionDao.getValidacionByIdusuarioAndCodigo(
-        tx,
-        usuario.idusuario,
-        payload.codigo,
-        filter_estado,
-      );
+      const validacion = await validacionDao.getValidacionByIdusuarioAndCodigo(tx, usuario.idusuario, payload.codigo, filter_estado);
       if (!validacion) {
         log.warn(line(), "Validación no existe: ", payload);
         throw new ClientError("Información no válida", 404);
@@ -378,10 +334,7 @@ export const sendVerificactionCodeService = async (
   );
 };
 
-export const registerUsuarioService = async (
-  idUsuarioSession: number,
-  payload: RegisterUsuarioDto,
-) => {
+export const registerUsuarioService = async (idUsuarioSession: number, payload: RegisterUsuarioDto) => {
   log.debug(line(), "service::registerUsuarioService");
   return await prismaFT.client.$transaction(
     async (tx) => {
@@ -390,10 +343,7 @@ export const registerUsuarioService = async (
         throw new ClientError("Documento tipo no existe", 404);
       }
 
-      const usuariobynumerodocumento = await usuarioDao.getUsuarioByNumerodocumento(
-        tx,
-        payload.documentonumero,
-      );
+      const usuariobynumerodocumento = await usuarioDao.getUsuarioByNumerodocumento(tx, payload.documentonumero);
       if (usuariobynumerodocumento) {
         throw new ClientError("El número de documento ya se encuentra registrado. ", 404);
       }
@@ -404,11 +354,7 @@ export const registerUsuarioService = async (
       }
 
       const personaverificacionestado_no_solicitado = 1;
-      const personaverificacionestado =
-        await personaverificacionestadoDao.getPersonaverificacionestadoByIdpersonaverificacionestado(
-          tx,
-          personaverificacionestado_no_solicitado,
-        );
+      const personaverificacionestado = await personaverificacionestadoDao.getPersonaverificacionestadoByIdpersonaverificacionestado(tx, personaverificacionestado_no_solicitado);
       if (!personaverificacionestado) {
         log.warn(line(), "Persona verificación estado no existe: [" + personaverificacionestado_no_solicitado + "]");
         throw new ClientError("Datos no válidos", 404);
@@ -417,15 +363,7 @@ export const registerUsuarioService = async (
       const emailvalidationcode = String(Math.floor(100000 + Math.random() * 900000));
       const hash = crypto
         .createHash("sha1")
-        .update(
-          payload.email +
-            "|" +
-            payload.documentotipoid +
-            "|" +
-            payload.documentonumero +
-            "|" +
-            new Date().getTime(),
-        )
+        .update(payload.email + "|" + payload.documentotipoid + "|" + payload.documentonumero + "|" + new Date().getTime())
         .digest("hex");
 
       const salt = bcrypt.genSaltSync(12);
@@ -433,8 +371,8 @@ export const registerUsuarioService = async (
 
       const usuarioToCreate: Prisma.usuarioCreateInput = {
         documento_tipo: { connect: { iddocumentotipo: documentotipo.iddocumentotipo } },
-        usuarioid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        usuarioid: randomUUID(),
+        code: randomUUID().split("-")[0],
         documentonumero: payload.documentonumero,
         usuarionombres: payload.usuarionombres,
         apellidopaterno: payload.apellidopaterno,
@@ -455,8 +393,8 @@ export const registerUsuarioService = async (
 
       const credencialToCreate: Prisma.credencialCreateInput = {
         usuario: { connect: { idusuario: usuarioCreated.idusuario } },
-        credencialid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        credencialid: randomUUID(),
+        code: randomUUID().split("-")[0],
         password: encryptedPassword,
         idusuariocrea: idUsuarioSession ?? 1,
         fechacrea: new Date(),
@@ -515,11 +453,7 @@ export const registerUsuarioService = async (
         codigo: validacionToCreate.codigo,
       };
 
-      const usuarioObfuscated = jsonUtils.ofuscarAtributos(
-        usuarioReturned,
-        ["email"],
-        jsonUtils.PATRON_OFUSCAR_EMAIL,
-      );
+      const usuarioObfuscated = jsonUtils.ofuscarAtributos(usuarioReturned, ["email"], jsonUtils.PATRON_OFUSCAR_EMAIL);
 
       return usuarioObfuscated;
     },
@@ -539,12 +473,7 @@ export const validateEmailService = async (idUsuarioSession: number, payload: Va
         throw new ClientError("El código de verificación no es válido o ha expidado", 404);
       }
 
-      const validacion = await validacionDao.getValidacionByIdusuarioAndCodigo(
-        tx,
-        usuario.idusuario,
-        payload.codigo,
-        filter_estado,
-      );
+      const validacion = await validacionDao.getValidacionByIdusuarioAndCodigo(tx, usuario.idusuario, payload.codigo, filter_estado);
       if (!validacion) {
         log.warn(line(), "Validación no existe: ", payload);
         throw new ClientError("El código de verificación no es válido o ha expidado", 404);

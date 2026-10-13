@@ -1,24 +1,9 @@
 import { Request, Response } from "express";
 import { line, log } from "#root/src/utils/logger.pino.js";
 import { response } from "#src/utils/CustomResponseOk.js";
-import * as yup from "yup";
-import {
-  getSunatTipoCambioHoyService,
-  getSunatTipoCambioPorFechaService,
-  getSunatTipoCambioExactoPorFechaService,
-  getSunatTipoCambioHistorialService,
-  sincronizarSunatTipoCambioService,
-  sincronizarSunatMesTipoCambioService,
-  getSunatTipoCambiosListOrPaginatedService,
-  getSunatTipoCambiosPaginadoService,
-  createSunatTipoCambioService,
-  updateSunatTipoCambioService,
-  deleteSunatTipoCambioService,
-  activateSunatTipoCambioService,
-  getSunatTipoCambioMasterService,
-  CreateSunatTipoCambioDto,
-  UpdateSunatTipoCambioDto,
-} from "#root/src/services/financiero/sunattipocambio.Service.js";
+import { z } from "zod";
+import { objectInput, stringInput, numberInput } from "#src/utils/validationInputs.js";
+import { getSunatTipoCambioHoyService, getSunatTipoCambioPorFechaService, getSunatTipoCambioExactoPorFechaService, getSunatTipoCambioHistorialService, sincronizarSunatTipoCambioService, sincronizarSunatMesTipoCambioService, getSunatTipoCambiosListOrPaginatedService, getSunatTipoCambiosPaginadoService, createSunatTipoCambioService, updateSunatTipoCambioService, deleteSunatTipoCambioService, activateSunatTipoCambioService, getSunatTipoCambioMasterService, CreateSunatTipoCambioDto, UpdateSunatTipoCambioDto } from "#root/src/services/financiero/sunattipocambio.Service.js";
 
 /**
  * Obtiene el tipo de cambio SUNAT del día de hoy (o más reciente) con estrategia Fallback en cascada.
@@ -76,12 +61,7 @@ export const sincronizarSunatTipoCambio = async (req: Request, res: Response) =>
   const serviciotipocambioid = (req.body.serviciotipocambioid || req.query.serviciotipocambioid) as string | undefined;
   const fecha = (req.body.fecha || req.query.fecha) as string | undefined;
 
-  const data = await sincronizarSunatTipoCambioService(
-    fecha,
-    mes ? Number(mes) : undefined,
-    anio ? Number(anio) : undefined,
-    serviciotipocambioid,
-  );
+  const data = await sincronizarSunatTipoCambioService(fecha, mes ? Number(mes) : undefined, anio ? Number(anio) : undefined, serviciotipocambioid);
   response(res, 201, data);
 };
 
@@ -133,27 +113,25 @@ export const getSunatTipoCambiosPaginado = async (req: Request, res: Response) =
  */
 export const createSunatTipoCambio = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createSunatTipoCambio");
-  const sunatCreateSchema = yup
-    .object()
-    .shape({
-      fecha: yup
-        .string()
-        .trim()
-        .required("La fecha es requerida (YYYY-MM-DD)")
-        .matches(/^\d{4}-\d{2}-\d{2}/, "El formato de fecha debe ser YYYY-MM-DD o ISO"),
-      precio_compra: yup.number().required("El precio de compra es requerido").positive(),
-      precio_venta: yup.number().required("El precio de venta es requerido").positive(),
-      monedabaseid: yup.string().trim().optional(),
-      monedacotizadaid: yup.string().trim().optional(),
-      codigomonedabase: yup.string().trim().optional().default("USD"),
-      codigomonedacotizada: yup.string().trim().optional().default("PEN"),
-    })
-    .required();
+  const sunatCreateSchema = objectInput(
+    z.object({
+      fecha: stringInput(
+        z
+          .string({ error: "La fecha es requerida (YYYY-MM-DD)" })
+          .refine((value) => value.length > 0, "La fecha es requerida (YYYY-MM-DD)")
+          .regex(/^\d{4}-\d{2}-\d{2}/, "El formato de fecha debe ser YYYY-MM-DD o ISO"),
+        { trim: true },
+      ),
+      precio_compra: numberInput(z.custom<number>((value) => typeof value === "number" && !Number.isNaN(value), { error: "El precio de compra es requerido" }).refine((value) => value > 0, "Debe ser un número positivo")),
+      precio_venta: numberInput(z.custom<number>((value) => typeof value === "number" && !Number.isNaN(value), { error: "El precio de venta es requerido" }).refine((value) => value > 0, "Debe ser un número positivo")),
+      monedabaseid: stringInput(z.string().optional(), { trim: true }),
+      monedacotizadaid: stringInput(z.string().optional(), { trim: true }),
+      codigomonedabase: stringInput(z.string().optional().prefault("USD"), { trim: true }),
+      codigomonedacotizada: stringInput(z.string().optional().prefault("PEN"), { trim: true }),
+    }),
+  );
 
-  const validated = sunatCreateSchema.validateSync(req.body, {
-    abortEarly: false,
-    stripUnknown: true,
-  }) as CreateSunatTipoCambioDto;
+  const validated = sunatCreateSchema.parse(req.body) as CreateSunatTipoCambioDto;
   log.debug(line(), "sunatValidated:", validated);
 
   const idUsuario = req.session_user?.usuario?.idusuario ?? 1;
@@ -169,24 +147,39 @@ export const updateSunatTipoCambio = async (req: Request, res: Response) => {
   log.debug(line(), "controller::updateSunatTipoCambio");
   const { id } = req.params;
 
-  const sunatUpdateSchema = yup
-    .object()
-    .shape({
-      sunattipocambioid: yup.string().trim().required().min(36).max(36),
-      precio_compra: yup.number().optional().positive(),
-      precio_venta: yup.number().optional().positive(),
-      fecha: yup
-        .string()
-        .trim()
-        .optional()
-        .matches(/^\d{4}-\d{2}-\d{2}/, "El formato de fecha debe ser YYYY-MM-DD o ISO"),
-    })
-    .required();
+  const sunatUpdateSchema = objectInput(
+    z.object({
+      sunattipocambioid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      precio_compra: numberInput(
+        z
+          .custom<number>((value) => typeof value === "number" && !Number.isNaN(value))
+          .refine((value) => value > 0, "Debe ser un número positivo")
+          .optional(),
+      ),
+      precio_venta: numberInput(
+        z
+          .custom<number>((value) => typeof value === "number" && !Number.isNaN(value))
+          .refine((value) => value > 0, "Debe ser un número positivo")
+          .optional(),
+      ),
+      fecha: stringInput(
+        z
+          .string()
+          .regex(/^\d{4}-\d{2}-\d{2}/, "El formato de fecha debe ser YYYY-MM-DD o ISO")
+          .optional(),
+        { trim: true },
+      ),
+    }),
+  );
 
-  const validated = sunatUpdateSchema.validateSync(
-    { sunattipocambioid: id, ...req.body },
-    { abortEarly: false, stripUnknown: true },
-  ) as UpdateSunatTipoCambioDto;
+  const validated = sunatUpdateSchema.parse({ sunattipocambioid: id, ...req.body }) as UpdateSunatTipoCambioDto;
   log.debug(line(), "sunatUpdateValidated:", validated);
 
   const idUsuario = req.session_user?.usuario?.idusuario ?? 1;
@@ -202,14 +195,20 @@ export const deleteSunatTipoCambio = async (req: Request, res: Response) => {
   log.debug(line(), "controller::deleteSunatTipoCambio");
   const { id } = req.params;
 
-  const schema = yup
-    .object()
-    .shape({
-      sunattipocambioid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
+  const schema = objectInput(
+    z.object({
+      sunattipocambioid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
 
-  const validated = schema.validateSync({ sunattipocambioid: id }, { abortEarly: false, stripUnknown: true });
+  const validated = schema.parse({ sunattipocambioid: id });
 
   const idUsuario = req.session_user?.usuario?.idusuario ?? 1;
   const result = await deleteSunatTipoCambioService(idUsuario, validated.sunattipocambioid);
@@ -224,14 +223,20 @@ export const activateSunatTipoCambio = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activateSunatTipoCambio");
   const { id } = req.params;
 
-  const schema = yup
-    .object()
-    .shape({
-      sunattipocambioid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
+  const schema = objectInput(
+    z.object({
+      sunattipocambioid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
 
-  const validated = schema.validateSync({ sunattipocambioid: id }, { abortEarly: false, stripUnknown: true });
+  const validated = schema.parse({ sunattipocambioid: id });
 
   const idUsuario = req.session_user?.usuario?.idusuario ?? 1;
   const result = await activateSunatTipoCambioService(idUsuario, validated.sunattipocambioid);

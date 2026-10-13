@@ -4,7 +4,7 @@ import * as zlaboratoriousuarioDao from "#root/src/daos/zlaboratoriousuario.Dao.
 import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { line, log } from "#src/utils/logger.pino.js";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 export interface ValidateTransactionPayload {
   nombre: string;
@@ -33,7 +33,7 @@ export const validateTransactionService = async (session_idusuario: number, usua
         usuario: {
           connect: { idusuario: usuarioCreated.idusuario },
         },
-        code: uuidv4().split("-")[0],
+        code: randomUUID().split("-")[0],
         nombre: usuariopedidoValidated.pedido,
         idusuariocrea: session_idusuario ?? 1,
         fechacrea: new Date(),

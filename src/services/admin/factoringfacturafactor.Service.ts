@@ -12,7 +12,7 @@ import { isProduction } from "#src/config.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import { line, log } from "#src/utils/logger.pino.js";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 // ─── DTOs ────────────────────────────────────────────────────────────────────
 
@@ -52,12 +52,7 @@ export interface GetFactoringfacturafactorMasterByFactoringidDto {
 
 // ─── Private Helpers ─────────────────────────────────────────────────────────
 
-const vincularFacturaDetraccion = async (
-  tx: any,
-  idarchivo: number,
-  idfactura: number,
-  idusuario: number,
-) => {
+const vincularFacturaDetraccion = async (tx: any, idarchivo: number, idfactura: number, idusuario: number) => {
   const archivofacturaToCreate: Prisma.archivo_facturaCreateInput = {
     archivo: { connect: { idarchivo: idarchivo } },
     factura: { connect: { idfactura: idfactura } },
@@ -82,19 +77,12 @@ export const activateFactoringfacturafactorService = async (dto: OperacionFactor
 
   return await prismaFT.client.$transaction(
     async (tx) => {
-      const existed = await factoringfacturafactorDao.getFactoringfacturafactorByFactoringfacturafactorid(
-        tx,
-        dto.factoringfacturafactorid,
-      );
+      const existed = await factoringfacturafactorDao.getFactoringfacturafactorByFactoringfacturafactorid(tx, dto.factoringfacturafactorid);
       if (!existed) {
         log.warn(line(), `Factoringfacturafactor no existe: [${dto.factoringfacturafactorid}]`);
         throw new ClientError("Factoringfacturafactor no existe", 404);
       }
-      return await factoringfacturafactorDao.activateFactoringfacturafactor(
-        tx,
-        dto.factoringfacturafactorid,
-        dto.idusuario,
-      );
+      return await factoringfacturafactorDao.activateFactoringfacturafactor(tx, dto.factoringfacturafactorid, dto.idusuario);
     },
     { timeout: prismaFT.transactionTimeout },
   );
@@ -108,19 +96,12 @@ export const deleteFactoringfacturafactorService = async (dto: OperacionFactorin
 
   return await prismaFT.client.$transaction(
     async (tx) => {
-      const existed = await factoringfacturafactorDao.getFactoringfacturafactorByFactoringfacturafactorid(
-        tx,
-        dto.factoringfacturafactorid,
-      );
+      const existed = await factoringfacturafactorDao.getFactoringfacturafactorByFactoringfacturafactorid(tx, dto.factoringfacturafactorid);
       if (!existed) {
         log.warn(line(), `Factoringfacturafactor no existe: [${dto.factoringfacturafactorid}]`);
         throw new ClientError("Factoringfacturafactor no existe", 404);
       }
-      return await factoringfacturafactorDao.deleteFactoringfacturafactor(
-        tx,
-        dto.factoringfacturafactorid,
-        dto.idusuario,
-      );
+      return await factoringfacturafactorDao.deleteFactoringfacturafactor(tx, dto.factoringfacturafactorid, dto.idusuario);
     },
     { timeout: prismaFT.transactionTimeout },
   );
@@ -134,10 +115,7 @@ export const updateFactoringfacturafactorService = async (dto: UpdateFactoringfa
 
   return await prismaFT.client.$transaction(
     async (tx) => {
-      const factoringfacturafactor = await factoringfacturafactorDao.getFactoringfacturafactorByFactoringfacturafactorid(
-        tx,
-        dto.factoringfacturafactorid,
-      );
+      const factoringfacturafactor = await factoringfacturafactorDao.getFactoringfacturafactorByFactoringfacturafactorid(tx, dto.factoringfacturafactorid);
       if (!factoringfacturafactor) {
         log.warn(line(), `Factoringfacturafactor no existe: [${dto.factoringfacturafactorid}]`);
         throw new ClientError("Datos no válidos", 404);
@@ -149,10 +127,7 @@ export const updateFactoringfacturafactorService = async (dto: UpdateFactoringfa
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const detraccion_estado = await detraccionestadoDao.getDetraccionestadoByDetraccionestadoid(
-        tx,
-        dto.detraccionestadoid,
-      );
+      const detraccion_estado = await detraccionestadoDao.getDetraccionestadoByDetraccionestadoid(tx, dto.detraccionestadoid);
       if (!detraccion_estado) {
         log.warn(line(), `Detraccion estado no existe: [${dto.detraccionestadoid}]`);
         throw new ClientError("Datos no válidos", 404);
@@ -160,23 +135,13 @@ export const updateFactoringfacturafactorService = async (dto: UpdateFactoringfa
 
       if (dto.detraccionarchivoid) {
         const filter_estado_archivo = isProduction ? [ESTADO.ACTIVO] : [ESTADO.ACTIVO, ESTADO.ELIMINADO];
-        const detraccionarchivo = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(
-          prismaFT.client,
-          dto.detraccionarchivoid,
-          ARCHIVO_TIPO.CONSTANCIA_PAGO_DETRACCION,
-          filter_estado_archivo,
-        );
+        const detraccionarchivo = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(prismaFT.client, dto.detraccionarchivoid, ARCHIVO_TIPO.CONSTANCIA_PAGO_DETRACCION, filter_estado_archivo);
         if (!detraccionarchivo) {
           log.warn(line(), `Factura Detraccion no existe o tipo no coincide: [${dto.detraccionarchivoid}]`);
           throw new ClientError("Datos no válidos", 404);
         }
 
-        const facturaDetraccionCreated = await vincularFacturaDetraccion(
-          tx,
-          detraccionarchivo.idarchivo,
-          factoringfacturafactor.idfactura,
-          dto.idusuario,
-        );
+        const facturaDetraccionCreated = await vincularFacturaDetraccion(tx, detraccionarchivo.idarchivo, factoringfacturafactor.idfactura, dto.idusuario);
         log.debug(line(), "facturaDetraccionCreated:", facturaDetraccionCreated);
       }
 
@@ -189,11 +154,7 @@ export const updateFactoringfacturafactorService = async (dto: UpdateFactoringfa
         fechamod: new Date(),
       };
 
-      const result = await factoringfacturafactorDao.updateFactoringfacturafactor(
-        tx,
-        dto.factoringfacturafactorid,
-        factoringfacturafactorToUpdate,
-      );
+      const result = await factoringfacturafactorDao.updateFactoringfacturafactor(tx, dto.factoringfacturafactorid, factoringfacturafactorToUpdate);
       log.debug(line(), "updated:", result);
 
       return result;
@@ -228,10 +189,7 @@ export const createFactoringfacturafactorService = async (dto: CreateFactoringfa
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const detraccion_estado = await detraccionestadoDao.getDetraccionestadoByDetraccionestadoid(
-        tx,
-        dto.detraccionestadoid,
-      );
+      const detraccion_estado = await detraccionestadoDao.getDetraccionestadoByDetraccionestadoid(tx, dto.detraccionestadoid);
       if (!detraccion_estado) {
         log.warn(line(), `Detraccion estado no existe: [${dto.detraccionestadoid}]`);
         throw new ClientError("Datos no válidos", 404);
@@ -239,23 +197,13 @@ export const createFactoringfacturafactorService = async (dto: CreateFactoringfa
 
       if (dto.detraccionarchivoid) {
         const filter_estado_archivo = isProduction ? [ESTADO.ACTIVO] : [ESTADO.ACTIVO, ESTADO.ELIMINADO];
-        const detraccionarchivo = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(
-          prismaFT.client,
-          dto.detraccionarchivoid,
-          ARCHIVO_TIPO.CONSTANCIA_PAGO_DETRACCION,
-          filter_estado_archivo,
-        );
+        const detraccionarchivo = await archivoDao.getArchivoByArchivoidAndIdarchivotipo(prismaFT.client, dto.detraccionarchivoid, ARCHIVO_TIPO.CONSTANCIA_PAGO_DETRACCION, filter_estado_archivo);
         if (!detraccionarchivo) {
           log.warn(line(), `Factura Detraccion no existe o tipo no coincide: [${dto.detraccionarchivoid}]`);
           throw new ClientError("Datos no válidos", 404);
         }
 
-        const facturaDetraccionCreated = await vincularFacturaDetraccion(
-          tx,
-          detraccionarchivo.idarchivo,
-          factura.idfactura,
-          dto.idusuario,
-        );
+        const facturaDetraccionCreated = await vincularFacturaDetraccion(tx, detraccionarchivo.idarchivo, factura.idfactura, dto.idusuario);
         log.debug(line(), "facturaDetraccionCreated:", facturaDetraccionCreated);
       }
 
@@ -265,8 +213,8 @@ export const createFactoringfacturafactorService = async (dto: CreateFactoringfa
         factura_estado: { connect: { idfacturaestado: factura_estado.idfacturaestado } },
         detraccion_estado: { connect: { iddetraccionestado: detraccion_estado.iddetraccionestado } },
 
-        factoringfacturafactorid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        factoringfacturafactorid: randomUUID(),
+        code: randomUUID().split("-")[0],
 
         fecha_pago_factura: dto.fecha_pago_factura ? new Date(dto.fecha_pago_factura) : null,
         fecha_pago_detraccion: dto.fecha_pago_detraccion ? new Date(dto.fecha_pago_detraccion) : null,
@@ -290,9 +238,7 @@ export const createFactoringfacturafactorService = async (dto: CreateFactoringfa
 /**
  * Consulta las facturas de factores vinculadas a un factoring en módulo admin.
  */
-export const getFactoringfacturafactoresByFactoringidService = async (
-  dto: GetFactoringfacturafactoresByFactoringidDto,
-) => {
+export const getFactoringfacturafactoresByFactoringidService = async (dto: GetFactoringfacturafactoresByFactoringidDto) => {
   log.debug(line(), "service::admin::getFactoringfacturafactoresByFactoringidService");
 
   return await prismaFT.client.$transaction(
@@ -305,11 +251,7 @@ export const getFactoringfacturafactoresByFactoringidService = async (
         throw new ClientError("Datos no válidos", 404);
       }
 
-      return await factoringfacturafactorDao.getFactoringfacturafactorsByIdfactoring(
-        tx,
-        factoring.idfactoring,
-        filter_estado,
-      );
+      return await factoringfacturafactorDao.getFactoringfacturafactorsByIdfactoring(tx, factoring.idfactoring, filter_estado);
     },
     { timeout: prismaFT.transactionTimeout },
   );
@@ -318,9 +260,7 @@ export const getFactoringfacturafactoresByFactoringidService = async (
 /**
  * Consulta catálogos maestros de asignación de facturas de factores en módulo admin.
  */
-export const getFactoringfacturafactorMasterByFactoringidService = async (
-  dto: GetFactoringfacturafactorMasterByFactoringidDto,
-) => {
+export const getFactoringfacturafactorMasterByFactoringidService = async (dto: GetFactoringfacturafactorMasterByFactoringidDto) => {
   log.debug(line(), "service::admin::getFactoringfacturafactorMasterByFactoringidService");
 
   return await prismaFT.client.$transaction(

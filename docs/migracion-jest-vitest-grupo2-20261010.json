@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "source": "tests/unit/services/financiero/factura.Service.test.ts",
+      "target": "tests/vitest/migrated/unit/services/financiero/factura.Service.test.ts",
+      "cases": 6,
+      "sameCasesAndStatuses": true,
+      "sourceMatchesOriginalWithOnlyVitestImportsMockAPIAndPrettier": true
+    },
+    {
+      "source": "tests/unit/services/secure/accesos.Service.test.ts",
+      "target": "tests/vitest/migrated/unit/services/secure/accesos.Service.test.ts",
+      "cases": 11,
+      "sameCasesAndStatuses": true,
+      "sourceMatchesOriginalWithOnlyVitestImportsMockAPIAndPrettier": true
+    }
+  ]
+}

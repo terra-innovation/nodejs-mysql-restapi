@@ -17,7 +17,7 @@ import * as luxon from "luxon";
 import path from "path";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { line, log } from "#src/utils/logger.pino.js";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 // ─── DTOs ────────────────────────────────────────────────────────────────────
 
@@ -45,9 +45,7 @@ export const generateFactoringpropuestaPDFService = async (dto: DownloadFactorin
       const propuesta = await factoringpropuestaDao.getFactoringpropuestaByFactoringpropuestaid(tx, dto.factoringpropuestaid);
       if (!propuesta || propuesta.estado !== ESTADO.ACTIVO) throw new ClientError("Datos no válidos", 404);
 
-      const ownedFactoring = await factoringDao.getFactoringByIdfactoringIdempresario(
-        tx, propuesta.idfactoring, dto.idusuario, [ESTADO.ACTIVO],
-      );
+      const ownedFactoring = await factoringDao.getFactoringByIdfactoringIdempresario(tx, propuesta.idfactoring, dto.idusuario, [ESTADO.ACTIVO]);
       if (!ownedFactoring || ownedFactoring.idfactoringpropuestaaceptada !== propuesta.idfactoringpropuesta) {
         throw new ClientError("Datos no válidos", 404);
       }
@@ -59,7 +57,7 @@ export const generateFactoringpropuestaPDFService = async (dto: DownloadFactorin
       const dirPath = path.join(storageUtils.pathApp(), storageUtils.STORAGE_PATH_PROCESAR, storageUtils.pathDate(new Date()));
       await mkdir(dirPath, { recursive: true });
       // Cada solicitud tiene su propio archivo temporal, incluso si se descarga simultáneamente.
-      const filePath = path.join(dirPath, `${uuidv4()}_factoring_propuesta.pdf`);
+      const filePath = path.join(dirPath, `${randomUUID()}_factoring_propuesta.pdf`);
       try {
         await new PDFGenerator(filePath).generateFactoringPropuesta(factoring, propuesta);
       } catch (error) {
@@ -88,42 +86,21 @@ export const acceptFactoringpropuestaService = async (dto: AcceptFactoringpropue
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const factoring_is_empresario = await factoringDao.getFactoringByIdfactoringIdempresario(
-        tx,
-        factoring.idfactoring,
-        dto.idusuario,
-        filter_estados,
-      );
+      const factoring_is_empresario = await factoringDao.getFactoringByIdfactoringIdempresario(tx, factoring.idfactoring, dto.idusuario, filter_estados);
       if (!factoring_is_empresario) {
         log.warn(line(), "Factoring [" + factoring.idfactoring + "] no pertenece al empresario [" + dto.idusuario + "]");
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const factoringpropuesta = await factoringpropuestaDao.getFactoringpropuestaByFactoringpropuestaid(
-        tx,
-        dto.factoringpropuestaid,
-      );
+      const factoringpropuesta = await factoringpropuestaDao.getFactoringpropuestaByFactoringpropuestaid(tx, dto.factoringpropuestaid);
       if (!factoringpropuesta) {
         log.warn(line(), "Factoringpropuesta no existe: [" + dto.factoringpropuestaid + "]");
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const factoringpropuesta_is_factoring =
-        await factoringpropuestaDao.getFactoringpropuestaVigenteByIdfactoringpropuestaIdfactoring(
-          tx,
-          factoringpropuesta.idfactoringpropuesta,
-          factoring.idfactoring,
-          filter_estados,
-        );
+      const factoringpropuesta_is_factoring = await factoringpropuestaDao.getFactoringpropuestaVigenteByIdfactoringpropuestaIdfactoring(tx, factoringpropuesta.idfactoringpropuesta, factoring.idfactoring, filter_estados);
       if (!factoringpropuesta_is_factoring) {
-        log.warn(
-          line(),
-          "Factoringpropuesta [" +
-            factoringpropuesta.idfactoringpropuesta +
-            "] no pertenece al factoring [" +
-            factoring.idfactoring +
-            "]",
-        );
+        log.warn(line(), "Factoringpropuesta [" + factoringpropuesta.idfactoringpropuesta + "] no pertenece al factoring [" + factoring.idfactoring + "]");
         throw new ClientError("Datos no válidos", 404);
       }
 
@@ -139,8 +116,8 @@ export const acceptFactoringpropuestaService = async (dto: AcceptFactoringpropue
         factoring_propuesta_estado: { connect: { idfactoringpropuestaestado: idfactoringpropuestaestado } },
         usuario_modifica: { connect: { idusuario: dto.idusuario } },
 
-        factoringpropuestahistorialestadoid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        factoringpropuestahistorialestadoid: randomUUID(),
+        code: randomUUID().split("-")[0],
         comentario: "",
         idusuariocrea: dto.idusuario ?? 1,
         fechacrea: new Date(),
@@ -149,19 +126,10 @@ export const acceptFactoringpropuestaService = async (dto: AcceptFactoringpropue
         estado: 1,
       };
 
-      const factoringpropuestahistorialestadoCreated =
-        await factoringpropuestahistorialestadoDao.insertFactoringpropuestahistorialestado(
-          tx,
-          factoringpropuestahistorialestadoToCreate,
-        );
+      const factoringpropuestahistorialestadoCreated = await factoringpropuestahistorialestadoDao.insertFactoringpropuestahistorialestado(tx, factoringpropuestahistorialestadoToCreate);
       log.debug(line(), "factoringpropuestahistorialestadoCreated:", factoringpropuestahistorialestadoCreated);
 
-      const factoringpropuestaUpdated = await factoringpropuestaDao.approveFactoringpropuestaVigente(
-        tx,
-        factoringpropuesta.factoringpropuestaid,
-        factoring.idfactoring,
-        dto.idusuario ?? 1,
-      );
+      const factoringpropuestaUpdated = await factoringpropuestaDao.approveFactoringpropuestaVigente(tx, factoringpropuesta.factoringpropuestaid, factoring.idfactoring, dto.idusuario ?? 1);
       log.debug(line(), "factoringpropuestaUpdated", factoringpropuestaUpdated);
 
       const idfactoringestado = 4; // Propuesta aceptada
@@ -171,8 +139,8 @@ export const acceptFactoringpropuestaService = async (dto: AcceptFactoringpropue
         factoring_estado: { connect: { idfactoringestado: idfactoringestado } },
         usuario_modifica: { connect: { idusuario: dto.idusuario } },
 
-        factoringhistorialestadoid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        factoringhistorialestadoid: randomUUID(),
+        code: randomUUID().split("-")[0],
         comentario: "",
         idusuariocrea: dto.idusuario ?? 1,
         fechacrea: new Date(),
@@ -181,10 +149,7 @@ export const acceptFactoringpropuestaService = async (dto: AcceptFactoringpropue
         estado: 1,
       };
 
-      const factoringhistorialestadoCreated = await factoringhistorialestadoDao.insertFactoringhistorialestado(
-        tx,
-        factoringhistorialestadoToCreate,
-      );
+      const factoringhistorialestadoCreated = await factoringhistorialestadoDao.insertFactoringhistorialestado(tx, factoringhistorialestadoToCreate);
       log.debug(line(), "factoringhistorialestadoCreated:", factoringhistorialestadoCreated);
 
       const factoringToUpdate: Prisma.factoringUpdateInput = {
@@ -198,17 +163,9 @@ export const acceptFactoringpropuestaService = async (dto: AcceptFactoringpropue
       log.debug(line(), "factoringUpdated", factoringUpdated);
 
       // Enviamos correo electrónico
-      const factoring_for_email = await factoringDao.getFactoringByIdfactoring(
-        tx,
-        factoringpropuestaUpdated.idfactoring,
-      );
+      const factoring_for_email = await factoringDao.getFactoringByIdfactoring(tx, factoringpropuestaUpdated.idfactoring);
       const usuario_for_email = await usuarioDao.getUsuarioByIdusuario(tx, dto.idusuario);
-      const factoringpropuesta_for_email =
-        await factoringpropuestaDao.getFactoringpropuestaAceptadaByIdfactoringpropuesta(
-          tx,
-          factoringpropuestaUpdated.idfactoringpropuesta,
-          [1],
-        );
+      const factoringpropuesta_for_email = await factoringpropuestaDao.getFactoringpropuestaAceptadaByIdfactoringpropuesta(tx, factoringpropuestaUpdated.idfactoringpropuesta, [1]);
 
       const paramsEmail = {
         factoring: factoring_for_email,
@@ -242,11 +199,7 @@ export const getFactoringpropuestaVigenteService = async (dto: GetFactoringpropu
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const factoringpropuesta = await factoringpropuestaDao.getFactoringpropuestaVigenteByIdfactoring(
-        tx,
-        factoring.idfactoring,
-        filter_estados,
-      );
+      const factoringpropuesta = await factoringpropuestaDao.getFactoringpropuestaVigenteByIdfactoring(tx, factoring.idfactoring, filter_estados);
 
       const factoringpropuestaFiltered = jsonUtils.removeAttributesPrivates(factoringpropuesta);
       return factoringpropuestaFiltered;

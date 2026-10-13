@@ -24,7 +24,7 @@ import * as fs from "fs";
 import { unlink } from "fs/promises";
 import * as luxon from "luxon";
 import path from "path";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 // ─── DTOs ────────────────────────────────────────────────────────────────────
 
@@ -442,8 +442,8 @@ export const createFactoringliquidacionService = async (dto: CreateFactoringliqu
         factoring_liquidacion_estado: {
           connect: { idfactoringliquidacionestado: liqEstado.idfactoringliquidacionestado },
         },
-        factoringliquidacionid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        factoringliquidacionid: randomUUID(),
+        code: randomUUID().split("-")[0],
         fecha_liquidacion: sim.fecha_liquidacion,
         fecha_pago_efectivo: sim.fecha_pago_efectivo,
         dias_pago_efectivo: sim.dias_pago_efectivo,
@@ -476,8 +476,8 @@ export const createFactoringliquidacionService = async (dto: CreateFactoringliqu
           financiero_concepto: {
             connect: { idfinancieroconcepto: fin.financiero_concepto.idfinancieroconcepto },
           },
-          factoringliquidacionfinancieroid: uuidv4(),
-          code: uuidv4().split("-")[0],
+          factoringliquidacionfinancieroid: randomUUID(),
+          code: randomUUID().split("-")[0],
           descripcion: fin.descripcion,
           cantidad: fin.cantidad,
           monto_unitario: fin.monto_unitario,

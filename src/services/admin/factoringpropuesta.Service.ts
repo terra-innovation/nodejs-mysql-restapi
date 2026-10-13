@@ -23,7 +23,7 @@ import { Decimal } from "@prisma/client/runtime/client";
 import * as fs from "fs";
 import * as luxon from "luxon";
 import path from "path";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 // ─── DTOs ────────────────────────────────────────────────────────────────────
 
@@ -137,8 +137,8 @@ export const updateFactoringpropuestaService = async (dto: UpdateFactoringpropue
           connect: { idfactoringpropuestaestado: factoringpropuestaestado.idfactoringpropuestaestado },
         },
         usuario_modifica: { connect: { idusuario } },
-        factoringpropuestahistorialestadoid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        factoringpropuestahistorialestadoid: randomUUID(),
+        code: randomUUID().split("-")[0],
         comentario: "",
         idusuariocrea: idusuario ?? 1,
         fechacrea: new Date(),
@@ -296,8 +296,8 @@ export const createFactoringpropuestaService = async (dto: CreateFactoringpropue
           connect: { idfactoringestrategia: factoringestrategia.idfactoringestrategia },
         },
 
-        factoringpropuestaid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        factoringpropuestaid: randomUUID(),
+        code: randomUUID().split("-")[0],
         fecha_propuesta: simulacion.fecha_propuesta,
 
         tda: simulacion.tda,
@@ -356,8 +356,8 @@ export const createFactoringpropuestaService = async (dto: CreateFactoringpropue
           connect: { idfactoringpropuestaestado: factoringpropuestaestado.idfactoringpropuestaestado },
         },
         usuario_modifica: { connect: { idusuario } },
-        factoringpropuestahistorialestadoid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        factoringpropuestahistorialestadoid: randomUUID(),
+        code: randomUUID().split("-")[0],
         comentario: "",
         idusuariocrea: idusuario ?? 1,
         fechacrea: new Date(),
@@ -380,8 +380,8 @@ export const createFactoringpropuestaService = async (dto: CreateFactoringpropue
             financiero_concepto: {
               connect: { idfinancieroconcepto: item.financiero_concepto.idfinancieroconcepto },
             },
-            factoringpropuestafinancieroid: uuidv4(),
-            code: uuidv4().split("-")[0],
+            factoringpropuestafinancieroid: randomUUID(),
+            code: randomUUID().split("-")[0],
             cantidad: item.cantidad,
             monto_unitario: item.monto_unitario,
             monto: item.monto,

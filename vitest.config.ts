@@ -1,5 +1,5 @@
 import { fileURLToPath } from "node:url";
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 
 const root = fileURLToPath(new URL("./", import.meta.url));
 const src = fileURLToPath(new URL("./src/", import.meta.url));
@@ -16,7 +16,22 @@ export default defineConfig({
   test: {
     environment: "node",
     globals: false,
-    include: ["tests/vitest/unit/**/*.test.ts", "tests/vitest/http/**/*.test.ts", "tests/vitest/pending/**/*.test.ts"],
+    include: [
+      "tests/vitest/unit/**/*.test.ts",
+      "tests/vitest/http/**/*.test.ts",
+      "tests/vitest/pending/**/*.test.ts",
+      // Suites migradas con correspondencia verificada frente a la línea base.
+      "tests/vitest/migrated/**/*.test.ts",
+      "tests/vitest/migrated/**/*.spec.ts",
+      "tests/vitest/migrated/**/__tests__/**/*.ts",
+    ],
+    exclude: [
+      ...configDefaults.exclude,
+      "tests/manual/**",
+      "tests/mariadb/**",
+      // Conservar la exclusión histórica de esta suite; no fue parte de la línea base.
+      "tests/vitest/migrated/e2e/index.test.ts",
+    ],
     maxWorkers: 4,
     isolate: true,
     clearMocks: true,

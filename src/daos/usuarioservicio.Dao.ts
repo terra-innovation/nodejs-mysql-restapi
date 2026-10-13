@@ -6,7 +6,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import { log, line } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 export const getEstadoUsuarioservicioPropio = (tx: TxClient, idusuario: number, usuarioservicioid: string) =>
   tx.usuario_servicio.findFirst({
@@ -53,10 +53,10 @@ export const habilitarServiciosParaUsuario = async (tx: TxClient, idusuario: num
     });
 
     const serviciosAInsertar = todosLosServicios.map((servicio) => ({
-      usuarioservicioid: uuidv4(),
+      usuarioservicioid: randomUUID(),
       idusuario,
       idservicio: servicio.idservicio,
-      code: uuidv4().split("-")[0],
+      code: randomUUID().split("-")[0],
       idusuarioservicioestado: 1,
       idusuariocrea: Number(idusuario_session),
       fechacrea: new Date(),

@@ -4,7 +4,7 @@ import { prismaFT } from "#root/src/models/prisma/db-factoring.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 // ─── DTOs ────────────────────────────────────────────────────────────────────
 
@@ -128,8 +128,8 @@ export const createServicioService = async (dto: CreateServicioDto) => {
   return prismaFT.client.$transaction(
     async (tx) => {
       const servicioCreate = {
-        servicioid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        servicioid: randomUUID(),
+        code: randomUUID().split("-")[0],
         nombre: dto.nombre,
         alias: dto.alias,
         descripcion: dto.descripcion,

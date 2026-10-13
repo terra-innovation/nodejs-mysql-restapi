@@ -9,7 +9,7 @@ import { ClientError } from "#src/utils/CustomErrors.js";
 import * as df from "#src/utils/dateUtils.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { line, log } from "#src/utils/logger.pino.js";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 export interface CreateSbsTipoCambioDto {
   fecha: string;
@@ -115,7 +115,7 @@ export const createSbsTipoCambioService = async (idUsuario: number, payload: Cre
       const precioContable = payload.precio_contable !== undefined ? new Prisma.Decimal(payload.precio_contable) : new Prisma.Decimal(payload.precio_venta);
 
       const sbsToCreate: Prisma.sbs_tipo_cambioUncheckedCreateInput = {
-        sbstipocambioid: uuidv4(),
+        sbstipocambioid: randomUUID(),
         code: tipocambioLogic.generateCode(),
         idmonedabase: monedaBase.idmoneda,
         idmonedacotizada: monedaCotizada.idmoneda,

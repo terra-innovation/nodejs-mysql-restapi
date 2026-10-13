@@ -1,5 +1,5 @@
 import { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 import * as monedaDao from "#src/daos/moneda.Dao.js";
 import * as sbstipocambioDao from "#src/daos/sbstipocambio.Dao.js";
@@ -28,7 +28,7 @@ export const parseFechaLima = (fechaStr?: string): Date => {
  * Genera un código único de 20 caracteres para el campo `code`.
  */
 export const generateCode = (): string => {
-  return uuidv4().split("-")[0];
+  return randomUUID().split("-")[0];
 };
 
 /**

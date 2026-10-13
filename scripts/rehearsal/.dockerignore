@@ -1,0 +1,6 @@
+*
+!Dockerfile
+!entry.mjs
+!guard.mjs
+!nginx.conf
+!sshd_config

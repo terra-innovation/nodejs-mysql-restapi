@@ -7,7 +7,7 @@ import EmailSender from "#src/providers/email/emailSender.js";
 import { encryptText } from "#src/utils/cryptoUtils.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 import * as configuracioncorreoDao from "#root/src/daos/configuracioncorreo.Dao.js";
 
@@ -70,8 +70,8 @@ export const createConfiguracioncorreoService = async (dto: ConfiguracionCorreoC
       const [ivHex, encryptedPass] = encryptedFull.split("|");
 
       const toCreate: Prisma.configuracion_correoCreateInput = {
-        configuracioncorreoid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        configuracioncorreoid: randomUUID(),
+        code: randomUUID().split("-")[0],
         alias: dto.alias,
         smtp_host: dto.smtp_host,
         smtp_port: dto.smtp_port,

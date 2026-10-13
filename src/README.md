@@ -9,7 +9,7 @@ Este documento describe la arquitectura modular y por capas implementada en el b
 ```mermaid
 flowchart TD
     Client(["Cliente / Frontend (Web/Mobile)"]) --> Routes["routes/\n(Transporte: Endpoints, Middlewares & Seguridad)"]
-    Routes --> Controllers["controllers/\n(Transporte: Parseo, Validación Yup & DTOs)"]
+    Routes --> Controllers["controllers/\n(Transporte: Parseo, Validación Zod & DTOs)"]
     Controllers --> Services["services/\n(Aplicación: Orquestación & Transacciones)"]
     Services --> Domain["domain/\n(Reglas y cálculos de negocio extraídos)"]
     
@@ -31,7 +31,7 @@ flowchart TD
 | Capa / Directorio | Tipo de Capa | Responsabilidad Principal | Puede Importar de | NO Puede Importar de |
 |---|---|---|---|---|
 | **`routes/`** | Transporte | Define rutas HTTP, asocia middlewares de autenticación (`isAuth`), autorización por rol (`isRole`) y envuelve handlers con `catchedAsync`. | `controllers/`, `middlewares/` | `services/`, `daos/`, `models/`, `providers/` |
-| **`controllers/`** | Transporte | **Capa delgada**: Extrae parámetros (`params`, `body`, `query`, `session_user`), valida esquemas Yup/DTOs, delega al servicio correspondiente y devuelve respuesta con `response(res, status, data)`. | `services/`, `utils/`, DTOs/esquemas | `daos/`, `models/prisma`, `providers/`, `integrations/`, llamadas a transacciones Prisma |
+| **`controllers/`** | Transporte | **Capa delgada**: Extrae parámetros (`params`, `body`, `query`, `session_user`), valida esquemas Zod/DTOs, delega al servicio correspondiente y devuelve respuesta con `response(res, status, data)`. | `services/`, `utils/`, DTOs/esquemas | `daos/`, `models/prisma`, `providers/`, `integrations/`, llamadas a transacciones Prisma |
 | **`services/`** | Aplicación | Orquesta casos de uso y transacciones (`$transaction`), obtiene datos mediante DAOs y delega los cálculos extraídos a `domain/`. Los módulos pendientes de extracción todavía contienen reglas de negocio. Agnóstico al transporte HTTP. | `domain/`, `daos/`, `integrations/`, `providers/`, `models/`, `utils/`, `constants/` | `express` (`Request`, `Response`), `controllers/`, `routes/` |
 | **`domain/`** | Dominio | Reglas y cálculos de negocio independientes de persistencia. Recibe parámetros y configuración como datos y devuelve resultados sin efectos secundarios. | Tipos compartidos mediante `import type`, librerías de cálculo y fechas | `services/`, `daos/`, `models/prisma`, `providers/`, `integrations/`, `controllers/`, `routes/` |
 | **`daos/`** | Acceso a Datos | Consultas y mutaciones directas a Prisma (`prismaFT` o cliente transaccional `tx`). No contiene reglas de negocio. | `models/`, `types/`, Prisma Client | `controllers/`, `services/`, `integrations/`, `providers/` |
@@ -115,24 +115,24 @@ El sistema cuenta con una verificación estricta de separación de capas:
 
 ---
 
-## 🧪 Pruebas Unitarias Automatizadas (`tests/unit/`)
+## 🧪 Pruebas Unitarias Automatizadas (`tests/vitest/migrated/unit/`)
 
-La arquitectura está respaldada por una suite de pruebas automatizadas con Jest y TypeScript (`ts-jest`), libre de dependencias de bases de datos vivas mediante mocking de DAOs y Prisma:
+La arquitectura está respaldada por una suite de pruebas automatizadas con Vitest y TypeScript, libre de dependencias de bases de datos vivas mediante mocking de DAOs y Prisma:
 
-- **`tests/unit/services/usuario/archivo.Service.test.ts`**: Pruebas de validación de extensiones, límites de peso, detección MIME real y borrado seguro.
-- **`tests/unit/services/financiero/factura.Service.test.ts`**: Verificación de delegación correcta de consultas, altas y bajas de facturas.
-- **`tests/unit/services/admin/factoringpropuesta.Service.test.ts`**: Verificación de cálculos de propuesta y simulación financiera.
-- **`tests/unit/services/admin/factoringliquidacion.Service.test.ts`**: Precisión de fórmulas financieras para pronto pago y mora.
-- **`tests/unit/services/factoring.Service.test.ts`**: Simulación de tasas efectivas y condiciones contractuales.
-- **`tests/unit/domain/factoring/factoring.Calculator.test.ts`**: Cálculos sin base de datos, cargos por moneda y banco, descuentos, redondeos históricos y fechas.
-- **`tests/unit/services/tipocambio.Service.test.ts`**: Normalización de fechas Lima UTC y generadores de código.
+- **`tests/vitest/migrated/unit/services/usuario/archivo.Service.test.ts`**: Pruebas de validación de extensiones, límites de peso, detección MIME real y borrado seguro.
+- **`tests/vitest/migrated/unit/services/financiero/factura.Service.test.ts`**: Verificación de delegación correcta de consultas, altas y bajas de facturas.
+- **`tests/vitest/migrated/unit/services/admin/factoringpropuesta.Service.test.ts`**: Verificación de cálculos de propuesta y simulación financiera.
+- **`tests/vitest/migrated/unit/services/admin/factoringliquidacion.Service.test.ts`**: Precisión de fórmulas financieras para pronto pago y mora.
+- **`tests/vitest/migrated/unit/services/factoring.Service.test.ts`**: Simulación de tasas efectivas y condiciones contractuales.
+- **`tests/vitest/migrated/unit/domain/factoring/factoring.Calculator.test.ts`**: Cálculos sin base de datos, cargos por moneda y banco, descuentos, redondeos históricos y fechas.
+- **`tests/vitest/migrated/unit/services/tipocambio.Service.test.ts`**: Normalización de fechas Lima UTC y generadores de código.
 
 ---
 
 ## ⛔ Reglas de Oro para Mantener la Arquitectura
 
 1. **El Controlador es delgado y pasivo:**
-   - Su única misión es recibir la petición HTTP, validar la estructura con Yup, llamar al servicio y responder al cliente con `response(res, status, data)`.
+   - Su única misión es recibir la petición HTTP, validar la estructura con Zod, llamar al servicio y responder al cliente con `response(res, status, data)`.
    - **NUNCA** debe importar de `src/daos/` ni de `src/models/prisma/`.
    - **NUNCA** debe abrir transacciones de base de datos (`$transaction`).
 

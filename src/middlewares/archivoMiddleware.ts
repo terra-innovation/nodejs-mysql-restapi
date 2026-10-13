@@ -7,7 +7,7 @@ import * as fs from "fs";
 import * as luxon from "luxon";
 import multer, { type FileFilterCallback } from "multer";
 import path from "path";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 import { corregirNombreArchivo } from "#src/utils/multerUtils.js";
 
 // Extensiones o mimetypes peligrosos comúnmente bloqueados
@@ -48,7 +48,7 @@ let storage_usuarioservicio = multer.diskStorage({
     const anio_upload = luxon.DateTime.now().toFormat("yyyy");
     const mes_upload = luxon.DateTime.now().toFormat("MM");
     const dia_upload = luxon.DateTime.now().toFormat("dd");
-    const codigo_archivo = uuidv4().split("-")[0] + "-" + uuidv4().split("-")[1];
+    const codigo_archivo = randomUUID().split("-")[0] + "-" + randomUUID().split("-")[1];
     const uniqueSuffix = luxon.DateTime.now().toFormat("yyyyMMdd_HHmmss_SSS") + "_" + codigo_archivo;
     const filename = uniqueSuffix + "_" + file.originalname;
     cb(null, filename);

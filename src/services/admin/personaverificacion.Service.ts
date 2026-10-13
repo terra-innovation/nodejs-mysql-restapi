@@ -13,7 +13,7 @@ import { line, log } from "#src/utils/logger.pino.js";
 import EmailSender from "#src/providers/email/emailSender.js";
 import TemplateManager from "#src/providers/email/TemplateManager.js";
 import * as df from "#src/utils/dateUtils.js";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 // ─── DTOs ────────────────────────────────────────────────────────────────────
 
@@ -234,8 +234,8 @@ export const createPersonaverificacionService = async (dto: CreatePersonaverific
         usuario_verifica: { connect: { idusuario: dto.idusuario } },
         comentariointerno: dto.comentariointerno,
         comentariousuario: dto.comentariousuario,
-        personaverificacionid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        personaverificacionid: randomUUID(),
+        code: randomUUID().split("-")[0],
         idusuariocrea: dto.idusuario ?? 1,
         fechacrea: new Date(),
         idusuariomod: dto.idusuario ?? 1,

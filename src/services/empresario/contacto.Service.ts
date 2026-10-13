@@ -8,7 +8,7 @@ import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { line, log } from "#src/utils/logger.pino.js";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 export interface UpdateContactoDto {
   contactoid: string;
@@ -46,10 +46,7 @@ export interface CreateContactoForFactoringDto {
   telefono: string;
 }
 
-export const updateContactoService = async (
-  session_idusuario: number,
-  payload: UpdateContactoDto,
-) => {
+export const updateContactoService = async (session_idusuario: number, payload: UpdateContactoDto) => {
   log.debug(line(), "service::updateContactoService");
   return await prismaFT.client.$transaction(
     async (tx) => {
@@ -90,10 +87,7 @@ export const updateContactoService = async (
   );
 };
 
-export const createContactoService = async (
-  session_idusuario: number,
-  payload: CreateContactoDto,
-) => {
+export const createContactoService = async (session_idusuario: number, payload: CreateContactoDto) => {
   log.debug(line(), "service::createContactoService");
   const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
 
@@ -116,12 +110,7 @@ export const createContactoService = async (
         throw new ClientError("Datos no válidos", 404);
       }
 
-      const contacto_por_email = await contactoDao.getContactosByIdempresaAndEmail(
-        tx,
-        empresa_aceptante_por_idusuario.idaceptante,
-        payload.email,
-        filter_estado,
-      );
+      const contacto_por_email = await contactoDao.getContactosByIdempresaAndEmail(tx, empresa_aceptante_por_idusuario.idaceptante, payload.email, filter_estado);
       if (contacto_por_email && contacto_por_email.length > 0) {
         log.warn(line(), "El email [" + payload.email + "] se encuentra registrado. Ingrese un contacto diferente.");
         throw new ClientError("El email [" + payload.email + "] se encuentra registrado. Ingrese un contacto diferente.", 404);
@@ -129,8 +118,8 @@ export const createContactoService = async (
 
       const contactoToCreate: Prisma.contactoCreateInput = {
         empresa: { connect: { idempresa: empresa.idempresa } },
-        contactoid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        contactoid: randomUUID(),
+        code: randomUUID().split("-")[0],
         nombrecontacto: payload.nombrecontacto,
         apellidocontacto: payload.apellidocontacto,
         cargo: payload.cargo,
@@ -195,10 +184,7 @@ export const getContactoMasterService = async (session_idusuario: number) => {
   );
 };
 
-export const getContactosForFactoringService = async (
-  session_idusuario: number,
-  payload: ContactoFactoringFilterDto,
-) => {
+export const getContactosForFactoringService = async (session_idusuario: number, payload: ContactoFactoringFilterDto) => {
   log.debug(line(), "service::getContactosForFactoringService");
   return await prismaFT.client.$transaction(
     async (tx) => {
@@ -237,10 +223,7 @@ export const getContactosForFactoringService = async (
   );
 };
 
-export const createContactoForFactoringService = async (
-  session_idusuario: number,
-  payload: CreateContactoForFactoringDto,
-) => {
+export const createContactoForFactoringService = async (session_idusuario: number, payload: CreateContactoForFactoringDto) => {
   log.debug(line(), "service::createContactoForFactoringService");
   const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
 
@@ -279,8 +262,8 @@ export const createContactoForFactoringService = async (
 
       const contactoToCreate: Prisma.contactoCreateInput = {
         empresa: { connect: { idempresa: empresa.idempresa } },
-        contactoid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        contactoid: randomUUID(),
+        code: randomUUID().split("-")[0],
         nombrecontacto: payload.nombrecontacto,
         apellidocontacto: payload.apellidocontacto,
         cargo: payload.cargo,
@@ -304,10 +287,7 @@ export const createContactoForFactoringService = async (
   );
 };
 
-export const getContactoMasterForFactoringService = async (
-  session_idusuario: number,
-  payload: ContactoFactoringFilterDto,
-) => {
+export const getContactoMasterForFactoringService = async (session_idusuario: number, payload: ContactoFactoringFilterDto) => {
   log.debug(line(), "service::getContactoMasterForFactoringService");
   return await prismaFT.client.$transaction(
     async (tx) => {

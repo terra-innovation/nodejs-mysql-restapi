@@ -18,17 +18,21 @@ creadas con `mkdtemp` y las elimina tras cada caso.
 
 ## Comandos
 
-| Comando | Uso |
-| --- | --- |
-| `npm test` | Selección existente de Jest |
-| `npm run test:vitest` | Ejecutar Vitest una vez; falla si no encuentra pruebas |
-| `npm run test:vitest:unit` | Ejecutar solo pruebas unitarias |
-| `npm run test:vitest:http` | Ejecutar solo pruebas de rutas y controladores |
-| `npm run test:vitest:watch` | Reejecutar durante el desarrollo |
-| `npm run test:vitest:coverage` | Generar cobertura V8 en `coverage/vitest/` |
-| `npm run test:vitest:typecheck` | Verificar tipos de las pruebas y configuración |
-| `npm run test:vitest:ci` | Modo CI, cobertura mínima y reporte JUnit |
-| `npm run test:all` | Ejecutar Jest, tipos de Vitest y Vitest; detenerse ante un fallo |
+Las suites originales de Jest están adaptadas en [`migrated/`](migrated/README.md),
+con correspondencia de casos verificada. Jest y sus soportes exclusivos se
+retiraron; `npm test` y `npm run test:vitest` ejecutan la misma selección.
+
+| Comando                         | Uso                                                              |
+| ------------------------------- | ---------------------------------------------------------------- |
+| `npm test`                      | Selección rápida completa de Vitest                              |
+| `npm run test:vitest`           | Ejecutar Vitest una vez; falla si no encuentra pruebas           |
+| `npm run test:vitest:unit`      | Ejecutar solo pruebas unitarias                                  |
+| `npm run test:vitest:http`      | Ejecutar solo pruebas de rutas y controladores                   |
+| `npm run test:vitest:watch`     | Reejecutar durante el desarrollo                                 |
+| `npm run test:vitest:coverage`  | Generar cobertura V8 en `coverage/vitest/`                       |
+| `npm run test:vitest:typecheck` | Verificar tipos de las pruebas y configuración                   |
+| `npm run test:vitest:ci`        | Modo CI, cobertura mínima y reporte JUnit                        |
+| `npm run test:all`              | Verificar tipos de Vitest y ejecutar la selección rápida una vez |
 
 Ejecutar un archivo o filtrar por nombre:
 
@@ -44,9 +48,9 @@ rechazar pruebas marcadas `.only`.
 
 ## Configuración y aislamiento
 
-- `vitest.config.ts` selecciona `tests/vitest/unit/`, `tests/vitest/http/` y
-  `tests/vitest/pending/`, con hasta cuatro workers. Las pruebas Jest y los
-  scripts manuales no se incluyen. `pending` contiene criterios `todo` que no
+- `vitest.config.ts` selecciona `tests/vitest/unit/`, `tests/vitest/http/`,
+  `tests/vitest/pending/` y `tests/vitest/migrated/`, con hasta cuatro workers.
+  MariaDB, scripts manuales y `migrated/e2e/index.test.ts` no se incluyen. `pending` contiene criterios `todo` que no
   ejecutan aserciones ni representan contratos implementados.
 - Entorno Node, `TZ=UTC` y `NODE_ENV=test` definidos antes de iniciar el proceso
   mediante `cross-env`, tanto en Windows como en Linux.
@@ -70,30 +74,30 @@ rechazar pruebas marcadas `.only`.
 
 ## Alcance actual: 346 casos activos y 8 pendientes
 
-| Suite | Casos | Contrato comprobado |
-| --- | ---: | --- |
-| `unit/factoring.Calculator.test.ts` | 4 | Desembolso V3 sin días de interés, PEN/USD, banco propio/interbancario, tres facturas, descuento de comisión, IGV y garantía |
-| `unit/dateUtils.test.ts` | 8 | Fecha civil por defecto antes/después de medianoche de Lima, cambio de año, rechazo de fechas inválidas y año bisiesto |
-| `unit/fileType.test.ts` | 2 | Carga ESM real, identificación de un PNG y rechazo de texto como imagen |
-| `unit/factoringpropuesta.business.test.ts` | 25 | Simular/crear en PEN y USD, conciliación de cabecera y detalles, riesgos y catálogos ausentes, historial, cambios de estado, notificación y fallos de escritura |
-| `unit/factoringliquidacion.business.test.ts` | 38 | Pago en inicio, puntual y tardío, reintegro, mora, IGV, exoneración, cargos/abonos adicionales, saldo cero o por cobrar, importes aceptados, persistencia y errores |
-| `unit/factoringtransferencia.business.test.ts` | 17 | Crear transferencia y vincular constancia, relaciones requeridas, cambios de estado, actor, activar/eliminar y fallos de persistencia |
-| `unit/secure.business.test.ts` | 29 | Login con bcrypt/JWT reales, vigencia por entorno, reset con cifrado real, OTP incorrecto/usado/vencido, errores de escritura, actualización de roles, expiración durante lectura, privacidad y pertenencia de suscripciones |
-| `unit/archivo.business.test.ts` | 14 | Filesystem y MIME reales, límite exacto, extensión, contenido incompatible, catálogos ausentes, limpieza del temporal, descarga y eliminación lógica |
-| `http/factoring.business.test.ts` | 46 | Rutas reales de propuestas/liquidaciones, autenticación, separación de roles, validación, simulación/creación, actor desde sesión y errores 400/401/403/404/500 |
-| `unit/facturaXML.business.test.ts` | 26 | XML real, codificaciones/prefijos, fechas/impuestos, cuotas, neto, detracción PEN/USD, retención y persistencia de vencimiento/moneda |
-| `unit/facturaRegistro.business.test.ts` | 18 | Tipos de archivo, cabecera/detalles/vínculos, actor, moneda PEN/USD y vencimiento enviados al DAO, enriquecimiento y errores |
-| `unit/factoringfactura.business.test.ts` | 21 | Asociar factura, estados de factura/detracción, constancia, fechas UTC, actualizar, activar/eliminar y errores |
-| `unit/factoringaprobacion.business.test.ts` | 15 | Pertenencia/vigencia, reserva condicional, propuesta aprobada 6 y operación 4, ambos historiales, vínculo aceptado, conflicto y notificaciones |
-| `unit/factoringestado.business.test.ts` | 26 | Estado actual e historial, adjuntos, estados 29/10/36, fecha de inicio, edición/baja lógica y errores |
-| `http/facturaXML.business.test.ts` | 13 | Router de registro XML, permisos, validación, actor desde JWT, respuesta y errores |
-| `http/factoringestado.business.test.ts` | 29 | Routers de aceptación e historial, permisos separados, validación, auditoría y errores |
-| `unit/mariadbEnvironment.test.ts` | 15 | Rechazo de destinos ajenos, limpieza de contenedores por identidad, integridad del snapshot y argumentos permitidos; no equivalen a ejecución de MariaDB |
-| `pending/business-decisions.test.ts` | 8 `todo` | Seis deudas financieras y DT-TEST-01/02; no se cuentan como casos aprobados |
+| Suite                                          |    Casos | Contrato comprobado                                                                                                                                                                                                          |
+| ---------------------------------------------- | -------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `unit/factoring.Calculator.test.ts`            |        4 | Desembolso V3 sin días de interés, PEN/USD, banco propio/interbancario, tres facturas, descuento de comisión, IGV y garantía                                                                                                 |
+| `unit/dateUtils.test.ts`                       |        8 | Fecha civil por defecto antes/después de medianoche de Lima, cambio de año, rechazo de fechas inválidas y año bisiesto                                                                                                       |
+| `unit/fileType.test.ts`                        |        2 | Carga ESM real, identificación de un PNG y rechazo de texto como imagen                                                                                                                                                      |
+| `unit/factoringpropuesta.business.test.ts`     |       25 | Simular/crear en PEN y USD, conciliación de cabecera y detalles, riesgos y catálogos ausentes, historial, cambios de estado, notificación y fallos de escritura                                                              |
+| `unit/factoringliquidacion.business.test.ts`   |       38 | Pago en inicio, puntual y tardío, reintegro, mora, IGV, exoneración, cargos/abonos adicionales, saldo cero o por cobrar, importes aceptados, persistencia y errores                                                          |
+| `unit/factoringtransferencia.business.test.ts` |       17 | Crear transferencia y vincular constancia, relaciones requeridas, cambios de estado, actor, activar/eliminar y fallos de persistencia                                                                                        |
+| `unit/secure.business.test.ts`                 |       29 | Login con bcrypt/JWT reales, vigencia por entorno, reset con cifrado real, OTP incorrecto/usado/vencido, errores de escritura, actualización de roles, expiración durante lectura, privacidad y pertenencia de suscripciones |
+| `unit/archivo.business.test.ts`                |       14 | Filesystem y MIME reales, límite exacto, extensión, contenido incompatible, catálogos ausentes, limpieza del temporal, descarga y eliminación lógica                                                                         |
+| `http/factoring.business.test.ts`              |       46 | Rutas reales de propuestas/liquidaciones, autenticación, separación de roles, validación, simulación/creación, actor desde sesión y errores 400/401/403/404/500                                                              |
+| `unit/facturaXML.business.test.ts`             |       26 | XML real, codificaciones/prefijos, fechas/impuestos, cuotas, neto, detracción PEN/USD, retención y persistencia de vencimiento/moneda                                                                                        |
+| `unit/facturaRegistro.business.test.ts`        |       18 | Tipos de archivo, cabecera/detalles/vínculos, actor, moneda PEN/USD y vencimiento enviados al DAO, enriquecimiento y errores                                                                                                 |
+| `unit/factoringfactura.business.test.ts`       |       21 | Asociar factura, estados de factura/detracción, constancia, fechas UTC, actualizar, activar/eliminar y errores                                                                                                               |
+| `unit/factoringaprobacion.business.test.ts`    |       15 | Pertenencia/vigencia, reserva condicional, propuesta aprobada 6 y operación 4, ambos historiales, vínculo aceptado, conflicto y notificaciones                                                                               |
+| `unit/factoringestado.business.test.ts`        |       26 | Estado actual e historial, adjuntos, estados 29/10/36, fecha de inicio, edición/baja lógica y errores                                                                                                                        |
+| `http/facturaXML.business.test.ts`             |       13 | Router de registro XML, permisos, validación, actor desde JWT, respuesta y errores                                                                                                                                           |
+| `http/factoringestado.business.test.ts`        |       29 | Routers de aceptación e historial, permisos separados, validación, auditoría y errores                                                                                                                                       |
+| `unit/mariadbEnvironment.test.ts`              |       15 | Rechazo de destinos ajenos, limpieza de contenedores por identidad, integridad del snapshot y argumentos permitidos; no equivalen a ejecución de MariaDB                                                                     |
+| `pending/business-decisions.test.ts`           | 8 `todo` | Seis deudas financieras y DT-TEST-01/02; no se cuentan como casos aprobados                                                                                                                                                  |
 
 Los importes esperados son valores fijos con un cálculo independiente explicado
 en la prueba, sin ejecutar el calculador para fabricar sus propios resultados
-esperados. Estos casos amplían la suite existente de Jest; no reemplazan ni
+esperados. Estos casos complementan las suites migradas; no reemplazan ni
 duplican sus archivos completos.
 
 La primera ampliación agregó 167 casos a los 14 iniciales. La del 2026-10-08
@@ -109,7 +113,7 @@ y límites en la [matriz de regresión](MATRIZ_NEGOCIO.md).
 La cobertura incluye 21 archivos: calculador, fechas y XML, servicios de factoring/
 facturas, aprobación del empresario, login/accesos, archivos/suscripciones,
 autenticación y cinco controladores. Incluye funciones aún no ejercitadas y no
-representa la cobertura de todo el backend ni agrega resultados de Jest.
+representa la cobertura de todo el backend aunque incluye la selección migrada desde Jest.
 
 Umbrales mínimos para esta etapa: 60% de líneas, sentencias y ramas, y 50% de
 funciones en el conjunto seleccionado. Accesos exige 100% de líneas/sentencias/
@@ -147,8 +151,7 @@ decisión de no reservar/consumir líneas al crear la operación. Ver
 Se añadieron 36 casos de liquidaciones/transferencias y cinco regresiones del
 auditor de lectura; total real 114. Ver
 [alcance y auditoría](../../docs/deuda-tecnica/20261008_integracion_liquidaciones_transferencias_auditoria.md).
-Se añadieron después 19 casos de cálculo y creación de propuestas; total real
-133. Guardado/lectura, rollback, conexiones distintas del calculador y creación
+Se añadieron después 19 casos de cálculo y creación de propuestas; total real 133. Guardado/lectura, rollback, conexiones distintas del calculador y creación
 mientras otra propuesta se aprueba: [hallazgos](../../docs/deuda-tecnica/20261008_integracion_propuestas_calculo.md).
 La ampliación de solicitudes repetidas/concurrentes añade 12 casos; total 145.
 Ver [comportamiento actual y rollback aislado](../../docs/deuda-tecnica/20261008_integracion_concurrencia_liquidaciones_transferencias.md).

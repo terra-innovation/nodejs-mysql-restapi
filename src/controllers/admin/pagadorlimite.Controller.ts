@@ -2,7 +2,8 @@ import * as pagadorlimiteService from "#root/src/services/admin/pagadorlimite.Se
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
-import * as yup from "yup";
+import { z } from "zod";
+import { objectInput, stringInput, numberInput } from "#src/utils/validationInputs.js";
 
 export const getPagadorlimites = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getPagadorlimites");
@@ -12,18 +13,42 @@ export const getPagadorlimites = async (req: Request, res: Response) => {
 
 export const createPagadorlimite = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createPagadorlimite");
-  const pagadorlimiteCreateSchema = yup
-    .object()
-    .shape({
-      empresaid: yup.string().trim().required().min(36).max(36),
-      monedaid: yup.string().trim().required().min(36).max(36),
-      total: yup.number().required().positive(),
-      usado: yup.number().min(0).default(0),
-      disponible: yup.number().min(0),
-    })
-    .required();
+  const pagadorlimiteCreateSchema = objectInput(
+    z.object({
+      empresaid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      monedaid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      total: numberInput(z.custom<number>((value) => typeof value === "number" && !Number.isNaN(value)).refine((value) => value > 0, "Debe ser un número positivo")),
+      usado: numberInput(
+        z
+          .custom<number>((value) => typeof value === "number" && !Number.isNaN(value))
+          .refine((value) => value >= 0, "Debe ser mayor o igual que 0")
+          .optional()
+          .prefault(0),
+      ),
+      disponible: numberInput(
+        z
+          .custom<number>((value) => typeof value === "number" && !Number.isNaN(value))
+          .refine((value) => value >= 0, "Debe ser mayor o igual que 0")
+          .optional(),
+      ),
+    }),
+  );
 
-  const pagadorlimiteValidated = pagadorlimiteCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
+  const pagadorlimiteValidated = pagadorlimiteCreateSchema.parse(req.body);
   log.debug(line(), "pagadorlimiteValidated:", pagadorlimiteValidated);
 
   const pagadorlimiteCreated = await pagadorlimiteService.createPagadorlimiteService({
@@ -41,17 +66,34 @@ export const createPagadorlimite = async (req: Request, res: Response) => {
 export const updatePagadorlimite = async (req: Request, res: Response) => {
   log.debug(line(), "controller::updatePagadorlimite");
   const { id } = req.params;
-  const pagadorlimiteUpdateSchema = yup
-    .object()
-    .shape({
-      pagadorlimiteid: yup.string().trim().required().min(36).max(36),
-      total: yup.number().required().positive(),
-      usado: yup.number().min(0).default(0),
-      disponible: yup.number().min(0),
-    })
-    .required();
+  const pagadorlimiteUpdateSchema = objectInput(
+    z.object({
+      pagadorlimiteid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      total: numberInput(z.custom<number>((value) => typeof value === "number" && !Number.isNaN(value)).refine((value) => value > 0, "Debe ser un número positivo")),
+      usado: numberInput(
+        z
+          .custom<number>((value) => typeof value === "number" && !Number.isNaN(value))
+          .refine((value) => value >= 0, "Debe ser mayor o igual que 0")
+          .optional()
+          .prefault(0),
+      ),
+      disponible: numberInput(
+        z
+          .custom<number>((value) => typeof value === "number" && !Number.isNaN(value))
+          .refine((value) => value >= 0, "Debe ser mayor o igual que 0")
+          .optional(),
+      ),
+    }),
+  );
 
-  const pagadorlimiteValidated = pagadorlimiteUpdateSchema.validateSync({ pagadorlimiteid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
+  const pagadorlimiteValidated = pagadorlimiteUpdateSchema.parse({ pagadorlimiteid: id, ...req.body });
   log.debug(line(), "pagadorlimiteValidated:", pagadorlimiteValidated);
 
   await pagadorlimiteService.updatePagadorlimiteService({
@@ -68,14 +110,20 @@ export const updatePagadorlimite = async (req: Request, res: Response) => {
 export const deletePagadorlimite = async (req: Request, res: Response) => {
   log.debug(line(), "controller::deletePagadorlimite");
   const { id } = req.params;
-  const pagadorlimiteSchema = yup
-    .object()
-    .shape({
-      pagadorlimiteid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
+  const pagadorlimiteSchema = objectInput(
+    z.object({
+      pagadorlimiteid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
 
-  const pagadorlimiteValidated = pagadorlimiteSchema.validateSync({ pagadorlimiteid: id }, { abortEarly: false, stripUnknown: true });
+  const pagadorlimiteValidated = pagadorlimiteSchema.parse({ pagadorlimiteid: id });
 
   const result = await pagadorlimiteService.deletePagadorlimiteService({
     pagadorlimiteid: pagadorlimiteValidated.pagadorlimiteid,
@@ -88,14 +136,20 @@ export const deletePagadorlimite = async (req: Request, res: Response) => {
 export const activatePagadorlimite = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activatePagadorlimite");
   const { id } = req.params;
-  const pagadorlimiteSchema = yup
-    .object()
-    .shape({
-      pagadorlimiteid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
+  const pagadorlimiteSchema = objectInput(
+    z.object({
+      pagadorlimiteid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
 
-  const pagadorlimiteValidated = pagadorlimiteSchema.validateSync({ pagadorlimiteid: id }, { abortEarly: false, stripUnknown: true });
+  const pagadorlimiteValidated = pagadorlimiteSchema.parse({ pagadorlimiteid: id });
 
   const result = await pagadorlimiteService.activatePagadorlimiteService({
     pagadorlimiteid: pagadorlimiteValidated.pagadorlimiteid,

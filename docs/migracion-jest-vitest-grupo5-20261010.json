@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "source": "tests/unit/services/admin/factoringliquidacion.Service.test.ts",
+      "target": "tests/vitest/migrated/unit/services/admin/factoringliquidacion.Service.test.ts",
+      "cases": 15,
+      "sameCasesAndStatuses": true,
+      "sourceTokensMatchExplicitRunnerAndTitleAdaptation": true
+    },
+    {
+      "source": "tests/unit/utils/document/PDFgenerator.dates.test.ts",
+      "target": "tests/vitest/migrated/unit/utils/document/PDFgenerator.dates.test.ts",
+      "cases": 20,
+      "sameCasesAndStatuses": true,
+      "sourceTokensMatchExplicitRunnerAndTitleAdaptation": true
+    }
+  ]
+}

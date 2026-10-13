@@ -1,0 +1,13 @@
+Port 22
+HostKey /etc/ssh/ssh_host_ed25519_key
+PermitRootLogin no
+PasswordAuthentication yes
+PermitEmptyPasswords no
+UsePAM no
+AllowUsers ssh_finanzatech
+Subsystem sftp internal-sftp
+Match User ssh_finanzatech
+    ChrootDirectory /opt/finanzatech
+    ForceCommand internal-sftp
+    AllowTcpForwarding no
+    X11Forwarding no

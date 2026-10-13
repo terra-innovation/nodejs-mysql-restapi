@@ -2,7 +2,8 @@ import * as factorlimiteService from "#root/src/services/admin/factorlimite.Serv
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
-import * as yup from "yup";
+import { z } from "zod";
+import { objectInput, stringInput, numberInput } from "#src/utils/validationInputs.js";
 
 export const getFactorlimites = async (req: Request, res: Response) => {
   log.debug(line(), "controller::getFactorlimites");
@@ -12,18 +13,42 @@ export const getFactorlimites = async (req: Request, res: Response) => {
 
 export const createFactorlimite = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createFactorlimite");
-  const factorlimiteCreateSchema = yup
-    .object()
-    .shape({
-      factorid: yup.string().trim().required().min(36).max(36),
-      monedaid: yup.string().trim().required().min(36).max(36),
-      total: yup.number().required().positive(),
-      usado: yup.number().min(0).default(0),
-      disponible: yup.number().min(0),
-    })
-    .required();
+  const factorlimiteCreateSchema = objectInput(
+    z.object({
+      factorid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      monedaid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      total: numberInput(z.custom<number>((value) => typeof value === "number" && !Number.isNaN(value)).refine((value) => value > 0, "Debe ser un número positivo")),
+      usado: numberInput(
+        z
+          .custom<number>((value) => typeof value === "number" && !Number.isNaN(value))
+          .refine((value) => value >= 0, "Debe ser mayor o igual que 0")
+          .optional()
+          .prefault(0),
+      ),
+      disponible: numberInput(
+        z
+          .custom<number>((value) => typeof value === "number" && !Number.isNaN(value))
+          .refine((value) => value >= 0, "Debe ser mayor o igual que 0")
+          .optional(),
+      ),
+    }),
+  );
 
-  const factorlimiteValidated = factorlimiteCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
+  const factorlimiteValidated = factorlimiteCreateSchema.parse(req.body);
   log.debug(line(), "factorlimiteValidated:", factorlimiteValidated);
 
   const factorlimiteCreated = await factorlimiteService.createFactorlimiteService({
@@ -41,17 +66,34 @@ export const createFactorlimite = async (req: Request, res: Response) => {
 export const updateFactorlimite = async (req: Request, res: Response) => {
   log.debug(line(), "controller::updateFactorlimite");
   const { id } = req.params;
-  const factorlimiteUpdateSchema = yup
-    .object()
-    .shape({
-      factorlimiteid: yup.string().trim().required().min(36).max(36),
-      total: yup.number().required().positive(),
-      usado: yup.number().min(0).default(0),
-      disponible: yup.number().min(0),
-    })
-    .required();
+  const factorlimiteUpdateSchema = objectInput(
+    z.object({
+      factorlimiteid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      total: numberInput(z.custom<number>((value) => typeof value === "number" && !Number.isNaN(value)).refine((value) => value > 0, "Debe ser un número positivo")),
+      usado: numberInput(
+        z
+          .custom<number>((value) => typeof value === "number" && !Number.isNaN(value))
+          .refine((value) => value >= 0, "Debe ser mayor o igual que 0")
+          .optional()
+          .prefault(0),
+      ),
+      disponible: numberInput(
+        z
+          .custom<number>((value) => typeof value === "number" && !Number.isNaN(value))
+          .refine((value) => value >= 0, "Debe ser mayor o igual que 0")
+          .optional(),
+      ),
+    }),
+  );
 
-  const factorlimiteValidated = factorlimiteUpdateSchema.validateSync({ factorlimiteid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
+  const factorlimiteValidated = factorlimiteUpdateSchema.parse({ factorlimiteid: id, ...req.body });
   log.debug(line(), "factorlimiteValidated:", factorlimiteValidated);
 
   await factorlimiteService.updateFactorlimiteService({
@@ -68,14 +110,20 @@ export const updateFactorlimite = async (req: Request, res: Response) => {
 export const deleteFactorlimite = async (req: Request, res: Response) => {
   log.debug(line(), "controller::deleteFactorlimite");
   const { id } = req.params;
-  const factorlimiteSchema = yup
-    .object()
-    .shape({
-      factorlimiteid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
+  const factorlimiteSchema = objectInput(
+    z.object({
+      factorlimiteid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
 
-  const factorlimiteValidated = factorlimiteSchema.validateSync({ factorlimiteid: id }, { abortEarly: false, stripUnknown: true });
+  const factorlimiteValidated = factorlimiteSchema.parse({ factorlimiteid: id });
 
   const result = await factorlimiteService.deleteFactorlimiteService({
     factorlimiteid: factorlimiteValidated.factorlimiteid,
@@ -88,14 +136,20 @@ export const deleteFactorlimite = async (req: Request, res: Response) => {
 export const activateFactorlimite = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activateFactorlimite");
   const { id } = req.params;
-  const factorlimiteSchema = yup
-    .object()
-    .shape({
-      factorlimiteid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
+  const factorlimiteSchema = objectInput(
+    z.object({
+      factorlimiteid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
 
-  const factorlimiteValidated = factorlimiteSchema.validateSync({ factorlimiteid: id }, { abortEarly: false, stripUnknown: true });
+  const factorlimiteValidated = factorlimiteSchema.parse({ factorlimiteid: id });
 
   const result = await factorlimiteService.activateFactorlimiteService({
     factorlimiteid: factorlimiteValidated.factorlimiteid,

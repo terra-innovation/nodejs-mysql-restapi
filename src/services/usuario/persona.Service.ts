@@ -20,7 +20,7 @@ import { newPersonaVerificationMessage } from "#src/templates/telegram/persona.T
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { line, log } from "#src/utils/logger.pino.js";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 export interface VerifyPersonaPayload {
   idusuario: number;
@@ -140,8 +140,8 @@ export const verifyPersonaService = async (session_idusuario: number, personaVal
         direccion: personaValidated.direccion,
         direccionreferencia: personaValidated.direccionreferencia,
 
-        personaid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        personaid: randomUUID(),
+        code: randomUUID().split("-")[0],
         email: usuarioConected.email,
         celular: usuarioConected.celular,
         idusuariocrea: session_idusuario ?? 1,
@@ -164,7 +164,7 @@ export const verifyPersonaService = async (session_idusuario: number, personaVal
 
       const personadeclaracionToCreate: Prisma.persona_declaracionCreateInput = {
         persona: { connect: { idpersona: personaCreated.idpersona } },
-        personadeclaracionid: uuidv4(),
+        personadeclaracionid: randomUUID(),
         espep: personaValidated.espep,
         tienevinculopep: personaValidated.tienevinculopep,
         idusuariocrea: session_idusuario ?? 1,
@@ -180,8 +180,8 @@ export const verifyPersonaService = async (session_idusuario: number, personaVal
         persona: { connect: { idpersona: personaCreated.idpersona } },
         persona_verificacion_estado: { connect: { idpersonaverificacionestado: personaverificacionestado.idpersonaverificacionestado } },
         usuario_verifica: { connect: { idusuario: session_idusuario } },
-        personaverificacionid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        personaverificacionid: randomUUID(),
+        code: randomUUID().split("-")[0],
         comentariousuario: "",
         comentariointerno: "",
         idusuariocrea: session_idusuario ?? 1,

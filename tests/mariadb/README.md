@@ -233,7 +233,7 @@ npm run test:integration -- tests/mariadb/operationState.test.ts
 ```
 
 `financialHttp.test.ts` añade 60 casos HTTP de propuestas, liquidaciones y
-transferencias: roles 2/6, PEN/USD, actor desde JWT, Yup, creación/consulta,
+transferencias: roles 2/6, PEN/USD, actor desde JWT, Zod, creación/consulta,
 simulación, actualización, baja/activación y rollback SQL.
 Los 60 casos HTTP se validaron inicialmente dentro de 315 casos en once archivos. Ver
 [alcance y límites](../../docs/deuda-tecnica/20261008_integracion_HTTP_financiero.md).

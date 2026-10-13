@@ -5,7 +5,7 @@ import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
 import { line, log } from "#src/utils/logger.pino.js";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 // ─── DTOs ────────────────────────────────────────────────────────────────────
 
@@ -41,11 +41,7 @@ export const activateCuentabancariaestadoService = async (dto: ActivateCuentaban
 
   return prismaFT.client.$transaction(
     async (tx) => {
-      const cuentabancariaestadoActivated = await cuentabancariaestadoDao.activateCuentabancariaestado(
-        tx,
-        dto.cuentabancariaestadoid,
-        dto.idusuario,
-      );
+      const cuentabancariaestadoActivated = await cuentabancariaestadoDao.activateCuentabancariaestado(tx, dto.cuentabancariaestadoid, dto.idusuario);
       log.debug(line(), "cuentabancariaestadoActivated:", cuentabancariaestadoActivated);
       return cuentabancariaestadoActivated;
     },
@@ -58,11 +54,7 @@ export const deleteCuentabancariaestadoService = async (dto: DeleteCuentabancari
 
   return prismaFT.client.$transaction(
     async (tx) => {
-      const cuentabancariaestadoDeleted = await cuentabancariaestadoDao.deleteCuentabancariaestado(
-        tx,
-        dto.cuentabancariaestadoid,
-        dto.idusuario,
-      );
+      const cuentabancariaestadoDeleted = await cuentabancariaestadoDao.deleteCuentabancariaestado(tx, dto.cuentabancariaestadoid, dto.idusuario);
       log.debug(line(), "cuentabancariaestadoDeleted:", cuentabancariaestadoDeleted);
       return cuentabancariaestadoDeleted;
     },
@@ -83,28 +75,17 @@ export const updateCuentabancariaestadoService = async (dto: UpdateCuentabancari
         fechamod: new Date(),
       };
 
-      const result = await cuentabancariaestadoDao.updateCuentabancariaestado(
-        tx,
-        dto.cuentabancariaestadoid,
-        cuentabancariaestadoToUpdate,
-      );
+      const result = await cuentabancariaestadoDao.updateCuentabancariaestado(tx, dto.cuentabancariaestadoid, cuentabancariaestadoToUpdate);
       if (result[0] === 0) {
         throw new ClientError("Cuentabancariaestado no existe", 404);
       }
 
-      const cuentabancariaestadoUpdated = await cuentabancariaestadoDao.getCuentabancariaestadoByCuentabancariaestadoid(
-        tx,
-        dto.cuentabancariaestadoid,
-      );
+      const cuentabancariaestadoUpdated = await cuentabancariaestadoDao.getCuentabancariaestadoByCuentabancariaestadoid(tx, dto.cuentabancariaestadoid);
       if (!cuentabancariaestadoUpdated) {
         throw new ClientError("Cuentabancariaestado no existe", 404);
       }
 
-      const cuentabancariaestadoObfuscated = jsonUtils.ofuscarAtributos(
-        cuentabancariaestadoUpdated,
-        ["numero", "cci"],
-        jsonUtils.PATRON_OFUSCAR_CUENTA,
-      );
+      const cuentabancariaestadoObfuscated = jsonUtils.ofuscarAtributos(cuentabancariaestadoUpdated, ["numero", "cci"], jsonUtils.PATRON_OFUSCAR_CUENTA);
       const cuentabancariaestadoFiltered = jsonUtils.removeAttributesPrivates(cuentabancariaestadoObfuscated);
       return cuentabancariaestadoFiltered;
     },
@@ -131,7 +112,7 @@ export const createCuentabancariaestadoService = async (dto: CreateCuentabancari
   return prismaFT.client.$transaction(
     async (tx) => {
       const cuentabancariaestadoToCreate: Prisma.cuenta_bancaria_estadoCreateInput = {
-        cuentabancariaestadoid: uuidv4(),
+        cuentabancariaestadoid: randomUUID(),
         nombre: dto.nombre,
         alias: dto.alias,
         color: dto.color,
@@ -142,10 +123,7 @@ export const createCuentabancariaestadoService = async (dto: CreateCuentabancari
         estado: 1,
       };
 
-      const cuentabancariaestadoCreated = await cuentabancariaestadoDao.insertCuentabancariaestado(
-        tx,
-        cuentabancariaestadoToCreate,
-      );
+      const cuentabancariaestadoCreated = await cuentabancariaestadoDao.insertCuentabancariaestado(tx, cuentabancariaestadoToCreate);
       return cuentabancariaestadoCreated;
     },
     { timeout: prismaFT.transactionTimeout },

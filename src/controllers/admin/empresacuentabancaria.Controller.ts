@@ -2,18 +2,25 @@ import * as empresacuentabancariaService from "#root/src/services/admin/empresac
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
-import * as yup from "yup";
+import { z } from "zod";
+import { objectInput, stringInput } from "#src/utils/validationInputs.js";
 
 export const activateEmpresacuentabancaria = async (req: Request, res: Response) => {
   log.debug(line(), "controller::activateEmpresacuentabancaria");
   const { id } = req.params;
-  const empresacuentabancariaSchema = yup
-    .object()
-    .shape({
-      empresacuentabancariaid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
-  const empresacuentabancariaValidated = empresacuentabancariaSchema.validateSync({ empresacuentabancariaid: id }, { abortEarly: false, stripUnknown: true });
+  const empresacuentabancariaSchema = objectInput(
+    z.object({
+      empresacuentabancariaid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
+  const empresacuentabancariaValidated = empresacuentabancariaSchema.parse({ empresacuentabancariaid: id });
   log.debug(line(), "empresacuentabancariaValidated:", empresacuentabancariaValidated);
 
   await empresacuentabancariaService.activateEmpresacuentabancariaService({
@@ -27,13 +34,19 @@ export const activateEmpresacuentabancaria = async (req: Request, res: Response)
 export const deleteEmpresacuentabancaria = async (req: Request, res: Response) => {
   log.debug(line(), "controller::deleteEmpresacuentabancaria");
   const { id } = req.params;
-  const empresacuentabancariaSchema = yup
-    .object()
-    .shape({
-      empresacuentabancariaid: yup.string().trim().required().min(36).max(36),
-    })
-    .required();
-  const empresacuentabancariaValidated = empresacuentabancariaSchema.validateSync({ empresacuentabancariaid: id }, { abortEarly: false, stripUnknown: true });
+  const empresacuentabancariaSchema = objectInput(
+    z.object({
+      empresacuentabancariaid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+    }),
+  );
+  const empresacuentabancariaValidated = empresacuentabancariaSchema.parse({ empresacuentabancariaid: id });
   log.debug(line(), "empresacuentabancariaValidated:", empresacuentabancariaValidated);
 
   await empresacuentabancariaService.deleteEmpresacuentabancariaService({
@@ -53,15 +66,33 @@ export const getEmpresacuentabancariaMaster = async (req: Request, res: Response
 export const updateEmpresacuentabancariaOnlyAliasAndCuentaBancariaEstado = async (req: Request, res: Response) => {
   log.debug(line(), "controller::updateEmpresacuentabancariaOnlyAliasAndCuentaBancariaEstado");
   const { id } = req.params;
-  const empresacuentabancariaUpdateSchema = yup
-    .object()
-    .shape({
-      empresacuentabancariaid: yup.string().trim().required().min(36).max(36),
-      cuentabancariaestadoid: yup.string().trim().required().min(36).max(36),
-      alias: yup.string().required().max(50),
-    })
-    .required();
-  const empresacuentabancariaValidated = empresacuentabancariaUpdateSchema.validateSync({ empresacuentabancariaid: id, ...req.body }, { abortEarly: false, stripUnknown: true });
+  const empresacuentabancariaUpdateSchema = objectInput(
+    z.object({
+      empresacuentabancariaid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      cuentabancariaestadoid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      alias: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 50, "Debe tener como máximo 50 caracteres"),
+      ),
+    }),
+  );
+  const empresacuentabancariaValidated = empresacuentabancariaUpdateSchema.parse({ empresacuentabancariaid: id, ...req.body });
   log.debug(line(), "empresacuentabancariaValidated:", empresacuentabancariaValidated);
 
   await empresacuentabancariaService.updateEmpresacuentabancariaOnlyAliasAndCuentaBancariaEstadoService({
@@ -82,19 +113,61 @@ export const getEmpresacuentabancarias = async (req: Request, res: Response) => 
 
 export const createEmpresacuentabancaria = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createEmpresacuentabancaria");
-  const empresacuentabancariaCreateSchema = yup
-    .object()
-    .shape({
-      empresaid: yup.string().trim().required().min(36).max(36),
-      bancoid: yup.string().trim().required().min(36).max(36),
-      cuentatipoid: yup.string().trim().required().min(36).max(36),
-      monedaid: yup.string().trim().required().min(36).max(36),
-      numero: yup.string().required().max(20),
-      cci: yup.string().required().max(20),
-      alias: yup.string().required().max(50),
-    })
-    .required();
-  const empresacuentabancariaValidated = empresacuentabancariaCreateSchema.validateSync(req.body, { abortEarly: false, stripUnknown: true });
+  const empresacuentabancariaCreateSchema = objectInput(
+    z.object({
+      empresaid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      bancoid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      cuentatipoid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      monedaid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      numero: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 20, "Debe tener como máximo 20 caracteres"),
+      ),
+      cci: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 20, "Debe tener como máximo 20 caracteres"),
+      ),
+      alias: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 50, "Debe tener como máximo 50 caracteres"),
+      ),
+    }),
+  );
+  const empresacuentabancariaValidated = empresacuentabancariaCreateSchema.parse(req.body);
   log.debug(line(), "empresacuentabancariaValidated:", empresacuentabancariaValidated);
 
   const empresacuentabancaria = await empresacuentabancariaService.createEmpresacuentabancariaService({

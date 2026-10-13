@@ -7,7 +7,7 @@ import { line, log } from "#root/src/utils/logger.pino.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { ClientError } from "#src/utils/CustomErrors.js";
 import * as jsonUtils from "#src/utils/jsonUtils.js";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 // ─── DTOs ────────────────────────────────────────────────────────────────────
 
@@ -71,12 +71,7 @@ export const createCedentelimiteService = async (dto: CreateCedentelimiteDto) =>
       }
 
       const filter_estado = [ESTADO.ACTIVO, ESTADO.ELIMINADO];
-      const cedentelimiteExistente = await cedentelimiteDao.getCedentelimiteByIdcedenteAndIdmoneda(
-        tx,
-        empresa.idempresa,
-        moneda.idmoneda,
-        filter_estado,
-      );
+      const cedentelimiteExistente = await cedentelimiteDao.getCedentelimiteByIdcedenteAndIdmoneda(tx, empresa.idempresa, moneda.idmoneda, filter_estado);
 
       if (cedentelimiteExistente) {
         log.warn(line(), "Ya existe un límite para el Cedente [" + dto.empresaid + "] y Moneda [" + dto.monedaid + "]");
@@ -88,8 +83,8 @@ export const createCedentelimiteService = async (dto: CreateCedentelimiteDto) =>
       const disponible = dto.disponible ?? total - usado;
 
       const cedentelimiteToCreate: Prisma.cedente_limiteCreateInput = {
-        cedentelimiteid: uuidv4(),
-        code: uuidv4().split("-")[0],
+        cedentelimiteid: randomUUID(),
+        code: randomUUID().split("-")[0],
         empresa: { connect: { idempresa: empresa.idempresa } },
         moneda: { connect: { idmoneda: moneda.idmoneda } },
         usado: usado,
@@ -134,11 +129,7 @@ export const updateCedentelimiteService = async (dto: UpdateCedentelimiteDto) =>
         fechamod: new Date(),
       };
 
-      const cedentelimiteUpdated = await cedentelimiteDao.updateCedentelimite(
-        tx,
-        cedentelimite.cedentelimiteid,
-        cedentelimiteToUpdate,
-      );
+      const cedentelimiteUpdated = await cedentelimiteDao.updateCedentelimite(tx, cedentelimite.cedentelimiteid, cedentelimiteToUpdate);
       log.debug(line(), "cedentelimiteUpdated:", cedentelimiteUpdated);
 
       return {};

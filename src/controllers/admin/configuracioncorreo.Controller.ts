@@ -1,7 +1,8 @@
 import { response } from "#src/utils/CustomResponseOk.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
-import * as yup from "yup";
+import { z } from "zod";
+import { objectInput, stringInput, numberInput, booleanInput, inputEmailPattern } from "#src/utils/validationInputs.js";
 
 import { activateConfiguracioncorreoService, createConfiguracioncorreoService, deleteConfiguracioncorreoService, getConfiguracioncorreoMasterService, getConfiguracioncorreosService, testConfiguracioncorreoService, updateConfiguracioncorreoService, type ConfiguracionCorreoCreateDto, type ConfiguracionCorreoUpdateDto, type TestConfiguracionCorreoDto } from "#root/src/services/admin/configuracioncorreo.Service.js";
 
@@ -13,22 +14,59 @@ export const getConfiguracioncorreos = async (req: Request, res: Response) => {
 
 export const createConfiguracioncorreo = async (req: Request, res: Response) => {
   log.debug(line(), "controller::createConfiguracioncorreo");
-  const schema = yup
-    .object()
-    .shape({
-      alias: yup.string().trim().required().max(200),
-      smtp_host: yup.string().trim().required().max(200),
-      smtp_port: yup.number().required(),
-      smtp_secure: yup.boolean().required(),
-      smtp_user: yup.string().trim().required().max(200),
-      smtp_pass: yup.string().trim().required().max(200),
-      smtp_name: yup.string().trim().required().max(200),
-      mail_backup: yup.string().trim().email().max(200).nullable(),
-      is_enabled: yup.boolean().required(),
-    })
-    .required();
+  const schema = objectInput(
+    z.object({
+      alias: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+        { trim: true },
+      ),
+      smtp_host: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+        { trim: true },
+      ),
+      smtp_port: numberInput(z.custom<number>((value) => typeof value === "number" && !Number.isNaN(value))),
+      smtp_secure: booleanInput(z.boolean()),
+      smtp_user: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+        { trim: true },
+      ),
+      smtp_pass: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+        { trim: true },
+      ),
+      smtp_name: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+        { trim: true },
+      ),
+      mail_backup: stringInput(
+        z
+          .string()
+          .refine((value) => value === "" || inputEmailPattern.test(value), "Debe ser un correo válido")
+          .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres")
+          .nullable()
+          .optional(),
+        { trim: true },
+      ),
+      is_enabled: booleanInput(z.boolean()),
+    }),
+  );
 
-  const validated = schema.validateSync({ ...req.body }, { abortEarly: false, stripUnknown: true }) as unknown as ConfiguracionCorreoCreateDto;
+  const validated = schema.parse({ ...req.body }) as unknown as ConfiguracionCorreoCreateDto;
 
   const idusuario = req.session_user?.usuario?.idusuario ?? 1;
   const created = await createConfiguracioncorreoService(validated, idusuario);
@@ -38,23 +76,68 @@ export const createConfiguracioncorreo = async (req: Request, res: Response) => 
 export const updateConfiguracioncorreo = async (req: Request, res: Response) => {
   log.debug(line(), "controller::updateConfiguracioncorreo");
   const { id } = req.params;
-  const schema = yup
-    .object()
-    .shape({
-      configuracioncorreoid: yup.string().trim().required().min(36).max(36),
-      alias: yup.string().trim().required().max(200),
-      smtp_host: yup.string().trim().required().max(200),
-      smtp_port: yup.number().required(),
-      smtp_secure: yup.boolean().required(),
-      smtp_user: yup.string().trim().required().max(200),
-      smtp_pass: yup.string().trim().max(200).nullable(),
-      smtp_name: yup.string().trim().required().max(200),
-      mail_backup: yup.string().trim().email().max(200).nullable(),
-      is_enabled: yup.boolean().required(),
-    })
-    .required();
+  const schema = objectInput(
+    z.object({
+      configuracioncorreoid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      alias: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+        { trim: true },
+      ),
+      smtp_host: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+        { trim: true },
+      ),
+      smtp_port: numberInput(z.custom<number>((value) => typeof value === "number" && !Number.isNaN(value))),
+      smtp_secure: booleanInput(z.boolean()),
+      smtp_user: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+        { trim: true },
+      ),
+      smtp_pass: stringInput(
+        z
+          .string()
+          .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres")
+          .nullable()
+          .optional(),
+        { trim: true },
+      ),
+      smtp_name: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+        { trim: true },
+      ),
+      mail_backup: stringInput(
+        z
+          .string()
+          .refine((value) => value === "" || inputEmailPattern.test(value), "Debe ser un correo válido")
+          .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres")
+          .nullable()
+          .optional(),
+        { trim: true },
+      ),
+      is_enabled: booleanInput(z.boolean()),
+    }),
+  );
 
-  const validated = schema.validateSync({ configuracioncorreoid: id, ...req.body }, { abortEarly: false, stripUnknown: true }) as unknown as ConfiguracionCorreoUpdateDto;
+  const validated = schema.parse({ configuracioncorreoid: id, ...req.body }) as unknown as ConfiguracionCorreoUpdateDto;
 
   const idusuario = req.session_user?.usuario?.idusuario ?? 1;
   await updateConfiguracioncorreoService(validated, idusuario);
@@ -86,15 +169,27 @@ export const getConfiguracioncorreoMaster = async (req: Request, res: Response) 
 export const testConfiguracioncorreo = async (req: Request, res: Response) => {
   log.debug(line(), "controller::testConfiguracioncorreo");
   const { id } = req.params;
-  const schema = yup
-    .object()
-    .shape({
-      configuracioncorreoid: yup.string().trim().required().min(36).max(36),
-      email_destinatario: yup.string().email().required().max(200),
-    })
-    .required();
+  const schema = objectInput(
+    z.object({
+      configuracioncorreoid: stringInput(
+        z
+          .string()
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length >= 36, "Debe tener al menos 36 caracteres")
+          .refine((value) => value.length <= 36, "Debe tener como máximo 36 caracteres"),
+        { trim: true },
+      ),
+      email_destinatario: stringInput(
+        z
+          .string()
+          .refine((value) => value === "" || inputEmailPattern.test(value), "Debe ser un correo válido")
+          .refine((value) => value.length > 0, "Campo requerido")
+          .refine((value) => value.length <= 200, "Debe tener como máximo 200 caracteres"),
+      ),
+    }),
+  );
 
-  const validated = schema.validateSync({ configuracioncorreoid: id, ...req.body }, { abortEarly: false, stripUnknown: true }) as unknown as TestConfiguracionCorreoDto;
+  const validated = schema.parse({ configuracioncorreoid: id, ...req.body }) as unknown as TestConfiguracionCorreoDto;
 
   const result = await testConfiguracioncorreoService(validated);
   response(res, 200, result);
