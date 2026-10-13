@@ -25,12 +25,25 @@ function environment(port: number): NodeJS.ProcessEnv {
     if (process.env[key]) values[key] = process.env[key];
   }
   Object.assign(values, {
-    NODE_ENV: "production", TZ: "UTC", PORT: String(port), WEB_SITE: "http://127.0.0.1", WEB_SITE_PORT: String(port),
-    TOKEN_KEY_JWT: "runtime-synthetic-jwt", TOKEN_KEY_OTP: "runtime-synthetic-otp", MAIL_ENCRYPTION_KEY_COFIG: "runtime-synthetic-mail",
-    TELEGRAM_ACTIVE: "false", LOG_LEVEL_CONSOLE: "info", LOG_LEVEL_FILE: "silent",
-    PRISMA_DATABASE_FACTORING_NICKNAME: "runtime-exclusive-test", PRISMA_DATABASE_FACTORING_URL: databaseURL,
-    PRISMA_DATABASE_FACTORING_TRANSACTION_TIMEOUT: "10000", PRISMA_DATABASE_FACTORING_SLOW_QUERY_THRESHOLD: "200",
-    DECOLECTA_BASE_URL: "http://127.0.0.1:1", DECOLECTA_API_TOKEN: "synthetic", APISPERU_BASE_URL: "http://127.0.0.1:1", APISPERU_API_TOKEN: "synthetic",
+    NODE_ENV: "production",
+    TZ: "UTC",
+    PORT: String(port),
+    WEB_SITE: "http://127.0.0.1",
+    WEB_SITE_PORT: String(port),
+    TOKEN_KEY_JWT: "runtime-synthetic-jwt",
+    TOKEN_KEY_OTP: "runtime-synthetic-otp",
+    MAIL_ENCRYPTION_KEY_COFIG: "runtime-synthetic-mail",
+    TELEGRAM_ACTIVE: "false",
+    LOG_LEVEL_CONSOLE: "info",
+    LOG_LEVEL_FILE: "silent",
+    PRISMA_DATABASE_FACTORING_NICKNAME: "runtime-exclusive-test",
+    PRISMA_DATABASE_FACTORING_URL: databaseURL,
+    PRISMA_DATABASE_FACTORING_TRANSACTION_TIMEOUT: "10000",
+    PRISMA_DATABASE_FACTORING_SLOW_QUERY_THRESHOLD: "200",
+    DECOLECTA_BASE_URL: "http://127.0.0.1:1",
+    DECOLECTA_API_TOKEN: "synthetic",
+    APISPERU_BASE_URL: "http://127.0.0.1:1",
+    APISPERU_API_TOKEN: "synthetic",
   });
   for (const suffix of ["QUERY", "INFO", "WARN", "ERROR", "SLOW_QUERIES"]) values[`PRISMA_DATABASE_FACTORING_LOG_${suffix}`] = "false";
   for (const suffix of ["IMPORTANT_TOKEN", "IMPORTANT_CHATID", "IMFORMATION_TOKEN", "IMFORMATION_CHATID", "WARING_TOKEN", "WARRING_CHATID", "ERROR_TOKEN", "ERROR_CHATID"]) values[`TELEGRAM_${suffix}`] = "synthetic";
@@ -39,27 +52,40 @@ function environment(port: number): NodeJS.ProcessEnv {
 
 async function freePort() {
   const server = createServer();
-  await new Promise<void>((resolve, reject) => { server.once("error", reject); server.listen(0, "127.0.0.1", resolve); });
+  await new Promise<void>((resolve, reject) => {
+    server.once("error", reject);
+    server.listen(0, "127.0.0.1", resolve);
+  });
   const address = server.address();
   if (!address || typeof address === "string") throw new Error("No se pudo reservar puerto local.");
   const port = address.port;
-  await new Promise<void>((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
+  await new Promise<void>((resolve, reject) => server.close((error) => (error ? reject(error) : resolve())));
   return port;
 }
 
 function launch(env: NodeJS.ProcessEnv) {
   const args = process.platform === "win32" ? ["--import", pathToFileURL(bridge).href] : [];
   const child = spawn(process.execPath, [...args, path.join(buildDir, "index.js")], {
-    cwd: workspace, env, shell: false, windowsHide: true,
+    cwd: workspace,
+    env,
+    shell: false,
+    windowsHide: true,
     stdio: process.platform === "win32" ? ["ignore", "pipe", "pipe", "ipc"] : ["ignore", "pipe", "pipe"],
   });
   children.add(child);
   let output = "";
-  child.stdout!.on("data", chunk => { output = (output + chunk.toString()).slice(-64000); });
-  child.stderr!.on("data", chunk => { output = (output + chunk.toString()).slice(-64000); });
+  child.stdout!.on("data", (chunk) => {
+    output = (output + chunk.toString()).slice(-64000);
+  });
+  child.stderr!.on("data", (chunk) => {
+    output = (output + chunk.toString()).slice(-64000);
+  });
   const exited = new Promise<{ code: number | null; signal: NodeJS.Signals | null }>((resolve, reject) => {
     child.once("error", reject);
-    child.once("close", (code, signal) => { children.delete(child); resolve({ code, signal }); });
+    child.once("close", (code, signal) => {
+      children.delete(child);
+      resolve({ code, signal });
+    });
   });
   return { child, exited, output: () => output };
 }
@@ -67,10 +93,15 @@ function launch(env: NodeJS.ProcessEnv) {
 async function deadline<T>(promise: Promise<T>, milliseconds: number): Promise<T> {
   let timer: ReturnType<typeof setTimeout>;
   try {
-    return await Promise.race([promise, new Promise<never>((_, reject) => {
-      timer = setTimeout(() => reject(new Error("El proceso compilado excedió el tiempo permitido.")), milliseconds);
-    })]);
-  } finally { clearTimeout(timer!); }
+    return await Promise.race([
+      promise,
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(() => reject(new Error("El proceso compilado excedió el tiempo permitido.")), milliseconds);
+      }),
+    ]);
+  } finally {
+    clearTimeout(timer!);
+  }
 }
 
 async function ready(instance: ReturnType<typeof launch>, port: number) {
@@ -78,13 +109,14 @@ async function ready(instance: ReturnType<typeof launch>, port: number) {
     if (instance.child.exitCode !== null || instance.child.signalCode !== null) throw new Error(`El backend terminó antes de escuchar: ${instance.output().replaceAll(databaseURL, "[base exclusiva]")}`);
     try {
       const response = await fetch(`http://127.0.0.1:${port}/ping`, {
-        headers: { Origin: "https://app.finanzatech.com", "User-Agent": "Mozilla/5.0 RuntimeRegression" }, signal: AbortSignal.timeout(1000),
+        headers: { Origin: "https://app.finanzatech.com", "User-Agent": "Mozilla/5.0 RuntimeRegression" },
+        signal: AbortSignal.timeout(1000),
       });
       expect(response.status).toBe(200);
       return response;
     } catch (error) {
       if (error instanceof Error && error.name === "AssertionError") throw error;
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
   }
   throw new Error("El backend compilado no respondió en localhost.");
@@ -109,7 +141,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   for (const child of children) {
-    const closed = new Promise(resolve => child.once("close", resolve));
+    const closed = new Promise((resolve) => child.once("close", resolve));
     child.kill("SIGKILL");
     await deadline(closed, 10000);
   }
@@ -150,8 +182,10 @@ describe("Backend compilado: proceso real y MariaDB exclusiva", () => {
     url.searchParams.set("pool_timeout", "2");
     const instance = launch({ ...environment(port), PRISMA_DATABASE_FACTORING_URL: url.href });
     expect(await deadline(instance.exited, 45000)).toEqual({ code: 1, signal: null });
-    expect(instance.output()).toContain("Max retries reached.");
-    expect(instance.output()).toContain("Error starting server:");
+    expect(instance.output()).toContain("Se agotaron los intentos de conexión de arranque.");
+    expect(instance.output()).toContain('"etapa":"base_de_datos","evento":"fallo"');
+    expect(instance.output()).not.toContain('"evento":"listo"');
+    expect(instance.output()).not.toContain("runtime-deliberately-invalid-password");
     expect(instance.output()).not.toContain("Database successful connection.");
     expect(instance.output()).not.toContain("Server running at");
     await expect(fetch(`http://127.0.0.1:${port}/ping`, { signal: AbortSignal.timeout(1000) })).rejects.toThrow();

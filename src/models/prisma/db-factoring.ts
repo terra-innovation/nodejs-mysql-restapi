@@ -4,6 +4,7 @@ import { env, isProduction } from "#src/config.js";
 import { getContext } from "#src/utils/context/loggerContext.js";
 import { line, log } from "#src/utils/logger.pino.js";
 import { createMariaDbAdapter } from "#src/models/prisma/mariadbAdapter.js";
+import { startupFailure } from "#src/utils/startupDiagnostics.js";
 
 type InitOptions = {
   retries?: number;
@@ -12,6 +13,7 @@ type InitOptions = {
 
 export class PrismaFTManager {
   private static instance: PrismaClient;
+  private static connectionValidated = false;
   private static transactionTimeout = env.PRISMA_DATABASE_FACTORING_TRANSACTION_TIMEOUT || 8000;
   private static slowQueryThreshold = env.PRISMA_DATABASE_FACTORING_SLOW_QUERY_THRESHOLD || 200;
   private static logLevels = this.getLogLevels();
@@ -27,17 +29,16 @@ export class PrismaFTManager {
   }
 
   private static createClient(): PrismaClient {
-    const logDefs = this.logLevels.map(
-      (level): Prisma.LogDefinition => ({
-        level,
-        emit: "event",
-      }),
-    );
+    const logDefs = this.logLevels.map((level): Prisma.LogDefinition => ({
+      level,
+      emit: "event",
+    }));
 
-    const createClient = () => new PrismaClient({
-      adapter: createMariaDbAdapter(env.PRISMA_DATABASE_FACTORING_URL),
-      log: logDefs,
-    });
+    const createClient = () =>
+      new PrismaClient({
+        adapter: createMariaDbAdapter(env.PRISMA_DATABASE_FACTORING_URL),
+        log: logDefs,
+      });
     const client = isProduction ? createClient() : (global.clientFT ?? (global.clientFT = createClient()));
 
     return client;
@@ -57,6 +58,7 @@ export class PrismaFTManager {
 
     if (this.logLevels.includes("query")) {
       client.$on("query" as never, (e: Prisma.QueryEvent) => {
+        if (!this.connectionValidated) return;
         const store = getContext();
         const duration = Number(e.duration);
         const isSlow = duration > this.slowQueryThreshold;
@@ -76,17 +78,18 @@ export class PrismaFTManager {
       });
     }
     if (this.logLevels.includes("warn")) {
-      client.$on("warn" as never, (e: Prisma.LogEvent) => log.warn(line(), `[Prisma] [${env.PRISMA_DATABASE_FACTORING_NICKNAME}] ${e.message}`));
+      client.$on("warn" as never, (e: Prisma.LogEvent) => log.warn(line(), this.connectionValidated ? `[Prisma] [${env.PRISMA_DATABASE_FACTORING_NICKNAME}] ${e.message}` : "[Prisma] Advertencia del motor durante arranque; consulte la etapa y el resultado de conexión."));
     }
     if (this.logLevels.includes("info")) {
-      client.$on("info" as never, (e: Prisma.LogEvent) => log.info(line(), `[Prisma] [${env.PRISMA_DATABASE_FACTORING_NICKNAME}] ${e.message}`));
+      client.$on("info" as never, (e: Prisma.LogEvent) => log.info(line(), this.connectionValidated ? `[Prisma] [${env.PRISMA_DATABASE_FACTORING_NICKNAME}] ${e.message}` : "[Prisma] Inicializando el motor de base de datos."));
     }
     if (this.logLevels.includes("error")) {
-      client.$on("error" as never, (e: Prisma.LogEvent) => log.error(line(), `[Prisma] [${env.PRISMA_DATABASE_FACTORING_NICKNAME}] ${e.message}`));
+      client.$on("error" as never, (e: Prisma.LogEvent) => log.error(line(), this.connectionValidated ? `[Prisma] [${env.PRISMA_DATABASE_FACTORING_NICKNAME}] ${e.message}` : "[Prisma] Error del motor durante arranque; consulte la etapa y el resultado de conexión."));
     }
   }
 
   public static async validateConnection({ retries = 5, baseDelayMs = 500 }: InitOptions = {}) {
+    PrismaFTManager.connectionValidated = false;
     let attempt = 0;
     while (attempt < retries) {
       try {
@@ -94,13 +97,14 @@ export class PrismaFTManager {
         await this.client.$connect();
         // El adaptador puede inicializar el pool sin autenticar una conexión real.
         await this.client.$queryRaw`SELECT 1`;
+        PrismaFTManager.connectionValidated = true;
         log.info(line(), `[Prisma] [${env.PRISMA_DATABASE_FACTORING_NICKNAME}] Database successful connection.`);
         return;
       } catch (error) {
         attempt++;
-        log.warn(line(), `[Prisma] [${env.PRISMA_DATABASE_FACTORING_NICKNAME}] Connection failed:`, error);
+        log.warn(line(), "[Prisma] Falló la comprobación de conexión de arranque.", { intento: attempt, maximo: retries, ...startupFailure(error) });
         if (attempt >= retries) {
-          log.error(line(), `[Prisma] [${env.PRISMA_DATABASE_FACTORING_NICKNAME}] Max retries reached.`, error);
+          log.error(line(), "[Prisma] Se agotaron los intentos de conexión de arranque.", startupFailure(error));
           throw error;
         }
         const delay = baseDelayMs * 2 ** (attempt - 1);
