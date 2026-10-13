@@ -14,6 +14,11 @@ export default [
   pluginJs.configs.recommended, // Base JS rules from ESLint
 
   {
+    files: ["scripts/rehearsal/*.mjs"],
+    languageOptions: { sourceType: "module", globals: globals.node },
+  },
+
+  {
     files: ["src/**/*.{ts,tsx,js,jsx}"],
     languageOptions: {
       sourceType: "module",

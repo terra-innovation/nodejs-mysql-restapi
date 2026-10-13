@@ -1,0 +1,74 @@
+name: ft-ubuntu-arm64-lab
+services:
+  db:
+    image: mariadb:11.4.10
+    platform: linux/arm64
+    environment:
+      MARIADB_ROOT_PASSWORD: ${LAB_DB_ROOT_PASSWORD:?prepare primero}
+      MARIADB_DATABASE: ft_rehearsal
+      MARIADB_USER: ft_lab
+      MARIADB_PASSWORD: ${LAB_DB_PASSWORD:?prepare primero}
+    command: ["--event-scheduler=OFF", "--default-time-zone=+00:00", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    volumes:
+      - db-data:/var/lib/mysql
+      - ${LAB_STATE}/init.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    networks: [isolated]
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+    labels:
+      ft.rehearsal: ubuntu-arm64
+  server:
+    image: ft-ubuntu-arm64-lab:node24
+    platform: linux/arm64
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      LAB_SFTP_PASSWORD: ${LAB_SFTP_PASSWORD:?prepare primero}
+    volumes:
+      - application:/opt/finanzatech
+      - pm2-state:/root/.pm2
+      - ${LAB_STATE}/release:/release:ro
+    networks: [isolated]
+    depends_on:
+      db:
+        condition: service_healthy
+    labels:
+      ft.rehearsal: ubuntu-arm64
+  gateway:
+    image: ft-ubuntu-arm64-lab:node24
+    platform: linux/arm64
+    entrypoint: ["nginx", "-g", "daemon off;"]
+    ports:
+      - "127.0.0.1:18080:80"
+      - "127.0.0.1:2222:22"
+    volumes:
+      - ./gateway.conf:/etc/nginx/nginx.conf:ro
+    networks: [isolated, edge]
+    depends_on: [server]
+    labels:
+      ft.rehearsal: ubuntu-arm64
+  installer:
+    image: ft-ubuntu-arm64-lab:node24
+    platform: linux/arm64
+    profiles: [tools]
+    entrypoint: ["npm"]
+    command: ["ci", "--omit=dev", "--ignore-scripts", "--no-audit", "--no-fund"]
+    working_dir: /opt/finanzatech/ft-app-backend
+    volumes:
+      - application:/opt/finanzatech
+      - npm-cache:/root/.npm
+    networks: [installation]
+networks:
+  isolated:
+    internal: true
+  installation: {}
+  edge: {}
+volumes:
+  application: {}
+  db-data: {}
+  pm2-state: {}
+  npm-cache: {}
