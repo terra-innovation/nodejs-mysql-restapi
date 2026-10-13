@@ -1,14 +1,16 @@
 // src/env.ts
-import { config } from "dotenv";
-import { join } from "path";
+import { loadEnvironment } from "#src/utils/loadEnvironment.js";
 import { z } from "zod";
 
-if (process.env.NODE_ENV !== "production") {
-  config({ path: join(process.cwd(), `.env.${process.env.NODE_ENV || "development"}`) });
+export const environmentSource = loadEnvironment();
+
+for (const [key, fallback] of Object.entries({ PORT: 3000, WEB_SITE_PORT: 0, DECOLECTA_BASE_URL: "URL predeterminada del proveedor", APISPERU_BASE_URL: "URL predeterminada del proveedor" })) {
+  if (process.env[key] === undefined) console.info(`[config] No se encontró ${key}; se usará el valor predeterminado: ${fallback}.`);
 }
 
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]),
+  APP_STAGE: z.enum(["development", "production", "test", "qa", "preproduction"]).optional(),
   PORT: z.coerce.number().default(3000),
   WEB_SITE: z.string().url(),
   WEB_SITE_PORT: z.coerce.number().default(0),
@@ -59,9 +61,10 @@ try {
 } catch (error) {
   if (error instanceof z.ZodError) {
     error.issues.forEach((err) => {
-      console.error(`Environment variable validation failed: ${err.path.join(".")}: ${err.message}`);
+      const key = err.path.join(".");
+      console.error(`[config] Variable ${key}: ${process.env[key] === undefined ? "ausente" : "inválida"}. Regla: ${err.code}. No se muestra su valor.`);
     });
-    process.exit(1); // Exit the process with an error code
+    throw Object.assign(new Error("La configuración contiene variables ausentes o inválidas."), { code: "CONFIG_INVALID" });
   }
   throw error; // Re-throw if it's not a ZodError
 }
