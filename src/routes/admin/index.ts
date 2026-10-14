@@ -33,6 +33,7 @@ import admin_zlaboratorioRoutes from "#root/src/routes/admin/zlaboratorio.routes
 
 import admin_administracionRoutes from "#root/src/routes/admin/administracion.routes.js";
 import admin_splaft_registrooperacionRoutes from "#root/src/routes/admin/splaft/registrooperacion.routes.js";
+import admin_splaft_saldocontableRoutes from "#src/routes/admin/splaft/saldocontable.routes.js";
 
 const router = Router();
 
@@ -59,6 +60,7 @@ router.use(admin_pagadorlimiteRoutes);
 router.use(admin_factoringcarteraRoutes);
 
 router.use(admin_splaft_registrooperacionRoutes);
+router.use(admin_splaft_saldocontableRoutes);
 
 router.use(admin_servicio_factoring_factoringRoutes);
 router.use(admin_servicio_factoring_factoringpropuestaRoutes);

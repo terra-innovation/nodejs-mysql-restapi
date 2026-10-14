@@ -180,6 +180,13 @@ export const generarMenuAdmin = (usuario: UsuarioConRoles) => {
             url: "/admin/splaft/registrooperacion/lista",
             breadcrumbs: true,
           },
+          {
+            id: "admin-splaft-saldocontable-lista",
+            title: "Saldo Contable",
+            type: "item",
+            url: "/admin/splaft/saldocontable/lista",
+            breadcrumbs: true,
+          },
         ],
       },
       {

@@ -18,6 +18,14 @@
 - En migraciones, comparar la misma selección de pruebas antes/después; no debilitar expectativas para obtener resultados aprobados.
 - No mostrar secretos de `.env`, credenciales o datos de clientes en contexto, logs o reportes.
 
+## Acceso y mantenimiento de la base de datos
+
+- Se permite acceso de solo lectura a desarrollo cuando sea pertinente a la tarea. Leer explícitamente `.env.development`; no usar una URL heredada ni mostrar credenciales o filas de clientes en logs/contexto.
+- Cualquier escritura directa, modificación de datos o cambio de estructura en desarrollo requiere confirmación expresa del usuario para ese alcance concreto. La autorización de una tarea anterior no es un permiso permanente. No ejecutar DDL, semillas, correcciones, `db push` o migraciones por iniciativa propia.
+- Para DDL autorizado usar `npm.cmd run db:ddl -- --plan <manifiesto>`: primero revisión sin cambios; aplicar únicamente con `--apply`, huellas de plan/destino y referencia de la autorización. Consultar [la guía del script](scripts/database/README.md). No sustituir la aprobación humana por argumentos del script.
+- Flujo obligatorio: crear/modificar tablas, campos y relaciones directamente en la base autorizada; verificar el resultado; después ejecutar `npm.cmd run prisma-sync` contra ese mismo destino para actualizar schema y cliente. No editar manualmente el schema como sustituto ni usar Prisma Migrate como flujo alternativo.
+- Las escrituras propias del módulo mediante sus endpoints forman parte del uso autorizado de la aplicación; esto no habilita mantenimiento directo de la base. Las pruebas usan datos sintéticos en MariaDB desechable y nunca escriben en desarrollo o producción.
+
 ## Validación
 
 - Usar la skill [backend-validation](.agents/skills/backend-validation/SKILL.md) para seleccionar y ejecutar comprobaciones del backend.

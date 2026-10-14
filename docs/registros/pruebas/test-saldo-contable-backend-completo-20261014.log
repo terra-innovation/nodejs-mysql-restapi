@@ -1,0 +1,793 @@
+
+> ft-app-backend@1.0.1 test:vitest
+> cross-env TZ=UTC NODE_ENV=test vitest run --config vitest.config.ts
+
+
+ RUN  v5.0.3 D:/06_Workspace_nodejs/ft-app-backend
+
+node:fs:483
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open 'D:\10_Workspace_react\ft-app-frontend-mantis\src\utils\dateUtils.js'
+    at Object.readFileSync (node:fs:483:20)
+    at Object.<anonymous> (D:\06_Workspace_nodejs\ft-app-backend\scripts\analisis\fecha-liquidacion-frontend.cjs:8:19)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\10_Workspace_react\\ft-app-frontend-mantis\\src\\utils\\dateUtils.js'
+}
+
+Node.js v24.21.0
+node:fs:483
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open 'D:\10_Workspace_react\ft-app-frontend-mantis\src\utils\dateUtils.js'
+    at Object.readFileSync (node:fs:483:20)
+    at Object.<anonymous> (D:\06_Workspace_nodejs\ft-app-backend\scripts\analisis\fecha-liquidacion-frontend.cjs:8:19)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\10_Workspace_react\\ft-app-frontend-mantis\\src\\utils\\dateUtils.js'
+}
+
+Node.js v24.21.0
+stdout | tests/vitest/migrated/unit/services/admin/factoringliquidacion.audit.test.ts
+AUDIT_SUMMARY {"total":0,"groups":{},"issueCounts":{},"observationCounts":{},"displayedDateDiscrepancies":0}
+
+ ❯ tests/vitest/migrated/unit/services/admin/factoringliquidacion.audit.test.ts (2262 tests | 2262 skipped) 495ms
+node:fs:483
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open 'D:\10_Workspace_react\ft-app-frontend-mantis\src\utils\dateUtils.js'
+    at Object.readFileSync (node:fs:483:20)
+    at Object.<anonymous> (D:\06_Workspace_nodejs\ft-app-backend\scripts\analisis\fecha-liquidacion-frontend.cjs:8:19)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\10_Workspace_react\\ft-app-frontend-mantis\\src\\utils\\dateUtils.js'
+}
+
+Node.js v24.21.0
+node:fs:483
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open 'D:\10_Workspace_react\ft-app-frontend-mantis\src\utils\dateUtils.js'
+    at Object.readFileSync (node:fs:483:20)
+    at Object.<anonymous> (D:\06_Workspace_nodejs\ft-app-backend\scripts\analisis\fecha-liquidacion-frontend.cjs:8:19)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\10_Workspace_react\\ft-app-frontend-mantis\\src\\utils\\dateUtils.js'
+}
+
+Node.js v24.21.0
+node:fs:483
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open 'D:\10_Workspace_react\ft-app-frontend-mantis\src\utils\dateUtils.js'
+    at Object.readFileSync (node:fs:483:20)
+    at Object.<anonymous> (D:\06_Workspace_nodejs\ft-app-backend\scripts\analisis\fecha-liquidacion-frontend.cjs:8:19)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\10_Workspace_react\\ft-app-frontend-mantis\\src\\utils\\dateUtils.js'
+}
+
+Node.js v24.21.0
+node:fs:483
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open 'D:\10_Workspace_react\ft-app-frontend-mantis\src\utils\dateUtils.js'
+    at Object.readFileSync (node:fs:483:20)
+    at Object.<anonymous> (D:\06_Workspace_nodejs\ft-app-backend\scripts\analisis\fecha-liquidacion-frontend.cjs:8:19)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\10_Workspace_react\\ft-app-frontend-mantis\\src\\utils\\dateUtils.js'
+}
+
+Node.js v24.21.0
+node:fs:483
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open 'D:\10_Workspace_react\ft-app-frontend-mantis\src\utils\dateUtils.js'
+    at Object.readFileSync (node:fs:483:20)
+    at Object.<anonymous> (D:\06_Workspace_nodejs\ft-app-backend\scripts\analisis\fecha-liquidacion-frontend.cjs:8:19)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\10_Workspace_react\\ft-app-frontend-mantis\\src\\utils\\dateUtils.js'
+}
+
+Node.js v24.21.0
+node:fs:483
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open 'D:\10_Workspace_react\ft-app-frontend-mantis\src\utils\dateUtils.js'
+    at Object.readFileSync (node:fs:483:20)
+    at Object.<anonymous> (D:\06_Workspace_nodejs\ft-app-backend\scripts\analisis\fecha-liquidacion-frontend.cjs:8:19)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\10_Workspace_react\\ft-app-frontend-mantis\\src\\utils\\dateUtils.js'
+}
+
+Node.js v24.21.0
+node:fs:483
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open 'D:\10_Workspace_react\ft-app-frontend-mantis\src\utils\dateUtils.js'
+    at Object.readFileSync (node:fs:483:20)
+    at Object.<anonymous> (D:\06_Workspace_nodejs\ft-app-backend\scripts\analisis\fecha-liquidacion-frontend.cjs:8:19)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\10_Workspace_react\\ft-app-frontend-mantis\\src\\utils\\dateUtils.js'
+}
+
+Node.js v24.21.0
+node:fs:483
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open 'D:\10_Workspace_react\ft-app-frontend-mantis\src\utils\dateUtils.js'
+    at Object.readFileSync (node:fs:483:20)
+    at Object.<anonymous> (D:\06_Workspace_nodejs\ft-app-backend\scripts\analisis\fecha-liquidacion-frontend.cjs:8:19)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\10_Workspace_react\\ft-app-frontend-mantis\\src\\utils\\dateUtils.js'
+}
+
+Node.js v24.21.0
+node:fs:483
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open 'D:\10_Workspace_react\ft-app-frontend-mantis\src\utils\dateUtils.js'
+    at Object.readFileSync (node:fs:483:20)
+    at Object.<anonymous> (D:\06_Workspace_nodejs\ft-app-backend\scripts\analisis\fecha-liquidacion-frontend.cjs:8:19)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\10_Workspace_react\\ft-app-frontend-mantis\\src\\utils\\dateUtils.js'
+}
+
+Node.js v24.21.0
+node:fs:483
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open 'D:\10_Workspace_react\ft-app-frontend-mantis\src\utils\dateUtils.js'
+    at Object.readFileSync (node:fs:483:20)
+    at Object.<anonymous> (D:\06_Workspace_nodejs\ft-app-backend\scripts\analisis\fecha-liquidacion-frontend.cjs:8:19)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\10_Workspace_react\\ft-app-frontend-mantis\\src\\utils\\dateUtils.js'
+}
+
+Node.js v24.21.0
+node:fs:483
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open 'D:\10_Workspace_react\ft-app-frontend-mantis\src\utils\dateUtils.js'
+    at Object.readFileSync (node:fs:483:20)
+    at Object.<anonymous> (D:\06_Workspace_nodejs\ft-app-backend\scripts\analisis\fecha-liquidacion-frontend.cjs:8:19)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\10_Workspace_react\\ft-app-frontend-mantis\\src\\utils\\dateUtils.js'
+}
+
+Node.js v24.21.0
+node:fs:483
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open 'D:\10_Workspace_react\ft-app-frontend-mantis\src\utils\dateUtils.js'
+    at Object.readFileSync (node:fs:483:20)
+    at Object.<anonymous> (D:\06_Workspace_nodejs\ft-app-backend\scripts\analisis\fecha-liquidacion-frontend.cjs:8:19)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\10_Workspace_react\\ft-app-frontend-mantis\\src\\utils\\dateUtils.js'
+}
+
+Node.js v24.21.0
+node:fs:483
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open 'D:\10_Workspace_react\ft-app-frontend-mantis\src\utils\dateUtils.js'
+    at Object.readFileSync (node:fs:483:20)
+    at Object.<anonymous> (D:\06_Workspace_nodejs\ft-app-backend\scripts\analisis\fecha-liquidacion-frontend.cjs:8:19)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\10_Workspace_react\\ft-app-frontend-mantis\\src\\utils\\dateUtils.js'
+}
+
+Node.js v24.21.0
+ ❯ tests/vitest/migrated/unit/services/factoring.dateTrace.test.ts (14 tests | 14 failed) 10406ms
+   ❯ Trazabilidad factura → operación → propuesta → aceptación → inicio → liquidación (14)
+     × factura 2026-10-30, propuesta 2026-10-30, pago con diferencia -5 581ms
+     × factura 2026-10-30, propuesta 2026-10-30, pago con diferencia 0 437ms
+     × factura 2026-10-30, propuesta 2026-10-30, pago con diferencia 1 1447ms
+     × factura 2026-10-30, propuesta 2026-10-30, pago con diferencia 10 707ms
+     × factura 2026-12-31, propuesta 2026-12-31, pago con diferencia -5 683ms
+     × factura 2026-12-31, propuesta 2026-12-31, pago con diferencia 0 615ms
+     × factura 2026-12-31, propuesta 2026-12-31, pago con diferencia 1 538ms
+     × factura 2026-12-31, propuesta 2026-12-31, pago con diferencia 10 520ms
+     × factura 2028-02-29, propuesta 2028-02-29, pago con diferencia -5 538ms
+     × factura 2028-02-29, propuesta 2028-02-29, pago con diferencia 0 470ms
+     × factura 2028-02-29, propuesta 2028-02-29, pago con diferencia 1 590ms
+     × factura 2028-02-29, propuesta 2028-02-29, pago con diferencia 10 1647ms
+     × factura 2026-10-30, propuesta 2026-11-02, pago con diferencia 0 693ms
+     × factura 2026-10-30, propuesta 2026-11-02, pago con diferencia 1 931ms
+[16:36:45.420] [34mDEBUG[39m: [36mArchivo aceptado sin firma: documento.txt, extensión: .txt[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "(anonymous) (D:/06_Workspace_nodejs/ft-app-backend/src/middlewares/archivoMiddleware.ts:140)"
+    [35menv[39m: "test"
+[16:36:45.560] [31mERROR[39m: [36mNo se proporcionó ningún archivo[39m
+    [35mlog[39m: "error"
+    [35mlocation[39m: "(anonymous) (D:/06_Workspace_nodejs/ft-app-backend/src/middlewares/archivoMiddleware.ts:117)"
+    [35menv[39m: "test"
+[16:36:45.632] [31mERROR[39m: [36mExtensión de archivo no permitida: [.exe] en archivo [malware.exe][39m
+    [35mlog[39m: "error"
+    [35mlocation[39m: "fileFilter (D:/06_Workspace_nodejs/ft-app-backend/src/middlewares/archivoMiddleware.ts:78)"
+    [35menv[39m: "test"
+[16:36:45.650] [31mERROR[39m: 
+    [35mlog[39m: "error"
+    [35mlocation[39m: "(anonymous) (D:/06_Workspace_nodejs/ft-app-backend/src/middlewares/archivoMiddleware.ts:103)"
+    [35menv[39m: "test"
+    error: {
+      "name": "Error",
+      "message": "Archivo no permitido",
+      "stack":
+          Error: Archivo no permitido
+              at fileFilter (D:/06_Workspace_nodejs/ft-app-backend/src/middlewares/archivoMiddleware.ts:79:17)
+              at wrappedFileFilter (D:\06_Workspace_nodejs\ft-app-backend\node_modules\multer\index.js:134:7)
+              at Multipart.<anonymous> (D:\06_Workspace_nodejs\ft-app-backend\node_modules\multer\lib\make-middleware.js:344:7)
+              at Multipart.emit (node:events:514:28)
+              at HeaderParser.cb (D:\06_Workspace_nodejs\ft-app-backend\node_modules\busboy\lib\types\multipart.js:358:14)
+              at HeaderParser.push (D:\06_Workspace_nodejs\ft-app-backend\node_modules\busboy\lib\types\multipart.js:162:20)
+              at SBMH.ssCb [as _cb] (D:\06_Workspace_nodejs\ft-app-backend\node_modules\busboy\lib\types\multipart.js:394:37)
+              at feed (D:\06_Workspace_nodejs\ft-app-backend\node_modules\streamsearch\lib\sbmh.js:219:14)
+              at SBMH.push (D:\06_Workspace_nodejs\ft-app-backend\node_modules\streamsearch\lib\sbmh.js:104:16)
+              at Multipart._write (D:\06_Workspace_nodejs\ft-app-backend\node_modules\busboy\lib\types\multipart.js:567:19)
+    }
+[16:36:45.666] [34mDEBUG[39m: [36mservice::admin::simulateFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.simulateFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:402)"
+    [35menv[39m: "test"
+[16:36:45.730] [33mWARN[39m: [36mFactoring no tiene propuesta aceptada[39m
+    [35mlog[39m: "warn"
+    [35mlocation[39m: "runSimulation (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:152)"
+    [35menv[39m: "test"
+[16:36:45.757] [34mDEBUG[39m: [36mservice::admin::simulateFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.simulateFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:402)"
+    [35menv[39m: "test"
+[16:36:45.766] [33mWARN[39m: [36mFactoring no tiene propuesta aceptada[39m
+    [35mlog[39m: "warn"
+    [35mlocation[39m: "runSimulation (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:152)"
+    [35menv[39m: "test"
+[16:36:45.771] [34mDEBUG[39m: [36mservice::admin::simulateFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.simulateFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:402)"
+    [35menv[39m: "test"
+[16:36:45.774] [33mWARN[39m: [36mFactoring no tiene propuesta aceptada[39m
+    [35mlog[39m: "warn"
+    [35mlocation[39m: "runSimulation (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:152)"
+    [35menv[39m: "test"
+[16:36:45.780] [34mDEBUG[39m: [36mservice::admin::createFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.createFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:422)"
+    [35menv[39m: "test"
+[16:36:45.786] [33mWARN[39m: [36mFactoring no tiene propuesta aceptada[39m
+    [35mlog[39m: "warn"
+    [35mlocation[39m: "runSimulation (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:152)"
+    [35menv[39m: "test"
+[16:36:45.793] [34mDEBUG[39m: [36mservice::admin::createFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.createFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:422)"
+    [35menv[39m: "test"
+[16:36:45.795] [33mWARN[39m: [36mFactoring no tiene propuesta aceptada[39m
+    [35mlog[39m: "warn"
+    [35mlocation[39m: "runSimulation (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:152)"
+    [35menv[39m: "test"
+[16:36:45.803] [34mDEBUG[39m: [36mservice::admin::createFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.createFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:422)"
+    [35menv[39m: "test"
+[16:36:45.805] [33mWARN[39m: [36mFactoring no tiene propuesta aceptada[39m
+    [35mlog[39m: "warn"
+    [35mlocation[39m: "runSimulation (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:152)"
+    [35menv[39m: "test"
+[16:36:45.810] [34mDEBUG[39m: [36mservice::admin::simulateFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.simulateFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:402)"
+    [35menv[39m: "test"
+[16:36:45.816] [33mWARN[39m: [36mFactoring no tiene fecha de inicio de operación[39m
+    [35mlog[39m: "warn"
+    [35mlocation[39m: "runSimulation (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:157)"
+    [35menv[39m: "test"
+[16:36:45.822] [34mDEBUG[39m: [36mservice::admin::simulateFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.simulateFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:402)"
+    [35menv[39m: "test"
+[16:36:45.823] [33mWARN[39m: [36mFactoring no tiene fecha de inicio de operación[39m
+    [35mlog[39m: "warn"
+    [35mlocation[39m: "runSimulation (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:157)"
+    [35menv[39m: "test"
+[16:36:45.828] [34mDEBUG[39m: [36mservice::admin::simulateFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.simulateFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:402)"
+    [35menv[39m: "test"
+[16:36:45.830] [33mWARN[39m: [36mFactoring no tiene fecha de inicio de operación[39m
+    [35mlog[39m: "warn"
+    [35mlocation[39m: "runSimulation (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:157)"
+    [35menv[39m: "test"
+[16:36:45.835] [34mDEBUG[39m: [36mservice::admin::createFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.createFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:422)"
+    [35menv[39m: "test"
+[16:36:45.839] [33mWARN[39m: [36mFactoring no tiene fecha de inicio de operación[39m
+    [35mlog[39m: "warn"
+    [35mlocation[39m: "runSimulation (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:157)"
+    [35menv[39m: "test"
+[16:36:45.842] [34mDEBUG[39m: [36mservice::admin::createFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.createFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:422)"
+    [35menv[39m: "test"
+[16:36:45.844] [33mWARN[39m: [36mFactoring no tiene fecha de inicio de operación[39m
+    [35mlog[39m: "warn"
+    [35mlocation[39m: "runSimulation (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:157)"
+    [35menv[39m: "test"
+[16:36:45.847] [34mDEBUG[39m: [36mservice::admin::createFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.createFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:422)"
+    [35menv[39m: "test"
+[16:36:45.849] [33mWARN[39m: [36mFactoring no tiene fecha de inicio de operación[39m
+    [35mlog[39m: "warn"
+    [35mlocation[39m: "runSimulation (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:157)"
+    [35menv[39m: "test"
+[16:36:45.853] [34mDEBUG[39m: [36mservice::admin::createFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.createFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:422)"
+    [35menv[39m: "test"
+[16:36:46.118] [34mDEBUG[39m: [36mservice::admin::simulateFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.simulateFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:402)"
+    [35menv[39m: "test"
+[16:36:46.203] [34mDEBUG[39m: [36mservice::admin::simulateFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.simulateFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:402)"
+    [35menv[39m: "test"
+[16:36:47.321] [34mDEBUG[39m: [36mservice::admin::simulateFactoringpropuestaService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.simulateFactoringpropuestaService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:186)"
+    [35menv[39m: "test"
+[16:36:47.391] [32mINFO[39m: [36msimulacion: [39m
+    [35mlog[39m: "info"
+    [35mlocation[39m: "__vite_ssr_import_9__.prismaFT.client.$transaction.timeout (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:220)"
+    [35mdata[39m: {
+      "tda": "0.26",
+      "tdm": "0.02",
+      "monto_efectivo": "8000",
+      "monto_garantia": "2000"
+    }
+    [35menv[39m: "test"
+[16:36:47.399] [34mDEBUG[39m: [36mservice::admin::simulateFactoringpropuestaService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.simulateFactoringpropuestaService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:186)"
+    [35menv[39m: "test"
+[16:36:47.406] [32mINFO[39m: [36msimulacion: [39m
+    [35mlog[39m: "info"
+    [35mlocation[39m: "__vite_ssr_import_9__.prismaFT.client.$transaction.timeout (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:220)"
+    [35mdata[39m: {}
+    [35menv[39m: "test"
+[16:36:47.410] [34mDEBUG[39m: [36mservice::admin::simulateFactoringpropuestaService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.simulateFactoringpropuestaService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:186)"
+    [35menv[39m: "test"
+[16:36:47.413] [32mINFO[39m: [36msimulacion: [39m
+    [35mlog[39m: "info"
+    [35mlocation[39m: "__vite_ssr_import_9__.prismaFT.client.$transaction.timeout (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:220)"
+    [35mdata[39m: {}
+    [35menv[39m: "test"
+[16:36:47.416] [34mDEBUG[39m: [36mservice::admin::simulateFactoringpropuestaService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.simulateFactoringpropuestaService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:186)"
+    [35menv[39m: "test"
+[16:36:47.419] [32mINFO[39m: [36msimulacion: [39m
+    [35mlog[39m: "info"
+    [35mlocation[39m: "__vite_ssr_import_9__.prismaFT.client.$transaction.timeout (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:220)"
+    [35mdata[39m: {}
+    [35menv[39m: "test"
+[16:36:47.421] [34mDEBUG[39m: [36mservice::admin::simulateFactoringpropuestaService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.simulateFactoringpropuestaService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:186)"
+    [35menv[39m: "test"
+[16:36:47.422] [32mINFO[39m: [36msimulacion: [39m
+    [35mlog[39m: "info"
+    [35mlocation[39m: "__vite_ssr_import_9__.prismaFT.client.$transaction.timeout (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:220)"
+    [35mdata[39m: {}
+    [35menv[39m: "test"
+[16:36:47.426] [34mDEBUG[39m: [36mservice::admin::createFactoringpropuestaService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.createFactoringpropuestaService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:232)"
+    [35menv[39m: "test"
+[16:36:47.429] [32mINFO[39m: [36msimulacion: [39m
+    [35mlog[39m: "info"
+    [35mlocation[39m: "__vite_ssr_import_9__.prismaFT.client.$transaction.timeout (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:284)"
+    [35mdata[39m: {
+      "tda": "0.26",
+      "tdm": "0.02",
+      "monto_efectivo": "8000",
+      "monto_garantia": "2000",
+      "comisiones": [
+        {
+          "financiero_tipo": {
+            "idfinancierotipo": 1
+          },
+          "financiero_concepto": {
+            "idfinancieroconcepto": 1
+          },
+          "cantidad": 1,
+          "monto_unitario": "100",
+          "monto": "100",
+          "igv": "18",
+          "total": "118",
+          "porcentaje_monto": "0.01"
+        }
+      ]
+    }
+    [35menv[39m: "test"
+[16:36:47.432] [34mDEBUG[39m: [36mfactoringpropuestaCreated:[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "__vite_ssr_import_9__.prismaFT.client.$transaction.timeout (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:349)"
+    [35mdata[39m: {
+      "idfactoringpropuesta": 100
+    }
+    [35menv[39m: "test"
+[16:36:47.433] [34mDEBUG[39m: [36mfactoringpropuestahistorialestadoCreated:[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "__vite_ssr_import_9__.prismaFT.client.$transaction.timeout (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:370)"
+    [35mdata[39m: {
+      "idfactoringpropuestahistorialestado": 200
+    }
+    [35menv[39m: "test"
+[16:36:47.436] [34mDEBUG[39m: [36mservice::admin::activateFactoringpropuestaService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.activateFactoringpropuestaService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:438)"
+    [35menv[39m: "test"
+[16:36:47.443] [34mDEBUG[39m: [36mservice::admin::deleteFactoringpropuestaService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.deleteFactoringpropuestaService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:457)"
+    [35menv[39m: "test"
+[16:36:47.613] [34mDEBUG[39m: [36mlogic::simulateFactoringLogicV4[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.simulateFactoringLogicV4 (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringCalculation.Service.ts:17)"
+    [35menv[39m: "test"
+[16:36:47.652] [34mDEBUG[39m: [36mlogic::simulateFactoringLogicV3[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "simulateFactoringLogicV3 (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringCalculation.Service.ts:30)"
+    [35menv[39m: "test"
+[16:36:53.701] [34mDEBUG[39m: [36mservice::financiero::subirFacturaFactorService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.subirFacturaFactorService (D:/06_Workspace_nodejs/ft-app-backend/src/services/financiero/factura.Service.ts:26)"
+    [35menv[39m: "test"
+[16:36:53.729] [34mDEBUG[39m: [36mservice::financiero::getFacturasByFactoringidService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.getFacturasByFactoringidService (D:/06_Workspace_nodejs/ft-app-backend/src/services/financiero/factura.Service.ts:34)"
+    [35menv[39m: "test"
+[16:36:53.732] [34mDEBUG[39m: [36mservice::financiero::activateFacturaService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.activateFacturaService (D:/06_Workspace_nodejs/ft-app-backend/src/services/financiero/factura.Service.ts:42)"
+    [35menv[39m: "test"
+[16:36:53.735] [34mDEBUG[39m: [36mservice::financiero::deleteFacturaService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.deleteFacturaService (D:/06_Workspace_nodejs/ft-app-backend/src/services/financiero/factura.Service.ts:50)"
+    [35menv[39m: "test"
+[16:36:53.737] [34mDEBUG[39m: [36mservice::financiero::getFacturaMasterService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.getFacturaMasterService (D:/06_Workspace_nodejs/ft-app-backend/src/services/financiero/factura.Service.ts:58)"
+    [35menv[39m: "test"
+[16:36:53.739] [34mDEBUG[39m: [36mservice::financiero::getFacturasService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.getFacturasService (D:/06_Workspace_nodejs/ft-app-backend/src/services/financiero/factura.Service.ts:66)"
+    [35menv[39m: "test"
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/vitest/migrated/unit/services/admin/factoringliquidacion.audit.test.ts [ tests/vitest/migrated/unit/services/admin/factoringliquidacion.audit.test.ts ]
+Error: Command failed: D:\Herramientas\node-v24.21.0-win-x64\node.exe D:\06_Workspace_nodejs\ft-app-backend\scripts\analisis\fecha-liquidacion-frontend.cjs 2026-10-01
+node:fs:483
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open 'D:\10_Workspace_react\ft-app-frontend-mantis\src\utils\dateUtils.js'
+    at Object.readFileSync (node:fs:483:20)
+    at Object.<anonymous> (D:\06_Workspace_nodejs\ft-app-backend\scripts\analisis\fecha-liquidacion-frontend.cjs:8:19)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\10_Workspace_react\\ft-app-frontend-mantis\\src\\utils\\dateUtils.js'
+}
+
+Node.js v24.21.0
+
+ ❯ Object.<anonymous> scripts/analisis/fecha-liquidacion-frontend.cjs:8:19
+ ❯ inspect tests/vitest/migrated/unit/services/admin/factoringliquidacion.audit.test.ts:168:52
+
+ ❯ tests/vitest/migrated/unit/services/admin/factoringliquidacion.audit.test.ts:169:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/15]⎯
+
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 14 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/vitest/migrated/unit/services/factoring.dateTrace.test.ts > Trazabilidad factura → operación → propuesta → aceptación → inicio → liquidación > factura 2026-10-30, propuesta 2026-10-30, pago con diferencia -5
+ FAIL  tests/vitest/migrated/unit/services/factoring.dateTrace.test.ts > Trazabilidad factura → operación → propuesta → aceptación → inicio → liquidación > factura 2026-10-30, propuesta 2026-10-30, pago con diferencia 0
+ FAIL  tests/vitest/migrated/unit/services/factoring.dateTrace.test.ts > Trazabilidad factura → operación → propuesta → aceptación → inicio → liquidación > factura 2026-10-30, propuesta 2026-10-30, pago con diferencia 1
+ FAIL  tests/vitest/migrated/unit/services/factoring.dateTrace.test.ts > Trazabilidad factura → operación → propuesta → aceptación → inicio → liquidación > factura 2026-10-30, propuesta 2026-10-30, pago con diferencia 10
+Error: Command failed: D:\Herramientas\node-v24.21.0-win-x64\node.exe D:\06_Workspace_nodejs\ft-app-backend\scripts\analisis\fecha-liquidacion-frontend.cjs 2026-10-30 2026-10-30T00:00:00.000Z
+node:fs:483
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open 'D:\10_Workspace_react\ft-app-frontend-mantis\src\utils\dateUtils.js'
+    at Object.readFileSync (node:fs:483:20)
+    at Object.<anonymous> (D:\06_Workspace_nodejs\ft-app-backend\scripts\analisis\fecha-liquidacion-frontend.cjs:8:19)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\10_Workspace_react\\ft-app-frontend-mantis\\src\\utils\\dateUtils.js'
+}
+
+Node.js v24.21.0
+
+ ❯ Object.<anonymous> scripts/analisis/fecha-liquidacion-frontend.cjs:8:19
+ ❯ frontendDate tests/vitest/migrated/unit/services/factoring.dateTrace.test.ts:106:71
+
+ ❯ tests/vitest/migrated/unit/services/factoring.dateTrace.test.ts:176:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/15]⎯
+
+ FAIL  tests/vitest/migrated/unit/services/factoring.dateTrace.test.ts > Trazabilidad factura → operación → propuesta → aceptación → inicio → liquidación > factura 2026-12-31, propuesta 2026-12-31, pago con diferencia -5
+ FAIL  tests/vitest/migrated/unit/services/factoring.dateTrace.test.ts > Trazabilidad factura → operación → propuesta → aceptación → inicio → liquidación > factura 2026-12-31, propuesta 2026-12-31, pago con diferencia 0
+ FAIL  tests/vitest/migrated/unit/services/factoring.dateTrace.test.ts > Trazabilidad factura → operación → propuesta → aceptación → inicio → liquidación > factura 2026-12-31, propuesta 2026-12-31, pago con diferencia 1
+ FAIL  tests/vitest/migrated/unit/services/factoring.dateTrace.test.ts > Trazabilidad factura → operación → propuesta → aceptación → inicio → liquidación > factura 2026-12-31, propuesta 2026-12-31, pago con diferencia 10
+Error: Command failed: D:\Herramientas\node-v24.21.0-win-x64\node.exe D:\06_Workspace_nodejs\ft-app-backend\scripts\analisis\fecha-liquidacion-frontend.cjs 2026-12-31 2026-12-31T00:00:00.000Z
+node:fs:483
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open 'D:\10_Workspace_react\ft-app-frontend-mantis\src\utils\dateUtils.js'
+    at Object.readFileSync (node:fs:483:20)
+    at Object.<anonymous> (D:\06_Workspace_nodejs\ft-app-backend\scripts\analisis\fecha-liquidacion-frontend.cjs:8:19)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\10_Workspace_react\\ft-app-frontend-mantis\\src\\utils\\dateUtils.js'
+}
+
+Node.js v24.21.0
+
+ ❯ Object.<anonymous> scripts/analisis/fecha-liquidacion-frontend.cjs:8:19
+ ❯ frontendDate tests/vitest/migrated/unit/services/factoring.dateTrace.test.ts:106:71
+
+ ❯ tests/vitest/migrated/unit/services/factoring.dateTrace.test.ts:176:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/15]⎯
+
+ FAIL  tests/vitest/migrated/unit/services/factoring.dateTrace.test.ts > Trazabilidad factura → operación → propuesta → aceptación → inicio → liquidación > factura 2028-02-29, propuesta 2028-02-29, pago con diferencia -5
+ FAIL  tests/vitest/migrated/unit/services/factoring.dateTrace.test.ts > Trazabilidad factura → operación → propuesta → aceptación → inicio → liquidación > factura 2028-02-29, propuesta 2028-02-29, pago con diferencia 0
+ FAIL  tests/vitest/migrated/unit/services/factoring.dateTrace.test.ts > Trazabilidad factura → operación → propuesta → aceptación → inicio → liquidación > factura 2028-02-29, propuesta 2028-02-29, pago con diferencia 1
+ FAIL  tests/vitest/migrated/unit/services/factoring.dateTrace.test.ts > Trazabilidad factura → operación → propuesta → aceptación → inicio → liquidación > factura 2028-02-29, propuesta 2028-02-29, pago con diferencia 10
+Error: Command failed: D:\Herramientas\node-v24.21.0-win-x64\node.exe D:\06_Workspace_nodejs\ft-app-backend\scripts\analisis\fecha-liquidacion-frontend.cjs 2028-02-29 2028-02-29T00:00:00.000Z
+node:fs:483
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open 'D:\10_Workspace_react\ft-app-frontend-mantis\src\utils\dateUtils.js'
+    at Object.readFileSync (node:fs:483:20)
+    at Object.<anonymous> (D:\06_Workspace_nodejs\ft-app-backend\scripts\analisis\fecha-liquidacion-frontend.cjs:8:19)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\10_Workspace_react\\ft-app-frontend-mantis\\src\\utils\\dateUtils.js'
+}
+
+Node.js v24.21.0
+
+ ❯ Object.<anonymous> scripts/analisis/fecha-liquidacion-frontend.cjs:8:19
+ ❯ frontendDate tests/vitest/migrated/unit/services/factoring.dateTrace.test.ts:106:71
+
+ ❯ tests/vitest/migrated/unit/services/factoring.dateTrace.test.ts:176:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/15]⎯
+
+ FAIL  tests/vitest/migrated/unit/services/factoring.dateTrace.test.ts > Trazabilidad factura → operación → propuesta → aceptación → inicio → liquidación > factura 2026-10-30, propuesta 2026-11-02, pago con diferencia 0
+ FAIL  tests/vitest/migrated/unit/services/factoring.dateTrace.test.ts > Trazabilidad factura → operación → propuesta → aceptación → inicio → liquidación > factura 2026-10-30, propuesta 2026-11-02, pago con diferencia 1
+Error: Command failed: D:\Herramientas\node-v24.21.0-win-x64\node.exe D:\06_Workspace_nodejs\ft-app-backend\scripts\analisis\fecha-liquidacion-frontend.cjs 2026-11-02 2026-10-30T00:00:00.000Z
+node:fs:483
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open 'D:\10_Workspace_react\ft-app-frontend-mantis\src\utils\dateUtils.js'
+    at Object.readFileSync (node:fs:483:20)
+    at Object.<anonymous> (D:\06_Workspace_nodejs\ft-app-backend\scripts\analisis\fecha-liquidacion-frontend.cjs:8:19)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\10_Workspace_react\\ft-app-frontend-mantis\\src\\utils\\dateUtils.js'
+}
+
+Node.js v24.21.0
+
+ ❯ Object.<anonymous> scripts/analisis/fecha-liquidacion-frontend.cjs:8:19
+ ❯ frontendDate tests/vitest/migrated/unit/services/factoring.dateTrace.test.ts:106:71
+
+ ❯ tests/vitest/migrated/unit/services/factoring.dateTrace.test.ts:176:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/15]⎯
+
+
+ Test Files  2 failed | 42 passed | 1 skipped (45)
+      Tests  14 failed | 1333 passed | 2262 skipped | 3 todo (3612)
+   Start at  16:36:17
+   Duration  39.15s (tests 50%, import 31%, transform 19%, worker 1%)
+

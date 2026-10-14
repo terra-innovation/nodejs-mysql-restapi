@@ -5,8 +5,13 @@ const ts = require('typescript');
 const path = require('path');
 
 const frontendRoot = process.env.LIQUIDACION_FRONTEND_ROOT || 'D:/10_Workspace_react/ft-app-frontend-mantis';
-const source = fs.readFileSync(path.join(frontendRoot, 'src/utils/dateUtils.js'), 'utf8');
+const sourcePath = ['src/utils/dateUtils.ts', 'src/utils/dateUtils.js']
+  .map((relative) => path.join(frontendRoot, relative))
+  .find((candidate) => fs.existsSync(candidate));
+if (!sourcePath) throw new Error('No se encontró dateUtils.ts/js en el frontend configurado.');
+const source = fs.readFileSync(sourcePath, 'utf8');
 const compiled = ts.transpileModule(source, {
+  fileName: sourcePath,
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 }
 }).outputText;
 const exported = {};

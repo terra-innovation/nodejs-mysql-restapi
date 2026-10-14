@@ -46,6 +46,7 @@
     "prisma:generate": "prisma generate",
     "prisma:generate:ci": "cross-env NODE_ENV=production prisma generate",
     "prisma-sync": "node scripts/prisma/generate-models.js",
+    "db:ddl": "node scripts/database/maintain.mjs",
     "list-unused-exports": "powershell -Command \"npx ts-prune | Select-String -NotMatch 'used in module' | Select-String '\\\\src\\\\controllers\\\\'\"",
     "build-prod": "node scripts/produccion/build-prod.js",
     "cron:tipo-cambio": "cross-env NODE_ENV=development node --env-file=.env.development --import tsx/esm src/scripts/sync_tipo_cambio.ts",
