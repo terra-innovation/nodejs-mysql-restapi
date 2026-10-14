@@ -66,7 +66,7 @@ it("propaga conflicto 409 y aplica valores de paginación predeterminados", asyn
   b.actualizar.mockRejectedValue({ statusCode: 409 });
   await request(app).patch(`${base}/actualizar/${id}`).set("Authorization", token()).send(body()).expect(409);
   await request(app).get(`${base}/listar`).set("Authorization", token()).expect(200);
-  expect(b.listar).toHaveBeenCalledWith({ estado: "PENDIENTE", pagina: 1, tamanio: 10, busqueda: "", ordenarPor: "fechaEmision", direccion: "asc" });
+  expect(b.listar).toHaveBeenCalledWith({ estado: "PENDIENTE", pagina: 1, tamanio: 10, busqueda: "", ordenarPor: "fechaEmision", direccion: "desc" });
 });
 it("menú conserva condiciones y coloca detracción entre pendientes factura y Operaciones", () => {
   expect(generarMenuFinanciero({ ispersonavalidated: false } as Parameters<typeof generarMenuFinanciero>[0])).toEqual([]);

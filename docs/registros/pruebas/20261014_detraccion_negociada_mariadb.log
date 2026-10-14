@@ -1,0 +1,29 @@
+
+> ft-app-backend@1.0.1 test:integration
+> node scripts/integration/run-mariadb.mjs tests/mariadb/detraccion.test.ts
+
+Preparando mariadb:11.4.10 con 131 tablas. No se consulta desarrollo.
+MariaDB lista. Ejecutando pruebas reales de entorno y negocio con Prisma.
+
+ RUN  v5.0.3 D:/06_Workspace_nodejs/ft-app-backend
+
+stdout | tests/mariadb/detraccion.test.ts
+[config] {"selection":"default","file":".env.test","loaded":true,"fileVariables":31,"retainedVariables":2,"conflictingKeys":["PRISMA_DATABASE_FACTORING_URL"]} precedence=process.env
+[config] Las claves en conflictingKeys tienen valores diferentes en el proceso y en el archivo. Prevalece el proceso (incluido el entorno heredado de PM2). Solo se muestran los nombres.
+
+ ✓ tests/mariadb/detraccion.test.ts (7 tests) 5191ms
+   ✓ detalle conserva datos XML activos para la guía SUNAT sin ampliar la bandeja 1271ms
+   ✓ listado y detalle incluyen solo facturas negociadas activas en orden estable para pendientes y pagadas 585ms
+   ✓ filtro/paginación conserva operaciones liquidadas y omite NO APLICA/eliminados 870ms
+   ✓ paga, corrige y reabre conservando fecha, archivos y campos ajenos 824ms
+   ✓ dos comprobantes de una operación conservan filas, búsqueda compuesta y orden con fecha nula al final 575ms
+   ✓ fallo de vínculo revierte estado/fecha/auditoría en SQL real 523ms
+   ✓ dos escritores con una versión producen un éxito y un conflicto sin duplicar archivos 522ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  21:35:42
+   Duration  8.17s (tests 66%, transform 20%, import 14%)
+
+JUNIT report written to D:/06_Workspace_nodejs/ft-app-backend/coverage/mariadb/junit.xml
+Resumen: coverage/mariadb/last-run.json

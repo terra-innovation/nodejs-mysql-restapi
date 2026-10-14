@@ -18,7 +18,7 @@ export const listarSchema = z.strictObject({
   tamanio: z.coerce.number().int().min(1).max(100).default(10),
   busqueda: z.string().trim().max(200).default(""),
   ordenarPor: z.enum(["fechaEmision", "operacion", "cedente", "comprobante", "importeTotal", "detraccionMonto", "fechaPagoDetraccion"]).default("fechaEmision"),
-  direccion: z.enum(["asc", "desc"]).default("asc"),
+  direccion: z.enum(["asc", "desc"]).default("desc"),
 });
 export const actualizarSchema = z.strictObject({ detraccionestadoid: uuid, fecha_pago_detraccion: fecha.nullable(), detraccionarchivoid: uuid.optional(), version: z.iso.datetime({ precision: 3 }) });
 export const listarDetracciones = async (req: Request, res: Response) => response(res, 200, await service.listarDetraccionesService(listarSchema.parse(req.query)));

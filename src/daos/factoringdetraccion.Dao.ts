@@ -39,7 +39,7 @@ const baseSelect = {
   fecha_pago_detraccion: true,
   factura_estado: { select: { nombre: true } },
   detraccion_estado: { select: { nombre: true, code: true, detraccionestadoid: true } },
-  factoring: { select: { factoringid: true, code: true, empresa_cedente: { select: { ruc: true, razon_social: true } } } },
+  factoring: { select: { factoringid: true, code: true, empresa_cedente: { select: { ruc: true, razon_social: true } }, factoring_facturas: { where: { estado: 1, factura: { estado: 1 } }, orderBy: { idfactura: "asc" }, select: { factura: { select: { serie: true, numero_comprobante: true } } } } } },
   factura: { select: facturaSelect },
 } satisfies Prisma.factoring_factura_factorSelect;
 const disponible: Prisma.factoring_factura_factorWhereInput = {
@@ -87,6 +87,17 @@ export const getDetraccion = (tx: TxClient, id: string) =>
       factura: {
         select: {
           ...facturaSelect,
+          codigo_tipo_documento: true,
+          factura_medio_pagos: {
+            where: { estado: 1 },
+            orderBy: { idfacturamediopago: "asc" },
+            select: { id: true, cuenta_bancaria: true },
+          },
+          factura_termino_pagos: {
+            where: { estado: 1 },
+            orderBy: { idfacturaterminopago: "asc" },
+            select: { id: true, forma_pago: true },
+          },
           archivo_facturas: {
             where: { estado: 1, archivo: { estado: 1 } },
             orderBy: [{ fechacrea: "desc" }, { idarchivo: "desc" }],

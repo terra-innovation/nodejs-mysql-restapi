@@ -99,3 +99,19 @@ Los documentos ajenos a esta tarea, incluido docs/plan-saldo-contable-sbs-202610
 5. Para revertir, retirar API/menú y restaurar las versiones anteriores de ambos proyectos de forma coordinada. No borrar estados, fechas, constancias ni vínculos registrados: no hay cambios de esquema que revertir. Operaciones y el administrador continúan con sus contratos anteriores.
 
 Siguiente paso del plan: publicar la entrega coordinada en el entorno de aceptación autorizado y realizar el recorrido integrado con un financiero. Producción requiere autorización específica de empaquetado/despliegue.
+
+## Ampliación: ayuda para el pago manual en SUNAT
+
+### Facturas negociadas y nombre de constancia
+
+Listado y detalle incluyen factoring.factoring_facturas con serie y número de los comprobantes cedidos. Se seleccionan únicamente vínculos y facturas activos, ordenados por ID de factura; no se duplica la fila de detracción cuando hay varias facturas en una operación. Los datos permiten la columna Factura Negociada y la sugerencia de nombre en el frontend sin consultas adicionales por fila. La edición de detracción conserva el mismo contrato.
+
+La integración real verifica operaciones con varias facturas, exclusión de factura inactiva y vínculo inactivo, y presencia de los datos tanto en pendientes como en pagadas y detalle. Siete casos aprobados en MariaDB desechable, ejecución 6d0703a8d2d3782c031c6ef0, limpieza removed. Tipos de aplicación e integración aprobados. Log en docs/registros/pruebas/20261014_detraccion_negociada_mariadb.log.
+
+El orden predeterminado de la bandeja, tanto en pendientes como en pagadas, es fecha de emisión descendente (más reciente primero), aplicado antes de paginar. Se conservan el orden estable por ID ante empates y las fechas sin emisión al final. El usuario puede seguir cambiando el orden desde las cabeceras.
+
+El detalle incluye ahora el tipo de documento y los medios/términos de pago activos del XML, con selección explícita y orden estable. La bandeja y el DTO de actualización conservan sus campos. No hay cambios de esquema ni escrituras adicionales.
+
+El frontend usa PaymentTerms identificado como Detraccion para el código del bien o servicio, y PaymentMeans identificado como Detraccion para la cuenta bancaria. PaymentMeansCode es un medio de pago (catálogo 59), no el tipo de operación del formulario de depósitos; no se convierte en 01. El modelo actual no conserva ese último dato, por lo que la orientación 01 se etiqueta como sugerida. Referencia técnica: [SUNAT, estándar UBL 2.1, anexo VII](https://www.sunat.gob.pe/legislacion/superin/2019/anexoVII-114-2019.pdf).
+
+Validación de esta ampliación: tipos del backend e integración aprobados; seis pruebas de detracciones aprobadas en MariaDB desechable, incluida la proyección de datos XML activos. Ejecución 0851d130fdf4d9785a4282cb, limpieza removed. ESLint del DAO aprobado; el archivo de integración está fuera de la configuración ESLint vigente, pero pasó la comprobación de tipos y las pruebas reales. Registros en docs/registros/pruebas/20261014_detracciones_sunat_mariadb.log. No se consultó ni modificó la base de desarrollo.

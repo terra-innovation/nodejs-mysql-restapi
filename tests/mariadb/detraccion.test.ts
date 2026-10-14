@@ -34,6 +34,37 @@ afterAll(async () => {
   await db.$disconnect();
 });
 const query = () => ({ estado: "PENDIENTE" as const, pagina: 1, tamanio: 10, busqueda: "", ordenarPor: "fechaEmision" as const, direccion: "asc" as const });
+it("detalle conserva datos XML activos para la guía SUNAT sin ampliar la bandeja", async () => {
+  const idfactura = fixture.factura.idfactura;
+  await db.factura.update({ where: { idfactura }, data: { codigo_tipo_documento: "01" } });
+  await db.factura_medio_pago.createMany({
+    data: [
+      { idfactura, id: "Detraccion", cuenta_bancaria: "00000000001" },
+      { idfactura, id: "Detraccion", cuenta_bancaria: "inactiva", estado: 0 },
+    ],
+  });
+  await db.factura_termino_pago.createMany({
+    data: [
+      { idfactura, id: "Detraccion", forma_pago: "037" },
+      { idfactura, id: "Detraccion", forma_pago: "022", estado: 0 },
+    ],
+  });
+  const detalle = await getDetraccionService(fixture.registro.factoringfacturafactorid);
+  expect(detalle.factura).toMatchObject({ codigo_tipo_documento: "01", factura_medio_pagos: [{ id: "Detraccion", cuenta_bancaria: "00000000001" }], factura_termino_pagos: [{ id: "Detraccion", forma_pago: "037" }] });
+  expect((await listarDetraccionesService(query())).registros[0].factura).not.toHaveProperty("factura_medio_pagos");
+});
+it("listado y detalle incluyen solo facturas negociadas activas en orden estable para pendientes y pagadas", async () => {
+  const idfactoring = fixture.factoring.idfactoring;
+  const facturas = [];
+  for (let i = 0; i < 3; i++) facturas.push(await db.factura.create({ data: { code: `IT-NEG-${i}`, idusuarioupload: fixture.user.idusuario, serie: "F001", numero_comprobante: String(i + 1), codigo_tipo_moneda: "PEN", importe_bruto: "100", importe_neto: "100", proveedor_ruc: "20000000001", proveedor_razon_social: "Cedente sintetico", cliente_ruc: "20000000002", cliente_razon_social: "Pagador sintetico", estado: i === 2 ? 0 : 1 } }));
+  await db.factoring_factura.createMany({ data: facturas.map((f) => ({ idfactoring, idfactura: f.idfactura })) });
+  const esperadas = facturas.slice(0, 2).map((f) => ({ factura: { serie: f.serie, numero_comprobante: f.numero_comprobante } }));
+  expect((await listarDetraccionesService(query())).registros[0].factoring.factoring_facturas).toEqual(esperadas);
+  expect((await getDetraccionService(fixture.registro.factoringfacturafactorid)).factoring.factoring_facturas).toEqual(esperadas);
+  await db.factoring_factura.update({ where: { idfactoring_idfactura: { idfactoring, idfactura: facturas[1].idfactura } }, data: { estado: 0 } });
+  await db.factoring_factura_factor.update({ where: { factoringfacturafactorid: fixture.registro.factoringfacturafactorid }, data: { iddetraccionestado: 2 } });
+  expect((await listarDetraccionesService({ ...query(), estado: "PAGADA" })).registros[0].factoring.factoring_facturas).toEqual(esperadas.slice(0, 1));
+});
 async function pago() {
   const detail = await getDetraccionService(fixture.registro.factoringfacturafactorid);
   return { id: fixture.registro.factoringfacturafactorid, detraccionestadoid: fixture.estados[1].detraccionestadoid, fecha_pago_detraccion: "2026-10-13T05:00:00.000Z", detraccionarchivoid: fixture.archivo.archivoid, version: detail.version, idusuario: fixture.user.idusuario };
