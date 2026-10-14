@@ -1,5 +1,130 @@
 # Carga de configuración y diagnóstico de PM2 — 2026-10-13
 
+## Reanudación en la ventana nocturna
+
+### Respaldo confirmado y preparación del runtime
+
+El usuario compartió la ejecución satisfactoria de `02-respaldo-pase.sh`
+el 2026-10-14 a las 00:17 UTC. El punto vigente de reversión es
+`/root/respaldo-pase-20261013-noche.NeOM4S`: backend completo con `storage`,
+frontend, PM2, módulos globales, servicios y paquete original de Node,
+comparados con el origen y verificados con SHA256. La API, PM2 y logrotate
+quedaron detenidos; MariaDB y Nginx permanecieron activos.
+
+Se preparó `scripts/produccion/04-preparar-pase.sh` para instalar el paquete
+exacto de Node 24.21.0, comprobar npm 11.19.0 y crear recepción SFTP dentro
+del backend en `pase-20261013-noche/{backend,frontend}`. No arranca PM2,
+no consulta el contenido de `.env`, no ejecuta SQL y no actualiza el resto
+del sistema. Mantiene Node fijado con `apt hold`. La sintaxis Bash fue
+comprobada; su ejecución en Ubuntu está pendiente. La reversión preparada
+continúa siendo manual y no se ha ejecutado en esta ventana.
+
+El usuario confirmó después la preparación satisfactoria: Node 24.21.0,
+npm 11.19.0, recepción SFTP propiedad de `ssh_finanzatech` y backend/PM2
+detenidos. También confirmó la transferencia de archivos. Se preparó
+`05-validar-recepcion.sh`: revisión de manifiestos/ecosystem, `npm ci
+--omit=dev --ignore-scripts`, carga de módulos Prisma sin crear un cliente
+y preflight compilado con entorno limpio, `NODE_ENV=production` y
+`APP_ENV_FILE=.env`. Su sintaxis Bash fue comprobada; ejecución en Ubuntu
+pendiente. El registro npm queda privado y el diagnóstico de configuración
+solo publica nombres de variables, nunca sus valores. Este paso no activa
+la API ni conecta a la base; la validación HTTP permanece pendiente.
+
+La validación en Ubuntu terminó con éxito a las 00:38 UTC del 2026-10-14:
+dependencias instaladas, runtime Prisma cargado y configuración válida de
+producción desde `.env`, sin claves en conflicto ni conexión a base.
+Registro: `/root/validacion-pase-20261013-noche.xDkw8U/resultado.log`.
+
+Se preparó `06-activar-backend.sh`, aún pendiente de ejecución en Ubuntu.
+Conserva las carpetas persistentes; retira los archivos de aplicación
+anteriores a un directorio privado y activa los nuevos. Añade un override
+de systemd para arrancar PM2 desde ecosystem con `--env production` y
+entorno inicial limpio, en lugar de recuperar el dump anterior. El override
+queda cubierto por la reversión completa preparada. Solo guarda el estado
+nuevo de PM2 tras cinco muestras a intervalos de 30 segundos con mismo PID,
+cero reinicios, Node real 24.21.0 y HTTP 200/pong. No publica aún el frontend.
+Si falla tras intentar arrancar, solicita detener PM2 y conserva los
+archivos para diagnóstico; la reversión sigue siendo una decisión manual.
+
+El usuario confirmó la activación satisfactoria del backend a las 00:44 UTC
+del 2026-10-14: daemon y aplicación con Node 24.21.0, PID 599253 sin cambios,
+cero reinicios y cinco respuestas HTTP 200/pong. Registro de activación:
+`/root/activacion-backend-20261013-noche.rsnhdR/resultado.log`. Los archivos
+anteriores están en su subdirectorio `anterior-backend`; los datos persistentes
+se conservaron en sus rutas originales. Esta evidencia no sustituye los
+flujos de negocio desde navegador.
+
+Se preparó `07-publicar-frontend.sh`, pendiente de ejecución en Ubuntu.
+Conserva el directorio raíz del frontend y retira su contenido anterior a
+un directorio privado. Publica los archivos recibidos con permisos de lectura
+para Nginx y comprueba HTTPS local con hostname/certificado de producción,
+HTTP 200 y SHA256 de index.html y sus referencias locales directas. Comprueba
+`/ping` antes y después; no reinicia servicios ni modifica configuración de
+Nginx. Ante fallo solicita reponer únicamente los archivos anteriores del
+frontend, conservando la nueva API activa. El DNS, acceso externo, recursos
+dinámicos y navegación de negocio requieren comprobación manual posterior.
+
+El usuario confirmó publicación satisfactoria del frontend: HTTPS local,
+index.html y siete recursos directos coincidentes con SHA256; registro
+`/root/activacion-frontend-20261013-noche.SF7F2R/resultado.log`. Confirmó
+también navegación manual satisfactoria. Tras una pausa con el backend
+detenido, reinició mediante ecosystem con `--env production --update-env`.
+La salida del 2026-10-14 a las 02:10 UTC mostró PID 600109, cero reinicios,
+Node 24.21.0 ARM64, `.env` explícito sin conflictos, base conectada y evento
+`listo` en aproximadamente 1,1 segundos. La captura de estado cubría veinte
+segundos; no sustituye una comprobación posterior de estabilidad/HTTP.
+
+Se preparó `08-cerrar-pase.sh` para comprobar estabilidad, logrotate, HTTP
+local del backend y HTTPS local del frontend, guardar PM2 y habilitar su
+servicio para el próximo arranque. Retira únicamente directorios de recepción
+vacíos mediante `rmdir`; conserva todos los respaldos. Sintaxis Bash
+comprobada; ejecución en Ubuntu y acceso externo tras la pausa pendientes.
+No se ensaya un reinicio de instancia. La reversión completa preparada
+restaura también `storage` al estado del respaldo: si entran nuevos archivos,
+deben preservarse antes de usarla. No ejecutar una reversión completa como
+limpieza rutinaria ni eliminar el paquete antiguo de Node del respaldo.
+
+El usuario confirmó una nueva ventana de dos horas, sin usuarios activos, y
+respaldos externos recientes de la BBDD y de la instancia. Los respaldos del
+backend de la mañana no deben usarse como punto de reversión de archivos de
+esta ventana: `storage` recibió cambios posteriores. Se requiere un nuevo
+respaldo local completo de backend, frontend y estado/configuración de los
+servicios antes de actualizar. La reversión de archivos no implica restaurar
+ni migrar la BBDD.
+
+El primer paso es ejecutar como root una copia de
+`scripts/produccion/diagnostico-pase.sh`, guardada en una carpeta privada bajo
+`/root`. Recoge versiones activas y del ejecutable real de PM2/worker, retención
+APT de Node, servicios, metadatos de rutas y respaldos existentes. No abre
+`.env`, no imprime el JSON bruto de PM2, no conecta a MariaDB y no detiene ni
+instala servicios. Su informe queda junto al script con fecha/hora UTC.
+
+El diagnóstico compartido corresponde a 2026-10-13 23:57:03 UTC: Ubuntu
+22.04.5 ARM64, Node instalado/activo 20.20.2, npm 10.8.2, PM2 6.0.8 y worker
+con Node real 20.20.2, sin reinicios durante unas 12,5 horas. Node 24.21.0 es
+candidato APT; Node 20 está retenido. MariaDB 11.4.10 y Nginx 1.18.0 están
+activos. Hay 32 GiB libres; backend 638 MiB, frontend 128 MiB y storage
+275 MiB, sin enlaces en storage. El usuario confirmó nuevos compilados
+`build-prod` de ambos proyectos; la configuración nueva se validará mediante
+preflight sin imprimir valores.
+
+Se prepararon `scripts/produccion/02-respaldo-pase.sh` y
+`scripts/produccion/03-revertir-pase.sh`. Copiar ambos a la carpeta privada
+de la ventana y ejecutar únicamente el respaldo inicialmente. Su tarea
+systemd continúa si se corta SSH. Guarda PM2 antes de detener su servicio
+(incluido logrotate), respalda ambos proyectos completos, estado PM2,
+módulos/ejecutables globales, configuración Nginx/unidad PM2 y paquete Node
+20. Verifica gzip, comparación con origen y SHA256; queda el backend detenido
+al finalizar correctamente. Un fallo intenta reiniciar el servicio anterior.
+No subir archivos durante el respaldo.
+
+La reversión es manual, acepta únicamente el respaldo nuevo marcado como
+verificado y comprueba hashes antes de actuar. Conserva el estado retirado,
+restaura Node 20 desde el paquete local, retención APT, archivos completos,
+PM2/globales y configuración, y comprueba runtime, estabilidad y HTTP/pong.
+No restaura ni migra la BBDD. Solo se validó sintaxis Bash local de estos
+scripts; su respaldo/reversión aún no se han ejecutado en esta ventana.
+
 ## Problema reproducido
 
 Después del pase en Ubuntu, PM2 conservó un entorno incompleto. El backend
