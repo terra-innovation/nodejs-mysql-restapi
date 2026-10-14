@@ -1,4 +1,5 @@
 import { Router } from "express";
+import factoringdetraccionRoutes from "#src/routes/financiero/servicio/factoring/factoringdetraccion.routes.js";
 
 import financiero_facturaRoutes from "#root/src/routes/financiero/factura.routes.js";
 import financiero_sbs_tipo_cambioRoutes from "#root/src/routes/financiero/sbs/sbstipocambio.routes.js";
@@ -12,6 +13,7 @@ import financiero_servicio_factoring_factoringtransferenciacedenteRoutes from "#
 import financiero_sunat_tipo_cambioRoutes from "#root/src/routes/financiero/sunat/sunattipocambio.routes.js";
 
 const router = Router();
+router.use(factoringdetraccionRoutes);
 
 router.use(financiero_sbs_tipo_cambioRoutes);
 router.use(financiero_sunat_tipo_cambioRoutes);

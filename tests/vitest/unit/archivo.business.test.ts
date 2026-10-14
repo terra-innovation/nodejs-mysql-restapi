@@ -4,15 +4,23 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 
 const h = vi.hoisted(() => ({
-  transaction: vi.fn(), getType: vi.fn(), getDefaultType: vi.fn(), insert: vi.fn(), get: vi.fn(), remove: vi.fn(),
-  root: "", success: "",
+  transaction: vi.fn(),
+  getType: vi.fn(),
+  getDefaultType: vi.fn(),
+  insert: vi.fn(),
+  get: vi.fn(),
+  remove: vi.fn(),
+  root: "",
+  success: "",
 }));
 vi.mock("#src/models/prisma/db-factoring.js", () => ({ prismaFT: { client: { $transaction: h.transaction }, transactionTimeout: 5000 } }));
 vi.mock("#src/utils/logger.pino.js", () => ({ line: () => "test", log: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() } }));
 vi.mock("#src/daos/archivo.Dao.js", () => ({ insertArchivo: h.insert, getArchivoByArchivoid: h.get, deleteArchivo: h.remove }));
-vi.mock("#src/daos/archivotipo.Dao.js", () => ({ getArchivotipoByCode: h.getType, getArchivotipoByIdarchivotipo: h.getDefaultType }));
+vi.mock("#src/daos/archivotipo.Dao.js", () => ({ ARCHIVO_TIPO: { CONSTANCIA_PAGO_DETRACCION: 12 }, getArchivotipoByCode: h.getType, getArchivotipoByIdarchivotipo: h.getDefaultType }));
 vi.mock("#src/utils/storageUtils.js", () => ({
-  get STORAGE_PATH_SUCCESS() { return h.success; },
+  get STORAGE_PATH_SUCCESS() {
+    return h.success;
+  },
   pathApp: () => h.root,
   normalizarRuta: (value: string) => value.replace(/[\\/]/g, path.sep),
 }));
@@ -24,10 +32,22 @@ let tx: { testTransaction: boolean };
 const fileDto = (content = png) => {
   const origin = path.join(h.root, "upload.tmp");
   writeFileSync(origin, content);
-  return { idusuario: 42, archivotipo_code: "fixture-image", archivoRaw: {
-    path: origin, size: content.length, originalname: "documento.PNG", mimetype: "image/png",
-    anio_upload: "2026", mes_upload: "10", dia_upload: "07", filename: "stored.png", encoding: "7bit", codigo_archivo: "fixture-code",
-  } };
+  return {
+    idusuario: 42,
+    archivotipo_code: "fixture-image",
+    archivoRaw: {
+      path: origin,
+      size: content.length,
+      originalname: "documento.PNG",
+      mimetype: "image/png",
+      anio_upload: "2026",
+      mes_upload: "10",
+      dia_upload: "07",
+      filename: "stored.png",
+      encoding: "7bit",
+      codigo_archivo: "fixture-code",
+    },
+  };
 };
 const destination = () => path.join(h.success, "2026", "10", "07", "stored.png");
 
@@ -53,6 +73,14 @@ afterEach(() => {
 });
 
 describe("Carga de archivos con filesystem y detección MIME reales", () => {
+  it("constancia rechaza contenido sin firma aunque declare PDF permitido", async () => {
+    h.getType.mockResolvedValue({ idarchivotipo: 12, code: "AT012000", nombre: "Constancia", tamanio_maximo: 5 * 1024 * 1024, extensiones_permitidas: ".pdf", mimetypes_permitidos: "application/pdf" });
+    const dto = fileDto(Buffer.from("contenido de texto sin firma"));
+    dto.archivoRaw.originalname = "constancia.pdf";
+    dto.archivoRaw.mimetype = "application/pdf";
+    await expect(cargarArchivoService(dto)).rejects.toHaveProperty("statusCode", 400);
+    expect(h.insert).not.toHaveBeenCalled();
+  });
   it("acepta el tamaño máximo exacto, normaliza extensión y elimina el temporal", async () => {
     const dto = fileDto();
     await expect(cargarArchivoService(dto)).resolves.toEqual({ archivoid: "file-test" });
@@ -77,8 +105,15 @@ describe("Carga de archivos con filesystem y detección MIME reales", () => {
     const content = kind === "contenido" ? Buffer.from("%PDF-1.4\ncontenido sintético de prueba\n%%EOF") : png;
     const dto = fileDto(content);
     let status = 400;
-    if (kind === "tipo desconocido") { h.getType.mockResolvedValue(null); status = 404; }
-    if (kind === "tipo por defecto ausente") { delete dto.archivotipo_code; h.getDefaultType.mockResolvedValue(null); status = 500; }
+    if (kind === "tipo desconocido") {
+      h.getType.mockResolvedValue(null);
+      status = 404;
+    }
+    if (kind === "tipo por defecto ausente") {
+      delete dto.archivotipo_code;
+      h.getDefaultType.mockResolvedValue(null);
+      status = 500;
+    }
     if (kind === "tamaño") dto.archivoRaw.size = png.length + 1;
     if (kind === "extensión") dto.archivoRaw.originalname = "documento.exe";
     await expect(cargarArchivoService(dto)).rejects.toMatchObject({ statusCode: status });

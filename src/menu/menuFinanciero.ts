@@ -23,6 +23,13 @@ export const generarMenuFinanciero = (usuario: UsuarioConRoles) => {
             breadcrumbs: true,
           },
           {
+            id: "financiero-factoring-pendientes-detraccion",
+            title: "Pendientes de pago de detracción",
+            type: "item",
+            url: "/financiero/servicio/factoring/factoring/pendientes-detraccion",
+            breadcrumbs: true,
+          },
+          {
             id: "financiero-factoring-factoring-lista",
             title: "Operaciones",
             type: "item",
