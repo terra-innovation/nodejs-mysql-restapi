@@ -1,0 +1,26 @@
+
+> ft-app-backend@1.0.1 test:integration
+> node scripts/integration/run-mariadb.mjs tests/mariadb/detraccion.test.ts tests/mariadb/authHttp.test.ts
+
+Preparando mariadb:11.4.10 con 127 tablas. No se consulta desarrollo.
+MariaDB lista. Ejecutando pruebas reales de entorno y negocio con Prisma.
+
+ RUN  v5.0.3 D:/06_Workspace_nodejs/ft-app-backend
+
+ ✓ tests/mariadb/authHttp.test.ts (37 tests) 4416ms
+   ✓ Login y refresco de accesos: app real, bcrypt y MariaDB (37)
+     ✓ monta detracciones en la app real y comprueba el rol financiero vigente 647ms
+stdout | tests/mariadb/detraccion.test.ts
+[config] {"selection":"default","file":".env.test","loaded":true,"fileVariables":31,"retainedVariables":2,"conflictingKeys":["PRISMA_DATABASE_FACTORING_URL"]} precedence=process.env
+[config] Las claves en conflictingKeys tienen valores diferentes en el proceso y en el archivo. Prevalece el proceso (incluido el entorno heredado de PM2). Solo se muestran los nombres.
+
+ ✓ tests/mariadb/detraccion.test.ts (5 tests) 1171ms
+   ✓ filtro/paginación conserva operaciones liquidadas y omite NO APLICA/eliminados 425ms
+
+ Test Files  2 passed (2)
+      Tests  42 passed (42)
+   Start at  13:19:36
+   Duration  13.86s (tests 41%, import 40%, transform 18%)
+
+JUNIT report written to D:/06_Workspace_nodejs/ft-app-backend/coverage/mariadb/junit.xml
+Resumen: coverage/mariadb/last-run.json

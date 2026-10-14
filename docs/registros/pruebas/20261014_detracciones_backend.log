@@ -1,0 +1,69 @@
+
+> ft-app-backend@1.0.1 test:vitest
+> cross-env TZ=UTC NODE_ENV=test vitest run --config vitest.config.ts tests/vitest/unit/factoringdetraccion.business.test.ts tests/vitest/http/factoringdetraccion.http.test.ts tests/vitest/unit/factoringfactura.business.test.ts tests/vitest/unit/archivo.business.test.ts tests/vitest/unit/archivoMiddleware.test.ts tests/vitest/migrated/unit/services/secure/accesos.Service.test.ts tests/vitest/migrated/unit/services/financiero/factura.Service.test.ts tests/vitest/migrated/unit/services/usuario/archivo.Service.test.ts
+
+
+ RUN  v5.0.3 D:/06_Workspace_nodejs/ft-app-backend
+
+[12:58:07.469] [34mDEBUG[39m: [36mArchivo aceptado sin firma: documento.txt, extensión: .txt[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "(anonymous) (D:/06_Workspace_nodejs/ft-app-backend/src/middlewares/archivoMiddleware.ts:140)"
+    [35menv[39m: "test"
+[12:58:07.482] [31mERROR[39m: [36mNo se proporcionó ningún archivo[39m
+    [35mlog[39m: "error"
+    [35mlocation[39m: "(anonymous) (D:/06_Workspace_nodejs/ft-app-backend/src/middlewares/archivoMiddleware.ts:117)"
+    [35menv[39m: "test"
+[12:58:07.488] [31mERROR[39m: [36mExtensión de archivo no permitida: [.exe] en archivo [malware.exe][39m
+    [35mlog[39m: "error"
+    [35mlocation[39m: "fileFilter (D:/06_Workspace_nodejs/ft-app-backend/src/middlewares/archivoMiddleware.ts:78)"
+    [35menv[39m: "test"
+[12:58:07.489] [31mERROR[39m: 
+    [35mlog[39m: "error"
+    [35mlocation[39m: "(anonymous) (D:/06_Workspace_nodejs/ft-app-backend/src/middlewares/archivoMiddleware.ts:103)"
+    [35menv[39m: "test"
+    error: {
+      "name": "Error",
+      "message": "Archivo no permitido",
+      "stack":
+          Error: Archivo no permitido
+              at fileFilter (D:/06_Workspace_nodejs/ft-app-backend/src/middlewares/archivoMiddleware.ts:79:17)
+              at wrappedFileFilter (D:\06_Workspace_nodejs\ft-app-backend\node_modules\multer\index.js:134:7)
+              at Multipart.<anonymous> (D:\06_Workspace_nodejs\ft-app-backend\node_modules\multer\lib\make-middleware.js:344:7)
+              at Multipart.emit (node:events:514:28)
+              at HeaderParser.cb (D:\06_Workspace_nodejs\ft-app-backend\node_modules\busboy\lib\types\multipart.js:358:14)
+              at HeaderParser.push (D:\06_Workspace_nodejs\ft-app-backend\node_modules\busboy\lib\types\multipart.js:162:20)
+              at SBMH.ssCb [as _cb] (D:\06_Workspace_nodejs\ft-app-backend\node_modules\busboy\lib\types\multipart.js:394:37)
+              at feed (D:\06_Workspace_nodejs\ft-app-backend\node_modules\streamsearch\lib\sbmh.js:219:14)
+              at SBMH.push (D:\06_Workspace_nodejs\ft-app-backend\node_modules\streamsearch\lib\sbmh.js:104:16)
+              at Multipart._write (D:\06_Workspace_nodejs\ft-app-backend\node_modules\busboy\lib\types\multipart.js:567:19)
+    }
+[12:58:07.489] [34mDEBUG[39m: [36mservice::financiero::subirFacturaFactorService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.subirFacturaFactorService (D:/06_Workspace_nodejs/ft-app-backend/src/services/financiero/factura.Service.ts:26)"
+    [35menv[39m: "test"
+[12:58:07.494] [34mDEBUG[39m: [36mservice::financiero::getFacturasByFactoringidService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.getFacturasByFactoringidService (D:/06_Workspace_nodejs/ft-app-backend/src/services/financiero/factura.Service.ts:34)"
+    [35menv[39m: "test"
+[12:58:07.495] [34mDEBUG[39m: [36mservice::financiero::activateFacturaService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.activateFacturaService (D:/06_Workspace_nodejs/ft-app-backend/src/services/financiero/factura.Service.ts:42)"
+    [35menv[39m: "test"
+[12:58:07.496] [34mDEBUG[39m: [36mservice::financiero::deleteFacturaService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.deleteFacturaService (D:/06_Workspace_nodejs/ft-app-backend/src/services/financiero/factura.Service.ts:50)"
+    [35menv[39m: "test"
+[12:58:07.497] [34mDEBUG[39m: [36mservice::financiero::getFacturaMasterService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.getFacturaMasterService (D:/06_Workspace_nodejs/ft-app-backend/src/services/financiero/factura.Service.ts:58)"
+    [35menv[39m: "test"
+[12:58:07.498] [34mDEBUG[39m: [36mservice::financiero::getFacturasService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.getFacturasService (D:/06_Workspace_nodejs/ft-app-backend/src/services/financiero/factura.Service.ts:66)"
+    [35menv[39m: "test"
+
+ Test Files  8 passed (8)
+      Tests  100 passed (100)
+   Start at  12:58:06
+   Duration  1.18s (import 51%, transform 36%, tests 12%, worker 1%)
+

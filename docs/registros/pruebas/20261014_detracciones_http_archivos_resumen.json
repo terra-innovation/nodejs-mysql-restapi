@@ -1,0 +1,11 @@
+{
+  "runId": "9f26fe71779c2ae97518a0bf",
+  "image": "mariadb:11.4.10",
+  "startedAt": "2026-10-14T13:19:25.167Z",
+  "status": "passed",
+  "cleanup": "removed",
+  "schemaHash": "31b61aab8b125fbf00fea9e499b84c24d33324ed96e7ec85473c96b5aa24898f",
+  "tables": 127,
+  "sourceVersion": "11.4.2-MariaDB",
+  "finishedAt": "2026-10-14T13:19:51.645Z"
+}
