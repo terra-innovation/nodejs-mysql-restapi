@@ -2,8 +2,11 @@ import * as personaController from "#root/src/controllers/usuario/persona.Contro
 import { isAuth, isRole } from "#root/src/middlewares/authMiddleware.js";
 import { catchedAsync } from "#src/utils/catchedAsync.js";
 import { Router } from "express";
+import { getEstadoPersona } from "#src/controllers/usuario/personaestadoConsulta.Controller.js";
 
 const router = Router();
+
+router.get("/usuario/persona/estado", isAuth, isRole([5]), catchedAsync(getEstadoPersona));
 
 //Usuario
 //router.get("/usuario/persona/listar", isAuth, isRole([5]), catchedAsync(personaController.getPersonas));

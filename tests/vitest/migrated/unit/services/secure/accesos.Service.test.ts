@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 
 vi.mock("#src/config.js", () => ({ env: { TOKEN_KEY_JWT: "test-only-access-key" }, isProduction: true }));
 vi.mock("#src/utils/logger.pino.js", () => ({ log: { debug: vi.fn(), warn: vi.fn(), error: vi.fn() }, line: vi.fn() }));
+vi.mock("#root/src/controllers/usuario/persona.Controller.js", () => ({ getPersonaMaster: vi.fn(), verifyPersona: vi.fn() }));
 vi.mock("#src/models/prisma/db-factoring.js", () => {
   const client = { usuario: { findFirst: vi.fn() }, usuario_servicio: { findFirst: vi.fn() }, $transaction: null };
   client.$transaction = vi.fn(async (callback) => callback(client));
@@ -19,6 +20,8 @@ import { getEstadoSuscripcion } from "#src/controllers/usuario/usuarioservicioes
 import { isAuth, isRole } from "#src/middlewares/authMiddleware.js";
 import { rateLimiterAccesosMiddleware } from "#src/middlewares/ratelimiterMiddleware.js";
 import { catchedAsync } from "#src/utils/catchedAsync.js";
+import personaRoutes from "#src/routes/usuario/persona.routes.js";
+import { getEstadoPersonaService } from "#src/services/usuario/personaestadoConsulta.Service.js";
 
 const key = "test-only-access-key";
 const usuarioid = "3b39a694-5e67-4fde-a0ef-799f16801536";
@@ -29,6 +32,7 @@ const client = prismaFT.client as any;
 const session = () => ({ usuario: { ...usuario, usuario_roles: [role(5)] } as any, iat: Math.floor(Date.now() / 1000) - 100, exp: Math.floor(Date.now() / 1000) + 600 });
 const app = express();
 app.use(express.json());
+app.use("/api/v1", personaRoutes);
 app.post("/access", isAuth, rateLimiterAccesosMiddleware, catchedAsync(actualizarAccesos));
 app.get("/state/:id", isAuth, catchedAsync(getEstadoSuscripcion));
 app.get("/protected", isAuth, isRole([3]), (_req, res) => {
@@ -78,6 +82,76 @@ test("rechaza una sesión vencida sin consultar la base de datos", async () => {
 test("rechaza una cuenta inexistente o inactiva", async () => {
   client.usuario.findFirst.mockResolvedValue(null);
   await expect(actualizarAccesosService(session())).rejects.toMatchObject({ statusCode: 401 });
+});
+
+test("la aprobación personal refresca indicador y menú sin conceder roles de Factoring", async () => {
+  client.usuario.findFirst.mockResolvedValue({ ...usuario, usuario_roles: [role(5)] });
+  const source = session();
+  source.usuario.ispersonavalidated = false;
+  const result = await actualizarAccesosService(source);
+  const decoded = jwt.verify(result.token, key) as any;
+  expect(decoded.exp).toBe(source.exp);
+  expect(decoded.iat).toBe(source.iat);
+  expect(decoded.usuario.ispersonavalidated).toBe(true);
+  expect(result.usuario.ispersonavalidated).toBe(true);
+  expect(decoded.usuario.usuario_roles.map((item) => item.idrol)).toEqual([5]);
+  const urls = result.menu.items.flatMap((item) => item.children?.map((child) => child.url) ?? []);
+  expect(urls).toContain("/usuario/inicio");
+  expect(urls).toContain("/usuario/usuarioservicio/lista");
+  expect(urls).not.toContain("/usuario/persona/verificacion");
+});
+
+test.each([null, { code: "review", alias: "EN REVISIÓN", color: "warning", isusuarioedit: false, ispersonavalidated: false }, { code: "approved", alias: "APROBADO", color: "success", isusuarioedit: false, ispersonavalidated: true }])("consulta mínima de persona sin catálogos: %j", async (estado) => {
+  client.usuario.findFirst.mockResolvedValue({ usuarioid, ispersonavalidated: estado?.ispersonavalidated ?? false, persona: estado ? { persona_verificacion_estado: estado } : null });
+  expect(await getEstadoPersonaService(42)).toEqual({ usuarioid, ispersonavalidated: estado?.ispersonavalidated ?? false, estado });
+  expect(client.usuario.findFirst).toHaveBeenCalledWith({
+    where: { idusuario: 42, estado: 1 },
+    select: { usuarioid: true, ispersonavalidated: true, persona: { select: { persona_verificacion_estado: { select: { code: true, alias: true, color: true, isusuarioedit: true, ispersonavalidated: true } } } } },
+  });
+});
+
+test("una discrepancia de estado e indicador se devuelve sin conceder aprobación", async () => {
+  client.usuario.findFirst.mockResolvedValue({ usuarioid, ispersonavalidated: false, persona: { persona_verificacion_estado: { ispersonavalidated: true } } });
+  expect(await getEstadoPersonaService(42)).toMatchObject({ ispersonavalidated: false, estado: { ispersonavalidated: true } });
+  client.usuario.findFirst.mockResolvedValue(null);
+  await expect(getEstadoPersonaService(42)).rejects.toMatchObject({ statusCode: 401 });
+});
+
+test("HTTP persona: ruta real exige sesión y rol 5; identidad solo desde JWT y no-store", async () => {
+  const path = "/api/v1/usuario/persona/estado";
+  await request(app).get(path).expect(403);
+  await request(app).get(path).set("Authorization", "Bearer invalid").expect(401);
+  const denied = jwt.sign({ ...session(), usuario: { ...usuario, usuario_roles: [role(3)] } }, key);
+  await request(app).get(path).set("Authorization", `Bearer ${denied}`).expect(403);
+  expect(client.usuario.findFirst).not.toHaveBeenCalled();
+  // isRole consulta roles vigentes primero; el DAO de estado consulta solo los campos públicos.
+  client.usuario.findFirst.mockResolvedValueOnce(usuario).mockResolvedValueOnce({ usuarioid, ispersonavalidated: false, persona: null });
+  const result = await request(app)
+    .get(path + "?idusuario=99")
+    .set("Authorization", `Bearer ${jwt.sign(session(), key)}`)
+    .expect(200);
+  expect(result.headers["cache-control"]).toBe("no-store");
+  expect(result.body.data).toEqual({ usuarioid, ispersonavalidated: false, estado: null });
+  expect(client.usuario.findFirst).toHaveBeenLastCalledWith(expect.objectContaining({ where: { idusuario: 42, estado: 1 } }));
+});
+
+test("HTTP persona: rechaza sesión vencida, cuenta desactivada y rol revocado", async () => {
+  const path = "/api/v1/usuario/persona/estado";
+  await request(app)
+    .get(path)
+    .set("Authorization", `Bearer ${jwt.sign({ ...session(), exp: 1 }, key)}`)
+    .expect(401);
+  expect(client.usuario.findFirst).not.toHaveBeenCalled();
+  client.usuario.findFirst.mockResolvedValue(null);
+  await request(app)
+    .get(path)
+    .set("Authorization", `Bearer ${jwt.sign(session(), key)}`)
+    .expect(401);
+  client.usuario.findFirst.mockResolvedValue({ ...usuario, usuario_roles: [] });
+  await request(app)
+    .get(path)
+    .set("Authorization", `Bearer ${jwt.sign(session(), key)}`)
+    .expect(403);
 });
 
 test("la consulta de estado filtra por propietario y utiliza solo los datos necesarios", async () => {
