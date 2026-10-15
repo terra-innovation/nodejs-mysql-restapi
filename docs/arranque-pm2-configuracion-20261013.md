@@ -1,5 +1,28 @@
 # Carga de configuración y diagnóstico de PM2 — 2026-10-13
 
+## Cron de tipos de cambio después del pase
+
+El log compartido el 2026-10-14 mostró que cron ejecutó el script sin
+`NODE_ENV` ni `APP_ENV_FILE`: se seleccionó `.env.development`, no se pudo
+cargar y la validación terminó en `CONFIG_INVALID`. Cron no hereda las
+variables del ecosystem de PM2. El bloque `dotenv.config()` del cuerpo de
+`sync_tipo_cambio.ts` no protege frente a la evaluación previa de sus imports
+ESM, que llegan a la configuración central.
+
+Corrección operativa propuesta, conservando horario y destino del log:
+
+```cron
+0 13 * * * cd /opt/finanzatech/ft-app-backend && NODE_ENV=production APP_ENV_FILE=/opt/finanzatech/ft-app-backend/.env /usr/bin/node dist/scripts/sync_tipo_cambio.js >> /var/log/scripts_sync_tipo_cambio.log 2>&1
+```
+
+Antes de esperar la ejecución programada, comprobar solamente configuración
+mediante `dist/scripts/check_config.js production`, con entorno limpio y
+ambos selectores explícitos. No ejecutar la sincronización como prueba de
+solo lectura: puede persistir tipos de cambio. El horario sigue dependiendo
+de la zona horaria del servicio cron; no se cambió en esta corrección.
+Propuesta pendiente de aplicar/verificar por el usuario en Ubuntu. No se
+abrió `.env` ni se ejecutó ninguna tarea contra producción desde Windows.
+
 ## Reanudación en la ventana nocturna
 
 ### Respaldo confirmado y preparación del runtime

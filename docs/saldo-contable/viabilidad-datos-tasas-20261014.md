@@ -9,8 +9,8 @@ Fecha: 14/10/2026. Este documento apoya el [plan](../plan-saldo-contable-sbs-202
 | Neto | factoring_propuesta.monto_neto de la propuesta aceptada enlazada | Base confirmada por pagador; copiar referencia e importe en detalle |
 | Instrumentos | factoring_factura y sustento documental | Clasificar sin sustituir ni distribuir arbitrariamente neto de propuesta aceptada |
 | Inicio | factoring.fecha_operacion | Comparar con corte y explicar datos faltantes |
-| Cobro total | factoring_liquidacion.fecha_pago_efectivo | Solo liquidación vigente activa; cobro hasta corte excluye |
-| Vigencia | getFactoringliquidacionVigenteByIdfactoring | Criterio actual funcional 4 y estado lógico; detectar varias vigentes |
+| Cobro total | factoring_liquidacion.fecha_pago_efectivo | Cualquier registro con estado lógico 1 y cobro hasta corte inclusive excluye |
+| Actividad | estado lógico de operación y liquidación | Solo 1; no filtrar por estados funcionales ni reutilizar getFactoringliquidacionVigenteByIdfactoring |
 | Multiplicador PEN | Decimal(1) | Convertir PEN a PEN sin consultar SBS |
 | Multiplicador USD | sbs_tipo_cambio.precio_contable | USD/PEN, fecha exacta de corte, activo y válido |
 | Tipo de operación | DESCUENTO confirmado | No deducirlo de nombres comerciales factoring |

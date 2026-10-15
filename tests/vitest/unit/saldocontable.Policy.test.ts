@@ -24,9 +24,16 @@ describe("Saldo contable al corte civil de Lima", () => {
     expect(evaluarSaldo(fuente(), fechas.fecha_corte, null)).toMatchObject({ elegible: true, calculable: false, monto_saldo_contable: null, motivos: [{ codigo: "SIN_TIPO_CAMBIO_CONTABLE", mensaje: expect.stringContaining("Actualice") }] });
   });
   it.each([null, new Decimal(0), new Decimal(-1)])("no usa un contable inválido %s", (tc) => expect(evaluarSaldo(fuente(), fechas.fecha_corte, tc).calculable).toBe(false));
-  it("explica propuesta ausente, varias vigentes, inicio posterior y operación inactiva", () => {
+  it("explica propuesta ausente, inicio posterior y operación inactiva", () => {
     const e = evaluarSaldo(fuente({ estado: 2, propuesta: null, fecha_operacion: new Date("2026-07-01T05:00:00Z"), liquidaciones: [{ fecha_pago_efectivo: new Date() }, { fecha_pago_efectivo: new Date() }] }), fechas.fecha_corte, new Decimal(3));
-    expect(e.motivos.map((m) => m.codigo)).toEqual(expect.arrayContaining(["OPERACION_INACTIVA", "SIN_PROPUESTA_ACEPTADA", "INICIO_POSTERIOR_CORTE", "VARIAS_LIQUIDACIONES_VIGENTES"]));
+    expect(e.motivos.map((m) => m.codigo)).toEqual(expect.arrayContaining(["OPERACION_INACTIVA", "SIN_PROPUESTA_ACEPTADA", "INICIO_POSTERIOR_CORTE"]));
+  });
+  it("cualquier cobro hasta el corte excluye aunque existan varias fechas; solo cobros posteriores mantienen saldo", () => {
+    const futuras = [{ fecha_pago_efectivo: new Date("2026-09-01") }, { fecha_pago_efectivo: new Date("2026-08-01") }];
+    expect(evaluarSaldo(fuente({ liquidaciones: futuras }), fechas.fecha_corte, new Decimal(3)).calculable).toBe(true);
+    const e = evaluarSaldo(fuente({ liquidaciones: [...futuras, { fecha_pago_efectivo: new Date("2026-06-30T15:00:00Z") }] }), fechas.fecha_corte, new Decimal(3));
+    expect(e.motivos.map((m) => m.codigo)).toContain("PAGADA_AL_CORTE");
+    expect(e.calculable).toBe(false);
   });
   it("rechaza propuesta de otra operación y evidencia de cobro contradictoria", () => {
     const e = evaluarSaldo(fuente({ propuesta: { pertenece: false, estado: 1, monto_neto: new Decimal(10) }, liquidaciones: [{ fecha_pago_efectivo: new Date("2025-01-01") }] }), fechas.fecha_corte, new Decimal(3));

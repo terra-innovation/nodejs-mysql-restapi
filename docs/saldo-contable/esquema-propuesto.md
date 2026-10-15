@@ -13,7 +13,9 @@ Fecha: 14/10/2026. Estado: aprobado y aplicado en desarrollo. Las cuatro tablas,
 
 ## 2. Qué se referencia y qué se copia
 
-Las FKs apuntan a operación, propuesta aceptada, liquidación vigente, moneda y tipo contable SBS. Las copias de monto_neto, tipo_cambio, importe PEN, fechas utilizadas, código/moneda y clasificación preservan lo que se calculó y reportó. Al cerrar no se sustituyen por valores actuales de las referencias.
+Las FKs apuntan a operación, propuesta aceptada, liquidación fuente, moneda y tipo contable SBS. Las copias de monto_neto, tipo_cambio, importe PEN, fechas utilizadas, código/moneda y clasificación preservan lo que se calculó y reportó. Al cerrar no se sustituyen por valores actuales de las referencias.
+
+Precisión posterior del 14/10/2026: para el cobro se consideran registros con estado lógico 1, sin condición de estado funcional. Cualquier pago hasta el corte inclusive excluye. Con varios pagos activos, la primera fecha se usa como evidencia, con ID como desempate. Esta regla sustituye las menciones iniciales a vigente/ambigüedad del diccionario siguiente. No se ha modificado el SQL aprobado, los comentarios físicos de la base ni el schema Prisma; cualquier DDL adicional requiere autorización expresa.
 
 Fuente única: factoring.factoring_propuesta_aceptada.monto_neto, mediante idfactoringpropuestaaceptada. Sin propuesta válida se bloquea esa operación; no usar neto inicial ni suma de facturas como respaldo. En borrador se recalcula expresamente; en cerrado se lee la copia inmutable.
 

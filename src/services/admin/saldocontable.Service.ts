@@ -91,7 +91,7 @@ export const sugerenciasService = (uuid: string, page: number, limit: number, se
     if (p.estado !== 1) throw new ClientError("Active el período para consultar sugerencias.", 409);
     const [[fuentes, total], detalles, tc] = await Promise.all([dao.listarFuentes(tx, page, limit, search, limiteCorte(civil(p.fecha_corte))), dao.getDetalles(tx, p.idsbssaldocontableperiodo), tipoCambio(tx, civil(p.fecha_corte))]);
     const asociados = new Set(detalles.map((d) => d.factoring.factoringid));
-    return { items: fuentes.map((f) => ({ factoringid: f.factoringid, codigo_operacion: f.code, moneda_codigo: f.moneda.codigo, fecha_operacion: f.fecha_operacion, fecha_pago_efectivo: f.factoring_liquidaciones.length === 1 ? f.factoring_liquidaciones[0].fecha_pago_efectivo : null, instrumentos_fuente: f.factoring_facturas.map((i) => ({ instrumento: i.factura.code, referencia: i.factura.facturaid })), asociado: asociados.has(f.factoringid), ...evaluar(f, civil(p.fecha_corte), tc) })), total, page, limit, tipo_cambio: tcDto(tc, civil(p.fecha_corte)), acciones: acciones(p) };
+    return { items: fuentes.map((f) => ({ factoringid: f.factoringid, codigo_operacion: f.code, moneda_codigo: f.moneda.codigo, fecha_operacion: f.fecha_operacion, fecha_pago_efectivo: f.factoring_liquidaciones[0]?.fecha_pago_efectivo ?? null, instrumentos_fuente: f.factoring_facturas.map((i) => ({ instrumento: i.factura.code, referencia: i.factura.facturaid })), asociado: asociados.has(f.factoringid), ...evaluar(f, civil(p.fecha_corte), tc) })), total, page, limit, tipo_cambio: tcDto(tc, civil(p.fecha_corte)), acciones: acciones(p) };
   });
 
 async function escritura<T>(work: (tx: TxClient) => Promise<T>) {

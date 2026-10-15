@@ -1,12 +1,12 @@
 # Saldo Contable: reglas confirmadas y alcance inicial
 
-Fecha: 14/10/2026. Versión: NETO-DESCUENTO-PERIODOS-02. Alcance: definición del módulo administrativo, sin implementación funcional ni pruebas ejecutadas.
+Fecha: 14/10/2026. Versión: NETO-DESCUENTO-PERIODOS-03. Alcance: reglas vigentes del módulo administrativo implementado. La precisión posterior del usuario sobre estado lógico y fecha real de cobro sustituye el criterio inicial de estado funcional de liquidación.
 
 ## 1. Decisiones confirmadas
 
 1. Base única: monto_neto de la propuesta aceptada de la operación, confirmado por el pagador. No restar nuevamente detracción, retención o garantía ni usar neto inicial/facturas como respaldo.
 2. Actualmente solo hay cobro total, no abonos parciales.
-3. Fuente del cobro total: `factoring_liquidacion.fecha_pago_efectivo` de la liquidación vigente activa. Descartar anuladas/reemplazadas.
+3. Fuente del cobro total: `factoring_liquidacion.fecha_pago_efectivo` de registros con estado lógico 1. No filtrar por estado funcional de operación o liquidación (incluidos 4 y 10). Cualquier cobro activo hasta el corte inclusive excluye la operación.
 4. Una operación pendiente al corte vuelve a sugerirse en períodos sucesivos aunque ya haya sido reportada. Evitar duplicados únicamente dentro del mismo período.
 5. Cierre: congelar asociaciones, importes y evidencias del reporte; permitir pagos posteriores en las operaciones originales.
 6. Crear períodos con fecha de inicio, fecha de fin y fecha de corte independientes, sin imponer trimestre, semestre o año en el modelo.
@@ -23,9 +23,9 @@ La propuesta de descartar toda operación asociada a un período anterior se ret
 
 Una operación se sugiere cuando:
 
-- Se inició/reconoció hasta la fecha de corte inclusive.
+- Tiene estado lógico 1 y fecha de inicio existente hasta la fecha de corte inclusive.
 - Pertenece al alcance Descuento confirmado.
-- No tiene una liquidación vigente activa con fecha efectiva de cobro hasta el corte inclusive.
+- No tiene liquidaciones lógicamente activas con fecha efectiva de cobro hasta el corte inclusive.
 - Sus datos permiten calcular el neto, clasificar el instrumento y, para USD, obtener el tipo de cambio contable del corte.
 
 La fecha de inicio del período describe la cobertura del reporte; **no excluye cartera antigua todavía pendiente al corte**. La fecha determinante del saldo es la de corte. Una operación liquidada hoy puede corresponder a un saldo pendiente en un corte histórico si su fecha efectiva de cobro fue posterior.
@@ -38,11 +38,11 @@ La fecha de inicio del período describe la cobertura del reporte; **no excluye 
 | Cobro total posterior al corte | Sugerir; estaba pendiente en ese corte |
 | Ya reportada antes y sigue pendiente | Volver a sugerir; no duplicar en el mismo período |
 | Inicio posterior al corte | No cumple: operación no iniciada al corte |
-| Varias liquidaciones vigentes activas | Requiere revisión: liquidación ambigua |
+| Varias liquidaciones lógicamente activas | Cualquier cobro hasta el corte excluye; si todos son posteriores, conserva saldo histórico |
 | USD sin tipo de cambio contable del corte | Bloqueo de cálculo/asociación USD; indicar actualizarlo |
 | PEN sin registro SBS de ese día | Calcular con 1; no requiere conversión externa |
 
-Para no confundir con históricos irrelevantes, la vista “No cumplen” se centra por defecto en operaciones iniciadas o cobradas dentro de la cobertura del período, siempre explicando el motivo. Las pagadas antes del inicio pueden quedar fuera de esa vista inicial o consultarse con filtro histórico; no se excluye cartera pendiente por esa reducción visual. No limitar “no cumplen” únicamente a operaciones iniciadas y pagadas dentro del mismo período, porque también puede haber cartera antigua cobrada en el período actual.
+La lista de sugerencias excluye las operaciones inactivas, sin inicio, iniciadas después del corte o cobradas hasta el corte inclusive. Aplica idéntico filtro antes de paginar, buscar y contar. Las candidatas pendientes conservan los motivos de bloqueo por datos o conversión. Asociar, recalcular y cerrar revalidan las fuentes; una solicitud directa tampoco puede incluir operaciones ya cobradas.
 
 La clasificación y el dato de tipo de cambio se informan separados de la situación de cobro: una operación puede estar pendiente y, aun así, requerir completar datos para asociarse.
 
@@ -68,7 +68,7 @@ Fuente única del neto: factoring.factoring_propuesta_aceptada.monto_neto, enlaz
 
 Ayuda en interfaz: «Monto neto pendiente de pago confirmado por el pagador, tomado de la propuesta aceptada de la operación». En cerrado mostrar copia guardada y propuesta usada, aunque después cambie la actual.
 
-Fuente del cobro: factoring_liquidacion.fecha_pago_efectivo de vigente activa, según criterio existente funcional4. Sin vigente se evalúa pendiente; varias vigentes requieren revisión. Fechas de factura/detracción/vencimiento no sustituyen esta fuente.
+Fuente del cobro: factoring_liquidacion.fecha_pago_efectivo de registros con estado lógico 1, independientemente del estado funcional. Sin cobros activos se evalúa pendiente. Ante varios registros activos, la fecha más temprana decide la exclusión y se conserva como evidencia, con ID como desempate determinista. Los registros lógicamente inactivos no se utilizan. Fechas de factura/detracción/vencimiento no sustituyen esta fuente.
 
 La [propuesta concreta de campos y relaciones](esquema-propuesto.md) prevalece sobre las descripciones genéricas anteriores.
 
@@ -104,11 +104,9 @@ V1 no implementa reapertura, firma, presentación automática, rectificación ve
 
 ## 7. Validación prevista y siguiente paso
 
-Pendiente de implementación: probar selección al corte, operación repetida entre períodos, cobro exactamente en corte, antes/después, Descuento único, fechas flexibles, PEN × 1, USD × contable del corte, valor faltante, integridad de dos tablas operativas y dos catálogos, transacción/concurrencia y cierre inmutable.
+La evidencia de implementación y comprobaciones está en [el informe del módulo](implementacion-modulo-20261014.md). Las suites completas previas corresponden a versiones anteriores de estas reglas; la corrección actual tiene pruebas focalizadas y comprobación de tipos. La integración actual requiere Docker disponible.
 
-No se ejecutaron pruebas ni consultas a BBDD para redactar estas reglas. Las consultas de diagnóstico existentes son opcionales para validar integridad; no se solicitan para redefinir las fuentes confirmadas.
-
-**Siguiente paso del plan:** validar los campos y relaciones de [las dos tablas operativas y dos catálogos propuestas](esquema-propuesto.md) y pasar a implementación conforme al [checklist](../plan-saldo-contable-sbs-20261014.md).
+**Siguiente paso del plan:** completar la integración de la regla corregida en MariaDB desechable y continuar la validación manual del período.
 
 
 Actualización de diseño: cabecera y detalle llevan prefijo sbs_; nombre_periodo es obligatorio. El estado funcional y tipo de operación se normalizan en sbs_saldo_contable_periodo_estado y sbs_saldo_contable_operacion_tipo, manteniendo estado lógico habitual. Hay cuatro tablas nuevas. El catálogo incluye Factoring no habilitado y Descuento habilitado; el DDL propuesto contiene comentarios detallados de todas las tablas/columnas. Ver [estructura vigente](esquema-propuesto.md).

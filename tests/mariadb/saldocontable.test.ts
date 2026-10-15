@@ -46,7 +46,7 @@ const mutar = (uuid: string, data: MutacionPeriodo) => service.mutarPeriodoServi
 async function cambio(fecha = "2026-06-30", precio = "3.410001") {
   return db.sbs_tipo_cambio.create({ data: { code: `TC-${fecha}`, idmonedabase: 2, idmonedacotizada: 1, fecha: new Date(fecha), precio_compra: 2, precio_venta: 4, precio_contable: precio } });
 }
-async function liquidacion(idfactoring: number, pago: string, estado = 4) {
+async function liquidacion(idfactoring: number, pago: string, estado = 10) {
   await db.factoring_liquidacion_estado.upsert({ where: { idfactoringliquidacionestado: estado }, create: { idfactoringliquidacionestado: estado, code: `E${estado}`, nombre: "Sintético", alias: "IT", color: "blue" }, update: {} });
   return db.factoring_liquidacion.create({ data: { code: `LQ-${await db.factoring_liquidacion.count()}`, idfactoring, idfactoringliquidacionestado: estado, fecha_liquidacion: new Date(pago), fecha_pago_efectivo: new Date(pago), dias_pago_efectivo: 0, dias_mora_efectivo: 0, monto_descuento_efectivo: 0, monto_descuento_a_favor: 0, monto_descuento_mora: 0, monto_total_neto_inafecto_igv_abono: 0, monto_total_neto_inafecto_igv_cargo: 0, monto_total_neto_inafecto_igv: 0, monto_total_neto_afecto_igv_abono: 0, monto_total_neto_afecto_igv_cargo: 0, monto_total_neto_afecto_igv: 0, monto_total_igv: 0, monto_total_a_favor: 0, monto_total_por_cobrar: 0 } });
 }
@@ -61,8 +61,9 @@ describe("Saldo Contable: servicios, DAO y transacciones reales", () => {
       ["POSTERIOR", new Date("2026-07-01T05:00:00Z")],
       ["FIN_CORTE", new Date("2026-07-01T04:59:59Z")],
       ["INICIO_CORTE", new Date("2026-06-30T05:00:00Z")],
+      ["INACTIVA", new Date("2026-01-15T15:00:00Z")],
     ] as const)
-      await db.factoring.create({ data: { ...data, idfactoringpropuestaaceptada: null, code: `IT-FECHA-${suffix}`, fecha_operacion } });
+      await db.factoring.create({ data: { ...data, idfactoringpropuestaaceptada: null, code: `IT-FECHA-${suffix}`, fecha_operacion, estado: suffix === "INACTIVA" ? 2 : 1 } });
     const first = await service.sugerenciasService(p.sbssaldocontableperiodoid, 1, 2, "");
     const second = await service.sugerenciasService(p.sbssaldocontableperiodoid, 2, 2, "");
     expect(first.total).toBe(3);
@@ -135,17 +136,31 @@ describe("Saldo Contable: servicios, DAO y transacciones reales", () => {
       p = await crear();
     await liquidacion(f.factoring.idfactoring, pago);
     const result = await service.sugerenciasService(p.sbssaldocontableperiodoid, 1, 25, "");
-    expect(result.items[0].motivos.map((m) => m.codigo)).toContain("PAGADA_AL_CORTE");
+    expect(result.items).toEqual([]);
+    expect(result.total).toBe(0);
     await expect(mutar(p.sbssaldocontableperiodoid, { accion: "asociar", version: 1, operaciones: [f.factoring.factoringid] })).rejects.toMatchObject({ statusCode: 409 });
   });
-  it("descarta liquidación anulada y acepta cobro posterior; varias vigentes requieren revisión", async () => {
+  it("ignora cobros eliminados lógicamente y usa la fecha de cualquier cobro activo", async () => {
     const f = await arrange(),
       p = await crear();
-    await liquidacion(f.factoring.idfactoring, "2026-05-01", 1);
+    const descartada = await liquidacion(f.factoring.idfactoring, "2026-05-01", 11);
+    await db.factoring_liquidacion.update({ where: { idfactoringliquidacion: descartada.idfactoringliquidacion }, data: { estado: 2 } });
     await liquidacion(f.factoring.idfactoring, "2026-07-01T05:00:00Z");
     expect((await service.sugerenciasService(p.sbssaldocontableperiodoid, 1, 25, "")).items[0].calculable).toBe(true);
     await liquidacion(f.factoring.idfactoring, "2026-08-01");
-    expect((await service.sugerenciasService(p.sbssaldocontableperiodoid, 1, 25, "")).items[0].motivos.map((m) => m.codigo)).toContain("VARIAS_LIQUIDACIONES_VIGENTES");
+    expect((await service.sugerenciasService(p.sbssaldocontableperiodoid, 1, 25, "")).items[0].calculable).toBe(true);
+    await liquidacion(f.factoring.idfactoring, "2026-06-30T23:00:00Z", 1);
+    expect((await service.sugerenciasService(p.sbssaldocontableperiodoid, 1, 25, "")).total).toBe(0);
+    await expect(mutar(p.sbssaldocontableperiodoid, { accion: "asociar", version: 1, operaciones: [f.factoring.factoringid] })).rejects.toMatchObject({ statusCode: 409 });
+  });
+  it.each([1, 4, 8, 10])("no utiliza estado funcional %s para omitir un cobro activo hasta el corte", async (estado) => {
+    const f = await arrange(),
+      p = await crear();
+    await liquidacion(f.factoring.idfactoring, "2026-06-30T15:00:00Z", estado);
+    const result = await service.sugerenciasService(p.sbssaldocontableperiodoid, 1, 25, "IT-FACTORING");
+    expect(result.items).toEqual([]);
+    expect(result.total).toBe(0);
+    await expect(mutar(p.sbssaldocontableperiodoid, { accion: "asociar", version: 1, operaciones: [f.factoring.factoringid] })).rejects.toMatchObject({ statusCode: 409 });
   });
   it.each([
     { fecha_inicio: "2099-01-01", fecha_fin: "2099-03-31", fecha_corte: "2099-03-31" },

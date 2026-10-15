@@ -65,8 +65,8 @@ export function evaluarSaldo(fuente: FuenteSaldo, corte: string, contable: Decim
   else if (fuente.fecha_operacion >= limite) add("INICIO_POSTERIOR_CORTE", "La operación inició después del corte.");
   if (!fuente.propuesta || !fuente.propuesta.pertenece || fuente.propuesta.estado !== 1) add("SIN_PROPUESTA_ACEPTADA", "Falta una propuesta aceptada activa que pertenezca a esta operación.");
   else if (!fuente.propuesta.monto_neto.isFinite() || fuente.propuesta.monto_neto.lte(0)) add("NETO_INVALIDO", "El monto neto de la propuesta aceptada debe ser positivo.");
-  if (fuente.liquidaciones.length > 1) add("VARIAS_LIQUIDACIONES_VIGENTES", "Hay varias liquidaciones vigentes; regularice la fuente de cobro antes de asociar.");
-  const pago = fuente.liquidaciones.length === 1 ? fuente.liquidaciones[0].fecha_pago_efectivo : null;
+  // El cobro activo y su fecha deciden, independientemente de estados funcionales.
+  const pago = fuente.liquidaciones.reduce<Date | null>((primera, row) => (!primera || row.fecha_pago_efectivo < primera ? row.fecha_pago_efectivo : primera), null);
   if (pago && fuente.fecha_operacion && pago < fuente.fecha_operacion) add("COBRO_ANTERIOR_INICIO", "La fecha real de cobro es anterior al inicio; requiere revisión.");
   if (pago && pago < limite) add("PAGADA_AL_CORTE", "La operación fue cobrada totalmente hasta la fecha de corte.");
   const elegible = motivos.length === 0;

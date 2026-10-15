@@ -1,0 +1,17 @@
+
+> ft-app-backend@1.0.1 format:changed
+> node scripts/quality/format-changed.mjs --check
+
+warning: in the working copy of 'docs/saldo-contable/contrato-api.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/saldo-contable/esquema-propuesto.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/saldo-contable/implementacion-modulo-20261014.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/saldo-contable/reglas-contables.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/saldo-contable/viabilidad-datos-tasas-20261014.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/controllers/financiero/servicio/factoring/factoring.Controller.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/daos/saldocontable.Dao.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/domain/factoring/saldocontable/saldocontable.Policy.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/routes/financiero/servicio/factoring/factoring.routes.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/services/admin/saldocontable.Service.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/mariadb/saldocontable.test.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/vitest/unit/saldocontable.Policy.test.ts', LF will be replaced by CRLF the next time Git touches it
+Formato: 13 archivos revisados; 0 con diferencias.

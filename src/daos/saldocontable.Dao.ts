@@ -2,10 +2,11 @@ import { Prisma } from "#root/generated/prisma/ft_factoring/client.js";
 import type { TxClient } from "#src/types/Prisma.types.js";
 
 const cabeceraInclude = { sbs_saldo_contable_periodo_estado: true, sbs_saldo_contable_operacion_tipo: true } as const;
+const ordenCobros: Prisma.factoring_liquidacionOrderByWithRelationInput[] = [{ fecha_pago_efectivo: "asc" }, { idfactoringliquidacion: "asc" }];
 const fuenteInclude = {
   moneda: { select: { idmoneda: true, codigo: true } },
   factoring_propuesta_aceptada: { select: { idfactoringpropuesta: true, factoringpropuestaid: true, idfactoring: true, monto_neto: true, estado: true } },
-  factoring_liquidaciones: { where: { estado: 1, idfactoringliquidacionestado: 4 }, select: { idfactoringliquidacion: true, fecha_pago_efectivo: true } },
+  factoring_liquidaciones: { where: { estado: 1 }, orderBy: ordenCobros, select: { idfactoringliquidacion: true, fecha_pago_efectivo: true } },
   factoring_facturas: { where: { estado: 1 }, select: { factura: { select: { facturaid: true, code: true } } } },
 } as const;
 export type FuenteSaldoRow = Prisma.factoringGetPayload<{ include: typeof fuenteInclude }>;
@@ -23,7 +24,7 @@ export const actualizarDetalle = (tx: TxClient, id: number, data: Prisma.sbs_sal
 export const getFuentesPorUuid = (tx: TxClient, uuids: string[]) => tx.factoring.findMany({ where: { factoringid: { in: uuids } }, include: fuenteInclude, orderBy: { idfactoring: "asc" } });
 export const listarFuentes = (tx: TxClient, page: number, limit: number, search: string, limiteCorteExclusivo: Date) => {
   // Filtrar antes de paginar y contar; no excluir cartera iniciada en períodos anteriores.
-  const where: Prisma.factoringWhereInput = { fecha_operacion: { not: null, lt: limiteCorteExclusivo }, ...(search ? { code: { contains: search } } : {}) };
+  const where: Prisma.factoringWhereInput = { estado: 1, fecha_operacion: { not: null, lt: limiteCorteExclusivo }, factoring_liquidaciones: { none: { estado: 1, fecha_pago_efectivo: { lt: limiteCorteExclusivo } } }, ...(search ? { code: { contains: search } } : {}) };
   return Promise.all([tx.factoring.findMany({ where, include: fuenteInclude, orderBy: { idfactoring: "desc" }, skip: (page - 1) * limit, take: limit }), tx.factoring.count({ where })]);
 };
 export const getMonedas = (tx: TxClient) => tx.moneda.findMany({ where: { estado: 1, codigo: { in: ["USD", "PEN"] } }, select: { idmoneda: true, codigo: true } });

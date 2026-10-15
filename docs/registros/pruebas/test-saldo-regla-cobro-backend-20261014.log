@@ -1,0 +1,13 @@
+
+> ft-app-backend@1.0.1 test:vitest
+> cross-env TZ=UTC NODE_ENV=test vitest run --config vitest.config.ts tests/vitest/unit/saldocontable.Policy.test.ts tests/vitest/http/saldocontable.http.test.ts
+
+
+ RUN  v5.0.3 D:/06_Workspace_nodejs/ft-app-backend
+
+
+ Test Files  2 passed (2)
+      Tests  29 passed (29)
+   Start at  02:02:38
+   Duration  2.90s (import 55%, transform 24%, tests 20%, worker 1%)
+

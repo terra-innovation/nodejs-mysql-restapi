@@ -1,0 +1,13 @@
+
+> ft-app-backend@1.0.1 test:vitest
+> cross-env TZ=UTC NODE_ENV=test vitest run --config vitest.config.ts tests/vitest/unit/factoringConsolidadoXlsx.test.ts tests/vitest/http/factoringConsolidado.http.test.ts
+
+
+ RUN  v5.0.3 D:/06_Workspace_nodejs/ft-app-backend
+
+
+ Test Files  2 passed (2)
+      Tests  11 passed (11)
+   Start at  03:32:55
+   Duration  817ms (transform 46%, import 43%, tests 10%)
+

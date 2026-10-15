@@ -1,9 +1,19 @@
 import { response } from "#src/utils/CustomResponseOk.js";
+import { downloadFactoringConsolidadoService } from "#src/services/financiero/factoringConsolidado.Service.js";
+
 import { line, log } from "#src/utils/logger.pino.js";
 import { Request, Response } from "express";
 import { z } from "zod";
 import { objectInput, stringInput, inputUuidPattern } from "#src/utils/validationInputs.js";
 import { getFactoringMasterService, getFactoringsPendientesFacturaCedenteService, getFactoringsService, getFactoringEmpresaDetalleService, getPreFacturaCedenteService } from "#src/services/financiero/factoring.Service.js";
+
+export const downloadFactoringConsolidado = async (_req: Request, res: Response) => {
+  const { file, nameFile } = await downloadFactoringConsolidadoService();
+  res.setHeader("Cache-Control", "no-store");
+  res.attachment(nameFile);
+  res.type("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+  res.send(file);
+};
 
 export const getFactoringMaster = async (_req: Request, res: Response) => {
   log.debug(line(), "controller::getFactoringsMaster");
