@@ -29,8 +29,11 @@
 ## Validación
 
 - Usar la skill [backend-validation](.agents/skills/backend-validation/SKILL.md) para seleccionar y ejecutar comprobaciones del backend.
-- `npm test` y `npm run test:vitest` ejecutan la misma selección rápida de Vitest, incluidas las suites migradas. Vitest no sustituye la comprobación de tipos.
-- Preferir pruebas afectadas; ampliar según el riesgo de negocio, seguridad, persistencia o runtime. Consultar [Vitest](tests/vitest/README.md), [matriz de negocio](tests/vitest/MATRIZ_NEGOCIO.md) o [MariaDB](tests/mariadb/README.md) según corresponda.
+- Antes de validar, identificar fase (desarrollo o cierre), comportamiento, consumidores afectados y riesgo. Durante el desarrollo, seleccionar pruebas concretas del cambio; ampliar primero a consumidores por riesgo financiero, seguridad, persistencia o runtime y justificar cada ampliación. Aplicar la [selección por fase y riesgo](tests/vitest/README.md#selección-por-fase-y-riesgo).
+- No ejecutar pruebas de aplicación por cambios exclusivamente documentales. Para texto o presentación local, revisar el resultado y las pruebas afectadas si el texto es un contrato observable; no lanzar la suite completa por rutina ni crear pruebas que solo repitan la implementación.
+- Al cerrar una nueva funcionalidad, un cambio transversal o una migración, comprobar la suite completa de cada proyecto afectado, más integración/runtime pertinentes. Antes del cierre, una completa requiere justificar el impacto transversal o la incertidumbre que resolverá. Respetar siempre los límites de ejecución del usuario; si impiden validar, declarar el cierre pendiente.
+- `npm test` y `npm run test:vitest` sin filtros ejecutan toda la selección rápida de Vitest, incluidas las suites migradas: no son pruebas focalizadas ni incluyen MariaDB. `test:all` tampoco incluye toda la integración. Vitest no sustituye la comprobación de tipos; cobertura, agregadores de calidad y builds no son comprobaciones rutinarias de cada edición.
+- No repetir comprobaciones aprobadas sin cambios relevantes, fallos o dudas nuevas. Registrar revisión, diff pendiente, selección y entorno comprobados; reutilizar evidencia de CI solo cuando corresponda a esa versión y alcance, indicando diferencias de plataforma. No declarar cierre completo con pruebas pendientes.
 - Ejecutar integración mediante el runner existente de MariaDB desechable. No regenerar snapshots ni acceder a bases compartidas como preparación rutinaria.
 - `npm run build-prod` empaqueta producción: ejecutarlo solo con autorización explícita para esa operación.
 - Reportar alcance, resultado, fallos y límites de lo verificado. Distinguir resultados actuales de evidencia histórica y pruebas con mocks de integración real.
