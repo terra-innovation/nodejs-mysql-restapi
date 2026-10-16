@@ -1,0 +1,6 @@
+
+> ft-app-backend@1.0.1 test:integration:doctor
+> node scripts/integration/doctor.mjs
+
+Estructura: 131 tablas, 11.4.2-MariaDB; destino: mariadb:11.4.10.
+docker falló (1). Comprueba que Docker esté iniciado.

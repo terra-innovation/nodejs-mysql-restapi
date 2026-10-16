@@ -1,4 +1,5 @@
 import { Router } from "express";
+import configuracionbbddRoutes from "#src/routes/admin/configuracionbbdd.routes.js";
 
 import admin_archivoRoutes from "#root/src/routes/admin/archivo.routes.js";
 import admin_archivofacturaRoutes from "#root/src/routes/admin/archivofactura.routes.js";
@@ -36,6 +37,7 @@ import admin_splaft_registrooperacionRoutes from "#root/src/routes/admin/splaft/
 import admin_splaft_saldocontableRoutes from "#src/routes/admin/splaft/saldocontable.routes.js";
 
 const router = Router();
+router.use(configuracionbbddRoutes);
 
 router.use(admin_administracionRoutes);
 router.use(admin_zlaboratorioRoutes);

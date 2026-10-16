@@ -11,6 +11,8 @@
     "npm": "^11.19.0"
   },
   "scripts": {
+    "cron:transacciones-bancarias": "cross-env NODE_ENV=development node --env-file=.env.development --import tsx/esm src/scripts/sync_transacciones_bancarias.ts",
+    "cron:transacciones-bancarias:prod": "node dist/scripts/sync_transacciones_bancarias.js",
     "typecheck": "tsc --noEmit",
     "typecheck:vitest": "npm run test:vitest:typecheck",
     "typecheck:integration": "npm run test:integration:typecheck",

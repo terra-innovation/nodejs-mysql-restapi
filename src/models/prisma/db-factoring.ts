@@ -70,7 +70,8 @@ export class PrismaFTManager {
         if (printLogQuery) {
           log.debug(line(), `[Prisma] [${env.PRISMA_DATABASE_FACTORING_NICKNAME}] ${msgQuery}`, {
             query: e.query,
-            params: e.params,
+            // El módulo bancario no publica valores de parámetros: contienen evidencia o secretos cifrados.
+            params: /factor_transaccion_bancaria|configuracion_bbdd/i.test(e.query) ? "[parámetros bancarios omitidos]" : e.params,
             duration,
             ...(store && typeof store === "object" && !Array.isArray(store) ? store : {}),
           });
@@ -84,7 +85,7 @@ export class PrismaFTManager {
       client.$on("info" as never, (e: Prisma.LogEvent) => log.info(line(), this.connectionValidated ? `[Prisma] [${env.PRISMA_DATABASE_FACTORING_NICKNAME}] ${e.message}` : "[Prisma] Inicializando el motor de base de datos."));
     }
     if (this.logLevels.includes("error")) {
-      client.$on("error" as never, (e: Prisma.LogEvent) => log.error(line(), this.connectionValidated ? `[Prisma] [${env.PRISMA_DATABASE_FACTORING_NICKNAME}] ${e.message}` : "[Prisma] Error del motor durante arranque; consulte la etapa y el resultado de conexión."));
+      client.$on("error" as never, (e: Prisma.LogEvent) => log.error(line(), this.connectionValidated ? (/factor_transaccion_bancaria|configuracion_bbdd/i.test(e.message) ? "[Prisma] Error de persistencia bancaria; valores omitidos." : `[Prisma] [${env.PRISMA_DATABASE_FACTORING_NICKNAME}] ${e.message}`) : "[Prisma] Error del motor durante arranque; consulte la etapa y el resultado de conexión."));
     }
   }
 

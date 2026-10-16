@@ -1,0 +1,37 @@
+{
+  "formatVersion": 1,
+  "id": "20261016-configuracion-bbdd",
+  "description": "Autorización expresa del usuario 16/10/2026: desacoplar configuración BBDD, preservar referencias y tabla bancaria en consumidor propio; sin pruebas remotas ni datos financieros nuevos.",
+  "sqlFile": "../../../docs/transacciones-bancarias/20261016-configuracion-bbdd.sql",
+  "createTables": [
+    "factor_transaccion_bancaria_fuente"
+  ],
+  "alterTables": [
+    "configuracion_bbdd",
+    "factor_transaccion_bancaria_origen_cuenta",
+    "factor_transaccion_bancaria_sincronizacion",
+    "factor_transaccion_bancaria_incidencia",
+    "factor_transaccion_bancaria_historial"
+  ],
+  "renameTables": [
+    {
+      "from": "factor_transaccion_bancaria_conexion",
+      "to": "configuracion_bbdd"
+    }
+  ],
+  "copyTables": [
+    {
+      "from": "configuracion_bbdd",
+      "to": "factor_transaccion_bancaria_fuente"
+    }
+  ],
+  "referenceRenames": [
+    {
+      "table": "configuracion_bbdd",
+      "column": "_idconfiguracionbbdd",
+      "fromTable": "factor_transaccion_bancaria_conexion",
+      "fromColumn": "_idfactortransaccionbancariaconexion"
+    }
+  ],
+  "seedTables": []
+}

@@ -1,0 +1,1288 @@
+
+> ft-app-backend@1.0.1 prisma-sync
+> node scripts/prisma/generate-models.js
+
+📁 Sincronizando exclusivamente el modelo ft_factoring (configuración de desarrollo).
+✅ Copia de seguridad creada: D:\06_Workspace_nodejs\ft-app-backend\prisma\ft_factoring\backup\schema.20261016T112741_560Z.antes-db-pull.c0cbdacb-c31e-4c31-bcb1-f1c0a3d1c3ad.prisma.bak
+
+🔧 Ejecutando: Sincronizar base de datos con Prisma
+Datasource "db": MySQL database "[omitido]" at "[omitido]:3306"
+
+- Introspecting based on datasource defined in prisma\ft_factoring\schema.prisma
+√ Introspected 138 models and wrote them into prisma\ft_factoring\schema.prisma in 244ms
+      
+*** WARNING ***
+
+These fields were enriched with `@map` information taken from the previous Prisma schema:
+  - Model: "accionista", field: "idaccionista"
+  - Model: "accionista", field: "idempresa"
+  - Model: "accionista", field: "idpais"
+  - Model: "accionista", field: "iddocumentotipo"
+  - Model: "accionista", field: "idaccionista_padre"
+  - Model: "archivo", field: "idarchivo"
+  - Model: "archivo", field: "idarchivotipo"
+  - Model: "archivo", field: "idarchivoestado"
+  - Model: "archivo_colaborador", field: "idarchivo"
+  - Model: "archivo_colaborador", field: "idcolaborador"
+  - Model: "archivo_cuenta_bancaria", field: "idarchivo"
+  - Model: "archivo_cuenta_bancaria", field: "idcuentabancaria"
+  - Model: "archivo_empresa", field: "idarchivo"
+  - Model: "archivo_empresa", field: "idempresa"
+  - Model: "archivo_estado", field: "idarchivoestado"
+  - Model: "archivo_factoring_historial_estado", field: "idarchivo"
+  - Model: "archivo_factoring_historial_estado", field: "idfactoringhistorialestado"
+  - Model: "archivo_factoring_transferencia_cedente", field: "idarchivo"
+  - Model: "archivo_factoring_transferencia_cedente", field: "idfactoringtransferenciacedente"
+  - Model: "archivo_factura", field: "idarchivo"
+  - Model: "archivo_factura", field: "idfactura"
+  - Model: "archivo_inversionista_deposito", field: "idarchivo"
+  - Model: "archivo_inversionista_deposito", field: "idinversionistadeposito"
+  - Model: "archivo_inversionista_retiro", field: "idarchivo"
+  - Model: "archivo_inversionista_retiro", field: "idinversionistaretiro"
+  - Model: "archivo_persona", field: "idarchivo"
+  - Model: "archivo_persona", field: "idpersona"
+  - Model: "archivo_persona_verificacion", field: "idarchivo"
+  - Model: "archivo_persona_verificacion", field: "idpersonaverificacion"
+  - Model: "archivo_servicio_empresa_verificacion", field: "idarchivo"
+  - Model: "archivo_servicio_empresa_verificacion", field: "idservicioempresaverificacion"
+  - Model: "archivo_servicio_inversionista_verificacion", field: "idarchivo"
+  - Model: "archivo_servicio_inversionista_verificacion", field: "idservicioinversionistaverificacion"
+  - Model: "archivo_tipo", field: "idarchivotipo"
+  - Model: "banco", field: "idbanco"
+  - Model: "banco_cuenta", field: "idbancocuenta"
+  - Model: "banco_cuenta", field: "idbancocuentatipo"
+  - Model: "banco_cuenta", field: "idmoneda"
+  - Model: "banco_cuenta", field: "idbancocuentaestado"
+  - Model: "banco_cuenta_estado", field: "idbancocuentaestado"
+  - Model: "banco_cuenta_tipo", field: "idbancocuentatipo"
+  - Model: "banco_transaccion", field: "idbancotransaccion"
+  - Model: "banco_transaccion", field: "idbancocuenta"
+  - Model: "banco_transaccion", field: "idbancotransacciontipo"
+  - Model: "banco_transaccion", field: "idbancotransaccionestado"
+  - Model: "banco_transaccion", field: "idbancotransaccionestadohistorial"
+  - Model: "banco_transaccion_estado", field: "idbancotransaccionestado"
+  - Model: "banco_transaccion_estado_historial", field: "idbancotransaccionestadohistorial"
+  - Model: "banco_transaccion_estado_historial", field: "idbancotransaccion"
+  - Model: "banco_transaccion_estado_historial", field: "idbancotransaccionestado"
+  - Model: "banco_transaccion_estado_historial", field: "idusuariomodifica"
+  - Model: "banco_transaccion_factoring_inversion", field: "idbancotransaccion"
+  - Model: "banco_transaccion_factoring_inversion", field: "idfactoringinversion"
+  - Model: "banco_transaccion_inversionista_deposito", field: "idbancotransaccion"
+  - Model: "banco_transaccion_inversionista_deposito", field: "idinversionistadeposito"
+  - Model: "banco_transaccion_inversionista_retiro", field: "idbancotransaccion"
+  - Model: "banco_transaccion_inversionista_retiro", field: "idinversionistaretiro"
+  - Model: "banco_transaccion_tipo", field: "idbancotransacciontipo"
+  - Model: "cedente_limite", field: "idcedentelimite"
+  - Model: "cedente_limite", field: "idcedente"
+  - Model: "cedente_limite", field: "idmoneda"
+  - Model: "colaborador", field: "idcolaborador"
+  - Model: "colaborador", field: "idempresa"
+  - Model: "colaborador", field: "idpersona"
+  - Model: "colaborador", field: "idcolaboradortipo"
+  - Model: "colaborador", field: "iddocumentotipo"
+  - Model: "colaborador_tipo", field: "idcolaboradortipo"
+  - Model: "configuracion_app", field: "idconfiguracionapp"
+  - Model: "configuracion_bbdd", field: "idconfiguracionbbdd"
+  - Model: "configuracion_correo", field: "idconfiguracioncorreo"
+  - Model: "contacto", field: "idcontacto"
+  - Model: "contacto", field: "idempresa"
+  - Model: "credencial", field: "idcredencial"
+  - Model: "credencial", field: "idusuario"
+  - Model: "cuenta_bancaria", field: "idcuentabancaria"
+  - Model: "cuenta_bancaria", field: "idbanco"
+  - Model: "cuenta_bancaria", field: "idcuentatipo"
+  - Model: "cuenta_bancaria", field: "idmoneda"
+  - Model: "cuenta_bancaria", field: "idcuentabancariaestado"
+  - Model: "cuenta_bancaria_estado", field: "idcuentabancariaestado"
+  - Model: "cuenta_tipo", field: "idcuentatipo"
+  - Model: "departamento", field: "iddepartamento"
+  - Model: "departamento", field: "idpais"
+  - Model: "detraccion_estado", field: "iddetraccionestado"
+  - Model: "distrito", field: "iddistrito"
+  - Model: "distrito", field: "idprovincia"
+  - Model: "distrito", field: "idregionnatural"
+  - Model: "documento_tipo", field: "iddocumentotipo"
+  - Model: "empresa", field: "idempresa"
+  - Model: "empresa", field: "idpaissede"
+  - Model: "empresa", field: "iddepartamentosede"
+  - Model: "empresa", field: "idprovinciasede"
+  - Model: "empresa", field: "iddistritosede"
+  - Model: "empresa", field: "idriesgo"
+  - Model: "empresa_cuenta_bancaria", field: "idempresacuentabancaria"
+  - Model: "empresa_cuenta_bancaria", field: "idempresa"
+  - Model: "empresa_cuenta_bancaria", field: "idcuentabancaria"
+  - Model: "empresa_declaracion", field: "idempresadeclaracion"
+  - Model: "empresa_declaracion", field: "idempresa"
+  - Model: "factor", field: "idfactor"
+  - Model: "factor", field: "idpaissede"
+  - Model: "factor", field: "iddepartamentosede"
+  - Model: "factor", field: "idprovinciasede"
+  - Model: "factor", field: "iddistritosede"
+  - Model: "factor", field: "idriesgo"
+  - Model: "factor_cuenta_bancaria", field: "idfactorcuentabancaria"
+  - Model: "factor_cuenta_bancaria", field: "idfactor"
+  - Model: "factor_cuenta_bancaria", field: "idcuentabancaria"
+  - Model: "factor_limite", field: "idfactorlimite"
+  - Model: "factor_limite", field: "idfactor"
+  - Model: "factor_limite", field: "idmoneda"
+  - Model: "factor_transaccion_bancaria", field: "idfactortransaccionbancaria"
+  - Model: "factor_transaccion_bancaria", field: "idfactorcuentabancaria"
+  - Model: "factor_transaccion_bancaria", field: "idorigencuenta"
+  - Model: "factor_transaccion_bancaria", field: "idsincronizacion_inicial"
+  - Model: "factor_transaccion_bancaria", field: "idsincronizacion_ultima"
+  - Model: "factor_transaccion_bancaria_fuente", field: "idconfiguracionbbdd"
+  - Model: "factor_transaccion_bancaria_historial", field: "idfactortransaccionbancariahistorial"
+  - Model: "factor_transaccion_bancaria_historial", field: "idfactortransaccionbancaria"
+  - Model: "factor_transaccion_bancaria_historial", field: "idconexion"
+  - Model: "factor_transaccion_bancaria_historial", field: "idorigencuenta"
+  - Model: "factor_transaccion_bancaria_historial", field: "idincidencia"
+  - Model: "factor_transaccion_bancaria_incidencia", field: "idfactortransaccionbancariaincidencia"
+  - Model: "factor_transaccion_bancaria_incidencia", field: "idconexion"
+  - Model: "factor_transaccion_bancaria_incidencia", field: "idsincronizacion_inicial"
+  - Model: "factor_transaccion_bancaria_incidencia", field: "idsincronizacion_ultima"
+  - Model: "factor_transaccion_bancaria_incidencia", field: "idfactortransaccionbancaria"
+  - Model: "factor_transaccion_bancaria_origen_cuenta", field: "idfactortransaccionbancariaorigencuenta"
+  - Model: "factor_transaccion_bancaria_origen_cuenta", field: "idconexion"
+  - Model: "factor_transaccion_bancaria_origen_cuenta", field: "idfactorcuentabancaria"
+  - Model: "factor_transaccion_bancaria_sincronizacion", field: "idfactortransaccionbancariasincronizacion"
+  - Model: "factor_transaccion_bancaria_sincronizacion", field: "idconexion"
+  - Model: "factoring", field: "idfactoring"
+  - Model: "factoring", field: "idfactor"
+  - Model: "factoring", field: "idaceptante"
+  - Model: "factoring", field: "idcedente"
+  - Model: "factoring", field: "idmoneda"
+  - Model: "factoring", field: "idfactoringestado"
+  - Model: "factoring", field: "idcuentabancaria"
+  - Model: "factoring", field: "idcontactoaceptante"
+  - Model: "factoring", field: "idcontactocedente"
+  - Model: "factoring", field: "idfactoringejecutado"
+  - Model: "factoring", field: "idfactoringpropuestaaceptada"
+  - Model: "factoring_cartera", field: "idfactoringcartera"
+  - Model: "factoring_config_comision", field: "idfactoringconfigcomision"
+  - Model: "factoring_config_comision", field: "idriesgo"
+  - Model: "factoring_config_garantia", field: "idfactoringconfiggarantia"
+  - Model: "factoring_config_garantia", field: "idriesgo"
+  - Model: "factoring_config_tasa_descuento", field: "idfactoringconfigtasadescuento"
+  - Model: "factoring_config_tasa_descuento", field: "idriesgo"
+  - Model: "factoring_ejecutado", field: "idfactoringejecutado"
+  - Model: "factoring_ejecutado", field: "idfactoring"
+  - Model: "factoring_ejecutado", field: "idfactoringejecutadoestado"
+  - Model: "factoring_ejecutado_estado", field: "idfactoringejecutadoestado"
+  - Model: "factoring_estado", field: "idfactoringestado"
+  - Model: "factoring_estado", field: "idfactoringcartera"
+  - Model: "factoring_estrategia", field: "idfactoringestrategia"
+  - Model: "factoring_factura", field: "idfactoring"
+  - Model: "factoring_factura", field: "idfactura"
+  - Model: "factoring_factura_factor", field: "idfactoringfacturafactor"
+  - Model: "factoring_factura_factor", field: "idfactoring"
+  - Model: "factoring_factura_factor", field: "idfactura"
+  - Model: "factoring_factura_factor", field: "idfacturaestado"
+  - Model: "factoring_factura_factor", field: "iddetraccionestado"
+  - Model: "factoring_historial_estado", field: "idfactoringhistorialestado"
+  - Model: "factoring_historial_estado", field: "idfactoring"
+  - Model: "factoring_historial_estado", field: "idfactoringestado"
+  - Model: "factoring_historial_estado", field: "idusuariomodifica"
+  - Model: "factoring_inversion", field: "idfactoringinversion"
+  - Model: "factoring_inversion", field: "idfactoring"
+  - Model: "factoring_inversion", field: "idinversionista"
+  - Model: "factoring_liquidacion", field: "idfactoringliquidacion"
+  - Model: "factoring_liquidacion", field: "idfactoring"
+  - Model: "factoring_liquidacion", field: "idfactoringliquidacionestado"
+  - Model: "factoring_liquidacion_estado", field: "idfactoringliquidacionestado"
+  - Model: "factoring_liquidacion_financiero", field: "idfactoringliquidacionfinanciero"
+  - Model: "factoring_liquidacion_financiero", field: "idfactoringliquidacion"
+  - Model: "factoring_liquidacion_financiero", field: "idfinancierotipo"
+  - Model: "factoring_liquidacion_financiero", field: "idfinancieroconcepto"
+  - Model: "factoring_pago", field: "idfactoringpago"
+  - Model: "factoring_pago", field: "idfactoring"
+  - Model: "factoring_pago", field: "idempresacuentabancaria"
+  - Model: "factoring_pago", field: "idfactorcuentabancaria"
+  - Model: "factoring_propuesta", field: "idfactoringpropuesta"
+  - Model: "factoring_propuesta", field: "idfactoring"
+  - Model: "factoring_propuesta", field: "idfactoringtipo"
+  - Model: "factoring_propuesta", field: "idfactoringpropuestaestado"
+  - Model: "factoring_propuesta", field: "idriesgooperacion"
+  - Model: "factoring_propuesta", field: "idriesgoaceptante"
+  - Model: "factoring_propuesta", field: "idriesgocedente"
+  - Model: "factoring_propuesta", field: "idfactoringestrategia"
+  - Model: "factoring_propuesta_estado", field: "idfactoringpropuestaestado"
+  - Model: "factoring_propuesta_financiero", field: "idfactoringpropuestafinanciero"
+  - Model: "factoring_propuesta_financiero", field: "idfactoringpropuesta"
+  - Model: "factoring_propuesta_financiero", field: "idfinancierotipo"
+  - Model: "factoring_propuesta_financiero", field: "idfinancieroconcepto"
+  - Model: "factoring_propuesta_historial_estado", field: "idfactoringpropuestahistorialestado"
+  - Model: "factoring_propuesta_historial_estado", field: "idfactoringpropuesta"
+  - Model: "factoring_propuesta_historial_estado", field: "idfactoringpropuestaestado"
+  - Model: "factoring_propuesta_historial_estado", field: "idusuariomodifica"
+  - Model: "factoring_simulacion", field: "idfactoringsimulacion"
+  - Model: "factoring_simulacion", field: "idfactoringtipo"
+  - Model: "factoring_simulacion", field: "idriesgooperacion"
+  - Model: "factoring_simulacion", field: "idfactoringestrategia"
+  - Model: "factoring_simulacion", field: "idbanco"
+  - Model: "factoring_simulacion", field: "idmoneda"
+  - Model: "factoring_simulacion_financiero", field: "idfactoringsimulacionfinanciero"
+  - Model: "factoring_simulacion_financiero", field: "idfactoringsimulacion"
+  - Model: "factoring_simulacion_financiero", field: "idfinancierotipo"
+  - Model: "factoring_simulacion_financiero", field: "idfinancieroconcepto"
+  - Model: "factoring_tipo", field: "idfactoringtipo"
+  - Model: "factoring_transferencia_cedente", field: "idfactoringtransferenciacedente"
+  - Model: "factoring_transferencia_cedente", field: "idfactoring"
+  - Model: "factoring_transferencia_cedente", field: "idfactoringtransferenciatipo"
+  - Model: "factoring_transferencia_cedente", field: "idfactoringtransferenciaestado"
+  - Model: "factoring_transferencia_cedente", field: "idfactorcuentabancaria"
+  - Model: "factoring_transferencia_cedente", field: "idempresacuentabancaria"
+  - Model: "factoring_transferencia_cedente", field: "idmoneda"
+  - Model: "factoring_transferencia_estado", field: "idfactoringtransferenciaestado"
+  - Model: "factoring_transferencia_tipo", field: "idfactoringtransferenciatipo"
+  - Model: "factura", field: "idfactura"
+  - Model: "factura", field: "idusuarioupload"
+  - Model: "factura_estado", field: "idfacturaestado"
+  - Model: "factura_impuesto", field: "idfacturaimpuesto"
+  - Model: "factura_impuesto", field: "idfactura"
+  - Model: "factura_item", field: "idfacturaitem"
+  - Model: "factura_item", field: "idfactura"
+  - Model: "factura_medio_pago", field: "idfacturamediopago"
+  - Model: "factura_medio_pago", field: "idfactura"
+  - Model: "factura_nota", field: "idfacturanota"
+  - Model: "factura_nota", field: "idfactura"
+  - Model: "factura_termino_pago", field: "idfacturaterminopago"
+  - Model: "factura_termino_pago", field: "idfactura"
+  - Model: "financiero_concepto", field: "idfinancieroconcepto"
+  - Model: "financiero_concepto_liquidacion", field: "idfinancieroconceptoliquidacion"
+  - Model: "financiero_concepto_liquidacion", field: "idfinancieroconcepto"
+  - Model: "financiero_tipo", field: "idfinancierotipo"
+  - Model: "funcionario", field: "idfuncionario"
+  - Model: "funcionario", field: "idempresa"
+  - Model: "funcionario", field: "idpais"
+  - Model: "funcionario", field: "iddocumentotipo"
+  - Model: "genero", field: "idgenero"
+  - Model: "inversionista", field: "idinversionista"
+  - Model: "inversionista", field: "idpersona"
+  - Model: "inversionista_banco_cuenta", field: "idinversionista"
+  - Model: "inversionista_banco_cuenta", field: "idbancocuenta"
+  - Model: "inversionista_cuenta_bancaria", field: "idinversionistacuentabancaria"
+  - Model: "inversionista_cuenta_bancaria", field: "idinversionista"
+  - Model: "inversionista_cuenta_bancaria", field: "idcuentabancaria"
+  - Model: "inversionista_deposito", field: "idinversionistadeposito"
+  - Model: "inversionista_deposito", field: "idbancocuenta"
+  - Model: "inversionista_deposito", field: "idinversionistacuentabancaria"
+  - Model: "inversionista_deposito", field: "idfactorcuentabancaria"
+  - Model: "inversionista_retiro", field: "idinversionistaretiro"
+  - Model: "inversionista_retiro", field: "idbancocuenta"
+  - Model: "inversionista_retiro", field: "idinversionistacuentabancaria"
+  - Model: "inversionista_retiro", field: "idfactorcuentabancaria"
+  - Model: "moneda", field: "idmoneda"
+  - Model: "pagador_limite", field: "idpagadorlimite"
+  - Model: "pagador_limite", field: "idpagador"
+  - Model: "pagador_limite", field: "idmoneda"
+  - Model: "pais", field: "idpais"
+  - Model: "pep_vinculo", field: "idpepvinculo"
+  - Model: "persona", field: "idpersona"
+  - Model: "persona", field: "idusuario"
+  - Model: "persona", field: "idpersonaverificacionestado"
+  - Model: "persona", field: "iddocumentotipo"
+  - Model: "persona", field: "idpaisnacionalidad"
+  - Model: "persona", field: "idpaisnacimiento"
+  - Model: "persona", field: "idpaisresidencia"
+  - Model: "persona", field: "iddepartamentoresidencia"
+  - Model: "persona", field: "idprovinciaresidencia"
+  - Model: "persona", field: "iddistritoresidencia"
+  - Model: "persona", field: "idgenero"
+  - Model: "persona_cuenta_bancaria", field: "idpersonacuentabancaria"
+  - Model: "persona_cuenta_bancaria", field: "idpersona"
+  - Model: "persona_cuenta_bancaria", field: "idcuentabancaria"
+  - Model: "persona_declaracion", field: "idpersonadeclaracion"
+  - Model: "persona_declaracion", field: "idpersona"
+  - Model: "persona_pep_directo", field: "idpersonapepdirecto"
+  - Model: "persona_pep_directo", field: "idpersona"
+  - Model: "persona_pep_indirecto", field: "idpersonapepindirecto"
+  - Model: "persona_pep_indirecto", field: "idpersona"
+  - Model: "persona_pep_indirecto", field: "idpepvinculo"
+  - Model: "persona_verificacion", field: "idpersonaverificacion"
+  - Model: "persona_verificacion", field: "idpersona"
+  - Model: "persona_verificacion", field: "idpersonaverificacionestado"
+  - Model: "persona_verificacion", field: "idusuarioverifica"
+  - Model: "persona_verificacion_estado", field: "idpersonaverificacionestado"
+  - Model: "provincia", field: "idprovincia"
+  - Model: "provincia", field: "iddepartamento"
+  - Model: "region_natural", field: "idregionnatural"
+  - Model: "riesgo", field: "idriesgo"
+  - Model: "rol", field: "idrol"
+  - Model: "sbs_saldo_contable_detalle", field: "idsbssaldocontabledetalle"
+  - Model: "sbs_saldo_contable_detalle", field: "idsbssaldocontableperiodo"
+  - Model: "sbs_saldo_contable_detalle", field: "idfactoring"
+  - Model: "sbs_saldo_contable_detalle", field: "idfactoringpropuesta"
+  - Model: "sbs_saldo_contable_detalle", field: "idfactoringliquidacion"
+  - Model: "sbs_saldo_contable_detalle", field: "idmoneda"
+  - Model: "sbs_saldo_contable_detalle", field: "idsbstipocambio"
+  - Model: "sbs_saldo_contable_operacion_tipo", field: "idsbssaldocontableoperaciontipo"
+  - Model: "sbs_saldo_contable_periodo", field: "idsbssaldocontableperiodo"
+  - Model: "sbs_saldo_contable_periodo", field: "idsbssaldocontableperiodoestado"
+  - Model: "sbs_saldo_contable_periodo", field: "idsbssaldocontableoperaciontipo"
+  - Model: "sbs_saldo_contable_periodo_estado", field: "idsbssaldocontableperiodoestado"
+  - Model: "sbs_tipo_cambio", field: "idsbstipocambio"
+  - Model: "sbs_tipo_cambio", field: "idmonedabase"
+  - Model: "sbs_tipo_cambio", field: "idmonedacotizada"
+  - Model: "servicio", field: "idservicio"
+  - Model: "servicio_empresa", field: "idservicioempresa"
+  - Model: "servicio_empresa", field: "idservicio"
+  - Model: "servicio_empresa", field: "idempresa"
+  - Model: "servicio_empresa", field: "idusuariosuscriptor"
+  - Model: "servicio_empresa", field: "idservicioempresaestado"
+  - Model: "servicio_empresa_estado", field: "idservicioempresaestado"
+  - Model: "servicio_empresa_verificacion", field: "idservicioempresaverificacion"
+  - Model: "servicio_empresa_verificacion", field: "idservicioempresa"
+  - Model: "servicio_empresa_verificacion", field: "idservicioempresaestado"
+  - Model: "servicio_empresa_verificacion", field: "idusuarioverifica"
+  - Model: "servicio_inversionista", field: "idservicioinversionista"
+  - Model: "servicio_inversionista", field: "idservicio"
+  - Model: "servicio_inversionista", field: "idinversionista"
+  - Model: "servicio_inversionista", field: "idusuariosuscriptor"
+  - Model: "servicio_inversionista", field: "idservicioinversionistaestado"
+  - Model: "servicio_inversionista_estado", field: "idservicioinversionistaestado"
+  - Model: "servicio_inversionista_verificacion", field: "idservicioinversionistaverificacion"
+  - Model: "servicio_inversionista_verificacion", field: "idservicioinversionista"
+  - Model: "servicio_inversionista_verificacion", field: "idservicioinversionistaestado"
+  - Model: "servicio_inversionista_verificacion", field: "idusuarioverifica"
+  - Model: "sunat_tipo_cambio", field: "idsunattipocambio"
+  - Model: "sunat_tipo_cambio", field: "idmonedabase"
+  - Model: "sunat_tipo_cambio", field: "idmonedacotizada"
+  - Model: "usuario", field: "idusuario"
+  - Model: "usuario", field: "iddocumentotipo"
+  - Model: "usuario_rol", field: "idusuario"
+  - Model: "usuario_rol", field: "idrol"
+  - Model: "usuario_servicio", field: "idusuarioservicio"
+  - Model: "usuario_servicio", field: "idusuario"
+  - Model: "usuario_servicio", field: "idservicio"
+  - Model: "usuario_servicio", field: "idusuarioservicioestado"
+  - Model: "usuario_servicio_empresa", field: "idusuarioservicioempresa"
+  - Model: "usuario_servicio_empresa", field: "idusuario"
+  - Model: "usuario_servicio_empresa", field: "idempresa"
+  - Model: "usuario_servicio_empresa", field: "idservicio"
+  - Model: "usuario_servicio_empresa", field: "idusuarioservicioempresaestado"
+  - Model: "usuario_servicio_empresa", field: "idusuarioservicioempresarol"
+  - Model: "usuario_servicio_empresa_estado", field: "idusuarioservicioempresaestado"
+  - Model: "usuario_servicio_empresa_rol", field: "idusuarioservicioempresarol"
+  - Model: "usuario_servicio_estado", field: "idusuarioservicioestado"
+  - Model: "usuario_servicio_verificacion", field: "idusuarioservicioverificacion"
+  - Model: "usuario_servicio_verificacion", field: "idusuarioservicio"
+  - Model: "usuario_servicio_verificacion", field: "idusuarioservicioestado"
+  - Model: "usuario_servicio_verificacion", field: "idusuarioverifica"
+  - Model: "validacion", field: "idvalidacion"
+  - Model: "validacion", field: "idusuario"
+  - Model: "validacion", field: "idvalidaciontipo"
+  - Model: "validacion_tipo", field: "idvalidaciontipo"
+  - Model: "zlaboratorio_pedido", field: "idpedido"
+  - Model: "zlaboratorio_pedido", field: "idusuario"
+  - Model: "zlaboratorio_usuario", field: "idusuario"
+
+These objects have comments defined in the database, which is not yet fully supported. Read more: https://pris.ly/d/database-comments
+  - Type: "field", name: "archivo.nombrereal"
+  - Type: "field", name: "archivo.nombrealmacenamiento"
+  - Type: "field", name: "archivo.tamanio"
+  - Type: "field", name: "archivo.mimetype"
+  - Type: "field", name: "archivo.encoding"
+  - Type: "field", name: "archivo.extension"
+  - Type: "field", name: "archivo.observacion"
+  - Type: "field", name: "archivo.fechavencimiento"
+  - Type: "field", name: "archivo_tipo.tamanio_maximo"
+  - Type: "field", name: "archivo_tipo.extensiones_permitidas"
+  - Type: "field", name: "archivo_tipo.mimetypes_permitidos"
+  - Type: "field", name: "banco_cuenta.disponible_confirmado"
+  - Type: "field", name: "banco_cuenta.disponible_proceso"
+  - Type: "field", name: "banco_cuenta.reservado_subasta"
+  - Type: "field", name: "banco_cuenta.reservado_retiro"
+  - Type: "field", name: "banco_cuenta.invertido"
+  - Type: "field", name: "banco_transaccion.signo"
+  - Type: "field", name: "banco_transaccion.saldo_resultante"
+  - Type: "model", name: "configuracion_bbdd"
+  - Type: "field", name: "configuracion_bbdd.idconfiguracionbbdd"
+  - Type: "field", name: "configuracion_bbdd.configuracionbbddid"
+  - Type: "field", name: "configuracion_bbdd.code"
+  - Type: "field", name: "configuracion_bbdd.alias"
+  - Type: "field", name: "configuracion_bbdd.motor"
+  - Type: "field", name: "configuracion_bbdd.host"
+  - Type: "field", name: "configuracion_bbdd.puerto"
+  - Type: "field", name: "configuracion_bbdd.base_datos"
+  - Type: "field", name: "configuracion_bbdd.usuario"
+  - Type: "field", name: "configuracion_bbdd.password_cifrado"
+  - Type: "field", name: "configuracion_bbdd.password_nonce"
+  - Type: "field", name: "configuracion_bbdd.password_tag"
+  - Type: "field", name: "configuracion_bbdd.clave_version"
+  - Type: "field", name: "configuracion_bbdd.cifrado_version"
+  - Type: "field", name: "configuracion_bbdd.tls_ca_referencia"
+  - Type: "field", name: "configuracion_bbdd.habilitado"
+  - Type: "field", name: "configuracion_bbdd.version"
+  - Type: "field", name: "configuracion_bbdd.idusuariocrea"
+  - Type: "field", name: "configuracion_bbdd.fechacrea"
+  - Type: "field", name: "configuracion_bbdd.idusuariomod"
+  - Type: "field", name: "configuracion_bbdd.fechamod"
+  - Type: "field", name: "configuracion_bbdd.estado"
+  - Type: "field", name: "configuracion_correo.smtp_secure"
+  - Type: "field", name: "configuracion_correo.smtp_pass"
+  - Type: "field", name: "configuracion_correo.mail_backup"
+  - Type: "field", name: "configuracion_correo.is_enabled"
+  - Type: "field", name: "configuracion_correo.encryption_iv"
+  - Type: "model", name: "departamento"
+  - Type: "model", name: "distrito"
+  - Type: "field", name: "empresa_declaracion.declaracion_conformidad_contrato"
+  - Type: "field", name: "empresa_declaracion.declaracion_datos_reales"
+  - Type: "field", name: "empresa_declaracion.declaracion_accionistas_autorizacion_datos"
+  - Type: "field", name: "empresa_declaracion.declaracion_funcionarios_autorizacion_datos"
+  - Type: "model", name: "factor_transaccion_bancaria"
+  - Type: "field", name: "factor_transaccion_bancaria.idfactortransaccionbancaria"
+  - Type: "field", name: "factor_transaccion_bancaria.factortransaccionbancariaid"
+  - Type: "field", name: "factor_transaccion_bancaria.code"
+  - Type: "field", name: "factor_transaccion_bancaria.idfactorcuentabancaria"
+  - Type: "field", name: "factor_transaccion_bancaria.numero_operacion"
+  - Type: "field", name: "factor_transaccion_bancaria.fecha"
+  - Type: "field", name: "factor_transaccion_bancaria.descripcion"
+  - Type: "field", name: "factor_transaccion_bancaria.signo"
+  - Type: "field", name: "factor_transaccion_bancaria.monto"
+  - Type: "field", name: "factor_transaccion_bancaria.origen_alta"
+  - Type: "field", name: "factor_transaccion_bancaria.identidad_version"
+  - Type: "field", name: "factor_transaccion_bancaria.identidad_datos"
+  - Type: "field", name: "factor_transaccion_bancaria.identidad_sha256"
+  - Type: "field", name: "factor_transaccion_bancaria.idorigencuenta"
+  - Type: "field", name: "factor_transaccion_bancaria.datos_origen_iniciales"
+  - Type: "field", name: "factor_transaccion_bancaria.idsincronizacion_inicial"
+  - Type: "field", name: "factor_transaccion_bancaria.idsincronizacion_ultima"
+  - Type: "field", name: "factor_transaccion_bancaria.ultima_observacion"
+  - Type: "field", name: "factor_transaccion_bancaria.tipo_operacion"
+  - Type: "field", name: "factor_transaccion_bancaria.detalle_fecha"
+  - Type: "field", name: "factor_transaccion_bancaria.detalle_hora"
+  - Type: "field", name: "factor_transaccion_bancaria.origen_cuenta"
+  - Type: "field", name: "factor_transaccion_bancaria.origen_nombre"
+  - Type: "field", name: "factor_transaccion_bancaria.origen_comision"
+  - Type: "field", name: "factor_transaccion_bancaria.destino_cuenta"
+  - Type: "field", name: "factor_transaccion_bancaria.destino_nombre"
+  - Type: "field", name: "factor_transaccion_bancaria.destino_comision"
+  - Type: "field", name: "factor_transaccion_bancaria.monto_neto"
+  - Type: "field", name: "factor_transaccion_bancaria.referencia_descripcion"
+  - Type: "field", name: "factor_transaccion_bancaria.referencia_proveedor_ruc"
+  - Type: "field", name: "factor_transaccion_bancaria.referencia_proveedor_factura"
+  - Type: "field", name: "factor_transaccion_bancaria.referencia_proveedor_boleta"
+  - Type: "field", name: "factor_transaccion_bancaria.referencia_ft_factura"
+  - Type: "field", name: "factor_transaccion_bancaria.referencia_ft_op_factoring"
+  - Type: "field", name: "factor_transaccion_bancaria.motivo_anulacion"
+  - Type: "field", name: "factor_transaccion_bancaria.version"
+  - Type: "field", name: "factor_transaccion_bancaria.idusuariocrea"
+  - Type: "field", name: "factor_transaccion_bancaria.fechacrea"
+  - Type: "field", name: "factor_transaccion_bancaria.idusuariomod"
+  - Type: "field", name: "factor_transaccion_bancaria.fechamod"
+  - Type: "field", name: "factor_transaccion_bancaria.estado"
+  - Type: "model", name: "factor_transaccion_bancaria_fuente"
+  - Type: "field", name: "factor_transaccion_bancaria_fuente.idconfiguracionbbdd"
+  - Type: "field", name: "factor_transaccion_bancaria_fuente.tabla_origen"
+  - Type: "model", name: "factor_transaccion_bancaria_historial"
+  - Type: "field", name: "factor_transaccion_bancaria_historial.idfactortransaccionbancariahistorial"
+  - Type: "field", name: "factor_transaccion_bancaria_historial.factortransaccionbancariahistorialid"
+  - Type: "field", name: "factor_transaccion_bancaria_historial.code"
+  - Type: "field", name: "factor_transaccion_bancaria_historial.idfactortransaccionbancaria"
+  - Type: "field", name: "factor_transaccion_bancaria_historial.idconexion"
+  - Type: "field", name: "factor_transaccion_bancaria_historial.idorigencuenta"
+  - Type: "field", name: "factor_transaccion_bancaria_historial.idincidencia"
+  - Type: "field", name: "factor_transaccion_bancaria_historial.evento"
+  - Type: "field", name: "factor_transaccion_bancaria_historial.motivo"
+  - Type: "field", name: "factor_transaccion_bancaria_historial.datos_antes"
+  - Type: "field", name: "factor_transaccion_bancaria_historial.datos_despues"
+  - Type: "field", name: "factor_transaccion_bancaria_historial.idusuariocrea"
+  - Type: "field", name: "factor_transaccion_bancaria_historial.fechacrea"
+  - Type: "field", name: "factor_transaccion_bancaria_historial.idusuariomod"
+  - Type: "field", name: "factor_transaccion_bancaria_historial.fechamod"
+  - Type: "field", name: "factor_transaccion_bancaria_historial.estado"
+  - Type: "model", name: "factor_transaccion_bancaria_incidencia"
+  - Type: "field", name: "factor_transaccion_bancaria_incidencia.idfactortransaccionbancariaincidencia"
+  - Type: "field", name: "factor_transaccion_bancaria_incidencia.factortransaccionbancariaincidenciaid"
+  - Type: "field", name: "factor_transaccion_bancaria_incidencia.code"
+  - Type: "field", name: "factor_transaccion_bancaria_incidencia.idconexion"
+  - Type: "field", name: "factor_transaccion_bancaria_incidencia.idsincronizacion_inicial"
+  - Type: "field", name: "factor_transaccion_bancaria_incidencia.idsincronizacion_ultima"
+  - Type: "field", name: "factor_transaccion_bancaria_incidencia.idfactortransaccionbancaria"
+  - Type: "field", name: "factor_transaccion_bancaria_incidencia.tipo"
+  - Type: "field", name: "factor_transaccion_bancaria_incidencia.huella"
+  - Type: "field", name: "factor_transaccion_bancaria_incidencia.datos_revision"
+  - Type: "field", name: "factor_transaccion_bancaria_incidencia.situacion"
+  - Type: "field", name: "factor_transaccion_bancaria_incidencia.veces_observada"
+  - Type: "field", name: "factor_transaccion_bancaria_incidencia.ultima_observacion"
+  - Type: "field", name: "factor_transaccion_bancaria_incidencia.resolucion_motivo"
+  - Type: "field", name: "factor_transaccion_bancaria_incidencia.idusuarioresuelve"
+  - Type: "field", name: "factor_transaccion_bancaria_incidencia.resolucion_fecha"
+  - Type: "field", name: "factor_transaccion_bancaria_incidencia.version"
+  - Type: "field", name: "factor_transaccion_bancaria_incidencia.idusuariocrea"
+  - Type: "field", name: "factor_transaccion_bancaria_incidencia.fechacrea"
+  - Type: "field", name: "factor_transaccion_bancaria_incidencia.idusuariomod"
+  - Type: "field", name: "factor_transaccion_bancaria_incidencia.fechamod"
+  - Type: "field", name: "factor_transaccion_bancaria_incidencia.estado"
+  - Type: "model", name: "factor_transaccion_bancaria_origen_cuenta"
+  - Type: "field", name: "factor_transaccion_bancaria_origen_cuenta.idfactortransaccionbancariaorigencuenta"
+  - Type: "field", name: "factor_transaccion_bancaria_origen_cuenta.factortransaccionbancariaorigencuentaid"
+  - Type: "field", name: "factor_transaccion_bancaria_origen_cuenta.code"
+  - Type: "field", name: "factor_transaccion_bancaria_origen_cuenta.idconexion"
+  - Type: "field", name: "factor_transaccion_bancaria_origen_cuenta.cuenta_origen"
+  - Type: "field", name: "factor_transaccion_bancaria_origen_cuenta.idfactorcuentabancaria"
+  - Type: "field", name: "factor_transaccion_bancaria_origen_cuenta.habilitado"
+  - Type: "field", name: "factor_transaccion_bancaria_origen_cuenta.version"
+  - Type: "field", name: "factor_transaccion_bancaria_origen_cuenta.idusuariocrea"
+  - Type: "field", name: "factor_transaccion_bancaria_origen_cuenta.fechacrea"
+  - Type: "field", name: "factor_transaccion_bancaria_origen_cuenta.idusuariomod"
+  - Type: "field", name: "factor_transaccion_bancaria_origen_cuenta.fechamod"
+  - Type: "field", name: "factor_transaccion_bancaria_origen_cuenta.estado"
+  - Type: "model", name: "factor_transaccion_bancaria_sincronizacion"
+  - Type: "field", name: "factor_transaccion_bancaria_sincronizacion.idfactortransaccionbancariasincronizacion"
+  - Type: "field", name: "factor_transaccion_bancaria_sincronizacion.factortransaccionbancariasincronizacionid"
+  - Type: "field", name: "factor_transaccion_bancaria_sincronizacion.code"
+  - Type: "field", name: "factor_transaccion_bancaria_sincronizacion.idconexion"
+  - Type: "field", name: "factor_transaccion_bancaria_sincronizacion.disparador"
+  - Type: "field", name: "factor_transaccion_bancaria_sincronizacion.resultado"
+  - Type: "field", name: "factor_transaccion_bancaria_sincronizacion.fecha_desde"
+  - Type: "field", name: "factor_transaccion_bancaria_sincronizacion.fecha_hasta"
+  - Type: "field", name: "factor_transaccion_bancaria_sincronizacion.cuentas_alcance"
+  - Type: "field", name: "factor_transaccion_bancaria_sincronizacion.inicio"
+  - Type: "field", name: "factor_transaccion_bancaria_sincronizacion.fin"
+  - Type: "field", name: "factor_transaccion_bancaria_sincronizacion.lectura_completa"
+  - Type: "field", name: "factor_transaccion_bancaria_sincronizacion.filas_leidas"
+  - Type: "field", name: "factor_transaccion_bancaria_sincronizacion.filas_insertadas"
+  - Type: "field", name: "factor_transaccion_bancaria_sincronizacion.filas_existentes"
+  - Type: "field", name: "factor_transaccion_bancaria_sincronizacion.filas_incidencia"
+  - Type: "field", name: "factor_transaccion_bancaria_sincronizacion.error_codigo"
+  - Type: "field", name: "factor_transaccion_bancaria_sincronizacion.error_resumen"
+  - Type: "field", name: "factor_transaccion_bancaria_sincronizacion.idusuariocrea"
+  - Type: "field", name: "factor_transaccion_bancaria_sincronizacion.fechacrea"
+  - Type: "field", name: "factor_transaccion_bancaria_sincronizacion.idusuariomod"
+  - Type: "field", name: "factor_transaccion_bancaria_sincronizacion.fechamod"
+  - Type: "field", name: "factor_transaccion_bancaria_sincronizacion.estado"
+  - Type: "field", name: "factoring.idcontactoaceptante"
+  - Type: "field", name: "factoring.idcontactocedente"
+  - Type: "field", name: "factoring.fecha_operacion"
+  - Type: "field", name: "factoring.fecha_pago_estimado"
+  - Type: "field", name: "factoring.monto_neto"
+  - Type: "model", name: "factoring_config_comision"
+  - Type: "model", name: "factoring_config_garantia"
+  - Type: "model", name: "factoring_config_tasa_descuento"
+  - Type: "field", name: "factoring_ejecutado.fecha_propuesta"
+  - Type: "field", name: "factoring_ejecutado.fecha_pago_real"
+  - Type: "field", name: "factoring_ejecutado.dias_pago_real"
+  - Type: "field", name: "factoring_ejecutado.dias_antiguedad_real"
+  - Type: "field", name: "factoring_ejecutado.dias_cobertura_garantia_real"
+  - Type: "field", name: "factoring_ejecutado.monto_neto"
+  - Type: "field", name: "factoring_ejecutado.monto_garantia_real"
+  - Type: "field", name: "factoring_ejecutado.monto_efectivo_real"
+  - Type: "field", name: "factoring_ejecutado.monto_descuento_real"
+  - Type: "field", name: "factoring_ejecutado.monto_financiado_real"
+  - Type: "field", name: "factoring_ejecutado.monto_comision_real"
+  - Type: "field", name: "factoring_ejecutado.monto_comision_igv_real"
+  - Type: "field", name: "factoring_ejecutado.monto_adelanto_real"
+  - Type: "field", name: "factoring_ejecutado.monto_costo_real"
+  - Type: "field", name: "factoring_ejecutado.monto_dia_mora"
+  - Type: "field", name: "factoring_ejecutado.monto_dia_interes"
+  - Type: "field", name: "factoring_ejecutado.porcentaje_garantia_real"
+  - Type: "field", name: "factoring_ejecutado.porcentaje_efectivo_real"
+  - Type: "field", name: "factoring_ejecutado.porcentaje_descuento_real"
+  - Type: "field", name: "factoring_ejecutado.porcentaje_financiado_real"
+  - Type: "field", name: "factoring_ejecutado.porcentaje_comision_real"
+  - Type: "field", name: "factoring_ejecutado.porcentaje_adelanto_real"
+  - Type: "field", name: "factoring_estrategia.descripcion"
+  - Type: "model", name: "factoring_factura_factor"
+  - Type: "field", name: "factoring_liquidacion.monto_descuento_efectivo"
+  - Type: "field", name: "factoring_liquidacion.monto_descuento_a_favor"
+  - Type: "field", name: "factoring_liquidacion.monto_descuento_mora"
+  - Type: "field", name: "factoring_liquidacion.monto_total_neto_inafecto_igv"
+  - Type: "field", name: "factoring_liquidacion.monto_total_neto_afecto_igv"
+  - Type: "field", name: "factoring_liquidacion.monto_total_igv"
+  - Type: "field", name: "factoring_liquidacion.monto_total_a_favor"
+  - Type: "field", name: "factoring_liquidacion.monto_total_por_cobrar"
+  - Type: "field", name: "factoring_liquidacion_estado.visible_cedente"
+  - Type: "model", name: "factoring_liquidacion_financiero"
+  - Type: "field", name: "factoring_liquidacion_financiero.monto"
+  - Type: "field", name: "factoring_liquidacion_financiero.total"
+  - Type: "field", name: "factoring_liquidacion_financiero.porcentaje_monto"
+  - Type: "field", name: "factoring_propuesta.tda"
+  - Type: "field", name: "factoring_propuesta.tdm"
+  - Type: "field", name: "factoring_propuesta.tdd"
+  - Type: "field", name: "factoring_propuesta.tda_mora"
+  - Type: "field", name: "factoring_propuesta.tdm_mora"
+  - Type: "field", name: "factoring_propuesta.tdd_mora"
+  - Type: "field", name: "factoring_propuesta.fecha_propuesta"
+  - Type: "field", name: "factoring_propuesta.fecha_pago_estimado"
+  - Type: "field", name: "factoring_propuesta.dias_pago_estimado"
+  - Type: "field", name: "factoring_propuesta.dias_antiguedad_estimado"
+  - Type: "field", name: "factoring_propuesta.dias_cobertura_garantia_estimado"
+  - Type: "field", name: "factoring_propuesta.monto_neto"
+  - Type: "field", name: "factoring_propuesta.monto_garantia"
+  - Type: "field", name: "factoring_propuesta.monto_efectivo"
+  - Type: "field", name: "factoring_propuesta.monto_descuento"
+  - Type: "field", name: "factoring_propuesta.monto_financiado"
+  - Type: "field", name: "factoring_propuesta.monto_comision_bruto"
+  - Type: "field", name: "factoring_propuesta.monto_comision"
+  - Type: "field", name: "factoring_propuesta.monto_comision_igv"
+  - Type: "field", name: "factoring_propuesta.monto_costo_estimado"
+  - Type: "field", name: "factoring_propuesta.monto_costo_estimado_igv"
+  - Type: "field", name: "factoring_propuesta.monto_gasto_estimado"
+  - Type: "field", name: "factoring_propuesta.monto_gasto_estimado_igv"
+  - Type: "field", name: "factoring_propuesta.monto_total_igv"
+  - Type: "field", name: "factoring_propuesta.monto_gasto_excento_igv"
+  - Type: "field", name: "factoring_propuesta.monto_adelanto"
+  - Type: "field", name: "factoring_propuesta.monto_dia_mora_estimado"
+  - Type: "field", name: "factoring_propuesta.monto_dia_interes_estimado"
+  - Type: "field", name: "factoring_propuesta.porcentaje_comision_descuento"
+  - Type: "field", name: "factoring_propuesta.porcentaje_garantia_estimado"
+  - Type: "field", name: "factoring_propuesta.porcentaje_efectivo_estimado"
+  - Type: "field", name: "factoring_propuesta.porcentaje_descuento_estimado"
+  - Type: "field", name: "factoring_propuesta.porcentaje_financiado_estimado"
+  - Type: "field", name: "factoring_propuesta.porcentaje_adelanto_estimado"
+  - Type: "field", name: "factoring_propuesta.porcentaje_comision_estimado"
+  - Type: "model", name: "factoring_propuesta_financiero"
+  - Type: "field", name: "factoring_propuesta_financiero.monto"
+  - Type: "field", name: "factoring_propuesta_financiero.total"
+  - Type: "field", name: "factoring_propuesta_financiero.porcentaje_monto"
+  - Type: "field", name: "factoring_simulacion.ruc_cedente"
+  - Type: "field", name: "factoring_simulacion.ruc_aceptante"
+  - Type: "field", name: "factoring_simulacion.razon_social_cedente"
+  - Type: "field", name: "factoring_simulacion.razon_social_aceptante"
+  - Type: "field", name: "factoring_simulacion.cantidad_facturas"
+  - Type: "field", name: "factoring_simulacion.tda"
+  - Type: "field", name: "factoring_simulacion.tdm"
+  - Type: "field", name: "factoring_simulacion.tdd"
+  - Type: "field", name: "factoring_simulacion.tda_mora"
+  - Type: "field", name: "factoring_simulacion.tdm_mora"
+  - Type: "field", name: "factoring_simulacion.tdd_mora"
+  - Type: "field", name: "factoring_simulacion.fecha_simulacion"
+  - Type: "field", name: "factoring_simulacion.fecha_pago_estimado"
+  - Type: "field", name: "factoring_simulacion.dias_pago_estimado"
+  - Type: "field", name: "factoring_simulacion.dias_antiguedad_estimado"
+  - Type: "field", name: "factoring_simulacion.dias_cobertura_garantia_estimado"
+  - Type: "field", name: "factoring_simulacion.monto_neto"
+  - Type: "field", name: "factoring_simulacion.monto_garantia"
+  - Type: "field", name: "factoring_simulacion.monto_efectivo"
+  - Type: "field", name: "factoring_simulacion.monto_descuento"
+  - Type: "field", name: "factoring_simulacion.monto_financiado"
+  - Type: "field", name: "factoring_simulacion.monto_comision_bruto"
+  - Type: "field", name: "factoring_simulacion.monto_comision"
+  - Type: "field", name: "factoring_simulacion.monto_comision_igv"
+  - Type: "field", name: "factoring_simulacion.monto_costo_estimado"
+  - Type: "field", name: "factoring_simulacion.monto_costo_estimado_igv"
+  - Type: "field", name: "factoring_simulacion.monto_gasto_estimado"
+  - Type: "field", name: "factoring_simulacion.monto_gasto_estimado_igv"
+  - Type: "field", name: "factoring_simulacion.monto_total_igv"
+  - Type: "field", name: "factoring_simulacion.monto_gasto_excento_igv"
+  - Type: "field", name: "factoring_simulacion.monto_adelanto"
+  - Type: "field", name: "factoring_simulacion.monto_dia_mora_estimado"
+  - Type: "field", name: "factoring_simulacion.monto_dia_interes_estimado"
+  - Type: "field", name: "factoring_simulacion.porcentaje_comision_descuento"
+  - Type: "field", name: "factoring_simulacion.porcentaje_garantia_estimado"
+  - Type: "field", name: "factoring_simulacion.porcentaje_efectivo_estimado"
+  - Type: "field", name: "factoring_simulacion.porcentaje_descuento_estimado"
+  - Type: "field", name: "factoring_simulacion.porcentaje_financiado_estimado"
+  - Type: "field", name: "factoring_simulacion.porcentaje_adelanto_estimado"
+  - Type: "field", name: "factoring_simulacion.porcentaje_comision_estimado"
+  - Type: "model", name: "factoring_simulacion_financiero"
+  - Type: "field", name: "factoring_simulacion_financiero.monto"
+  - Type: "field", name: "factoring_simulacion_financiero.total"
+  - Type: "field", name: "factoring_simulacion_financiero.porcentaje_monto"
+  - Type: "field", name: "factoring_transferencia_cedente.idfactorcuentabancaria"
+  - Type: "field", name: "factoring_transferencia_cedente.idempresacuentabancaria"
+  - Type: "field", name: "factoring_transferencia_cedente.monto"
+  - Type: "field", name: "factoring_transferencia_estado.visible_cedente"
+  - Type: "field", name: "factura_estado.visible_cedente"
+  - Type: "field", name: "financiero_concepto.factor"
+  - Type: "model", name: "pais"
+  - Type: "field", name: "pais.requiere_apellido"
+  - Type: "field", name: "pais.orden"
+  - Type: "field", name: "persona_declaracion.espep"
+  - Type: "field", name: "persona_declaracion.tienevinculopep"
+  - Type: "model", name: "persona_pep_directo"
+  - Type: "field", name: "persona_pep_directo.actualmente"
+  - Type: "model", name: "persona_pep_indirecto"
+  - Type: "field", name: "persona_pep_indirecto.actualmente"
+  - Type: "field", name: "persona_verificacion_estado.ispersonavalidated"
+  - Type: "field", name: "persona_verificacion_estado.isestadofinal"
+  - Type: "field", name: "persona_verificacion_estado.isusuarioedit"
+  - Type: "model", name: "provincia"
+  - Type: "model", name: "region_natural"
+  - Type: "model", name: "sbs_saldo_contable_detalle"
+  - Type: "field", name: "sbs_saldo_contable_detalle.idsbssaldocontabledetalle"
+  - Type: "field", name: "sbs_saldo_contable_detalle.sbssaldocontabledetalleid"
+  - Type: "field", name: "sbs_saldo_contable_detalle.code"
+  - Type: "field", name: "sbs_saldo_contable_detalle.idsbssaldocontableperiodo"
+  - Type: "field", name: "sbs_saldo_contable_detalle.idfactoring"
+  - Type: "field", name: "sbs_saldo_contable_detalle.idfactoringpropuesta"
+  - Type: "field", name: "sbs_saldo_contable_detalle.idfactoringliquidacion"
+  - Type: "field", name: "sbs_saldo_contable_detalle.idmoneda"
+  - Type: "field", name: "sbs_saldo_contable_detalle.idsbstipocambio"
+  - Type: "field", name: "sbs_saldo_contable_detalle.codigo_operacion"
+  - Type: "field", name: "sbs_saldo_contable_detalle.moneda_codigo"
+  - Type: "field", name: "sbs_saldo_contable_detalle.fecha_operacion"
+  - Type: "field", name: "sbs_saldo_contable_detalle.fecha_pago_efectivo"
+  - Type: "field", name: "sbs_saldo_contable_detalle.monto_neto"
+  - Type: "field", name: "sbs_saldo_contable_detalle.tipo_cambio"
+  - Type: "field", name: "sbs_saldo_contable_detalle.monto_saldo_contable"
+  - Type: "field", name: "sbs_saldo_contable_detalle.clasificacion_instrumentos"
+  - Type: "field", name: "sbs_saldo_contable_detalle.motivo_retiro"
+  - Type: "field", name: "sbs_saldo_contable_detalle.idusuariocrea"
+  - Type: "field", name: "sbs_saldo_contable_detalle.fechacrea"
+  - Type: "field", name: "sbs_saldo_contable_detalle.idusuariomod"
+  - Type: "field", name: "sbs_saldo_contable_detalle.fechamod"
+  - Type: "field", name: "sbs_saldo_contable_detalle.estado"
+  - Type: "model", name: "sbs_saldo_contable_operacion_tipo"
+  - Type: "field", name: "sbs_saldo_contable_operacion_tipo.idsbssaldocontableoperaciontipo"
+  - Type: "field", name: "sbs_saldo_contable_operacion_tipo.sbssaldocontableoperaciontipoid"
+  - Type: "field", name: "sbs_saldo_contable_operacion_tipo.code"
+  - Type: "field", name: "sbs_saldo_contable_operacion_tipo.nombre"
+  - Type: "field", name: "sbs_saldo_contable_operacion_tipo.alias"
+  - Type: "field", name: "sbs_saldo_contable_operacion_tipo.color"
+  - Type: "field", name: "sbs_saldo_contable_operacion_tipo.orden"
+  - Type: "field", name: "sbs_saldo_contable_operacion_tipo.habilitado"
+  - Type: "field", name: "sbs_saldo_contable_operacion_tipo.idusuariocrea"
+  - Type: "field", name: "sbs_saldo_contable_operacion_tipo.fechacrea"
+  - Type: "field", name: "sbs_saldo_contable_operacion_tipo.idusuariomod"
+  - Type: "field", name: "sbs_saldo_contable_operacion_tipo.fechamod"
+  - Type: "field", name: "sbs_saldo_contable_operacion_tipo.estado"
+  - Type: "model", name: "sbs_saldo_contable_periodo"
+  - Type: "field", name: "sbs_saldo_contable_periodo.idsbssaldocontableperiodo"
+  - Type: "field", name: "sbs_saldo_contable_periodo.sbssaldocontableperiodoid"
+  - Type: "field", name: "sbs_saldo_contable_periodo.code"
+  - Type: "field", name: "sbs_saldo_contable_periodo.nombre_periodo"
+  - Type: "field", name: "sbs_saldo_contable_periodo.fecha_inicio"
+  - Type: "field", name: "sbs_saldo_contable_periodo.fecha_fin"
+  - Type: "field", name: "sbs_saldo_contable_periodo.fecha_corte"
+  - Type: "field", name: "sbs_saldo_contable_periodo.idsbssaldocontableperiodoestado"
+  - Type: "field", name: "sbs_saldo_contable_periodo.idsbssaldocontableoperaciontipo"
+  - Type: "field", name: "sbs_saldo_contable_periodo.monto_saldo_contable"
+  - Type: "field", name: "sbs_saldo_contable_periodo.version"
+  - Type: "field", name: "sbs_saldo_contable_periodo.fecha_cierre"
+  - Type: "field", name: "sbs_saldo_contable_periodo.idusuariocierra"
+  - Type: "field", name: "sbs_saldo_contable_periodo.idusuariocrea"
+  - Type: "field", name: "sbs_saldo_contable_periodo.fechacrea"
+  - Type: "field", name: "sbs_saldo_contable_periodo.idusuariomod"
+  - Type: "field", name: "sbs_saldo_contable_periodo.fechamod"
+  - Type: "field", name: "sbs_saldo_contable_periodo.estado"
+  - Type: "model", name: "sbs_saldo_contable_periodo_estado"
+  - Type: "field", name: "sbs_saldo_contable_periodo_estado.idsbssaldocontableperiodoestado"
+  - Type: "field", name: "sbs_saldo_contable_periodo_estado.sbssaldocontableperiodoestadoid"
+  - Type: "field", name: "sbs_saldo_contable_periodo_estado.code"
+  - Type: "field", name: "sbs_saldo_contable_periodo_estado.nombre"
+  - Type: "field", name: "sbs_saldo_contable_periodo_estado.alias"
+  - Type: "field", name: "sbs_saldo_contable_periodo_estado.color"
+  - Type: "field", name: "sbs_saldo_contable_periodo_estado.orden"
+  - Type: "field", name: "sbs_saldo_contable_periodo_estado.idusuariocrea"
+  - Type: "field", name: "sbs_saldo_contable_periodo_estado.fechacrea"
+  - Type: "field", name: "sbs_saldo_contable_periodo_estado.idusuariomod"
+  - Type: "field", name: "sbs_saldo_contable_periodo_estado.fechamod"
+  - Type: "field", name: "sbs_saldo_contable_periodo_estado.estado"
+  - Type: "model", name: "sbs_tipo_cambio"
+  - Type: "field", name: "sbs_tipo_cambio.fecha"
+  - Type: "field", name: "sbs_tipo_cambio.precio_compra"
+  - Type: "field", name: "sbs_tipo_cambio.precio_venta"
+  - Type: "field", name: "sbs_tipo_cambio.precio_contable"
+  - Type: "field", name: "sunat_tipo_cambio.fecha"
+  - Type: "field", name: "usuario.ispersonavalidated"
+  - Type: "field", name: "validacion.tiempo_expiracion"
+
+Run prisma generate to generate Prisma Client.
+
+
+✅ Completado: Sincronizar base de datos con Prisma
+
+🔧 Ejecutando: Pluraliza schema
+📁 Ejecutando script: pluralizar-schema.js
+📂 Procesando archivo: D:\06_Workspace_nodejs\ft-app-backend\prisma\ft_factoring\schema.prisma
+✅ Copia de seguridad creada: D:\06_Workspace_nodejs\ft-app-backend\prisma\ft_factoring\backup\schema.20261016T112742_627Z.antes-pluralizar.c4d7e6b3-c7a0-4633-a782-85ea5187bf48.prisma.bak
+/// Línea 34: 'archivo_colaboradores' ya está pluralizado correctamente.
+/// Línea 35: 'archivo_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 36: 'archivo_empresas' ya está pluralizado correctamente.
+/// Línea 37: 'archivo_factoring_historial_estados' ya está pluralizado correctamente.
+/// Línea 38: 'archivo_factoring_transferencia_cedentes' ya está pluralizado correctamente.
+/// Línea 39: 'archivo_facturas' ya está pluralizado correctamente.
+/// Línea 40: 'archivo_inversionista_depositos' ya está pluralizado correctamente.
+/// Línea 41: 'archivo_inversionista_retiros' ya está pluralizado correctamente.
+/// Línea 42: 'archivo_personas' ya está pluralizado correctamente.
+/// Línea 43: 'archivo_persona_verificaciones' ya está pluralizado correctamente.
+/// Línea 44: 'archivo_servicio_empresa_verificaciones' ya está pluralizado correctamente.
+/// Línea 45: 'archivo_servicio_inversionista_verificaciones' ya está pluralizado correctamente.
+/// Línea 105: 'archivos' ya está pluralizado correctamente.
+/// Línea 196: 'archivos' ya está pluralizado correctamente.
+/// Línea 210: 'cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 211: 'factoring_simulaciones' ya está pluralizado correctamente.
+/// Línea 236: 'banco_transacciones' ya está pluralizado correctamente.
+/// Línea 237: 'inversionista_banco_cuentas' ya está pluralizado correctamente.
+/// Línea 238: 'inversionista_depositos' ya está pluralizado correctamente.
+/// Línea 239: 'inversionista_retiros' ya está pluralizado correctamente.
+/// Línea 256: 'banco_cuentas' ya está pluralizado correctamente.
+/// Línea 269: 'banco_cuentas' ya está pluralizado correctamente.
+/// Línea 295: 'banco_transaccion_factoring_inversiones' ya está pluralizado correctamente.
+/// Línea 296: 'banco_transaccion_inversionista_depositos' ya está pluralizado correctamente.
+/// Línea 297: 'banco_transaccion_inversionista_retiros' ya está pluralizado correctamente.
+/// Línea 315: 'banco_transacciones' ya está pluralizado correctamente.
+/// Línea 316: 'banco_transaccion_estado_historiales' ya está pluralizado correctamente.
+/// Línea 397: 'banco_transacciones' ya está pluralizado correctamente.
+/// Línea 421: 'archivo_colaboradores' ya está pluralizado correctamente.
+/// Línea 426: 'factoringes' ya está pluralizado correctamente.
+/// Línea 445: 'colaboradores' ya está pluralizado correctamente.
+/// Línea 481: 'factoringes' ya está pluralizado correctamente.
+/// Línea 518: 'archivo_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 523: 'empresa_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 524: 'factor_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 525: 'factoringes' ya está pluralizado correctamente.
+/// Línea 526: 'inversionista_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 527: 'persona_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 546: 'cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 559: 'cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 575: 'empresas' ya está pluralizado correctamente.
+/// Línea 576: 'factores' ya está pluralizado correctamente.
+/// Línea 577: 'personas' ya está pluralizado correctamente.
+/// Línea 578: 'provincias' ya está pluralizado correctamente.
+/// Línea 599: 'empresas' ya está pluralizado correctamente.
+/// Línea 600: 'factores' ya está pluralizado correctamente.
+/// Línea 601: 'personas' ya está pluralizado correctamente.
+/// Línea 617: 'accionistas' ya está pluralizado correctamente.
+/// Línea 618: 'colaboradores' ya está pluralizado correctamente.
+/// Línea 619: 'funcionarios' ya está pluralizado correctamente.
+/// Línea 620: 'personas' ya está pluralizado correctamente.
+/// Línea 621: 'usuarios' ya está pluralizado correctamente.
+/// Línea 645: 'accionistas' ya está pluralizado correctamente.
+/// Línea 646: 'archivo_empresas' ya está pluralizado correctamente.
+/// Línea 647: 'cedente_limites' ya está pluralizado correctamente.
+/// Línea 648: 'colaboradores' ya está pluralizado correctamente.
+/// Línea 649: 'contactos' ya está pluralizado correctamente.
+/// Línea 655: 'empresa_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 659: 'funcionarios' ya está pluralizado correctamente.
+/// Línea 660: 'pagador_limites' ya está pluralizado correctamente.
+/// Línea 661: 'servicio_empresas' ya está pluralizado correctamente.
+/// Línea 662: 'usuario_servicio_empresas' ya está pluralizado correctamente.
+/// Línea 684: 'factoring_pagos' ya está pluralizado correctamente.
+/// Línea 685: 'factoring_transferencia_cedentes' ya está pluralizado correctamente.
+/// Línea 735: 'factor_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 736: 'factor_limites' ya está pluralizado correctamente.
+/// Línea 737: 'factoringes' ya está pluralizado correctamente.
+/// Línea 759: 'factor_transaccion_bancarias' ya está pluralizado correctamente.
+/// Línea 760: 'factor_transaccion_bancaria_origen_cuentas' ya está pluralizado correctamente.
+/// Línea 761: 'factoring_pagos' ya está pluralizado correctamente.
+/// Línea 762: 'factoring_transferencia_cedentes' ya está pluralizado correctamente.
+/// Línea 763: 'inversionista_depositos' ya está pluralizado correctamente.
+/// Línea 764: 'inversionista_retiros' ya está pluralizado correctamente.
+/// Línea 810: 'factoring_facturas' ya está pluralizado correctamente.
+/// Línea 811: 'factoring_factura_factores' ya está pluralizado correctamente.
+/// Línea 812: 'factoring_historial_estados' ya está pluralizado correctamente.
+/// Línea 813: 'factoring_liquidaciones' ya está pluralizado correctamente.
+/// Línea 814: 'factoring_pagos' ya está pluralizado correctamente.
+/// Línea 816: 'factoring_transferencia_cedentes' ya está pluralizado correctamente.
+/// Línea 817: 'sbs_saldo_contable_detalles' ya está pluralizado correctamente.
+/// Línea 945: 'factoring_ejecutados' ya está pluralizado correctamente.
+/// Línea 964: 'factoringes' ya está pluralizado correctamente.
+/// Línea 966: 'factoring_historial_estados' ya está pluralizado correctamente.
+/// Línea 983: 'factoring_propuestas' ya está pluralizado correctamente.
+/// Línea 984: 'factoring_simulaciones' ya está pluralizado correctamente.
+/// Línea 1015: 'archivo_factoring_historial_estados' ya está pluralizado correctamente.
+/// Línea 1039: 'banco_transaccion_factoring_inversiones' ya está pluralizado correctamente.
+/// Línea 1126: 'factoring_propuesta_financieros' ya está pluralizado correctamente.
+/// Línea 1127: 'factoring_propuesta_historial_estados' ya está pluralizado correctamente.
+/// Línea 1128: 'sbs_saldo_contable_detalles' ya está pluralizado correctamente.
+/// Línea 1151: 'factoring_propuestas' ya está pluralizado correctamente.
+/// Línea 1152: 'factoring_propuesta_historial_estados' ya está pluralizado correctamente.
+/// Línea 1195: 'factoring_propuestas' ya está pluralizado correctamente.
+/// Línea 1196: 'factoring_simulaciones' ya está pluralizado correctamente.
+/// Línea 1247: 'archivo_facturas' ya está pluralizado correctamente.
+/// Línea 1248: 'factoring_facturas' ya está pluralizado correctamente.
+/// Línea 1249: 'factoring_factura_factores' ya está pluralizado correctamente.
+/// Línea 1251: 'factura_impuestos' ya está pluralizado correctamente.
+/// Línea 1252: 'factura_itemes' ya está pluralizado correctamente.
+/// Línea 1253: 'factura_medio_pagos' ya está pluralizado correctamente.
+/// Línea 1254: 'factura_notas' ya está pluralizado correctamente.
+/// Línea 1255: 'factura_termino_pagos' ya está pluralizado correctamente.
+/// Línea 1375: 'factoring_liquidacion_financieros' ya está pluralizado correctamente.
+/// Línea 1376: 'factoring_propuesta_financieros' ya está pluralizado correctamente.
+/// Línea 1377: 'factoring_simulacion_financieros' ya está pluralizado correctamente.
+/// Línea 1393: 'factoring_liquidacion_financieros' ya está pluralizado correctamente.
+/// Línea 1394: 'factoring_propuesta_financieros' ya está pluralizado correctamente.
+/// Línea 1395: 'factoring_simulacion_financieros' ya está pluralizado correctamente.
+/// Línea 1407: 'personas' ya está pluralizado correctamente.
+/// Línea 1421: 'inversionista_banco_cuentas' ya está pluralizado correctamente.
+/// Línea 1422: 'inversionista_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 1423: 'servicio_inversionistas' ya está pluralizado correctamente.
+/// Línea 1454: 'inversionista_depositos' ya está pluralizado correctamente.
+/// Línea 1455: 'inversionista_retiros' ya está pluralizado correctamente.
+/// Línea 1478: 'archivo_inversionista_depositos' ya está pluralizado correctamente.
+/// Línea 1479: 'banco_transaccion_inversionista_depositos' ya está pluralizado correctamente.
+/// Línea 1506: 'archivo_inversionista_retiros' ya está pluralizado correctamente.
+/// Línea 1507: 'banco_transaccion_inversionista_retiros' ya está pluralizado correctamente.
+/// Línea 1531: 'banco_cuentas' ya está pluralizado correctamente.
+/// Línea 1532: 'cedente_limites' ya está pluralizado correctamente.
+/// Línea 1533: 'cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 1534: 'factor_limites' ya está pluralizado correctamente.
+/// Línea 1535: 'factoringes' ya está pluralizado correctamente.
+/// Línea 1536: 'factoring_simulaciones' ya está pluralizado correctamente.
+/// Línea 1537: 'factoring_transferencia_cedentes' ya está pluralizado correctamente.
+/// Línea 1538: 'pagador_limites' ya está pluralizado correctamente.
+/// Línea 1539: 'sbs_saldo_contable_detalles' ya está pluralizado correctamente.
+/// Línea 1560: 'accionistas' ya está pluralizado correctamente.
+/// Línea 1561: 'departamentos' ya está pluralizado correctamente.
+/// Línea 1562: 'empresas' ya está pluralizado correctamente.
+/// Línea 1563: 'factores' ya está pluralizado correctamente.
+/// Línea 1564: 'funcionarios' ya está pluralizado correctamente.
+/// Línea 1579: 'persona_pep_indirectos' ya está pluralizado correctamente.
+/// Línea 1610: 'archivo_personas' ya está pluralizado correctamente.
+/// Línea 1611: 'colaboradores' ya está pluralizado correctamente.
+/// Línea 1623: 'persona_cuenta_bancarias' ya está pluralizado correctamente.
+/// Línea 1625: 'persona_pep_directos' ya está pluralizado correctamente.
+/// Línea 1626: 'persona_pep_indirectos' ya está pluralizado correctamente.
+/// Línea 1627: 'persona_verificaciones' ya está pluralizado correctamente.
+/// Línea 1736: 'archivo_persona_verificaciones' ya está pluralizado correctamente.
+/// Línea 1763: 'personas' ya está pluralizado correctamente.
+/// Línea 1764: 'persona_verificaciones' ya está pluralizado correctamente.
+/// Línea 1779: 'distritos' ya está pluralizado correctamente.
+/// Línea 1780: 'empresas' ya está pluralizado correctamente.
+/// Línea 1781: 'factores' ya está pluralizado correctamente.
+/// Línea 1782: 'personas' ya está pluralizado correctamente.
+/// Línea 1798: 'distritos' ya está pluralizado correctamente.
+/// Línea 1816: 'empresas' ya está pluralizado correctamente.
+/// Línea 1817: 'factores' ya está pluralizado correctamente.
+/// Línea 1818: 'factoring_config_comisiones' ya está pluralizado correctamente.
+/// Línea 1819: 'factoring_config_garantias' ya está pluralizado correctamente.
+/// Línea 1820: 'factoring_config_tasa_descuentos' ya está pluralizado correctamente.
+/// Línea 1824: 'factoring_simulaciones' ya está pluralizado correctamente.
+/// Línea 1839: 'usuario_roles' ya está pluralizado correctamente.
+/// Línea 1856: 'servicio_empresas' ya está pluralizado correctamente.
+/// Línea 1857: 'servicio_inversionistas' ya está pluralizado correctamente.
+/// Línea 1858: 'usuario_servicios' ya está pluralizado correctamente.
+/// Línea 1859: 'usuario_servicio_empresas' ya está pluralizado correctamente.
+/// Línea 1879: 'servicio_empresa_verificaciones' ya está pluralizado correctamente.
+/// Línea 1903: 'servicio_empresas' ya está pluralizado correctamente.
+/// Línea 1904: 'servicio_empresa_verificaciones' ya está pluralizado correctamente.
+/// Línea 1921: 'archivo_servicio_empresa_verificaciones' ya está pluralizado correctamente.
+/// Línea 1951: 'banco_transaccion_estado_historiales' ya está pluralizado correctamente.
+/// Línea 1953: 'factoring_historial_estados' ya está pluralizado correctamente.
+/// Línea 1954: 'factoring_propuesta_historial_estados' ya está pluralizado correctamente.
+/// Línea 1955: 'facturas' ya está pluralizado correctamente.
+/// Línea 1957: 'persona_verificaciones' ya está pluralizado correctamente.
+/// Línea 1958: 'servicio_empresas' ya está pluralizado correctamente.
+/// Línea 1959: 'servicio_empresa_verificaciones' ya está pluralizado correctamente.
+/// Línea 1960: 'servicio_inversionistas' ya está pluralizado correctamente.
+/// Línea 1961: 'servicio_inversionista_verificaciones' ya está pluralizado correctamente.
+/// Línea 1963: 'usuario_roles' ya está pluralizado correctamente.
+/// Línea 1964: 'usuario_servicios' ya está pluralizado correctamente.
+/// Línea 1965: 'usuario_servicio_empresas' ya está pluralizado correctamente.
+/// Línea 1966: 'usuario_servicio_verificaciones' ya está pluralizado correctamente.
+/// Línea 1967: 'validaciones' ya está pluralizado correctamente.
+/// Línea 2002: 'usuario_servicio_verificaciones' ya está pluralizado correctamente.
+/// Línea 2048: 'usuario_servicio_empresas' ya está pluralizado correctamente.
+/// Línea 2063: 'usuario_servicio_empresas' ya está pluralizado correctamente.
+/// Línea 2078: 'usuario_servicios' ya está pluralizado correctamente.
+/// Línea 2079: 'usuario_servicio_verificaciones' ya está pluralizado correctamente.
+/// Línea 2138: 'validaciones' ya está pluralizado correctamente.
+/// Línea 2164: 'zlaboratorio_pedidos' ya está pluralizado correctamente.
+/// Línea 2184: 'servicio_inversionista_verificaciones' ya está pluralizado correctamente.
+/// Línea 2208: 'servicio_inversionistas' ya está pluralizado correctamente.
+/// Línea 2209: 'servicio_inversionista_verificaciones' ya está pluralizado correctamente.
+/// Línea 2226: 'archivo_servicio_inversionista_verificaciones' ya está pluralizado correctamente.
+/// Línea 2292: 'archivo_factoring_transferencia_cedentes' ya está pluralizado correctamente.
+/// Línea 2321: 'factoring_transferencia_cedentes' ya está pluralizado correctamente.
+/// Línea 2336: 'factoring_transferencia_cedentes' ya está pluralizado correctamente.
+/// Línea 2400: 'factoring_simulacion_financieros' ya está pluralizado correctamente.
+/// Línea 2603: 'factoring_estados' ya está pluralizado correctamente.
+/// Línea 2635: 'factoring_liquidacion_financieros' ya está pluralizado correctamente.
+/// Línea 2636: 'sbs_saldo_contable_detalles' ya está pluralizado correctamente.
+/// Línea 2655: 'factoring_liquidaciones' ya está pluralizado correctamente.
+/// Línea 2758: 'factoring_factura_factores' ya está pluralizado correctamente.
+/// Línea 2802: 'factoring_factura_factores' ya está pluralizado correctamente.
+/// Línea 2821: 'sbs_saldo_contable_detalles' ya está pluralizado correctamente.
+/// Línea 2907: 'sbs_saldo_contable_periodos' ya está pluralizado correctamente.
+/// Línea 2930: 'sbs_saldo_contable_detalles' ya está pluralizado correctamente.
+/// Línea 2954: 'sbs_saldo_contable_periodos' ya está pluralizado correctamente.
+/// Línea 3004: 'factor_transaccion_bancaria_historiales' ya está pluralizado correctamente.
+/// Línea 3005: 'factor_transaccion_bancaria_incidencias' ya está pluralizado correctamente.
+/// Línea 3066: 'factor_transaccion_bancaria_historiales' ya está pluralizado correctamente.
+/// Línea 3094: 'factor_transaccion_bancarias' ya está pluralizado correctamente.
+/// Línea 3095: 'factor_transaccion_bancaria_historiales' ya está pluralizado correctamente.
+/// Línea 3162: 'factor_transaccion_bancaria_historiales' ya está pluralizado correctamente.
+/// Línea 3163: 'factor_transaccion_bancaria_incidencias' ya está pluralizado correctamente.
+/// Línea 3164: 'factor_transaccion_bancaria_origen_cuentas' ya está pluralizado correctamente.
+/// Línea 3165: 'factor_transaccion_bancaria_sincronizaciones' ya está pluralizado correctamente.
+✅ Archivo schema.prisma actualizado: D:\06_Workspace_nodejs\ft-app-backend\prisma\ft_factoring\schema.prisma
+📝 Log de ejecución actualizado en schema.prisma
+📊 Resumen de ejecución:
+🔎 Total líneas con relaciones tipo '[]': 210
+✅ Modificaciones realizadas: 0
+⚠️ Sin modificar (ya pluralizadas): 210
+
+✅ Completado: Pluraliza schema
+
+🔧 Ejecutando: Renombra atributos especiales
+📁 Ejecutando script: renombrar-atributos-especiales.js
+📂 Procesando archivo: D:\06_Workspace_nodejs\ft-app-backend\prisma\ft_factoring\schema.prisma
+✅ Copia de seguridad creada: D:\06_Workspace_nodejs\ft-app-backend\prisma\ft_factoring\backup\schema.20261016T112742_753Z.antes-renombrar.9369f2bd-9f83-4fa8-b68c-4f541439e2bd.prisma.bak
+✔️ Línea 32: (relation-field) archivo_estado ya coincide con 'archivoestado'
+✔️ Línea 33: (relation-field) archivo_tipo ya coincide con 'archivotipo'
+✔️ Línea 59: (relation-field) archivo ya coincide con 'archivo'
+✔️ Línea 60: (relation-field) colaborador ya coincide con 'colaborador'
+✔️ Línea 74: (relation-field) archivo ya coincide con 'archivo'
+✔️ Línea 75: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
+✔️ Línea 89: (relation-field) archivo ya coincide con 'archivo'
+✔️ Línea 90: (relation-field) empresa ya coincide con 'empresa'
+✔️ Línea 116: (relation-field) archivo ya coincide con 'archivo'
+✔️ Línea 117: (relation-field) factoring_historial_estado ya coincide con 'factoringhistorialestado'
+✔️ Línea 131: (relation-field) archivo ya coincide con 'archivo'
+✔️ Línea 132: (relation-field) factura ya coincide con 'factura'
+✔️ Línea 146: (relation-field) archivo ya coincide con 'archivo'
+✔️ Línea 147: (relation-field) inversionista_deposito ya coincide con 'inversionistadeposito'
+✔️ Línea 161: (relation-field) archivo ya coincide con 'archivo'
+✔️ Línea 162: (relation-field) inversionista_retiro ya coincide con 'inversionistaretiro'
+✔️ Línea 176: (relation-field) archivo ya coincide con 'archivo'
+✔️ Línea 177: (relation-field) persona ya coincide con 'persona'
+✔️ Línea 233: (relation-field) banco_cuenta_estado ya coincide con 'bancocuentaestado'
+✔️ Línea 234: (relation-field) banco_cuenta_tipo ya coincide con 'bancocuentatipo'
+✔️ Línea 235: (relation-field) moneda ya coincide con 'moneda'
+✔️ Línea 290: (relation-field) banco_cuenta ya coincide con 'bancocuenta'
+✔️ Línea 291: (relation-field) banco_transaccion_estado ya coincide con 'bancotransaccionestado'
+✔️ Línea 292: (singular) banco_transaccion_estado_historial ya está correcto | Relación: 'banco_transaccion_idbancotransaccionestadohistorialTobanco_transaccion_estado_historial'
+✔️ Línea 293: (relation-field) banco_transaccion_tipo ya coincide con 'bancotransacciontipo'
+✔️ Línea 294: (plural) banco_transaccion_estado_historial_bancotransacciones ya está correcto | Relación: 'banco_transaccion_estado_historial_idbancotransaccionTobanco_transaccion'
+✔️ Línea 332: (plural) banco_transaccion_bancotransaccionestadohistoriales ya está correcto | Relación: 'banco_transaccion_idbancotransaccionestadohistorialTobanco_transaccion_estado_historial'
+✔️ Línea 333: (singular) banco_transaccion ya está correcto | Relación: 'banco_transaccion_estado_historial_idbancotransaccionTobanco_transaccion'
+✔️ Línea 334: (relation-field) banco_transaccion_estado ya coincide con 'bancotransaccionestado'
+✔️ Línea 335: (relation-field) usuario_modifica ya coincide con 'usuariomodifica'
+✔️ Línea 350: (relation-field) banco_transaccion ya coincide con 'bancotransaccion'
+✔️ Línea 351: (relation-field) factoring_inversion ya coincide con 'factoringinversion'
+✔️ Línea 365: (relation-field) banco_transaccion ya coincide con 'bancotransaccion'
+✔️ Línea 366: (relation-field) inversionista_deposito ya coincide con 'inversionistadeposito'
+✔️ Línea 380: (relation-field) banco_transaccion ya coincide con 'bancotransaccion'
+✔️ Línea 381: (relation-field) inversionista_retiro ya coincide con 'inversionistaretiro'
+✔️ Línea 422: (relation-field) colaborador_tipo ya coincide con 'colaboradortipo'
+✔️ Línea 423: (relation-field) documento_tipo ya coincide con 'documentotipo'
+✔️ Línea 424: (relation-field) empresa ya coincide con 'empresa'
+✔️ Línea 425: (relation-field) persona ya coincide con 'persona'
+✔️ Línea 480: (relation-field) empresa ya coincide con 'empresa'
+✔️ Línea 497: (relation-field) usuario ya coincide con 'usuario'
+✔️ Línea 519: (relation-field) banco ya coincide con 'banco'
+✔️ Línea 520: (relation-field) cuenta_bancaria_estado ya coincide con 'cuentabancariaestado'
+✔️ Línea 521: (relation-field) cuenta_tipo ya coincide con 'cuentatipo'
+✔️ Línea 522: (relation-field) moneda ya coincide con 'moneda'
+✔️ Línea 574: (relation-field) pais ya coincide con 'pais'
+✔️ Línea 597: (relation-field) provincia ya coincide con 'provincia'
+✔️ Línea 598: (relation-field) region_natural ya coincide con 'regionnatural'
+✔️ Línea 650: (relation-field) departamento_sede ya coincide con 'departamentosede'
+✔️ Línea 651: (relation-field) distrito_sede ya coincide con 'distritosede'
+✔️ Línea 652: (relation-field) pais_sede ya coincide con 'paissede'
+✔️ Línea 653: (relation-field) provincia_sede ya coincide con 'provinciasede'
+✔️ Línea 654: (relation-field) riesgo ya coincide con 'riesgo'
+✔️ Línea 657: (plural) factoring_aceptantes ya está correcto | Relación: 'factoring_idaceptanteToempresa'
+✔️ Línea 658: (plural) factoring_cedentes ya está correcto | Relación: 'factoring_idcedenteToempresa'
+✔️ Línea 682: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
+✔️ Línea 683: (relation-field) empresa ya coincide con 'empresa'
+✔️ Línea 706: (relation-field) empresa ya coincide con 'empresa'
+✔️ Línea 730: (relation-field) departamento_sede ya coincide con 'departamentosede'
+✔️ Línea 731: (relation-field) distrito_sede ya coincide con 'distritosede'
+✔️ Línea 732: (relation-field) pais_sede ya coincide con 'paissede'
+✔️ Línea 733: (relation-field) provincia_sede ya coincide con 'provinciasede'
+✔️ Línea 734: (relation-field) riesgo ya coincide con 'riesgo'
+✔️ Línea 757: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
+✔️ Línea 758: (relation-field) factor ya coincide con 'factor'
+✔️ Línea 799: (singular) empresa_aceptante ya está correcto | Relación: 'factoring_idaceptanteToempresa'
+✔️ Línea 800: (singular) empresa_cedente ya está correcto | Relación: 'factoring_idcedenteToempresa'
+✔️ Línea 801: (relation-field) contacto_aceptante ya coincide con 'contactoaceptante'
+✔️ Línea 802: (relation-field) contacto_cedente ya coincide con 'contactocedente'
+✔️ Línea 803: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
+✔️ Línea 804: (relation-field) factor ya coincide con 'factor'
+✔️ Línea 805: (singular) factoring_ejecutado ya está correcto | Relación: 'factoring_idfactoringejecutadoTofactoring_ejecutado'
+✔️ Línea 806: (relation-field) factoring_estado ya coincide con 'factoringestado'
+✔️ Línea 807: (singular) factoring_propuesta_aceptada ya está correcto | Relación: 'factoring_idfactoringpropuestaaceptadaTofactoring_propuesta'
+✔️ Línea 808: (relation-field) moneda ya coincide con 'moneda'
+✔️ Línea 809: (plural) factoring_ejecutado_factoringes ya está correcto | Relación: 'factoring_ejecutado_idfactoringTofactoring'
+✔️ Línea 815: (plural) factoring_propuesta_factoringes ya está correcto | Relación: 'factoring_propuesta_idfactoringTofactoring'
+✔️ Línea 846: (relation-field) riesgo ya coincide con 'riesgo'
+✔️ Línea 866: (relation-field) riesgo ya coincide con 'riesgo'
+✔️ Línea 885: (relation-field) riesgo ya coincide con 'riesgo'
+✔️ Línea 925: (plural) factoring_factoringejecutados ya está correcto | Relación: 'factoring_idfactoringejecutadoTofactoring_ejecutado'
+✔️ Línea 926: (singular) factoring ya está correcto | Relación: 'factoring_ejecutado_idfactoringTofactoring'
+✔️ Línea 927: (relation-field) factoring_ejecutado_estado ya coincide con 'factoringejecutadoestado'
+✔️ Línea 965: (relation-field) factoring_cartera ya coincide con 'factoringcartera'
+✔️ Línea 995: (relation-field) factoring ya coincide con 'factoring'
+✔️ Línea 996: (relation-field) factura ya coincide con 'factura'
+✔️ Línea 1016: (relation-field) factoring_estado ya coincide con 'factoringestado'
+✔️ Línea 1017: (relation-field) factoring ya coincide con 'factoring'
+✔️ Línea 1018: (relation-field) usuario_modifica ya coincide con 'usuariomodifica'
+✔️ Línea 1057: (relation-field) empresa_cuenta_bancaria ya coincide con 'empresacuentabancaria'
+✔️ Línea 1058: (relation-field) factor_cuenta_bancaria ya coincide con 'factorcuentabancaria'
+✔️ Línea 1059: (relation-field) factoring ya coincide con 'factoring'
+✔️ Línea 1118: (plural) factoring_factoringpropuestaaceptadas ya está correcto | Relación: 'factoring_idfactoringpropuestaaceptadaTofactoring_propuesta'
+✔️ Línea 1119: (singular) factoring ya está correcto | Relación: 'factoring_propuesta_idfactoringTofactoring'
+✔️ Línea 1120: (relation-field) factoring_estrategia ya coincide con 'factoringestrategia'
+✔️ Línea 1121: (relation-field) factoring_propuesta_estado ya coincide con 'factoringpropuestaestado'
+✔️ Línea 1122: (relation-field) factoring_tipo ya coincide con 'factoringtipo'
+✔️ Línea 1123: (singular) riesgo_aceptante ya está correcto | Relación: 'factoring_propuesta_idriesgoaceptanteToriesgo'
+✔️ Línea 1124: (singular) riesgo_cedente ya está correcto | Relación: 'factoring_propuesta_idriesgocedenteToriesgo'
+✔️ Línea 1125: (singular) riesgo_operacion ya está correcto | Relación: 'factoring_propuesta_idriesgooperacionToriesgo'
+✔️ Línea 1175: (relation-field) factoring_propuesta ya coincide con 'factoringpropuesta'
+✔️ Línea 1176: (relation-field) financiero_concepto ya coincide con 'financieroconcepto'
+✔️ Línea 1177: (relation-field) financiero_tipo ya coincide con 'financierotipo'
+✔️ Línea 1250: (relation-field) usuario_upload ya coincide con 'usuarioupload'
+✔️ Línea 1275: (relation-field) factura ya coincide con 'factura'
+✔️ Línea 1304: (relation-field) factura ya coincide con 'factura'
+✔️ Línea 1321: (relation-field) factura ya coincide con 'factura'
+✔️ Línea 1337: (relation-field) factura ya coincide con 'factura'
+✔️ Línea 1356: (relation-field) factura ya coincide con 'factura'
+✔️ Línea 1420: (relation-field) persona ya coincide con 'persona'
+✔️ Línea 1434: (relation-field) banco_cuenta ya coincide con 'bancocuenta'
+✔️ Línea 1435: (relation-field) inversionista ya coincide con 'inversionista'
+✔️ Línea 1452: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
+✔️ Línea 1453: (relation-field) inversionista ya coincide con 'inversionista'
+✔️ Línea 1480: (relation-field) banco_cuenta ya coincide con 'bancocuenta'
+✔️ Línea 1481: (relation-field) factor_cuenta_bancaria ya coincide con 'factorcuentabancaria'
+✔️ Línea 1482: (relation-field) inversionista_cuenta_bancaria ya coincide con 'inversionistacuentabancaria'
+✔️ Línea 1508: (relation-field) banco_cuenta ya coincide con 'bancocuenta'
+✔️ Línea 1509: (relation-field) factor_cuenta_bancaria ya coincide con 'factorcuentabancaria'
+✔️ Línea 1510: (relation-field) inversionista_cuenta_bancaria ya coincide con 'inversionistacuentabancaria'
+✔️ Línea 1540: (plural) sbs_tipo_cambio_monedabases ya está correcto | Relación: 'sbs_tipo_cambio_idmonedabaseTomoneda'
+✔️ Línea 1541: (plural) sbs_tipo_cambio_monedacotizadas ya está correcto | Relación: 'sbs_tipo_cambio_idmonedacotizadaTomoneda'
+✔️ Línea 1542: (plural) sunat_tipo_cambio_monedabases ya está correcto | Relación: 'sunat_tipo_cambio_idmonedabaseTomoneda'
+✔️ Línea 1543: (plural) sunat_tipo_cambio_monedacotizadas ya está correcto | Relación: 'sunat_tipo_cambio_idmonedacotizadaTomoneda'
+✔️ Línea 1565: (plural) persona_paisnacimientos ya está correcto | Relación: 'persona_idpaisnacimientoTopais'
+✔️ Línea 1566: (plural) persona_paisnacionalidades ya está correcto | Relación: 'persona_idpaisnacionalidadTopais'
+✔️ Línea 1567: (plural) persona_paisresidencias ya está correcto | Relación: 'persona_idpaisresidenciaTopais'
+✔️ Línea 1613: (relation-field) departamento_residencia ya coincide con 'departamentoresidencia'
+✔️ Línea 1614: (relation-field) distrito_residencia ya coincide con 'distritoresidencia'
+✔️ Línea 1615: (relation-field) documento_tipo ya coincide con 'documentotipo'
+✔️ Línea 1616: (relation-field) genero ya coincide con 'genero'
+✔️ Línea 1617: (singular) pais_nacimiento ya está correcto | Relación: 'persona_idpaisnacimientoTopais'
+✔️ Línea 1618: (singular) pais_nacionalidad ya está correcto | Relación: 'persona_idpaisnacionalidadTopais'
+✔️ Línea 1619: (singular) pais_residencia ya está correcto | Relación: 'persona_idpaisresidenciaTopais'
+✔️ Línea 1620: (relation-field) persona_verificacion_estado ya coincide con 'personaverificacionestado'
+✔️ Línea 1621: (relation-field) provincia_residencia ya coincide con 'provinciaresidencia'
+✔️ Línea 1622: (relation-field) usuario ya coincide con 'usuario'
+✔️ Línea 1651: (relation-field) cuenta_bancaria ya coincide con 'cuentabancaria'
+✔️ Línea 1652: (relation-field) persona ya coincide con 'persona'
+✔️ Línea 1670: (relation-field) persona ya coincide con 'persona'
+✔️ Línea 1691: (relation-field) persona ya coincide con 'persona'
+✔️ Línea 1715: (relation-field) pep_vinculo ya coincide con 'pepvinculo'
+✔️ Línea 1716: (relation-field) persona ya coincide con 'persona'
+✔️ Línea 1737: (relation-field) persona ya coincide con 'persona'
+✔️ Línea 1738: (relation-field) persona_verificacion_estado ya coincide con 'personaverificacionestado'
+✔️ Línea 1739: (relation-field) usuario_verifica ya coincide con 'usuarioverifica'
+✔️ Línea 1783: (relation-field) departamento ya coincide con 'departamento'
+✔️ Línea 1821: (plural) factoring_propuesta_riesgoaceptantes ya está correcto | Relación: 'factoring_propuesta_idriesgoaceptanteToriesgo'
+✔️ Línea 1822: (plural) factoring_propuesta_riesgocedentes ya está correcto | Relación: 'factoring_propuesta_idriesgocedenteToriesgo'
+✔️ Línea 1823: (plural) factoring_propuesta_riesgooperaciones ya está correcto | Relación: 'factoring_propuesta_idriesgooperacionToriesgo'
+✔️ Línea 1875: (relation-field) empresa ya coincide con 'empresa'
+✔️ Línea 1876: (relation-field) servicio ya coincide con 'servicio'
+✔️ Línea 1877: (relation-field) servicio_empresa_estado ya coincide con 'servicioempresaestado'
+✔️ Línea 1878: (relation-field) usuario_suscriptor ya coincide con 'usuariosuscriptor'
+✔️ Línea 1922: (relation-field) servicio_empresa ya coincide con 'servicioempresa'
+✔️ Línea 1923: (relation-field) servicio_empresa_estado ya coincide con 'servicioempresaestado'
+✔️ Línea 1924: (relation-field) usuario_verifica ya coincide con 'usuarioverifica'
+✔️ Línea 1962: (relation-field) documento_tipo ya coincide con 'documentotipo'
+✔️ Línea 1980: (relation-field) rol ya coincide con 'rol'
+✔️ Línea 1981: (relation-field) usuario ya coincide con 'usuario'
+✔️ Línea 1999: (relation-field) servicio ya coincide con 'servicio'
+✔️ Línea 2000: (relation-field) usuario ya coincide con 'usuario'
+✔️ Línea 2001: (relation-field) usuario_servicio_estado ya coincide con 'usuarioservicioestado'
+✔️ Línea 2023: (relation-field) empresa ya coincide con 'empresa'
+✔️ Línea 2024: (relation-field) servicio ya coincide con 'servicio'
+✔️ Línea 2025: (relation-field) usuario ya coincide con 'usuario'
+✔️ Línea 2026: (relation-field) usuario_servicio_empresa_estado ya coincide con 'usuarioservicioempresaestado'
+✔️ Línea 2027: (relation-field) usuario_servicio_empresa_rol ya coincide con 'usuarioservicioempresarol'
+✔️ Línea 2095: (relation-field) usuario_servicio ya coincide con 'usuarioservicio'
+✔️ Línea 2096: (relation-field) usuario_servicio_estado ya coincide con 'usuarioservicioestado'
+✔️ Línea 2097: (relation-field) usuario_verifica ya coincide con 'usuarioverifica'
+✔️ Línea 2122: (relation-field) usuario ya coincide con 'usuario'
+✔️ Línea 2123: (relation-field) validacion_tipo ya coincide con 'validaciontipo'
+✔️ Línea 2151: (relation-field) usuario ya coincide con 'usuario'
+✔️ Línea 2180: (relation-field) inversionista ya coincide con 'inversionista'
+✔️ Línea 2181: (relation-field) servicio ya coincide con 'servicio'
+✔️ Línea 2182: (relation-field) servicio_inversionista_estado ya coincide con 'servicioinversionistaestado'
+✔️ Línea 2183: (relation-field) usuario_suscriptor ya coincide con 'usuariosuscriptor'
+✔️ Línea 2227: (relation-field) servicio_inversionista ya coincide con 'servicioinversionista'
+✔️ Línea 2228: (relation-field) servicio_inversionista_estado ya coincide con 'servicioinversionistaestado'
+✔️ Línea 2229: (relation-field) usuario_verifica ya coincide con 'usuarioverifica'
+✔️ Línea 2249: (relation-field) factoring_propuesta ya coincide con 'factoringpropuesta'
+✔️ Línea 2250: (relation-field) factoring_propuesta_estado ya coincide con 'factoringpropuestaestado'
+✔️ Línea 2251: (relation-field) usuario_modifica ya coincide con 'usuariomodifica'
+✔️ Línea 2266: (relation-field) archivo ya coincide con 'archivo'
+✔️ Línea 2267: (relation-field) factoring_transferencia_cedente ya coincide con 'factoringtransferenciacedente'
+✔️ Línea 2293: (relation-field) empresa_cuenta_bancaria ya coincide con 'empresacuentabancaria'
+✔️ Línea 2294: (relation-field) factor_cuenta_bancaria ya coincide con 'factorcuentabancaria'
+✔️ Línea 2295: (relation-field) factoring ya coincide con 'factoring'
+✔️ Línea 2296: (relation-field) factoring_transferencia_estado ya coincide con 'factoringtransferenciaestado'
+✔️ Línea 2297: (relation-field) factoring_transferencia_tipo ya coincide con 'factoringtransferenciatipo'
+✔️ Línea 2298: (relation-field) moneda ya coincide con 'moneda'
+✔️ Línea 2395: (relation-field) banco ya coincide con 'banco'
+✔️ Línea 2396: (relation-field) factoring_estrategia ya coincide con 'factoringestrategia'
+✔️ Línea 2397: (relation-field) factoring_tipo ya coincide con 'factoringtipo'
+✔️ Línea 2398: (relation-field) moneda ya coincide con 'moneda'
+✔️ Línea 2399: (relation-field) riesgo_operacion ya coincide con 'riesgooperacion'
+✔️ Línea 2429: (relation-field) factoring_simulacion ya coincide con 'factoringsimulacion'
+✔️ Línea 2430: (relation-field) financiero_concepto ya coincide con 'financieroconcepto'
+✔️ Línea 2431: (relation-field) financiero_tipo ya coincide con 'financierotipo'
+✔️ Línea 2466: (relation-field) documento_tipo ya coincide con 'documentotipo'
+✔️ Línea 2467: (relation-field) empresa ya coincide con 'empresa'
+✔️ Línea 2468: (relation-field) pais ya coincide con 'pais'
+✔️ Línea 2497: (relation-field) documento_tipo ya coincide con 'documentotipo'
+✔️ Línea 2498: (relation-field) empresa ya coincide con 'empresa'
+✔️ Línea 2499: (relation-field) pais ya coincide con 'pais'
+✔️ Línea 2542: (relation-field) moneda ya coincide con 'moneda'
+⚠️ Línea 2543: (relation-field) 'cedente' no comienza con 'empresa' (limpio: 'empresa') | Original: 'empresa         empresa  @relation(fields: [idcedente], references: [idempresa], onDelete: NoAction, onUpdate: NoAction, map: "FK_facforlimite_idcedente")'
+✔️ Línea 2563: (relation-field) factor ya coincide con 'factor'
+✔️ Línea 2564: (relation-field) moneda ya coincide con 'moneda'
+⚠️ Línea 2584: (relation-field) 'pagador' no comienza con 'empresa' (limpio: 'empresa') | Original: 'empresa         empresa  @relation(fields: [idpagador], references: [idempresa], onDelete: NoAction, onUpdate: NoAction, map: "FK_facforlimite_idpagador")'
+✔️ Línea 2585: (relation-field) moneda ya coincide con 'moneda'
+✔️ Línea 2633: (relation-field) factoring ya coincide con 'factoring'
+✔️ Línea 2634: (relation-field) factoring_liquidacion_estado ya coincide con 'factoringliquidacionestado'
+✔️ Línea 2679: (relation-field) factoring_liquidacion ya coincide con 'factoringliquidacion'
+✔️ Línea 2680: (relation-field) financiero_concepto ya coincide con 'financieroconcepto'
+✔️ Línea 2681: (relation-field) financiero_tipo ya coincide con 'financierotipo'
+✔️ Línea 2698: (relation-field) financiero_concepto ya coincide con 'financieroconcepto'
+✔️ Línea 2709: (relation-field) archivo ya coincide con 'archivo'
+✔️ Línea 2710: (relation-field) persona_verificacion ya coincide con 'personaverificacion'
+✔️ Línea 2724: (relation-field) archivo ya coincide con 'archivo'
+✔️ Línea 2725: (relation-field) servicio_inversionista_verificacion ya coincide con 'servicioinversionistaverificacion'
+✔️ Línea 2739: (relation-field) archivo ya coincide con 'archivo'
+✔️ Línea 2740: (relation-field) servicio_empresa_verificacion ya coincide con 'servicioempresaverificacion'
+✔️ Línea 2777: (relation-field) detraccion_estado ya coincide con 'detraccionestado'
+✔️ Línea 2778: (relation-field) factoring ya coincide con 'factoring'
+✔️ Línea 2779: (relation-field) factura ya coincide con 'factura'
+✔️ Línea 2780: (relation-field) factura_estado ya coincide con 'facturaestado'
+✔️ Línea 2822: (singular) moneda_base ya está correcto | Relación: 'sbs_tipo_cambio_idmonedabaseTomoneda'
+✔️ Línea 2823: (singular) moneda_cotizada ya está correcto | Relación: 'sbs_tipo_cambio_idmonedacotizadaTomoneda'
+✔️ Línea 2844: (singular) moneda_base ya está correcto | Relación: 'sunat_tipo_cambio_idmonedabaseTomoneda'
+✔️ Línea 2845: (singular) moneda_cotizada ya está correcto | Relación: 'sunat_tipo_cambio_idmonedacotizadaTomoneda'
+✔️ Línea 2876: (relation-field) factoring ya coincide con 'factoring'
+✔️ Línea 2877: (relation-field) factoring_liquidacion ya coincide con 'factoringliquidacion'
+✔️ Línea 2878: (relation-field) moneda ya coincide con 'moneda'
+✔️ Línea 2879: (relation-field) sbs_saldo_contable_periodo ya coincide con 'sbssaldocontableperiodo'
+✔️ Línea 2880: (relation-field) factoring_propuesta ya coincide con 'factoringpropuesta'
+✔️ Línea 2881: (relation-field) sbs_tipo_cambio ya coincide con 'sbstipocambio'
+✔️ Línea 2931: (relation-field) sbs_saldo_contable_periodo_estado ya coincide con 'sbssaldocontableperiodoestado'
+✔️ Línea 2932: (relation-field) sbs_saldo_contable_operacion_tipo ya coincide con 'sbssaldocontableoperaciontipo'
+✔️ Línea 3000: (relation-field) factor_cuenta_bancaria ya coincide con 'factorcuentabancaria'
+⚠️ Línea 3001: (relation-field) 'origencuenta' no comienza con 'factor_transaccion_bancaria_origen_cuenta' (limpio: 'factortransaccionbancariaorigencuenta') | Original: 'factor_transaccion_bancaria_origen_cuenta                                                                                                   factor_transaccion_bancaria_origen_cuenta?  @relation(fields: [idorigencuenta], references: [idfactortransaccionbancariaorigencuenta], onDelete: Restrict, onUpdate: Restrict, map: "FK_ftb_origen")'
+⚠️ Línea 3032: (relation-field) 'incidencia' no comienza con 'factor_transaccion_bancaria_incidencia' (limpio: 'factortransaccionbancariaincidencia') | Original: 'factor_transaccion_bancaria_incidencia    factor_transaccion_bancaria_incidencia?    @relation(fields: [idincidencia], references: [idfactortransaccionbancariaincidencia], onDelete: Restrict, onUpdate: Restrict, map: "FK_ftbh_incidencia")'
+✔️ Línea 3033: (relation-field) factor_transaccion_bancaria ya coincide con 'factortransaccionbancaria'
+⚠️ Línea 3034: (relation-field) 'origencuenta' no comienza con 'factor_transaccion_bancaria_origen_cuenta' (limpio: 'factortransaccionbancariaorigencuenta') | Original: 'factor_transaccion_bancaria_origen_cuenta factor_transaccion_bancaria_origen_cuenta? @relation(fields: [idorigencuenta], references: [idfactortransaccionbancariaorigencuenta], onDelete: Restrict, onUpdate: Restrict, map: "FK_ftbh_origen")'
+✔️ Línea 3068: (relation-field) factor_transaccion_bancaria ya coincide con 'factortransaccionbancaria'
+✔️ Línea 3097: (relation-field) factor_cuenta_bancaria ya coincide con 'factorcuentabancaria'
+✔️ Línea 3174: (relation-field) configuracion_bbdd ya coincide con 'configuracionbbdd'
+📊 Resumen del script: renombrar-atributos-especiales.js
+🔎 Total relaciones '@relation' detectadas: 259
+✅ Atributos renombrados: 4
+⚠️ Ya estaban correctos: 255
+
+✅ Completado: Renombra atributos especiales
+
+🔧 Ejecutando: Generar modelos con Prisma
+
+✔ Generated Prisma Client (7.10.0) to .\generated\prisma\ft_factoring in 1.69s
+
+
+✅ Completado: Generar modelos con Prisma
+
+🚀 Todos los scripts se ejecutaron correctamente.
+
+◇ injected env (29) from .env.development
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\ft_factoring\schema.prisma.
+
+◇ injected env (29) from .env.development
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\ft_factoring\schema.prisma.
+

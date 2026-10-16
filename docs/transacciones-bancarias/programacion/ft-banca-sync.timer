@@ -1,0 +1,10 @@
+[Unit]
+Description=Programacion de sincronizacion bancaria cada quince minutos
+
+[Timer]
+OnCalendar=*-*-* *:00/15:00
+Persistent=true
+Unit=ft-banca-sync.service
+
+[Install]
+WantedBy=timers.target

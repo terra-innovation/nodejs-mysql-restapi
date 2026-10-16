@@ -1,0 +1,271 @@
+{
+  "verifiedAt": "2026-10-16T02:37:55.378Z",
+  "source": ".env.development",
+  "targetSha256": "f9c511527fec5ac2f6b231619de812ce248bc3ec699a0e42f9f2dc33fb8f7527",
+  "planSha256": "0d161c91118fbb6b3e59f0c130473f8785b9ff157433f3f41db0c4f2b20fcade",
+  "result": "passed",
+  "checkConstraintChecksEnabled": true,
+  "noRedundantCurrencyColumn": true,
+  "tables": [
+    {
+      "table": "factor_transaccion_bancaria_conexion",
+      "columns": 23,
+      "typesNullabilityDefaultsExact": true,
+      "namedChecks": 6,
+      "checksMetadata": [
+        {
+          "name": "CK_ftbc_crypto",
+          "clause": "`cifrado_version` = 1 and octet_length(`password_cifrado`) > 0"
+        },
+        {
+          "name": "CK_ftbc_estado",
+          "clause": "`estado` in (1,2)"
+        },
+        {
+          "name": "CK_ftbc_habilitado",
+          "clause": "`habilitado` in (0,1)"
+        },
+        {
+          "name": "CK_ftbc_motor",
+          "clause": "`motor` = 'MYSQL'"
+        },
+        {
+          "name": "CK_ftbc_puerto",
+          "clause": "`puerto` between 1 and 65535"
+        },
+        {
+          "name": "CK_ftbc_version",
+          "clause": "`version` > 0"
+        }
+      ],
+      "engine": "InnoDB",
+      "collation": "utf8mb4_unicode_ci",
+      "rowFormat": "Dynamic"
+    },
+    {
+      "table": "factor_transaccion_bancaria_origen_cuenta",
+      "columns": 13,
+      "typesNullabilityDefaultsExact": true,
+      "namedChecks": 4,
+      "checksMetadata": [
+        {
+          "name": "CK_ftboc_cuenta",
+          "clause": "char_length(trim(`cuenta_origen`)) > 0"
+        },
+        {
+          "name": "CK_ftboc_estado",
+          "clause": "`estado` in (1,2)"
+        },
+        {
+          "name": "CK_ftboc_habilitado",
+          "clause": "`habilitado` in (0,1)"
+        },
+        {
+          "name": "CK_ftboc_version",
+          "clause": "`version` > 0"
+        }
+      ],
+      "engine": "InnoDB",
+      "collation": "utf8mb4_unicode_ci",
+      "rowFormat": "Dynamic"
+    },
+    {
+      "table": "factor_transaccion_bancaria_sincronizacion",
+      "columns": 23,
+      "typesNullabilityDefaultsExact": true,
+      "namedChecks": 8,
+      "checksMetadata": [
+        {
+          "name": "CK_ftbs_completa",
+          "clause": "`lectura_completa` in (0,1)"
+        },
+        {
+          "name": "CK_ftbs_cuentas",
+          "clause": "json_type(`cuentas_alcance`) = 'ARRAY' and json_length(`cuentas_alcance`) > 0"
+        },
+        {
+          "name": "CK_ftbs_disparador",
+          "clause": "`disparador` in ('PROGRAMADA','MANUAL','CARGA_LEGADO')"
+        },
+        {
+          "name": "CK_ftbs_estado",
+          "clause": "`estado` in (1,2)"
+        },
+        {
+          "name": "CK_ftbs_exitosa",
+          "clause": "`resultado` <> 'EXITOSA' or `lectura_completa` = 1 and `filas_incidencia` = 0 and `error_codigo` is null"
+        },
+        {
+          "name": "CK_ftbs_fin",
+          "clause": "`resultado` = 'EN_CURSO' and `fin` is null or `resultado` <> 'EN_CURSO' and `fin` is not null and `fin` >= `inicio`"
+        },
+        {
+          "name": "CK_ftbs_periodo",
+          "clause": "`fecha_desde` is null and `fecha_hasta` is null or `fecha_desde` is not null and `fecha_hasta` is not null and `fecha_hasta` >= `fecha_desde`"
+        },
+        {
+          "name": "CK_ftbs_resultado",
+          "clause": "`resultado` in ('EN_CURSO','EXITOSA','PARCIAL','FALLIDA','INTERRUMPIDA')"
+        },
+        {
+          "name": "cuentas_alcance",
+          "clause": "json_valid(`cuentas_alcance`)"
+        }
+      ],
+      "engine": "InnoDB",
+      "collation": "utf8mb4_unicode_ci",
+      "rowFormat": "Dynamic"
+    },
+    {
+      "table": "factor_transaccion_bancaria",
+      "columns": 41,
+      "typesNullabilityDefaultsExact": true,
+      "namedChecks": 14,
+      "checksMetadata": [
+        {
+          "name": "CK_ftb_anulacion",
+          "clause": "`estado` = 1 and `motivo_anulacion` is null or `estado` = 2 and `motivo_anulacion` is not null and char_length(trim(`motivo_anulacion`)) > 0"
+        },
+        {
+          "name": "CK_ftb_comisiones",
+          "clause": "(`origen_comision` is null or `origen_comision` >= 0) and (`destino_comision` is null or `destino_comision` >= 0)"
+        },
+        {
+          "name": "CK_ftb_estado",
+          "clause": "`estado` in (1,2)"
+        },
+        {
+          "name": "CK_ftb_evidencia",
+          "clause": "`_idorigencuenta` is null and `datos_origen_iniciales` is null and `_idsincronizacion_inicial` is null and `_idsincronizacion_ultima` is null and `ultima_observacion` is null or `_idorigencuenta` is not null and `datos_origen_iniciales` is not null and `_idsincronizacion_inicial` is not null and `_idsincronizacion_ultima` is not null and `ultima_observacion` is not null"
+        },
+        {
+          "name": "CK_ftb_hora",
+          "clause": "`detalle_hora` is null or `detalle_hora` >= '00:00:00' and `detalle_hora` <= '23:59:59'"
+        },
+        {
+          "name": "CK_ftb_identidad",
+          "clause": "`identidad_version` = 1 and json_type(`identidad_datos`) = 'ARRAY' and json_length(`identidad_datos`) = 5 and `identidad_sha256` regexp '^[0-9a-f]{64}$'"
+        },
+        {
+          "name": "CK_ftb_importada",
+          "clause": "`origen_alta` = 'MANUAL' or `_idorigencuenta` is not null"
+        },
+        {
+          "name": "CK_ftb_monto",
+          "clause": "`monto` > 0"
+        },
+        {
+          "name": "CK_ftb_neto",
+          "clause": "`monto_neto` is null or `monto_neto` >= 0"
+        },
+        {
+          "name": "CK_ftb_operacion",
+          "clause": "char_length(trim(`numero_operacion`)) > 0"
+        },
+        {
+          "name": "CK_ftb_origen_alta",
+          "clause": "`origen_alta` in ('MANUAL','SINCRONIZACION','LEGADO')"
+        },
+        {
+          "name": "CK_ftb_signo",
+          "clause": "`signo` in (-1,1)"
+        },
+        {
+          "name": "CK_ftb_snapshot",
+          "clause": "`datos_origen_iniciales` is null or json_type(`datos_origen_iniciales`) = 'OBJECT'"
+        },
+        {
+          "name": "CK_ftb_version",
+          "clause": "`version` > 0"
+        },
+        {
+          "name": "datos_origen_iniciales",
+          "clause": "json_valid(`datos_origen_iniciales`)"
+        },
+        {
+          "name": "identidad_datos",
+          "clause": "json_valid(`identidad_datos`)"
+        }
+      ],
+      "engine": "InnoDB",
+      "collation": "utf8mb4_unicode_ci",
+      "rowFormat": "Dynamic"
+    },
+    {
+      "table": "factor_transaccion_bancaria_incidencia",
+      "columns": 22,
+      "typesNullabilityDefaultsExact": true,
+      "namedChecks": 6,
+      "checksMetadata": [
+        {
+          "name": "CK_ftbi_contadores",
+          "clause": "`veces_observada` > 0 and `version` > 0"
+        },
+        {
+          "name": "CK_ftbi_estado",
+          "clause": "`estado` in (1,2)"
+        },
+        {
+          "name": "CK_ftbi_huella",
+          "clause": "`huella` regexp '^[0-9a-f]{64}$'"
+        },
+        {
+          "name": "CK_ftbi_resolucion",
+          "clause": "`situacion` = 'PENDIENTE' and `resolucion_motivo` is null and `idusuarioresuelve` is null and `resolucion_fecha` is null or `situacion` <> 'PENDIENTE' and `resolucion_motivo` is not null and char_length(trim(`resolucion_motivo`)) > 0 and `idusuarioresuelve` is not null and `resolucion_fecha` is not null"
+        },
+        {
+          "name": "CK_ftbi_situacion",
+          "clause": "`situacion` in ('PENDIENTE','RESUELTA','DESCARTADA')"
+        },
+        {
+          "name": "CK_ftbi_sync",
+          "clause": "`_idsincronizacion_inicial` is null and `_idsincronizacion_ultima` is null or `_idsincronizacion_inicial` is not null and `_idsincronizacion_ultima` is not null and `_idconexion` is not null"
+        },
+        {
+          "name": "datos_revision",
+          "clause": "json_valid(`datos_revision`)"
+        }
+      ],
+      "engine": "InnoDB",
+      "collation": "utf8mb4_unicode_ci",
+      "rowFormat": "Dynamic"
+    },
+    {
+      "table": "factor_transaccion_bancaria_historial",
+      "columns": 16,
+      "typesNullabilityDefaultsExact": true,
+      "namedChecks": 3,
+      "checksMetadata": [
+        {
+          "name": "CK_ftbh_entidad",
+          "clause": "(`_idfactortransaccionbancaria` is not null) + (`_idconexion` is not null) + (`_idorigencuenta` is not null) + (`_idincidencia` is not null) = 1"
+        },
+        {
+          "name": "CK_ftbh_estado",
+          "clause": "`estado` = 1"
+        },
+        {
+          "name": "CK_ftbh_motivo",
+          "clause": "char_length(trim(`motivo`)) > 0"
+        },
+        {
+          "name": "datos_antes",
+          "clause": "json_valid(`datos_antes`)"
+        },
+        {
+          "name": "datos_despues",
+          "clause": "json_valid(`datos_despues`)"
+        }
+      ],
+      "engine": "InnoDB",
+      "collation": "utf8mb4_unicode_ci",
+      "rowFormat": "Dynamic"
+    }
+  ],
+  "noBusinessRowsRead": true,
+  "noDatabaseWrites": true,
+  "limits": [
+    "Los CHECK se verificaron mediante metadatos; no se insertaron filas de prueba en desarrollo",
+    "No prueba cifrado, sincronizacion ni interfaz"
+  ]
+}

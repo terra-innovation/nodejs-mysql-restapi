@@ -1,0 +1,11 @@
+{
+  "formatVersion": 1,
+  "id": "20261016-configuracion-bbdd-comentarios",
+  "description": "Completar comentarios genéricos de configuración BBDD dentro del ajuste autorizado 16/10/2026. Sin datos ni cambios de tipos, índices o relaciones.",
+  "sqlFile": "../../../docs/transacciones-bancarias/20261016-configuracion-bbdd-comentarios.sql",
+  "createTables": [],
+  "alterTables": [
+    "configuracion_bbdd"
+  ],
+  "seedTables": []
+}

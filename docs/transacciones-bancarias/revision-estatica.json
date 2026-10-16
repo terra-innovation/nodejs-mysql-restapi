@@ -1,0 +1,50 @@
+{
+  "reviewedAt": "2026-10-16T02:33:11.166Z",
+  "kind": "offline-structure-review",
+  "nodeVersion": "v24.21.0",
+  "plan": "20261015-factor-transaccion-bancaria",
+  "planSha256": "0d161c91118fbb6b3e59f0c130473f8785b9ff157433f3f41db0c4f2b20fcade",
+  "sqlSha256": "73c01a4dc6fafac57105265f58e2f3a8980922524eb66d130b1e1427672ef61b",
+  "result": "passed",
+  "tables": [
+    {
+      "table": "factor_transaccion_bancaria_conexion",
+      "columns": 23,
+      "commentsComplete": true
+    },
+    {
+      "table": "factor_transaccion_bancaria_origen_cuenta",
+      "columns": 13,
+      "commentsComplete": true
+    },
+    {
+      "table": "factor_transaccion_bancaria_sincronizacion",
+      "columns": 23,
+      "commentsComplete": true
+    },
+    {
+      "table": "factor_transaccion_bancaria",
+      "columns": 41,
+      "commentsComplete": true
+    },
+    {
+      "table": "factor_transaccion_bancaria_incidencia",
+      "columns": 22,
+      "commentsComplete": true
+    },
+    {
+      "table": "factor_transaccion_bancaria_historial",
+      "columns": 16,
+      "commentsComplete": true
+    }
+  ],
+  "checks": [
+    "seis CREATE sin ALTER ni semillas",
+    "sin columna indice ni FK de moneda redundante",
+    "comentarios de todas las tablas y columnas",
+    "alcance autorizado de desarrollo"
+  ],
+  "limits": [
+    "Revision estatica; la ejecucion y verificacion real se registran separadamente"
+  ]
+}

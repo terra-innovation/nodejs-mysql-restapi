@@ -5,9 +5,35 @@ import path from "node:path";
 import { assertApplyAuthorization, describeStatements, expectedComments, identifier, loadPlan, readDevelopmentTarget, redact, safeError, splitSql } from "../../../scripts/database/maintenance-core.mjs";
 
 const temporary: string[] = [];
-afterEach(async () => { vi.unstubAllEnvs(); await Promise.all(temporary.splice(0).map((p) => rm(p, { recursive: true, force: true }))); });
+afterEach(async () => {
+  vi.unstubAllEnvs();
+  await Promise.all(temporary.splice(0).map((p) => rm(p, { recursive: true, force: true })));
+});
 
 describe("Mantenimiento DDL explícito y acotado", () => {
+  it("limita renombres y copias conservadoras al manifiesto", () => {
+    const plan = { createTables: ["fuente"], alterTables: ["configuracion"], renameTables: [{ from: "conexion", to: "configuracion" }], copyTables: [{ from: "configuracion", to: "fuente" }] };
+    const sql = ["ALTER TABLE `conexion` RENAME TO `configuracion`", "ALTER TABLE `configuracion` DROP COLUMN `tabla`", "CREATE TABLE `fuente` (`id` INT)", "INSERT INTO `fuente` (`id`) SELECT `id` FROM `configuracion`"];
+    expect(describeStatements(sql, plan).map((s) => s.kind)).toEqual(["rename", "alter", "create", "copy"]);
+    expect(() =>
+      describeStatements(
+        sql.map((s) => s.replace("SELECT `id`", "SELECT password()")),
+        plan,
+      ),
+    ).toThrow();
+    expect(() =>
+      describeStatements(
+        sql.map((s) => s.replace("RENAME TO `configuracion`", "RENAME TO `ajena`")),
+        plan,
+      ),
+    ).toThrow();
+    expect(() =>
+      describeStatements(
+        sql.map((s) => s.replace("FROM `configuracion`", "FROM `clientes`")),
+        plan,
+      ),
+    ).toThrow();
+  });
   it("no separa sentencias por punto y coma dentro de valores/comentarios", () => {
     const statements = splitSql("-- comentario; no SQL\nCREATE TABLE `ejemplo` (`nombre` VARCHAR(20) COMMENT 'importe; no final'); /* otro; */ INSERT INTO `ejemplo` (`nombre`) VALUES ('a'';b');");
     expect(statements).toHaveLength(2);
@@ -31,7 +57,8 @@ describe("Mantenimiento DDL explícito y acotado", () => {
     expect(() => assertApplyAuthorization({}, "plan", "destino")).not.toThrow();
   });
   it("lee el archivo de desarrollo explícito aunque exista una URL heredada distinta", async () => {
-    const dir = await mkdtemp(path.join(os.tmpdir(), "ft-ddl-unit-")); temporary.push(dir);
+    const dir = await mkdtemp(path.join(os.tmpdir(), "ft-ddl-unit-"));
+    temporary.push(dir);
     const file = path.join(dir, ".env.development");
     await writeFile(file, "PRISMA_DATABASE_FACTORING_URL=mysql://guest:p%40ss@dev.invalid:3307/copiatest\n");
     vi.stubEnv("PRISMA_DATABASE_FACTORING_URL", "mysql://production:secret@production.invalid/production");
@@ -39,11 +66,14 @@ describe("Mantenimiento DDL explícito y acotado", () => {
     expect(target.options).toMatchObject({ host: "dev.invalid", port: 3307, database: "copiatest", password: "p@ss", multipleStatements: false });
     expect(target.fingerprint).toMatch(/^[a-f0-9]{64}$/);
     const redacted = redact(`${target.url} ${target.options.host} ${target.options.password}`, target);
-    expect(redacted).not.toContain("p@ss"); expect(redacted).not.toContain("dev.invalid"); expect(redacted).not.toContain("mysql://");
+    expect(redacted).not.toContain("p@ss");
+    expect(redacted).not.toContain("dev.invalid");
+    expect(redacted).not.toContain("mysql://");
   });
   it("nunca expone el mensaje del driver", () => {
     const result = safeError({ code: "ER_ACCESS_DENIED_ERROR", message: "secret-password host private-db" });
-    expect(result).toContain("ER_ACCESS_DENIED_ERROR"); expect(result).not.toContain("secret-password");
+    expect(result).toContain("ER_ACCESS_DENIED_ERROR");
+    expect(result).not.toContain("secret-password");
   });
   it("admite PK físicas del proyecto y rechaza identificadores inyectados", () => {
     expect(identifier("_idfactoring")).toBe("`_idfactoring`");

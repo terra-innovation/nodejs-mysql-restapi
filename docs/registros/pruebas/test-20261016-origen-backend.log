@@ -1,0 +1,13 @@
+
+> ft-app-backend@1.0.1 test:vitest
+> cross-env TZ=UTC NODE_ENV=test vitest run --config vitest.config.ts tests/vitest/unit/mysqlSource.test.ts tests/vitest/unit/transaccionbancaria.Service.test.ts tests/vitest/http/transaccionbancaria.http.test.ts
+
+
+ RUN  v5.0.3 D:/06_Workspace_nodejs/ft-app-backend
+
+
+ Test Files  3 passed (3)
+      Tests  34 passed (34)
+   Start at  15:03:36
+   Duration  996ms (import 46%, transform 44%, tests 9%, worker 1%)
+

@@ -1,0 +1,20 @@
+[Unit]
+Description=Sincronizacion de transacciones bancarias del factor
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=finanzatech
+WorkingDirectory=/opt/finanzatech
+EnvironmentFile=/etc/finanzatech/banca-sync.env
+ExecStart=/usr/bin/node /opt/finanzatech/dist/scripts/sync_transacciones_bancarias.js
+TimeoutStartSec=180
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/opt/finanzatech/logs
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,9 @@
+{
+  "startedAt": "2026-10-16T02:39:31.589Z",
+  "source": ".env.development",
+  "targetSha256": "f9c511527fec5ac2f6b231619de812ce248bc3ec699a0e42f9f2dc33fb8f7527",
+  "status": "completed",
+  "log": "docs/transacciones-bancarias/prisma-sync-final.log",
+  "databaseDdlExecuted": false,
+  "finishedAt": "2026-10-16T02:39:42.261Z"
+}

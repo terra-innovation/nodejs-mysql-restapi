@@ -52,6 +52,11 @@ export function splitSql(sql) {
 }
 
 export function describeStatements(statements, plan) {
+  const renames = plan.renameTables ?? [];
+  const copies = plan.copyTables ?? [];
+  for (const pair of renames) { identifier(pair.from); identifier(pair.to); }
+  if (new Set(renames.flatMap((p) => [p.from, p.to])).size !== renames.length * 2) throw new Error("Renombres repetidos o encadenados no permitidos.");
+  const foundRename = new Set(), foundCopy = new Set();
   const create = new Set(plan.createTables ?? []), alter = new Set(plan.alterTables ?? []);
   const seeds = new Set(plan.seedTables ?? []), foundCreate = new Set(), foundAlter = new Set();
   for (const value of [...create, ...alter, ...seeds]) identifier(value);
@@ -59,6 +64,23 @@ export function describeStatements(statements, plan) {
     throw new Error("Las semillas solo se permiten en tablas nuevas; no mezclar creación y alteración de una tabla.");
   }
   const steps = statements.map((sql, index) => {
+    const rename = sql.match(/^ALTER\s+TABLE\s+`([a-z][a-z0-9_]*)`\s+RENAME\s+TO\s+`([a-z][a-z0-9_]*)`$/i);
+    if (rename) {
+      const pair = renames.find((p) => p.from === rename[1] && p.to === rename[2]);
+      if (!pair || foundRename.has(pair.from)) throw new Error("Renombre fuera del alcance o repetido.");
+      foundRename.add(pair.from);
+      return { index: index + 1, kind: "rename", table: pair.from, target: pair.to, sql };
+    }
+    // Copia conservadora: solo columnas explícitas, sin filtros, expresiones ni SQL libre,
+    // hacia una tabla creada en este mismo plan. Nunca actualiza datos existentes.
+    const copy = sql.match(/^INSERT\s+INTO\s+`([a-z][a-z0-9_]*)`\s*\(([^)]+)\)\s+SELECT\s+([\s\S]+?)\s+FROM\s+`([a-z][a-z0-9_]*)`$/i);
+    if (copy) {
+      const pair = copies.find((p) => p.from === copy[4] && p.to === copy[1]);
+      const columns = (text) => text.split(",").map((c) => { const m = c.trim().match(/^`([a-z_][a-z0-9_]*)`$/i); if (!m) throw new Error("Copia con expresión no permitida."); return m[1]; });
+      if (!pair || !foundCreate.has(pair.to) || !alter.has(pair.from) || foundCopy.has(pair.to) || columns(copy[2]).length !== columns(copy[3]).length) throw new Error("Copia fuera de alcance.");
+      foundCopy.add(pair.to);
+      return { index: index + 1, kind: "copy", table: pair.to, source: pair.from, sql };
+    }
     let match = sql.match(/^CREATE\s+TABLE\s+`([a-z][a-z0-9_]*)`\s*\(/i);
     if (match) {
       if (!create.has(match[1]) || foundCreate.has(match[1])) throw new Error("CREATE fuera del alcance o duplicado.");
@@ -79,7 +101,7 @@ export function describeStatements(statements, plan) {
     }
     throw new Error(`Sentencia ${index + 1} no permitida: solo CREATE/ALTER declarados y semillas de tablas nuevas.`);
   });
-  if (!steps.length || create.size !== foundCreate.size || alter.size !== foundAlter.size) throw new Error("El SQL no coincide con todas las tablas declaradas.");
+  if (!steps.length || create.size !== foundCreate.size || alter.size !== foundAlter.size || foundRename.size !== renames.length || foundCopy.size !== copies.length) throw new Error("El SQL no coincide con todas las tablas declaradas.");
   return steps;
 }
 

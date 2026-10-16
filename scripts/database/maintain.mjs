@@ -80,12 +80,15 @@ try {
     await connection.query("SET SESSION time_zone='+00:00'");
   } else await connection.query("SET SESSION TRANSACTION READ ONLY");
   const before = await schemaDigests();
+  const renames = loaded.plan.renameTables ?? [];
+  for (const pair of renames) if (!before[pair.from] || before[pair.to]) throw new MaintenanceError("Origen o destino de renombre incompatible.");
   for (const table of loaded.plan.createTables ?? []) if (before[table]) throw new MaintenanceError(`La tabla ${table} ya existe; no se reemplaza ni se ignora.`);
-  for (const table of loaded.plan.alterTables ?? []) if (!before[table]) throw new MaintenanceError(`La tabla ${table} no existe para ALTER.`);
+  for (const table of loaded.plan.alterTables ?? []) if (!before[table] && !renames.some((p) => p.to === table)) throw new MaintenanceError(`La tabla ${table} no existe para ALTER.`);
   const referenced = [...loaded.sql.matchAll(/REFERENCES\s+`([^`]+)`\s*\(`([^`]+)`\)/g)].map((m) => ({ table: m[1], column: m[2] }));
   for (const ref of referenced) {
     if ((loaded.plan.createTables ?? []).includes(ref.table)) continue;
-    const [column] = await connection.query("SELECT COLUMN_TYPE AS type FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=? AND COLUMN_NAME=?", [ref.table, ref.column]);
+    const previous = (loaded.plan.referenceRenames ?? []).find((p) => p.table === ref.table && p.column === ref.column);
+    const [column] = await connection.query("SELECT COLUMN_TYPE AS type FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=? AND COLUMN_NAME=?", [previous?.fromTable ?? ref.table, previous?.fromColumn ?? ref.column]);
     if (!column || !/^int\b.*unsigned$/i.test(column.type)) throw new MaintenanceError(`Referencia existente incompatible: ${ref.table}.${ref.column}.`);
   }
   report.beforeSchemaHashes = before;
@@ -106,17 +109,26 @@ try {
     for (const step of loaded.steps) {
       report.currentStep = { index: step.index, kind: step.kind, table: step.table };
       await save();
-      await connection.query(step.sql);
-      report.steps.push({ ...report.currentStep, status: "completed" });
+      if (step.kind === "copy") {
+        const [sourceCount] = await connection.query(`SELECT COUNT(*) AS n FROM ${identifier(step.source)}`);
+        await connection.query(step.sql);
+        const [copiedCount] = await connection.query(`SELECT COUNT(*) AS n FROM ${identifier(step.table)}`);
+        if (String(sourceCount.n) !== String(copiedCount.n)) throw new MaintenanceError("La copia conservadora no preservó todas las filas.");
+        report.steps.push({ ...report.currentStep, status: "completed", rowsPreserved: String(copiedCount.n) });
+      } else {
+        await connection.query(step.sql);
+        report.steps.push({ ...report.currentStep, status: "completed" });
+      }
       console.log(`Completado ${step.index}: ${step.kind} ${step.table}.`);
       await save();
     }
     report.verification = await verifyCreated();
     const after = await schemaDigests();
     const allowedAlter = new Set(loaded.plan.alterTables ?? []);
+    for (const pair of renames) allowedAlter.add(pair.from);
     const changed = Object.keys(before).filter((name) => before[name] !== after[name] && !allowedAlter.has(name));
     const added = Object.keys(after).filter((name) => !before[name]).sort();
-    if (changed.length || JSON.stringify(added) !== JSON.stringify([...loaded.plan.createTables].sort())) throw new MaintenanceError("Se detectó cambio de estructura fuera de las tablas autorizadas.");
+    if (changed.length || JSON.stringify(added) !== JSON.stringify([...loaded.plan.createTables, ...renames.map((p) => p.to)].sort())) throw new MaintenanceError("Se detectó cambio de estructura fuera de las tablas autorizadas.");
     report.afterSchemaHashes = after;
     report.existingTablesUnchanged = true;
     report.status = "applied_and_verified";

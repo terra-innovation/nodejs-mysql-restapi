@@ -3,7 +3,7 @@ import type { PoolConfig } from "mariadb";
 import { readFileSync } from "node:fs";
 
 /** Convierte las opciones de la URL Prisma (segundos) a las del driver MariaDB. */
-export function createMariaDbAdapter(connectionString: string): PrismaMariaDb {
+export function mariaDbOptions(connectionString: string): PoolConfig {
   const url = new URL(connectionString);
   if (url.protocol !== "mysql:" && url.protocol !== "mariadb:") {
     throw new Error("La conexión Prisma requiere una URL MySQL/MariaDB.");
@@ -53,5 +53,9 @@ export function createMariaDbAdapter(connectionString: string): PrismaMariaDb {
     };
   }
 
-  return new PrismaMariaDb(options);
+  return options;
+}
+
+export function createMariaDbAdapter(connectionString: string): PrismaMariaDb {
+  return new PrismaMariaDb(mariaDbOptions(connectionString));
 }

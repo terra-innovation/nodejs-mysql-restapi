@@ -37,6 +37,8 @@ En el plan SBS se verifican columnas/comentarios exactos, FKs restrictivas, índ
 
 ## Registros y fallos
 
+El ajuste del 16/10/2026 agrega `renameTables: [{ from, to }]` para `ALTER TABLE ... RENAME TO` exacto y `copyTables: [{ from, to }]` para una copia conservadora a una tabla creada en el mismo plan. El origen debe declararse en `alterTables`; solo se permite `INSERT (columnas) SELECT columnas FROM tabla`, sin expresiones, filtros ni JOIN. Se coteja el número de filas copiadas antes de continuar. `referenceRenames` declara los nombres previos de una PK para revisar su tipo antes del cambio. Los renombres se incluyen en la huella y en las tablas autorizadas para el cotejo final de estructura. Continúan rechazados UPDATE, DELETE y DROP TABLE. Estas extensiones no amplían la autorización humana a otras tablas ni convierten el script en un ejecutor de SQL libre.
+
 Los informes JSON y registros Prisma quedan en `docs/registros/bbdd/`, sin credenciales ni filas de negocio. Incluyen huellas, pasos completados, metadatos del esquema creado y resultado. Los mensajes del driver no se publican; se conserva únicamente su código seguro. Prisma recibe explícitamente la misma URL leída del archivo de desarrollo, y su salida se sanitiza antes de guardarla.
 
 MariaDB confirma DDL implícitamente: una falla puede dejar pasos aplicados. El script se detiene y registra el último paso; **no elimina tablas ni simula rollback**. Inspeccionar el informe y el estado real antes de diseñar una continuación, conservando la autorización original solo para el alcance pendiente. Una reversión destructiva exige autorización expresa adicional. Si falla únicamente `prisma-sync`, conservar el DDL verificado y volver a sincronizar el mismo destino; no repetir CREATE.
