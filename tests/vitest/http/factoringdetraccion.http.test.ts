@@ -73,6 +73,6 @@ it("menú conserva condiciones y coloca detracción entre pendientes factura y O
   const menu = generarMenuFinanciero({ ispersonavalidated: true } as Parameters<typeof generarMenuFinanciero>[0]);
   type MenuNode = { title?: string; url?: string; children?: MenuNode[] };
   const opciones = (menu as MenuNode[]).flatMap((group) => group.children || []).flatMap((item) => item.children || []);
-  expect(opciones.map((item) => item.title)).toEqual(["Pendientes de facturar al cedente", "Pendientes de pago de detracción", "Operaciones"]);
+  expect(opciones.map((item) => item.title)).toEqual(["Pendientes de facturar al cedente", "Pendientes de pago de detracción", "Operaciones", "Datos del origen remoto", "Transacciones bancarias", "Cuentas de origen", "Sincronizar manualmente", "Ejecuciones y log", "Incidencias", "Historial de cambios"]);
   expect(opciones[1].url).toContain("pendientes-detraccion");
 });

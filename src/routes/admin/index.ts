@@ -75,4 +75,6 @@ router.use(admin_servicio_factoring_factoringfacturafactorRoutes);
 router.use(admin_servicio_factoring_funcionarioRoutes);
 router.use(admin_servicio_factoring_accionistaRoutes);
 
+import factoringPagoRoutes from "#src/routes/admin/servicio/factoring/factoringpago.routes.js";
+router.use(factoringPagoRoutes);
 export default router;

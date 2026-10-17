@@ -4,6 +4,7 @@ import { Decimal } from "@prisma/client/runtime/client";
 // Solo sustituye infraestructura. Los servicios, calendarios y calculadores son reales.
 const boundary = vi.hoisted(() => ({
   tx: { testTransaction: true },
+  pago: { asegurarMaestroPago: vi.fn() },
   transaction: vi.fn(),
   factoring: { getFactoringByFactoringid: vi.fn(), getFactoringByIdfactoring: vi.fn(), getFactoringByIdfactoringIdempresario: vi.fn(), updateFactoring: vi.fn(), claimFactoringApproval: vi.fn() },
   estado: { getFactoringestadoByFactoringestadoid: vi.fn() },
@@ -77,6 +78,7 @@ vi.mock("#src/daos/factoringfacturafactor.Dao.js", () => boundary.facturaFactor)
 vi.mock("#src/daos/factorcuentabancaria.Dao.js", () => boundary.cuentaFactor);
 vi.mock("#src/daos/empresacuentabancaria.Dao.js", () => boundary.cuentaEmpresa);
 vi.mock("#src/daos/moneda.Dao.js", () => boundary.moneda);
+vi.mock("#src/services/admin/factoringpago.Service.js", () => boundary.pago);
 vi.mock("#src/daos/factoringtransferenciatipo.Dao.js", () => boundary.transferenciaTipo);
 vi.mock("#src/daos/factoringtransferenciaestado.Dao.js", () => boundary.transferenciaEstado);
 vi.mock("#src/daos/factoringtransferenciacedente.Dao.js", () => boundary.transferencia);
@@ -133,6 +135,7 @@ const conceptos = {
 };
 
 export function resetFactoringBoundary(moneda = 1, banco = 1) {
+  boundary.pago.asegurarMaestroPago.mockReset().mockResolvedValue({ idfactoringpago: 1 });
   vi.resetAllMocks();
   boundary.usuario.getUsuarioAccesosByIdusuario.mockResolvedValue({ idusuario: 42, estado: 1, usuario_roles: [2,3,4,5,6].map(idrol => ({ idrol, estado: 1, rol: { estado: 1 } })) });
   const factoring = createFactoringFixture(moneda, banco);

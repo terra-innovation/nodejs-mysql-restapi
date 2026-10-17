@@ -6,6 +6,13 @@ import { mkdirSync, writeFileSync } from "fs";
 import { join } from "path";
 
 // Servicios, helpers de React y fórmulas reales; persistencia, catálogos y notificaciones sustituidos.
+vi.mock("#src/daos/factoringpago.Dao.js", () => ({
+  lockOperation: vi.fn(),
+  currentMaster: vi.fn(async () => null),
+  statuses: vi.fn(async () => [{ code: "PENDIENTE", idfactoringpagoestado: 1 }]),
+  createMaster: vi.fn(async (_tx, data) => ({ ...data, idfactoringpago: 1 })),
+  history: vi.fn(),
+}));
 vi.mock("#src/config.js", () => ({ isProduction: true }));
 vi.mock("#src/utils/logger.pino.js", () => ({ line: () => "trace", log: { debug: vi.fn(), warn: vi.fn(), info: vi.fn(), error: vi.fn() } }));
 vi.mock("#src/utils/storageUtils.js", () => ({}));

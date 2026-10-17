@@ -1,0 +1,35 @@
+
+> ft-app-backend@1.0.1 test:integration
+> node scripts/integration/run-mariadb.mjs tests/mariadb/factoringPago.test.ts tests/mariadb/runtime.test.ts
+
+Preparando mariadb:11.4.10 con 141 tablas. No se consulta desarrollo.
+MariaDB lista. Ejecutando pruebas reales de entorno y negocio con Prisma.
+
+ RUN  v5.0.3 D:/06_Workspace_nodejs/ft-app-backend
+
+ ✓ tests/mariadb/runtime.test.ts (2 tests) 28041ms
+   ✓ Backend compilado: proceso real y MariaDB exclusiva (2)
+     ✓ arranca, consulta MariaDB por HTTP y cierra mediante el hook real 2329ms
+     ✓ credenciales MariaDB inválidas agotan reintentos y salen con código 1 sin escuchar 22238ms
+ ✓ tests/mariadb/factoringPago.test.ts (13 tests) 10890ms
+   ✓ un abono compartido cubre dos operaciones y no duplica el movimiento 1154ms
+   ✓ dos asignaciones concurrentes no exceden el disponible global 701ms
+   ✓ relee el importe bancario actual después de esperar un lock de corrección 651ms
+   ✓ no anula un movimiento si un pago se confirma mientras espera el lock 726ms
+   ✓ inicio idempotente conserva un solo maestro y no reinicia sus pagos 699ms
+   ✓ el cierre manual permite céntimos pendientes o en exceso: 19999.98 691ms
+   ✓ el cierre manual permite céntimos pendientes o en exceso: 20000.03 769ms
+   ✓ corregir, eliminar y reactivar recalcula sin cambiar el estado manual 911ms
+   ✓ revierte detalle y versión si falla la escritura del historial 653ms
+   ✓ rechaza versiones antiguas y detalles ajenos 750ms
+   ✓ no admite egresos, monedas distintas ni referencias bancarias anuladas 707ms
+   ✓ protege evidencia bancaria aplicada y muestra disponibilidad en el buscador 781ms
+   ✓ recorre HTTP, JWT, validación, servicio y persistencia reales para alta, cierre y eliminación 1680ms
+
+ Test Files  2 passed (2)
+      Tests  15 passed (15)
+   Start at  23:02:00
+   Duration  42.39s (tests 93%, import 4%, transform 3%)
+
+JUNIT report written to D:/06_Workspace_nodejs/ft-app-backend/coverage/mariadb/junit.xml
+Resumen: coverage/mariadb/last-run.json

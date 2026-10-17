@@ -18,6 +18,10 @@ export const mappingCreate = (tx: TxClient, data: Prisma.factor_transaccion_banc
 export const mappingUpdate = (tx: TxClient, pk: number, version: number, data: Prisma.factor_transaccion_bancaria_origen_cuentaUncheckedUpdateManyInput) => tx.factor_transaccion_bancaria_origen_cuenta.updateMany({ where: { idfactortransaccionbancariaorigencuenta: pk, version }, data });
 export const movementInclude = { factor_cuenta_bancaria: { include: accountInclude } } satisfies Prisma.factor_transaccion_bancariaInclude;
 export const movement = (tx: TxClient, uuid: string) => tx.factor_transaccion_bancaria.findUnique({ where: { factortransaccionbancariaid: uuid }, include: movementInclude });
+export async function lockMovement(tx: TxClient, pk: number) {
+  await tx.$queryRaw`SELECT _idfactortransaccionbancaria FROM factor_transaccion_bancaria WHERE _idfactortransaccionbancaria=${pk} FOR UPDATE`;
+}
+export const activePaymentApplications = (tx: TxClient, pk: number) => tx.factoring_pago_detalle.count({ where: { idfactortransaccionbancaria: pk, estado: 1 } });
 export const byIdentity = (tx: TxClient, hash: string) => tx.factor_transaccion_bancaria.findUnique({ where: { identidad_sha256: hash }, include: movementInclude });
 export const byCurrentIdentity = (tx: TxClient, accountPk: number, date: string, operation: string, sign: number, amount: string) => tx.factor_transaccion_bancaria.findFirst({ where: { idfactorcuentabancaria: accountPk, fecha: new Date(`${date}T00:00:00.000Z`), numero_operacion: operation, signo: sign, monto: amount }, include: movementInclude });
 export const movementCreate = (tx: TxClient, data: Prisma.factor_transaccion_bancariaUncheckedCreateInput) => tx.factor_transaccion_bancaria.create({ data, include: movementInclude });

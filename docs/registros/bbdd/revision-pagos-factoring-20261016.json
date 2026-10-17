@@ -1,0 +1,139 @@
+{
+  "reviewedAt": "2026-10-16T21:30:34.659Z",
+  "source": ".env.development",
+  "mode": "READ ONLY",
+  "status": "reviewed",
+  "targetFingerprint": "f9c511527fec5ac2f6b231619de812ce248bc3ec699a0e42f9f2dc33fb8f7527",
+  "runtime": {
+    "version": "v24.21.0",
+    "executable": "D:\\Herramientas\\node-v24.21.0-win-x64\\node.exe"
+  },
+  "tables": [
+    {
+      "name": "factoring",
+      "engine": "InnoDB"
+    },
+    {
+      "name": "factoring_pago",
+      "engine": "InnoDB"
+    },
+    {
+      "name": "factoring_propuesta",
+      "engine": "InnoDB"
+    },
+    {
+      "name": "factor_transaccion_bancaria",
+      "engine": "InnoDB"
+    }
+  ],
+  "paymentColumns": [
+    {
+      "name": "_idfactoringpago",
+      "type": "int(11) unsigned",
+      "nullable": "NO"
+    },
+    {
+      "name": "factoringpagoid",
+      "type": "varchar(50)",
+      "nullable": "NO"
+    },
+    {
+      "name": "code",
+      "type": "varchar(255)",
+      "nullable": "NO"
+    },
+    {
+      "name": "_idfactoring",
+      "type": "int(11) unsigned",
+      "nullable": "NO"
+    },
+    {
+      "name": "_idempresacuentabancaria",
+      "type": "int(11) unsigned",
+      "nullable": "NO"
+    },
+    {
+      "name": "_idfactorcuentabancaria",
+      "type": "int(11) unsigned",
+      "nullable": "NO"
+    },
+    {
+      "name": "numero_operacion",
+      "type": "varchar(50)",
+      "nullable": "NO"
+    },
+    {
+      "name": "fecha_pago",
+      "type": "timestamp",
+      "nullable": "NO"
+    },
+    {
+      "name": "monto_pagado",
+      "type": "decimal(10,2)",
+      "nullable": "NO"
+    },
+    {
+      "name": "idusuariocrea",
+      "type": "int(11)",
+      "nullable": "NO"
+    },
+    {
+      "name": "fechacrea",
+      "type": "timestamp(3)",
+      "nullable": "NO"
+    },
+    {
+      "name": "idusuariomod",
+      "type": "int(11)",
+      "nullable": "NO"
+    },
+    {
+      "name": "fechamod",
+      "type": "timestamp(3)",
+      "nullable": "NO"
+    },
+    {
+      "name": "estado",
+      "type": "tinyint(4)",
+      "nullable": "NO"
+    }
+  ],
+  "referencesToPayments": [],
+  "payments": {
+    "total": "0",
+    "operations": "0",
+    "active": "0",
+    "deleted": "0",
+    "otherStates": "0",
+    "nonPositiveAmounts": "0",
+    "emptyBankNumbers": "0"
+  },
+  "multiplePayments": {
+    "operationsWithMultipleRows": "0",
+    "largestRowCountPerOperation": "0"
+  },
+  "duplicatePairs": {
+    "groupsWithRepeatedBankReference": "0"
+  },
+  "paymentIntegrity": {
+    "missingOperation": "0",
+    "missingAcceptedProposal": "0",
+    "acceptedProposalFromOtherOperation": "0",
+    "brokenAcceptedProposal": "0",
+    "bankAccountFromOtherFactor": "0"
+  },
+  "bankMovements": {
+    "total": "385",
+    "activeCredits": "79"
+  },
+  "bankCandidates": {
+    "examinedPayments": "0",
+    "withoutUtcDateCandidate": "0",
+    "singleUtcDateCandidate": "0",
+    "ambiguousUtcDateCandidates": "0",
+    "withoutLimaDateCandidate": "0",
+    "singleLimaDateCandidate": "0",
+    "ambiguousLimaDateCandidates": "0"
+  },
+  "candidateLimit": "Coincidencias exploratorias por cuenta, número, fecha y monto suficiente. No acreditan pagador, moneda, disponibilidad global ni asociación autorizada. No se publican filas ni importes."
+}

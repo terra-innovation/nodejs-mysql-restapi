@@ -1,0 +1,14 @@
+{
+  "formatVersion": 1,
+  "id": "20261016-factoring-pagos",
+  "description": "Autorización expresa en este chat el 16/10/2026: aplicar en desarrollo la transformación de factoring_pago vacío y crear catálogo, detalle e historial, cargar los tres estados con actor 105 y ejecutar prisma-sync. Sin migración de pagos, maestros históricos ni asociaciones bancarias automáticas. Guarda de vacío validada en MariaDB desechable.",
+  "sqlFile": "../../../docs/pagos-factoring/esquema-propuesto.sql",
+  "createTables": [
+    "factoring_pago_estado",
+    "factoring_pago_detalle",
+    "factoring_pago_historial"
+  ],
+  "alterTables": ["factoring_pago"],
+  "seedTables": ["factoring_pago_estado"],
+  "seedChecks": [{ "table": "factoring_pago_estado", "columns": ["_idfactoringpagoestado", "code", "idusuariocrea", "idusuariomod"], "rows": [[1,"PENDIENTE",105,105],[2,"PARCIAL",105,105],[3,"CANCELADO",105,105]] }]
+}

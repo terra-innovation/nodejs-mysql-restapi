@@ -1,0 +1,21 @@
+{
+  "preparedAtUtc": "2026-10-17T00:25:32.1412593Z",
+  "scope": "SQL UNICO PREPARADO SIN APLICAR",
+  "sharedDatabaseAccess": false,
+  "sqlFile": "docs/pagos-factoring/regularizacion-maestros.sql",
+  "sourceSqlSha256": "3abf1fdce11fe95781ffdb38e7cdabbf751ea93a841d4562c1fc00a726f4a408",
+  "configuredActor": 105,
+  "externalParametersRequired": false,
+  "testsPassed": 7,
+  "integration": {
+    "runId": "20767c42c580e2f56a336247",
+    "image": "mariadb:11.4.10",
+    "startedAt": "2026-10-17T00:24:50.702Z",
+    "status": "passed",
+    "cleanup": "removed",
+    "schemaHash": "5cf6a6c2dfcaa5501d1da34ec2a4b24798f6ac2fcff4e368d263167755387a27",
+    "tables": 141,
+    "sourceVersion": "11.4.2-MariaDB",
+    "finishedAt": "2026-10-17T00:25:04.076Z"
+  }
+}

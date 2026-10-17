@@ -7,6 +7,12 @@ import * as configuracionappDao from "#root/src/daos/configuracionapp.Dao.js";
 import { ESTADO } from "#src/constants/prisma.Constant.js";
 import { line, log } from "#src/utils/logger.pino.js";
 
+// La colección histórica estaba vacía al migrar. El seguimiento nuevo usa su endpoint
+// exclusivo de administrador; no serializar maestros como si fueran abonos antiguos.
+function hidePaymentMasters<T extends { factoring_pagos?: unknown }>(row: T): Omit<T, "factoring_pagos"> & { factoring_pagos: never[] } {
+  return { ...row, factoring_pagos: [] };
+}
+
 // Serializar solicitudes por cedente: protege incluso copias de un XML con
 // distintos IDs de factura. Debe ejecutarse dentro de la transacción de creación.
 export const lockFactoringCedente = async (tx: TxClient, idcedente: number) => {
@@ -141,7 +147,7 @@ export const getFactoringsByIdfactoringestado = async (tx: TxClient, idfactoring
       },
     });
 
-    return factorings;
+    return factorings.map(hidePaymentMasters);
   } catch (error) {
     log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
@@ -225,7 +231,7 @@ export const getFactoringsByIdcedentes = async (tx: TxClient, idcedentes: number
       };
     });
 
-    return factoringsExtendido;
+    return factoringsExtendido.map(hidePaymentMasters);
   } catch (error) {
     log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
@@ -295,7 +301,8 @@ export const getFactoringByFactoringidAndIdcontactocedente = async (tx: TxClient
       },
     });
     //log.debug(line(),"factoring: ", factoring);
-    return factoring;
+    if (!factoring) return null;
+    return hidePaymentMasters(factoring);
   } catch (error) {
     log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
@@ -329,7 +336,7 @@ export const getFactoringsCotizacionesByIdcontactocedente = async (tx: TxClient,
       },
     });
 
-    return factorings;
+    return factorings.map(hidePaymentMasters);
   } catch (error) {
     log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
@@ -410,7 +417,7 @@ export const getFactoringsByEstados = async (tx: TxClient, estados: number[]) =>
       };
     });
 
-    return factoringsExtendido;
+    return factoringsExtendido.map(hidePaymentMasters);
   } catch (error) {
     log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
@@ -499,7 +506,8 @@ export const getFactoringByIdfactoring = async (tx: TxClient, idfactoring: numbe
       },
     });
 
-    return factoring;
+    if (!factoring) return null;
+    return hidePaymentMasters(factoring);
   } catch (error) {
     log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);
@@ -529,7 +537,8 @@ export const getFactoringByFactoringid = async (tx: TxClient, factoringid: strin
         factoringid: factoringid,
       },
     });
-    return factoring;
+    if (!factoring) return null;
+    return hidePaymentMasters(factoring);
   } catch (error) {
     log.error(line(), "", error);
     throw new ClientError("Ocurrio un error", 500);

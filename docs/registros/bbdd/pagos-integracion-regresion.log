@@ -1,0 +1,28 @@
+
+> ft-app-backend@1.0.1 test:integration
+> node scripts/integration/run-mariadb.mjs tests/mariadb/factoringPago.test.ts
+
+Preparando mariadb:11.4.10 con 141 tablas. No se consulta desarrollo.
+MariaDB lista. Ejecutando pruebas reales de entorno y negocio con Prisma.
+
+ RUN  v5.0.3 D:/06_Workspace_nodejs/ft-app-backend
+
+ ✓ tests/mariadb/factoringPago.test.ts (10 tests) 10938ms
+   ✓ un abono compartido cubre dos operaciones y no duplica el movimiento 3468ms
+   ✓ dos asignaciones concurrentes no exceden el disponible global 927ms
+   ✓ inicio idempotente conserva un solo maestro y no reinicia sus pagos 765ms
+   ✓ el cierre manual permite céntimos pendientes o en exceso: 19999.98 584ms
+   ✓ el cierre manual permite céntimos pendientes o en exceso: 20000.03 541ms
+   ✓ corregir, eliminar y reactivar recalcula sin cambiar el estado manual 939ms
+   ✓ revierte detalle y versión si falla la escritura del historial 841ms
+   ✓ rechaza versiones antiguas y detalles ajenos 1103ms
+   ✓ no admite egresos, monedas distintas ni referencias bancarias anuladas 965ms
+   ✓ protege evidencia bancaria aplicada y muestra disponibilidad en el buscador 774ms
+
+ Test Files  1 passed (1)
+      Tests  10 passed (10)
+   Start at  22:33:42
+   Duration  14.91s (tests 75%, transform 16%, import 9%)
+
+JUNIT report written to D:/06_Workspace_nodejs/ft-app-backend/coverage/mariadb/junit.xml
+Resumen: coverage/mariadb/last-run.json

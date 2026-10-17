@@ -37,6 +37,8 @@ vi.mock("#src/daos/transaccionbancaria.Dao.js", async () => {
     interruptRuns: async () => {},
     byIdentity: async (_t: unknown, hash: string) => state.movements.find((row) => row.identidad_sha256 === hash) || null,
     byCurrentIdentity: async (_t: unknown, pk: number, date: string, operation: string, sign: number, amount: string) => state.movements.find((row) => row.idfactorcuentabancaria === pk && row.fecha instanceof Date && row.fecha.toISOString().slice(0, 10) === date && row.numero_operacion === operation && row.signo === sign && String(row.monto) === String(new Prisma.Decimal(amount))) || null,
+    lockMovement: async () => {},
+    activePaymentApplications: async () => 0,
     movement: async (_t: unknown, uuid: string) => state.movements.find((row) => row.factortransaccionbancariaid === uuid) || null,
     movementCreate: async (_t: unknown, data: Record<string, unknown>) => {
       const row = apply({ idfactortransaccionbancaria: state.movements.length + 1, factortransaccionbancariaid: `movement-${state.movements.length + 1}`, version: 1, estado: 1, factor_cuenta_bancaria: a }, data);

@@ -110,22 +110,29 @@ export async function crearMovimiento(input: MovimientoBancoInput, user: number)
   });
 }
 export async function mutarMovimiento(uuid: string, input: z.infer<typeof cambioBanco>, user: number) {
-  return tx(async (t) => {
-    const row = required(await dao.movement(t, uuid));
-    let data: Prisma.factor_transaccion_bancariaUncheckedUpdateManyInput;
-    if (input.accion === "editar") {
-      if (row.estado !== 1 || !input.movimiento) throw new ClientError("Movimiento no editable.", 422);
-      const m = input.movimiento;
-      if (row.factor_cuenta_bancaria.factorcuentabancariaid !== m.cuenta) throw new ClientError("La cuenta del movimiento no se reasigna; anule el registro erróneo.", 422);
-      const collision = (await dao.byIdentity(t, identidad(row.idfactorcuentabancaria, m.fecha, m.numero_operacion, m.signo, m.monto).identidad_sha256)) || (await dao.byCurrentIdentity(t, row.idfactorcuentabancaria, m.fecha, limpiar(m.numero_operacion), m.signo, importe(m.monto)));
-      if (collision && collision.idfactortransaccionbancaria !== row.idfactortransaccionbancaria) throw new ClientError("La corrección coincide con otro movimiento.", 409);
-      data = { ...enrichment(m), numero_operacion: limpiar(m.numero_operacion), fecha: new Date(`${m.fecha}T00:00:00.000Z`), descripcion: m.descripcion, signo: m.signo, monto: importe(m.monto) } as Prisma.factor_transaccion_bancariaUncheckedUpdateManyInput;
-    } else data = { estado: input.accion === "anular" ? 2 : 1, motivo_anulacion: input.accion === "anular" ? input.motivo : null };
-    checkVersion(await dao.movementUpdate(t, row.idfactortransaccionbancaria, input.version, { ...data, ...changed(user) }));
-    const updated = required(await dao.movement(t, uuid));
-    await history(t, { idfactortransaccionbancaria: row.idfactortransaccionbancaria }, input.accion.toUpperCase(), input.motivo, user, movementDto(row), movementDto(updated));
-    return movementDto(updated);
-  });
+  return db.$transaction(
+    async (t) => {
+      let row = required(await dao.movement(t, uuid));
+      await dao.lockMovement(t, row.idfactortransaccionbancaria);
+      row = required(await dao.movement(t, uuid));
+      const changesEvidence = input.accion === "anular" || (input.accion === "editar" && input.movimiento && (input.movimiento.fecha !== row.fecha.toISOString().slice(0, 10) || input.movimiento.numero_operacion !== row.numero_operacion || input.movimiento.signo !== row.signo || !row.monto.eq(input.movimiento.monto)));
+      if (changesEvidence && (await dao.activePaymentApplications(t, row.idfactortransaccionbancaria))) throw new ClientError("La transacción tiene pagos aplicados. Resuelva sus aplicaciones antes de modificar los datos bancarios o anularla.", 409);
+      let data: Prisma.factor_transaccion_bancariaUncheckedUpdateManyInput;
+      if (input.accion === "editar") {
+        if (row.estado !== 1 || !input.movimiento) throw new ClientError("Movimiento no editable.", 422);
+        const m = input.movimiento;
+        if (row.factor_cuenta_bancaria.factorcuentabancariaid !== m.cuenta) throw new ClientError("La cuenta del movimiento no se reasigna; anule el registro erróneo.", 422);
+        const collision = (await dao.byIdentity(t, identidad(row.idfactorcuentabancaria, m.fecha, m.numero_operacion, m.signo, m.monto).identidad_sha256)) || (await dao.byCurrentIdentity(t, row.idfactorcuentabancaria, m.fecha, limpiar(m.numero_operacion), m.signo, importe(m.monto)));
+        if (collision && collision.idfactortransaccionbancaria !== row.idfactortransaccionbancaria) throw new ClientError("La corrección coincide con otro movimiento.", 409);
+        data = { ...enrichment(m), numero_operacion: limpiar(m.numero_operacion), fecha: new Date(`${m.fecha}T00:00:00.000Z`), descripcion: m.descripcion, signo: m.signo, monto: importe(m.monto) } as Prisma.factor_transaccion_bancariaUncheckedUpdateManyInput;
+      } else data = { estado: input.accion === "anular" ? 2 : 1, motivo_anulacion: input.accion === "anular" ? input.motivo : null };
+      checkVersion(await dao.movementUpdate(t, row.idfactortransaccionbancaria, input.version, { ...data, ...changed(user) }));
+      const updated = required(await dao.movement(t, uuid));
+      await history(t, { idfactortransaccionbancaria: row.idfactortransaccionbancaria }, input.accion.toUpperCase(), input.motivo, user, movementDto(row), movementDto(updated));
+      return movementDto(updated);
+    },
+    { timeout: prismaFT.transactionTimeout || 10000, isolationLevel: "ReadCommitted" },
+  );
 }
 export async function listarMovimientos(query: { page: number; limit: number; search: string; cuenta?: string; cuentas?: string[]; desde?: string; hasta?: string; sortBy?: string; desc?: boolean }) {
   const accounts = query.cuentas ? query.cuentas.filter((uuid) => !query.cuenta || query.cuenta === uuid) : query.cuenta ? [query.cuenta] : null;

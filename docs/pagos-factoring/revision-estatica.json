@@ -1,0 +1,49 @@
+{
+  "reviewedAt": "2026-10-16T23:04:29.027Z",
+  "mode": "LOCAL STATIC ONLY",
+  "databaseConnected": false,
+  "planSha256": "63ad981f4f76d0fa3db651b33d66da381a44c0000cfbb9e8e4c0fb8f6fbfcdd8",
+  "appliedSqlSha256": "6b2503fb7c17a3b69ba0210534869f948d6a5e49eb244dfc8909ac78df9b4de4",
+  "appliedSqlArchiveMatches": true,
+  "steps": [
+    {
+      "index": 1,
+      "kind": "alter",
+      "table": "factoring_pago"
+    },
+    {
+      "index": 2,
+      "kind": "create",
+      "table": "factoring_pago_estado"
+    },
+    {
+      "index": 3,
+      "kind": "alter",
+      "table": "factoring_pago"
+    },
+    {
+      "index": 4,
+      "kind": "create",
+      "table": "factoring_pago_detalle"
+    },
+    {
+      "index": 5,
+      "kind": "create",
+      "table": "factoring_pago_historial"
+    },
+    {
+      "index": 6,
+      "kind": "seed",
+      "table": "factoring_pago_estado"
+    },
+    {
+      "index": 7,
+      "kind": "alter",
+      "table": "factoring_pago"
+    }
+  ],
+  "limits": [
+    "Los encabezados del SQL de trabajo se actualizaron después de aplicar.",
+    "La evidencia de ejecución real está en el informe DDL y SQL exacto archivado."
+  ]
+}

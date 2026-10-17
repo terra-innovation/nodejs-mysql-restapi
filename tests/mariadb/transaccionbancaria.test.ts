@@ -17,7 +17,11 @@ let user: Awaited<ReturnType<typeof seedMasters>>, account: string, connection: 
 const source = { cuenta: "PEN-A", numerooperacion: "00001", fecha: "2026-10-15", descripcion: "Transferencia sintética", sumaoresta: "Resta", moneda: "PEN", monto: "-100.25" };
 beforeAll(async () => {
   const sql = await readFile(new URL("../../docs/transacciones-bancarias/esquema-vigente.sql", import.meta.url), "utf8");
-  for (const statement of splitSql(sql)) await db.$executeRawUnsafe(statement);
+  for (const statement of splitSql(sql)) {
+    const table = statement.match(/^CREATE TABLE `([^`]+)`/)?.[1];
+    const exists = await db.$queryRaw<{ n: bigint }[]>`SELECT COUNT(*) n FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=${table}`;
+    if (!exists[0].n) await db.$executeRawUnsafe(statement);
+  }
 });
 beforeEach(async () => {
   vi.stubEnv("BANK_SYNC_KEYS", JSON.stringify({ v1: randomBytes(32).toString("base64") }));

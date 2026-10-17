@@ -9,6 +9,14 @@ beforeEach(() => { resetFactoringBoundary(); vi.useFakeTimers({ toFake: ["Date"]
 afterEach(() => { vi.useRealTimers(); });
 
 describe("Cambios de estado e historial: servicio real", () => {
+  it("un fallo al asegurar el maestro impide notificar el inicio", async () => {
+    b.estado.getFactoringestadoByFactoringestadoid.mockResolvedValue({ idfactoringestado: 36 });
+    b.factoring.updateFactoring.mockResolvedValue({ idfactoring: 10, idfactoringestado: 36 });
+    b.pago.asegurarMaestroPago.mockRejectedValue(new Error("No se pudo crear maestro"));
+    await expect(create(dto(), 42)).rejects.toThrow("No se pudo crear maestro");
+    expect(b.pago.asegurarMaestroPago).toHaveBeenCalledWith(b.tx, 10, 42);
+    expect(notifications()[2]).not.toHaveBeenCalled();
+  });
   it("registra el estado de la operación y sus adjuntos con el actor correcto", async () => {
     await expect(create(dto(), 42)).resolves.toEqual({});
     expect(b.historial.insertFactoringhistorialestado).toHaveBeenCalledWith(b.tx, expect.objectContaining({

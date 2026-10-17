@@ -1,0 +1,88 @@
+
+> ft-app-backend@1.0.1 test:integration
+> node scripts/integration/run-mariadb.mjs tests/mariadb/factoringPagoDdl.test.ts tests/mariadb/factoringPago.test.ts tests/mariadb/operationState.test.ts tests/mariadb/transaccionbancaria.test.ts
+
+Preparando mariadb:11.4.10 con 141 tablas. No se consulta desarrollo.
+MariaDB lista. Ejecutando pruebas reales de entorno y negocio con Prisma.
+
+ RUN  v5.0.3 D:/06_Workspace_nodejs/ft-app-backend
+
+ ❯ tests/mariadb/factoringPago.test.ts (10 tests | 1 failed) 9410ms
+   ✓ un abono compartido cubre dos operaciones y no duplica el movimiento 1365ms
+   ✓ dos asignaciones concurrentes no exceden el disponible global 845ms
+   ✓ inicio idempotente conserva un solo maestro y no reinicia sus pagos 810ms
+   ✓ el cierre manual permite céntimos pendientes o en exceso: 19999.98 716ms
+   ✓ el cierre manual permite céntimos pendientes o en exceso: 20000.03 731ms
+   ✓ corregir, eliminar y reactivar recalcula sin cambiar el estado manual 1167ms
+   ✓ revierte detalle y versión si falla la escritura del historial 1621ms
+   ✓ rechaza versiones antiguas y detalles ajenos 928ms
+   × no admite egresos, monedas distintas ni referencias bancarias anuladas 557ms
+   ✓ protege evidencia bancaria aplicada y muestra disponibilidad en el buscador 659ms
+ ✓ tests/mariadb/operationState.test.ts (27 tests) 14717ms
+   ✓ Estados e historial: guardado, lectura y rollback reales (27)
+     ✓ PEN, estado 29: guarda historial, adjuntos y notificación coherentes 883ms
+     ✓ PEN, estado 10: guarda historial, adjuntos y notificación coherentes 580ms
+     ✓ PEN, estado 36: guarda historial, adjuntos y notificación coherentes 552ms
+     ✓ USD, estado 29: guarda historial, adjuntos y notificación coherentes 626ms
+     ✓ USD, estado 10: guarda historial, adjuntos y notificación coherentes 623ms
+     ✓ USD, estado 36: guarda historial, adjuntos y notificación coherentes 615ms
+     ✓ estado sin acción especial conserva fecha de inicio y no notifica 582ms
+     ✓ operación inexistente rechaza sin cambios 493ms
+     ✓ estado inexistente rechaza sin cambios 514ms
+     ✓ segundo adjunto inexistente rechaza sin cambios 541ms
+     ✓ fallo SQL en historial revierte toda la creación 584ms
+     ✓ fallo SQL en operación revierte toda la creación 587ms
+     ✓ fallo SQL en segundo vínculo revierte toda la creación 509ms
+     ✓ fallo SQL en fecha de inicio revierte toda la creación 526ms
+     ✓ fallo de notificación de estado 29 revierte SQL y preserva adjuntos 508ms
+     ✓ fallo de notificación de estado 10 revierte SQL y preserva adjuntos 543ms
+     ✓ fallo de notificación de estado 36 revierte SQL y preserva adjuntos 520ms
+     ✓ editar historial cambia comentario/estado y añade adjunto sin cambiar la operación 494ms
+     ✓ edición con historial inexistente conserva registros previos 462ms
+     ✓ edición con estado inexistente conserva registros previos 461ms
+     ✓ edición con adjunto inexistente conserva registros previos 431ms
+     ✓ fallo SQL al añadir adjunto en edición revierte comentario y estado del historial 486ms
+     ✓ eliminar y activar historial conserva operación, fecha, adjuntos y lectura 494ms
+     ✓ eliminar: fallo SQL conserva todo el historial 436ms
+     ✓ eliminar: historial desconocido devuelve 404 466ms
+     ✓ activar: fallo SQL conserva todo el historial 553ms
+     ✓ activar: historial desconocido devuelve 404 634ms
+ ✓ tests/mariadb/transaccionbancaria.test.ts (6 tests) 3149ms
+   ✓ almacena GCM y consulta no expone materiales criptográficos 474ms
+   ✓ relectura idempotente enlaza alta manual y conserva enriquecimiento 481ms
+   ✓ CHECK reales rechazan signo cero e importe negativo 428ms
+   ✓ un fallo de historial revierte el alta en la misma transacción 393ms
+   ✓ duplicados concurrentes no producen dos movimientos 504ms
+   ✓ bloqueo asesor coordina dos sincronizaciones reales 664ms
+ ✓ tests/mariadb/factoringPagoDdl.test.ts (2 tests) 337ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/mariadb/factoringPago.test.ts > no admite egresos, monedas distintas ni referencias bancarias anuladas
+PrismaClientKnownRequestError: 
+Invalid `db.factor_transaccion_bancaria.update()` invocation in
+D:/06_Workspace_nodejs/ft-app-backend/tests/mariadb/factoringPago.test.ts:86:42
+
+  83 it("no admite egresos, monedas distintas ni referencias bancarias anuladas", async () => {
+  84   const f = await arrange();
+  85   for (const change of [{ signo: -1 }, { estado: 2 }]) {
+→ 86     await db.factor_transaccion_bancaria.update(
+Database error. Code: `4025`. Message: `CONSTRAINT `CK_ftb_anulacion` failed for `ft_integration_20cb7fec61c3082088ddc46d`.`factor_transaccion_bancaria``
+ ❯ vn.handleRequestError node_modules/@prisma/client/src/runtime/RequestHandler.ts:238:13
+ ❯ vn.handleAndLogRequestError node_modules/@prisma/client/src/runtime/RequestHandler.ts:184:12
+ ❯ vn.request node_modules/@prisma/client/src/runtime/RequestHandler.ts:153:12
+ ❯ a node_modules/@prisma/client/src/runtime/getPrismaClient.ts:1014:24
+ ❯ tests/mariadb/factoringPago.test.ts:86:5
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  1 failed | 44 passed (45)
+   Start at  22:29:02
+   Duration  33.36s (tests 88%, import 8%, transform 4%)
+
+JUNIT report written to D:/06_Workspace_nodejs/ft-app-backend/coverage/mariadb/junit.xml
+Fallaron las comprobaciones de integración. Consultar coverage/mariadb/junit.xml.
+Resumen: coverage/mariadb/last-run.json

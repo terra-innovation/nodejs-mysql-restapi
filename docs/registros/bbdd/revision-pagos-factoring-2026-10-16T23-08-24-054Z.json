@@ -1,0 +1,116 @@
+{
+  "reviewedAt": "2026-10-16T23:08:24.054Z",
+  "source": ".env.development",
+  "mode": "READ ONLY",
+  "status": "reviewed",
+  "targetFingerprint": "f9c511527fec5ac2f6b231619de812ce248bc3ec699a0e42f9f2dc33fb8f7527",
+  "runtime": {
+    "version": "v24.21.0",
+    "executable": "D:\\Herramientas\\node-v24.21.0-win-x64\\node.exe"
+  },
+  "tables": [
+    {
+      "name": "factoring",
+      "engine": "InnoDB"
+    },
+    {
+      "name": "factoring_pago",
+      "engine": "InnoDB"
+    },
+    {
+      "name": "factoring_propuesta",
+      "engine": "InnoDB"
+    },
+    {
+      "name": "factor_transaccion_bancaria",
+      "engine": "InnoDB"
+    }
+  ],
+  "paymentColumns": [
+    {
+      "name": "_idfactoringpago",
+      "type": "int(10) unsigned",
+      "nullable": "NO"
+    },
+    {
+      "name": "factoringpagoid",
+      "type": "varchar(50)",
+      "nullable": "NO"
+    },
+    {
+      "name": "code",
+      "type": "varchar(255)",
+      "nullable": "NO"
+    },
+    {
+      "name": "_idfactoring",
+      "type": "int(10) unsigned",
+      "nullable": "NO"
+    },
+    {
+      "name": "idusuariocrea",
+      "type": "int(11)",
+      "nullable": "NO"
+    },
+    {
+      "name": "fechacrea",
+      "type": "timestamp(3)",
+      "nullable": "NO"
+    },
+    {
+      "name": "idusuariomod",
+      "type": "int(11)",
+      "nullable": "NO"
+    },
+    {
+      "name": "fechamod",
+      "type": "timestamp(3)",
+      "nullable": "NO"
+    },
+    {
+      "name": "estado",
+      "type": "tinyint(4)",
+      "nullable": "NO"
+    },
+    {
+      "name": "_idfactoringpagoestado",
+      "type": "int(10) unsigned",
+      "nullable": "NO"
+    },
+    {
+      "name": "version",
+      "type": "int(10) unsigned",
+      "nullable": "NO"
+    }
+  ],
+  "referencesToPayments": [
+    {
+      "tableName": "factoring_pago_detalle",
+      "columnName": "_idfactoringpago",
+      "paymentColumn": "_idfactoringpago"
+    },
+    {
+      "tableName": "factoring_pago_historial",
+      "columnName": "_idfactoringpago",
+      "paymentColumn": "_idfactoringpago"
+    }
+  ],
+  "model": "MAESTRO_DETALLE",
+  "payments": {
+    "total": "0",
+    "operations": "0",
+    "active": "0"
+  },
+  "details": {
+    "total": "0",
+    "active": "0",
+    "deleted": "0"
+  },
+  "bankMovements": {
+    "total": "385",
+    "activeCredits": "79"
+  },
+  "pendingMasters": {
+    "total": "10"
+  }
+}

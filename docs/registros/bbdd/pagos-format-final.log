@@ -1,0 +1,8 @@
+src/daos/factoring.Dao.ts 181ms
+src/daos/transaccionbancaria.Dao.ts 55ms
+src/services/admin/factoringpago.Service.ts 47ms (unchanged)
+src/services/banca/transaccionbancaria.Service.ts 112ms
+src/types/Prisma.types.ts 12ms
+tests/mariadb/factoringPago.test.ts 69ms
+tests/vitest/http/factoringdetraccion.http.test.ts 29ms
+tests/vitest/migrated/unit/services/factoring.dateTrace.test.ts 79ms (unchanged)
