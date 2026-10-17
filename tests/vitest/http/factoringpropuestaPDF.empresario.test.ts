@@ -51,6 +51,10 @@ function files(folder = path.join(b.root, "storage", "procesar")): string[] {
   if (!existsSync(folder)) return [];
   return readdirSync(folder, { withFileTypes: true }).flatMap(entry => entry.isDirectory() ? files(path.join(folder, entry.name)) : [path.join(folder, entry.name)]);
 }
+async function expectNoTemporaryFiles() {
+  // La respuesta HTTP puede finalizar antes que el unlink asíncrono del controlador.
+  await vi.waitFor(() => expect(files()).toEqual([]), { timeout: 1000, interval: 10 });
+}
 async function pdfText(data: Buffer) {
   const task = getDocument({ data: new Uint8Array(data), useSystemFonts: true });
   const doc = await task.promise;
@@ -93,7 +97,7 @@ describe("PDF de propuesta aceptada del empresario", () => {
     const text = await pdfText(response.body);
     for (const expected of ["Propuesta de Factoring", "PROP-001", "Cedente SAC", "Pagador SAC", "F001-205", currency, "10,000.00", "9,635.00"]) expect(text).toContain(expected);
     expect(b.owned.mock.calls[0][0].where).toMatchObject({ idfactoring: 10, empresa_cedente: { usuario_servicio_empresas: { some: { idusuario: 42 } } }, estado: { in: [1] } });
-    expect(files()).toEqual([]);
+    await expectNoTemporaryFiles();
   });
   it("sin sesión no consulta ni genera", async () => {
     await request(app).get(url).expect(403); expect(b.transaction).not.toHaveBeenCalled();
@@ -136,19 +140,32 @@ describe("PDF de propuesta aceptada del empresario", () => {
   });
   it("permite descargar cuando la operación avanza de estado", async () => {
     b.owned.mockResolvedValue({ ...factoring(), idfactoringestado: 9 });
-    await download().expect(200); expect(files()).toEqual([]);
+    await download().expect(200); await expectNoTemporaryFiles();
   });
   it("descargas simultáneas usan temporales independientes", async () => {
     const generatedPaths: string[] = [];
+    const cleanupGate = Promise.withResolvers<void>();
+    const sendFile = httpUtils.sendFileAsync;
+    // El cliente puede recibir el PDF antes de que el controlador alcance su finally.
+    vi.spyOn(httpUtils, "sendFileAsync").mockImplementation(async (...args) => {
+      await sendFile(...args);
+      await cleanupGate.promise;
+    });
     const generate = PDFGenerator.prototype.generateFactoringPropuesta;
     vi.spyOn(PDFGenerator.prototype, "generateFactoringPropuesta").mockImplementation(function (...args) {
       generatedPaths.push((this as unknown as { filePath: string }).filePath);
       return generate.apply(this, args);
     });
-    const results = await Promise.all([download(), download()]);
+    let results;
+    try {
+      results = await Promise.all([download(), download()]);
+      expect(files().sort()).toEqual([...generatedPaths].sort());
+    } finally {
+      cleanupGate.resolve();
+    }
     for (const result of results) { expect(result.status).toBe(200); expect(result.body.subarray(0, 5).toString()).toBe("%PDF-"); }
     expect(new Set(generatedPaths).size).toBe(2);
-    expect(files()).toEqual([]);
+    await expectNoTemporaryFiles();
   });
   it("el contenido del PDF coincide con la descarga existente del administrador", async () => {
     b.usuario.mockResolvedValue({ idusuario: 42, usuario_roles: [{ idrol: 2 }, { idrol: 3 }] });
@@ -158,12 +175,12 @@ describe("PDF de propuesta aceptada del empresario", () => {
         const chunks: Buffer[] = []; res.on("data", chunk => chunks.push(Buffer.from(chunk))); res.on("end", () => callback(null, Buffer.concat(chunks)));
       }).expect(200);
     expect(await pdfText(entrepreneur.body)).toBe(await pdfText(admin.body));
-    expect(files()).toEqual([]);
+    await expectNoTemporaryFiles();
   });
   it("fallo al enviar elimina el PDF y permite reintentar", async () => {
     vi.spyOn(httpUtils, "sendFileAsync").mockRejectedValueOnce(new Error("fallo de envío"));
     await request(app).get(url).set("Authorization", auth()).expect(500); expect(files()).toEqual([]);
-    await download().expect(200); expect(files()).toEqual([]);
+    await download().expect(200); await expectNoTemporaryFiles();
   });
   it("fallo al generar elimina archivo parcial y conserva el error", async () => {
     const error = new Error("fallo de PDF");
