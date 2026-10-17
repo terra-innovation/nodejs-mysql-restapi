@@ -11,11 +11,13 @@ vi.mock("#src/utils/logger.pino.js", () => ({ log: { warn: vi.fn(), debug: vi.fn
 vi.mock("#src/daos/usuario.Dao.js", () => ({ getUsuarioAccesosByIdusuario: b.accesos }));
 vi.mock("#src/models/prisma/db-factoring.js", () => ({ prismaFT: { client: {} } }));
 import router from "#src/routes/admin/servicio/factoring/factoringpago.routes.js";
+import financieroRouter from "#src/routes/financiero/servicio/factoring/factoringpago.routes.js";
 const id = "00000000-0000-4000-8000-000000000001",
   base = `/api/v1/admin/servicio/factoring/factoringpago/${id}`;
 const app = express();
 app.use(express.json());
 app.use("/api/v1", router);
+app.use("/api/v1", financieroRouter);
 const handler: ErrorRequestHandler = (err, _req, res, _next) => {
   res.status(err instanceof ZodError ? 400 : err.statusCode || 500).json({ error: true });
 };
@@ -35,6 +37,43 @@ it("consulta y mutación son exclusivas del administrador con rol vigente", asyn
   await request(app).get(base).set("Authorization", token()).expect(200);
   b.accesos.mockResolvedValue({ usuario_roles: [] });
   await request(app).get(base).set("Authorization", token()).expect(403);
+});
+it("financiero consulta pagos con rol vigente, valida UUID y no expone escrituras ni buscador", async () => {
+  const financieroBase = base.replace("/admin/", "/financiero/");
+  await request(app).get(financieroBase).expect(403);
+  await request(app).get(financieroBase).set("Authorization", token(2)).expect(403);
+  await request(app).get(financieroBase).set("Authorization", token(6)).expect(200);
+  expect(b.consulta).toHaveBeenCalledExactlyOnceWith(id);
+  await request(app).get(financieroBase.replace(id, "invalido")).set("Authorization", token(6)).expect(400);
+  await request(app)
+    .get(financieroBase + "/transacciones")
+    .set("Authorization", token(6))
+    .expect(404);
+  await request(app)
+    .post(financieroBase + "/detalles")
+    .set("Authorization", token(6))
+    .send({})
+    .expect(404);
+  await request(app)
+    .patch(financieroBase + "/estado")
+    .set("Authorization", token(6))
+    .send({})
+    .expect(404);
+  await request(app)
+    .post(base + "/detalles")
+    .set("Authorization", token(6))
+    .send({})
+    .expect(403);
+  await request(app)
+    .patch(base + "/estado")
+    .set("Authorization", token(6))
+    .send({})
+    .expect(403);
+  expect(b.buscar).not.toHaveBeenCalled();
+  expect(b.detalle).not.toHaveBeenCalled();
+  expect(b.estado).not.toHaveBeenCalled();
+  b.accesos.mockResolvedValue({ usuario_roles: [] });
+  await request(app).get(financieroBase).set("Authorization", token(6)).expect(403);
 });
 it("el alta usa el actor de sesión, valida importes y no admite campos de maestro", async () => {
   const body = { accion: "crear", transaccion: id, monto: "100.50", version: 1 };
