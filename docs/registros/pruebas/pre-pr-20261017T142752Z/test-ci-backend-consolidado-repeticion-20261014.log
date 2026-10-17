@@ -1,0 +1,184 @@
+
+> ft-app-backend@1.0.1 test:vitest:ci
+> cross-env CI=true TZ=UTC NODE_ENV=test vitest run --config vitest.config.ts --coverage --reporter=default --reporter=junit --outputFile.junit=coverage/vitest/junit.xml
+
+
+ RUN  v5.0.3 D:/06_Workspace_nodejs/ft-app-backend
+      Coverage enabled with v8
+
+ ✓ tests/vitest/http/factoringpropuestaPDF.empresario.test.ts (22 tests) 3958ms
+   ✓ PDF de propuesta aceptada del empresario (22)
+     ✓ descarga PDF real en PEN y elimina el temporal 1645ms
+     ✓ descarga PDF real en USD y elimina el temporal 327ms
+     ✓ descargas simultáneas usan temporales independientes 418ms
+     ✓ el contenido del PDF coincide con la descarga existente del administrador 487ms
+     ✓ fallo al enviar elimina el PDF y permite reintentar 330ms
+ ✓ tests/vitest/unit/secure.business.test.ts (29 tests) 6983ms
+   ✓ Recuperación de contraseña con cifrado y hash reales (9)
+     ✓ actualiza el hash y marca la validación utilizada sin guardar contraseña en claro 2641ms
+     ✓ recuperación con credencial inválida no escribe 1507ms
+     ✓ si no se actualiza la credencial, no consume el código de validación 1381ms
+     ✓ un fallo de persistencia de credencial no consume la validación 1343ms
+ ✓ tests/vitest/migrated/unit/utils/document/PDFgenerator.dates.test.ts (20 tests) 2964ms
+ ✓ tests/vitest/migrated/unit/services/admin/factoringsimulacion.dates.test.ts (494 tests) 21164ms
+   ✓ Simulación y propuesta comparten interpretación, cálculo y persistencia (480)
+     ✓ 2028-02-28 → 2028-02-29 04:59:59 UTC; zona America/New_York, banco 2, moneda 1 603ms
+ ✓ tests/vitest/unit/facturaXML.business.test.ts (26 tests) 723ms
+ ✓ tests/vitest/unit/factoringliquidacion.business.test.ts (171 tests) 597ms
+ ✓ tests/vitest/unit/loadEnvironment.test.ts (10 tests) 2096ms
+   ✓ configuration source (10)
+     ✓ checks a complete synthetic profile without connecting to its closed database port 480ms
+     ✓ rejects a stale invalid port before startup without exposing its value 682ms
+     ✓ captures missing configuration before importing application dependencies 829ms
+ ✓ tests/vitest/http/factoring.business.test.ts (74 tests) 1615ms
+stdout | tests/vitest/unit/archivoMiddleware.test.ts
+[config] {"selection":"default","file":".env.test","loaded":true,"fileVariables":31,"retainedVariables":29,"conflictingKeys":["APISPERU_API_TOKEN","APISPERU_BASE_URL","DECOLECTA_API_TOKEN","DECOLECTA_BASE_URL","LOG_LEVEL_CONSOLE","MAIL_ENCRYPTION_KEY_COFIG","PRISMA_DATABASE_FACTORING_LOG_ERROR","PRISMA_DATABASE_FACTORING_LOG_SLOW_QUERIES","PRISMA_DATABASE_FACTORING_LOG_WARN","PRISMA_DATABASE_FACTORING_NICKNAME","PRISMA_DATABASE_FACTORING_TRANSACTION_TIMEOUT","PRISMA_DATABASE_FACTORING_URL","TELEGRAM_ACTIVE","TELEGRAM_ERROR_CHATID","TELEGRAM_ERROR_TOKEN","TELEGRAM_IMFORMATION_CHATID","TELEGRAM_IMFORMATION_TOKEN","TELEGRAM_IMPORTANT_CHATID","TELEGRAM_IMPORTANT_TOKEN","TELEGRAM_WARING_TOKEN","TELEGRAM_WARRING_CHATID","TOKEN_KEY_JWT","TOKEN_KEY_OTP","WEB_SITE"]} precedence=process.env
+[config] Las claves en conflictingKeys tienen valores diferentes en el proceso y en el archivo. Prevalece el proceso (incluido el entorno heredado de PM2). Solo se muestran los nombres.
+
+ ✓ tests/vitest/migrated/unit/routes/factoringEmpresaDetalle.test.ts (24 tests) 287ms
+ ✓ tests/vitest/unit/archivoMiddleware.test.ts (3 tests) 177ms
+ ✓ tests/vitest/migrated/unit/services/factoring.dateTrace.test.ts (14 tests) 27695ms
+   ✓ Trazabilidad factura → operación → propuesta → aceptación → inicio → liquidación (14)
+     ✓ factura 2026-10-30, propuesta 2026-10-30, pago con diferencia -5 3599ms
+     ✓ factura 2026-10-30, propuesta 2026-10-30, pago con diferencia 0 3290ms
+     ✓ factura 2026-10-30, propuesta 2026-10-30, pago con diferencia 1 1676ms
+     ✓ factura 2026-10-30, propuesta 2026-10-30, pago con diferencia 10 1391ms
+     ✓ factura 2026-12-31, propuesta 2026-12-31, pago con diferencia -5 2416ms
+     ✓ factura 2026-12-31, propuesta 2026-12-31, pago con diferencia 0 2112ms
+     ✓ factura 2026-12-31, propuesta 2026-12-31, pago con diferencia 1 1931ms
+     ✓ factura 2026-12-31, propuesta 2026-12-31, pago con diferencia 10 1495ms
+     ✓ factura 2028-02-29, propuesta 2028-02-29, pago con diferencia -5 1348ms
+     ✓ factura 2028-02-29, propuesta 2028-02-29, pago con diferencia 0 1429ms
+     ✓ factura 2028-02-29, propuesta 2028-02-29, pago con diferencia 1 2000ms
+     ✓ factura 2028-02-29, propuesta 2028-02-29, pago con diferencia 10 1399ms
+     ✓ factura 2026-10-30, propuesta 2026-11-02, pago con diferencia 0 2109ms
+     ✓ factura 2026-10-30, propuesta 2026-11-02, pago con diferencia 1 1492ms
+ ✓ tests/vitest/http/saldocontable.http.test.ts (13 tests) 295ms
+ ✓ tests/vitest/http/facturaXML.business.test.ts (13 tests) 353ms
+ ✓ tests/vitest/http/factoringestado.business.test.ts (29 tests) 398ms
+stdout | tests/vitest/migrated/unit/services/admin/factoringliquidacion.Service.test.ts
+[config] {"selection":"default","file":".env.test","loaded":true,"fileVariables":31,"retainedVariables":29,"conflictingKeys":["APISPERU_API_TOKEN","APISPERU_BASE_URL","DECOLECTA_API_TOKEN","DECOLECTA_BASE_URL","LOG_LEVEL_CONSOLE","MAIL_ENCRYPTION_KEY_COFIG","PRISMA_DATABASE_FACTORING_LOG_ERROR","PRISMA_DATABASE_FACTORING_LOG_SLOW_QUERIES","PRISMA_DATABASE_FACTORING_LOG_WARN","PRISMA_DATABASE_FACTORING_NICKNAME","PRISMA_DATABASE_FACTORING_TRANSACTION_TIMEOUT","PRISMA_DATABASE_FACTORING_URL","TELEGRAM_ACTIVE","TELEGRAM_ERROR_CHATID","TELEGRAM_ERROR_TOKEN","TELEGRAM_IMFORMATION_CHATID","TELEGRAM_IMFORMATION_TOKEN","TELEGRAM_IMPORTANT_CHATID","TELEGRAM_IMPORTANT_TOKEN","TELEGRAM_WARING_TOKEN","TELEGRAM_WARRING_CHATID","TOKEN_KEY_JWT","TOKEN_KEY_OTP","WEB_SITE"]} precedence=process.env
+[config] Las claves en conflictingKeys tienen valores diferentes en el proceso y en el archivo. Prevalece el proceso (incluido el entorno heredado de PM2). Solo se muestran los nombres.
+
+ ✓ tests/vitest/unit/facturaRegistro.business.test.ts (18 tests) 356ms
+ ✓ tests/vitest/http/factoringConsolidado.http.test.ts (8 tests) 277ms
+ ✓ tests/vitest/migrated/unit/services/admin/factoringliquidacion.Service.test.ts (15 tests) 139ms
+ ✓ tests/vitest/unit/archivo.business.test.ts (15 tests) 236ms
+ ✓ tests/vitest/http/factoringdetraccion.http.test.ts (18 tests) 480ms
+stdout | tests/vitest/migrated/unit/services/tipocambio.Service.test.ts
+[config] {"selection":"default","file":".env.test","loaded":true,"fileVariables":31,"retainedVariables":29,"conflictingKeys":["APISPERU_API_TOKEN","APISPERU_BASE_URL","DECOLECTA_API_TOKEN","DECOLECTA_BASE_URL","LOG_LEVEL_CONSOLE","MAIL_ENCRYPTION_KEY_COFIG","PRISMA_DATABASE_FACTORING_LOG_ERROR","PRISMA_DATABASE_FACTORING_LOG_SLOW_QUERIES","PRISMA_DATABASE_FACTORING_LOG_WARN","PRISMA_DATABASE_FACTORING_NICKNAME","PRISMA_DATABASE_FACTORING_TRANSACTION_TIMEOUT","PRISMA_DATABASE_FACTORING_URL","TELEGRAM_ACTIVE","TELEGRAM_ERROR_CHATID","TELEGRAM_ERROR_TOKEN","TELEGRAM_IMFORMATION_CHATID","TELEGRAM_IMFORMATION_TOKEN","TELEGRAM_IMPORTANT_CHATID","TELEGRAM_IMPORTANT_TOKEN","TELEGRAM_WARING_TOKEN","TELEGRAM_WARRING_CHATID","TOKEN_KEY_JWT","TOKEN_KEY_OTP","WEB_SITE"]} precedence=process.env
+[config] Las claves en conflictingKeys tienen valores diferentes en el proceso y en el archivo. Prevalece el proceso (incluido el entorno heredado de PM2). Solo se muestran los nombres.
+
+ ✓ tests/vitest/migrated/unit/services/secure/accesos.Service.test.ts (11 tests) 294ms
+ ✓ tests/vitest/unit/factoringpropuesta.business.test.ts (25 tests) 119ms
+ ✓ tests/vitest/migrated/unit/domain/factoring/factoring.Calculator.test.ts (10 tests) 74ms
+stdout | tests/vitest/migrated/unit/services/financiero/factura.Service.test.ts
+[config] {"selection":"default","file":".env.test","loaded":true,"fileVariables":31,"retainedVariables":29,"conflictingKeys":["APISPERU_API_TOKEN","APISPERU_BASE_URL","DECOLECTA_API_TOKEN","DECOLECTA_BASE_URL","LOG_LEVEL_CONSOLE","MAIL_ENCRYPTION_KEY_COFIG","PRISMA_DATABASE_FACTORING_LOG_ERROR","PRISMA_DATABASE_FACTORING_LOG_SLOW_QUERIES","PRISMA_DATABASE_FACTORING_LOG_WARN","PRISMA_DATABASE_FACTORING_NICKNAME","PRISMA_DATABASE_FACTORING_TRANSACTION_TIMEOUT","PRISMA_DATABASE_FACTORING_URL","TELEGRAM_ACTIVE","TELEGRAM_ERROR_CHATID","TELEGRAM_ERROR_TOKEN","TELEGRAM_IMFORMATION_CHATID","TELEGRAM_IMFORMATION_TOKEN","TELEGRAM_IMPORTANT_CHATID","TELEGRAM_IMPORTANT_TOKEN","TELEGRAM_WARING_TOKEN","TELEGRAM_WARRING_CHATID","TOKEN_KEY_JWT","TOKEN_KEY_OTP","WEB_SITE"]} precedence=process.env
+[config] Las claves en conflictingKeys tienen valores diferentes en el proceso y en el archivo. Prevalece el proceso (incluido el entorno heredado de PM2). Solo se muestran los nombres.
+
+ ✓ tests/vitest/migrated/unit/services/financiero/factura.Service.test.ts (6 tests) 22ms
+ ✓ tests/vitest/migrated/unit/services/tipocambio.Service.test.ts (3 tests) 40ms
+ ✓ tests/vitest/unit/factoringtransferencia.business.test.ts (17 tests) 32ms
+ ✓ tests/vitest/unit/factoringConsolidadoXlsx.test.ts (3 tests) 121ms
+ ✓ tests/vitest/migrated/unit/utils/dateUtils.test.ts (45 tests) 96ms
+ ✓ tests/vitest/unit/databaseMaintenance.test.ts (11 tests) 60ms
+stdout | tests/vitest/migrated/unit/services/factoring.Service.test.ts
+[config] {"selection":"default","file":".env.test","loaded":true,"fileVariables":31,"retainedVariables":29,"conflictingKeys":["APISPERU_API_TOKEN","APISPERU_BASE_URL","DECOLECTA_API_TOKEN","DECOLECTA_BASE_URL","LOG_LEVEL_CONSOLE","MAIL_ENCRYPTION_KEY_COFIG","PRISMA_DATABASE_FACTORING_LOG_ERROR","PRISMA_DATABASE_FACTORING_LOG_SLOW_QUERIES","PRISMA_DATABASE_FACTORING_LOG_WARN","PRISMA_DATABASE_FACTORING_NICKNAME","PRISMA_DATABASE_FACTORING_TRANSACTION_TIMEOUT","PRISMA_DATABASE_FACTORING_URL","TELEGRAM_ACTIVE","TELEGRAM_ERROR_CHATID","TELEGRAM_ERROR_TOKEN","TELEGRAM_IMFORMATION_CHATID","TELEGRAM_IMFORMATION_TOKEN","TELEGRAM_IMPORTANT_CHATID","TELEGRAM_IMPORTANT_TOKEN","TELEGRAM_WARING_TOKEN","TELEGRAM_WARRING_CHATID","TOKEN_KEY_JWT","TOKEN_KEY_OTP","WEB_SITE"]} precedence=process.env
+[config] Las claves en conflictingKeys tienen valores diferentes en el proceso y en el archivo. Prevalece el proceso (incluido el entorno heredado de PM2). Solo se muestran los nombres.
+
+ ✓ tests/vitest/unit/saldocontable.Policy.test.ts (16 tests) 65ms
+ ✓ tests/vitest/migrated/unit/services/factoring.Service.test.ts (1 test) 76ms
+ ✓ tests/vitest/migrated/unit/services/usuario/archivo.Service.test.ts (8 tests) 21ms
+ ✓ tests/vitest/unit/factoringfactura.business.test.ts (21 tests) 48ms
+ ✓ tests/vitest/unit/factoringestado.business.test.ts (26 tests) 72ms
+stdout | tests/vitest/migrated/unit/services/admin/factoringpropuesta.Service.test.ts
+[config] {"selection":"default","file":".env.test","loaded":true,"fileVariables":31,"retainedVariables":29,"conflictingKeys":["APISPERU_API_TOKEN","APISPERU_BASE_URL","DECOLECTA_API_TOKEN","DECOLECTA_BASE_URL","LOG_LEVEL_CONSOLE","MAIL_ENCRYPTION_KEY_COFIG","PRISMA_DATABASE_FACTORING_LOG_ERROR","PRISMA_DATABASE_FACTORING_LOG_SLOW_QUERIES","PRISMA_DATABASE_FACTORING_LOG_WARN","PRISMA_DATABASE_FACTORING_NICKNAME","PRISMA_DATABASE_FACTORING_TRANSACTION_TIMEOUT","PRISMA_DATABASE_FACTORING_URL","TELEGRAM_ACTIVE","TELEGRAM_ERROR_CHATID","TELEGRAM_ERROR_TOKEN","TELEGRAM_IMFORMATION_CHATID","TELEGRAM_IMFORMATION_TOKEN","TELEGRAM_IMPORTANT_CHATID","TELEGRAM_IMPORTANT_TOKEN","TELEGRAM_WARING_TOKEN","TELEGRAM_WARRING_CHATID","TOKEN_KEY_JWT","TOKEN_KEY_OTP","WEB_SITE"]} precedence=process.env
+[config] Las claves en conflictingKeys tienen valores diferentes en el proceso y en el archivo. Prevalece el proceso (incluido el entorno heredado de PM2). Solo se muestran los nombres.
+
+ ✓ tests/vitest/migrated/unit/services/admin/factoringpropuesta.Service.test.ts (8 tests) 95ms
+ ✓ tests/vitest/unit/factoring.Calculator.test.ts (24 tests) 54ms
+ ✓ tests/vitest/unit/factoringaprobacion.business.test.ts (15 tests) 52ms
+ ✓ tests/vitest/unit/dateUtils.test.ts (8 tests) 73ms
+ ✓ tests/vitest/unit/startupDiagnostics.test.ts (5 tests) 63ms
+ ✓ tests/vitest/unit/rehearsalGuard.test.ts (13 tests) 14ms
+stdout | tests/vitest/unit/factoringdetraccion.business.test.ts
+[config] {"selection":"default","file":".env.test","loaded":true,"fileVariables":31,"retainedVariables":29,"conflictingKeys":["APISPERU_API_TOKEN","APISPERU_BASE_URL","DECOLECTA_API_TOKEN","DECOLECTA_BASE_URL","LOG_LEVEL_CONSOLE","MAIL_ENCRYPTION_KEY_COFIG","PRISMA_DATABASE_FACTORING_LOG_ERROR","PRISMA_DATABASE_FACTORING_LOG_SLOW_QUERIES","PRISMA_DATABASE_FACTORING_LOG_WARN","PRISMA_DATABASE_FACTORING_NICKNAME","PRISMA_DATABASE_FACTORING_TRANSACTION_TIMEOUT","PRISMA_DATABASE_FACTORING_URL","TELEGRAM_ACTIVE","TELEGRAM_ERROR_CHATID","TELEGRAM_ERROR_TOKEN","TELEGRAM_IMFORMATION_CHATID","TELEGRAM_IMFORMATION_TOKEN","TELEGRAM_IMPORTANT_CHATID","TELEGRAM_IMPORTANT_TOKEN","TELEGRAM_WARING_TOKEN","TELEGRAM_WARRING_CHATID","TOKEN_KEY_JWT","TOKEN_KEY_OTP","WEB_SITE"]} precedence=process.env
+[config] Las claves en conflictingKeys tienen valores diferentes en el proceso y en el archivo. Prevalece el proceso (incluido el entorno heredado de PM2). Solo se muestran los nombres.
+
+stdout | tests/vitest/unit/emailSender.test.ts
+[config] {"selection":"default","file":".env.test","loaded":true,"fileVariables":31,"retainedVariables":29,"conflictingKeys":["APISPERU_API_TOKEN","APISPERU_BASE_URL","DECOLECTA_API_TOKEN","DECOLECTA_BASE_URL","LOG_LEVEL_CONSOLE","MAIL_ENCRYPTION_KEY_COFIG","PRISMA_DATABASE_FACTORING_LOG_ERROR","PRISMA_DATABASE_FACTORING_LOG_SLOW_QUERIES","PRISMA_DATABASE_FACTORING_LOG_WARN","PRISMA_DATABASE_FACTORING_NICKNAME","PRISMA_DATABASE_FACTORING_TRANSACTION_TIMEOUT","PRISMA_DATABASE_FACTORING_URL","TELEGRAM_ACTIVE","TELEGRAM_ERROR_CHATID","TELEGRAM_ERROR_TOKEN","TELEGRAM_IMFORMATION_CHATID","TELEGRAM_IMFORMATION_TOKEN","TELEGRAM_IMPORTANT_CHATID","TELEGRAM_IMPORTANT_TOKEN","TELEGRAM_WARING_TOKEN","TELEGRAM_WARRING_CHATID","TOKEN_KEY_JWT","TOKEN_KEY_OTP","WEB_SITE"]} precedence=process.env
+[config] Las claves en conflictingKeys tienen valores diferentes en el proceso y en el archivo. Prevalece el proceso (incluido el entorno heredado de PM2). Solo se muestran los nombres.
+
+ ✓ tests/vitest/unit/factoringdetraccion.business.test.ts (18 tests) 34ms
+ ✓ tests/vitest/unit/emailSender.test.ts (2 tests) 32ms
+ ✓ tests/vitest/unit/mariadbEnvironment.test.ts (15 tests) 36ms
+ ✓ tests/vitest/unit/liquidacionLimits.test.ts (28 tests) 22ms
+stdout | tests/vitest/migrated/e2e/example.test.ts > Basic Jest test example
+Iniciando pruebas...
+
+stdout | tests/vitest/migrated/e2e/example.test.ts > Basic Jest test example > should pass a basic test
+Ejecutando prueba básica...
+
+stdout | tests/vitest/migrated/e2e/example.test.ts > Basic Jest test example > should log a message
+Ejecutando otra prueba...
+
+stdout | tests/vitest/migrated/e2e/example.test.ts > Basic Jest test example
+Finalizando pruebas...
+
+ ✓ tests/vitest/migrated/e2e/example.test.ts (2 tests) 11ms
+ ↓ tests/vitest/pending/business-decisions.test.ts (3 tests | 3 todo)
+ ✓ tests/vitest/unit/fileType.test.ts (2 tests) 14ms
+stdout | tests/vitest/migrated/unit/services/admin/factoringliquidacion.audit.test.ts
+AUDIT_SUMMARY {"total":2281,"groups":{"calendario":{"total":480,"conforming":480,"discrepancies":0,"observations":0},"finanzas":{"total":1440,"conforming":1440,"discrepancies":0,"observations":360},"zonas_servidor":{"total":320,"conforming":320,"discrepancies":0,"observations":0},"inicio_vs_propuesta":{"total":5,"conforming":5,"discrepancies":0,"observations":4},"fixture_previo":{"total":2,"conforming":2,"discrepancies":0,"observations":0},"validacion_cronologica":{"total":2,"conforming":2,"discrepancies":0,"observations":0},"validacion_entrada":{"total":4,"conforming":4,"discrepancies":0,"observations":0},"conceptos_adicionales":{"total":5,"conforming":5,"discrepancies":0,"observations":0},"persistencia_simulada":{"total":3,"conforming":3,"discrepancies":0,"observations":0},"navegador":{"total":20,"conforming":20,"discrepancies":0,"observations":0}},"issueCounts":{},"observationCounts":{"REDONDEO_DIARIO":360,"DESCUENTO_MAYOR_SIN_CARGO_POR_INICIO_DISTINTO":2,"ABONO_PUNTUAL_POR_INICIO_DISTINTO":2},"displayedDateDiscrepancies":0}
+
+ ✓ tests/vitest/migrated/unit/services/admin/factoringliquidacion.audit.test.ts (2262 tests) 52242ms
+
+ Test Files  46 passed | 1 skipped (47)
+      Tests  3621 passed | 3 todo (3624)
+   Start at  04:03:21
+   Duration  53.73s (tests 80%, import 15%, transform 4%, worker 1%)
+
+JUNIT report written to D:/06_Workspace_nodejs/ft-app-backend/coverage/vitest/junit.xml
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   71.51 |    67.81 |   62.92 |   71.61 |                   
+ controllers/admin |   33.96 |    16.66 |   33.33 |   33.96 |                   
+  ...Controller.ts |   33.96 |    16.66 |   33.33 |   33.96 | ...06-108,112-114 
+ ...icio/factoring |   57.06 |     87.5 |   64.64 |   56.68 |                   
+  ...Controller.ts |   76.92 |      100 |   78.94 |   76.92 | ...,83-87,187-191 
+  ...Controller.ts |   36.92 |    66.66 |   42.62 |   36.43 | ...87-306,310-334 
+  ...Controller.ts |   64.74 |    94.44 |   74.39 |   64.23 | ...99-303,307-311 
+ ...ario/factoring |   73.52 |       25 |   73.33 |   73.52 |                   
+  ...Controller.ts |   73.52 |       25 |   73.33 |   73.52 | 67-88             
+ domain/factoring  |   97.74 |    92.85 |   76.47 |     100 |                   
+  ...Calculator.ts |   97.74 |    92.85 |   76.47 |     100 | 351               
+ middlewares       |   91.07 |     93.1 |     100 |      90 |                   
+  ...Middleware.ts |   91.07 |     93.1 |     100 |      90 | 65-66,72-73,83    
+ services/admin    |   73.37 |    74.04 |   54.12 |    73.3 |                   
+  ...on.Service.ts |   59.18 |      100 |   42.85 |   59.18 | 86-128,132-151    
+  ...or.Service.ts |   81.63 |    85.71 |   69.23 |   81.63 | 242-254,264-279   
+  ...do.Service.ts |    86.4 |    72.41 |   57.14 |    86.4 | ...35-142,337-342 
+  ...on.Service.ts |   66.78 |    74.66 |      50 |   66.29 | ...93-705,715-747 
+  ...ta.Service.ts |   82.09 |    73.33 |   68.42 |   81.98 | ...76-486,501-506 
+  ...te.Service.ts |   67.92 |    71.05 |   57.14 |   67.92 | ...77-289,299-318 
+  ...ra.Service.ts |   64.83 |    55.55 |   28.57 |   65.55 | ...99-205,217-222 
+ ...ces/empresario |   85.71 |    77.77 |   57.14 |    86.3 |                   
+  ...ta.Service.ts |   85.71 |    77.77 |   57.14 |    86.3 | 190-205           
+ services/secure   |   35.13 |    33.33 |    37.5 |    34.7 |                   
+  ...os.Service.ts |     100 |     90.9 |     100 |     100 | 24                
+  ...re.Service.ts |   30.76 |     26.8 |   28.57 |   30.91 | ...38-458,465-527 
+ services/usuario  |   98.75 |    83.33 |      90 |     100 |                   
+  ...vo.Service.ts |   98.64 |    81.57 |   88.88 |     100 | 72,85-88,121-140  
+ utils             |   87.05 |    66.01 |   76.92 |   89.59 |                   
+  dateUtils.ts     |   63.04 |     43.1 |      40 |   69.04 | ...47,160,170-181 
+  facturaUtils.ts  |   98.92 |    70.43 |     100 |   98.91 | 398,402           
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 71.51% ( 1594/2229 )
+Branches     : 67.81% ( 670/988 )
+Functions    : 62.92% ( 275/437 )
+Lines        : 71.61% ( 1562/2181 )
+================================================================================

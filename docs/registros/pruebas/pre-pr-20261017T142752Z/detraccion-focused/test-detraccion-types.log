@@ -1,0 +1,4 @@
+
+> ft-app-backend@1.0.1 test:integration:typecheck
+> tsc --project tests/mariadb/tsconfig.json --noEmit
+

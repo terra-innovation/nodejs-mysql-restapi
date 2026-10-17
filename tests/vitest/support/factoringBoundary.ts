@@ -96,32 +96,48 @@ export const ids = {
 };
 
 export const proposalDto = () => ({
-  factoringid: ids.factoring, factoringtipoid: ids.tipo, riesgooperacionid: ids.riesgo,
-  riesgocedenteid: ids.riesgo, riesgoaceptanteid: ids.riesgo,
-  factoringpropuestaestadoid: ids.estado, factoringestrategiaid: ids.estrategia,
-  monto_neto: 20000, porcentaje_financiado_estimado: 0.8, tdm: 0.02,
-  porcentaje_comision_descuento: 0, fecha_pago_estimado: "2026-10-01T05:00:00.000Z",
+  factoringid: ids.factoring,
+  factoringtipoid: ids.tipo,
+  riesgooperacionid: ids.riesgo,
+  riesgocedenteid: ids.riesgo,
+  riesgoaceptanteid: ids.riesgo,
+  factoringpropuestaestadoid: ids.estado,
+  factoringestrategiaid: ids.estrategia,
+  monto_neto: 20000,
+  porcentaje_financiado_estimado: 0.8,
+  tdm: 0.02,
+  porcentaje_comision_descuento: 0,
+  fecha_pago_estimado: "2026-10-01T05:00:00.000Z",
 });
 
 export const liquidationDto = () => ({
-  factoringid: ids.factoring, factoringliquidacionestadoid: ids.estado,
+  factoringid: ids.factoring,
+  factoringliquidacionestadoid: ids.estado,
   fecha_liquidacion: "2026-10-01T05:00:00.000Z",
   fecha_pago_efectivo: "2026-10-01T05:00:00.000Z",
 });
 
 export const createFactoringFixture = (moneda = 1, banco = 1) => ({
-  idfactoring: 10, factoringid: ids.factoring, idfactor: 1, idmoneda: moneda,
-  cantidad_facturas: 2, monto_neto: new Decimal(20000),
+  idfactoring: 10,
+  factoringid: ids.factoring,
+  idfactor: 1,
+  idmoneda: moneda,
+  cantidad_facturas: 2,
+  monto_neto: new Decimal(20000),
   fecha_emision: new Date("2026-08-01T00:00:00Z"),
   fecha_operacion: new Date("2026-09-01T05:00:00Z"),
-  cuenta_bancaria: { idbanco: banco }, moneda: { idmoneda: moneda },
+  cuenta_bancaria: { idbanco: banco },
+  moneda: { idmoneda: moneda },
   idfactoringpropuestaaceptada: 100,
   contacto_cedente: { email: "cedente@example.test", persona: { idusuario: 42 } },
   contacto_aceptante: { email: "aceptante@example.test" },
   factoring_propuesta_aceptada: {
-    idriesgooperacion: 1, tdm: new Decimal("0.02"),
-    porcentaje_financiado_estimado: new Decimal("0.8"), porcentaje_comision_descuento: new Decimal(0),
-    monto_descuento: new Decimal(320), monto_garantia: new Decimal(4000),
+    idriesgooperacion: 1,
+    tdm: new Decimal("0.02"),
+    porcentaje_financiado_estimado: new Decimal("0.8"),
+    porcentaje_comision_descuento: new Decimal(0),
+    monto_descuento: new Decimal(320),
+    monto_garantia: new Decimal(4000),
     fecha_pago_estimado: new Date("2026-10-01T05:00:00Z"),
   },
 });
@@ -137,7 +153,7 @@ const conceptos = {
 export function resetFactoringBoundary(moneda = 1, banco = 1) {
   boundary.pago.asegurarMaestroPago.mockReset().mockResolvedValue({ idfactoringpago: 1 });
   vi.resetAllMocks();
-  boundary.usuario.getUsuarioAccesosByIdusuario.mockResolvedValue({ idusuario: 42, estado: 1, usuario_roles: [2,3,4,5,6].map(idrol => ({ idrol, estado: 1, rol: { estado: 1 } })) });
+  boundary.usuario.getUsuarioAccesosByIdusuario.mockResolvedValue({ idusuario: 42, estado: 1, usuario_roles: [2, 3, 4, 5, 6].map((idrol) => ({ idrol, estado: 1, rol: { estado: 1 } })) });
   const factoring = createFactoringFixture(moneda, banco);
   boundary.transaction.mockImplementation(async (callback) => callback(boundary.tx));
   boundary.factoring.getFactoringByFactoringid.mockResolvedValue(factoring);

@@ -1,0 +1,75 @@
+{
+  "startedAt": "2026-10-17T14:31:42.759Z",
+  "finishedAt": "2026-10-17T14:44:38.518Z",
+  "commit": "6d537f47ffae966c94889eb540f0dd006945ccea",
+  "dirty": true,
+  "base": "98b5a7687ff23cd04cd201debe4a462f72283d82",
+  "mergeBase": "98b5a7687ff23cd04cd201debe4a462f72283d82",
+  "scope": "all",
+  "platform": "win32",
+  "arch": "x64",
+  "node": "24.21.0",
+  "npm": "11.19.0",
+  "results": [
+    {
+      "id": "prisma",
+      "status": "passed",
+      "exitCode": 0,
+      "log": "docs/registros/pruebas/test-ci-backend-prisma.log"
+    },
+    {
+      "id": "types",
+      "status": "passed",
+      "exitCode": 0,
+      "log": "docs/registros/pruebas/test-ci-backend-types.log"
+    },
+    {
+      "id": "lint",
+      "status": "passed",
+      "exitCode": 0,
+      "log": "docs/registros/pruebas/test-ci-backend-lint.log"
+    },
+    {
+      "id": "format",
+      "status": "passed",
+      "exitCode": 0,
+      "log": "docs/registros/pruebas/test-ci-backend-format.log"
+    },
+    {
+      "id": "frontend-contract",
+      "status": "passed",
+      "exitCode": 0,
+      "log": "docs/registros/pruebas/test-ci-backend-frontend-contract.log"
+    },
+    {
+      "id": "vitest",
+      "status": "passed",
+      "exitCode": 0,
+      "log": "docs/registros/pruebas/test-ci-backend-vitest.log"
+    },
+    {
+      "id": "build",
+      "status": "passed",
+      "exitCode": 0,
+      "log": "docs/registros/compilaciones/build-ci-backend.log"
+    },
+    {
+      "id": "doctor",
+      "status": "passed",
+      "exitCode": 0,
+      "log": "docs/registros/pruebas/test-ci-backend-doctor.log"
+    },
+    {
+      "id": "integration",
+      "status": "failed",
+      "exitCode": 1,
+      "log": "docs/registros/pruebas/test-ci-backend-integration.log"
+    },
+    {
+      "id": "evidence",
+      "status": "failed",
+      "exitCode": 1,
+      "log": "docs/registros/pruebas/test-ci-backend-evidence.log"
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+Estructura: 141 tablas, 11.4.2-MariaDB; destino: mariadb:11.4.10.
+Docker Linux disponible. El diagnóstico no crea bases ni consulta desarrollo.

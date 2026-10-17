@@ -94,7 +94,6 @@ const renombrarAtributosEspeciales = (filePath) => {
       return line.replace("factor_transaccion_bancaria_conexion", "configuracion_bbdd");
     }
 
-
     //if (!line.includes('@relation("')) return line;
 
     // --- Caso 1: Relaciones con array ([]), aplicar pluralización ---

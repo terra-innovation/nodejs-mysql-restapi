@@ -1,0 +1,24 @@
+
+> ft-app-backend@1.0.1 typecheck:all
+> npm run typecheck && npm run typecheck:vitest && npm run typecheck:integration
+
+
+> ft-app-backend@1.0.1 typecheck
+> tsc --noEmit
+
+
+> ft-app-backend@1.0.1 typecheck:vitest
+> npm run test:vitest:typecheck
+
+
+> ft-app-backend@1.0.1 test:vitest:typecheck
+> tsc --project tests/vitest/tsconfig.json --noEmit
+
+
+> ft-app-backend@1.0.1 typecheck:integration
+> npm run test:integration:typecheck
+
+
+> ft-app-backend@1.0.1 test:integration:typecheck
+> tsc --project tests/mariadb/tsconfig.json --noEmit
+

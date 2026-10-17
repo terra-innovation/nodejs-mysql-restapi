@@ -29,6 +29,7 @@
 ## Validación
 
 - Usar la skill [backend-validation](.agents/skills/backend-validation/SKILL.md) para seleccionar y ejecutar comprobaciones del backend.
+- Para un cierre pre-PR autorizado, consultar [validación previa al PR](docs/ci/validacion-pre-pr.md): `ci:check -- --base <base>` agrupa calidad e integración; `--plan` muestra el alcance sin ejecutarlo. No confundir la suite Vitest sola con todos los controles del PR ni usar este cierre completo como validación rutinaria de cada edición.
 - Antes de validar, identificar fase (desarrollo o cierre), comportamiento, consumidores afectados y riesgo. Durante el desarrollo, seleccionar pruebas concretas del cambio; ampliar primero a consumidores por riesgo financiero, seguridad, persistencia o runtime y justificar cada ampliación. Aplicar la [selección por fase y riesgo](tests/vitest/README.md#selección-por-fase-y-riesgo).
 - No ejecutar pruebas de aplicación por cambios exclusivamente documentales. Para texto o presentación local, revisar el resultado y las pruebas afectadas si el texto es un contrato observable; no lanzar la suite completa por rutina ni crear pruebas que solo repitan la implementación.
 - Al cerrar una nueva funcionalidad, un cambio transversal o una migración, comprobar la suite completa de cada proyecto afectado, más integración/runtime pertinentes. Antes del cierre, una completa requiere justificar el impacto transversal o la incertidumbre que resolverá. Respetar siempre los límites de ejecución del usuario; si impiden validar, declarar el cierre pendiente.

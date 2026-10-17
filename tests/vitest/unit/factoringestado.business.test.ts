@@ -5,8 +5,14 @@ import { createFactoringhistorialestadoService as create, updateFactoringhistori
 const dto = () => ({ factoringid: ids.factoring, factoringestadoid: ids.estado, comentario: "Estado confirmado", archivos: [ids.concepto] });
 const updateDto = () => ({ ...dto(), factoringhistorialestadoid: ids.liquidacion });
 const notifications = () => [b.email.sendFactoringEmpresaServicioFactoringDeudorSolicitudConfirmacion, b.email.sendFactoringEmpresaServicioFactoringDeudorNotificacionTransferencia, b.email.sendFactoringEmpresaServicioFactoringCedenteNotificacionInicioOperacion];
-beforeEach(() => { resetFactoringBoundary(); vi.useFakeTimers({ toFake: ["Date"] }); vi.setSystemTime(new Date("2026-10-08T15:30:00Z")); });
-afterEach(() => { vi.useRealTimers(); });
+beforeEach(() => {
+  resetFactoringBoundary();
+  vi.useFakeTimers({ toFake: ["Date"] });
+  vi.setSystemTime(new Date("2026-10-08T15:30:00Z"));
+});
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 describe("Cambios de estado e historial: servicio real", () => {
   it("un fallo al asegurar el maestro impide notificar el inicio", async () => {
@@ -19,16 +25,29 @@ describe("Cambios de estado e historial: servicio real", () => {
   });
   it("registra el estado de la operación y sus adjuntos con el actor correcto", async () => {
     await expect(create(dto(), 42)).resolves.toEqual({});
-    expect(b.historial.insertFactoringhistorialestado).toHaveBeenCalledWith(b.tx, expect.objectContaining({
-      factoring: { connect: { idfactoring: 10 } }, factoring_estado: { connect: { idfactoringestado: 4 } },
-      comentario: "Estado confirmado", usuario_modifica: { connect: { idusuario: 42 } }, idusuariocrea: 42,
-    }));
+    expect(b.historial.insertFactoringhistorialestado).toHaveBeenCalledWith(
+      b.tx,
+      expect.objectContaining({
+        factoring: { connect: { idfactoring: 10 } },
+        factoring_estado: { connect: { idfactoringestado: 4 } },
+        comentario: "Estado confirmado",
+        usuario_modifica: { connect: { idusuario: 42 } },
+        idusuariocrea: 42,
+      }),
+    );
     expect(b.factoring.updateFactoring).toHaveBeenCalledWith(b.tx, ids.factoring, {
-      factoring_estado: { connect: { idfactoringestado: 4 } }, idusuariomod: 42, fechamod: new Date(),
+      factoring_estado: { connect: { idfactoringestado: 4 } },
+      idusuariomod: 42,
+      fechamod: new Date(),
     });
-    expect(b.historialArchivo.insertArchivofactoringhistorialestado).toHaveBeenCalledWith(b.tx, expect.objectContaining({
-      archivo: { connect: { idarchivo: 50 } }, factoring_historial_estado: { connect: { idfactoringhistorialestado: 400 } }, idusuariocrea: 42,
-    }));
+    expect(b.historialArchivo.insertArchivofactoringhistorialestado).toHaveBeenCalledWith(
+      b.tx,
+      expect.objectContaining({
+        archivo: { connect: { idarchivo: 50 } },
+        factoring_historial_estado: { connect: { idfactoringhistorialestado: 400 } },
+        idusuariocrea: 42,
+      }),
+    );
     for (const notify of notifications()) expect(notify).not.toHaveBeenCalled();
   });
   it("sin adjuntos solo escribe historial y estado", async () => {
@@ -134,7 +153,10 @@ describe("Edición y baja lógica de historial", () => {
     await expect(update(updateDto(), 42)).rejects.toBe(error);
     expect(b.historialArchivo.insertArchivofactoringhistorialestado).not.toHaveBeenCalled();
   });
-  for (const [name, service, dao] of [["activar", activate, b.historial.activateFactoringhistorialestado], ["eliminar", remove, b.historial.deleteFactoringhistorialestado]] as const) {
+  for (const [name, service, dao] of [
+    ["activar", activate, b.historial.activateFactoringhistorialestado],
+    ["eliminar", remove, b.historial.deleteFactoringhistorialestado],
+  ] as const) {
     it(`${name} conserva actor y no modifica el estado actual de la operación`, async () => {
       await expect(service({ factoringhistorialestadoid: ids.liquidacion }, 42)).resolves.toEqual([1]);
       expect(dao).toHaveBeenCalledWith(b.tx, ids.liquidacion, 42);

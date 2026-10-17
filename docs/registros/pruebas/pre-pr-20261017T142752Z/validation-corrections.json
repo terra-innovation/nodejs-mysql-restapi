@@ -1,0 +1,9 @@
+{
+  "records": [
+    {
+      "sha256": "d48e78f794ab7e2fbab58e0d34ee4e2049f8b32c7e0bfc15eed659611b47dc49",
+      "reason": "Adaptadores de configuración y logger de prueba; Prisma real y aserciones sin cambios.",
+      "file": "tests/mariadb/detraccion.test.ts"
+    }
+  ]
+}

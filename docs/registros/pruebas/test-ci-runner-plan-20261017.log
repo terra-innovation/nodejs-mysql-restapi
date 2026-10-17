@@ -1,0 +1,126 @@
+
+> ft-app-backend@1.0.1 ci:check
+> node scripts/quality/ci-runner.ts --base HEAD --plan
+
+{
+  "scope": "all",
+  "base": "6d537f47ffae966c94889eb540f0dd006945ccea",
+  "mergeBase": "6d537f47ffae966c94889eb540f0dd006945ccea",
+  "node": "24.21.0",
+  "npm": "11.19.0",
+  "steps": [
+    {
+      "id": "prisma",
+      "command": [
+        "npm",
+        "prisma:generate:ci"
+      ],
+      "group": "quality"
+    },
+    {
+      "id": "types",
+      "command": [
+        "npm",
+        "typecheck:all"
+      ],
+      "group": "quality",
+      "dependencies": [
+        "prisma"
+      ]
+    },
+    {
+      "id": "lint",
+      "command": [
+        "npm",
+        "lint"
+      ],
+      "group": "quality"
+    },
+    {
+      "id": "format",
+      "command": [
+        "npm",
+        "format:changed",
+        "--",
+        "--base",
+        "6d537f47ffae966c94889eb540f0dd006945ccea"
+      ],
+      "group": "quality"
+    },
+    {
+      "id": "frontend-contract",
+      "command": [
+        "node",
+        "scripts/quality/verify-frontend-date-contract.mjs"
+      ],
+      "group": "quality",
+      "dependencies": [
+        "prisma"
+      ],
+      "quick": true
+    },
+    {
+      "id": "vitest",
+      "command": [
+        "npm",
+        "test:vitest:ci"
+      ],
+      "group": "quality",
+      "dependencies": [
+        "frontend-contract"
+      ],
+      "quick": true
+    },
+    {
+      "id": "build",
+      "command": [
+        "npm",
+        "build"
+      ],
+      "group": "quality",
+      "dependencies": [
+        "prisma"
+      ],
+      "production": true
+    },
+    {
+      "id": "doctor",
+      "command": [
+        "npm",
+        "test:integration:doctor"
+      ],
+      "group": "integration",
+      "dependencies": [
+        "prisma",
+        "types",
+        "lint",
+        "format",
+        "frontend-contract",
+        "vitest",
+        "build"
+      ]
+    },
+    {
+      "id": "integration",
+      "command": [
+        "npm",
+        "test:integration"
+      ],
+      "group": "integration",
+      "dependencies": [
+        "doctor",
+        "prisma"
+      ]
+    },
+    {
+      "id": "evidence",
+      "command": [
+        "node",
+        "scripts/quality/verify-integration-report.mjs"
+      ],
+      "group": "integration",
+      "afterExecution": "integration"
+    }
+  ],
+  "note": "Plan únicamente; no se ejecutaron controles ni se escribieron informes."
+}

@@ -1,0 +1,9 @@
+Pendiente: scripts/analisis/fecha-liquidacion-frontend.cjs
+Pendiente: scripts/database/maintain.mjs
+Pendiente: scripts/database/maintenance-core.mjs
+Pendiente: scripts/database/review-factoring-payments.mjs
+Pendiente: scripts/prisma/renombrar-atributos-especiales.js
+Pendiente: tests/mariadb/businessSupport.ts
+Pendiente: tests/vitest/support/factoringBoundary.ts
+Pendiente: tests/vitest/unit/factoringestado.business.test.ts
+Formato: 94 archivos revisados; 8 con diferencias.

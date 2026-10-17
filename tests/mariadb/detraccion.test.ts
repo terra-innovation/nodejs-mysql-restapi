@@ -1,5 +1,7 @@
 import { afterAll, afterEach, beforeEach, expect, it, vi } from "vitest";
 import { db, cleanFixtures, seedMasters, seedApproval } from "./businessSupport.js";
+vi.mock("#src/config.js", () => ({ env: {}, isProduction: true }));
+vi.mock("#src/utils/logger.pino.js", () => ({ line: () => "integration", log: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() } }));
 vi.mock("#src/models/prisma/db-factoring.js", async () => ({ prismaFT: { client: (await import("./businessSupport.js")).db, transactionTimeout: 10000 } }));
 import { actualizarDetraccionService, getDetraccionService, listarDetraccionesService } from "#src/services/financiero/factoringdetraccion.Service.js";
 let fixture: Awaited<ReturnType<typeof seed>>;

@@ -13,14 +13,17 @@ for (let i = 2; i < process.argv.length; i++) {
   else throw new MaintenanceError("Argumento desconocido o incompleto.");
 }
 
-let connection, locked = false, target, loaded;
+let connection,
+  locked = false,
+  target,
+  loaded;
 const report = { startedAt: new Date().toISOString(), status: "preparing", source: ".env.development", steps: [] };
 const reportDir = path.join(root, "docs/registros/bbdd");
 const runId = new Date().toISOString().replace(/[:.]/g, "-");
 const reportPath = path.join(reportDir, `${runId}-ddl.json`);
 async function save() {
   await mkdir(reportDir, { recursive: true });
-  await writeFile(reportPath, JSON.stringify(report, (_key, value) => typeof value === "bigint" ? value.toString() : value, 2) + "\n");
+  await writeFile(reportPath, JSON.stringify(report, (_key, value) => (typeof value === "bigint" ? value.toString() : value), 2) + "\n");
 }
 async function schemaDigests() {
   const rows = await connection.query("SELECT TABLE_NAME AS name FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_TYPE='BASE TABLE' ORDER BY TABLE_NAME");
@@ -56,7 +59,7 @@ async function verifyCreated() {
     if (!(loaded.plan.seedTables ?? []).includes(check.table)) throw new MaintenanceError("Verificación de semillas fuera del alcance.");
     const columns = check.columns.map(identifier).join(",");
     const rows = await connection.query(`SELECT ${columns} FROM ${identifier(check.table)} ORDER BY ${identifier(check.columns[0])}`);
-    const actual = rows.map((row) => check.columns.map((c) => typeof row[c] === "bigint" ? Number(row[c]) : row[c]));
+    const actual = rows.map((row) => check.columns.map((c) => (typeof row[c] === "bigint" ? Number(row[c]) : row[c])));
     if (JSON.stringify(actual) !== JSON.stringify(check.rows)) throw new MaintenanceError(`Semillas no coinciden en ${check.table}.`);
   }
   return verification;
@@ -74,7 +77,7 @@ try {
   if (!server.version.includes("MariaDB") || server.selectedDatabase !== target.options.database || (args.apply && Number(server.readOnly) !== 0)) throw new MaintenanceError("Destino no coincide o no permite el mantenimiento previsto.");
   report.serverVersion = server.version;
   if (args.apply) {
-    const [lock] = await connection.query("SELECT GET_LOCK(?,10) AS acquired", [`ft:ddl:${target.fingerprint.slice(0,32)}`]);
+    const [lock] = await connection.query("SELECT GET_LOCK(?,10) AS acquired", [`ft:ddl:${target.fingerprint.slice(0, 32)}`]);
     if (Number(lock.acquired) !== 1) throw new MaintenanceError("Otro mantenimiento está en curso.");
     locked = true;
     await connection.query("SET SESSION time_zone='+00:00'");
@@ -127,13 +130,15 @@ try {
     const allowedAlter = new Set(loaded.plan.alterTables ?? []);
     for (const pair of renames) allowedAlter.add(pair.from);
     const changed = Object.keys(before).filter((name) => before[name] !== after[name] && !allowedAlter.has(name));
-    const added = Object.keys(after).filter((name) => !before[name]).sort();
+    const added = Object.keys(after)
+      .filter((name) => !before[name])
+      .sort();
     if (changed.length || JSON.stringify(added) !== JSON.stringify([...loaded.plan.createTables, ...renames.map((p) => p.to)].sort())) throw new MaintenanceError("Se detectó cambio de estructura fuera de las tablas autorizadas.");
     report.afterSchemaHashes = after;
     report.existingTablesUnchanged = true;
     report.status = "applied_and_verified";
     await save();
-    console.log(`Verificado: ${report.verification.length} tablas, ${report.verification.reduce((n,t) => n+t.columns,0)} columnas con comentarios exactos y relaciones/semillas correctas. Estructuras previas sin cambios.`);
+    console.log(`Verificado: ${report.verification.length} tablas, ${report.verification.reduce((n, t) => n + t.columns, 0)} columnas con comentarios exactos y relaciones/semillas correctas. Estructuras previas sin cambios.`);
     if (args["prisma-sync"]) {
       const sourceAgain = await readDevelopmentTarget();
       if (sourceAgain.envSha256 !== target.envSha256) throw new MaintenanceError(".env.development cambió; no sincronizar otro destino.");
@@ -143,7 +148,9 @@ try {
       await save();
       try {
         const result = await promisify(execFile)(process.execPath, [npmCli, "run", "prisma-sync"], {
-          cwd: root, windowsHide: true, maxBuffer: 20 * 1024 * 1024,
+          cwd: root,
+          windowsHide: true,
+          maxBuffer: 20 * 1024 * 1024,
           env: { ...process.env, NODE_ENV: "development", PRISMA_DATABASE_FACTORING_URL: target.url },
         });
         await writeFile(logPath, redact(result.stdout + "\n" + result.stderr, target));
@@ -164,7 +171,7 @@ try {
   process.exitCode = 1;
 } finally {
   if (connection) {
-    if (locked) await connection.query("SELECT RELEASE_LOCK(?)", [`ft:ddl:${target.fingerprint.slice(0,32)}`]).catch(() => {});
+    if (locked) await connection.query("SELECT RELEASE_LOCK(?)", [`ft:ddl:${target.fingerprint.slice(0, 32)}`]).catch(() => {});
     await connection.end().catch(() => {});
   }
   report.finishedAt = new Date().toISOString();

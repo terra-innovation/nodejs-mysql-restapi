@@ -1,0 +1,37 @@
+{
+  "startedAt": "2026-10-17T16:36:09.172Z",
+  "finishedAt": "2026-10-17T16:41:15.865Z",
+  "commit": "6d537f47ffae966c94889eb540f0dd006945ccea",
+  "dirty": true,
+  "scope": "integration",
+  "platform": "win32",
+  "arch": "x64",
+  "node": "24.21.0",
+  "npm": "11.19.0",
+  "results": [
+    {
+      "id": "prisma",
+      "status": "passed",
+      "exitCode": 0,
+      "log": "docs/registros/pruebas/test-ci-backend-prisma.log"
+    },
+    {
+      "id": "doctor",
+      "status": "passed",
+      "exitCode": 0,
+      "log": "docs/registros/pruebas/test-ci-backend-doctor.log"
+    },
+    {
+      "id": "integration",
+      "status": "passed",
+      "exitCode": 0,
+      "log": "docs/registros/pruebas/test-ci-backend-integration.log"
+    },
+    {
+      "id": "evidence",
+      "status": "passed",
+      "exitCode": 0,
+      "log": "docs/registros/pruebas/test-ci-backend-evidence.log"
+    }
+  ]
+}

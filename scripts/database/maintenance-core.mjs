@@ -15,36 +15,64 @@ export const identifier = (value) => {
 // Separar por ';' directamente rompería comentarios/valores como los de este DDL.
 export function splitSql(sql) {
   const statements = [];
-  let current = "", quote = null, comment = null;
+  let current = "",
+    quote = null,
+    comment = null;
   for (let i = 0; i < sql.length; i++) {
-    const c = sql[i], next = sql[i + 1];
+    const c = sql[i],
+      next = sql[i + 1];
     if (comment === "line") {
-      if (c === "\n") { comment = null; current += "\n"; }
+      if (c === "\n") {
+        comment = null;
+        current += "\n";
+      }
       continue;
     }
     if (comment === "block") {
-      if (c === "*" && next === "/") { comment = null; current += " "; i++; }
+      if (c === "*" && next === "/") {
+        comment = null;
+        current += " ";
+        i++;
+      }
       continue;
     }
     if (quote) {
       if (c === "\\") throw new Error("Usar comillas duplicadas en SQL, sin escapes dependientes de sql_mode.");
       current += c;
       if (c === quote) {
-        if (next === quote) { current += next; i++; } else quote = null;
+        if (next === quote) {
+          current += next;
+          i++;
+        } else quote = null;
       }
       continue;
     }
-    if (c === "-" && next === "-" && /\s/.test(sql[i + 2] ?? "")) { comment = "line"; i++; continue; }
-    if (c === "#") { comment = "line"; continue; }
+    if (c === "-" && next === "-" && /\s/.test(sql[i + 2] ?? "")) {
+      comment = "line";
+      i++;
+      continue;
+    }
+    if (c === "#") {
+      comment = "line";
+      continue;
+    }
     if (c === "/" && next === "*") {
       if (sql[i + 2] === "!" || sql[i + 2] === "+" || sql.slice(i, i + 4).toUpperCase() === "/*M!") {
         throw new Error("Comentarios ejecutables o directivas SQL no permitidos.");
       }
-      comment = "block"; i++; continue;
+      comment = "block";
+      i++;
+      continue;
     }
-    if (["'", '"', "`"].includes(c)) { quote = c; current += c; continue; }
-    if (c === ";") { if (current.trim()) statements.push(current.trim()); current = ""; }
-    else current += c;
+    if (["'", '"', "`"].includes(c)) {
+      quote = c;
+      current += c;
+      continue;
+    }
+    if (c === ";") {
+      if (current.trim()) statements.push(current.trim());
+      current = "";
+    } else current += c;
   }
   if (quote || comment === "block") throw new Error("SQL incompleto: comilla o comentario sin cerrar.");
   if (current.trim()) statements.push(current.trim());
@@ -54,11 +82,18 @@ export function splitSql(sql) {
 export function describeStatements(statements, plan) {
   const renames = plan.renameTables ?? [];
   const copies = plan.copyTables ?? [];
-  for (const pair of renames) { identifier(pair.from); identifier(pair.to); }
+  for (const pair of renames) {
+    identifier(pair.from);
+    identifier(pair.to);
+  }
   if (new Set(renames.flatMap((p) => [p.from, p.to])).size !== renames.length * 2) throw new Error("Renombres repetidos o encadenados no permitidos.");
-  const foundRename = new Set(), foundCopy = new Set();
-  const create = new Set(plan.createTables ?? []), alter = new Set(plan.alterTables ?? []);
-  const seeds = new Set(plan.seedTables ?? []), foundCreate = new Set(), foundAlter = new Set();
+  const foundRename = new Set(),
+    foundCopy = new Set();
+  const create = new Set(plan.createTables ?? []),
+    alter = new Set(plan.alterTables ?? []);
+  const seeds = new Set(plan.seedTables ?? []),
+    foundCreate = new Set(),
+    foundAlter = new Set();
   for (const value of [...create, ...alter, ...seeds]) identifier(value);
   if ([...create].some((t) => alter.has(t)) || [...seeds].some((t) => !create.has(t))) {
     throw new Error("Las semillas solo se permiten en tablas nuevas; no mezclar creación y alteración de una tabla.");
@@ -76,7 +111,12 @@ export function describeStatements(statements, plan) {
     const copy = sql.match(/^INSERT\s+INTO\s+`([a-z][a-z0-9_]*)`\s*\(([^)]+)\)\s+SELECT\s+([\s\S]+?)\s+FROM\s+`([a-z][a-z0-9_]*)`$/i);
     if (copy) {
       const pair = copies.find((p) => p.from === copy[4] && p.to === copy[1]);
-      const columns = (text) => text.split(",").map((c) => { const m = c.trim().match(/^`([a-z_][a-z0-9_]*)`$/i); if (!m) throw new Error("Copia con expresión no permitida."); return m[1]; });
+      const columns = (text) =>
+        text.split(",").map((c) => {
+          const m = c.trim().match(/^`([a-z_][a-z0-9_]*)`$/i);
+          if (!m) throw new Error("Copia con expresión no permitida.");
+          return m[1];
+        });
       if (!pair || !foundCreate.has(pair.to) || !alter.has(pair.from) || foundCopy.has(pair.to) || columns(copy[2]).length !== columns(copy[3]).length) throw new Error("Copia fuera de alcance.");
       foundCopy.add(pair.to);
       return { index: index + 1, kind: "copy", table: pair.to, source: pair.from, sql };
@@ -127,20 +167,32 @@ export async function readDevelopmentTarget(envPath = path.join(root, ".env.deve
   const bytes = await readFile(envPath);
   const values = dotenv.parse(bytes);
   let url;
-  try { url = new URL(values.PRISMA_DATABASE_FACTORING_URL); } catch { throw new Error("Falta una URL MariaDB válida en .env.development."); }
+  try {
+    url = new URL(values.PRISMA_DATABASE_FACTORING_URL);
+  } catch {
+    throw new Error("Falta una URL MariaDB válida en .env.development.");
+  }
   if (url.protocol !== "mysql:" || !url.username || !url.pathname.slice(1)) throw new Error("URL de desarrollo incompleta o protocolo no permitido.");
   const allowed = new Set(["connection_limit", "pool_timeout", "connect_timeout", "socket_timeout", "timezone"]);
   if ([...url.searchParams.keys()].some((key) => !allowed.has(key))) throw new Error("Opciones de conexión no soportadas; revisar SSL/socket sin descartar opciones silenciosamente.");
   const database = decodeURIComponent(url.pathname.slice(1));
   if (database.includes("/")) throw new Error("Nombre de base de desarrollo inválido.");
   const options = {
-    host: url.hostname, port: Number(url.port || 3306), database,
-    user: decodeURIComponent(url.username), password: decodeURIComponent(url.password),
-    charset: "utf8mb4", connectTimeout: 8000, socketTimeout: 30000, multipleStatements: false,
+    host: url.hostname,
+    port: Number(url.port || 3306),
+    database,
+    user: decodeURIComponent(url.username),
+    password: decodeURIComponent(url.password),
+    charset: "utf8mb4",
+    connectTimeout: 8000,
+    socketTimeout: 30000,
+    multipleStatements: false,
     ...(url.searchParams.has("timezone") ? { timezone: url.searchParams.get("timezone") } : {}),
   };
   return {
-    options, url: values.PRISMA_DATABASE_FACTORING_URL, envSha256: sha256(bytes),
+    options,
+    url: values.PRISMA_DATABASE_FACTORING_URL,
+    envSha256: sha256(bytes),
     fingerprint: sha256(JSON.stringify({ host: options.host, port: options.port, database })),
   };
 }

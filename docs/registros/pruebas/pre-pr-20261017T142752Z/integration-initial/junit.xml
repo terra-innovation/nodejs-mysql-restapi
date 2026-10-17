@@ -1,0 +1,1247 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="576" failures="1" errors="0" time="552.2169579">
+    <testsuite name="tests/mariadb/appHttp.test.ts" timestamp="2026-10-17T14:44:36.017Z" hostname="LENOVO" tests="29" failures="0" errors="0" skipped="0" time="19.135333">
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; raíz pública pasa filtros, CORS, trazabilidad y Helmet" time="0.7630927">
+        </testcase>
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; ping consulta MariaDB desde la ruta pública real" time="0.5119515">
+        </testcase>
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; ruta desconocida llega al manejador 404 JSON y conserva SQL" time="0.5408762">
+        </testcase>
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; router montado: /api/v1/admin/servicio/factoring/factoringliquidacion/master/factoring/00000000-0000-0000-0000-000000000000 exige sesión" time="0.562959">
+        </testcase>
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; router montado: /api/v1/financiero/servicio/factoring/factoringliquidacion/master/factoring/00000000-0000-0000-0000-000000000000 exige sesión" time="0.6450944">
+        </testcase>
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; router montado: /api/v1/empresario/servicio/factoring/factoring/listar exige sesión" time="0.5060243">
+        </testcase>
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; router montado: /api/v1/inversionista/factoring/factoring/listar exige sesión" time="0.4096675">
+        </testcase>
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; router montado: /api/v1/usuario/archivo/descargar/00000000-0000-0000-0000-000000000000 exige sesión" time="0.4688004">
+        </testcase>
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; router secure montado exige sesión para actualizar accesos" time="0.4669019">
+        </testcase>
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; creación real rechaza sesión ausente sin escrituras" time="0.4615025">
+        </testcase>
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; creación real rechaza sesión formato sin escrituras" time="0.4069682">
+        </testcase>
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; creación real rechaza sesión expirado sin escrituras" time="0.3693862">
+        </testcase>
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; creación real rechaza sesión firma sin escrituras" time="0.3502427">
+        </testcase>
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; creación real rechaza sesión rol sin escrituras" time="0.4295952">
+        </testcase>
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; Zod devuelve 400 a través del manejador global, sin escrituras" time="0.4827373">
+        </testcase>
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; PEN: crea y relee liquidación con permisos reales de ambos perfiles" time="1.485278">
+        </testcase>
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; USD: crea y relee liquidación con permisos reales de ambos perfiles" time="1.2036213">
+        </testcase>
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; fallo SQL devuelve 500 global y revierte cabecera/detalles" time="1.0811327">
+        </testcase>
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; error inesperado de conexión llega a 500 global y notifica solo al proveedor sustituido" time="0.374448">
+        </testcase>
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; filtro IP real: blacklist rechaza antes de CORS y rutas" time="0.4052353">
+        </testcase>
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; filtro IP real: blacklist global rechaza antes de CORS y rutas" time="0.4081582">
+        </testcase>
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; filtro IP real: whitelist vacía rechaza antes de CORS y rutas" time="0.4623696">
+        </testcase>
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; filtro IP real: fuera de whitelist rechaza antes de CORS y rutas" time="0.4079052">
+        </testcase>
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; User-Agent bloqueado devuelve 404 vacío en producción" time="0.3790797">
+        </testcase>
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; preflight CORS: origen ajeno" time="0.3858326">
+        </testcase>
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; preflight CORS: origen permitido" time="0.3813884">
+        </testcase>
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; producción rechaza solicitudes sin Origin mediante CORS, incluso en ping" time="0.3330428">
+        </testcase>
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; JSON inválido devuelve 400 antes de filtros y conserva SQL" time="0.3733555">
+        </testcase>
+        <testcase classname="tests/mariadb/appHttp.test.ts" name="Montaje global real de Express con MariaDB &gt; limitador global real: 500 solicitudes admitidas y siguiente 429 por IP" time="4.0562429">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/mariadb/authHttp.test.ts" timestamp="2026-10-17T14:44:36.060Z" hostname="LENOVO" tests="37" failures="0" errors="0" skipped="0" time="19.5899459">
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; monta detracciones en la app real y comprueba el rol financiero vigente" time="2.6549379">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; login rol 2 emite JWT firmado y conserva credenciales" time="0.4599481">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; login rol 3 emite JWT firmado y conserva credenciales" time="0.4772311">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; login rol 4 emite JWT firmado y conserva credenciales" time="0.4642523">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; login rol 5 emite JWT firmado y conserva credenciales" time="0.4734922">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; login rol 6 emite JWT firmado y conserva credenciales" time="0.4735361">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; login rechaza correo ajeno sin cambiar SQL" time="0.4782821">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; login rechaza password incorrecta sin cambiar SQL" time="0.4462216">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; login rechaza email inválido sin cambiar SQL" time="0.4217715">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; login rechaza password corta sin cambiar SQL" time="0.4624702">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; login rechaza password ausente sin cambiar SQL" time="0.4349841">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; refresco conserva exp/iat, depura perfil y produce menú administrativo" time="0.5336564">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; refresco incorpora rol financiero posterior al login sin extender la sesión" time="0.6199107">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; refresco retira vínculo inactivo estado 0; revoca también permisos del JWT anterior" time="1.0702206">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; refresco retira rol inactivo estado 0; revoca también permisos del JWT anterior" time="0.7578103">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; refresco retira vínculo inactivo estado 2; revoca también permisos del JWT anterior" time="0.6332367">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; refresco retira rol inactivo estado 2; revoca también permisos del JWT anterior" time="0.5725061">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; login sin credencial devuelve 404 sin token ni notificación" time="0.3976529">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; retirar físicamente el vínculo revoca el JWT previo" time="0.3902108">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; desactivar cuenta después del login rechaza JWT previo en rutas protegidas" time="0.4413971">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; JWT firmado con rol ajeno a SQL no concede ese permiso" time="0.3515026">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; fallo al leer permisos vigentes no autoriza con el JWT anterior" time="0.3461196">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; login con usuario estado 0: solo estado 1 autentica y concede roles" time="0.3571906">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; login con credencial estado 0: solo estado 1 autentica y concede roles" time="0.3032987">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; login con vínculo estado 0: solo estado 1 autentica y concede roles" time="0.338894">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; login con rol estado 0: solo estado 1 autentica y concede roles" time="0.356113">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; login con usuario estado 2: solo estado 1 autentica y concede roles" time="0.3204862">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; login con credencial estado 2: solo estado 1 autentica y concede roles" time="0.331197">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; login con vínculo estado 2: solo estado 1 autentica y concede roles" time="0.4012782">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; login con rol estado 2: solo estado 1 autentica y concede roles" time="0.3933651">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; refresco rechaza expirado sin escrituras" time="0.3615889">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; refresco rechaza sin exp sin escrituras" time="0.3920761">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; refresco rechaza usuario inexistente sin escrituras" time="0.3753845">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; refresco rechaza sin idusuario sin escrituras" time="0.3880133">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; fallo de lectura Prisma en refresco devuelve 500 y conserva SQL" time="0.392898">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; login limita diez intentos por IP; otra IP puede autenticar" time="0.6734132">
+        </testcase>
+        <testcase classname="tests/mariadb/authHttp.test.ts" name="Login y refresco de accesos: app real, bcrypt y MariaDB &gt; refresco limita diez solicitudes por usuario, aunque cambie IP, con Retry-After" time="0.8127801">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/mariadb/business.test.ts" timestamp="2026-10-17T14:44:36.097Z" hostname="LENOVO" tests="15" failures="0" errors="0" skipped="0" time="8.8332223">
+        <testcase classname="tests/mariadb/business.test.ts" name="XML: guardado, lectura y rollback reales &gt; persiste moneda PEN, fechas y todos los detalles; vuelve a leer por Prisma y DAO" time="1.0402368">
+        </testcase>
+        <testcase classname="tests/mariadb/business.test.ts" name="XML: guardado, lectura y rollback reales &gt; persiste moneda USD, fechas y todos los detalles; vuelve a leer por Prisma y DAO" time="0.5425898">
+        </testcase>
+        <testcase classname="tests/mariadb/business.test.ts" name="XML: guardado, lectura y rollback reales &gt; vencimiento ausente permanece NULL al leer desde MariaDB" time="0.5502235">
+        </testcase>
+        <testcase classname="tests/mariadb/business.test.ts" name="XML: guardado, lectura y rollback reales &gt; fallo SQL tardío al vincular el PDF revierte cabecera, detalles y primer vínculo" time="0.6889434">
+        </testcase>
+        <testcase classname="tests/mariadb/business.test.ts" name="XML: guardado, lectura y rollback reales &gt; XML inválido se rechaza sin registros parciales" time="0.338095">
+        </testcase>
+        <testcase classname="tests/mariadb/business.test.ts" name="XML: guardado, lectura y rollback reales &gt; XML inválido se rechaza sin registros parciales" time="0.2999269">
+        </testcase>
+        <testcase classname="tests/mariadb/business.test.ts" name="XML: guardado, lectura y rollback reales &gt; moneda sin maestro revierte toda la importación" time="0.3754799">
+        </testcase>
+        <testcase classname="tests/mariadb/business.test.ts" name="Aprobación: estados, rollback y concurrencia reales &gt; aprueba, vincula la propuesta, registra ambos historiales y rechaza la repetición" time="0.7726823">
+        </testcase>
+        <testcase classname="tests/mariadb/business.test.ts" name="Aprobación: estados, rollback y concurrencia reales &gt; otro usuario no puede aprobar y no deja escrituras" time="0.5191293">
+        </testcase>
+        <testcase classname="tests/mariadb/business.test.ts" name="Aprobación: estados, rollback y concurrencia reales &gt; si la propuesta pierde vigencia después de leerla, revierte la reserva y el historial" time="0.5311502">
+        </testcase>
+        <testcase classname="tests/mariadb/business.test.ts" name="Aprobación: estados, rollback y concurrencia reales &gt; solicitudes simultáneas sin coordinador dejan una sola aprobación" time="0.6756652">
+        </testcase>
+        <testcase classname="tests/mariadb/business.test.ts" name="Aprobación: estados, rollback y concurrencia reales &gt; error de proveedor de email revierte estados, vínculo y ambos historiales" time="0.5714439">
+        </testcase>
+        <testcase classname="tests/mariadb/business.test.ts" name="Aprobación: estados, rollback y concurrencia reales &gt; fallo SQL al actualizar factoring revierte el cambio de propuesta y ambos historiales" time="0.5567057">
+        </testcase>
+        <testcase classname="tests/mariadb/business.test.ts" name="Aprobación: estados, rollback y concurrencia reales &gt; dos solicitudes concurrentes aprueban una sola vez (propuestas distintas: false)" time="0.6366365">
+        </testcase>
+        <testcase classname="tests/mariadb/business.test.ts" name="Aprobación: estados, rollback y concurrencia reales &gt; dos solicitudes concurrentes aprueban una sola vez (propuestas distintas: true)" time="0.7145715">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/mariadb/connectedFlow.test.ts" timestamp="2026-10-17T14:44:36.112Z" hostname="LENOVO" tests="10" failures="0" errors="0" skipped="0" time="22.0454767">
+        <testcase classname="tests/mariadb/connectedFlow.test.ts" name="Recorrido conectado: XML → operación → propuesta → aprobación → inicio → liquidación &gt; PEN, pago anticipado conserva trazabilidad e importes" time="3.6560507">
+        </testcase>
+        <testcase classname="tests/mariadb/connectedFlow.test.ts" name="Recorrido conectado: XML → operación → propuesta → aprobación → inicio → liquidación &gt; PEN, pago puntual conserva trazabilidad e importes" time="2.2034404">
+        </testcase>
+        <testcase classname="tests/mariadb/connectedFlow.test.ts" name="Recorrido conectado: XML → operación → propuesta → aprobación → inicio → liquidación &gt; PEN, pago mora conserva trazabilidad e importes" time="2.035554">
+        </testcase>
+        <testcase classname="tests/mariadb/connectedFlow.test.ts" name="Recorrido conectado: XML → operación → propuesta → aprobación → inicio → liquidación &gt; USD, pago anticipado conserva trazabilidad e importes" time="2.1509386">
+        </testcase>
+        <testcase classname="tests/mariadb/connectedFlow.test.ts" name="Recorrido conectado: XML → operación → propuesta → aprobación → inicio → liquidación &gt; USD, pago puntual conserva trazabilidad e importes" time="2.2358926">
+        </testcase>
+        <testcase classname="tests/mariadb/connectedFlow.test.ts" name="Recorrido conectado: XML → operación → propuesta → aprobación → inicio → liquidación &gt; USD, pago mora conserva trazabilidad e importes" time="1.99477">
+        </testcase>
+        <testcase classname="tests/mariadb/connectedFlow.test.ts" name="Recorrido conectado: XML → operación → propuesta → aprobación → inicio → liquidación &gt; PEN: no aprueba propuesta aún no disponible; conserva etapas previas" time="1.3467276">
+        </testcase>
+        <testcase classname="tests/mariadb/connectedFlow.test.ts" name="Recorrido conectado: XML → operación → propuesta → aprobación → inicio → liquidación &gt; USD: no aprueba propuesta aún no disponible; conserva etapas previas" time="1.4982561">
+        </testcase>
+        <testcase classname="tests/mariadb/connectedFlow.test.ts" name="Recorrido conectado: XML → operación → propuesta → aprobación → inicio → liquidación &gt; PEN: fallo tardío de liquidación conserva recorrido confirmado y permite reintentar" time="2.1963581">
+        </testcase>
+        <testcase classname="tests/mariadb/connectedFlow.test.ts" name="Recorrido conectado: XML → operación → propuesta → aprobación → inicio → liquidación &gt; USD: fallo tardío de liquidación conserva recorrido confirmado y permite reintentar" time="2.6900055">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/mariadb/detraccion.test.ts" timestamp="2026-10-17T14:44:36.127Z" hostname="LENOVO" tests="1" failures="1" errors="0" skipped="0" time="0">
+        <testcase classname="tests/mariadb/detraccion.test.ts" name="tests/mariadb/detraccion.test.ts" time="0">
+            <system-out>
+[config] No se pudo cargar el archivo predeterminado. Se validarán exclusivamente las variables disponibles en el proceso; no se cargará .env.example.
+[config] {&quot;selection&quot;:&quot;default&quot;,&quot;file&quot;:&quot;.env.test&quot;,&quot;loaded&quot;:false,&quot;fileVariables&quot;:0,&quot;retainedVariables&quot;:0,&quot;conflictingKeys&quot;:[]} precedence=process.env
+[config] No se encontró PORT; se usará el valor predeterminado: 3000.
+[config] No se encontró WEB_SITE_PORT; se usará el valor predeterminado: 0.
+[config] No se encontró DECOLECTA_BASE_URL; se usará el valor predeterminado: URL predeterminada del proveedor.
+[config] No se encontró APISPERU_BASE_URL; se usará el valor predeterminado: URL predeterminada del proveedor.
+
+            </system-out>
+            <system-err>
+[config] Variable WEB_SITE: ausente. Regla: invalid_type. No se muestra su valor.
+[config] Variable TOKEN_KEY_JWT: ausente. Regla: invalid_type. No se muestra su valor.
+[config] Variable TOKEN_KEY_OTP: ausente. Regla: invalid_type. No se muestra su valor.
+[config] Variable MAIL_ENCRYPTION_KEY_COFIG: ausente. Regla: invalid_type. No se muestra su valor.
+[config] Variable TELEGRAM_ACTIVE: ausente. Regla: invalid_value. No se muestra su valor.
+[config] Variable TELEGRAM_IMPORTANT_TOKEN: ausente. Regla: invalid_type. No se muestra su valor.
+[config] Variable TELEGRAM_IMPORTANT_CHATID: ausente. Regla: invalid_type. No se muestra su valor.
+[config] Variable TELEGRAM_IMFORMATION_TOKEN: ausente. Regla: invalid_type. No se muestra su valor.
+[config] Variable TELEGRAM_IMFORMATION_CHATID: ausente. Regla: invalid_type. No se muestra su valor.
+[config] Variable TELEGRAM_WARING_TOKEN: ausente. Regla: invalid_type. No se muestra su valor.
+[config] Variable TELEGRAM_WARRING_CHATID: ausente. Regla: invalid_type. No se muestra su valor.
+[config] Variable TELEGRAM_ERROR_TOKEN: ausente. Regla: invalid_type. No se muestra su valor.
+[config] Variable TELEGRAM_ERROR_CHATID: ausente. Regla: invalid_type. No se muestra su valor.
+[config] Variable PRISMA_DATABASE_FACTORING_NICKNAME: ausente. Regla: invalid_type. No se muestra su valor.
+[config] Variable PRISMA_DATABASE_FACTORING_TRANSACTION_TIMEOUT: ausente. Regla: invalid_type. No se muestra su valor.
+[config] Variable LOG_LEVEL_CONSOLE: ausente. Regla: invalid_value. No se muestra su valor.
+[config] Variable LOG_LEVEL_FILE: ausente. Regla: invalid_value. No se muestra su valor.
+[config] Variable PRISMA_DATABASE_FACTORING_LOG_QUERY: ausente. Regla: invalid_value. No se muestra su valor.
+[config] Variable PRISMA_DATABASE_FACTORING_LOG_INFO: ausente. Regla: invalid_value. No se muestra su valor.
+[config] Variable PRISMA_DATABASE_FACTORING_LOG_WARN: ausente. Regla: invalid_value. No se muestra su valor.
+[config] Variable PRISMA_DATABASE_FACTORING_LOG_ERROR: ausente. Regla: invalid_value. No se muestra su valor.
+[config] Variable PRISMA_DATABASE_FACTORING_LOG_SLOW_QUERIES: ausente. Regla: invalid_value. No se muestra su valor.
+[config] Variable PRISMA_DATABASE_FACTORING_SLOW_QUERY_THRESHOLD: ausente. Regla: invalid_type. No se muestra su valor.
+[config] Variable DECOLECTA_API_TOKEN: ausente. Regla: invalid_type. No se muestra su valor.
+[config] Variable APISPERU_API_TOKEN: ausente. Regla: invalid_type. No se muestra su valor.
+
+            </system-err>
+            <failure message="La configuración contiene variables ausentes o inválidas." type="Error">
+Error: La configuración contiene variables ausentes o inválidas.
+ ❯ src/config.ts:67:25
+ ❯ src/utils/logger.pino.ts:5:1
+ ❯ src/daos/archivotipo.Dao.ts:7:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { code: &apos;CONFIG_INVALID&apos; }
+            </failure>
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/mariadb/entrepreneur.test.ts" timestamp="2026-10-17T14:44:36.167Z" hostname="LENOVO" tests="27" failures="0" errors="0" skipped="0" time="14.4910253">
+        <testcase classname="tests/mariadb/entrepreneur.test.ts" name="Registro XML empresario: elegibilidad y persistencia reales &gt; acepta PEN con una cuota y líneas exactamente iguales al neto; reutiliza empresas" time="0.9005263">
+        </testcase>
+        <testcase classname="tests/mariadb/entrepreneur.test.ts" name="Registro XML empresario: elegibilidad y persistencia reales &gt; acepta USD con una cuota y líneas exactamente iguales al neto; reutiliza empresas" time="0.4662075">
+        </testcase>
+        <testcase classname="tests/mariadb/entrepreneur.test.ts" name="Registro XML empresario: elegibilidad y persistencia reales &gt; rechaza otro usuario sin dejar factura" time="0.4271057">
+        </testcase>
+        <testcase classname="tests/mariadb/entrepreneur.test.ts" name="Registro XML empresario: elegibilidad y persistencia reales &gt; rechaza asociacion inactiva sin dejar factura" time="0.378285">
+        </testcase>
+        <testcase classname="tests/mariadb/entrepreneur.test.ts" name="Registro XML empresario: elegibilidad y persistencia reales &gt; rechaza cedente inactivo sin dejar factura" time="0.5518326">
+        </testcase>
+        <testcase classname="tests/mariadb/entrepreneur.test.ts" name="Registro XML empresario: elegibilidad y persistencia reales &gt; rechaza contado y revierte todos los detalles" time="0.521631">
+        </testcase>
+        <testcase classname="tests/mariadb/entrepreneur.test.ts" name="Registro XML empresario: elegibilidad y persistencia reales &gt; rechaza dos cuotas y revierte todos los detalles" time="0.5047608">
+        </testcase>
+        <testcase classname="tests/mariadb/entrepreneur.test.ts" name="Registro XML empresario: elegibilidad y persistencia reales &gt; rechaza vencimiento a cinco dias y revierte todos los detalles" time="0.4953459">
+        </testcase>
+        <testcase classname="tests/mariadb/entrepreneur.test.ts" name="Registro XML empresario: elegibilidad y persistencia reales &gt; acepta vencimiento a seis días: frontera de la regla superior a cinco" time="0.6082555">
+        </testcase>
+        <testcase classname="tests/mariadb/entrepreneur.test.ts" name="Registro XML empresario: elegibilidad y persistencia reales &gt; factor_limite: sin linea devuelve 422 sin registros parciales" time="0.5608032">
+        </testcase>
+        <testcase classname="tests/mariadb/entrepreneur.test.ts" name="Registro XML empresario: elegibilidad y persistencia reales &gt; factor_limite: linea inactiva devuelve 422 sin registros parciales" time="0.6022178">
+        </testcase>
+        <testcase classname="tests/mariadb/entrepreneur.test.ts" name="Registro XML empresario: elegibilidad y persistencia reales &gt; factor_limite: neto excede disponible devuelve 422 sin registros parciales" time="0.5533265">
+        </testcase>
+        <testcase classname="tests/mariadb/entrepreneur.test.ts" name="Registro XML empresario: elegibilidad y persistencia reales &gt; cedente_limite: sin linea devuelve 422 sin registros parciales" time="0.5558711">
+        </testcase>
+        <testcase classname="tests/mariadb/entrepreneur.test.ts" name="Registro XML empresario: elegibilidad y persistencia reales &gt; cedente_limite: linea inactiva devuelve 422 sin registros parciales" time="0.5291297">
+        </testcase>
+        <testcase classname="tests/mariadb/entrepreneur.test.ts" name="Registro XML empresario: elegibilidad y persistencia reales &gt; cedente_limite: neto excede disponible devuelve 422 sin registros parciales" time="0.5968058">
+        </testcase>
+        <testcase classname="tests/mariadb/entrepreneur.test.ts" name="Registro XML empresario: elegibilidad y persistencia reales &gt; pagador_limite: sin linea devuelve 422 sin registros parciales" time="0.5343697">
+        </testcase>
+        <testcase classname="tests/mariadb/entrepreneur.test.ts" name="Registro XML empresario: elegibilidad y persistencia reales &gt; pagador_limite: linea inactiva devuelve 422 sin registros parciales" time="0.5655556">
+        </testcase>
+        <testcase classname="tests/mariadb/entrepreneur.test.ts" name="Registro XML empresario: elegibilidad y persistencia reales &gt; pagador_limite: neto excede disponible devuelve 422 sin registros parciales" time="0.5175722">
+        </testcase>
+        <testcase classname="tests/mariadb/entrepreneur.test.ts" name="Registro XML empresario: elegibilidad y persistencia reales &gt; pagador no registrado se rechaza y no se crea automáticamente" time="0.4753807">
+        </testcase>
+        <testcase classname="tests/mariadb/entrepreneur.test.ts" name="Registro XML empresario: elegibilidad y persistencia reales &gt; moneda sin maestro se rechaza y revierte el guardado" time="0.4740601">
+        </testcase>
+        <testcase classname="tests/mariadb/entrepreneur.test.ts" name="Registro XML empresario: elegibilidad y persistencia reales &gt; cedente desconocido no se crea automáticamente ni deja una factura" time="0.5035258">
+        </testcase>
+        <testcase classname="tests/mariadb/entrepreneur.test.ts" name="Registro XML empresario: elegibilidad y persistencia reales &gt; factura vinculada a operación con estado lógico 1 conserva el filtro de duplicados" time="0.7264158">
+        </testcase>
+        <testcase classname="tests/mariadb/entrepreneur.test.ts" name="Registro XML empresario: elegibilidad y persistencia reales &gt; factura vinculada a operación con estado lógico 0 conserva el filtro de duplicados" time="0.7455544">
+        </testcase>
+        <testcase classname="tests/mariadb/entrepreneur.test.ts" name="Registro XML empresario: elegibilidad y persistencia reales &gt; fallo SQL al vincular PDF revierte la etapa de persistencia" time="0.4931076">
+        </testcase>
+        <testcase classname="tests/mariadb/entrepreneur.test.ts" name="Registro XML empresario: elegibilidad y persistencia reales &gt; fallo SQL en enriquecimiento final revierte importación y conserva empresas existentes" time="0.5579994">
+        </testcase>
+        <testcase classname="tests/mariadb/entrepreneur.test.ts" name="Empresa: creación mediante DAO y transacciones reales (fuera de elegibilidad XML) &gt; crea, lee por RUC y rechaza duplicado sin reemplazar la empresa" time="0.2824452">
+        </testcase>
+        <testcase classname="tests/mariadb/entrepreneur.test.ts" name="Empresa: creación mediante DAO y transacciones reales (fuera de elegibilidad XML) &gt; fallo SQL al crear la segunda empresa revierte también la primera" time="0.3385366">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/mariadb/environment.test.ts" timestamp="2026-10-17T14:44:36.244Z" hostname="LENOVO" tests="4" failures="0" errors="0" skipped="0" time="0.8923804">
+        <testcase classname="tests/mariadb/environment.test.ts" name="Entorno desechable MariaDB: conexiones reales &gt; usa MariaDB 11.4.10, el esquema exclusivo y UTC" time="0.0222708">
+        </testcase>
+        <testcase classname="tests/mariadb/environment.test.ts" name="Entorno desechable MariaDB: conexiones reales &gt; restaura todas las tablas del snapshot sin copiar registros de desarrollo" time="0.310884">
+        </testcase>
+        <testcase classname="tests/mariadb/environment.test.ts" name="Entorno desechable MariaDB: conexiones reales &gt; conserva las claves foráneas y el charset de las tablas" time="0.2707371">
+        </testcase>
+        <testcase classname="tests/mariadb/environment.test.ts" name="Entorno desechable MariaDB: conexiones reales &gt; el cliente Prisma real puede leer facturas e ítems con su mapeo actual" time="0.0634513">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/mariadb/factoringConsolidado.test.ts" timestamp="2026-10-17T14:44:36.249Z" hostname="LENOVO" tests="1" failures="0" errors="0" skipped="0" time="0.9899343">
+        <testcase classname="tests/mariadb/factoringConsolidado.test.ts" name="consulta real conserva granularidad por factura, propuestas ausentes, eliminados y fechas Lima sin alterar la sesión" time="0.9802748">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/mariadb/factoringPago.test.ts" timestamp="2026-10-17T14:44:36.252Z" hostname="LENOVO" tests="13" failures="0" errors="0" skipped="0" time="15.709858">
+        <testcase classname="tests/mariadb/factoringPago.test.ts" name="un abono compartido cubre dos operaciones y no duplica el movimiento" time="1.6399779">
+        </testcase>
+        <testcase classname="tests/mariadb/factoringPago.test.ts" name="dos asignaciones concurrentes no exceden el disponible global" time="1.5048055">
+        </testcase>
+        <testcase classname="tests/mariadb/factoringPago.test.ts" name="relee el importe bancario actual después de esperar un lock de corrección" time="1.1976924">
+        </testcase>
+        <testcase classname="tests/mariadb/factoringPago.test.ts" name="no anula un movimiento si un pago se confirma mientras espera el lock" time="1.3023262">
+        </testcase>
+        <testcase classname="tests/mariadb/factoringPago.test.ts" name="inicio idempotente conserva un solo maestro y no reinicia sus pagos" time="1.383611">
+        </testcase>
+        <testcase classname="tests/mariadb/factoringPago.test.ts" name="el cierre manual permite céntimos pendientes o en exceso: 19999.98" time="0.9306933">
+        </testcase>
+        <testcase classname="tests/mariadb/factoringPago.test.ts" name="el cierre manual permite céntimos pendientes o en exceso: 20000.03" time="0.803663">
+        </testcase>
+        <testcase classname="tests/mariadb/factoringPago.test.ts" name="corregir, eliminar y reactivar recalcula sin cambiar el estado manual" time="1.1825384">
+        </testcase>
+        <testcase classname="tests/mariadb/factoringPago.test.ts" name="revierte detalle y versión si falla la escritura del historial" time="1.0569337">
+        </testcase>
+        <testcase classname="tests/mariadb/factoringPago.test.ts" name="rechaza versiones antiguas y detalles ajenos" time="1.0720316">
+        </testcase>
+        <testcase classname="tests/mariadb/factoringPago.test.ts" name="no admite egresos, monedas distintas ni referencias bancarias anuladas" time="1.0084709">
+        </testcase>
+        <testcase classname="tests/mariadb/factoringPago.test.ts" name="protege evidencia bancaria aplicada y muestra disponibilidad en el buscador" time="0.9266349">
+        </testcase>
+        <testcase classname="tests/mariadb/factoringPago.test.ts" name="recorre HTTP, JWT, validación, servicio y persistencia reales para alta, cierre y eliminación" time="1.6628268">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/mariadb/factoringPagoDdl.test.ts" timestamp="2026-10-17T14:44:36.282Z" hostname="LENOVO" tests="2" failures="0" errors="0" skipped="0" time="0.3321891">
+        <testcase classname="tests/mariadb/factoringPagoDdl.test.ts" name="la guarda de vacío rechaza filas y bloquea nuevas escrituras hasta completar el DDL" time="0.2495656">
+        </testcase>
+        <testcase classname="tests/mariadb/factoringPagoDdl.test.ts" name="aplica el manifiesto sobre el baseline vacío sin crear pagos ni eliminar controles" time="0.0570163">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/mariadb/factoringPagoRegularizacion.test.ts" timestamp="2026-10-17T14:44:36.285Z" hostname="LENOVO" tests="7" failures="0" errors="0" skipped="0" time="3.7116118">
+        <testcase classname="tests/mariadb/factoringPagoRegularizacion.test.ts" name="un solo bloque calcula candidatos y verifica el resultado sin parametros de sesion" time="0.799499">
+        </testcase>
+        <testcase classname="tests/mariadb/factoringPagoRegularizacion.test.ts" name="rechaza catalogo pendiente inactivo sin crear maestros" time="0.5347264">
+        </testcase>
+        <testcase classname="tests/mariadb/factoringPagoRegularizacion.test.ts" name="crea solo faltantes iniciados hasta el corte, preserva existentes y reintenta sin duplicar" time="0.5773783">
+        </testcase>
+        <testcase classname="tests/mariadb/factoringPagoRegularizacion.test.ts" name="revierte maestros e historial ante fallo de auditoria" time="0.4882592">
+        </testcase>
+        <testcase classname="tests/mariadb/factoringPagoRegularizacion.test.ts" name="revierte el lote si la verificacion detecta un evento sin su identificador de lote" time="0.4415787">
+        </testcase>
+        <testcase classname="tests/mariadb/factoringPagoRegularizacion.test.ts" name="rechaza responsable inactivo sin escribir" time="0.4295128">
+        </testcase>
+        <testcase classname="tests/mariadb/factoringPagoRegularizacion.test.ts" name="rechaza una sesion con transaccion abierta sin revertirla" time="0.4254492">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/mariadb/financialHttp.test.ts" timestamp="2026-10-17T14:44:36.293Z" hostname="LENOVO" tests="60" failures="0" errors="0" skipped="0" time="44.7512362">
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringpropuesta, PEN: crea con actor de sesión y consulta con ambos perfiles" time="3.1884862">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringpropuesta, USD: crea con actor de sesión y consulta con ambos perfiles" time="1.4104889">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringliquidacion, PEN: crea con actor de sesión y consulta con ambos perfiles" time="1.40405">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringliquidacion, USD: crea con actor de sesión y consulta con ambos perfiles" time="1.3786939">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringtransferenciacedente, PEN: crea con actor de sesión y consulta con ambos perfiles" time="1.4308776">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringtransferenciacedente, USD: crea con actor de sesión y consulta con ambos perfiles" time="1.1647192">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringpropuesta: creación rechaza sin sesión sin escribir" time="0.4251607">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringpropuesta: creación rechaza rol financiero sin escribir" time="0.4053784">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringpropuesta: creación rechaza JWT expirado sin escribir" time="0.385608">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringliquidacion: creación rechaza sin sesión sin escribir" time="0.4005024">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringliquidacion: creación rechaza rol financiero sin escribir" time="0.3919107">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringliquidacion: creación rechaza JWT expirado sin escribir" time="0.4212764">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringtransferenciacedente: creación rechaza sin sesión sin escribir" time="0.3755909">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringtransferenciacedente: creación rechaza rol financiero sin escribir" time="0.3633109">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringtransferenciacedente: creación rechaza JWT expirado sin escribir" time="0.3551441">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; admin/factoringpropuesta: consulta rechaza sin sesión antes de SQL de negocio" time="0.3295706">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; admin/factoringpropuesta: consulta rechaza rol ajeno antes de SQL de negocio" time="0.3311009">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; admin/factoringpropuesta: consulta rechaza JWT expirado antes de SQL de negocio" time="0.3640397">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; financiero/factoringpropuesta: consulta rechaza sin sesión antes de SQL de negocio" time="0.3787984">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; financiero/factoringpropuesta: consulta rechaza rol ajeno antes de SQL de negocio" time="0.3844654">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; financiero/factoringpropuesta: consulta rechaza JWT expirado antes de SQL de negocio" time="0.4349868">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; admin/factoringliquidacion: consulta rechaza sin sesión antes de SQL de negocio" time="0.360544">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; admin/factoringliquidacion: consulta rechaza rol ajeno antes de SQL de negocio" time="0.3622941">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; admin/factoringliquidacion: consulta rechaza JWT expirado antes de SQL de negocio" time="0.3965865">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; financiero/factoringliquidacion: consulta rechaza sin sesión antes de SQL de negocio" time="0.3764606">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; financiero/factoringliquidacion: consulta rechaza rol ajeno antes de SQL de negocio" time="0.3865114">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; financiero/factoringliquidacion: consulta rechaza JWT expirado antes de SQL de negocio" time="0.3863977">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; admin/factoringtransferenciacedente: consulta rechaza sin sesión antes de SQL de negocio" time="0.3816581">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; admin/factoringtransferenciacedente: consulta rechaza rol ajeno antes de SQL de negocio" time="0.4067896">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; admin/factoringtransferenciacedente: consulta rechaza JWT expirado antes de SQL de negocio" time="0.4207021">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; financiero/factoringtransferenciacedente: consulta rechaza sin sesión antes de SQL de negocio" time="0.3817011">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; financiero/factoringtransferenciacedente: consulta rechaza rol ajeno antes de SQL de negocio" time="0.3985876">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; financiero/factoringtransferenciacedente: consulta rechaza JWT expirado antes de SQL de negocio" time="0.3756477">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringpropuesta: campo requerido devuelve 400 sin cambios" time="0.8473628">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringpropuesta: identificador corto devuelve 400 sin cambios" time="0.8261083">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringpropuesta: fecha inválida devuelve 400 sin cambios" time="0.8566483">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringpropuesta: importe o porcentaje inválido devuelve 400 sin cambios" time="0.9347375">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringliquidacion: campo requerido devuelve 400 sin cambios" time="0.8863278">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringliquidacion: identificador corto devuelve 400 sin cambios" time="0.7990138">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringliquidacion: fecha inválida devuelve 400 sin cambios" time="0.8792081">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringliquidacion: importe o porcentaje inválido devuelve 400 sin cambios" time="0.8086875">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringtransferenciacedente: campo requerido devuelve 400 sin cambios" time="0.8699413">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringtransferenciacedente: identificador corto devuelve 400 sin cambios" time="0.8390318">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringtransferenciacedente: fecha inválida devuelve 400 sin cambios" time="0.855775">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringtransferenciacedente: importe o porcentaje inválido devuelve 400 sin cambios" time="0.9086713">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringpropuesta: operación inexistente devuelve 404 y conserva filas previas" time="0.8814919">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringliquidacion: operación inexistente devuelve 404 y conserva filas previas" time="0.7899296">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringtransferenciacedente: operación inexistente devuelve 404 y conserva filas previas" time="0.8286811">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringpropuesta: fallo SQL en cabecera devuelve 500 con rollback" time="1.1488033">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringpropuesta: fallo SQL en detalle o vínculo devuelve 500 con rollback" time="1.1214393">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringliquidacion: fallo SQL en cabecera devuelve 500 con rollback" time="1.0870837">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringliquidacion: fallo SQL en detalle o vínculo devuelve 500 con rollback" time="1.0268371">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringtransferenciacedente: fallo SQL en cabecera devuelve 500 con rollback" time="1.1922678">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringtransferenciacedente: fallo SQL en detalle o vínculo devuelve 500 con rollback" time="1.1986736">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringpropuesta: actualización, baja y activación por HTTP preservan importes y detalles" time="1.3088646">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringliquidacion: actualización, baja y activación por HTTP preservan importes y detalles" time="1.1390681">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringtransferenciacedente: actualización, baja y activación por HTTP preservan importes y detalles" time="1.1368421">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringpropuesta: ruta financiera de creación no existe (404)" time="0.4078823">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringliquidacion: ruta financiera de creación no existe (404)" time="0.4099947">
+        </testcase>
+        <testcase classname="tests/mariadb/financialHttp.test.ts" name="HTTP administrativo y financiero con MariaDB real &gt; factoringtransferenciacedente: ruta financiera de creación no existe (404)" time="0.3798963">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/mariadb/historicalAudit.test.ts" timestamp="2026-10-17T14:44:36.344Z" hostname="LENOVO" tests="5" failures="0" errors="0" skipped="0" time="3.1468877">
+        <testcase classname="tests/mariadb/historicalAudit.test.ts" name="audita sumas Decimal correctas sin falsos positivos ni escrituras" time="1.0459871">
+        </testcase>
+        <testcase classname="tests/mariadb/historicalAudit.test.ts" name="detecta importes concatenados sin atribuir automáticamente su causa" time="0.5485683">
+        </testcase>
+        <testcase classname="tests/mariadb/historicalAudit.test.ts" name="marca vínculos faltantes y conserva en alcance operaciones eliminadas" time="0.502484">
+        </testcase>
+        <testcase classname="tests/mariadb/historicalAudit.test.ts" name="detecta monedas inconsistentes aunque los importes coincidan" time="0.5380103">
+        </testcase>
+        <testcase classname="tests/mariadb/historicalAudit.test.ts" name="detecta varias facturas vinculadas aunque la cantidad declarada sea uno" time="0.4930977">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/mariadb/invoiceHttp.test.ts" timestamp="2026-10-17T14:44:36.350Z" hostname="LENOVO" tests="83" failures="0" errors="0" skipped="0" time="45.1513832">
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="HTTP, JWT, Multer, disco, parser y MariaDB reales &gt; /api/v1/admin/factura/factor/subir, PEN: carga ambos archivos, registra y lee moneda/fechas/actor" time="2.0464182">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="HTTP, JWT, Multer, disco, parser y MariaDB reales &gt; /api/v1/admin/factura/factor/subir, USD: carga ambos archivos, registra y lee moneda/fechas/actor" time="0.7006239">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="HTTP, JWT, Multer, disco, parser y MariaDB reales &gt; /api/v1/financiero/factura/factor/subir, PEN: carga ambos archivos, registra y lee moneda/fechas/actor" time="0.5885188">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="HTTP, JWT, Multer, disco, parser y MariaDB reales &gt; /api/v1/financiero/factura/factor/subir, USD: carga ambos archivos, registra y lee moneda/fechas/actor" time="0.5901992">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="HTTP, JWT, Multer, disco, parser y MariaDB reales &gt; /api/v1/empresario/servicio/factoring/factura/subir, PEN: carga ambos archivos, registra y lee moneda/fechas/actor" time="0.8152029">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="HTTP, JWT, Multer, disco, parser y MariaDB reales &gt; /api/v1/empresario/servicio/factoring/factura/subir, USD: carga ambos archivos, registra y lee moneda/fechas/actor" time="0.782975">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="HTTP, JWT, Multer, disco, parser y MariaDB reales &gt; lee las facturas de una operación desde el router administrativo con rol 2" time="0.9490479">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Eliminación de archivos por HTTP: contrato vigente &gt; sin sesión rechaza eliminación sin efectos" time="0.572245">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Eliminación de archivos por HTTP: contrato vigente &gt; rol incorrecto rechaza eliminación sin efectos" time="0.5731163">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Eliminación de archivos por HTTP: contrato vigente &gt; JWT expirado rechaza eliminación sin efectos" time="0.5303825">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Eliminación de archivos por HTTP: contrato vigente &gt; sin roles rechaza eliminación sin efectos" time="0.4508365">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Eliminación de archivos por HTTP: contrato vigente &gt; firma inválida rechaza eliminación sin efectos" time="0.4751196">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Eliminación de archivos por HTTP: contrato vigente &gt; XML: elimina lógicamente, conserva contenido y permite descarga" time="0.5149945">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Eliminación de archivos por HTTP: contrato vigente &gt; PDF: elimina lógicamente, conserva contenido y permite descarga" time="0.4723657">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Eliminación de archivos por HTTP: contrato vigente &gt; identificador invalid responde 400 sin tocar otros archivos" time="0.4669125">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Eliminación de archivos por HTTP: contrato vigente &gt; identificador 00000000-0000-0000-0000-000000000000 responde 404 sin tocar otros archivos" time="0.4980327">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Eliminación de archivos por HTTP: contrato vigente &gt; XML vinculado a factura: eliminación lógica conserva factura, vínculo y descarga" time="0.727738">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Eliminación de archivos por HTTP: contrato vigente &gt; PDF vinculado a factura: eliminación lógica conserva factura, vínculo y descarga" time="0.7648365">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Eliminación de archivos por HTTP: contrato vigente &gt; otro usuario con rol 5 puede eliminar un archivo ajeno: limitación de pertenencia" time="0.5460373">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Eliminación de archivos por HTTP: contrato vigente &gt; repetir la eliminación responde 204 y conserva una sola fila y copia" time="0.4907024">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Eliminación de archivos por HTTP: contrato vigente &gt; fallo SQL durante eliminación devuelve 500 y conserva fila activa y contenido" time="0.4997979">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; carga: expirado responde 401 antes de Multer" time="0.3534715">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; carga: sin usuario responde 401 antes de Multer" time="0.3274223">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; carga: sin roles responde 403 antes de Multer" time="0.3369866">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; carga: roles nulos responde 403 antes de Multer" time="0.2826532">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; carga: roles vacíos responde 403 antes de Multer" time="0.2839775">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; carga: rol desconocido responde 403 antes de Multer" time="0.3233115">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; /api/v1/admin/factura/factor/subir: expirado responde 401 y conserva las cargas previas" time="0.4461765">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; /api/v1/admin/factura/factor/subir: sin usuario responde 401 y conserva las cargas previas" time="0.4657127">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; /api/v1/admin/factura/factor/subir: sin roles responde 403 y conserva las cargas previas" time="0.4919821">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; /api/v1/admin/factura/factor/subir: roles nulos responde 403 y conserva las cargas previas" time="0.3953903">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; /api/v1/admin/factura/factor/subir: roles vacíos responde 403 y conserva las cargas previas" time="0.4337471">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; /api/v1/admin/factura/factor/subir: rol desconocido responde 403 y conserva las cargas previas" time="0.5012878">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; /api/v1/financiero/factura/factor/subir: expirado responde 401 y conserva las cargas previas" time="0.4607266">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; /api/v1/financiero/factura/factor/subir: sin usuario responde 401 y conserva las cargas previas" time="0.4441063">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; /api/v1/financiero/factura/factor/subir: sin roles responde 403 y conserva las cargas previas" time="0.4684315">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; /api/v1/financiero/factura/factor/subir: roles nulos responde 403 y conserva las cargas previas" time="0.5247224">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; /api/v1/financiero/factura/factor/subir: roles vacíos responde 403 y conserva las cargas previas" time="0.4604682">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; /api/v1/financiero/factura/factor/subir: rol desconocido responde 403 y conserva las cargas previas" time="0.5103694">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; /api/v1/empresario/servicio/factoring/factura/subir: expirado responde 401 y conserva las cargas previas" time="0.4827446">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; /api/v1/empresario/servicio/factoring/factura/subir: sin usuario responde 401 y conserva las cargas previas" time="0.4847685">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; /api/v1/empresario/servicio/factoring/factura/subir: sin roles responde 403 y conserva las cargas previas" time="0.4483505">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; /api/v1/empresario/servicio/factoring/factura/subir: roles nulos responde 403 y conserva las cargas previas" time="0.5107484">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; /api/v1/empresario/servicio/factoring/factura/subir: roles vacíos responde 403 y conserva las cargas previas" time="0.5339876">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; /api/v1/empresario/servicio/factoring/factura/subir: rol desconocido responde 403 y conserva las cargas previas" time="0.4795087">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; descarga: expirado responde 401 sin entregar el contenido" time="0.4499456">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; descarga: sin usuario responde 401 sin entregar el contenido" time="0.4370283">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; descarga: sin roles responde 403 sin entregar el contenido" time="0.412114">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; descarga: roles nulos responde 403 sin entregar el contenido" time="0.4002955">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; descarga: roles vacíos responde 403 sin entregar el contenido" time="0.4098353">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="JWT expirados y sesiones sin roles válidos &gt; descarga: rol desconocido responde 403 sin entregar el contenido" time="0.4348315">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Rechazos de carga: middleware y catálogos reales &gt; límite global 20 MiB: desplazamiento -1 byte(s) devuelve 200" time="0.9637048">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Rechazos de carga: middleware y catálogos reales &gt; límite global 20 MiB: desplazamiento 0 byte(s) devuelve 200" time="1.1162305">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Rechazos de carga: middleware y catálogos reales &gt; límite global 20 MiB: desplazamiento 1 byte(s) devuelve 400" time="0.5940963">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Rechazos de carga: middleware y catálogos reales &gt; autorización undefined devuelve 403 antes de guardar archivo" time="0.3060458">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Rechazos de carga: middleware y catálogos reales &gt; autorización invalid devuelve 401 antes de guardar archivo" time="0.4103444">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Rechazos de carga: middleware y catálogos reales &gt; autorización Bearer invalid devuelve 401 antes de guardar archivo" time="0.3570608">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Rechazos de carga: middleware y catálogos reales &gt; autorización wrong-key devuelve 401 antes de guardar archivo" time="0.3166457">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Rechazos de carga: middleware y catálogos reales &gt; autorización wrong-role devuelve 403 antes de guardar archivo" time="0.3827744">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Rechazos de carga: middleware y catálogos reales &gt; rechaza sin archivo sin registro de archivo" time="0.3550435">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Rechazos de carga: middleware y catálogos reales &gt; rechaza campo incorrecto sin registro de archivo" time="0.3363599">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Rechazos de carga: middleware y catálogos reales &gt; rechaza dos archivos sin registro de archivo" time="0.3928325">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Rechazos de carga: middleware y catálogos reales &gt; rechaza campos extra sin registro de archivo" time="0.3893783">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Rechazos de carga: middleware y catálogos reales &gt; rechaza extension bloqueada sin registro de archivo" time="0.4544481">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Rechazos de carga: middleware y catálogos reales &gt; rechaza PDF sin firma sin registro de archivo" time="0.5296491">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Rechazos de carga: middleware y catálogos reales &gt; rechaza contenido PNG sin registro de archivo" time="0.5226996">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Rechazos de carga: middleware y catálogos reales &gt; rechaza tipo inexistente sin registro de archivo" time="0.5799634">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Rechazos de carga: middleware y catálogos reales &gt; rechaza tamaño de catálogo sin registro de archivo" time="0.6909112">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Registro de factura: permisos, validación y rollback HTTP/SQL &gt; tipo de archivo con código inválido responde 400 antes del servicio; caracteriza temporal pendiente de limpieza" time="0.64033">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Registro de factura: permisos, validación y rollback HTTP/SQL &gt; /api/v1/admin/factura/factor/subir rechaza rol 2 aunque los archivos existan" time="0.8100518">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Registro de factura: permisos, validación y rollback HTTP/SQL &gt; /api/v1/financiero/factura/factor/subir rechaza rol 3 aunque los archivos existan" time="0.6160234">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Registro de factura: permisos, validación y rollback HTTP/SQL &gt; /api/v1/empresario/servicio/factoring/factura/subir rechaza rol 6 aunque los archivos existan" time="0.5187562">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Registro de factura: permisos, validación y rollback HTTP/SQL &gt; sin identificadores se rechaza y no deja una factura parcial" time="0.592882">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Registro de factura: permisos, validación y rollback HTTP/SQL &gt; uuid inválido se rechaza y no deja una factura parcial" time="0.5106859">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Registro de factura: permisos, validación y rollback HTTP/SQL &gt; archivo ausente se rechaza y no deja una factura parcial" time="0.4711094">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Registro de factura: permisos, validación y rollback HTTP/SQL &gt; tipos intercambiados se rechaza y no deja una factura parcial" time="0.5606257">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Registro de factura: permisos, validación y rollback HTTP/SQL &gt; XML inválido se rechaza y no deja una factura parcial" time="0.5863857">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Registro de factura: permisos, validación y rollback HTTP/SQL &gt; otra estructura se rechaza y no deja una factura parcial" time="0.6540086">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Registro de factura: permisos, validación y rollback HTTP/SQL &gt; otra clase documento se rechaza y no deja una factura parcial" time="0.6101108">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Registro de factura: permisos, validación y rollback HTTP/SQL &gt; moneda sin maestro se rechaza y no deja una factura parcial" time="0.7402063">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Registro de factura: permisos, validación y rollback HTTP/SQL &gt; fallo SQL PDF se rechaza y no deja una factura parcial" time="0.7480968">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Registro de factura: permisos, validación y rollback HTTP/SQL &gt; empresario no elegible se rechaza y no deja una factura parcial" time="0.7392068">
+        </testcase>
+        <testcase classname="tests/mariadb/invoiceHttp.test.ts" name="Registro de factura: permisos, validación y rollback HTTP/SQL &gt; fallo SQL al guardar archivo revierte el registro y elimina temporal; caracteriza copia final huérfana" time="0.5151105">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/mariadb/operation.test.ts" timestamp="2026-10-17T14:44:36.434Z" hostname="LENOVO" tests="27" failures="0" errors="0" skipped="0" time="22.9269227">
+        <testcase classname="tests/mariadb/operation.test.ts" name="Creación de factoring: servicios, XML y SQL reales &gt; crea en PEN con importes de factura, estado inicial, historial y asociación; no consume líneas" time="1.3108046">
+        </testcase>
+        <testcase classname="tests/mariadb/operation.test.ts" name="Creación de factoring: servicios, XML y SQL reales &gt; crea en USD con importes de factura, estado inicial, historial y asociación; no consume líneas" time="0.8338892">
+        </testcase>
+        <testcase classname="tests/mariadb/operation.test.ts" name="Creación de factoring: servicios, XML y SQL reales &gt; suma dos facturas Decimal sin concatenar y usa la emisión más antigua" time="1.063512">
+        </testcase>
+        <testcase classname="tests/mariadb/operation.test.ts" name="Creación de factoring: servicios, XML y SQL reales &gt; factura inexistente rechaza sin escritura parcial" time="0.6130249">
+        </testcase>
+        <testcase classname="tests/mariadb/operation.test.ts" name="Creación de factoring: servicios, XML y SQL reales &gt; cedenteid inexistente rechaza sin escritura parcial" time="0.6970735">
+        </testcase>
+        <testcase classname="tests/mariadb/operation.test.ts" name="Creación de factoring: servicios, XML y SQL reales &gt; aceptanteid inexistente rechaza sin escritura parcial" time="0.7430479">
+        </testcase>
+        <testcase classname="tests/mariadb/operation.test.ts" name="Creación de factoring: servicios, XML y SQL reales &gt; cuentabancariaid inexistente rechaza sin escritura parcial" time="0.7213273">
+        </testcase>
+        <testcase classname="tests/mariadb/operation.test.ts" name="Creación de factoring: servicios, XML y SQL reales &gt; monedaid inexistente rechaza sin escritura parcial" time="0.7164004">
+        </testcase>
+        <testcase classname="tests/mariadb/operation.test.ts" name="Creación de factoring: servicios, XML y SQL reales &gt; contactoaceptanteid inexistente rechaza sin escritura parcial" time="0.8742724">
+        </testcase>
+        <testcase classname="tests/mariadb/operation.test.ts" name="Creación de factoring: servicios, XML y SQL reales &gt; persona inexistente rechaza sin escritura parcial" time="0.8693477">
+        </testcase>
+        <testcase classname="tests/mariadb/operation.test.ts" name="Creación de factoring: servicios, XML y SQL reales &gt; colaborador inexistente rechaza sin escritura parcial" time="0.8965432">
+        </testcase>
+        <testcase classname="tests/mariadb/operation.test.ts" name="Creación de factoring: servicios, XML y SQL reales &gt; factura repetida en el mismo payload provoca rollback de operación e historial" time="1.3094082">
+        </testcase>
+        <testcase classname="tests/mariadb/operation.test.ts" name="Creación de factoring: servicios, XML y SQL reales &gt; segunda creación secuencial con la misma factura se rechaza sin duplicar asociación" time="0.8655097">
+        </testcase>
+        <testcase classname="tests/mariadb/operation.test.ts" name="Creación de factoring: servicios, XML y SQL reales &gt; fallo SQL en factoring_historial_estado revierte la operación completa" time="0.9164639">
+        </testcase>
+        <testcase classname="tests/mariadb/operation.test.ts" name="Creación de factoring: servicios, XML y SQL reales &gt; fallo SQL en factoring_factura revierte la operación completa" time="0.7981949">
+        </testcase>
+        <testcase classname="tests/mariadb/operation.test.ts" name="Creación de factoring: servicios, XML y SQL reales &gt; fallo de email revierte operación, historial y asociaciones, conservando la factura" time="0.7444184">
+        </testcase>
+        <testcase classname="tests/mariadb/operation.test.ts" name="Creación de factoring: servicios, XML y SQL reales &gt; dos solicitudes no crean dos operaciones con la misma factura (copias XML: false)" time="0.9623359">
+        </testcase>
+        <testcase classname="tests/mariadb/operation.test.ts" name="Creación de factoring: servicios, XML y SQL reales &gt; dos solicitudes no crean dos operaciones con la misma factura (copias XML: true)" time="0.9590873">
+        </testcase>
+        <testcase classname="tests/mariadb/operation.test.ts" name="Creación de factoring: servicios, XML y SQL reales &gt; solicitudes simultáneas sin coordinador no duplican operaciones" time="0.7286904">
+        </testcase>
+        <testcase classname="tests/mariadb/operation.test.ts" name="Creación de factoring: servicios, XML y SQL reales &gt; dos facturas distintas del mismo cedente pueden crear operaciones concurrentes" time="1.0367936">
+        </testcase>
+        <testcase classname="tests/mariadb/operation.test.ts" name="Creación de factoring: servicios, XML y SQL reales &gt; fallo en la segunda asociación revierte también la primera y conserva ambas facturas" time="1.0362328">
+        </testcase>
+        <testcase classname="tests/mariadb/operation.test.ts" name="Líneas: actualización administrativa real, sin reserva implícita &gt; actualiza factor: disponible=total-usado y conserva actor" time="0.7136117">
+        </testcase>
+        <testcase classname="tests/mariadb/operation.test.ts" name="Líneas: actualización administrativa real, sin reserva implícita &gt; actualiza cedente: disponible=total-usado y conserva actor" time="0.7096377">
+        </testcase>
+        <testcase classname="tests/mariadb/operation.test.ts" name="Líneas: actualización administrativa real, sin reserva implícita &gt; actualiza pagador: disponible=total-usado y conserva actor" time="0.7010835">
+        </testcase>
+        <testcase classname="tests/mariadb/operation.test.ts" name="Líneas: actualización administrativa real, sin reserva implícita &gt; fallo SQL al actualizar factor conserva los saldos anteriores" time="0.6796026">
+        </testcase>
+        <testcase classname="tests/mariadb/operation.test.ts" name="Líneas: actualización administrativa real, sin reserva implícita &gt; fallo SQL al actualizar cedente conserva los saldos anteriores" time="0.7426842">
+        </testcase>
+        <testcase classname="tests/mariadb/operation.test.ts" name="Líneas: actualización administrativa real, sin reserva implícita &gt; fallo SQL al actualizar pagador conserva los saldos anteriores" time="0.6630466">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/mariadb/operationState.test.ts" timestamp="2026-10-17T14:44:36.456Z" hostname="LENOVO" tests="27" failures="0" errors="0" skipped="0" time="26.9851367">
+        <testcase classname="tests/mariadb/operationState.test.ts" name="Estados e historial: guardado, lectura y rollback reales &gt; PEN, estado 29: guarda historial, adjuntos y notificación coherentes" time="1.3699849">
+        </testcase>
+        <testcase classname="tests/mariadb/operationState.test.ts" name="Estados e historial: guardado, lectura y rollback reales &gt; PEN, estado 10: guarda historial, adjuntos y notificación coherentes" time="1.1477418">
+        </testcase>
+        <testcase classname="tests/mariadb/operationState.test.ts" name="Estados e historial: guardado, lectura y rollback reales &gt; PEN, estado 36: guarda historial, adjuntos y notificación coherentes" time="1.2322845">
+        </testcase>
+        <testcase classname="tests/mariadb/operationState.test.ts" name="Estados e historial: guardado, lectura y rollback reales &gt; USD, estado 29: guarda historial, adjuntos y notificación coherentes" time="0.9472195">
+        </testcase>
+        <testcase classname="tests/mariadb/operationState.test.ts" name="Estados e historial: guardado, lectura y rollback reales &gt; USD, estado 10: guarda historial, adjuntos y notificación coherentes" time="1.0675109">
+        </testcase>
+        <testcase classname="tests/mariadb/operationState.test.ts" name="Estados e historial: guardado, lectura y rollback reales &gt; USD, estado 36: guarda historial, adjuntos y notificación coherentes" time="1.2314592">
+        </testcase>
+        <testcase classname="tests/mariadb/operationState.test.ts" name="Estados e historial: guardado, lectura y rollback reales &gt; estado sin acción especial conserva fecha de inicio y no notifica" time="1.2031477">
+        </testcase>
+        <testcase classname="tests/mariadb/operationState.test.ts" name="Estados e historial: guardado, lectura y rollback reales &gt; operación inexistente rechaza sin cambios" time="0.9040234">
+        </testcase>
+        <testcase classname="tests/mariadb/operationState.test.ts" name="Estados e historial: guardado, lectura y rollback reales &gt; estado inexistente rechaza sin cambios" time="0.9221146">
+        </testcase>
+        <testcase classname="tests/mariadb/operationState.test.ts" name="Estados e historial: guardado, lectura y rollback reales &gt; segundo adjunto inexistente rechaza sin cambios" time="0.9698252">
+        </testcase>
+        <testcase classname="tests/mariadb/operationState.test.ts" name="Estados e historial: guardado, lectura y rollback reales &gt; fallo SQL en historial revierte toda la creación" time="1.1332398">
+        </testcase>
+        <testcase classname="tests/mariadb/operationState.test.ts" name="Estados e historial: guardado, lectura y rollback reales &gt; fallo SQL en operación revierte toda la creación" time="1.0675699">
+        </testcase>
+        <testcase classname="tests/mariadb/operationState.test.ts" name="Estados e historial: guardado, lectura y rollback reales &gt; fallo SQL en segundo vínculo revierte toda la creación" time="0.9044476">
+        </testcase>
+        <testcase classname="tests/mariadb/operationState.test.ts" name="Estados e historial: guardado, lectura y rollback reales &gt; fallo SQL en fecha de inicio revierte toda la creación" time="1.031342">
+        </testcase>
+        <testcase classname="tests/mariadb/operationState.test.ts" name="Estados e historial: guardado, lectura y rollback reales &gt; fallo de notificación de estado 29 revierte SQL y preserva adjuntos" time="0.968813">
+        </testcase>
+        <testcase classname="tests/mariadb/operationState.test.ts" name="Estados e historial: guardado, lectura y rollback reales &gt; fallo de notificación de estado 10 revierte SQL y preserva adjuntos" time="1.0561482">
+        </testcase>
+        <testcase classname="tests/mariadb/operationState.test.ts" name="Estados e historial: guardado, lectura y rollback reales &gt; fallo de notificación de estado 36 revierte SQL y preserva adjuntos" time="1.1816445">
+        </testcase>
+        <testcase classname="tests/mariadb/operationState.test.ts" name="Estados e historial: guardado, lectura y rollback reales &gt; editar historial cambia comentario/estado y añade adjunto sin cambiar la operación" time="0.9446178">
+        </testcase>
+        <testcase classname="tests/mariadb/operationState.test.ts" name="Estados e historial: guardado, lectura y rollback reales &gt; edición con historial inexistente conserva registros previos" time="0.8508567">
+        </testcase>
+        <testcase classname="tests/mariadb/operationState.test.ts" name="Estados e historial: guardado, lectura y rollback reales &gt; edición con estado inexistente conserva registros previos" time="0.8745588">
+        </testcase>
+        <testcase classname="tests/mariadb/operationState.test.ts" name="Estados e historial: guardado, lectura y rollback reales &gt; edición con adjunto inexistente conserva registros previos" time="0.9446941">
+        </testcase>
+        <testcase classname="tests/mariadb/operationState.test.ts" name="Estados e historial: guardado, lectura y rollback reales &gt; fallo SQL al añadir adjunto en edición revierte comentario y estado del historial" time="1.0687833">
+        </testcase>
+        <testcase classname="tests/mariadb/operationState.test.ts" name="Estados e historial: guardado, lectura y rollback reales &gt; eliminar y activar historial conserva operación, fecha, adjuntos y lectura" time="0.9189797">
+        </testcase>
+        <testcase classname="tests/mariadb/operationState.test.ts" name="Estados e historial: guardado, lectura y rollback reales &gt; eliminar: fallo SQL conserva todo el historial" time="0.7562637">
+        </testcase>
+        <testcase classname="tests/mariadb/operationState.test.ts" name="Estados e historial: guardado, lectura y rollback reales &gt; eliminar: historial desconocido devuelve 404" time="0.6584086">
+        </testcase>
+        <testcase classname="tests/mariadb/operationState.test.ts" name="Estados e historial: guardado, lectura y rollback reales &gt; activar: fallo SQL conserva todo el historial" time="0.7941672">
+        </testcase>
+        <testcase classname="tests/mariadb/operationState.test.ts" name="Estados e historial: guardado, lectura y rollback reales &gt; activar: historial desconocido devuelve 404" time="0.8165688">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/mariadb/pdfHttp.test.ts" timestamp="2026-10-17T14:44:36.475Z" hostname="LENOVO" tests="104" failures="0" errors="0" skipped="0" time="158.5935753">
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/propuesta, PEN: PDF contiene moneda, fechas e importes SQL y elimina temporal" time="2.7326214">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/propuesta, USD: PDF contiene moneda, fechas e importes SQL y elimina temporal" time="1.4580273">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/propuesta, PEN: PDF contiene moneda, fechas e importes SQL y elimina temporal" time="1.6982083">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/propuesta, USD: PDF contiene moneda, fechas e importes SQL y elimina temporal" time="1.4682183">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/liquidacion, PEN: PDF contiene moneda, fechas e importes SQL y elimina temporal" time="1.4217934">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/liquidacion, USD: PDF contiene moneda, fechas e importes SQL y elimina temporal" time="1.8591232">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/liquidacion, PEN: PDF contiene moneda, fechas e importes SQL y elimina temporal" time="1.4077924">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/liquidacion, USD: PDF contiene moneda, fechas e importes SQL y elimina temporal" time="1.4632803">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; liquidación PEN por cobrar contiene total y cuentas de pago SQL" time="1.7306402">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; liquidación USD por cobrar contiene total y cuentas de pago SQL" time="1.5519566">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/liquidacion PEN, anticipado: fechas, reintegro/interés y saldo SQL en PDF" time="1.486831">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/liquidacion PEN, mora: fechas, reintegro/interés y saldo SQL en PDF" time="1.2601747">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/liquidacion PEN, anticipado: fechas, reintegro/interés y saldo SQL en PDF" time="1.4906917">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/liquidacion PEN, mora: fechas, reintegro/interés y saldo SQL en PDF" time="1.2483596">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/liquidacion USD, anticipado: fechas, reintegro/interés y saldo SQL en PDF" time="1.2784271">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/liquidacion USD, mora: fechas, reintegro/interés y saldo SQL en PDF" time="1.2747219">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/liquidacion USD, anticipado: fechas, reintegro/interés y saldo SQL en PDF" time="1.4131392">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/liquidacion USD, mora: fechas, reintegro/interés y saldo SQL en PDF" time="1.2569296">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; propuesta PEN: 60 conceptos completos entre páginas, total y pie presentes" time="3.4238763">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; propuesta USD: 60 conceptos completos entre páginas, total y pie presentes" time="3.3327696">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; liquidacion PEN: 60 conceptos completos entre páginas, total y pie presentes" time="3.6926873">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; liquidacion USD: 60 conceptos completos entre páginas, total y pie presentes" time="3.2881331">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/propuesta PEN: nombres largos y veinte facturas conservan texto e importes; caracteriza DT-PDF-05" time="1.5016578">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/propuesta USD: nombres largos y veinte facturas conservan texto e importes; caracteriza DT-PDF-05" time="1.5538936">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/propuesta PEN: nombres largos y veinte facturas conservan texto e importes; caracteriza DT-PDF-05" time="1.4315189">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/propuesta USD: nombres largos y veinte facturas conservan texto e importes; caracteriza DT-PDF-05" time="1.8713266">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/liquidacion PEN: nombres largos y veinte facturas conservan texto e importes; caracteriza DT-PDF-05" time="1.6544697">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/liquidacion USD: nombres largos y veinte facturas conservan texto e importes; caracteriza DT-PDF-05" time="1.5363153">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/liquidacion PEN: nombres largos y veinte facturas conservan texto e importes; caracteriza DT-PDF-05" time="1.7370315">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/liquidacion USD: nombres largos y veinte facturas conservan texto e importes; caracteriza DT-PDF-05" time="1.851529">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/propuesta PEN: diagnóstico DT-PDF-05 pendiente, criterio sin superposición incumplido" time="1.8947198">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/propuesta USD: diagnóstico DT-PDF-05 pendiente, criterio sin superposición incumplido" time="1.5374413">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/propuesta PEN: diagnóstico DT-PDF-05 pendiente, criterio sin superposición incumplido" time="1.5613935">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/propuesta USD: diagnóstico DT-PDF-05 pendiente, criterio sin superposición incumplido" time="1.8737987">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/propuesta: rechaza sin sesión sin generar PDF" time="0.3249797">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/propuesta: rechaza rol ajeno sin generar PDF" time="0.3200872">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/propuesta: rechaza expirado sin generar PDF" time="0.2956193">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/propuesta: rechaza sin sesión sin generar PDF" time="0.2901212">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/propuesta: rechaza rol ajeno sin generar PDF" time="0.3433638">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/propuesta: rechaza expirado sin generar PDF" time="0.375358">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/liquidacion: rechaza sin sesión sin generar PDF" time="0.5505712">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/liquidacion: rechaza rol ajeno sin generar PDF" time="0.7142366">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/liquidacion: rechaza expirado sin generar PDF" time="0.6505662">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/liquidacion: rechaza sin sesión sin generar PDF" time="0.6028971">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/liquidacion: rechaza rol ajeno sin generar PDF" time="0.6373229">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/liquidacion: rechaza expirado sin generar PDF" time="0.5798988">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/propuesta: registro inexistente sin archivo responde 404" time="0.6596114">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/propuesta: registro inexistente sin archivo responde 404" time="0.5586378">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/liquidacion: registro inexistente sin archivo responde 404" time="0.6403308">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/liquidacion: registro inexistente sin archivo responde 404" time="0.5665213">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/propuesta: fallo de entrega después de generar limpia el PDF" time="2.4840784">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/propuesta: fallo de entrega después de generar limpia el PDF" time="2.4750742">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/liquidacion: fallo de entrega después de generar limpia el PDF" time="1.7856716">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/liquidacion: fallo de entrega después de generar limpia el PDF" time="2.5348125">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; propuesta: fallo posterior a generación deja archivo; caracteriza límite anterior al finally" time="2.26038">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; liquidacion: fallo posterior a generación deja archivo; caracteriza límite anterior al finally" time="1.9460309">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/propuesta PEN: cancelación TCP antes de cabeceras limpia temporal y permite reintentar" time="1.9543161">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/propuesta USD: cancelación TCP antes de cabeceras limpia temporal y permite reintentar" time="1.7127812">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/propuesta PEN: cancelación TCP tras cabeceras antes del cuerpo limpia temporal y permite reintentar" time="1.4239963">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/propuesta USD: cancelación TCP tras cabeceras antes del cuerpo limpia temporal y permite reintentar" time="1.3179006">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/propuesta PEN: cancelación TCP antes de cabeceras limpia temporal y permite reintentar" time="1.579457">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/propuesta USD: cancelación TCP antes de cabeceras limpia temporal y permite reintentar" time="2.2474389">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/propuesta PEN: cancelación TCP tras cabeceras antes del cuerpo limpia temporal y permite reintentar" time="1.580641">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/propuesta USD: cancelación TCP tras cabeceras antes del cuerpo limpia temporal y permite reintentar" time="1.1807093">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/liquidacion PEN: cancelación TCP antes de cabeceras limpia temporal y permite reintentar" time="1.2311266">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/liquidacion USD: cancelación TCP antes de cabeceras limpia temporal y permite reintentar" time="1.1876122">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/liquidacion PEN: cancelación TCP tras cabeceras antes del cuerpo limpia temporal y permite reintentar" time="1.1278274">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/liquidacion USD: cancelación TCP tras cabeceras antes del cuerpo limpia temporal y permite reintentar" time="1.4117754">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/liquidacion PEN: cancelación TCP antes de cabeceras limpia temporal y permite reintentar" time="1.5900722">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/liquidacion USD: cancelación TCP antes de cabeceras limpia temporal y permite reintentar" time="1.5197092">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/liquidacion PEN: cancelación TCP tras cabeceras antes del cuerpo limpia temporal y permite reintentar" time="1.4356417">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/liquidacion USD: cancelación TCP tras cabeceras antes del cuerpo limpia temporal y permite reintentar" time="1.5556449">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/propuesta PEN: fallo de escritura open, conserva SQL y caracteriza DT-PDF-01" time="1.5907933">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/propuesta USD: fallo de escritura open, conserva SQL y caracteriza DT-PDF-01" time="1.4712726">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/propuesta PEN: fallo de escritura partial, conserva SQL y caracteriza DT-PDF-01" time="1.7793835">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/propuesta USD: fallo de escritura partial, conserva SQL y caracteriza DT-PDF-01" time="2.1519093">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/propuesta PEN: fallo de escritura open, conserva SQL y caracteriza DT-PDF-01" time="1.3182625">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/propuesta USD: fallo de escritura open, conserva SQL y caracteriza DT-PDF-01" time="1.1494335">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/propuesta PEN: fallo de escritura partial, conserva SQL y caracteriza DT-PDF-01" time="1.1534581">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/propuesta USD: fallo de escritura partial, conserva SQL y caracteriza DT-PDF-01" time="1.1598811">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/liquidacion PEN: fallo de escritura open, conserva SQL y caracteriza DT-PDF-01" time="1.0629805">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/liquidacion USD: fallo de escritura open, conserva SQL y caracteriza DT-PDF-01" time="1.1999112">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/liquidacion PEN: fallo de escritura partial, conserva SQL y caracteriza DT-PDF-01" time="1.1603086">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; admin/liquidacion USD: fallo de escritura partial, conserva SQL y caracteriza DT-PDF-01" time="1.5042207">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/liquidacion PEN: fallo de escritura open, conserva SQL y caracteriza DT-PDF-01" time="1.4654972">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/liquidacion USD: fallo de escritura open, conserva SQL y caracteriza DT-PDF-01" time="1.4433937">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/liquidacion PEN: fallo de escritura partial, conserva SQL y caracteriza DT-PDF-01" time="1.1800814">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; financiero/liquidacion USD: fallo de escritura partial, conserva SQL y caracteriza DT-PDF-01" time="1.0887406">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; propuesta PEN, admin/admin: caracteriza colisión del mismo temporal y limpieza concurrente" time="1.2356742">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; propuesta USD, admin/admin: caracteriza colisión del mismo temporal y limpieza concurrente" time="1.5410227">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; propuesta PEN, financiero/financiero: caracteriza colisión del mismo temporal y limpieza concurrente" time="1.2226459">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; propuesta USD, financiero/financiero: caracteriza colisión del mismo temporal y limpieza concurrente" time="1.3342652">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; propuesta PEN, admin/financiero: caracteriza colisión del mismo temporal y limpieza concurrente" time="1.0941089">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; propuesta USD, admin/financiero: caracteriza colisión del mismo temporal y limpieza concurrente" time="1.1545512">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; liquidacion PEN, admin/admin: caracteriza colisión del mismo temporal y limpieza concurrente" time="1.1341421">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; liquidacion USD, admin/admin: caracteriza colisión del mismo temporal y limpieza concurrente" time="1.1267772">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; liquidacion PEN, financiero/financiero: caracteriza colisión del mismo temporal y limpieza concurrente" time="1.1699358">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; liquidacion USD, financiero/financiero: caracteriza colisión del mismo temporal y limpieza concurrente" time="1.3200325">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; liquidacion PEN, admin/financiero: caracteriza colisión del mismo temporal y limpieza concurrente" time="1.7367663">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; liquidacion USD, admin/financiero: caracteriza colisión del mismo temporal y limpieza concurrente" time="5.7555015">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; propuesta PEN: documentos distintos descargan completos sin interferencia" time="2.9298254">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; propuesta USD: documentos distintos descargan completos sin interferencia" time="3.0183313">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; liquidacion PEN: documentos distintos descargan completos sin interferencia" time="2.3087164">
+        </testcase>
+        <testcase classname="tests/mariadb/pdfHttp.test.ts" name="PDF reales: contenido, descarga y limpieza &gt; liquidacion USD: documentos distintos descargan completos sin interferencia" time="1.7017809">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/mariadb/proposal.test.ts" timestamp="2026-10-17T14:44:36.554Z" hostname="LENOVO" tests="24" failures="0" errors="0" skipped="0" time="23.7125296">
+        <testcase classname="tests/mariadb/proposal.test.ts" name="Cálculo y creación de propuestas con Prisma/MariaDB reales &gt; DT-LIQ-04: guarda financiamiento más garantía igual al neto con centavo impar" time="1.4799005">
+        </testcase>
+        <testcase classname="tests/mariadb/proposal.test.ts" name="Cálculo y creación de propuestas con Prisma/MariaDB reales &gt; DT-LIQ-05: guarda y lee simulación con cobertura null y financiamiento 0.8" time="0.7914522">
+        </testcase>
+        <testcase classname="tests/mariadb/proposal.test.ts" name="Cálculo y creación de propuestas con Prisma/MariaDB reales &gt; DT-LIQ-05: guarda y lee simulación con cobertura null y financiamiento 1" time="0.9743599">
+        </testcase>
+        <testcase classname="tests/mariadb/proposal.test.ts" name="Cálculo y creación de propuestas con Prisma/MariaDB reales &gt; DT-LIQ-05: guarda y lee cobertura null con tasa cero y financiamiento 0.8" time="1.0879934">
+        </testcase>
+        <testcase classname="tests/mariadb/proposal.test.ts" name="Cálculo y creación de propuestas con Prisma/MariaDB reales &gt; DT-LIQ-05: guarda y lee cobertura null con tasa cero y financiamiento 1" time="1.0705167">
+        </testcase>
+        <testcase classname="tests/mariadb/proposal.test.ts" name="Cálculo y creación de propuestas con Prisma/MariaDB reales &gt; PEN, banco 1: simula sin escrituras y guarda cabecera, historial y detalles conciliados" time="1.2298001">
+        </testcase>
+        <testcase classname="tests/mariadb/proposal.test.ts" name="Cálculo y creación de propuestas con Prisma/MariaDB reales &gt; PEN, banco 2: simula sin escrituras y guarda cabecera, historial y detalles conciliados" time="1.1585543">
+        </testcase>
+        <testcase classname="tests/mariadb/proposal.test.ts" name="Cálculo y creación de propuestas con Prisma/MariaDB reales &gt; USD, banco 1: simula sin escrituras y guarda cabecera, historial y detalles conciliados" time="1.2291243">
+        </testcase>
+        <testcase classname="tests/mariadb/proposal.test.ts" name="Cálculo y creación de propuestas con Prisma/MariaDB reales &gt; USD, banco 2: simula sin escrituras y guarda cabecera, historial y detalles conciliados" time="1.1176251">
+        </testcase>
+        <testcase classname="tests/mariadb/proposal.test.ts" name="Cálculo y creación de propuestas con Prisma/MariaDB reales &gt; referencia factoringid inexistente no altera propuestas previas" time="0.9119694">
+        </testcase>
+        <testcase classname="tests/mariadb/proposal.test.ts" name="Cálculo y creación de propuestas con Prisma/MariaDB reales &gt; referencia factoringtipoid inexistente no altera propuestas previas" time="0.8805212">
+        </testcase>
+        <testcase classname="tests/mariadb/proposal.test.ts" name="Cálculo y creación de propuestas con Prisma/MariaDB reales &gt; referencia factoringestrategiaid inexistente no altera propuestas previas" time="0.7769248">
+        </testcase>
+        <testcase classname="tests/mariadb/proposal.test.ts" name="Cálculo y creación de propuestas con Prisma/MariaDB reales &gt; referencia riesgooperacionid inexistente no altera propuestas previas" time="0.79742">
+        </testcase>
+        <testcase classname="tests/mariadb/proposal.test.ts" name="Cálculo y creación de propuestas con Prisma/MariaDB reales &gt; referencia riesgocedenteid inexistente no altera propuestas previas" time="0.8345147">
+        </testcase>
+        <testcase classname="tests/mariadb/proposal.test.ts" name="Cálculo y creación de propuestas con Prisma/MariaDB reales &gt; referencia riesgoaceptanteid inexistente no altera propuestas previas" time="0.739886">
+        </testcase>
+        <testcase classname="tests/mariadb/proposal.test.ts" name="Cálculo y creación de propuestas con Prisma/MariaDB reales &gt; referencia factoringpropuestaestadoid inexistente no altera propuestas previas" time="0.7510917">
+        </testcase>
+        <testcase classname="tests/mariadb/proposal.test.ts" name="Cálculo y creación de propuestas con Prisma/MariaDB reales &gt; fallo SQL en cabecera revierte la propuesta nueva y preserva la anterior" time="0.9883689">
+        </testcase>
+        <testcase classname="tests/mariadb/proposal.test.ts" name="Cálculo y creación de propuestas con Prisma/MariaDB reales &gt; fallo SQL en historial revierte la propuesta nueva y preserva la anterior" time="0.9012542">
+        </testcase>
+        <testcase classname="tests/mariadb/proposal.test.ts" name="Cálculo y creación de propuestas con Prisma/MariaDB reales &gt; fallo SQL en primer detalle revierte la propuesta nueva y preserva la anterior" time="1.1127762">
+        </testcase>
+        <testcase classname="tests/mariadb/proposal.test.ts" name="Cálculo y creación de propuestas con Prisma/MariaDB reales &gt; fallo SQL en segundo detalle revierte la propuesta nueva y preserva la anterior" time="0.8648823">
+        </testcase>
+        <testcase classname="tests/mariadb/proposal.test.ts" name="Cálculo y creación de propuestas con Prisma/MariaDB reales &gt; fallo de lectura en la transacción del calculador no deja escrituras" time="0.8316526">
+        </testcase>
+        <testcase classname="tests/mariadb/proposal.test.ts" name="Aislamiento y concurrencia: caracterización del comportamiento actual &gt; la transacción del calculador usa otra conexión y puede leer configuración posterior al snapshot exterior" time="0.9774116">
+        </testcase>
+        <testcase classname="tests/mariadb/proposal.test.ts" name="Aislamiento y concurrencia: caracterización del comportamiento actual &gt; dos creaciones simultáneas guardan propuestas independientes y detalles completos sin reemplazar la aceptada" time="0.9828796">
+        </testcase>
+        <testcase classname="tests/mariadb/proposal.test.ts" name="Aislamiento y concurrencia: caracterización del comportamiento actual &gt; una aprobación entre lectura y creación conserva el vínculo e importes aprobados; la creación aún se permite" time="1.1956241">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/mariadb/runtime.test.ts" timestamp="2026-10-17T14:44:36.569Z" hostname="LENOVO" tests="2" failures="0" errors="0" skipped="0" time="31.6986061">
+        <testcase classname="tests/mariadb/runtime.test.ts" name="Backend compilado: proceso real y MariaDB exclusiva &gt; arranca, consulta MariaDB por HTTP y cierra mediante el hook real" time="2.4231372">
+        </testcase>
+        <testcase classname="tests/mariadb/runtime.test.ts" name="Backend compilado: proceso real y MariaDB exclusiva &gt; credenciales MariaDB inválidas agotan reintentos y salen con código 1 sin escuchar" time="22.4268725">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/mariadb/saldocontable.test.ts" timestamp="2026-10-17T14:44:36.572Z" hostname="LENOVO" tests="22" failures="0" errors="0" skipped="0" time="15.0927971">
+        <testcase classname="tests/mariadb/saldocontable.test.ts" name="Saldo Contable: servicios, DAO y transacciones reales &gt; filtra inicio existente hasta el corte completo en Lima antes de paginar, contar y buscar" time="1.3064725">
+        </testcase>
+        <testcase classname="tests/mariadb/saldocontable.test.ts" name="Saldo Contable: servicios, DAO y transacciones reales &gt; crea nombre/fechas flexibles, rechaza fechas inválidas y duplicado sin duplicar cabecera" time="0.3610843">
+        </testcase>
+        <testcase classname="tests/mariadb/saldocontable.test.ts" name="Saldo Contable: servicios, DAO y transacciones reales &gt; guarda neto aceptado distinto al inicial, multiplicador PEN=1, total y autoría" time="0.5616637">
+        </testcase>
+        <testcase classname="tests/mariadb/saldocontable.test.ts" name="Saldo Contable: servicios, DAO y transacciones reales &gt; USD requiere contable exacto, no compra/venta ni último disponible; conserva precisión" time="0.7860255">
+        </testcase>
+        <testcase classname="tests/mariadb/saldocontable.test.ts" name="Saldo Contable: servicios, DAO y transacciones reales &gt; operación pendiente vuelve a sugerirse y asociarse en otro corte" time="0.8773682">
+        </testcase>
+        <testcase classname="tests/mariadb/saldocontable.test.ts" name="Saldo Contable: servicios, DAO y transacciones reales &gt; retiro/reactivación reutiliza detalle, conserva identidad y evita asociación duplicada" time="0.7383335">
+        </testcase>
+        <testcase classname="tests/mariadb/saldocontable.test.ts" name="Saldo Contable: servicios, DAO y transacciones reales &gt; cobro real 2026-06-30T15:00:00Z excluye al corte" time="0.6487618">
+        </testcase>
+        <testcase classname="tests/mariadb/saldocontable.test.ts" name="Saldo Contable: servicios, DAO y transacciones reales &gt; cobro real 2026-07-01T04:59:59Z excluye al corte" time="0.6232387">
+        </testcase>
+        <testcase classname="tests/mariadb/saldocontable.test.ts" name="Saldo Contable: servicios, DAO y transacciones reales &gt; ignora cobros eliminados lógicamente y usa la fecha de cualquier cobro activo" time="0.6762935">
+        </testcase>
+        <testcase classname="tests/mariadb/saldocontable.test.ts" name="Saldo Contable: servicios, DAO y transacciones reales &gt; no utiliza estado funcional 1 para omitir un cobro activo hasta el corte" time="0.5729191">
+        </testcase>
+        <testcase classname="tests/mariadb/saldocontable.test.ts" name="Saldo Contable: servicios, DAO y transacciones reales &gt; no utiliza estado funcional 4 para omitir un cobro activo hasta el corte" time="0.7086105">
+        </testcase>
+        <testcase classname="tests/mariadb/saldocontable.test.ts" name="Saldo Contable: servicios, DAO y transacciones reales &gt; no utiliza estado funcional 8 para omitir un cobro activo hasta el corte" time="0.6197671">
+        </testcase>
+        <testcase classname="tests/mariadb/saldocontable.test.ts" name="Saldo Contable: servicios, DAO y transacciones reales &gt; no utiliza estado funcional 10 para omitir un cobro activo hasta el corte" time="0.6057064">
+        </testcase>
+        <testcase classname="tests/mariadb/saldocontable.test.ts" name="Saldo Contable: servicios, DAO y transacciones reales &gt; crea futuro/curso y bloquea asociación/cierre desde servicio" time="0.5210762">
+        </testcase>
+        <testcase classname="tests/mariadb/saldocontable.test.ts" name="Saldo Contable: servicios, DAO y transacciones reales &gt; crea futuro/curso y bloquea asociación/cierre desde servicio" time="0.6221081">
+        </testcase>
+        <testcase classname="tests/mariadb/saldocontable.test.ts" name="Saldo Contable: servicios, DAO y transacciones reales &gt; cerrado conserva copias aunque se registren cobros y cambios de fuentes posteriores" time="0.9990832">
+        </testcase>
+        <testcase classname="tests/mariadb/saldocontable.test.ts" name="Saldo Contable: servicios, DAO y transacciones reales &gt; cambio del contable antes del cierre exige recalcular; el cierre no cambia importes silenciosamente" time="0.7604878">
+        </testcase>
+        <testcase classname="tests/mariadb/saldocontable.test.ts" name="Saldo Contable: servicios, DAO y transacciones reales &gt; eliminación lógica conserva detalle, bloquea cambios y permite activar" time="0.8856655">
+        </testcase>
+        <testcase classname="tests/mariadb/saldocontable.test.ts" name="Saldo Contable: servicios, DAO y transacciones reales &gt; no cambia fechas con asociaciones; editar nombre sí conserva importe" time="0.6498523">
+        </testcase>
+        <testcase classname="tests/mariadb/saldocontable.test.ts" name="Saldo Contable: servicios, DAO y transacciones reales &gt; fallo SQL tras insertar detalle revierte detalle, total y versión en la misma transacción" time="0.6197476">
+        </testcase>
+        <testcase classname="tests/mariadb/saldocontable.test.ts" name="Saldo Contable: servicios, DAO y transacciones reales &gt; dos ediciones concurrentes de la misma versión producen una escritura y un conflicto" time="0.4011255">
+        </testcase>
+        <testcase classname="tests/mariadb/saldocontable.test.ts" name="Saldo Contable: servicios, DAO y transacciones reales &gt; lote con operación inexistente es atómico y cerrar vacío no se permite" time="0.5274869">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/mariadb/settlement.test.ts" timestamp="2026-10-17T14:44:36.588Z" hostname="LENOVO" tests="58" failures="0" errors="0" skipped="0" time="55.9193205">
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; DT-LIQ-02-RANGO: diez decimales se conservan en Prisma y el producto queda a dos" time="2.1783997">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; DT-LIQ-02-RANGO: esquema antiguo rechaza alta precisión antes de guardar" time="1.1516413">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; DT-LIQ-02-RANGO: conserva exactamente los dos factores admitidos al guardar" time="1.2789713">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; DT-LIQ-06: reintegro sin garantía en PEN descuenta el gasto una vez al guardar y leer" time="1.595139">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; DT-LIQ-06: reintegro sin garantía en USD descuenta el gasto una vez al guardar y leer" time="1.412057">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; DT-LIQ-02-RANGO: 1.00000000001/100 rechaza sin registros parciales" time="1.087327">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; DT-LIQ-02-RANGO: 1/100.00000000001 rechaza sin registros parciales" time="1.3554129">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; DT-LIQ-02-RANGO: 2/60000000 rechaza sin registros parciales" time="1.2281039">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; DT-LIQ-02-RANGO: 1/90000000 rechaza sin registros parciales" time="1.0626945">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; DT-LIQ-03: tipo 2, afecto false, factor -1 guarda impuesto y desglose coherentes" time="1.3396661">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; DT-LIQ-03: tipo 2, afecto false, factor 1 guarda impuesto y desglose coherentes" time="1.3131292">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; DT-LIQ-03: tipo 2, afecto true, factor -1 guarda impuesto y desglose coherentes" time="1.1037764">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; DT-LIQ-03: tipo 2, afecto true, factor 1 guarda impuesto y desglose coherentes" time="0.8892496">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; DT-LIQ-03: tipo 4, afecto false, factor -1 guarda impuesto y desglose coherentes" time="1.0886154">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; DT-LIQ-03: tipo 4, afecto false, factor 1 guarda impuesto y desglose coherentes" time="1.1426663">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; DT-LIQ-03: tipo 4, afecto true, factor -1 guarda impuesto y desglose coherentes" time="1.1223817">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; DT-LIQ-03: tipo 4, afecto true, factor 1 guarda impuesto y desglose coherentes" time="0.9341718">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; DT-LIQ-01: rechaza pago anterior 2026-08-31T12:00:00-05:00 sin registros financieros" time="0.8270835">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; DT-LIQ-01: rechaza pago anterior 2026-08-21T12:00:00-05:00 sin registros financieros" time="0.9910737">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; DT-LIQ-02: rechaza cantidad/monto -1/100 sin registros financieros" time="0.8631077">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; DT-LIQ-02: rechaza cantidad/monto 1/-100 sin registros financieros" time="0.7796398">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; DT-LIQ-02: rechaza cantidad/monto -1/-100 sin registros financieros" time="0.7391168">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; PEN, pago anticipado guarda y lee cabecera y detalles" time="1.0127269">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; PEN, pago puntual guarda y lee cabecera y detalles" time="0.9945103">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; PEN, pago mora guarda y lee cabecera y detalles" time="1.0660337">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; USD, pago anticipado guarda y lee cabecera y detalles" time="0.9877126">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; USD, pago puntual guarda y lee cabecera y detalles" time="0.9569931">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; USD, pago mora guarda y lee cabecera y detalles" time="0.9555013">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; gasto interbancario en PEN y exoneración se conservan al leer" time="0.8387238">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; gasto interbancario en USD y exoneración se conservan al leer" time="1.0417511">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; cargo adicional tipo 2, monto 100 persiste IGV y saldo" time="0.9178379">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; cargo adicional tipo 4, monto 100 persiste IGV y saldo" time="0.8784679">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; cargo adicional tipo 2, monto 5000 persiste IGV y saldo" time="0.7985318">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; falta operacion: rechaza y no persiste una liquidación" time="0.7189333">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; falta propuesta: rechaza y no persiste una liquidación" time="0.8039784">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; falta inicio: rechaza y no persiste una liquidación" time="0.7410589">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; falta estado: rechaza y no persiste una liquidación" time="0.7147272">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; falta tipo: rechaza y no persiste una liquidación" time="0.8939176">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; falta concepto: rechaza y no persiste una liquidación" time="0.7659429">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; fallo SQL en cabecera revierte cabecera y todos los detalles" time="0.6981969">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; fallo SQL en segundo detalle revierte cabecera y todos los detalles" time="0.742894">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; cambia estado y fecha; elimina y reactiva conservando importes y detalles" time="0.9767778">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Liquidaciones: cálculos y persistencia en MariaDB &gt; fallo SQL al cambiar estado conserva estado, fecha y actor anteriores" time="0.8794345">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Transferencias al cedente: servicio y SQL reales &gt; guarda y lee transferencia PEN con constancia y cuenta bancaria" time="0.819592">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Transferencias al cedente: servicio y SQL reales &gt; guarda y lee transferencia USD con constancia y cuenta bancaria" time="0.7233549">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Transferencias al cedente: servicio y SQL reales &gt; referencia factoringid desconocida no guarda registros parciales" time="0.7489746">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Transferencias al cedente: servicio y SQL reales &gt; referencia factoringtransferenciatipoid desconocida no guarda registros parciales" time="0.7292565">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Transferencias al cedente: servicio y SQL reales &gt; referencia factoringtransferenciaestadoid desconocida no guarda registros parciales" time="0.8067543">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Transferencias al cedente: servicio y SQL reales &gt; referencia factorcuentabancariaid desconocida no guarda registros parciales" time="0.7813586">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Transferencias al cedente: servicio y SQL reales &gt; referencia empresacuentabancariaid desconocida no guarda registros parciales" time="0.7620475">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Transferencias al cedente: servicio y SQL reales &gt; referencia monedaid desconocida no guarda registros parciales" time="0.7864267">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Transferencias al cedente: servicio y SQL reales &gt; referencia archivo_constancia_transferencia desconocida no guarda registros parciales" time="0.7532419">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Transferencias al cedente: servicio y SQL reales &gt; fallo SQL en transferencia revierte transferencia y vínculo de archivo" time="0.7105132">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Transferencias al cedente: servicio y SQL reales &gt; fallo SQL en constancia revierte transferencia y vínculo de archivo" time="0.7881634">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Transferencias al cedente: servicio y SQL reales &gt; cambia estado; elimina y reactiva conservando monto y constancia" time="0.9437252">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Transferencias al cedente: servicio y SQL reales &gt; fallo SQL al actualizar conserva transferencia y constancia" time="0.8605848">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Transferencias al cedente: servicio y SQL reales &gt; actualización con transferencia desconocido conserva el registro existente" time="0.7844275">
+        </testcase>
+        <testcase classname="tests/mariadb/settlement.test.ts" name="Transferencias al cedente: servicio y SQL reales &gt; actualización con estado desconocido conserva el registro existente" time="0.7465982">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/mariadb/settlementConcurrency.test.ts" timestamp="2026-10-17T14:44:36.634Z" hostname="LENOVO" tests="12" failures="0" errors="0" skipped="0" time="11.6795845">
+        <testcase classname="tests/mariadb/settlementConcurrency.test.ts" name="Caracterización de solicitudes repetidas; no establece idempotencia comercial &gt; liquidación PEN: repetir el mismo payload guarda dos registros completos" time="1.4898447">
+        </testcase>
+        <testcase classname="tests/mariadb/settlementConcurrency.test.ts" name="Caracterización de solicitudes repetidas; no establece idempotencia comercial &gt; liquidación USD: repetir el mismo payload guarda dos registros completos" time="0.8436754">
+        </testcase>
+        <testcase classname="tests/mariadb/settlementConcurrency.test.ts" name="Caracterización de solicitudes repetidas; no establece idempotencia comercial &gt; transferencia PEN: repetir número de operación y constancia guarda dos registros" time="0.9692824">
+        </testcase>
+        <testcase classname="tests/mariadb/settlementConcurrency.test.ts" name="Caracterización de solicitudes repetidas; no establece idempotencia comercial &gt; transferencia USD: repetir número de operación y constancia guarda dos registros" time="0.9644931">
+        </testcase>
+        <testcase classname="tests/mariadb/settlementConcurrency.test.ts" name="Creaciones concurrentes completas &gt; liquidaciones simultáneas sin coordinación guardan dos registros independientes" time="0.9892439">
+        </testcase>
+        <testcase classname="tests/mariadb/settlementConcurrency.test.ts" name="Creaciones concurrentes completas &gt; transferencias simultáneas sin coordinación repiten la operación y vinculan ambas constancias" time="0.8530092">
+        </testcase>
+        <testcase classname="tests/mariadb/settlementConcurrency.test.ts" name="Creaciones concurrentes completas &gt; dos liquidaciones insertadas sin commit en conexiones distintas terminan con todos sus detalles" time="0.9417032">
+        </testcase>
+        <testcase classname="tests/mariadb/settlementConcurrency.test.ts" name="Creaciones concurrentes completas &gt; dos transferencias insertadas sin commit en conexiones distintas conservan sus vínculos" time="0.879276">
+        </testcase>
+        <testcase classname="tests/mariadb/settlementConcurrency.test.ts" name="Rollback aislado de una solicitud concurrente &gt; liquidación: fallo primero; error en segundo detalle no afecta a la otra solicitud" time="1.0180332">
+        </testcase>
+        <testcase classname="tests/mariadb/settlementConcurrency.test.ts" name="Rollback aislado de una solicitud concurrente &gt; liquidación: éxito primero; error en segundo detalle no afecta a la otra solicitud" time="0.915813">
+        </testcase>
+        <testcase classname="tests/mariadb/settlementConcurrency.test.ts" name="Rollback aislado de una solicitud concurrente &gt; transferencia: fallo primero; error en constancia no afecta a la otra solicitud" time="0.8839684">
+        </testcase>
+        <testcase classname="tests/mariadb/settlementConcurrency.test.ts" name="Rollback aislado de una solicitud concurrente &gt; transferencia: éxito primero; error en constancia no afecta a la otra solicitud" time="0.911755">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/mariadb/transaccionbancaria.test.ts" timestamp="2026-10-17T14:44:36.644Z" hostname="LENOVO" tests="6" failures="0" errors="0" skipped="0" time="6.8280015">
+        <testcase classname="tests/mariadb/transaccionbancaria.test.ts" name="almacena GCM y consulta no expone materiales criptográficos" time="0.8743198">
+        </testcase>
+        <testcase classname="tests/mariadb/transaccionbancaria.test.ts" name="relectura idempotente enlaza alta manual y conserva enriquecimiento" time="1.0689125">
+        </testcase>
+        <testcase classname="tests/mariadb/transaccionbancaria.test.ts" name="CHECK reales rechazan signo cero e importe negativo" time="2.5227827">
+        </testcase>
+        <testcase classname="tests/mariadb/transaccionbancaria.test.ts" name="un fallo de historial revierte el alta en la misma transacción" time="0.6804404">
+        </testcase>
+        <testcase classname="tests/mariadb/transaccionbancaria.test.ts" name="duplicados concurrentes no producen dos movimientos" time="0.6437038">
+        </testcase>
+        <testcase classname="tests/mariadb/transaccionbancaria.test.ts" name="bloqueo asesor coordina dos sincronizaciones reales" time="0.7260206">
+        </testcase>
+    </testsuite>
+</testsuites>

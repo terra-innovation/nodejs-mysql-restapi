@@ -1,0 +1,12 @@
+{
+  "runId": "7cf7b79547d30bba90bf531f",
+  "image": "mariadb:11.4.10",
+  "startedAt": "2026-10-17T14:33:59.074Z",
+  "status": "failed",
+  "cleanup": "removed",
+  "schemaHash": "5cf6a6c2dfcaa5501d1da34ec2a4b24798f6ac2fcff4e368d263167755387a27",
+  "tables": 141,
+  "sourceVersion": "11.4.2-MariaDB",
+  "error": "Fallaron las comprobaciones de integración. Consultar coverage/mariadb/junit.xml.",
+  "finishedAt": "2026-10-17T14:44:38.245Z"
+}
