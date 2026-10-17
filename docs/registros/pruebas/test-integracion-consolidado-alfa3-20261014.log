@@ -1,0 +1,19 @@
+
+> ft-app-backend@1.0.1 test:integration
+> node scripts/integration/run-mariadb.mjs tests/mariadb/factoringConsolidado.test.ts
+
+Preparando mariadb:11.4.10 con 131 tablas. No se consulta desarrollo.
+MariaDB lista. Ejecutando pruebas reales de entorno y negocio con Prisma.
+
+ RUN  v5.0.3 D:/06_Workspace_nodejs/ft-app-backend
+
+ ✓ tests/mariadb/factoringConsolidado.test.ts (1 test) 1219ms
+   ✓ consulta real conserva granularidad por factura, propuestas ausentes, eliminados y fechas Lima sin alterar la sesión 1208ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  04:33:43
+   Duration  2.99s (tests 44%, transform 31%, import 25%)
+
+JUNIT report written to D:/06_Workspace_nodejs/ft-app-backend/coverage/mariadb/junit.xml
+Resumen: coverage/mariadb/last-run.json

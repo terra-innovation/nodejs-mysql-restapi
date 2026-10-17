@@ -1,0 +1,9 @@
+src/domain/factoring/factoringPago.Policy.ts 61ms (unchanged)
+src/daos/factoringpago.Dao.ts 32ms
+src/services/admin/factoringpago.Service.ts 39ms
+src/controllers/admin/servicio/factoring/factoringpago.Controller.ts 8ms
+src/routes/admin/servicio/factoring/factoringpago.routes.ts 3ms (unchanged)
+tests/mariadb/factoringPago.test.ts 24ms
+tests/mariadb/factoringPagoDdl.test.ts 5ms
+tests/vitest/http/factoringPago.http.test.ts 8ms
+tests/vitest/unit/factoringPago.Policy.test.ts 2ms

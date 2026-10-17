@@ -1,0 +1,146 @@
+{
+  "date": "2026-10-16T11:48:14.374Z",
+  "targetSha256": "f9c511527fec5ac2f6b231619de812ce248bc3ec699a0e42f9f2dc33fb8f7527",
+  "oldTableAbsent": true,
+  "sourceDecoupled": true,
+  "columns": [
+    {
+      "name": "_idconfiguracionbbdd",
+      "type": "int(10) unsigned",
+      "comment": "PK interna estable de la configuración de BBDD externa. El renombre conserva sus valores y las referencias de los consumidores; nunca se recibe desde la interfaz."
+    },
+    {
+      "name": "configuracionbbddid",
+      "type": "varchar(50)",
+      "comment": "UUID público estable de la configuración externa. Se conserva durante el renombre y forma parte del contexto autenticado del secreto existente."
+    },
+    {
+      "name": "code",
+      "type": "varchar(20)",
+      "comment": "Código único y legible de presentación de esta configuración, generado por el servicio. No sustituye la PK interna ni el UUID público y no identifica ninguna operación de negocio."
+    },
+    {
+      "name": "alias",
+      "type": "varchar(200)",
+      "comment": "Nombre de presentación de la configuración para administradores autorizados. No participa en la autenticación ni en la construcción de consultas; los consumidores muestran este alias sin recibir las credenciales."
+    },
+    {
+      "name": "motor",
+      "type": "varchar(10)",
+      "comment": "Motor de la BBDD externa. Esta versión soporta MYSQL y MARIADB mediante un adaptador compatible; otros motores requieren implementar su adaptador y validación antes de habilitarlos."
+    },
+    {
+      "name": "host",
+      "type": "varchar(253)",
+      "comment": "Nombre DNS o dirección del servidor externo, sin protocolo, puerto ni credenciales. Guardar no consulta la red; probar o utilizar exige política de destinos autorizados y verificación de identidad TLS."
+    },
+    {
+      "name": "puerto",
+      "type": "smallint(5) unsigned",
+      "comment": "Puerto TCP del MySQL entre 1 y 65535, sujeto a lista de destinos y puertos autorizados. No habilita explorar otros servicios de red."
+    },
+    {
+      "name": "base_datos",
+      "type": "varchar(64)",
+      "comment": "Nombre de la base externa seleccionada o escrito manualmente por el administrador. La lista obtenida durante la prueba es orientativa; no se exige una prueba exitosa para guardar este valor."
+    },
+    {
+      "name": "usuario",
+      "type": "varchar(128)",
+      "comment": "Nombre de usuario de autenticación de la BBDD externa. Sus permisos son administrados en el servidor remoto. Cada consumidor aplica sus propias restricciones; la sincronización bancaria exige exclusivamente SELECT y USAGE."
+    },
+    {
+      "name": "password_cifrado",
+      "type": "varbinary(2048)",
+      "comment": "Bytes de la contraseña cifrada con AES-256-GCM, sin Base64 ni tag concatenado. Nunca se devuelve al frontend, se registra en logs ni se copia al historial. La interfaz permite reemplazarla, no recuperarla."
+    },
+    {
+      "name": "password_nonce",
+      "type": "binary(12)",
+      "comment": "Nonce criptográficamente aleatorio de 96 bits por cifrado. Debe ser único bajo la misma clave, incluidas rotaciones; no se deriva de la hora, el UUID ni la contraseña."
+    },
+    {
+      "name": "password_tag",
+      "type": "binary(16)",
+      "comment": "Etiqueta de autenticación GCM de 128 bits. Debe verificarse antes de usar la contraseña; ante fallo se rechaza el secreto sin recurrir a otro modo de descifrado."
+    },
+    {
+      "name": "clave_version",
+      "type": "varchar(50)",
+      "comment": "Identificador de la clave externa AES de 256 bits. No contiene material de clave. Se resuelve con BBDD_KEYS fuera de esta base; se conservan versiones anteriores para descifrar conexiones existentes."
+    },
+    {
+      "name": "cifrado_version",
+      "type": "smallint(5) unsigned",
+      "comment": "Formato V1: AES-256-GCM, nonce de 12 bytes, tag de 16 y AAD canónico ligado al UUID de conexión, campo password y versión de clave. Cambiar el formato requiere una migración explícita."
+    },
+    {
+      "name": "tls_ca_referencia",
+      "type": "varchar(255)",
+      "comment": "Referencia autorizada a una CA instalada por infraestructura; NULL usa las autoridades del sistema. No admite rutas libres ni claves privadas. Verificar certificado y nombre del servidor es siempre obligatorio."
+    },
+    {
+      "name": "habilitado",
+      "type": "tinyint(4)",
+      "comment": "Disponibilidad administrativa: 1 habilitado y 0 deshabilitado para los consumidores. Puede guardarse sin probar la conexión; no acredita conectividad ni permisos. Deshabilitar conserva credenciales, referencias e historial."
+    },
+    {
+      "name": "version",
+      "type": "int(10) unsigned",
+      "comment": "Versión incremental para concurrencia optimista. Toda modificación desde la interfaz exige la versión vigente y la incrementa; no representa una prueba exitosa ni la versión del servidor externo."
+    },
+    {
+      "name": "idusuariocrea",
+      "type": "int(11)",
+      "comment": "Usuario autenticado o cuenta técnica habilitada responsable del alta. Se asigna explícitamente en el servicio; no se acepta del frontend ni se atribuye automáticamente al usuario 1."
+    },
+    {
+      "name": "fechacrea",
+      "type": "timestamp(3)",
+      "comment": "Instante UTC de creación de la configuración con precisión de milisegundos. Es metadato administrativo local y no representa fechas de los datos externos ni el tiempo de una prueba de conexión."
+    },
+    {
+      "name": "idusuariomod",
+      "type": "int(11)",
+      "comment": "Usuario autenticado responsable de la última modificación administrativa. Lo asigna el servicio desde la sesión junto con la versión y fecha de cambio; no se acepta del formulario."
+    },
+    {
+      "name": "fechamod",
+      "type": "timestamp(3)",
+      "comment": "Instante UTC de la última modificación administrativa, actualizado explícitamente por el servicio con precisión de milisegundos. No tiene ON UPDATE y no almacena tiempos de diagnóstico ni funciona como cursor remoto."
+    },
+    {
+      "name": "estado",
+      "type": "tinyint(4)",
+      "comment": "Vigencia lógica del proyecto: 1 ACTIVO y 2 ELIMINADO. No implica borrado físico ni acredita conectividad. Habilitado controla la disponibilidad para consumidores de forma independiente; se preservan credenciales y referencias."
+    }
+  ],
+  "refs": [
+    {
+      "tableName": "factor_transaccion_bancaria_fuente",
+      "columnName": "_idconfiguracionbbdd",
+      "referencedColumn": "_idconfiguracionbbdd"
+    },
+    {
+      "tableName": "factor_transaccion_bancaria_historial",
+      "columnName": "_idconexion",
+      "referencedColumn": "_idconfiguracionbbdd"
+    },
+    {
+      "tableName": "factor_transaccion_bancaria_incidencia",
+      "columnName": "_idconexion",
+      "referencedColumn": "_idconfiguracionbbdd"
+    },
+    {
+      "tableName": "factor_transaccion_bancaria_origen_cuenta",
+      "columnName": "_idconexion",
+      "referencedColumn": "_idconfiguracionbbdd"
+    },
+    {
+      "tableName": "factor_transaccion_bancaria_sincronizacion",
+      "columnName": "_idconexion",
+      "referencedColumn": "_idconfiguracionbbdd"
+    }
+  ],
+  "commentsExact": true
+}

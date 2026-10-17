@@ -1,0 +1,14 @@
+{
+  "startedAt": "2026-10-16T11:22:40.648Z",
+  "status": "failed_before_changes",
+  "source": ".env.development",
+  "steps": [],
+  "plan": "20261016-configuracion-bbdd",
+  "mode": "preview",
+  "planSha256": "1e2fa99246afd889191aa25f4f7391dced3643d79eb232a40848e05cca9031bd",
+  "sqlSha256": "9dc685ea1316990790a687b19101d0cfa536bf3ce2662e5db2475d8486bc6d5d",
+  "targetSha256": "f9c511527fec5ac2f6b231619de812ce248bc3ec699a0e42f9f2dc33fb8f7527",
+  "authorizationRef": null,
+  "error": "Error de conexión/SQL (EACCES).",
+  "finishedAt": "2026-10-16T11:22:40.666Z"
+}

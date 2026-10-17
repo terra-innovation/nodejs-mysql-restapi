@@ -1,0 +1,48 @@
+{
+  "reviewedAt": "2026-10-16T02:40:44.146Z",
+  "source": "prisma-sync contra el mismo destino .env.development tras confirmacion de tablas SBS",
+  "schemaSha256": "440c2d99fcff17002ea620b93c07edce3c590b59e9a34c3bae94857d9f340327",
+  "priorModels": 131,
+  "currentModels": 137,
+  "addedModels": [
+    "factor_transaccion_bancaria",
+    "factor_transaccion_bancaria_conexion",
+    "factor_transaccion_bancaria_historial",
+    "factor_transaccion_bancaria_incidencia",
+    "factor_transaccion_bancaria_origen_cuenta",
+    "factor_transaccion_bancaria_sincronizacion"
+  ],
+  "missingModels": [],
+  "existingModelDifferences": [
+    {
+      "model": "factor_cuenta_bancaria",
+      "removed": [],
+      "added": [
+        "factor_transaccion_bancarias factor_transaccion_bancaria[]",
+        "factor_transaccion_bancaria_origen_cuentas factor_transaccion_bancaria_origen_cuenta[]"
+      ]
+    },
+    {
+      "model": "factoring_estado",
+      "removed": [
+        "factoring_cartera factoring_cartera @relation(fields: [idfactoringcartera], references: [idfactoringcartera], onDelete: Cascade, map: \"FK_factoringestado__idfactoringcartera\")"
+      ],
+      "added": [
+        "factoring_cartera factoring_cartera @relation(fields: [idfactoringcartera], references: [idfactoringcartera], onDelete: NoAction, onUpdate: NoAction, map: \"FK_factoringestado__idfactoringcartera\")"
+      ]
+    },
+    {
+      "model": "inversionista_deposito",
+      "removed": [
+        "inversionistasdepositoid String @default(dbgenerated(\"(uuid())\")) @db.VarChar(50)",
+        "inversionistadepositoid String @unique(map: \"UQ_bancodeposito_bancodepositoid\") @default(dbgenerated(\"(uuid())\")) @db.VarChar(50)"
+      ],
+      "added": [
+        "inversionistasdepositoid String @unique(map: \"UQ_bancodeposito_bancodepositoid\") @default(dbgenerated(\"(uuid())\")) @db.VarChar(50)"
+      ]
+    }
+  ],
+  "bankMovementHasNoCurrencyColumn": true,
+  "jsonIntrospection": "MariaDB JSON se introspecta como String @db.LongText; JSON_VALID y CHECK permanecen en la base",
+  "noManualSchemaEdits": true
+}

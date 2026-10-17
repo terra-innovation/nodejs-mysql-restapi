@@ -1,0 +1,74 @@
+{
+  "integration": [
+    {
+      "id": "prisma",
+      "status": "passed",
+      "exitCode": 0,
+      "log": "docs/registros/pruebas/test-ci-backend-prisma.log"
+    },
+    {
+      "id": "doctor",
+      "status": "passed",
+      "exitCode": 0,
+      "log": "docs/registros/pruebas/test-ci-backend-doctor.log"
+    },
+    {
+      "id": "integration",
+      "status": "passed",
+      "exitCode": 0,
+      "log": "docs/registros/pruebas/test-ci-backend-integration.log"
+    },
+    {
+      "id": "evidence",
+      "status": "passed",
+      "exitCode": 0,
+      "log": "docs/registros/pruebas/test-ci-backend-evidence.log"
+    }
+  ],
+  "reuse": "La calidad precede a la reparación exclusiva de la suite MariaDB; tipos de integración y todas sus suites se comprobaron después.",
+  "integrationExitCode": 0,
+  "quality": [
+    {
+      "id": "prisma",
+      "status": "passed",
+      "exitCode": 0,
+      "log": "docs/registros/pruebas/test-ci-backend-prisma.log"
+    },
+    {
+      "id": "types",
+      "status": "passed",
+      "exitCode": 0,
+      "log": "docs/registros/pruebas/test-ci-backend-types.log"
+    },
+    {
+      "id": "lint",
+      "status": "passed",
+      "exitCode": 0,
+      "log": "docs/registros/pruebas/test-ci-backend-lint.log"
+    },
+    {
+      "id": "format",
+      "status": "passed",
+      "exitCode": 0,
+      "log": "docs/registros/pruebas/test-ci-backend-format.log"
+    },
+    {
+      "id": "frontend-contract",
+      "status": "passed",
+      "exitCode": 0,
+      "log": "docs/registros/pruebas/test-ci-backend-frontend-contract.log"
+    },
+    {
+      "id": "vitest",
+      "status": "passed",
+      "exitCode": 0,
+      "log": "docs/registros/pruebas/test-ci-backend-vitest.log"
+    },
+    {
+      "id": "build",
+      "status": "passed",
+      "exitCode": 0,
+      "log": "docs/registros/compilaciones/build-ci-backend.log"
+    }
+  ]
+}

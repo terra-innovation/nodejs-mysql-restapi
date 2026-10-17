@@ -1,0 +1,11 @@
+import { Router } from "express";
+import { isAuth, isRole } from "#src/middlewares/authMiddleware.js";
+import { catchedAsync } from "#src/utils/catchedAsync.js";
+import * as controller from "#src/controllers/admin/servicio/factoring/factoringpago.Controller.js";
+const router = Router();
+const base = "/admin/servicio/factoring/factoringpago/:factoringid";
+router.get(base, isAuth, isRole([2]), catchedAsync(controller.consulta));
+router.get(base + "/transacciones", isAuth, isRole([2]), catchedAsync(controller.buscar));
+router.patch(base + "/estado", isAuth, isRole([2]), catchedAsync(controller.estado));
+router.post(base + "/detalles", isAuth, isRole([2]), catchedAsync(controller.detalle));
+export default router;

@@ -1,0 +1,10 @@
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'prisma/ft_factoring/schema.prisma', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/menu/menuAdmin.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/menu/menuFinanciero.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/models/prisma/db-factoring.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/models/prisma/mariadbAdapter.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/routes/admin/index.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/routes/financiero/index.ts', LF will be replaced by CRLF the next time Git touches it
+Formateado: tests/vitest/unit/transaccionbancaria.Service.test.ts
+Formato: 24 archivos revisados; 1 formateados.

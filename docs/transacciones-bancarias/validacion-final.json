@@ -1,0 +1,54 @@
+{
+  "verifiedAt": "2026-10-16T04:12:10.124Z",
+  "businessTimezone": "America/Lima",
+  "implementation": "backend, frontend, CLI y plantillas systemd preparados",
+  "nodeVersion": "v24.21.0",
+  "backend": {
+    "passed": 3675,
+    "testFiles": "52 passed | 1 skipped (53)",
+    "todo": 3,
+    "exitCode": 0,
+    "log": "docs/transacciones-bancarias/test-backend-completo.log"
+  },
+  "frontend": {
+    "passed": 3020,
+    "testFiles": "87 passed (87)",
+    "todo": 0,
+    "exitCode": 0,
+    "log": "D:/10_Workspace_react/ft-app-frontend-mantis/docs/registros/pruebas/test-banca-regresion-completa.log"
+  },
+  "types": {
+    "backendApp": 0,
+    "backendVitest": 0,
+    "backendIntegration": 0,
+    "frontendApp": 0,
+    "frontendTests": 0
+  },
+  "lint": {
+    "newBackendModuleErrors": 0,
+    "frontendErrors": 0,
+    "sharedFilesErrors": 0,
+    "preexistingSharedWarnings": [
+      "logLevel sin uso en db-factoring.ts"
+    ]
+  },
+  "format": "sin diferencias en los archivos afectados",
+  "integration": {
+    "status": "blocked_before_start",
+    "reason": "Motor Docker Linux no activo",
+    "containerCreated": false,
+    "log": "docs/transacciones-bancarias/test-integracion.log",
+    "suite": "tests/mariadb/transaccionbancaria.test.ts",
+    "source": "MySQL simulado; persistencia real pendiente"
+  },
+  "remoteMysqlTested": false,
+  "browserE2eTested": false,
+  "ubuntuTimerInstalled": false,
+  "productionPackaged": false,
+  "envFilesEditedByAgent": false,
+  "realBankRowsLoaded": false,
+  "logSha256": {
+    "backend": "d8fe962d8396fdd7423c15d7a88bd720df335019a1d3a1002f2fa0eaed54ab91",
+    "frontend": "b1f2426d7fb50925dd70fc0bbd7408baeccaa8edf758835cff9ad96b14da4c76"
+  }
+}

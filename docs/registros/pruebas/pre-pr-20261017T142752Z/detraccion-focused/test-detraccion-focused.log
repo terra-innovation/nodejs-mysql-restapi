@@ -1,0 +1,25 @@
+
+> ft-app-backend@1.0.1 test:integration
+> node scripts/integration/run-mariadb.mjs tests/mariadb/detraccion.test.ts
+
+Preparando mariadb:11.4.10 con 141 tablas. No se consulta desarrollo.
+MariaDB lista. Ejecutando pruebas reales de entorno y negocio con Prisma.
+
+ RUN  v5.0.3 D:/06_Workspace_nodejs/ft-app-backend/coverage/pre-pr-20261017T142752Z/backend
+
+ ✓ tests/mariadb/detraccion.test.ts (7 tests) 6828ms
+   ✓ detalle conserva datos XML activos para la guía SUNAT sin ampliar la bandeja 1595ms
+   ✓ listado y detalle incluyen solo facturas negociadas activas en orden estable para pendientes y pagadas 636ms
+   ✓ filtro/paginación conserva operaciones liquidadas y omite NO APLICA/eliminados 833ms
+   ✓ paga, corrige y reabre conservando fecha, archivos y campos ajenos 875ms
+   ✓ dos comprobantes de una operación conservan filas, búsqueda compuesta y orden con fecha nula al final 838ms
+   ✓ fallo de vínculo revierte estado/fecha/auditoría en SQL real 972ms
+   ✓ dos escritores con una versión producen un éxito y un conflicto sin duplicar archivos 1054ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  14:46:41
+   Duration  10.05s (tests 70%, transform 17%, import 13%)
+
+JUNIT report written to D:/06_Workspace_nodejs/ft-app-backend/coverage/pre-pr-20261017T142752Z/backend/coverage/mariadb/junit.xml
+Resumen: coverage/mariadb/last-run.json

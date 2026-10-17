@@ -1,0 +1,50 @@
+
+> ft-app-backend@1.0.1 ci:integration
+> node scripts/quality/ci-runner.ts --scope integration --plan
+
+{
+  "scope": "integration",
+  "node": "24.21.0",
+  "npm": "11.19.0",
+  "steps": [
+    {
+      "id": "prisma",
+      "command": [
+        "npm",
+        "prisma:generate:ci"
+      ],
+      "group": "integration"
+    },
+    {
+      "id": "doctor",
+      "command": [
+        "npm",
+        "test:integration:doctor"
+      ],
+      "group": "integration",
+      "dependencies": []
+    },
+    {
+      "id": "integration",
+      "command": [
+        "npm",
+        "test:integration"
+      ],
+      "group": "integration",
+      "dependencies": [
+        "doctor",
+        "prisma"
+      ]
+    },
+    {
+      "id": "evidence",
+      "command": [
+        "node",
+        "scripts/quality/verify-integration-report.mjs"
+      ],
+      "group": "integration",
+      "afterExecution": "integration"
+    }
+  ],
+  "note": "Plan únicamente; no se ejecutaron controles ni se escribieron informes."
+}

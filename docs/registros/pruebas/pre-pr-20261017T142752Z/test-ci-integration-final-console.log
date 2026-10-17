@@ -1,0 +1,9 @@
+
+> ft-app-backend@1.0.1 ci:integration
+> node scripts/quality/ci-runner.ts --scope integration
+
+prisma: APROBADO; docs/registros/pruebas/test-ci-backend-prisma.log
+doctor: APROBADO; docs/registros/pruebas/test-ci-backend-doctor.log
+integration: APROBADO; docs/registros/pruebas/test-ci-backend-integration.log
+evidence: APROBADO; docs/registros/pruebas/test-ci-backend-evidence.log
+Resumen: docs/registros/pruebas/test-ci-backend-summary.json

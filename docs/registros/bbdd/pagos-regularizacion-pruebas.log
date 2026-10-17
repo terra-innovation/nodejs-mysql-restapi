@@ -1,0 +1,19 @@
+
+> ft-app-backend@1.0.1 test:integration
+> node scripts/integration/run-mariadb.mjs tests/mariadb/factoringPagoRegularizacion.test.ts
+
+Preparando mariadb:11.4.10 con 141 tablas. No se consulta desarrollo.
+MariaDB lista. Ejecutando pruebas reales de entorno y negocio con Prisma.
+
+ RUN  v5.0.3 D:/06_Workspace_nodejs/ft-app-backend
+
+ ✓ tests/mariadb/factoringPagoRegularizacion.test.ts (7 tests) 2085ms
+   ✓ un solo bloque calcula candidatos y verifica el resultado sin parametros de sesion 534ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  00:24:58
+   Duration  3.70s (tests 60%, transform 23%, import 17%)
+
+JUNIT report written to D:/06_Workspace_nodejs/ft-app-backend/coverage/mariadb/junit.xml
+Resumen: coverage/mariadb/last-run.json

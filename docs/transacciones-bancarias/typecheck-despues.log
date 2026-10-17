@@ -1,0 +1,21 @@
+
+> ft-app-backend@1.0.1 typecheck
+> tsc --noEmit
+
+src/daos/saldocontable.Dao.ts(13,33): error TS2694: Namespace '"D:/06_Workspace_nodejs/ft-app-backend/generated/prisma/ft_factoring/internal/prismaNamespace"' has no exported member 'sbs_saldo_contable_periodoGetPayload'.
+src/daos/saldocontable.Dao.ts(15,94): error TS2339: Property 'sbs_saldo_contable_periodo' does not exist on type 'TransactionClient'.
+src/daos/saldocontable.Dao.ts(15,278): error TS2339: Property 'sbs_saldo_contable_periodo' does not exist on type 'TransactionClient'.
+src/daos/saldocontable.Dao.ts(16,62): error TS2339: Property 'sbs_saldo_contable_periodo' does not exist on type 'TransactionClient'.
+src/daos/saldocontable.Dao.ts(18,63): error TS2339: Property 'sbs_saldo_contable_periodo_estado' does not exist on type 'TransactionClient'.
+src/daos/saldocontable.Dao.ts(18,163): error TS2339: Property 'sbs_saldo_contable_operacion_tipo' does not exist on type 'TransactionClient'.
+src/daos/saldocontable.Dao.ts(19,57): error TS2694: Namespace '"D:/06_Workspace_nodejs/ft-app-backend/generated/prisma/ft_factoring/internal/prismaNamespace"' has no exported member 'sbs_saldo_contable_periodoUncheckedCreateInput'.
+src/daos/saldocontable.Dao.ts(19,111): error TS2339: Property 'sbs_saldo_contable_periodo' does not exist on type 'TransactionClient'.
+src/daos/saldocontable.Dao.ts(20,74): error TS2694: Namespace '"D:/06_Workspace_nodejs/ft-app-backend/generated/prisma/ft_factoring/internal/prismaNamespace"' has no exported member 'sbs_saldo_contable_periodoUncheckedUpdateInput'.
+src/daos/saldocontable.Dao.ts(20,128): error TS2339: Property 'sbs_saldo_contable_periodo' does not exist on type 'TransactionClient'.
+src/daos/saldocontable.Dao.ts(21,61): error TS2339: Property 'sbs_saldo_contable_detalle' does not exist on type 'TransactionClient'.
+src/daos/saldocontable.Dao.ts(22,96): error TS2694: Namespace '"D:/06_Workspace_nodejs/ft-app-backend/generated/prisma/ft_factoring/internal/prismaNamespace"' has no exported member 'sbs_saldo_contable_detalleUncheckedCreateInput'.
+src/daos/saldocontable.Dao.ts(22,159): error TS2694: Namespace '"D:/06_Workspace_nodejs/ft-app-backend/generated/prisma/ft_factoring/internal/prismaNamespace"' has no exported member 'sbs_saldo_contable_detalleUncheckedUpdateInput'.
+src/daos/saldocontable.Dao.ts(22,213): error TS2339: Property 'sbs_saldo_contable_detalle' does not exist on type 'TransactionClient'.
+src/daos/saldocontable.Dao.ts(23,74): error TS2694: Namespace '"D:/06_Workspace_nodejs/ft-app-backend/generated/prisma/ft_factoring/internal/prismaNamespace"' has no exported member 'sbs_saldo_contable_detalleUncheckedUpdateInput'.
+src/daos/saldocontable.Dao.ts(23,128): error TS2339: Property 'sbs_saldo_contable_detalle' does not exist on type 'TransactionClient'.
+src/services/admin/saldocontable.Service.ts(128,27): error TS2694: Namespace '"D:/06_Workspace_nodejs/ft-app-backend/generated/prisma/ft_factoring/internal/prismaNamespace"' has no exported member 'sbs_saldo_contable_periodoUncheckedUpdateInput'.

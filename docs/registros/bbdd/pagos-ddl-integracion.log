@@ -1,0 +1,18 @@
+
+> ft-app-backend@1.0.1 test:integration
+> node scripts/integration/run-mariadb.mjs tests/mariadb/factoringPagoDdl.test.ts
+
+Preparando mariadb:11.4.10 con 131 tablas. No se consulta desarrollo.
+MariaDB lista. Ejecutando pruebas reales de entorno y negocio con Prisma.
+
+ RUN  v5.0.3 D:/06_Workspace_nodejs/ft-app-backend
+
+ ✓ tests/mariadb/factoringPagoDdl.test.ts (2 tests) 243ms
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  22:15:13
+   Duration  1.34s (transform 43%, import 36%, tests 20%)
+
+JUNIT report written to D:/06_Workspace_nodejs/ft-app-backend/coverage/mariadb/junit.xml
+Resumen: coverage/mariadb/last-run.json

@@ -6,6 +6,7 @@ import { Router } from "express";
 const router = Router();
 
 //Financiero
+router.get("/financiero/servicio/factoring/factoring/consolidado.xlsx", isAuth, isRole([6]), catchedAsync(factoringController.downloadFactoringConsolidado));
 router.get("/financiero/servicio/factoring/factoring/listar", isAuth, isRole([6]), catchedAsync(factoringController.getFactorings));
 router.get("/financiero/servicio/factoring/factoring/empresa/:empresaid", isAuth, isRole([6]), catchedAsync(factoringController.getFactoringEmpresaDetalle));
 router.get("/financiero/servicio/factoring/factoring/pendientes-factura-cedente", isAuth, isRole([6]), catchedAsync(factoringController.getFactoringsPendientesFacturaCedente));

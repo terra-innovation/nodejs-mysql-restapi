@@ -1,4 +1,5 @@
 import { Router } from "express";
+import configuracionbbddRoutes from "#src/routes/admin/configuracionbbdd.routes.js";
 
 import admin_archivoRoutes from "#root/src/routes/admin/archivo.routes.js";
 import admin_archivofacturaRoutes from "#root/src/routes/admin/archivofactura.routes.js";
@@ -33,8 +34,10 @@ import admin_zlaboratorioRoutes from "#root/src/routes/admin/zlaboratorio.routes
 
 import admin_administracionRoutes from "#root/src/routes/admin/administracion.routes.js";
 import admin_splaft_registrooperacionRoutes from "#root/src/routes/admin/splaft/registrooperacion.routes.js";
+import admin_splaft_saldocontableRoutes from "#src/routes/admin/splaft/saldocontable.routes.js";
 
 const router = Router();
+router.use(configuracionbbddRoutes);
 
 router.use(admin_administracionRoutes);
 router.use(admin_zlaboratorioRoutes);
@@ -59,6 +62,7 @@ router.use(admin_pagadorlimiteRoutes);
 router.use(admin_factoringcarteraRoutes);
 
 router.use(admin_splaft_registrooperacionRoutes);
+router.use(admin_splaft_saldocontableRoutes);
 
 router.use(admin_servicio_factoring_factoringRoutes);
 router.use(admin_servicio_factoring_factoringpropuestaRoutes);
@@ -71,4 +75,6 @@ router.use(admin_servicio_factoring_factoringfacturafactorRoutes);
 router.use(admin_servicio_factoring_funcionarioRoutes);
 router.use(admin_servicio_factoring_accionistaRoutes);
 
+import factoringPagoRoutes from "#src/routes/admin/servicio/factoring/factoringpago.routes.js";
+router.use(factoringPagoRoutes);
 export default router;

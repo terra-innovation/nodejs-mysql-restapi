@@ -1,0 +1,37 @@
+
+> ft-app-backend@1.0.1 test:integration
+> node scripts/integration/run-mariadb.mjs tests/mariadb/saldocontable.test.ts
+
+Preparando mariadb:11.4.10 con 131 tablas. No se consulta desarrollo.
+MariaDB lista. Ejecutando pruebas reales de entorno y negocio con Prisma.
+
+ RUN  v5.0.3 D:/06_Workspace_nodejs/ft-app-backend
+
+ ✓ tests/mariadb/saldocontable.test.ts (18 tests) 13231ms
+   ✓ Saldo Contable: servicios, DAO y transacciones reales (18)
+     ✓ filtra inicio existente hasta el corte completo en Lima antes de paginar, contar y buscar 2832ms
+     ✓ crea nombre/fechas flexibles, rechaza fechas inválidas y duplicado sin duplicar cabecera 499ms
+     ✓ guarda neto aceptado distinto al inicial, multiplicador PEN=1, total y autoría 732ms
+     ✓ USD requiere contable exacto, no compra/venta ni último disponible; conserva precisión 634ms
+     ✓ operación pendiente vuelve a sugerirse y asociarse en otro corte 691ms
+     ✓ retiro/reactivación reutiliza detalle, conserva identidad y evita asociación duplicada 624ms
+     ✓ cobro real 2026-06-30T15:00:00Z excluye al corte 499ms
+     ✓ cobro real 2026-07-01T04:59:59Z excluye al corte 599ms
+     ✓ descarta liquidación anulada y acepta cobro posterior; varias vigentes requieren revisión 659ms
+     ✓ crea futuro/curso y bloquea asociación/cierre desde servicio 531ms
+     ✓ crea futuro/curso y bloquea asociación/cierre desde servicio 480ms
+     ✓ cerrado conserva copias aunque se registren cobros y cambios de fuentes posteriores 819ms
+     ✓ cambio del contable antes del cierre exige recalcular; el cierre no cambia importes silenciosamente 819ms
+     ✓ eliminación lógica conserva detalle, bloquea cambios y permite activar 772ms
+     ✓ no cambia fechas con asociaciones; editar nombre sí conserva importe 668ms
+     ✓ fallo SQL tras insertar detalle revierte detalle, total y versión en la misma transacción 565ms
+     ✓ dos ediciones concurrentes de la misma versión producen una escritura y un conflicto 330ms
+     ✓ lote con operación inexistente es atómico y cerrar vacío no se permite 459ms
+
+ Test Files  1 passed (1)
+      Tests  18 passed (18)
+   Start at  17:54:24
+   Duration  17.07s (tests 79%, transform 11%, import 10%)
+
+JUNIT report written to D:/06_Workspace_nodejs/ft-app-backend/coverage/mariadb/junit.xml
+Resumen: coverage/mariadb/last-run.json

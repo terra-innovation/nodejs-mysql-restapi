@@ -1,0 +1,64 @@
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\ft_factoring\schema.prisma.
+┌─────────────────────────────────────────────────────────┐
+│  Update available 7.10.0 -> 8.0.0-rc.23                 │
+│                                                         │
+│  This is a major update - please follow the guide at    │
+│  https://pris.ly/d/major-version-upgrade                │
+│                                                         │
+│  Run the following to update                            │
+│    npm i --save-dev prisma@latest                       │
+│    npm i @prisma/client@latest                          │
+└─────────────────────────────────────────────────────────┘
+
+✔ Generated Prisma Client (7.10.0) to .\generated\prisma\ft_factoring in 2.16s
+
+ℹ tsdown v0.23.0 powered by rolldown v1.2.13
+ℹ config file: D:\06_Workspace_nodejs\ft-app-backend\coverage\pre-pr-20261017T142752Z\backend\tsdown.config.ts 
+ℹ entry: src\index.ts, src\scripts\check_config.ts, src\scripts\email_venta_frio.ts, src\scripts\sync_tipo_cambio.ts, src\scripts\sync_transacciones_bancarias.ts
+ℹ target: node24
+ℹ tsconfig: tsconfig.json
+ℹ Build start
+ℹ dist\scripts\sync_tipo_cambio.js                   11.69 kB │ gzip:  3.22 kB
+ℹ dist\scripts\email_venta_frio.js                    7.55 kB │ gzip:  2.65 kB
+ℹ dist\index.js                                       2.46 kB │ gzip:  1.07 kB
+ℹ dist\scripts\check_config.js                        1.30 kB │ gzip:  0.69 kB
+ℹ dist\scripts\sync_transacciones_bancarias.js        1.20 kB │ gzip:  0.63 kB
+ℹ dist\app-DgCA63r7.js.map                            2.49 MB
+ℹ dist\db-factoring-CGW-XDGM.js.map                   2.40 MB
+ℹ dist\db-factoring-CGW-XDGM.js                       1.62 MB
+ℹ dist\app-DgCA63r7.js                                1.04 MB
+ℹ dist\email.Provider-BMqCvqiF.js.map               185.27 kB │ gzip: 18.25 kB
+ℹ dist\tipocambio.Service-D7nRKA5E.js.map           118.98 kB │ gzip: 17.99 kB
+ℹ dist\transaccionbancaria.Service-C-qLNmng.js.map  112.40 kB │ gzip: 29.19 kB
+ℹ dist\email.Provider-BMqCvqiF.js                    92.70 kB │ gzip:  9.97 kB
+ℹ dist\transaccionbancaria.Service-C-qLNmng.js       63.90 kB │ gzip: 17.95 kB
+ℹ dist\tipocambio.Service-D7nRKA5E.js                58.06 kB │ gzip:  9.54 kB
+ℹ dist\scripts\sync_tipo_cambio.js.map               17.44 kB │ gzip:  4.50 kB
+ℹ dist\scripts\email_venta_frio.js.map               15.46 kB │ gzip:  4.35 kB
+ℹ dist\dateUtils-DICVYmcI.js.map                      9.72 kB │ gzip:  2.65 kB
+ℹ dist\config-C3g6FXKv.js.map                         9.62 kB │ gzip:  3.28 kB
+ℹ dist\logger.pino-B1PgoEH0.js.map                    8.79 kB │ gzip:  3.13 kB
+ℹ dist\config-C3g6FXKv.js                             5.54 kB │ gzip:  2.02 kB
+ℹ dist\dateUtils-DICVYmcI.js                          5.45 kB │ gzip:  1.76 kB
+ℹ dist\startupDiagnostics-CJ8JMjAR.js.map             4.61 kB │ gzip:  1.93 kB
+ℹ dist\index.js.map                                   4.01 kB │ gzip:  1.56 kB
+ℹ dist\logger.pino-B1PgoEH0.js                        3.90 kB │ gzip:  1.60 kB
+ℹ dist\ipAccessControl-BJZb9mIa.js.map                3.21 kB │ gzip:  1.22 kB
+ℹ dist\startupDiagnostics-CJ8JMjAR.js                 2.68 kB │ gzip:  1.23 kB
+ℹ dist\scripts\check_config.js.map                    2.00 kB │ gzip:  1.00 kB
+ℹ dist\scripts\sync_transacciones_bancarias.js.map    1.92 kB │ gzip:  0.92 kB
+ℹ dist\ipAccessControl-BJZb9mIa.js                    1.86 kB │ gzip:  0.77 kB
+ℹ dist\globalErrorHandlers-ytDJyHbW.js.map            1.76 kB │ gzip:  0.75 kB
+ℹ dist\CustomErrors-tL2bpvow.js.map                   1.62 kB │ gzip:  0.38 kB
+ℹ dist\shutdownHandler-B4Qkf0hH.js.map                1.60 kB │ gzip:  0.81 kB
+ℹ dist\CustomErrors-tL2bpvow.js                       0.93 kB │ gzip:  0.26 kB
+ℹ dist\shutdownHandler-B4Qkf0hH.js                    0.88 kB │ gzip:  0.50 kB
+ℹ dist\globalErrorHandlers-ytDJyHbW.js                0.79 kB │ gzip:  0.38 kB
+ℹ dist\config-BAit9WR6.js                             0.13 kB │ gzip:  0.13 kB
+ℹ dist\logger.pino-CtDdYxML.js                        0.07 kB │ gzip:  0.08 kB
+ℹ dist\db-factoring-BzKJeAzK.js                       0.06 kB │ gzip:  0.08 kB
+ℹ dist\ipAccessControl-C4TXoM_O.js                    0.05 kB │ gzip:  0.07 kB
+ℹ 40 files, total: 8.30 MB
+✔ Build complete in 479ms

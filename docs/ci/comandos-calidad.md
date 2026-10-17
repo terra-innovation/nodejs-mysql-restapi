@@ -1,5 +1,7 @@
 # Comandos de calidad del backend
 
+Para el cierre previo a un PR usar el [procedimiento y agrupador actual](validacion-pre-pr.md). Esta página conserva la descripción de controles individuales y su adopción inicial.
+
 Punto 3 del plan de integración continua. Estos controles son independientes y se pueden reutilizar en desarrollo y en el futuro workflow. No ejecutan pruebas, compilaciones con emisión, introspección ni conexiones a bases de datos.
 
 ## Preparación
@@ -31,7 +33,7 @@ npm.cmd run format:check
 | `npm run format:changed` | Archivos modificados, staged y nuevos no ignorados, dentro del mismo alcance de formato | Comprueba el formato sin escribir |
 | `npm run format:changed:write` | Mismo alcance de archivos modificados | Aplica Prettier solo sobre estos archivos |
 
-Los tres controles principales deben ejecutarse por separado para ver todos sus resultados aunque alguno falle. No se ha añadido un agregado que oculte los controles posteriores por detenerse en el primer fallo.
+Los tres controles principales pueden ejecutarse por separado para ver sus resultados. El agrupador actual `ci:quality` también conserva estos diagnósticos independientes; su alcance incluye además pruebas y compilación, según el procedimiento enlazado arriba.
 
 ## Adopción gradual
 

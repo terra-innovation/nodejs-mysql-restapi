@@ -1,0 +1,7 @@
+
+D:\06_Workspace_nodejs\ft-app-backend\src\services\usuario\archivo.Service.ts
+  19:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  45:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 2 problems (0 errors, 2 warnings)
+

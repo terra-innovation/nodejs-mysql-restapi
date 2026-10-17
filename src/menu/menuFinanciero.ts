@@ -23,6 +23,13 @@ export const generarMenuFinanciero = (usuario: UsuarioConRoles) => {
             breadcrumbs: true,
           },
           {
+            id: "financiero-factoring-pendientes-detraccion",
+            title: "Pendientes de pago de detracción",
+            type: "item",
+            url: "/financiero/servicio/factoring/factoring/pendientes-detraccion",
+            breadcrumbs: true,
+          },
+          {
             id: "financiero-factoring-factoring-lista",
             title: "Operaciones",
             type: "item",
@@ -56,6 +63,22 @@ export const generarMenuFinanciero = (usuario: UsuarioConRoles) => {
     title: "Menu Financiero",
   };
 
+  const menuBanca = {
+    id: "financiero-transacciones-bancarias",
+    title: "Sincronización de transacciones bancarias",
+    type: "collapse",
+    icon: "BankOutlined",
+    children: [
+      { id: "financiero-banco-origen", title: "Datos del origen remoto", type: "item", url: "/financiero/transaccionbancaria/origen", breadcrumbs: true },
+      { id: "financiero-banco-movimientos", title: "Transacciones bancarias", type: "item", url: "/financiero/transaccionbancaria/movimientos", breadcrumbs: true },
+      { id: "financiero-banco-cuentas", title: "Cuentas de origen", type: "item", url: "/financiero/transaccionbancaria/cuentas", breadcrumbs: true },
+      { id: "financiero-banco-sincronizar", title: "Sincronizar manualmente", type: "item", url: "/financiero/transaccionbancaria/sincronizar", breadcrumbs: true },
+      { id: "financiero-banco-ejecuciones", title: "Ejecuciones y log", type: "item", url: "/financiero/transaccionbancaria/ejecuciones", breadcrumbs: true },
+      { id: "financiero-banco-incidencias", title: "Incidencias", type: "item", url: "/financiero/transaccionbancaria/incidencias", breadcrumbs: true },
+      { id: "financiero-banco-historial", title: "Historial de cambios", type: "item", url: "/financiero/transaccionbancaria/historial", breadcrumbs: true },
+    ],
+  };
+
   return [
     ...(ispersonavalidated
       ? [
@@ -65,6 +88,7 @@ export const generarMenuFinanciero = (usuario: UsuarioConRoles) => {
           },
           menuTitulo,
           menuSBS,
+          { id: "financiero-group-banca", type: "group", children: [menuBanca] },
         ]
       : []),
   ];

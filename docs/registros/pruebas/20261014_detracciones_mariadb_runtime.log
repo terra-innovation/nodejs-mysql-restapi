@@ -1,0 +1,36 @@
+
+> ft-app-backend@1.0.1 test:integration
+> node scripts/integration/run-mariadb.mjs tests/mariadb/detraccion.test.ts tests/mariadb/authHttp.test.ts tests/mariadb/runtime.test.ts
+
+Preparando mariadb:11.4.10 con 127 tablas. No se consulta desarrollo.
+MariaDB lista. Ejecutando pruebas reales de entorno y negocio con Prisma.
+
+ RUN  v5.0.3 D:/06_Workspace_nodejs/ft-app-backend
+
+ ✓ tests/mariadb/runtime.test.ts (2 tests) 28058ms
+   ✓ Backend compilado: proceso real y MariaDB exclusiva (2)
+     ✓ arranca, consulta MariaDB por HTTP y cierra mediante el hook real 2346ms
+     ✓ credenciales MariaDB inválidas agotan reintentos y salen con código 1 sin escuchar 21649ms
+ ✓ tests/mariadb/authHttp.test.ts (37 tests) 8594ms
+   ✓ Login y refresco de accesos: app real, bcrypt y MariaDB (37)
+     ✓ monta detracciones en la app real y comprueba el rol financiero vigente 584ms
+     ✓ login limita diez intentos por IP; otra IP puede autenticar 387ms
+     ✓ refresco limita diez solicitudes por usuario, aunque cambie IP, con Retry-After 391ms
+stdout | tests/mariadb/detraccion.test.ts
+[config] {"selection":"default","file":".env.test","loaded":true,"fileVariables":31,"retainedVariables":2,"conflictingKeys":["PRISMA_DATABASE_FACTORING_URL"]} precedence=process.env
+[config] Las claves en conflictingKeys tienen valores diferentes en el proceso y en el archivo. Prevalece el proceso (incluido el entorno heredado de PM2). Solo se muestran los nombres.
+
+ ✓ tests/mariadb/detraccion.test.ts (5 tests) 2359ms
+   ✓ filtro/paginación conserva operaciones liquidadas y omite NO APLICA/eliminados 849ms
+   ✓ paga, corrige y reabre conservando fecha, archivos y campos ajenos 488ms
+   ✓ dos comprobantes de una operación conservan filas, búsqueda compuesta y orden con fecha nula al final 356ms
+   ✓ fallo de vínculo revierte estado/fecha/auditoría en SQL real 328ms
+   ✓ dos escritores con una versión producen un éxito y un conflicto sin duplicar archivos 329ms
+
+ Test Files  3 passed (3)
+      Tests  44 passed (44)
+   Start at  13:12:07
+   Duration  51.28s (tests 77%, import 16%, transform 7%)
+
+JUNIT report written to D:/06_Workspace_nodejs/ft-app-backend/coverage/mariadb/junit.xml
+Resumen: coverage/mariadb/last-run.json

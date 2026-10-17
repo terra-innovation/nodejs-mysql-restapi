@@ -4,6 +4,7 @@ import * as archivofactoringhistorialestadoDao from "#root/src/daos/archivofacto
 import * as configuracionappDao from "#root/src/daos/configuracionapp.Dao.js";
 import * as factorcuentabancariaDao from "#root/src/daos/factorcuentabancaria.Dao.js";
 import * as factoringDao from "#root/src/daos/factoring.Dao.js";
+import { asegurarMaestroPago } from "#src/services/admin/factoringpago.Service.js";
 import * as factoringestadoDao from "#root/src/daos/factoringestado.Dao.js";
 import * as factoringhistorialestadoDao from "#root/src/daos/factoringhistorialestado.Dao.js";
 import * as factoringpropuestaDao from "#root/src/daos/factoringpropuesta.Dao.js";
@@ -255,6 +256,7 @@ export const createFactoringhistorialestadoService = async (dto: CreateFactoring
       }
 
       if (factoringUpdated.idfactoringestado === 36) {
+        await asegurarMaestroPago(tx, factoringUpdated.idfactoring, idusuario);
         // Inicio de Operación de Factoring
         const factoringToUpdate_2: Prisma.factoringUpdateInput = {
           fecha_operacion: new Date(),

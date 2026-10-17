@@ -1,0 +1,6 @@
+
+D:\06_Workspace_nodejs\ft-app-backend\src\models\prisma\db-factoring.ts
+  65:15  warning  'logLevel' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+✖ 1 problem (0 errors, 1 warning)
+

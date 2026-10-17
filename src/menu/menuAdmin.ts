@@ -143,6 +143,13 @@ export const generarMenuAdmin = (usuario: UsuarioConRoles) => {
             url: "/admin/configuracioncorreo/lista",
             breadcrumbs: true,
           },
+          {
+            id: "admin-mantenimiento-configuracionbbdd",
+            title: "Config BBDD",
+            type: "item",
+            url: "/admin/configuracionbbdd/lista",
+            breadcrumbs: true,
+          },
         ],
       },
       {
@@ -178,6 +185,13 @@ export const generarMenuAdmin = (usuario: UsuarioConRoles) => {
             title: "Registro de operaciones",
             type: "item",
             url: "/admin/splaft/registrooperacion/lista",
+            breadcrumbs: true,
+          },
+          {
+            id: "admin-splaft-saldocontable-lista",
+            title: "Saldo Contable",
+            type: "item",
+            url: "/admin/splaft/saldocontable/lista",
             breadcrumbs: true,
           },
         ],

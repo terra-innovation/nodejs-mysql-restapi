@@ -1,0 +1,105 @@
+{
+  "verifiedAt": "2026-10-16T23:05:44.559Z",
+  "targetFingerprint": "f9c511527fec5ac2f6b231619de812ce248bc3ec699a0e42f9f2dc33fb8f7527",
+  "mode": "READ ONLY",
+  "status": "verified",
+  "columns": [
+    {
+      "name": "_idfactoringpago",
+      "type": "int(10) unsigned",
+      "nullable": "NO"
+    },
+    {
+      "name": "factoringpagoid",
+      "type": "varchar(50)",
+      "nullable": "NO"
+    },
+    {
+      "name": "code",
+      "type": "varchar(255)",
+      "nullable": "NO"
+    },
+    {
+      "name": "_idfactoring",
+      "type": "int(10) unsigned",
+      "nullable": "NO"
+    },
+    {
+      "name": "idusuariocrea",
+      "type": "int(11)",
+      "nullable": "NO"
+    },
+    {
+      "name": "fechacrea",
+      "type": "timestamp(3)",
+      "nullable": "NO"
+    },
+    {
+      "name": "idusuariomod",
+      "type": "int(11)",
+      "nullable": "NO"
+    },
+    {
+      "name": "fechamod",
+      "type": "timestamp(3)",
+      "nullable": "NO"
+    },
+    {
+      "name": "estado",
+      "type": "tinyint(4)",
+      "nullable": "NO"
+    },
+    {
+      "name": "_idfactoringpagoestado",
+      "type": "int(10) unsigned",
+      "nullable": "NO"
+    },
+    {
+      "name": "version",
+      "type": "int(10) unsigned",
+      "nullable": "NO"
+    }
+  ],
+  "fks": [
+    {
+      "name": "FK_fp_factoring",
+      "deleteRule": "RESTRICT",
+      "updateRule": "RESTRICT"
+    },
+    {
+      "name": "FK_fp_pagoestado",
+      "deleteRule": "RESTRICT",
+      "updateRule": "RESTRICT"
+    }
+  ],
+  "checks": [
+    {
+      "name": "CK_fp_version"
+    },
+    {
+      "name": "CK_fp_estado"
+    }
+  ],
+  "catalog": [
+    {
+      "code": "PENDIENTE",
+      "idusuariocrea": 105,
+      "idusuariomod": 105
+    },
+    {
+      "code": "PARCIAL",
+      "idusuariocrea": 105,
+      "idusuariomod": 105
+    },
+    {
+      "code": "CANCELADO",
+      "idusuariocrea": 105,
+      "idusuariomod": 105
+    }
+  ],
+  "counts": {
+    "maestros": "0",
+    "detalles": "0"
+  },
+  "legacyRegularization": "DECLINED_BY_USER"
+}

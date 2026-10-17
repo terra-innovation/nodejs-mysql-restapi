@@ -1,0 +1,11 @@
+{
+  "formatVersion": 1,
+  "id": "20261016-configuracion-bbdd-tls",
+  "description": "Usuario autoriza expresamente opción por conexión sin TLS, aceptando contraseña y datos sin cifrar. Agregar bandera administrativa con valor predeterminado seguro 1 y CHECK; no cambiar decisiones de registros existentes.",
+  "sqlFile": "../../../docs/transacciones-bancarias/20261016-configuracion-bbdd-tls.sql",
+  "createTables": [],
+  "alterTables": [
+    "configuracion_bbdd"
+  ],
+  "seedTables": []
+}

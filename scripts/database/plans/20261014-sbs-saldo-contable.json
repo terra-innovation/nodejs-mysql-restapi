@@ -1,0 +1,26 @@
+{
+  "formatVersion": 1,
+  "id": "20261014-sbs-saldo-contable",
+  "description": "Cuatro tablas SBS aprobadas expresamente por el usuario: dos catálogos y dos operativas, con comentarios y semillas iniciales.",
+  "sqlFile": "../../../docs/saldo-contable/esquema-propuesto.sql",
+  "createTables": [
+    "sbs_saldo_contable_periodo_estado",
+    "sbs_saldo_contable_operacion_tipo",
+    "sbs_saldo_contable_periodo",
+    "sbs_saldo_contable_detalle"
+  ],
+  "alterTables": [],
+  "seedTables": ["sbs_saldo_contable_periodo_estado", "sbs_saldo_contable_operacion_tipo"],
+  "seedChecks": [
+    {
+      "table": "sbs_saldo_contable_periodo_estado",
+      "columns": ["_idsbssaldocontableperiodoestado", "code", "nombre"],
+      "rows": [[1, "SCPE00001", "EN ELABORACION"], [2, "SCPE00002", "CERRADO"]]
+    },
+    {
+      "table": "sbs_saldo_contable_operacion_tipo",
+      "columns": ["_idsbssaldocontableoperaciontipo", "code", "nombre", "habilitado"],
+      "rows": [[1, "SCOT00001", "DESCUENTO", 1], [2, "SCOT00002", "FACTORING", 0]]
+    }
+  ]
+}

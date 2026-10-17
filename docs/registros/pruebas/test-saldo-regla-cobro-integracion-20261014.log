@@ -1,0 +1,6 @@
+
+> ft-app-backend@1.0.1 test:integration
+> node scripts/integration/run-mariadb.mjs tests/mariadb/saldocontable.test.ts
+
+docker falló (1). Comprueba que Docker esté iniciado.
+Resumen: coverage/mariadb/last-run.json

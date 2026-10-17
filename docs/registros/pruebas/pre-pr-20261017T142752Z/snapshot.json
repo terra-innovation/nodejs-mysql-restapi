@@ -1,0 +1,4989 @@
+{
+  "createdAt": "2026-10-17T14:28:00.564Z",
+  "source": "D:\\06_Workspace_nodejs\\ft-app-backend",
+  "target": "D:\\06_Workspace_nodejs\\ft-app-backend\\coverage\\pre-pr-20261017T142752Z\\backend",
+  "head": "6d537f47ffae966c94889eb540f0dd006945ccea",
+  "files": [
+    {
+      "path": "docs/ci/validacion-pre-pr.md",
+      "sha256": "c963852a5aab962a7c7968a354ff72dfa86b332ad47c26b620ca83fec607c69a",
+      "bytes": 6818
+    },
+    {
+      "path": "docs/registros/pruebas/test-ci-runner-integration-plan-20261017.log",
+      "sha256": "5e8162ed162022c3f104487d5a285cfcac9345d2bb81b31bfecea40e0f7591df",
+      "bytes": 1041
+    },
+    {
+      "path": "docs/registros/pruebas/test-ci-runner-plan-20261017.log",
+      "sha256": "1aad57a0bde55bdd1bf150db6e0a765397fc0f49b91ed67ce070cf5b1ea6f445",
+      "bytes": 2497
+    },
+    {
+      "path": "docs/registros/pruebas/test-ci-runner-pr-plan-20261017.log",
+      "sha256": "a921abcf642f66c44b68b672ea249792a7ec8ba98b13671415089398148b7399",
+      "bytes": 2506
+    },
+    {
+      "path": "docs/registros/pruebas/test-ci-runner-quality-plan-20261017.log",
+      "sha256": "d3d1bb135f12c216a47ec6e2a79432c92695a9e95c227dc9a418ec44c9aef1cd",
+      "bytes": 1763
+    },
+    {
+      "path": "docs/registros/pruebas/test-ci-runner-types-20261017.log",
+      "sha256": "35c7214355de5ea230e4ef2008a2555310f0b07fd3fa08b5e45e57ec63f3383d",
+      "bytes": 103
+    },
+    {
+      "path": "docs/registros/pruebas/test-ci-runner-unit-20261017.log",
+      "sha256": "547e17822e696d1d9e8074dca3868c6b10d920a5485a83615e48810e36a6f869",
+      "bytes": 352
+    },
+    {
+      "path": "scripts/quality/ci-runner.ts",
+      "sha256": "6de83094528a913092ab03d5a80315ae74f21dfa5b049a6182284761d16a03aa",
+      "bytes": 9229
+    },
+    {
+      "path": "tests/vitest/unit/ciRunner.test.ts",
+      "sha256": "128d505e9d00e184c26dbc0fb6debc48dd970eba9473b7842ce0e0e3aff1c611",
+      "bytes": 5531
+    },
+    {
+      "path": ".agents/skills/backend-validation/SKILL.md",
+      "sha256": "3e7d134532c5a956152e8461163c4045bb19a11c90ac60f0c38baa4c428ef935",
+      "bytes": 8327
+    },
+    {
+      "path": ".antigravityignore",
+      "sha256": "65c8c26af85b46177cbbfddd6ff2421faaf429004fadd38a0ac98fb10c5eaa80",
+      "bytes": 1379
+    },
+    {
+      "path": ".env.example",
+      "sha256": "c6f90965c103040b37037cb8fe934dec9ea4598f43adf69f9a30906142d52fc0",
+      "bytes": 1792
+    },
+    {
+      "path": ".gitattributes",
+      "sha256": "e30d861de45fa926d60f6f88f0f1383479480d4570139d6af56bd471bfd5ab54",
+      "bytes": 145
+    },
+    {
+      "path": ".github/branch-protection/master.json",
+      "sha256": "db0b3971270ded90d62b5f3bc5b3947d8d4443d5566d61cb042b6fbf44e29cc6",
+      "bytes": 664
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "sha256": "12e974cd789c837e8733204f3be83a174d6cc1522e6422d9f5245a1c0a52b4d1",
+      "bytes": 1008
+    },
+    {
+      "path": ".github/workflows/backend-quality.yml",
+      "sha256": "137ec68e7cd7294ddd44887d7017f7bc6d992f57cedb429cd75babd0058c4c72",
+      "bytes": 11517
+    },
+    {
+      "path": ".github/workflows/backend-security.yml",
+      "sha256": "267867b27edc4b772613e758ddb209018475484d3d28cef6cc9b8a5cf31675fe",
+      "bytes": 2691
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "99ed77f918370f98caf9c238b5a2c74d5fc78a3ea8f086d6df462a9f3dceb250",
+      "bytes": 350
+    },
+    {
+      "path": ".node-version",
+      "sha256": "04d43a993a37e6543c8b1cc37d498fa4a10250034ab922207b1a6a1e41e216da",
+      "bytes": 9
+    },
+    {
+      "path": ".npmrc",
+      "sha256": "85f476be1a3acba36c6d8ac40ab2943a77867cd18d7159cc5211a80e07eb3a62",
+      "bytes": 20
+    },
+    {
+      "path": ".prettierignore",
+      "sha256": "13a34a68658e38b84f0040d7d8e93351619b45717587351f60260ed5aecbe7d1",
+      "bytes": 314
+    },
+    {
+      "path": ".prettierrc",
+      "sha256": "2dc14070897ccb0d7c199814b3572f7f700ea067804fc3757fdb59e56a834060",
+      "bytes": 28
+    },
+    {
+      "path": ".vscode/extensions.json",
+      "sha256": "980b4f1748dc076e1635994d91ad3fcb8c959b3d68cb1b7d6536ec739ab97733",
+      "bytes": 134
+    },
+    {
+      "path": ".vscode/launch.json",
+      "sha256": "a753a7c30aa93ceb68809c2f704e74b22b0e64ba8b843b7e7a495c13140bdf84",
+      "bytes": 1681
+    },
+    {
+      "path": ".vscode/settings.json",
+      "sha256": "3f1d816d75f220d818263a561b541d29479dfa0a6750aa57f45d2f84c9762df9",
+      "bytes": 798
+    },
+    {
+      "path": ".vscode/tasks.json",
+      "sha256": "3dac801c331c9f1581d9301cae99c27870d9c21fc3435911e53640880c4a7595",
+      "bytes": 698
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "8ec712ec9dd89678915bba9a3fcabb465b28d35b36384542be4c7d0e61540988",
+      "bytes": 7425
+    },
+    {
+      "path": "README.md",
+      "sha256": "e0e9d6740832a5f38f894a2a2ca3596c34ba1e60e7728bea10e7e11a7fdc2b88",
+      "bytes": 1681
+    },
+    {
+      "path": "assets/images/cotizacion/LogoFinanzaTech.png",
+      "sha256": "6a49d0c3c4c553adadc5fd391a6d6a68c1a37202972c72cb8e474e37e346a10c",
+      "bytes": 19695
+    },
+    {
+      "path": "db/database.sql",
+      "sha256": "49ab4f6969b9e373bcdc14ee821be0845eb66f9b5af2159577c1555959776cf4",
+      "bytes": 391
+    },
+    {
+      "path": "db/procedures.sql",
+      "sha256": "5480145f1ae1379bb47def7a28d6bc4d38b116bde5964545f4c7970565f3a213",
+      "bytes": 424
+    },
+    {
+      "path": "docker-compose.yml",
+      "sha256": "9455c8b81d174cb391d6fea9bf542a49a63779b1e137445e4a1e4d0464186e31",
+      "bytes": 349
+    },
+    {
+      "path": "docs/actualizacion-accesos-suscripciones.md",
+      "sha256": "58150f5b7413b4965d74408eaed4b23cf9f55019dcdfc9c0238aeb453a770c58",
+      "bytes": 6744
+    },
+    {
+      "path": "docs/alineacion-simulacion-fechas-2026-10-06.md",
+      "sha256": "d06b5981b2fc83d1b2462be4c0d60cab5411df7ffd962445d1a55d15c4cfa4f0",
+      "bytes": 9112
+    },
+    {
+      "path": "docs/ampliacion-precision-liquidacion-20261009.md",
+      "sha256": "2456fb73912d92f92f9423a27d70f9549b55a3219de63032a463364d025461f2",
+      "bytes": 8017
+    },
+    {
+      "path": "docs/analisis-liquidacion-factoring-2026-10-06.md",
+      "sha256": "ce3f25e572b998958958b8fdca5f8b091b3d9d4da251c03e18c5b4726db34ffe",
+      "bytes": 19274
+    },
+    {
+      "path": "docs/analisis-optimizacion-tokens-chats-20261011.md",
+      "sha256": "4f9a8a19cbb21a88405f19de4ae0b59c630eece111ede08365d141caed738c31",
+      "bytes": 12143
+    },
+    {
+      "path": "docs/analisis-transacciones-bancarias-factor-20261015.md",
+      "sha256": "b6aa4226d6176936d2b5eae0f96e249ef74448616800bca33e333dbb21653aa5",
+      "bytes": 20097
+    },
+    {
+      "path": "docs/arranque-pm2-configuracion-20261013.md",
+      "sha256": "05fd296b09adaded4d78d06eb43ab621777013e29fd7229af4d98a955f545c94",
+      "bytes": 23555
+    },
+    {
+      "path": "docs/ci/adopcion-calidad.md",
+      "sha256": "fc8bd37e57b967eb46cb85040ce526380f454a8bac538aa4e5be1cfd47b47625",
+      "bytes": 4040
+    },
+    {
+      "path": "docs/ci/comandos-calidad.md",
+      "sha256": "55965287fd9611101df30f87f9dc4092a7ec8ce39c25398fb63783bd99aa40a8",
+      "bytes": 5231
+    },
+    {
+      "path": "docs/ci/flujo-diario-y-protecciones.md",
+      "sha256": "a2b8328e1413dd504db64d56c132711b20c7d83569a6949ffb247b13030726e3",
+      "bytes": 6922
+    },
+    {
+      "path": "docs/ci/instalacion-reproducible.md",
+      "sha256": "f64654b9a1fc0cf3dcc073b774301d77c618a45e7f34426e3ad696c870962693",
+      "bytes": 5235
+    },
+    {
+      "path": "docs/ci/integracion-runtime.md",
+      "sha256": "b7d2e875ebc06abe4d1882ea44d95cd8c225f87493df36f1c69c2952f5786634",
+      "bytes": 5807
+    },
+    {
+      "path": "docs/ci/linea-base-20261010.json",
+      "sha256": "4fd78e98a3771c40bec6c33e38d8d9bd8be8787692490cefae0880d39a2e84dc",
+      "bytes": 16963
+    },
+    {
+      "path": "docs/ci/linea-base-20261010.md",
+      "sha256": "73927278264c8b7d89a3b46eb5abad161e81e5d37649e4d23b32d555ac51127f",
+      "bytes": 8550
+    },
+    {
+      "path": "docs/ci/mantenimiento-y-seguridad.md",
+      "sha256": "b705d34b2d72cf648c89718acb235d0fef8b6b3cbf384793833e89814ecad89f",
+      "bytes": 6662
+    },
+    {
+      "path": "docs/ci/validacion-remota-20261010.md",
+      "sha256": "c9394a02bc2e24d1cb8096421741d15bb9612ffd35894c8ba2735c87348181ec",
+      "bytes": 5486
+    },
+    {
+      "path": "docs/ci/workflow-rapido.md",
+      "sha256": "940fa1154d73f6d90682cf1467334364bb742d51097260923575b267e097da69",
+      "bytes": 12627
+    },
+    {
+      "path": "docs/correccion-arranque-prisma7-20261009.md",
+      "sha256": "e0cd30ae64e7eb5e9aa54bd49e17a53c708ec1b2e8f8ea2ee1a8f2d9ed39912b",
+      "bytes": 1837
+    },
+    {
+      "path": "docs/correccion-cobertura-tasa-cero-factoring.md",
+      "sha256": "0ff6ce020717fc6a79139e762d54fab75a0e4129b0b6624c3923989b818b32e5",
+      "bytes": 5303
+    },
+    {
+      "path": "docs/correccion-tipos-jest-20261009.md",
+      "sha256": "f16524331f7770f3e793a2da0d2002b8d0f65305a1828da60b6a0ce8980d3178",
+      "bytes": 1541
+    },
+    {
+      "path": "docs/desarrollo-node24-windows.md",
+      "sha256": "e45f0e0506928fdf61fb72de2bd1026d0ddbacd4193a26b56564c9704557b948",
+      "bytes": 2259
+    },
+    {
+      "path": "docs/deuda-tecnica/20261006_1451_DT_validaciones_financieras_factoring.md",
+      "sha256": "85d216dbf264e5ef9d30f60adef0b27a0b343f5eecfb541813442e7f86455752",
+      "bytes": 39272
+    },
+    {
+      "path": "docs/deuda-tecnica/20261007_DT_hallazgos_pruebas_negocio.md",
+      "sha256": "f8abe9189895bac23b3dbf3960c9e6144722d04c75760251b49a4abfbea655ee",
+      "bytes": 4144
+    },
+    {
+      "path": "docs/deuda-tecnica/20261008_DT_XML_empresario_integracion.md",
+      "sha256": "3e29bc4f649b6e77c7228f63d9c81b9135692d904409e0d06921e359f6498cfa",
+      "bytes": 4461
+    },
+    {
+      "path": "docs/deuda-tecnica/20261008_DT_ciclo_vida_archivos.md",
+      "sha256": "e7874c9f6159bb8a38d00ac5f35fd48f2e2860193c09584836df2058a799cbf1",
+      "bytes": 3737
+    },
+    {
+      "path": "docs/deuda-tecnica/20261008_DT_creacion_factoring_integracion.md",
+      "sha256": "6cdbb1d3571d9e60daa4648f4cb745e54741d14c665116cd9eef8d0c2ed7f6a9",
+      "bytes": 5387
+    },
+    {
+      "path": "docs/deuda-tecnica/20261008_DT_hallazgos_XML_regresion.md",
+      "sha256": "02fc81313bffc4e52e8cf1a94336d017945df5a0a497c305e02592db7a3273e3",
+      "bytes": 4615
+    },
+    {
+      "path": "docs/deuda-tecnica/20261008_DT_integracion_MariaDB.md",
+      "sha256": "7b8a6c49e9c42584eef7a92a86101edbb127b2cc50e389d474bbaa4e11b25932",
+      "bytes": 5403
+    },
+    {
+      "path": "docs/deuda-tecnica/20261008_correccion_autenticacion.md",
+      "sha256": "82d53f7f05d61482b4a9542347af1b62d47938898612b6f741de6a052fe76ed7",
+      "bytes": 5711
+    },
+    {
+      "path": "docs/deuda-tecnica/20261008_integracion_HTTP_Multer_facturas.md",
+      "sha256": "2ba5260c54cc75144614850450ee6595bc853bb0047294e6525e062ae99cee7b",
+      "bytes": 14127
+    },
+    {
+      "path": "docs/deuda-tecnica/20261008_integracion_HTTP_financiero.md",
+      "sha256": "a00df6279117bb2f3f37cbb9fa8dde8eb86d31ba2167e138be248926e4c5a0a4",
+      "bytes": 5910
+    },
+    {
+      "path": "docs/deuda-tecnica/20261008_integracion_PDF.md",
+      "sha256": "ede37ed3ff86eb6ea4854a5c438237e8f21723408fd72ee0c0e2ab617ee00550",
+      "bytes": 20237
+    },
+    {
+      "path": "docs/deuda-tecnica/20261008_integracion_concurrencia_liquidaciones_transferencias.md",
+      "sha256": "1ef92b965a0f737ba547929c5b511d5553b4fcbf7162491558c3d1d28b3aec50",
+      "bytes": 4879
+    },
+    {
+      "path": "docs/deuda-tecnica/20261008_integracion_estados_historial_operacion.md",
+      "sha256": "6fbc0f9eb14731459d69dd7f5738b29454f34af2ff0e9db85f84ff43a6edb05a",
+      "bytes": 5398
+    },
+    {
+      "path": "docs/deuda-tecnica/20261008_integracion_liquidaciones_transferencias_auditoria.md",
+      "sha256": "c54a8ebeaecf9ecd2bbfeb252f09bf511edd55cae96798cbd9187aa1890c03d6",
+      "bytes": 4981
+    },
+    {
+      "path": "docs/deuda-tecnica/20261008_integracion_login_accesos.md",
+      "sha256": "39730208aa44d64e69d930db2cae3e20544eae9e3b2e18c383854e4e3cf11b17",
+      "bytes": 6062
+    },
+    {
+      "path": "docs/deuda-tecnica/20261008_integracion_montaje_global.md",
+      "sha256": "3ddc92e3027302de300cc730acb457412b963a0d63cea37e22472187f0dc0bba",
+      "bytes": 5627
+    },
+    {
+      "path": "docs/deuda-tecnica/20261008_integracion_propuestas_calculo.md",
+      "sha256": "a64fed93af0fd998d279b6e7d1dedbe0052c80fb888cac153d024d5ac46991b7",
+      "bytes": 5351
+    },
+    {
+      "path": "docs/deuda-tecnica/20261008_integracion_recorrido_conectado.md",
+      "sha256": "06b91d361172544e437778180a24d6f45f8e62e92c07a16c8734516ebb05c7b3",
+      "bytes": 6939
+    },
+    {
+      "path": "docs/deuda-tecnica/20261008_regresion_backend_compilado.md",
+      "sha256": "9717a3e19ec20259b030c0c01c7b36a5fcdaaa7abbe5051fdc9d858d789ef0ca",
+      "bytes": 4277
+    },
+    {
+      "path": "docs/deuda-tecnica/20261009_DT_limites_entrada_financiera.md",
+      "sha256": "9a713b8142ef5f343f6d1aa47d96addc8026c26c34acf37228c9ddf6689d5fac",
+      "bytes": 5506
+    },
+    {
+      "path": "docs/deuda-tecnica/20261010_DT_CI_01_contrato_fechas_frontend.md",
+      "sha256": "5bb08922b4f1efff2f30ff5826c936c5a9981b543a66d0316dbed144e143ffe9",
+      "bytes": 2630
+    },
+    {
+      "path": "docs/deuda-tecnica/20261010_DT_CI_02_remediacion_dependencias.md",
+      "sha256": "23a7019f43fcf1104dd5af578b2adf1bfc24e939ae08679aea1fa1794aa33740",
+      "bytes": 2741
+    },
+    {
+      "path": "docs/deuda-tecnica/20261015_DT_divergencias_prisma_desarrollo.md",
+      "sha256": "5a62bd4ac45c97516b343694979c9666b05c36e3b6618c00587bf7aea3a5a6bb",
+      "bytes": 2552
+    },
+    {
+      "path": "docs/ensayo-ubuntu-arm64.md",
+      "sha256": "e62204fc20171d972d98ceafea581a5c270954f0f92fa79d10a6fadff631f58f",
+      "bytes": 11329
+    },
+    {
+      "path": "docs/estandar-fechas-factoring.md",
+      "sha256": "28e08b408d559e85f9c02c0b9c7faa7530707e905ba3f03f77bfc4b9d6e35d4a",
+      "bytes": 4212
+    },
+    {
+      "path": "docs/implementacion-gasto-limites-liquidacion-20261009.md",
+      "sha256": "a9d26409c47e48b62d5c5cc1cbc8b4fd8073c845832a574030eea044d580c699",
+      "bytes": 7314
+    },
+    {
+      "path": "docs/implementaciones/20261014_detracciones_financiero_entrega.md",
+      "sha256": "7d7c533a90b096d2faac3a9f2a3bc9624ac6bdf205230cd865c2bc7ab6929d65",
+      "bytes": 14882
+    },
+    {
+      "path": "docs/implementaciones/20261014_detracciones_financiero_fase_a.md",
+      "sha256": "cf0dcfa5393727e7ad68e2950055b29ab34bb3b4932d2906e1b072e6176de505",
+      "bytes": 16967
+    },
+    {
+      "path": "docs/migracion-bcryptjs-3.md",
+      "sha256": "f8729a72fdede90ffc816877f6d7f4664c4dafc88890ce66833ab99465e93bda",
+      "bytes": 1547
+    },
+    {
+      "path": "docs/migracion-conector-mariadb-20261009.md",
+      "sha256": "1b244a93773a09b719edd9dfda574914cc69ea50de7ca1db73887549ec34b8a9",
+      "bytes": 1623
+    },
+    {
+      "path": "docs/migracion-cors-20261009.md",
+      "sha256": "9653e62add3bc16b0255e61d9abcb9bb08d899d88a22bd64d9b3d5d2f29377c4",
+      "bytes": 1044
+    },
+    {
+      "path": "docs/migracion-dependencias-complementarias-20261009.md",
+      "sha256": "6b965af0416f33a96cafb3325e35e957197c88d53eea0feeca379866f2cd8a12",
+      "bytes": 4188
+    },
+    {
+      "path": "docs/migracion-eslint10-20261009.md",
+      "sha256": "e807863a0727a3630986c4049be90f935990ad8d8145cb53ed341b0bbe940c29",
+      "bytes": 2381
+    },
+    {
+      "path": "docs/migracion-express5-20261009.md",
+      "sha256": "b994da2d7cc2735cdb4fe737965bed38df607c164fda3b8b5054422727857505",
+      "bytes": 1893
+    },
+    {
+      "path": "docs/migracion-file-type-22-20261009.md",
+      "sha256": "eeef1f7a087e6aa4c3893f883ee153727f0f51eaa5d633dc715a1043f8331634",
+      "bytes": 2029
+    },
+    {
+      "path": "docs/migracion-helmet-20261009.md",
+      "sha256": "0706263b3746b7344695f152c2cb36acba92ba5a31c5fc06e76de30e50650114",
+      "bytes": 1037
+    },
+    {
+      "path": "docs/migracion-ip-range-check-20261009.md",
+      "sha256": "5d063ca0ade1f05de1c719425c38971e8a5dd9d155aeee12dbc2516436a9f965",
+      "bytes": 1247
+    },
+    {
+      "path": "docs/migracion-jest-vitest-cierre-20261010.json",
+      "sha256": "207bc7c1c091d79ddba79c16b0c18de336033e908c77067bf2da826abee280f3",
+      "bytes": 1357
+    },
+    {
+      "path": "docs/migracion-jest-vitest-correspondencia-completa-20261010.json",
+      "sha256": "72b716eaf8c7ce1eb9f2b44ec464a483f580a0ecbcb9ef0705c28433edd7d71f",
+      "bytes": 3823
+    },
+    {
+      "path": "docs/migracion-jest-vitest-grupo1-20261010.json",
+      "sha256": "400700a1ac684c5c55b77167d123461f87a8f0a7993cf4657873eb76ef1b7a7c",
+      "bytes": 610
+    },
+    {
+      "path": "docs/migracion-jest-vitest-grupo2-20261010.json",
+      "sha256": "82c85c6f1a35795936d47628cd95c0d01eb76b7d540aa6e9f65fc3ae19690ec5",
+      "bytes": 663
+    },
+    {
+      "path": "docs/migracion-jest-vitest-grupo3-20261010.json",
+      "sha256": "4cd6439d6307d651cb401681a497ee2ef4d4208c342464df1cce441e4a883a19",
+      "bytes": 689
+    },
+    {
+      "path": "docs/migracion-jest-vitest-grupo4-20261010.json",
+      "sha256": "f61f021d578cd3631587080679252301134d176cc928c09b41e503990a72dc83",
+      "bytes": 642
+    },
+    {
+      "path": "docs/migracion-jest-vitest-grupo5-20261010.json",
+      "sha256": "147f2eb3e4495d3194b77aed9a28b3c26ee3efe8b5466ee1b70f12c81e14de82",
+      "bytes": 662
+    },
+    {
+      "path": "docs/migracion-jest-vitest-grupo6-20261010.json",
+      "sha256": "5b5a5c7bd46a9eba80f44d731e3d2a713fcd60703c94479f597c5248155fe2c8",
+      "bytes": 663
+    },
+    {
+      "path": "docs/migracion-jest-vitest-grupo7-20261010.json",
+      "sha256": "8cde1eb25a43e5f8414e37511cbcb1fe1692a893547a823744e6a68e95cccfab",
+      "bytes": 655
+    },
+    {
+      "path": "docs/migracion-jest-vitest-grupo8-20261010.json",
+      "sha256": "d17495cb22103cb45bfe7f6366fcf105e926196ebb6c848466b8555ecefbc6a4",
+      "bytes": 785
+    },
+    {
+      "path": "docs/migracion-jest-vitest-linea-base-20261010.json",
+      "sha256": "a693e9b9c7ca50526c92eb4adad1cd10f7e9c6f0810f5ca0c3c608229cb71269",
+      "bytes": 586697
+    },
+    {
+      "path": "docs/migracion-jest-vitest-paso1-20261010.md",
+      "sha256": "138a530f9d487e270344278911ac39a382c2c7b05e92cc4b48a0108c901a1294",
+      "bytes": 6462
+    },
+    {
+      "path": "docs/migracion-jest-vitest-paso2-20261010.md",
+      "sha256": "6c571837a6dd86d762f3767f3bf6aa6139b9b2360012e1d8e500397705b2a800",
+      "bytes": 3761
+    },
+    {
+      "path": "docs/migracion-jest-vitest-paso3-grupo1-20261010.md",
+      "sha256": "6eb96dd68733866918459a6ff2b8844e2f40bd0a5a86d6a766ee4877b4134b87",
+      "bytes": 3307
+    },
+    {
+      "path": "docs/migracion-jest-vitest-paso3-grupo2-20261010.md",
+      "sha256": "ba08082b25896c66cd5af9a5172a1bb04f7f3a61caddd54ae613bcea6b71d5a1",
+      "bytes": 3806
+    },
+    {
+      "path": "docs/migracion-jest-vitest-paso3-grupo3-20261010.md",
+      "sha256": "6ca9e98851e0673e118a571923ac808fae3e52e6c1440bc4fd4f165d95e2ef20",
+      "bytes": 3853
+    },
+    {
+      "path": "docs/migracion-jest-vitest-paso3-grupo4-20261010.md",
+      "sha256": "2da0b0c5d94409a289b79011483899acf3f6926b2987b766dce7ffbe6250a9a1",
+      "bytes": 3980
+    },
+    {
+      "path": "docs/migracion-jest-vitest-paso3-grupo5-20261010.md",
+      "sha256": "12f1231ce994044b373f630f146fba8f6d22145f2b6e0b32255beae93e093f34",
+      "bytes": 4100
+    },
+    {
+      "path": "docs/migracion-jest-vitest-paso3-grupo6-20261010.md",
+      "sha256": "a2a509822d82b406f11bdaf7fcf2b95e19b17b73f3701c0a00386b91e947e133",
+      "bytes": 3959
+    },
+    {
+      "path": "docs/migracion-jest-vitest-paso3-grupo7-20261010.md",
+      "sha256": "30e70f1cf3e5fd39088bc809a8712ff5cd1a65c5b9f1f8514321aca2a417ccaa",
+      "bytes": 4879
+    },
+    {
+      "path": "docs/migracion-jest-vitest-paso3-grupo8-20261010.md",
+      "sha256": "a455dfb50584b8e5bca0bc1ebb7f1ff93276f45f9a477887c9e07a04df8b705a",
+      "bytes": 4280
+    },
+    {
+      "path": "docs/migracion-jest-vitest-paso5-20261010.json",
+      "sha256": "99021153ba9fa8f05f4f6b816457c9f03164100f625557e66b3b22ecbea42005",
+      "bytes": 259
+    },
+    {
+      "path": "docs/migracion-jest-vitest-paso5-20261010.md",
+      "sha256": "4e569964eb263dace16571a53ddf5a0d6a2cc070011979c30d266bab20da1048",
+      "bytes": 2620
+    },
+    {
+      "path": "docs/migracion-jest-vitest-paso6-20261010.md",
+      "sha256": "6603b2f6eaac0543d9585624279327925bed5550b52e674ffed5f780ac4a5c5f",
+      "bytes": 5644
+    },
+    {
+      "path": "docs/migracion-jest30-20261009.md",
+      "sha256": "55d9a63444da7b2e1f4666f01d70c8ff81acacfdc03b64e832af34b7bd84e943",
+      "bytes": 1631
+    },
+    {
+      "path": "docs/migracion-pdfkit-20261009.md",
+      "sha256": "c59780cf978939e7b8fad03280fc2ee62e5de2d3cc5feb75e8621fa76c1adcb6",
+      "bytes": 2013
+    },
+    {
+      "path": "docs/migracion-pino10-20261009.md",
+      "sha256": "9ae1d5f6571ba42b82a868012d6a4a6a9754e31a7ba044ef10062a15bebd8619",
+      "bytes": 1815
+    },
+    {
+      "path": "docs/migracion-prisma7-20261009.md",
+      "sha256": "1c0e61671d82633582e62edd2fb662b89a6cc6f5b0cf6dcab03c945876dea300",
+      "bytes": 9118
+    },
+    {
+      "path": "docs/migracion-rate-limiter-flexible-20261009.md",
+      "sha256": "40f9a9d5c7e0930ea70fc9385d2d997c91addec75250b454887bcf41121f9ec9",
+      "bytes": 1251
+    },
+    {
+      "path": "docs/migracion-sheetjs-20261009.md",
+      "sha256": "0dce9809a4351f61d6df302185df726a753d0a2a17e6afa78f3bcaaec89045bb",
+      "bytes": 1513
+    },
+    {
+      "path": "docs/migracion-tipos-node24-express-pdfkit-supertest-20261009.md",
+      "sha256": "b8e54882161ecced854f0ae16dd462be3e13246e4f17263f4c4e11bd002680fa",
+      "bytes": 1699
+    },
+    {
+      "path": "docs/migracion-typescript7-20261009.md",
+      "sha256": "7ebf4285ae212e298a8b7cd20606f4ad182ac39ace9800dc02d70d8792b7ffac",
+      "bytes": 4023
+    },
+    {
+      "path": "docs/migracion-uuid-20261009.md",
+      "sha256": "ebbd970ef4240462f50d9375e45b03493dab832b25a125075fc363e938471f0d",
+      "bytes": 1552
+    },
+    {
+      "path": "docs/migracion-uuid-nativo-20261010.md",
+      "sha256": "463c8ef2ee0312c371941e3c43fa8c5a1c153b67c2f4ee11860cc340e32913a0",
+      "bytes": 2206
+    },
+    {
+      "path": "docs/migracion-vitest5-20261009.md",
+      "sha256": "68fe399028b66a31bc838477bceedc9bb81d168666b7c3ab51c8fa1fb926300b",
+      "bytes": 2549
+    },
+    {
+      "path": "docs/migracion-xml2js-pino-pretty-tsx-supertest-20261009.md",
+      "sha256": "6f8828dd770656fba514e5f10ad49ff4eb0b0fb59fb742b717f74179e9ea71de",
+      "bytes": 1946
+    },
+    {
+      "path": "docs/migracion-yup-zod-20261010.md",
+      "sha256": "8a4eb374ddb6d459fbbc68636ec0f11c8d59a30947881420169cff7dd14dd3c3",
+      "bytes": 3371
+    },
+    {
+      "path": "docs/migracion-zod4-20261009.md",
+      "sha256": "f21b7853bba966259c29f523ebb49d2373a29b172ac3baa4b9205a2c1777a199",
+      "bytes": 1798
+    },
+    {
+      "path": "docs/modelo-pagos-factoring-20261016.md",
+      "sha256": "da607aba27a778fee04ad46a5bd27274306e1be30e6b355611fec9fa5539142c",
+      "bytes": 16788
+    },
+    {
+      "path": "docs/pagos-factoring/README.md",
+      "sha256": "656ccdecaed9134a6e38312c838b3506e2cca7f014f4fcca1ff3332393d0e357",
+      "bytes": 13198
+    },
+    {
+      "path": "docs/pagos-factoring/esquema-propuesto.sql",
+      "sha256": "3e27eaca905e9779c41747bf5ffa09c9565518202bf26f787fdf4222a6324e08",
+      "bytes": 12845
+    },
+    {
+      "path": "docs/pagos-factoring/implementacion.md",
+      "sha256": "42b6589194e33b18d3e28d63cad51089fd86cbd59c5d4f739b11cb723413b712",
+      "bytes": 11398
+    },
+    {
+      "path": "docs/pagos-factoring/regularizacion-maestros.sql",
+      "sha256": "3abf1fdce11fe95781ffdb38e7cdabbf751ea93a841d4562c1fc00a726f4a408",
+      "bytes": 5690
+    },
+    {
+      "path": "docs/pagos-factoring/regularizacion.md",
+      "sha256": "d7f39ffe62e613bb0fe5eb6f9fc881d17706075eba0115671586658cb4d0ec12",
+      "bytes": 4088
+    },
+    {
+      "path": "docs/pagos-factoring/revision-estatica.json",
+      "sha256": "30f75372a614f49c465386ca9d5971ed806cb00e0d95bb78b36331f220bbbc11",
+      "bytes": 1155
+    },
+    {
+      "path": "docs/pagos-factoring/revision-regularizacion.json",
+      "sha256": "6ee07f6039eafb735c1a71c32cab1af4e4ac42ce4f155f75467060f20a57ccb8",
+      "bytes": 772
+    },
+    {
+      "path": "docs/pagos-factoring/verificacion-desarrollo.json",
+      "sha256": "b2e99c1b696cc997cb3f2e5b1f46673c1920f82b454270dced423254bd03b10d",
+      "bytes": 1997
+    },
+    {
+      "path": "docs/plan-actualizacion-verificacion-cuenta-20261015.md",
+      "sha256": "e0e9df456906a8ca6146b62c2faac9ed8bfb9f87fb19f5c420515f4cb4e15642",
+      "bytes": 10972
+    },
+    {
+      "path": "docs/plan-saldo-contable-sbs-20261014.md",
+      "sha256": "0fa7d8e92d10c7b0a13ce40d9d1a492d36db434f586e42018297b9dcb53a1cac",
+      "bytes": 68959
+    },
+    {
+      "path": "docs/politica-pruebas-ia-propuesta-20261016.md",
+      "sha256": "7114c80f36a5ecd8d562bf13b6806e0ef77bc43c0b2d63d7247eb3c51fdb2c4d",
+      "bytes": 11609
+    },
+    {
+      "path": "docs/precision-sunat-y-residual-garantia-20261009.md",
+      "sha256": "ea81c1a19ff6218e8aa8a6884dc2ecd09d3214f90061d845bab5e0989a6a370b",
+      "bytes": 6426
+    },
+    {
+      "path": "docs/precision-tasa-diaria-fuentes-peru-20261009.md",
+      "sha256": "a8a98e33210e47c36acc4ef5ffdbc7cc9020cb573cdf784d4d8bf8be391c546f",
+      "bytes": 4051
+    },
+    {
+      "path": "docs/pruebas-inventario-20261008.md",
+      "sha256": "e3fbc7e69166afa950c34fe84d87c71f96d304fe3c0137ed880aa0b8e7f22842",
+      "bytes": 4901
+    },
+    {
+      "path": "docs/registros/bbdd/2026-10-14T16-05-54-482Z-ddl.json",
+      "sha256": "488c6d69c8858165dd1f33026980e5da50bbec6aea8d91c4298b31b87bc19c4c",
+      "bytes": 220
+    },
+    {
+      "path": "docs/registros/bbdd/2026-10-14T16-06-03-879Z-ddl.json",
+      "sha256": "147edbc768f5d1df828ba0700dd884040e96cc6cc56edf5c328fa00e38f549c4",
+      "bytes": 13341
+    },
+    {
+      "path": "docs/registros/bbdd/2026-10-14T16-06-23-036Z-ddl.json",
+      "sha256": "a39f81673347806f8f9dae8fc2249d7c4fffb23f43bc6574990cd933ebca0f0e",
+      "bytes": 56440
+    },
+    {
+      "path": "docs/registros/bbdd/2026-10-14T16-06-23-036Z-prisma-sync.log",
+      "sha256": "bd6baec0bd3ed03641de01218e37fc8102131673e04c7490c15d2046a4850c96",
+      "bytes": 77849
+    },
+    {
+      "path": "docs/registros/bbdd/2026-10-16T02-34-04-933Z-ddl.json",
+      "sha256": "ef19100150e6b60ff50fd6d3af34bbc072dfbca80a9d73bdbd13f3f5b5d06762",
+      "bytes": 13391
+    },
+    {
+      "path": "docs/registros/bbdd/2026-10-16T02-34-20-432Z-ddl.json",
+      "sha256": "759a4735a6a3254cc9142fbd23b0e80c32bdaa7d53531a68e42fab9618a86b06",
+      "bytes": 86137
+    },
+    {
+      "path": "docs/registros/bbdd/2026-10-16T02-34-20-432Z-prisma-sync.log",
+      "sha256": "ae325fafb894107ae464bbfcf0ac8b32b979286535203d830c3333612f100b78",
+      "bytes": 87491
+    },
+    {
+      "path": "docs/registros/bbdd/2026-10-16T11-22-40-649Z-ddl.json",
+      "sha256": "32d336048397ddad2740c2fadb7ee21dbe52670a96cb848b32e5ca09f7fa3c0b",
+      "bytes": 564
+    },
+    {
+      "path": "docs/registros/bbdd/2026-10-16T11-22-52-077Z-ddl.json",
+      "sha256": "69619fa3d97baf4f7705979d6d1fa02b4945fa18a91575f677accf160d4e14f7",
+      "bytes": 15219
+    },
+    {
+      "path": "docs/registros/bbdd/2026-10-16T11-23-25-674Z-ddl.json",
+      "sha256": "4eaa5bdd911b5afa12a3c384e68c1c8afe27ef9a9d3c2f07bfe255d11bc3c5dd",
+      "bytes": 32183
+    },
+    {
+      "path": "docs/registros/bbdd/2026-10-16T11-23-25-674Z-prisma-sync.log",
+      "sha256": "4fd42037e45ba071959897c6eed3b205ebb9270cc574796f5b9da18d920f8e58",
+      "bytes": 95186
+    },
+    {
+      "path": "docs/registros/bbdd/2026-10-16T11-46-59-276Z-ddl.json",
+      "sha256": "2fbf1ac256a0d262d695f93207aed79b04cec8e8a3b8a59af2e3f815326a1be8",
+      "bytes": 14016
+    },
+    {
+      "path": "docs/registros/bbdd/2026-10-16T11-47-19-731Z-ddl.json",
+      "sha256": "0056beb865827642f4633bf90c94e2d8b44d5eda150066d5d6e5d732e14c73e0",
+      "bytes": 27813
+    },
+    {
+      "path": "docs/registros/bbdd/2026-10-16T11-47-19-731Z-prisma-sync.log",
+      "sha256": "284603f492b2decd40e24faa59fae9908ed47895efd5ce223e0c90a41a8f533c",
+      "bytes": 95190
+    },
+    {
+      "path": "docs/registros/bbdd/2026-10-16T12-16-32-732Z-ddl.json",
+      "sha256": "c0d080a658ac1a488936d61271ccb20103dbd9e090e912c811033b7e7c27b00e",
+      "bytes": 14008
+    },
+    {
+      "path": "docs/registros/bbdd/2026-10-16T12-16-52-902Z-ddl.json",
+      "sha256": "2aa7d82da79053de9c0425a33681cc3285c246f6046a0a89d1d9c6a27c5177b8",
+      "bytes": 27804
+    },
+    {
+      "path": "docs/registros/bbdd/2026-10-16T12-16-52-902Z-prisma-sync.log",
+      "sha256": "3d5b016d3b2c1f59a8d1dd6311b0fa08456ec2f64381ccf425925080f01456ad",
+      "bytes": 95251
+    },
+    {
+      "path": "docs/registros/bbdd/2026-10-16T22-16-44-641Z-ddl.json",
+      "sha256": "65ff3edc941318b1e92a26029ee56c3af0632e09340119ab6840055cfed112c6",
+      "bytes": 14547
+    },
+    {
+      "path": "docs/registros/bbdd/2026-10-16T22-16-55-194Z-ddl.json",
+      "sha256": "8b9f219e1463f1b4e9a792603cf5a37f1f3e4cfbe9008a3d2e9d107435301253",
+      "bytes": 42588
+    },
+    {
+      "path": "docs/registros/bbdd/2026-10-16T22-16-55-194Z-prisma-sync.log",
+      "sha256": "65698057a77be4e133adadb2760134251a0bce69a1275afefb589298cb655ade",
+      "bytes": 99559
+    },
+    {
+      "path": "docs/registros/bbdd/20261016-configuracion-bbdd-prisma-sync.log",
+      "sha256": "88dcb4cef7798d038cdd983443e2686e1ae40b8b538255946644a0f55e56caa9",
+      "bytes": 93637
+    },
+    {
+      "path": "docs/registros/bbdd/20261016-pagos-aplicado.sql",
+      "sha256": "6b2503fb7c17a3b69ba0210534869f948d6a5e49eb244dfc8909ac78df9b4de4",
+      "bytes": 12823
+    },
+    {
+      "path": "docs/registros/bbdd/pagos-backend-cierre.log",
+      "sha256": "a7d7c6d4e97c3e2c607b60b2ca30f6ede37d9a05edb04ce7eb514b47df12de81",
+      "bytes": 18654
+    },
+    {
+      "path": "docs/registros/bbdd/pagos-backend-completa-final.log",
+      "sha256": "50408cb6a4d9f7b85b2cc197169e62f0170ea6c1cf6f8dc18741cfccbe09dd04",
+      "bytes": 18654
+    },
+    {
+      "path": "docs/registros/bbdd/pagos-backend-completa.log",
+      "sha256": "b382103951f5afd7bc7838b9544dd4167255652b9a74d456f584e2ab98de7a56",
+      "bytes": 27434
+    },
+    {
+      "path": "docs/registros/bbdd/pagos-baseline-vitest.log",
+      "sha256": "35d13d9721abfd1f515eadc755980ee937333395520af6cd762429cf9e147c10",
+      "bytes": 424
+    },
+    {
+      "path": "docs/registros/bbdd/pagos-ddl-integracion.log",
+      "sha256": "f637a2c7f1080ae256af350a10944d5d79b8ea2ebb14457cae779b4afd2cee66",
+      "bytes": 662
+    },
+    {
+      "path": "docs/registros/bbdd/pagos-focalizadas.log",
+      "sha256": "8c60f76476371bace01a09f02232eef0ae89df18a85b79b0f61853e9994cfeae",
+      "bytes": 471
+    },
+    {
+      "path": "docs/registros/bbdd/pagos-format-check.log",
+      "sha256": "f20510a9da4717c51c4cffee6d0dd88d6c9a723d0a83711d01216f5b48961283",
+      "bytes": 68
+    },
+    {
+      "path": "docs/registros/bbdd/pagos-format-final.log",
+      "sha256": "45b6519070f44e152fc772f85f28ab22bbc90fa66a5327b72c553ded03e18f09",
+      "bytes": 407
+    },
+    {
+      "path": "docs/registros/bbdd/pagos-format.log",
+      "sha256": "41cbcbac7046d3bbcf13eb9a7c969c932d32331e5afa47e3c827f313485915cf",
+      "bytes": 488
+    },
+    {
+      "path": "docs/registros/bbdd/pagos-http.log",
+      "sha256": "c6d92eba295bc8333e71ce745882a3de5c6f10e22e9062deb534bba12541dc5b",
+      "bytes": 352
+    },
+    {
+      "path": "docs/registros/bbdd/pagos-integracion-completa.log",
+      "sha256": "6caaa4370b28da5eef6b88c5c39efa946e54e61b2bd62f25d54d8eaae8201a52",
+      "bytes": 51196
+    },
+    {
+      "path": "docs/registros/bbdd/pagos-integracion-final.log",
+      "sha256": "15e498212c15b0decb3e40090d901b9dc747a45e92e52406c03295a3548feaa0",
+      "bytes": 2081
+    },
+    {
+      "path": "docs/registros/bbdd/pagos-integracion-focalizada.log",
+      "sha256": "f35622efc448fa09f9e22fb097cd8239e07eb134326edc5a7051bf9771136061",
+      "bytes": 5719
+    },
+    {
+      "path": "docs/registros/bbdd/pagos-integracion-regresion.log",
+      "sha256": "72a1cfbf9a8f6b9f26a80e16a64970ba37a3df5210c4bc4bc52305e8e8d0a8bb",
+      "bytes": 1464
+    },
+    {
+      "path": "docs/registros/bbdd/pagos-integracion-types.log",
+      "sha256": "9518632092721c7d012956e38f2735355a5f1de6d65c375620d631eab2571b3d",
+      "bytes": 109
+    },
+    {
+      "path": "docs/registros/bbdd/pagos-regresion-consumidores.log",
+      "sha256": "bfc2da691e07b537f946f4b6e92f5a3f08fee909e521eade534ab64d7cb27a8d",
+      "bytes": 547
+    },
+    {
+      "path": "docs/registros/bbdd/pagos-regularizacion-pruebas.log",
+      "sha256": "55990463a41484e7ed7d56351b442dea31d9485dae3d17d03c704c9518e9fe9c",
+      "bytes": 782
+    },
+    {
+      "path": "docs/registros/bbdd/pagos-regularizacion-tipos.log",
+      "sha256": "9518632092721c7d012956e38f2735355a5f1de6d65c375620d631eab2571b3d",
+      "bytes": 109
+    },
+    {
+      "path": "docs/registros/bbdd/pagos-typecheck-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/registros/bbdd/pagos-typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/registros/bbdd/pagos-vitest-types.log",
+      "sha256": "35c7214355de5ea230e4ef2008a2555310f0b07fd3fa08b5e45e57ec63f3383d",
+      "bytes": 103
+    },
+    {
+      "path": "docs/registros/bbdd/revision-pagos-factoring-2026-10-16T23-08-24-054Z.json",
+      "sha256": "3dd2edba9e763b92f3b59918a290fc15a81736df6d3761bd65d404241a4d198d",
+      "bytes": 2339
+    },
+    {
+      "path": "docs/registros/bbdd/revision-pagos-factoring-20261016.json",
+      "sha256": "a377c1e89450c516850c010d742e775f37729aa788ade6a42dc7a09ed3170a68",
+      "bytes": 3193
+    },
+    {
+      "path": "docs/registros/compilaciones/typecheck-verificacion-cuenta-20261015.log",
+      "sha256": "7ba1af4449a612d90e651d62befe533e1587bb63e7e3b339a581dea8017aeb4f",
+      "bytes": 54
+    },
+    {
+      "path": "docs/registros/compilaciones/typecheck-vitest-verificacion-cuenta-20261015.log",
+      "sha256": "35c7214355de5ea230e4ef2008a2555310f0b07fd3fa08b5e45e57ec63f3383d",
+      "bytes": 103
+    },
+    {
+      "path": "docs/registros/pruebas/20261014_detraccion_negociada_mariadb.log",
+      "sha256": "bda0e29567d8eb14da9512612cc9c02a80b7605f5dd85b5dbeab3d480952db64",
+      "bytes": 1748
+    },
+    {
+      "path": "docs/registros/pruebas/20261014_detraccion_negociada_mariadb_resumen.json",
+      "sha256": "ee546b277cc89189794a27421138a45a95174b806a56c03fc69eeaacf4848bc7",
+      "bytes": 343
+    },
+    {
+      "path": "docs/registros/pruebas/20261014_detraccion_orden_test.log",
+      "sha256": "74984e629d09973ef0a2363c5aee36915dc8403f43224f7d41da52ff2c21eade",
+      "bytes": 360
+    },
+    {
+      "path": "docs/registros/pruebas/20261014_detracciones_backend.log",
+      "sha256": "e0aba6674e5510f06cc426bb19baf664ad8c05694093802e2d71e7f4d5226bbf",
+      "bytes": 4792
+    },
+    {
+      "path": "docs/registros/pruebas/20261014_detracciones_backend_completo.log",
+      "sha256": "421fffc92370b9c7f6091a5f73c3ed49608b5e7b63db2b3a86d0e24647de54d2",
+      "bytes": 46797
+    },
+    {
+      "path": "docs/registros/pruebas/20261014_detracciones_backend_completo_contrato_ci.log",
+      "sha256": "368e952ec8be6218e5618a9f62028af827b8bdee0129dc6c16d43508093979bc",
+      "bytes": 18654
+    },
+    {
+      "path": "docs/registros/pruebas/20261014_detracciones_backend_formato.log",
+      "sha256": "f20510a9da4717c51c4cffee6d0dd88d6c9a723d0a83711d01216f5b48961283",
+      "bytes": 68
+    },
+    {
+      "path": "docs/registros/pruebas/20261014_detracciones_backend_lint.log",
+      "sha256": "81e7c1d07fd754e1678bc1f8f0bef4bef6668f9848f055eb9f1b0ab372f5c956",
+      "bytes": 316
+    },
+    {
+      "path": "docs/registros/pruebas/20261014_detracciones_backend_tipos.log",
+      "sha256": "2fdd4f5da896ac05c58d7f19a61e0a30cbd2686243bbd7e051b0f9d7c8e4d17b",
+      "bytes": 556
+    },
+    {
+      "path": "docs/registros/pruebas/20261014_detracciones_backend_tipos_tests.log",
+      "sha256": "41533fd77d0d4025b74fef31b664ba700f98f4350b9d7959e90bbc829fc55bf4",
+      "bytes": 394
+    },
+    {
+      "path": "docs/registros/pruebas/20261014_detracciones_fase_a_backend.log",
+      "sha256": "7b6bc1ed34a617e41b4e3579a245642a03278e1b75fc0835e2d6fa5725df4be5",
+      "bytes": 5195
+    },
+    {
+      "path": "docs/registros/pruebas/20261014_detracciones_fase_a_backend_reintento.log",
+      "sha256": "44d3228e9f823b6f7c24212182990f61d526f6f4d1a72622521208447bd19b11",
+      "bytes": 4615
+    },
+    {
+      "path": "docs/registros/pruebas/20261014_detracciones_http_archivos.log",
+      "sha256": "dd57ddfcb4cc43cf85a1c321de97e093c82b249ddf350c3bb152098dfdf32c91",
+      "bytes": 1406
+    },
+    {
+      "path": "docs/registros/pruebas/20261014_detracciones_http_archivos_resumen.json",
+      "sha256": "9e9e5cedd1a405d25aca80641bf455a29d947ab61ebf421f1b1c76e2239fa843",
+      "bytes": 343
+    },
+    {
+      "path": "docs/registros/pruebas/20261014_detracciones_integracion_tipos.log",
+      "sha256": "9518632092721c7d012956e38f2735355a5f1de6d65c375620d631eab2571b3d",
+      "bytes": 109
+    },
+    {
+      "path": "docs/registros/pruebas/20261014_detracciones_mariadb.log",
+      "sha256": "7c47208064720f0a5399f5496da8a0f0e3b65323f8df594098440bde70ba175f",
+      "bytes": 1424
+    },
+    {
+      "path": "docs/registros/pruebas/20261014_detracciones_mariadb_runtime.log",
+      "sha256": "de82b9842c50f50007c9b34151dd2dff53efe9277534752a616c449e4b0ab44c",
+      "bytes": 2289
+    },
+    {
+      "path": "docs/registros/pruebas/20261014_detracciones_sunat_mariadb.log",
+      "sha256": "2dd2b2eae27c4a7f3459e58287b569ed6e20c244a18d0cef42327cf61e91ff14",
+      "bytes": 1638
+    },
+    {
+      "path": "docs/registros/pruebas/20261014_detracciones_sunat_mariadb_resumen.json",
+      "sha256": "97e685251ae68e2eee109e713ef982cd14133eeccfd6905778328267057e2d7e",
+      "bytes": 343
+    },
+    {
+      "path": "docs/registros/pruebas/lint-verificacion-cuenta-20261015.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/registros/pruebas/pagos-financiero-backend-completa-20261017.log",
+      "sha256": "4ca03a522f884a3d111992ec8045573de6bea0fa15f15402e32aa10a43ddb428",
+      "bytes": 18654
+    },
+    {
+      "path": "docs/registros/pruebas/pagos-financiero-http-20261017.log",
+      "sha256": "15260e4e2a9edce7ec5f79fb4f8103e3dd182f4f08a1a525dd758a62163631d6",
+      "bytes": 352
+    },
+    {
+      "path": "docs/registros/pruebas/pagos-financiero-lint-20261017.log",
+      "sha256": "4d34d80d9d06639125318828785b99fcc552fb956039c00cfa55e5bb52148036",
+      "bytes": 204
+    },
+    {
+      "path": "docs/registros/pruebas/pagos-financiero-tipos-20261017.log",
+      "sha256": "7ba1af4449a612d90e651d62befe533e1587bb63e7e3b339a581dea8017aeb4f",
+      "bytes": 54
+    },
+    {
+      "path": "docs/registros/pruebas/pagos-financiero-tipos-vitest-20261017.log",
+      "sha256": "35c7214355de5ea230e4ef2008a2555310f0b07fd3fa08b5e45e57ec63f3383d",
+      "bytes": 103
+    },
+    {
+      "path": "docs/registros/pruebas/sincronizacion-2023-BSA3441103C3F2420F.png",
+      "sha256": "f20f2373cec4c60b0c65b669682c55b4a86f95f29afc3efd0f6bd5a9561e14da",
+      "bytes": 43761
+    },
+    {
+      "path": "docs/registros/pruebas/sincronizacion-2024-BSC1D75254A45F4BBB.png",
+      "sha256": "8496a45f11b20acc64989d51c47ee7ff295906fb7b00274995abd7da104e2b75",
+      "bytes": 43877
+    },
+    {
+      "path": "docs/registros/pruebas/sincronizacion-2025-BS956809DB39D146AB.png",
+      "sha256": "695ed7a28a5d89690a80c5d9d8db0cfa58c1ca41be4e165b149c8f467758926c",
+      "bytes": 43387
+    },
+    {
+      "path": "docs/registros/pruebas/sincronizacion-2026-BS5B6B87803EE34491.png",
+      "sha256": "5ebd9bcc125316aac8240219d173771e8c3e9bad58c77fa16315de917935f9dc",
+      "bytes": 44310
+    },
+    {
+      "path": "docs/registros/pruebas/test-20261016-banca-incidencias-backend.log",
+      "sha256": "902f684f1fe388718f9c40252dd440404b6543f750956d65cff83a7080347f0b",
+      "bytes": 881
+    },
+    {
+      "path": "docs/registros/pruebas/test-20261016-banca-permisos.log",
+      "sha256": "1ac3f40c085c0916975b9919024a91dd5b8538b5d60a2e32f2321f45f4e14325",
+      "bytes": 463
+    },
+    {
+      "path": "docs/registros/pruebas/test-20261016-bbdd-tls-backend.log",
+      "sha256": "595bcf0c1ed6fc9d89618b863d9c884aacbe8c73eafddb7ca1d8ae184f0b24fd",
+      "bytes": 503
+    },
+    {
+      "path": "docs/registros/pruebas/test-20261016-configuracion-bbdd-backend.log",
+      "sha256": "395b7cddac1cbaf5a06b34d02ece8e15b577fbe14208c4c5448f4b60551d5e6d",
+      "bytes": 18654
+    },
+    {
+      "path": "docs/registros/pruebas/test-20261016-configuracion-bbdd-cierre.log",
+      "sha256": "5051fba84d6468d24651070cb72bbd517794d197c1e9f51e8a05d626e962579c",
+      "bytes": 451
+    },
+    {
+      "path": "docs/registros/pruebas/test-20261016-configuracion-bbdd-tipos.log",
+      "sha256": "2fdd4f5da896ac05c58d7f19a61e0a30cbd2686243bbd7e051b0f9d7c8e4d17b",
+      "bytes": 556
+    },
+    {
+      "path": "docs/registros/pruebas/test-20261016-origen-backend.log",
+      "sha256": "4a303316c4aafa0f098cab6a312d6e87178663fb1d616eaff0c8be61d7dfaa3b",
+      "bytes": 462
+    },
+    {
+      "path": "docs/registros/pruebas/test-20261016-origen-lint-backend.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/registros/pruebas/test-20261016-origen-tipos-backend.log",
+      "sha256": "2fdd4f5da896ac05c58d7f19a61e0a30cbd2686243bbd7e051b0f9d7c8e4d17b",
+      "bytes": 556
+    },
+    {
+      "path": "docs/registros/pruebas/test-20261016-origen-tipos-vitest-backend.log",
+      "sha256": "35c7214355de5ea230e4ef2008a2555310f0b07fd3fa08b5e45e57ec63f3383d",
+      "bytes": 103
+    },
+    {
+      "path": "docs/registros/pruebas/test-20261016-origen-zona-desconocida-backend.log",
+      "sha256": "6cd964370183337e1c6cb917af1d16599bd78873d5e335e23c6501160230dbc1",
+      "bytes": 357
+    },
+    {
+      "path": "docs/registros/pruebas/test-20261016-pinceladas-backend.log",
+      "sha256": "6da93f81c79c67a5341ad49139319b4f1958d546dd84936d1af1fc6af613cbf4",
+      "bytes": 771
+    },
+    {
+      "path": "docs/registros/pruebas/test-20261016-pinceladas-doctor.log",
+      "sha256": "f3f1736f69e0912cec600a28b9007d250dce241312084432a07fe9d7cc2a5691",
+      "bytes": 215
+    },
+    {
+      "path": "docs/registros/pruebas/test-20261016-pinceladas-lint-backend.log",
+      "sha256": "aa14e4c77a3b941d91830bed98247aec4d8fb76c7153f3854e3255ed4d791150",
+      "bytes": 384
+    },
+    {
+      "path": "docs/registros/pruebas/test-20261016-pinceladas-tipos-backend.log",
+      "sha256": "2fdd4f5da896ac05c58d7f19a61e0a30cbd2686243bbd7e051b0f9d7c8e4d17b",
+      "bytes": 556
+    },
+    {
+      "path": "docs/registros/pruebas/test-ci-backend-consolidado-20261014.log",
+      "sha256": "55a5f18c88d73c4d0231bac2c53f8a2b9636026831f0d26234a85beead4284fe",
+      "bytes": 22110
+    },
+    {
+      "path": "docs/registros/pruebas/test-ci-backend-consolidado-repeticion-20261014.log",
+      "sha256": "d3d44f6af36d1cf797921233fafad5fd2f9101cafae8509205b33da9b7e82751",
+      "bytes": 19954
+    },
+    {
+      "path": "docs/registros/pruebas/test-ci-backend-format-changed-20261014.log",
+      "sha256": "06f5db2e530d706f3a2ce1676c6f37ef70e572db7092e40c9ac4db3092aef8f9",
+      "bytes": 1835
+    },
+    {
+      "path": "docs/registros/pruebas/test-ci-backend-lint-20261014.log",
+      "sha256": "8706461c673e4120528d6c31fd06438bb7456b2bd9dcdabb684d42f0edbccf65",
+      "bytes": 47359
+    },
+    {
+      "path": "docs/registros/pruebas/test-ci-backend-typecheck-all-20261014.log",
+      "sha256": "2fdd4f5da896ac05c58d7f19a61e0a30cbd2686243bbd7e051b0f9d7c8e4d17b",
+      "bytes": 556
+    },
+    {
+      "path": "docs/registros/pruebas/test-consolidado-factoring-20261014.log",
+      "sha256": "b9c191268d93d891b616de5b16fdd044ae9b623771ff49f515f4124cc899cceb",
+      "bytes": 412
+    },
+    {
+      "path": "docs/registros/pruebas/test-integracion-completa-alfa3-20261014.log",
+      "sha256": "147fe96324cad42666e57711cc45016e7f2a3018e996927cf7671394c93ddd14",
+      "bytes": 46156
+    },
+    {
+      "path": "docs/registros/pruebas/test-integracion-completa-alfa3-repeticion-20261014.log",
+      "sha256": "c3094c631f5fdb4174d5a47f380812b5d02e46201b5601a472736739b92519c1",
+      "bytes": 44603
+    },
+    {
+      "path": "docs/registros/pruebas/test-integracion-consolidado-alfa3-20261014.log",
+      "sha256": "0ea88b878e4531237229e3c232ed0ed5fd7ff09e89b7ea02c47398898eb6c72f",
+      "bytes": 803
+    },
+    {
+      "path": "docs/registros/pruebas/test-integracion-doctor-alfa3-20261014.log",
+      "sha256": "16e28c7f952cb80975d8da6e7bad48e44716236d2ee83d939cb49a0360198bbe",
+      "bytes": 238
+    },
+    {
+      "path": "docs/registros/pruebas/test-integracion-evidencia-alfa3-20261014.log",
+      "sha256": "573f6d98fdd14687b8d9ef82cf450cf0ec5124abe653ec1827747e4f9c9455df",
+      "bytes": 644
+    },
+    {
+      "path": "docs/registros/pruebas/test-integracion-evidencia-alfa3-repeticion-20261014.log",
+      "sha256": "bb09fc6fa04dbfcf24365dd8a32016b9bf32e49d9e8a30914760ac845e62e7b3",
+      "bytes": 94
+    },
+    {
+      "path": "docs/registros/pruebas/test-integracion-formato-alfa3-20261014.log",
+      "sha256": "f20510a9da4717c51c4cffee6d0dd88d6c9a723d0a83711d01216f5b48961283",
+      "bytes": 68
+    },
+    {
+      "path": "docs/registros/pruebas/test-integracion-tipos-alfa3-20261014.log",
+      "sha256": "9518632092721c7d012956e38f2735355a5f1de6d65c375620d631eab2571b3d",
+      "bytes": 109
+    },
+    {
+      "path": "docs/registros/pruebas/test-saldo-contable-ajuste-filtro-integracion-20261014.json",
+      "sha256": "41b5468df1c2e9563a2b7e7f05f6afb9992239709e1ecfe5fd9c315d315d0144",
+      "bytes": 343
+    },
+    {
+      "path": "docs/registros/pruebas/test-saldo-contable-ajuste-filtro-integracion-20261014.log",
+      "sha256": "cc5adb7a2074171bcfcd9f92bb11dd7e8f1435b23bec23c176fdbee8862c2c96",
+      "bytes": 2415
+    },
+    {
+      "path": "docs/registros/pruebas/test-saldo-contable-auxiliar-fechas-20261014.log",
+      "sha256": "70647cdc4cbfe5086951567b82dd90fb07e02d453ebd1c15ba59fa45aaf89081",
+      "bytes": 453
+    },
+    {
+      "path": "docs/registros/pruebas/test-saldo-contable-backend-completo-20261014.log",
+      "sha256": "283e59f93fd227389c435dfe0d8b8d354a0dae76581e1fb028703aa49524056c",
+      "bytes": 46800
+    },
+    {
+      "path": "docs/registros/pruebas/test-saldo-contable-backend-completo-final-20261014.log",
+      "sha256": "3360e79902313f50292c36be559c5ee01b3243d05e346166de60d678242a7c2c",
+      "bytes": 18655
+    },
+    {
+      "path": "docs/registros/pruebas/test-saldo-contable-integracion-completa-20261014.json",
+      "sha256": "5bf9aebdbc16c6397bb281de4a4234e38598607af1ef4de11a6d32141f1d458f",
+      "bytes": 343
+    },
+    {
+      "path": "docs/registros/pruebas/test-saldo-contable-integracion-completa-20261014.log",
+      "sha256": "ef105e5aae2a40804ab3cb998e5a9478320c7ebfb619298e42abc9497a97e049",
+      "bytes": 51456
+    },
+    {
+      "path": "docs/registros/pruebas/test-saldo-regla-cobro-backend-20261014.log",
+      "sha256": "d45a3c520367f91bad334152a3989c5ace56ffa57bc0a8cd6bb0a0edc86b5b22",
+      "bytes": 412
+    },
+    {
+      "path": "docs/registros/pruebas/test-saldo-regla-cobro-integracion-20261014.log",
+      "sha256": "a941d0b29225a927e62f5fd96b79252ada352f46d614aa54929e9b104a40fec7",
+      "bytes": 223
+    },
+    {
+      "path": "docs/registros/pruebas/test-verificacion-cuenta-20261015.log",
+      "sha256": "cf5dbcff9767c1244464440de244d1cfded64480750da0e2598f7e6f7e113601",
+      "bytes": 375
+    },
+    {
+      "path": "docs/regresion-jest-esm-node24-20261009.md",
+      "sha256": "df0c7352d036b0743e366a67d9bed926c16f4deec559d0e49cd6c90fc52542b8",
+      "bytes": 4220
+    },
+    {
+      "path": "docs/reportes/ci-consolidado-factoring-20261014.md",
+      "sha256": "9dbfb0a4fac018627ef10a9e82f57613de21926e9ffb303c0b6d3caef24f716d",
+      "bytes": 9709
+    },
+    {
+      "path": "docs/reportes/consolidado-operaciones-factoring-20261014.md",
+      "sha256": "c9b2731da4539dc5f3a97434bd92a7e9acf5ce8c0249a91e8322ece4d677d53d",
+      "bytes": 4621
+    },
+    {
+      "path": "docs/revision-pendientes-liquidacion-20261009.md",
+      "sha256": "5e5877404bd931382d5f5473323cc7e9c23166f20e4022bf6dadda3379c7c9a8",
+      "bytes": 8648
+    },
+    {
+      "path": "docs/revision-transicion-pagos-factoring-20261016.md",
+      "sha256": "bea0a5a81756f53932a27ce70da54ec3cd0763db554512a55b11a86d254ea20b",
+      "bytes": 9936
+    },
+    {
+      "path": "docs/saldo-contable/contrato-api.md",
+      "sha256": "5d95a03c3e37366d4fa2b82250e8f57cd9158fe41738d0f250d56bb73f0478bc",
+      "bytes": 5595
+    },
+    {
+      "path": "docs/saldo-contable/diagnostico-clasificacion-cobros-20261014.md",
+      "sha256": "b379175c002e05ccf155672aeb6ac5c00562ebf3332fbbe9c91c51c5b0fbd4cf",
+      "bytes": 2870
+    },
+    {
+      "path": "docs/saldo-contable/esquema-propuesto.md",
+      "sha256": "7dce7f02992b972f9f112a15d49dcbf186af467e313e2886bf75c5b3c9b5f40f",
+      "bytes": 24145
+    },
+    {
+      "path": "docs/saldo-contable/esquema-propuesto.sql",
+      "sha256": "1650275759712506ebeb53186e78e729957878b3254a3b3b5bd6be3ab2b17b71",
+      "bytes": 20167
+    },
+    {
+      "path": "docs/saldo-contable/implementacion-bbdd-20261014.md",
+      "sha256": "94c2ff82ba8d175c45bb1383e86da2cff19f8beb5252eba90d82eb4c727988d9",
+      "bytes": 3468
+    },
+    {
+      "path": "docs/saldo-contable/implementacion-modulo-20261014.md",
+      "sha256": "e7f800f566b0e51ae311ef8d232f5e903d5fe560b47bd90a646ebc0c6c4711e5",
+      "bytes": 13600
+    },
+    {
+      "path": "docs/saldo-contable/reglas-contables.md",
+      "sha256": "8935b04711f6b0d9231b101e08b1306b99cc66cf5322e42ff744d2e5909dbde9",
+      "bytes": 11979
+    },
+    {
+      "path": "docs/saldo-contable/verificacion-datos.sql",
+      "sha256": "57f78f6f8d2dbd88c82fd7b3fe970576c5f1ecb0be26551539c4224b510187ca",
+      "bytes": 6002
+    },
+    {
+      "path": "docs/saldo-contable/viabilidad-datos-tasas-20261014.md",
+      "sha256": "8564a876b6c64e61491e58b081a2449ffa439afb0f24c80054aa5ec99720fb14",
+      "bytes": 5600
+    },
+    {
+      "path": "docs/transacciones-bancarias/20261016-configuracion-bbdd-comentarios.sql",
+      "sha256": "3b0dc32a299eb519b86d71aa9d8d1ff3824fed345ecc6b0bce95c3cb5069df83",
+      "bytes": 2046
+    },
+    {
+      "path": "docs/transacciones-bancarias/20261016-configuracion-bbdd-tls.sql",
+      "sha256": "17846d291379ead9f638e4dd0f66d4a4a1a1691f315262ab3a73f5f4d1cad9d2",
+      "bytes": 546
+    },
+    {
+      "path": "docs/transacciones-bancarias/20261016-configuracion-bbdd.sql",
+      "sha256": "9dc685ea1316990790a687b19101d0cfa536bf3ce2662e5db2475d8486bc6d5d",
+      "bytes": 5473
+    },
+    {
+      "path": "docs/transacciones-bancarias/aplicacion-desarrollo-20261015.md",
+      "sha256": "08f7c9b6bd73d11ecef21139847916a20b70b300e6b983015a3f68ea924ad0aa",
+      "bytes": 5565
+    },
+    {
+      "path": "docs/transacciones-bancarias/configuracion-bbdd.md",
+      "sha256": "042838184e4de60bae3bf0f4644ba50d2320adf0e1689b4479200584d026c286",
+      "bytes": 7355
+    },
+    {
+      "path": "docs/transacciones-bancarias/consulta-origen-interfaz-20261016.md",
+      "sha256": "0d42523812166299863be5728b9ba14baf1bad4fefabbf2e000ce3c87f1a327d",
+      "bytes": 6532
+    },
+    {
+      "path": "docs/transacciones-bancarias/diferencias-previas.json",
+      "sha256": "e94b1fb797ea351224e5d1678a59ae06745dacbfb88bc6c048a039cc14fa8586",
+      "bytes": 1345
+    },
+    {
+      "path": "docs/transacciones-bancarias/esquema-propuesto.sql",
+      "sha256": "73c01a4dc6fafac57105265f58e2f3a8980922524eb66d130b1e1427672ef61b",
+      "bytes": 43711
+    },
+    {
+      "path": "docs/transacciones-bancarias/esquema-vigente.sql",
+      "sha256": "cb3c52275dbb04f3d773a4626bcbb3e10dc1e7d1cd365f6b444d0c2d84b3b43d",
+      "bytes": 45148
+    },
+    {
+      "path": "docs/transacciones-bancarias/formato.log",
+      "sha256": "492d2c68dc91cd75bec5657de3edfb76bd60d86f6e1e563fbc7f53673589a60b",
+      "bytes": 1082
+    },
+    {
+      "path": "docs/transacciones-bancarias/implementacion.md",
+      "sha256": "0527772f689384e1d00ddf7c49fba34a52a0ed533d928f0385d85d02b14e34ce",
+      "bytes": 6978
+    },
+    {
+      "path": "docs/transacciones-bancarias/incidencias-normalizacion-20261016.md",
+      "sha256": "013fc304648aa3f6927d30c3eca35e823e8d03dda7f61ee09ab750322c97b544",
+      "bytes": 4804
+    },
+    {
+      "path": "docs/transacciones-bancarias/incidente-tls-20261016.md",
+      "sha256": "fcfcb81a901584205b7bfcdde54222d522519ce07bb2d7aec71d75477fe47b1e",
+      "bytes": 3745
+    },
+    {
+      "path": "docs/transacciones-bancarias/integracion-intento.json",
+      "sha256": "f6317c67a6cdd3f3aabcfce1497291e4ae4c38debc25f6e1d972750abc5df5c1",
+      "bytes": 279
+    },
+    {
+      "path": "docs/transacciones-bancarias/integration-doctor.log",
+      "sha256": "f3f1736f69e0912cec600a28b9007d250dce241312084432a07fe9d7cc2a5691",
+      "bytes": 215
+    },
+    {
+      "path": "docs/transacciones-bancarias/lint-compartido.log",
+      "sha256": "04ea15a196bc4b219352bae424def7e106f89e6111c37118120678ad955dcf17",
+      "bytes": 216
+    },
+    {
+      "path": "docs/transacciones-bancarias/lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/transacciones-bancarias/modelo-propuesto.md",
+      "sha256": "51ab4864f58e938237158b6112d44842c158ba94024c5a957f2010213d646848",
+      "bytes": 56194
+    },
+    {
+      "path": "docs/transacciones-bancarias/operacion.md",
+      "sha256": "840e2294548951b33d9634822a5e5dfcaa083ff5edfc10544a464213057944c4",
+      "bytes": 9537
+    },
+    {
+      "path": "docs/transacciones-bancarias/permisos-origen-20261016.md",
+      "sha256": "7e3117739291c70975099eb45e0545c96f8236f543fabc8eaf9a33709a2a894b",
+      "bytes": 2647
+    },
+    {
+      "path": "docs/transacciones-bancarias/preflight-desarrollo.json",
+      "sha256": "247c9e3e31ae704512180b268fc2adaf2edda689947462659afd59ced34fe036",
+      "bytes": 1146
+    },
+    {
+      "path": "docs/transacciones-bancarias/prisma-recuperacion.log",
+      "sha256": "7b8f738f89f2ee609af2d28bf5d72984d169dc0e6a28c95e9e87531e662b434f",
+      "bytes": 291
+    },
+    {
+      "path": "docs/transacciones-bancarias/prisma-sync-final.json",
+      "sha256": "0820bd7580e0b50a361aecdd4c76c989c64197cc8d7867ee5ea8f9ff07406f29",
+      "bytes": 328
+    },
+    {
+      "path": "docs/transacciones-bancarias/prisma-sync-final.log",
+      "sha256": "777131b298c65c194cc2932b560e194ce7410997e95d489159684816ef8f841f",
+      "bytes": 93877
+    },
+    {
+      "path": "docs/transacciones-bancarias/programacion/ft-banca-sync.service",
+      "sha256": "5ce9e66f893d5555c707608e86a89cc36e02a801c4482aaca71ef54302ffeb89",
+      "bytes": 507
+    },
+    {
+      "path": "docs/transacciones-bancarias/programacion/ft-banca-sync.timer",
+      "sha256": "72525c900dca2790bd621ced5d3a907913fff65891e398a8422f8fa193822050",
+      "bytes": 193
+    },
+    {
+      "path": "docs/transacciones-bancarias/revision-estatica.json",
+      "sha256": "7d3d1315e673af2d733a3a9b5688f07e0915c2b9ad7563605df49371bddff1de",
+      "bytes": 1402
+    },
+    {
+      "path": "docs/transacciones-bancarias/revision-prisma-final.json",
+      "sha256": "77f5c01479908b864d9d79f8a5a448e4595779f224766c2ccabc4b0726e7ffcc",
+      "bytes": 2081
+    },
+    {
+      "path": "docs/transacciones-bancarias/revision-sbs-desarrollo.json",
+      "sha256": "bc00dccc9462915eae0a5c55ec439c506f3a59078afaa6a5d888e72b2eb4072e",
+      "bytes": 499
+    },
+    {
+      "path": "docs/transacciones-bancarias/schema-introspectado-desarrollo.prisma",
+      "sha256": "d79c059e942f672e0ab5437ac728243a88a29917babe409b4bc7816b8a432443",
+      "bytes": 307269
+    },
+    {
+      "path": "docs/transacciones-bancarias/test-backend-completo.log",
+      "sha256": "d8fe962d8396fdd7423c15d7a88bd720df335019a1d3a1002f2fa0eaed54ab91",
+      "bytes": 18654
+    },
+    {
+      "path": "docs/transacciones-bancarias/test-integracion.log",
+      "sha256": "9319ba80a33a51f2242fd27ea138176790ffefaf7b369c49b9f3ce0e29b05938",
+      "bytes": 229
+    },
+    {
+      "path": "docs/transacciones-bancarias/test-sinteticos.log",
+      "sha256": "3d3809825db6d832d065051fef76d1a51cdc3b90f1d8556135f729efe73b6cfe",
+      "bytes": 515
+    },
+    {
+      "path": "docs/transacciones-bancarias/typecheck-antes.log",
+      "sha256": "7ba1af4449a612d90e651d62befe533e1587bb63e7e3b339a581dea8017aeb4f",
+      "bytes": 54
+    },
+    {
+      "path": "docs/transacciones-bancarias/typecheck-completo.log",
+      "sha256": "2fdd4f5da896ac05c58d7f19a61e0a30cbd2686243bbd7e051b0f9d7c8e4d17b",
+      "bytes": 556
+    },
+    {
+      "path": "docs/transacciones-bancarias/typecheck-despues.log",
+      "sha256": "1b0b883eb452dcb69218b26f9831cd60e07fbf870f1c8d2f0c5df2f5692cece2",
+      "bytes": 3061
+    },
+    {
+      "path": "docs/transacciones-bancarias/typecheck-final.log",
+      "sha256": "7ba1af4449a612d90e651d62befe533e1587bb63e7e3b339a581dea8017aeb4f",
+      "bytes": 54
+    },
+    {
+      "path": "docs/transacciones-bancarias/typecheck-implementacion.log",
+      "sha256": "7ba1af4449a612d90e651d62befe533e1587bb63e7e3b339a581dea8017aeb4f",
+      "bytes": 54
+    },
+    {
+      "path": "docs/transacciones-bancarias/typecheck-recuperacion.log",
+      "sha256": "7ba1af4449a612d90e651d62befe533e1587bb63e7e3b339a581dea8017aeb4f",
+      "bytes": 54
+    },
+    {
+      "path": "docs/transacciones-bancarias/validacion-configuracion-bbdd-20261016.md",
+      "sha256": "beadca8fbc8bdb2e4fda8c167046929c54e8077c46771944d674c405ed01ecba",
+      "bytes": 3367
+    },
+    {
+      "path": "docs/transacciones-bancarias/validacion-final.json",
+      "sha256": "33a597b89a2a5f4beb17722a67aa247034ca7060a21229767e50eb3fa7870eac",
+      "bytes": 1685
+    },
+    {
+      "path": "docs/transacciones-bancarias/verificacion-configuracion-bbdd-20261016.json",
+      "sha256": "1d2c6f468786294339f3ba882c7376567b807e3fa32730a4c3d13fa99cb06e2a",
+      "bytes": 7274
+    },
+    {
+      "path": "docs/transacciones-bancarias/verificacion-desarrollo.json",
+      "sha256": "ed58786ff487fc9e1b12ba89a5542f5031d00d90a43157fe22234436dc512cc7",
+      "bytes": 9178
+    },
+    {
+      "path": "docs/trazabilidad-fechas-factoring-2026-10-06.md",
+      "sha256": "838522262dc3365ee7f0f18aba6c59dcd792367f245244d08e2077af921bc38f",
+      "bytes": 7633
+    },
+    {
+      "path": "docs/unificacion-fechas-factoring-2026-10-06.md",
+      "sha256": "090f6977b99625e61e502544bbb8fd78655986f52044309a1ada0026b3e0cca7",
+      "bytes": 7487
+    },
+    {
+      "path": "docs/validacion-conjunta-liquidacion-cierre-20261009.md",
+      "sha256": "0a465fe78a3897745c0c21a2582ae298d469d5b453a1fc5280efe7b1d4174f26",
+      "bytes": 3963
+    },
+    {
+      "path": "docs/validacion-final-deudas-factoring-20261009.md",
+      "sha256": "bd2617a1f832bae1625bc8d95cb329b7f0cddb4f35cddebbd57c27217a4d7a12",
+      "bytes": 4092
+    },
+    {
+      "path": "docs/validacion-igv-liquidaciones-20261009.md",
+      "sha256": "c0fd35069bccd76a96649874aedd183089ef04ea5175b227a63bf3f1767bd016",
+      "bytes": 2700
+    },
+    {
+      "path": "docs/viabilidad-tsup-tsdown-20261009.md",
+      "sha256": "3f878e20ae521081b97910693b1c69816a01875f31f6aded09952f91f2283333",
+      "bytes": 16602
+    },
+    {
+      "path": "ecosystem.config.cjs",
+      "sha256": "0708745560a911919a50f375af88cb507225da844a88b9e627aa9c6615528007",
+      "bytes": 1286
+    },
+    {
+      "path": "eslint.config.js",
+      "sha256": "08dfd79a97a93ab00bbd132179b01a7a1cce247ec1b5b39ee9fb44baf506999a",
+      "bytes": 2359
+    },
+    {
+      "path": "http/employees.routes.http",
+      "sha256": "d6c1443bcc249a851aae94ebf1c8d244f6b49562cda3196d0cfd254a7a47caf8",
+      "bytes": 410
+    },
+    {
+      "path": "jest.config.js_anterior",
+      "sha256": "6c3d8bfbe6dcaa7037a9f36089fc4b11ebfc947eb0e518c7e2a8ca4f7e4ebadf",
+      "bytes": 329
+    },
+    {
+      "path": "nodemon.json",
+      "sha256": "425d39897596c8251e8fd574579486ae078ec13bd559240f1bf8f673f9e152b3",
+      "bytes": 178
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "eabb275c4352b8bf1e6cac3578fe79b13f7edec8ade141e20ac1b49b0532949e",
+      "bytes": 629989
+    },
+    {
+      "path": "package.json",
+      "sha256": "3720b20567f06404f0b78d3fd4291d158d50c6ef8e3a24078ab3bbc9679fc0d0",
+      "bytes": 5808
+    },
+    {
+      "path": "prisma.config.ts",
+      "sha256": "92e18cb10fc53be4dd0ea56ff37570219ffda5b19d412f5b68b6b0308ce9e4b0",
+      "bytes": 540
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20260707_1636.prisma.bak",
+      "sha256": "e8bb7e1132720df012932ff2b8405cb3fee70653306983c1d5a819cc6f8f878b",
+      "bytes": 236083
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20260707_1642.prisma.bak",
+      "sha256": "89ba53745a5cf56a11226b9fa924eb30eda28f61818171e51f27293ab99e6f64",
+      "bytes": 235997
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20260709_1119.prisma.bak",
+      "sha256": "4f09179beadde0728ae585da95635963b17db55601372e133867e5073cdda8a1",
+      "bytes": 236114
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20260723_0841.prisma.bak",
+      "sha256": "b32063f14ae01b78de142251de0e733c926a4bdb8f4bf427e9615767c1fa4e96",
+      "bytes": 241382
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20260911_0806.prisma.bak",
+      "sha256": "6532f8cbd3bdbc8fc9b2b4bc4e7dd4436e2b7f3c76d0b1740adc7d5a44ac463f",
+      "bytes": 246918
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20260911_0822.prisma.bak",
+      "sha256": "eb578c641d12bb5bea70b837e59a170ea44fbe9bb0e1445984e0fe71fb853c5f",
+      "bytes": 245319
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20260912_1409.prisma.bak",
+      "sha256": "6a4b49a756c98a889056d14874ba4a076bf30d3f0a1a1d09eb936a4a1c3a2ae3",
+      "bytes": 245419
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20260912_1410.prisma.bak",
+      "sha256": "0c17b274be84845bc195cfad12414b17a9ba939158534ce1576dbfd6c3ab6aa8",
+      "bytes": 245419
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20260915_1020.prisma.bak",
+      "sha256": "b1f96b3d50241f20239aa8397200c26cf751ab9a93ebeafbebeef6182ed49468",
+      "bytes": 245303
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20260918_2200.prisma.bak",
+      "sha256": "b5f3a430db4af21319671d42dc06431dd9d585a895d560fb2f8a6d22ec9ef633",
+      "bytes": 245420
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261009_1552.prisma.bak",
+      "sha256": "31a41f20c6d41ad84b63a82dda30021c0bfe36f85fdbfaab50ca742443ebcef8",
+      "bytes": 245443
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261009_1553.prisma.bak",
+      "sha256": "f926825ccab3106289df98f7db13648bf86274c3960b4bc450439361270eaeea",
+      "bytes": 245443
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261010T012013_616Z.antes-db-pull.2cde92b4-73e4-4b78-9e21-c5ac512c752d.prisma.bak",
+      "sha256": "bc3a17ba3fad0a6ef04c0562c5657ab0edc37326b29124c979016816c7581316",
+      "bytes": 271522
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261010T012044_063Z.antes-db-pull.58cce528-c707-45ae-8318-6e61c5746a09.prisma.bak",
+      "sha256": "bc3a17ba3fad0a6ef04c0562c5657ab0edc37326b29124c979016816c7581316",
+      "bytes": 271522
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261010T012045_287Z.antes-pluralizar.d14df73c-3c4d-49f5-b815-939447fa14a7.prisma.bak",
+      "sha256": "15a7e1c2bfea3374b4d688c3962071b3ba6d20d7d662e0a03234fd24c5354c39",
+      "bytes": 233166
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261010T012045_375Z.antes-renombrar.c46ce7ed-3ffb-4ec2-b572-29c2d8d395d0.prisma.bak",
+      "sha256": "e3cad4a6055597c7bee2e7528d3172633919ac61a45ebdddda6da9a2a215fb07",
+      "bytes": 248395
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261010T021056_861Z.antes-db-pull.5b1ceb79-9055-41cf-8fbb-d97d1352f6c4.prisma.bak",
+      "sha256": "2a21b0f8c5afbdd3ef5cef45f7ec7ba2efc2470a59b22334eedb8dcea0ed1aff",
+      "bytes": 271522
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261010T021058_641Z.antes-pluralizar.8b8aa36e-4e61-44f0-99eb-b1862e9141d9.prisma.bak",
+      "sha256": "15a7e1c2bfea3374b4d688c3962071b3ba6d20d7d662e0a03234fd24c5354c39",
+      "bytes": 233166
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261010T021058_807Z.antes-renombrar.6b79d0cd-401d-4121-8ec6-dd85cd95beb6.prisma.bak",
+      "sha256": "7f0a116e2442aaebf607a3af96cfeb3d7d841d513fad1c8dfe7e1b4b5b205f77",
+      "bytes": 248395
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261014T160627_958Z.antes-db-pull.4fdd5ac5-1414-43a1-b397-86b57d89a5b7.prisma.bak",
+      "sha256": "7ae7f56595ff49387b625c440e88bc640c720f15a655ba685ae816cad8265ff2",
+      "bytes": 271522
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261014T160630_739Z.antes-pluralizar.5f37084d-67bc-4683-868b-82ee9d899fe4.prisma.bak",
+      "sha256": "f7a8e4388ac76dd52ee6a4f4d84b59bd43e1107caddb5433652ba3d8282a0db9",
+      "bytes": 240647
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261014T160630_817Z.antes-renombrar.c3cc0a40-cc01-47ae-a8eb-29af89aeac7c.prisma.bak",
+      "sha256": "ac7bebc0eb737d7f9ca32cfdbe1574da9b98c7d8c8345db58b83d6fd831f5738",
+      "bytes": 256319
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261016T023428_785Z.antes-db-pull.8d437697-6815-49bc-9494-78fbf3d9639f.prisma.bak",
+      "sha256": "824a82084385c790ddc96c6fa904d722d924c12f5c94cd11a44f9d18d7b0e2be",
+      "bytes": 280003
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261016T023431_036Z.antes-pluralizar.7453aebb-d785-4273-a407-d22d5ab87c93.prisma.bak",
+      "sha256": "5ca4acb1b5c221b658d6cd05cf431d8448b981c3b6b11233484e18a03d6d994d",
+      "bytes": 264684
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261016T023431_133Z.antes-renombrar.e0d7e150-cbd2-4296-ac72-66e04b65a894.prisma.bak",
+      "sha256": "dff4443dce9d1896369070c2205476f3f6d2630d0aa7d12a1f309a5b8414a8d8",
+      "bytes": 280834
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261016T023931_796Z.antes-db-pull.f9850630-79ed-4fd4-81ac-075ad7cb56dd.prisma.bak",
+      "sha256": "824a82084385c790ddc96c6fa904d722d924c12f5c94cd11a44f9d18d7b0e2be",
+      "bytes": 280003
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261016T023932_952Z.antes-pluralizar.f425f20c-aced-4590-a87f-130a305ac0cc.prisma.bak",
+      "sha256": "39d1e1cceb874a261c8fe2cd030f54589b410edf5934ece870cb111d5a025c57",
+      "bytes": 275025
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261016T023933_118Z.antes-renombrar.c2a66bf8-b57f-49da-bbbf-b26fb5926518.prisma.bak",
+      "sha256": "109810f52cb4084434a0057a1f7bbf9d29919c05eab88075baccc6709bd48ad0",
+      "bytes": 291838
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261016T112328_057Z.antes-db-pull.fd9a579f-8b1f-43af-b01d-71e4cbb104dc.prisma.bak",
+      "sha256": "440c2d99fcff17002ea620b93c07edce3c590b59e9a34c3bae94857d9f340327",
+      "bytes": 319070
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261016T112330_400Z.antes-pluralizar.3866e478-0b62-4340-9cd5-01c7a5b25a14.prisma.bak",
+      "sha256": "a7aa4b208778ea1177b7432c7245292a56ba80e3098e293eb6699f8bb9243740",
+      "bytes": 275505
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261016T112330_884Z.antes-renombrar.9edfaa37-e023-4038-872c-b719ba097681.prisma.bak",
+      "sha256": "e7b1968aa780e8659dc59db85b643a9c4cf85d19cb93f3e5aa6b05f2b3be9b31",
+      "bytes": 292231
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261016T112741_560Z.antes-db-pull.c0cbdacb-c31e-4c31-bcb1-f1c0a3d1c3ad.prisma.bak",
+      "sha256": "f0dc7a25e278e88945c8a32e7f6a2cb44775cd69e870bd345c99dd8efd80ba3f",
+      "bytes": 319495
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261016T112742_627Z.antes-pluralizar.c4d7e6b3-c7a0-4633-a782-85ea5187bf48.prisma.bak",
+      "sha256": "a7aa4b208778ea1177b7432c7245292a56ba80e3098e293eb6699f8bb9243740",
+      "bytes": 275505
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261016T112742_753Z.antes-renombrar.9369f2bd-9f83-4fa8-b68c-4f541439e2bd.prisma.bak",
+      "sha256": "cda3203605c3ca5560b799f1c61065457fe59240fefdbc7cedf2916a184614da",
+      "bytes": 292231
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261016T114720_009Z.antes-db-pull.b425409d-4d25-4f96-aaaa-57f755cf0e08.prisma.bak",
+      "sha256": "4fd7eb35d4d50c330daa21ebd3e4252fa2b823248e8158502c1c1e1f297f3848",
+      "bytes": 317718
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261016T114720_987Z.antes-pluralizar.14eaaa53-c509-4648-958a-fd625c71d29b.prisma.bak",
+      "sha256": "9297e587f63ce99440640a43c5ebb364b8dde83f37670780fd9dc2a3ab2a92cf",
+      "bytes": 275505
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261016T114721_076Z.antes-renombrar.1bf12012-8e6d-45b8-a299-59a49e077b89.prisma.bak",
+      "sha256": "470172e2505c5cffb8a8b8c819ed4e4911cc381e5a017f655185afe0931a0f8c",
+      "bytes": 292231
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261016T121653_186Z.antes-db-pull.b002bee0-d750-4bfa-bfe2-7a02352094f3.prisma.bak",
+      "sha256": "86170403aa1fb75616bcf0c72ee8523f6ded2c675229bb4b151f9defb8f3c817",
+      "bytes": 319359
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261016T121654_196Z.antes-pluralizar.35c5cde9-8b98-44ab-b803-9ebbb57446e1.prisma.bak",
+      "sha256": "2ca6fa86b2fc13ff4d75fa1fbd38ec7bcb9514033232fab529b16f3a931bd55c",
+      "bytes": 275621
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261016T121654_280Z.antes-renombrar.ab10a101-1617-43e2-a500-036b0d7debb0.prisma.bak",
+      "sha256": "5e9dc836bc0de04e3609d38cab1632d2e69f1b243cdaad8883fd766c856c9e87",
+      "bytes": 292347
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261016T221659_043Z.antes-db-pull.6d0fb003-e6bd-4e88-97a0-4f6a144eae12.prisma.bak",
+      "sha256": "60bd432865f1b6a9f3ed2aaa119614fd2e6f05e527dee9e1b1256a32190d0074",
+      "bytes": 319475
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261016T221703_106Z.antes-pluralizar.670afce1-c59b-4c43-9159-341d3dab3ee7.prisma.bak",
+      "sha256": "62add859a975c043bef089c86b0bd32c9da4bb1fea1d6f21e03a9e3b4750b662",
+      "bytes": 279899
+    },
+    {
+      "path": "prisma/ft_factoring/backup/schema.20261016T221703_317Z.antes-renombrar.6bf02db9-4143-4a4b-b416-cc6066b60ba6.prisma.bak",
+      "sha256": "fe8d331a782ec6da7bce6c340103aa53bac39436883f4b5353fb272228e61dd2",
+      "bytes": 296771
+    },
+    {
+      "path": "prisma/ft_factoring/schema.prisma",
+      "sha256": "211976e565ca461e809cddcd23c5db3c47bb06e8ac53f4e012f79a6f09fa2b27",
+      "bytes": 324184
+    },
+    {
+      "path": "scripts/analisis/fecha-liquidacion-frontend.cjs",
+      "sha256": "ea7b8afb0922d87d4d2a1edc5bfff9a3520f347da497a804cfe36bdc94a3ad4a",
+      "bytes": 1452
+    },
+    {
+      "path": "scripts/database/README.md",
+      "sha256": "7e8e81788db66cc2f0644b510023f6662519c472a2d6af2e3c46453bb6d889bf",
+      "bytes": 5756
+    },
+    {
+      "path": "scripts/database/maintain.mjs",
+      "sha256": "cc37e0b08414ff21d689ee4ac66c46f549d7b2c511a47893797564e9fdd23c28",
+      "bytes": 13454
+    },
+    {
+      "path": "scripts/database/maintenance-core.mjs",
+      "sha256": "30cf47a7903a9cb2b6ea0c404ae0882d66dc99ac649a7282db6a6a1d4c45c120",
+      "bytes": 9917
+    },
+    {
+      "path": "scripts/database/plans/20261014-sbs-saldo-contable.json",
+      "sha256": "38737546368fdf638bc6cf2ddeaa2cd4b828f466a13adff1782754a6b180a8a0",
+      "bytes": 1041
+    },
+    {
+      "path": "scripts/database/plans/20261015-factor-transaccion-bancaria.json",
+      "sha256": "2093aca2f084deefc7b31ef6994dfb10c650d56bb1fdb82acf13e393c788c613",
+      "bytes": 752
+    },
+    {
+      "path": "scripts/database/plans/20261016-configuracion-bbdd-comentarios.json",
+      "sha256": "737824856974bbef5bbb314210b48f64552095c21749ab111713bc3f8385bb61",
+      "bytes": 436
+    },
+    {
+      "path": "scripts/database/plans/20261016-configuracion-bbdd-tls.json",
+      "sha256": "f18f7713f217e93a97cf2224e6d9fcc4bbb355aca641cbbc471612c88a71c409",
+      "bytes": 493
+    },
+    {
+      "path": "scripts/database/plans/20261016-configuracion-bbdd.json",
+      "sha256": "85017aee7e9affc786eb5dccb77be86c0972717e736b272685636302cabc16e9",
+      "bytes": 1163
+    },
+    {
+      "path": "scripts/database/plans/20261016-factoring-pagos.json",
+      "sha256": "f7717b6862aedf833bf8b72f1629a12751cf3d1ef1bc1891efaeee761a4a32cd",
+      "bytes": 914
+    },
+    {
+      "path": "scripts/database/review-factoring-payments.mjs",
+      "sha256": "a22daa5d870d3bbdc9c4af15c43afabf92ddcd708daeeb617248597f5d8d4828",
+      "bytes": 7212
+    },
+    {
+      "path": "scripts/excel/excel-to-json.js",
+      "sha256": "82b8bb773b0dce299a9238da6aeb0e534bf3e02a94a666c8eed37cb212aa0cbc",
+      "bytes": 2607
+    },
+    {
+      "path": "scripts/integration/audit-historical-factoring.mjs",
+      "sha256": "f9708daf9a71deb740c66f5bf1ca70adf19c34fa08007f5389518e37430af2dc",
+      "bytes": 2112
+    },
+    {
+      "path": "scripts/integration/doctor.mjs",
+      "sha256": "c268bfa914d98a69c53f4a85c86601b53c2da1f23cc189c7a55c63f88a015420",
+      "bytes": 518
+    },
+    {
+      "path": "scripts/integration/enable-wsl-windows.ps1",
+      "sha256": "9e0cd7b5916508f8550565e23be26fe9ebb1135421b0c3b68fa2a0e3980cd8eb",
+      "bytes": 1918
+    },
+    {
+      "path": "scripts/integration/export-schema.mjs",
+      "sha256": "60af15f111fbd3be2d12edb9a1ab0ceebaf2318484e792cd48ececc5c7028269",
+      "bytes": 2543
+    },
+    {
+      "path": "scripts/integration/historical-factoring-query.mjs",
+      "sha256": "a509e67d531da670134aee41de1fd13087282ff05208e73425d322ebaac2dc20",
+      "bytes": 2267
+    },
+    {
+      "path": "scripts/integration/mariadb-common.mjs",
+      "sha256": "9c49273476688fae4ea510730f4b0dad809668df2f46705b700e71452b9edd4d",
+      "bytes": 7226
+    },
+    {
+      "path": "scripts/integration/run-mariadb.mjs",
+      "sha256": "36439838dffc612cadb02d1c39a5083504d5680089a8a7ea6c5a4e30b61b077f",
+      "bytes": 5971
+    },
+    {
+      "path": "scripts/migrations/20261009_liquidacion_precision_10.sql",
+      "sha256": "6092dcc5edce3a8303bc66c0b66c09bbdf8d8cbc9772a5d09ce2d3f2f5c03a62",
+      "bytes": 530
+    },
+    {
+      "path": "scripts/prisma/generate-models.js",
+      "sha256": "eef55f8eed08e69e3917cb73ad69c9077c76db36c90603c3b4ba0453a617cd54",
+      "bytes": 2034
+    },
+    {
+      "path": "scripts/prisma/pluralizar-schema.js",
+      "sha256": "2cfa9f3fe99037c47ac024163d8c0cb12ce266ab8fcd81e643a3a5bfc904fe7a",
+      "bytes": 4311
+    },
+    {
+      "path": "scripts/prisma/renombrar-atributos-especiales.js",
+      "sha256": "bdeb740dbdd4dcf9daf0f1a9a8edb6c62a5188eefc8191f1abd8a354d52bb66d",
+      "bytes": 9777
+    },
+    {
+      "path": "scripts/prisma/schema-backup.js",
+      "sha256": "072afd86ecf98cc9202a55990c4979516a5ebe775c269336c980a54e915e9e97",
+      "bytes": 628
+    },
+    {
+      "path": "scripts/produccion/02-respaldo-pase.sh",
+      "sha256": "d93b61bec907797833cce3b9098d5ece8a2cc25ddeef49685e197140a77fa6bc",
+      "bytes": 6720
+    },
+    {
+      "path": "scripts/produccion/03-revertir-pase.sh",
+      "sha256": "33e1a3020c1b6a1cb9f500eee1f5905277cb33bee9b5f7db65c391047c442eba",
+      "bytes": 6278
+    },
+    {
+      "path": "scripts/produccion/04-preparar-pase.sh",
+      "sha256": "2a2cd6a5d5407b03646ac7e90589512d94d208eff04d4642b8f6dca325d9d9c4",
+      "bytes": 4402
+    },
+    {
+      "path": "scripts/produccion/05-validar-recepcion.sh",
+      "sha256": "3dd8bc006eb6fc29d033b49dd418531f00ccf63db06946f80ad59bf4e0e2b5c9",
+      "bytes": 6605
+    },
+    {
+      "path": "scripts/produccion/06-activar-backend.sh",
+      "sha256": "df8c2b7088488e9366890709ac34f4ad1af775461324fbc93c13af0ab86e64f2",
+      "bytes": 8308
+    },
+    {
+      "path": "scripts/produccion/07-publicar-frontend.sh",
+      "sha256": "850e8ac239e8efb61c0117046602686c1ecba82ecec5feb4672c3485c7b4b685",
+      "bytes": 6694
+    },
+    {
+      "path": "scripts/produccion/08-cerrar-pase.sh",
+      "sha256": "72ae02e1e0fd34b614789b4ce715242414809e420d2e9998fee2d5964f0cf9d0",
+      "bytes": 6673
+    },
+    {
+      "path": "scripts/produccion/build-prod.js",
+      "sha256": "2d8d6d88cf07fb631909f0435f4b5b129b8ff25ccb6ee0466ee887728ecc5845",
+      "bytes": 6604
+    },
+    {
+      "path": "scripts/produccion/diagnostico-pase.sh",
+      "sha256": "207d953c5c72aca307ab5babeda548230910ef83796e98500d9163813e349dd0",
+      "bytes": 6356
+    },
+    {
+      "path": "scripts/quality/format-changed.mjs",
+      "sha256": "4260cb5996ab8d8d0db3fb011cd2496ce8c56347473d96cb5004a434e610e2ec",
+      "bytes": 2941
+    },
+    {
+      "path": "scripts/quality/verify-frontend-date-contract.mjs",
+      "sha256": "8a87f33d6ff70e25f6299fa306ed75efe3d22893ce754e883cc4be8da1b4fdbe",
+      "bytes": 947
+    },
+    {
+      "path": "scripts/quality/verify-integration-report.mjs",
+      "sha256": "b134342c1541837ec65f3980348f16a57f828bc925b8d0a2ae3180208689763a",
+      "bytes": 1930
+    },
+    {
+      "path": "scripts/rehearsal/.dockerignore",
+      "sha256": "eb1e686f65cba40884b0c6cbeb70b48c38da373c7b365ce77680de4ca05b1e77",
+      "bytes": 67
+    },
+    {
+      "path": "scripts/rehearsal/Dockerfile",
+      "sha256": "1b1562c8e387ed6f62d00d0e7c77c9bb20e63cd4cfcf04229e7ade10ded0293f",
+      "bytes": 1138
+    },
+    {
+      "path": "scripts/rehearsal/compose.yml",
+      "sha256": "5f04f2d0fb6fd669f6b00a302e69da5cd69f407a545d011a93547c04261f6ba2",
+      "bytes": 2179
+    },
+    {
+      "path": "scripts/rehearsal/entry.mjs",
+      "sha256": "d270333b0389e59f8420c0a01e9fa62c5fdb874436667bba0bde187aa1dffa89",
+      "bytes": 2775
+    },
+    {
+      "path": "scripts/rehearsal/gateway.conf",
+      "sha256": "8331a2865edf4dad6cb87945afc35d21ff7414ddf71876b2a80516a65a200efc",
+      "bytes": 226
+    },
+    {
+      "path": "scripts/rehearsal/guard.mjs",
+      "sha256": "db41ae2ddff2a0b316e0dfd9c13d9acdf470732d0cf7441c5a50bc7bdd876d9a",
+      "bytes": 1294
+    },
+    {
+      "path": "scripts/rehearsal/lab.mjs",
+      "sha256": "50edaeea6aaffa8b15c81de078be89930a75a9c91f688047c21ee54cb3311da6",
+      "bytes": 13440
+    },
+    {
+      "path": "scripts/rehearsal/nginx.conf",
+      "sha256": "ee4c4655d10b98dd53568f08d40b757fbb0a1b247f01f9f7a31d9d9e992191f0",
+      "bytes": 703
+    },
+    {
+      "path": "scripts/rehearsal/sftp-check.mjs",
+      "sha256": "cfa744669fd25f823e529f4d71d1580751d7c1a476307529e3d51919c02ceebd",
+      "bytes": 4343
+    },
+    {
+      "path": "scripts/rehearsal/sshd_config",
+      "sha256": "3b2bd21c355de3da7690e66ad7ab00c6a5b23e15a7d856746e1d90ffda8eaec1",
+      "bytes": 337
+    },
+    {
+      "path": "scripts/rehearsal/startup-check.mjs",
+      "sha256": "cbb551b278c4d183494ce537d1e8861076f78ad4b6f89d32f79d9d6e1ff7283a",
+      "bytes": 3828
+    },
+    {
+      "path": "security/ip/blacklist-ejemplo.txt",
+      "sha256": "e36320324b9b357d9db45e50920232d1ea5b991d7041698c87c4b982569d97f6",
+      "bytes": 272
+    },
+    {
+      "path": "security/ip/whitelist-ejemplo.txt",
+      "sha256": "64f903a2ddf1d1aeed4577702138fe22af91dcb73e1f1439eccbbdf599dfa5a7",
+      "bytes": 292
+    },
+    {
+      "path": "src/README.md",
+      "sha256": "f13ec926e28f743c7d6fb6b112712163b05b5f54ed59191e3ea1feb94a656ca2",
+      "bytes": 12684
+    },
+    {
+      "path": "src/app.ts",
+      "sha256": "a0561941c2727a0e6a719e0a9c4f7d3fc7e648d0b476666081ad4dac23d799f6",
+      "bytes": 2565
+    },
+    {
+      "path": "src/config.ts",
+      "sha256": "e56b51e7e8cf306ec6066f5377e4c990316cda77b7fcd2ccc24bf07e7cbfd2c9",
+      "bytes": 3305
+    },
+    {
+      "path": "src/constants/prisma.Constant.ts",
+      "sha256": "ef4a10333cb04376b9bff201986e69226c713bad7e8e5a1fb2faa9cfdd7e9745",
+      "bytes": 73
+    },
+    {
+      "path": "src/controllers/README.md",
+      "sha256": "fc5dbc91acfd6e18efdb6819012ed114fe1c664f2846c84db34338bda6c51c82",
+      "bytes": 718
+    },
+    {
+      "path": "src/controllers/admin/administracionbd.Controller.ts",
+      "sha256": "575b5962fd691a52b782c4dee02e1750f3df0b212036d453dc75457f819d1a07",
+      "bytes": 773
+    },
+    {
+      "path": "src/controllers/admin/archivo.Controller.ts",
+      "sha256": "462519abb132870480d42356bd04c36fae46921ad6efe81a840c44567f87b513",
+      "bytes": 5194
+    },
+    {
+      "path": "src/controllers/admin/archivofactura.Controller.ts",
+      "sha256": "7c0c45fcb954e49b65910aa4c951a4576537c8a1d334d185fd3ec5365de3a935",
+      "bytes": 1329
+    },
+    {
+      "path": "src/controllers/admin/cedentelimite.Controller.ts",
+      "sha256": "7b25144949d4a939b456bfcc88a90d9399df20b3d3de6f396ac65de90b0acaeb",
+      "bytes": 6568
+    },
+    {
+      "path": "src/controllers/admin/configuracionbbdd.Controller.ts",
+      "sha256": "6ed07ef8440231c53ccc7726fae8ff07f0535d2711da5fdc845b33bb6c74f73e",
+      "bytes": 2236
+    },
+    {
+      "path": "src/controllers/admin/configuracioncorreo.Controller.ts",
+      "sha256": "1ea07736af34589fc9f4a2e2d49f02530095b33d9f8888e6c73af99ccc23c9e5",
+      "bytes": 7885
+    },
+    {
+      "path": "src/controllers/admin/contacto.Controller.ts",
+      "sha256": "4f1f56763d4a04680eafe99ead6aefefc896df1e67dffc7025b10ae858271962",
+      "bytes": 8905
+    },
+    {
+      "path": "src/controllers/admin/cuentabancariaestado.Controller.ts",
+      "sha256": "7e97f070c43a42e80255f8c1562cbd3687ed5b356f902492545a8d26eb2deaee",
+      "bytes": 6403
+    },
+    {
+      "path": "src/controllers/admin/empresa.Controller.ts",
+      "sha256": "24899a749b761997bad6d001a5f823ba9880e6d591f70d3cd649db19b5241d79",
+      "bytes": 10292
+    },
+    {
+      "path": "src/controllers/admin/empresacuentabancaria.Controller.ts",
+      "sha256": "22d094b9d8a5c412d3f6794d2e8635fbaedbac7b46c0fe4d6d1e345ff22eedfa",
+      "bytes": 7990
+    },
+    {
+      "path": "src/controllers/admin/factoringcartera.Controller.ts",
+      "sha256": "dda2ce5dedc9c1c32fdc8ce1d2c570ad8c2c7a8f3ea23c103f93b65d125fa037",
+      "bytes": 537
+    },
+    {
+      "path": "src/controllers/admin/factoringempresaverificacion.Controller.ts",
+      "sha256": "c12f2643675c895bc31823909c35f23781ed456fadc718ca13bc4da596579e46",
+      "bytes": 8304
+    },
+    {
+      "path": "src/controllers/admin/factoringinversionistaverificacion.Controller.ts",
+      "sha256": "5bf16431fc7fc575f6a53fa6b1e328e8943317a242d83d77b6b6131003a91113",
+      "bytes": 8694
+    },
+    {
+      "path": "src/controllers/admin/factorlimite.Controller.ts",
+      "sha256": "f369c168aff5ee76f6fcfce4335390861382c94fa1873e496434566a72f79f0d",
+      "bytes": 6494
+    },
+    {
+      "path": "src/controllers/admin/factura.Controller.ts",
+      "sha256": "5dea911134981f126dcbd2e1e314fe9d2725ee992766f45c329d870d11e709be",
+      "bytes": 4412
+    },
+    {
+      "path": "src/controllers/admin/inversionistacuentabancaria.Controller.ts",
+      "sha256": "4e716b2e60c4dfa9a515efb9e2ebf6ce02a4a82b19cf58f5b7f658d576b2a53a",
+      "bytes": 8440
+    },
+    {
+      "path": "src/controllers/admin/pagadorlimite.Controller.ts",
+      "sha256": "2dc6c9f05e9b083a5805e743bd7702ec80b0acad4e9654042201bcc5cf207afd",
+      "bytes": 6568
+    },
+    {
+      "path": "src/controllers/admin/persona.Controller.ts",
+      "sha256": "3aedca3c6f8edd28bc38d5b5b1f4e38420df675ab25781c89e864e78d0c52dee",
+      "bytes": 6782
+    },
+    {
+      "path": "src/controllers/admin/personaverificacion.Controller.ts",
+      "sha256": "51d224f8c7ba241225df292863886cd7edf7035e8b377089dfc4b0d184782776",
+      "bytes": 9067
+    },
+    {
+      "path": "src/controllers/admin/servicio.Controller.ts",
+      "sha256": "4796e96c003c6a9fc5dd64f674c52900784cddd0bac5cb365e39333059ef8b5d",
+      "bytes": 7701
+    },
+    {
+      "path": "src/controllers/admin/servicio/factoring/accionista.Controller.ts",
+      "sha256": "22fcea56445d156b49667d9dd4d2031af3c374bfaeb7729a0f07c6ea49bdf80a",
+      "bytes": 1247
+    },
+    {
+      "path": "src/controllers/admin/servicio/factoring/factoring.Controller.ts",
+      "sha256": "a497394b718b13bdfcc42b5a05c98664736c77970330589151a02ebd24274dfe",
+      "bytes": 4353
+    },
+    {
+      "path": "src/controllers/admin/servicio/factoring/factoringfacturafactor.Controller.ts",
+      "sha256": "045ddfd2744b5dbd84105cd23ec5d9fd15b901e0e1bb8a0d51c9e48a50ffffcd",
+      "bytes": 10869
+    },
+    {
+      "path": "src/controllers/admin/servicio/factoring/factoringhistorialestado.Controller.ts",
+      "sha256": "0f946a017937b7c3787838af73e10247327be5a9f88cf03a533a48644dcd760e",
+      "bytes": 8766
+    },
+    {
+      "path": "src/controllers/admin/servicio/factoring/factoringliquidacion.Controller.ts",
+      "sha256": "c6f5ef597ff235eaa4487afdb3b9b11766afb940504fb18defe0ca7de4ab1914",
+      "bytes": 14048
+    },
+    {
+      "path": "src/controllers/admin/servicio/factoring/factoringpago.Controller.ts",
+      "sha256": "7e8457d88e641e7d4801a1661a62fb6887ee4babccfc787d9f8c7e3ac4d70d27",
+      "bytes": 2309
+    },
+    {
+      "path": "src/controllers/admin/servicio/factoring/factoringpropuesta.Controller.ts",
+      "sha256": "6164f5a595b980adc9a2cd503064c8938458656ad1955d8cf01f71af7fde83dc",
+      "bytes": 14179
+    },
+    {
+      "path": "src/controllers/admin/servicio/factoring/factoringpropuestahistorialestado.Controller.ts",
+      "sha256": "041871cb4203fe257cb8704fc84433ffaf530d3bbccfabfd40f8dbddcccd08ac",
+      "bytes": 8577
+    },
+    {
+      "path": "src/controllers/admin/servicio/factoring/factoringsimulacion.Controller.ts",
+      "sha256": "d777359d1c2df7d38f1890195f32f667c577a16cfea8f2ce2057eae2ecfc273a",
+      "bytes": 13048
+    },
+    {
+      "path": "src/controllers/admin/servicio/factoring/factoringtransferenciacedente.Controller.ts",
+      "sha256": "6bbb773bfd7f887bebf3f1c73bff865c4b64c4eed7079ab010ebc4116f8aca91",
+      "bytes": 12126
+    },
+    {
+      "path": "src/controllers/admin/servicio/factoring/funcionario.Controller.ts",
+      "sha256": "77ad6fe626efbe02f0407d2fe448eb3aea91bcd7dd42e170cb8ad471e7a6a26c",
+      "bytes": 1261
+    },
+    {
+      "path": "src/controllers/admin/splaft/registrooperacion.Controller.ts",
+      "sha256": "7d71475c22c44bda8a9f4a50185332f922e53615681c772f5c7989d0cc04345a",
+      "bytes": 549
+    },
+    {
+      "path": "src/controllers/admin/splaft/saldocontable.Controller.ts",
+      "sha256": "af597d2752eb516fae753a4f17bdd7cd21d1cdbd6a26f567fe2dfc776b0964fb",
+      "bytes": 2921
+    },
+    {
+      "path": "src/controllers/admin/usuario.Controller.ts",
+      "sha256": "c49690f418463f51a3561e5ba276b4d43b815c5117341148ad5656039e620f78",
+      "bytes": 2378
+    },
+    {
+      "path": "src/controllers/admin/zlaboratorio.Controller.ts",
+      "sha256": "395958f3956315f918ed622a38872d41e45918eac7a6c56a22054827ccc94948",
+      "bytes": 1650
+    },
+    {
+      "path": "src/controllers/banca/transaccionbancaria.Controller.ts",
+      "sha256": "7f8f76b06d83cf9bc332a5e9456fb43ac90d41d1a6004638e9d01844bc4ea02c",
+      "bytes": 2970
+    },
+    {
+      "path": "src/controllers/empresario/contacto.Controller.ts",
+      "sha256": "1b5008d6a974bef6ddf04d64aed2e7c8cab2e9219bc86ea73dfbf572b08273e8",
+      "bytes": 6378
+    },
+    {
+      "path": "src/controllers/empresario/empresacuentabancaria.Controller.ts",
+      "sha256": "10cd0e5a622acb2780051a3e5d25114766215573bc63a05d8fae8e4f197d9224",
+      "bytes": 5761
+    },
+    {
+      "path": "src/controllers/empresario/factoring/contacto.Controller.ts",
+      "sha256": "55cf409c18a9a00b8f72b6fcb28821ab43c11d6bf1ba1589282b61db47876365",
+      "bytes": 5981
+    },
+    {
+      "path": "src/controllers/empresario/factoring/empresacuentabancaria.Controller.ts",
+      "sha256": "5c4368d252d2c6dfec9b5d4f7734325e6e387eb783e1a5927cbe561313bf3e57",
+      "bytes": 5358
+    },
+    {
+      "path": "src/controllers/empresario/factoring/factoring.Controller.ts",
+      "sha256": "528f8e13b563ebdbb86cc5738106a2db80e6ab1981608782b14416132b6e5ed7",
+      "bytes": 4233
+    },
+    {
+      "path": "src/controllers/empresario/factoring/factoringpropuesta.Controller.ts",
+      "sha256": "08bdd3ba16f6dfce212e5cfae28ea959122d743c8b04d8a0837b001916006f3e",
+      "bytes": 3649
+    },
+    {
+      "path": "src/controllers/empresario/factoring/factura.Controller.ts",
+      "sha256": "298613fe0b35de181bca7487ee772f2e28f3cc2180d00a4980428df2e7d7849c",
+      "bytes": 1621
+    },
+    {
+      "path": "src/controllers/empresario/factoring/usuario.Controller.ts",
+      "sha256": "688023f268f13d4b11edc624d420920394e442b2a98a3c31a7a62178ebc49bda",
+      "bytes": 549
+    },
+    {
+      "path": "src/controllers/empresario/factoringfacturafactor.Controller.ts",
+      "sha256": "92b29c69e2cb7bee6c8aabff8ece40e70208f63065edf379019561a2a14544db",
+      "bytes": 2266
+    },
+    {
+      "path": "src/controllers/empresario/factoringliquidacion.Controller.ts",
+      "sha256": "90c5f86dad5350772cdc31ce127630b4ae05369f9f399402e59e1d6e1693298c",
+      "bytes": 2578
+    },
+    {
+      "path": "src/controllers/empresario/factoringtransferenciacedente.Controller.ts",
+      "sha256": "d1aeb5949df3d2bfbeafa2ed5a46b863dea691d96087650a29d10c2bd9d0ae7f",
+      "bytes": 2739
+    },
+    {
+      "path": "src/controllers/empresario/factura.Controller.ts",
+      "sha256": "4ac92058b343ca523cf4fa795afdb6b3a7c4cc5003501fa30150ffee5028319a",
+      "bytes": 3522
+    },
+    {
+      "path": "src/controllers/empresario/usuarioservicioempresa.Controller.ts",
+      "sha256": "d7e8e598342dbdf6e33b96c01adb347fa255437717d444497de136be6ef983e5",
+      "bytes": 955
+    },
+    {
+      "path": "src/controllers/financiero/factura.Controller.ts",
+      "sha256": "64658edba571f3f3e449ae8b4dfd227d65044c42af5f7b4a7dcccf3e92fff928",
+      "bytes": 4446
+    },
+    {
+      "path": "src/controllers/financiero/sbs/sbstipocambio.Controller.ts",
+      "sha256": "7a761d804eacd68e301abcc05bf2f44c6c2b50ce0ca709403d348b4f85eeafd3",
+      "bytes": 11131
+    },
+    {
+      "path": "src/controllers/financiero/servicio/factoring/factoring.Controller.ts",
+      "sha256": "2a8baa7c85f34ee46dd235ca850ee961d9783fd1c401567e5dcc40a1b14ed916",
+      "bytes": 2699
+    },
+    {
+      "path": "src/controllers/financiero/servicio/factoring/factoringdetraccion.Controller.ts",
+      "sha256": "1221c38450639cc25e7dcae36ad81976f2a86fb2669603cecda1a73cd3e02963",
+      "bytes": 2195
+    },
+    {
+      "path": "src/controllers/financiero/servicio/factoring/factoringfacturafactor.Controller.ts",
+      "sha256": "dcb75f0d52dff0135bd5cf01ec34bad4321ac3d3cf812c31ea84c2ab131379c7",
+      "bytes": 8852
+    },
+    {
+      "path": "src/controllers/financiero/servicio/factoring/factoringhistorialestado.Controller.ts",
+      "sha256": "209a176262e2645845755cd83c793a1a0b75a889ed93db978c9b968567c2f2b8",
+      "bytes": 1908
+    },
+    {
+      "path": "src/controllers/financiero/servicio/factoring/factoringliquidacion.Controller.ts",
+      "sha256": "794328bfb6e305ceb4b18f1dde7a9ec4973cc2d525dea0049321eda5507f6575",
+      "bytes": 5297
+    },
+    {
+      "path": "src/controllers/financiero/servicio/factoring/factoringpago.Controller.ts",
+      "sha256": "337938438663b6e7ed91566b3cc8a155d2b52de31edaa7b876122618066e4b66",
+      "bytes": 485
+    },
+    {
+      "path": "src/controllers/financiero/servicio/factoring/factoringpropuesta.Controller.ts",
+      "sha256": "bb0fda444192f5b197574da19b91118e5bb168d4b79bfc994d8c076ce52d0a9b",
+      "bytes": 3240
+    },
+    {
+      "path": "src/controllers/financiero/servicio/factoring/factoringpropuestahistorialestado.Controller.ts",
+      "sha256": "73a843c79783fd7c5d74bcc5feeec85eeec2bdf6902263491b91c71ab760d4cb",
+      "bytes": 2124
+    },
+    {
+      "path": "src/controllers/financiero/servicio/factoring/factoringtransferenciacedente.Controller.ts",
+      "sha256": "dc05be4ef6fe3dd614a65f929987b4a64ef961950134ddd2e27e9600791c274e",
+      "bytes": 3786
+    },
+    {
+      "path": "src/controllers/financiero/sunat/sunattipocambio.Controller.ts",
+      "sha256": "ce191a19d39605902d8cd022ce2d4a6c99d4eddedeae9da36a060beb0215d494",
+      "bytes": 11023
+    },
+    {
+      "path": "src/controllers/index.Controller.ts",
+      "sha256": "668d0aa31835d97558f821a4e511fdbddc739bb23a036a341498a18f558e3b9f",
+      "bytes": 492
+    },
+    {
+      "path": "src/controllers/inversionista/factoring/factoring.Controller.ts",
+      "sha256": "b309ca3e1d599062eebf5bb9727298dd52f1e1d1b2fa81f9527343d15f3f2068",
+      "bytes": 819
+    },
+    {
+      "path": "src/controllers/inversionista/inversionistacuentabancaria.Controller.ts",
+      "sha256": "f15ceda43b832b8dd855ac96e1e31f580d5b162a6c561a6593615d4bb99d938b",
+      "bytes": 5625
+    },
+    {
+      "path": "src/controllers/secure/accesos.Controller.ts",
+      "sha256": "005cd9212bf335fd0c0e59fb7571b63b71a1336b3a09230287fea67ba54c107d",
+      "bytes": 416
+    },
+    {
+      "path": "src/controllers/secure/secure.Controller.ts",
+      "sha256": "6b73671e48b071fab62792febd9ff930c5ec06543c551636bf6f752892f1310b",
+      "bytes": 11891
+    },
+    {
+      "path": "src/controllers/usuario/archivo.Controller.ts",
+      "sha256": "a8f6e39d0893427ad88ac73711c977074429fa8032d6288f36ed5eb0ec98f147",
+      "bytes": 3567
+    },
+    {
+      "path": "src/controllers/usuario/credencial.Controller.ts",
+      "sha256": "90fb7aa7dea36da6a4517cf39a165fd1f9dc68d70acd00e90631b38f159289ce",
+      "bytes": 2612
+    },
+    {
+      "path": "src/controllers/usuario/menu.Controller.ts",
+      "sha256": "9ed5b0454488079f38601d0b20c3a5188da3208ae028f975725f7e5cd532fdc2",
+      "bytes": 584
+    },
+    {
+      "path": "src/controllers/usuario/persona.Controller.ts",
+      "sha256": "7780f1a0210552370cbd8b2e28e348ff17bcccf686855c0de7eefe217914cab0",
+      "bytes": 7215
+    },
+    {
+      "path": "src/controllers/usuario/personaestadoConsulta.Controller.ts",
+      "sha256": "9cd3b88b8c148dcb18fe74b03a7116595dd377eb1710f12346f56211a3e0710f",
+      "bytes": 444
+    },
+    {
+      "path": "src/controllers/usuario/usuario.Controller.ts",
+      "sha256": "450d3b5539d718dc77c049a68ee0f843482d64e5208b1678c1a67ad8efd8f514",
+      "bytes": 1228
+    },
+    {
+      "path": "src/controllers/usuario/usuarioservicio.Controller.ts",
+      "sha256": "d653021b0782c9fdcd7ecb7187486a7824648254d5420675b026dfbc4491b63a",
+      "bytes": 15948
+    },
+    {
+      "path": "src/controllers/usuario/usuarioservicioestadoConsulta.Controller.ts",
+      "sha256": "6a0c6f089f96e3aeeeba08ea0985884737283dec72f44279147f4452ce20d7c6",
+      "bytes": 741
+    },
+    {
+      "path": "src/daos/accionista.Dao.ts",
+      "sha256": "e6317b924b42bfe17e06e561ee7ecd245570554a7c372c2279bc524e3066ba63",
+      "bytes": 4783
+    },
+    {
+      "path": "src/daos/administracion/administracionbd.Dao.ts",
+      "sha256": "0f2dfe93550772aade11831e75df64837c5e58af8d4c38ba701f0e19433283e5",
+      "bytes": 1217
+    },
+    {
+      "path": "src/daos/archivo.Dao.ts",
+      "sha256": "d513dcb1149116bd571a2f7a557e34f8a45e590fc73eb1a5bc2c998e124cb884",
+      "bytes": 4053
+    },
+    {
+      "path": "src/daos/archivocolaborador.Dao.ts",
+      "sha256": "c2c6221e9d867900d2be6db26b15ede11f7fc94376d831d622eaaf45fc40b6a3",
+      "bytes": 3280
+    },
+    {
+      "path": "src/daos/archivocuentabancaria.Dao.ts",
+      "sha256": "1fd896c41d2f0953e894412e54d32d6ca66f3811e278e048fc99e2eb6ec817c5",
+      "bytes": 3501
+    },
+    {
+      "path": "src/daos/archivoempresa.Dao.ts",
+      "sha256": "305e54cf24ad4049e8500e62bdaf6fab58740d65f2910462f87fb7de5d6827e2",
+      "bytes": 3210
+    },
+    {
+      "path": "src/daos/archivoestado.Dao.ts",
+      "sha256": "6c000755e6f64d70567cb4d24354372511fc4ffb2e5d2fcaf29e7dce0ae830ac",
+      "bytes": 3662
+    },
+    {
+      "path": "src/daos/archivofactoringhistorialestado.Dao.ts",
+      "sha256": "5cb13e389e87f4b8989510f2902bbd469b919b9487fc8d253f9c5aaea5d50ad8",
+      "bytes": 3241
+    },
+    {
+      "path": "src/daos/archivofactoringtransferenciacedente.Dao.ts",
+      "sha256": "8b8de6aeb72150052f18b4749f2a5acdd6e3c4be81f2b3420b48771d3c02c8ab",
+      "bytes": 3411
+    },
+    {
+      "path": "src/daos/archivofactura.Dao.ts",
+      "sha256": "7e78767292da886e1c01bc2f8410dce0b82e0c94126ae9b18c38b545aeff41f9",
+      "bytes": 4567
+    },
+    {
+      "path": "src/daos/archivopersona.Dao.ts",
+      "sha256": "40679e3de06b766b6abadb64089e4aaa07b34a78b50bf81f0b1835360ff6a3c7",
+      "bytes": 3210
+    },
+    {
+      "path": "src/daos/archivopersonaverificacion.Dao.ts",
+      "sha256": "9e6a248254b505e3a9c745efff154805aabe12bb631ded14d3120d8cb7e07903",
+      "bytes": 3033
+    },
+    {
+      "path": "src/daos/archivoservicioempresaverificacion.Dao.ts",
+      "sha256": "4bad24ac93cc2806351dc4c396a372281e8bcbf6a63f2a258b1b8801042752cc",
+      "bytes": 3304
+    },
+    {
+      "path": "src/daos/archivoservicioinversionistaverificacion.Dao.ts",
+      "sha256": "5ad67610ba413cf8dd297a8f361f11fc0b69c8adc93acc1ca3b8f69c14851a3a",
+      "bytes": 3502
+    },
+    {
+      "path": "src/daos/archivotipo.Dao.ts",
+      "sha256": "eef33b182536b600ebdae766cd1591634b276c9b8ee61e5bdb0a1164cbf631f6",
+      "bytes": 3815
+    },
+    {
+      "path": "src/daos/banco.Dao.ts",
+      "sha256": "aaa8eebb7afd3f4755c6058ac49c352d8688a1f789cd6896b0c646436b6572e5",
+      "bytes": 3235
+    },
+    {
+      "path": "src/daos/cedentelimite.Dao.ts",
+      "sha256": "46146f99fec3721874a485a9d4cbd037bc8a4ba5fdb39c119876c8dae8933ffd",
+      "bytes": 4257
+    },
+    {
+      "path": "src/daos/colaborador.Dao.ts",
+      "sha256": "d1f3997aed9d2c3a03b20e631af2f629b4b06e52c072dd3758e651b8ad8df386",
+      "bytes": 4497
+    },
+    {
+      "path": "src/daos/colaboradortipo.Dao.ts",
+      "sha256": "f0da55a9c2f2c24f0aacd292ec504c8cf67661d36c36f59f6a84561ca8b63731",
+      "bytes": 3367
+    },
+    {
+      "path": "src/daos/configuracionapp.Dao.ts",
+      "sha256": "199898347c6008b3722d21a914067b2108527d4f53119f42b6d99ef84dc2e6a8",
+      "bytes": 5704
+    },
+    {
+      "path": "src/daos/configuracionbbdd.Dao.ts",
+      "sha256": "6978013a80fe9821728b78ccd1904053580b48d1dc60e33c543630182945e000",
+      "bytes": 1993
+    },
+    {
+      "path": "src/daos/configuracioncorreo.Dao.ts",
+      "sha256": "14ca03d50eae3393d5ffe2a153489bfc7e6f9d7f8d9fc774a6de89f04f81dcf7",
+      "bytes": 4114
+    },
+    {
+      "path": "src/daos/contacto.Dao.ts",
+      "sha256": "96a76eb4e3a61f8a4a4c8d158369377e33d4d1e34659dbfaa76f142d2e916de1",
+      "bytes": 4660
+    },
+    {
+      "path": "src/daos/credencial.Dao.ts",
+      "sha256": "05b5668f97faf1dd86237b1c076d283cb3f2422f565005e0d0b893c125999d46",
+      "bytes": 3457
+    },
+    {
+      "path": "src/daos/cuentabancaria.Dao.ts",
+      "sha256": "20dd84009b2cb41715c83c961b2ed854d029d52309a94d29e9895795ecf5dd48",
+      "bytes": 10527
+    },
+    {
+      "path": "src/daos/cuentabancariaestado.Dao.ts",
+      "sha256": "948d2fc821fa717647cca055e59ec8a087574351065e9f96034b705ccd73412a",
+      "bytes": 4133
+    },
+    {
+      "path": "src/daos/cuentatipo.Dao.ts",
+      "sha256": "3b9bd96c7c0840d74bbc365acd450dbf107e2fa81160e84df1b2ff4a45bbc7e4",
+      "bytes": 3106
+    },
+    {
+      "path": "src/daos/departamento.Dao.ts",
+      "sha256": "18a91c057430da802b672a7bccccb5647dd25e55395bb9e14faccdc79b641128",
+      "bytes": 3196
+    },
+    {
+      "path": "src/daos/detraccionestado.Dao.ts",
+      "sha256": "46f723c3c93864113da031f0a867859b207e9f226e3ce0d2b276ad7631e68973",
+      "bytes": 3387
+    },
+    {
+      "path": "src/daos/distrito.Dao.ts",
+      "sha256": "0d5bc879608ce6e30fb4680b4d9675dde5064b3a11f352a5a45ac4a43db5de54",
+      "bytes": 3099
+    },
+    {
+      "path": "src/daos/documentotipo.Dao.ts",
+      "sha256": "726d1c4ca6ace8394bdaf548ebc2441c6f14fde70ea5aa0b3afc84e653efa4f0",
+      "bytes": 3878
+    },
+    {
+      "path": "src/daos/empresa.Dao.ts",
+      "sha256": "c3934594ad66c43ac3eadfee3636eaf26f82d6f8dbc3d82d0222facaea2b5986",
+      "bytes": 8065
+    },
+    {
+      "path": "src/daos/empresacuentabancaria.Dao.ts",
+      "sha256": "5fbceff01275a119da5bb2196c9d36e5653f7da94863f76480f03e3349b3031a",
+      "bytes": 9793
+    },
+    {
+      "path": "src/daos/empresadeclaracion.Dao.ts",
+      "sha256": "e63919af32028d868f999f407b59b7911d1ede4c4dc03c0ee52cdafc5a78195e",
+      "bytes": 3506
+    },
+    {
+      "path": "src/daos/factor.Dao.ts",
+      "sha256": "6a231db33ec9c1d2f6bbcc15d23dbf390e4b9eca2cffaf15f1ab747a1e6029b5",
+      "bytes": 1646
+    },
+    {
+      "path": "src/daos/factorcuentabancaria.Dao.ts",
+      "sha256": "2cba3e972c7012eb805721073f3b84b2f0177b1b1e1968a28019acbf407c9e1d",
+      "bytes": 6717
+    },
+    {
+      "path": "src/daos/factoring.Dao.ts",
+      "sha256": "9386795347048c5ce51d8248eb15026a41cf506ccf9055c6c78ffce7a6ff54e6",
+      "bytes": 25138
+    },
+    {
+      "path": "src/daos/factoringConsolidado.Dao.ts",
+      "sha256": "df12a820b2ce8344de297088d8a8f1fb8dcb1346d35d99af02bbf7039420afd4",
+      "bytes": 4251
+    },
+    {
+      "path": "src/daos/factoringcartera.Dao.ts",
+      "sha256": "a11a7325f8195aac1c884fe79b523bc25e39234d46ccb49f6eec3f4af6967583",
+      "bytes": 5044
+    },
+    {
+      "path": "src/daos/factoringconfigcomision.Dao.ts",
+      "sha256": "7fb8eef1b007632ab0f90a7173d7c45f642251b6ff2f882d0f8dea64e7f43492",
+      "bytes": 4245
+    },
+    {
+      "path": "src/daos/factoringconfiggarantia.Dao.ts",
+      "sha256": "b8ec62161ab83070c7409ade15e4d58a2637092f04fa71ffec67c56f3628df36",
+      "bytes": 3766
+    },
+    {
+      "path": "src/daos/factoringconfigtasadescuento.Dao.ts",
+      "sha256": "4c4447b7e68fdbd0df373aada06f2ac541e62e36cf34d27486a632235e7ee470",
+      "bytes": 4026
+    },
+    {
+      "path": "src/daos/factoringdetraccion.Dao.ts",
+      "sha256": "014d6bbf2d87b8205d1cd6471fc6cad87388350b69785a34238797c8715cf335",
+      "bytes": 6551
+    },
+    {
+      "path": "src/daos/factoringestado.Dao.ts",
+      "sha256": "eeab855ee81838bbe2e44fda7b95d430372ad903b7d65a91e4ba58b4c0a7d876",
+      "bytes": 3407
+    },
+    {
+      "path": "src/daos/factoringestrategia.Dao.ts",
+      "sha256": "1471073d66b3bbf919fbcb1184a33eff70ed49e2e458039f68cd47b2064133aa",
+      "bytes": 3556
+    },
+    {
+      "path": "src/daos/factoringfactura.Dao.ts",
+      "sha256": "57a6da964f5435c811181d446868d090b8ff02c87a0879e5791070c6088619ba",
+      "bytes": 3757
+    },
+    {
+      "path": "src/daos/factoringfacturafactor.Dao.ts",
+      "sha256": "30f0ba6ea8717b34290ff4b304a5fd1d3e48a3886733bc8260949f156eea6ba2",
+      "bytes": 8569
+    },
+    {
+      "path": "src/daos/factoringhistorialestado.Dao.ts",
+      "sha256": "eee67ff3fa5d54811ff143ed3b5eed127af613af4f2f3a5c6e6a53634b8b9864",
+      "bytes": 5234
+    },
+    {
+      "path": "src/daos/factoringliquidacion.Dao.ts",
+      "sha256": "61fb7d4753c06536b266f9c0f9d5a850eb03a7c75fd215513ea2adee905d013f",
+      "bytes": 8293
+    },
+    {
+      "path": "src/daos/factoringliquidacionestado.Dao.ts",
+      "sha256": "1f2742d6592785c1c0930484d5931b9dab986449084e4ca4231bcbbf52c2c0df",
+      "bytes": 3804
+    },
+    {
+      "path": "src/daos/factoringliquidacionfinanciero.Dao.ts",
+      "sha256": "a054912586c07d627cf0ed5c5de2cee76e32b76f5871cd6f60a23ebff4077fd6",
+      "bytes": 4675
+    },
+    {
+      "path": "src/daos/factoringpago.Dao.ts",
+      "sha256": "5e35c8a78b0b8e6398dbbd58f4a3835bb39a9242e741ce0a9aebbfb48ebdddd6",
+      "bytes": 5999
+    },
+    {
+      "path": "src/daos/factoringpropuesta.Dao.ts",
+      "sha256": "5526a27a7cfd185fa9dd491cf3b98e0dcb4717b6fef45ea7836c7ca6fa98b3ec",
+      "bytes": 12750
+    },
+    {
+      "path": "src/daos/factoringpropuestaestado.Dao.ts",
+      "sha256": "4aaf610b95c6f47abe40cc4e830526cc30142f3e4618841b8b49715abe3d2034",
+      "bytes": 3712
+    },
+    {
+      "path": "src/daos/factoringpropuestafinanciero.Dao.ts",
+      "sha256": "1a69dff766d3064b4766a263c2d8b70916254236d10e1bf2ea1a6142bd9906ae",
+      "bytes": 3896
+    },
+    {
+      "path": "src/daos/factoringpropuestahistorialestado.Dao.ts",
+      "sha256": "5bf8195481895116cb2a56feb68669ec6c92d9e96b182c54462e1266aa9d73f6",
+      "bytes": 5577
+    },
+    {
+      "path": "src/daos/factoringsimulacion.Dao.ts",
+      "sha256": "a83948019833ce73fbd96e8ee2ff3400af8a4110d7d0bbf6347444c9fbc5a658",
+      "bytes": 6658
+    },
+    {
+      "path": "src/daos/factoringsimulacionfinanciero.Dao.ts",
+      "sha256": "d6b4847b27fbc0d87cd2577d5785ce62e1b5ca1ac597a2ddc471bd02bf9113a2",
+      "bytes": 3975
+    },
+    {
+      "path": "src/daos/factoringtipo.Dao.ts",
+      "sha256": "042575542451cfb8d312d0fb8dee4968bd1b9727d1782a7a44372bcb9ff18985",
+      "bytes": 3213
+    },
+    {
+      "path": "src/daos/factoringtransferenciacedente.Dao.ts",
+      "sha256": "8a1503239aabf5626911a18fe374a6d6116dc795aa125a7a7467c00baa1b03bb",
+      "bytes": 8324
+    },
+    {
+      "path": "src/daos/factoringtransferenciaestado.Dao.ts",
+      "sha256": "9fdeff06f6d543cbd29c3014e40b0b178dd80ba9319f59503c2079caffb4471d",
+      "bytes": 3928
+    },
+    {
+      "path": "src/daos/factoringtransferenciatipo.Dao.ts",
+      "sha256": "4ef72a47555fcd55b96fd48b05916c9014a4afcfe3871594434c36eac634fc05",
+      "bytes": 3834
+    },
+    {
+      "path": "src/daos/factorlimite.Dao.ts",
+      "sha256": "a3a95207e85a023114f3f21a47a3bd4831cd153ea1179ce6ca554051f2f49c75",
+      "bytes": 4195
+    },
+    {
+      "path": "src/daos/factura.Dao.ts",
+      "sha256": "5d1fc27a165f8bd436d2ae8e4c6e6bb33eb1659689d3cb8d7ef321210687440a",
+      "bytes": 5906
+    },
+    {
+      "path": "src/daos/facturaestado.Dao.ts",
+      "sha256": "4f1bccb44645ebf6b2ae4fa78f77954f71060c59bcf07e1138d35846528c09d6",
+      "bytes": 3240
+    },
+    {
+      "path": "src/daos/facturaimpuesto.Dao.ts",
+      "sha256": "036d13a9cef18868a45c03e2247da4a7f95fc7f2493daac68cd28b103fc6bc3a",
+      "bytes": 3305
+    },
+    {
+      "path": "src/daos/facturaitem.Dao.ts",
+      "sha256": "aa0b5aafc9336cee77139151cec9c6a9022de486b2154a528edfd4ea69bfca39",
+      "bytes": 3156
+    },
+    {
+      "path": "src/daos/facturamediopago.Dao.ts",
+      "sha256": "f276c0ad503815ba8f9b4854ce2564523c829a313d020b3a33485c19e3bec225",
+      "bytes": 3416
+    },
+    {
+      "path": "src/daos/facturanota.Dao.ts",
+      "sha256": "2ef44f49d596ae195e5c95b614933d9bda2fa0378f414e2c50598f9a710bfa86",
+      "bytes": 3156
+    },
+    {
+      "path": "src/daos/facturaterminopago.Dao.ts",
+      "sha256": "20fefb0039dc4039e863f7eb7665ef61193c996040fb6fa93486da79b87f5d16",
+      "bytes": 3516
+    },
+    {
+      "path": "src/daos/financieroconcepto.Dao.ts",
+      "sha256": "2d8265449d81c35b0ea777c017e9ec979b8ebe02c6c9283fb5b87b34eb049e16",
+      "bytes": 4698
+    },
+    {
+      "path": "src/daos/financieroconceptoliquidacion.Dao.ts",
+      "sha256": "d44d12f9fb050d737bae5268142af93d7eb0d35441fa4932859bf0df93dd2faa",
+      "bytes": 4194
+    },
+    {
+      "path": "src/daos/financierotipo.Dao.ts",
+      "sha256": "dcd6331e631cd3de03903e7d5ede5e9ed920c8feec9a712e65ab3e331863a604",
+      "bytes": 3789
+    },
+    {
+      "path": "src/daos/funcionario.Dao.ts",
+      "sha256": "0b85423e560d3e1fc1beed4b959bf4639192972c46b96fee55cb4b63c71616f4",
+      "bytes": 4055
+    },
+    {
+      "path": "src/daos/genero.Dao.ts",
+      "sha256": "d29f8ca0c20225e698eda726e343d67ce80a683412859120ecd03dc35442c78f",
+      "bytes": 2896
+    },
+    {
+      "path": "src/daos/inversionista.Dao.ts",
+      "sha256": "17838690585ff0238f67804cf268806f230ddb07d294fed3e9e804475071ee7e",
+      "bytes": 4240
+    },
+    {
+      "path": "src/daos/inversionistacuentabancaria.Dao.ts",
+      "sha256": "43b33fe32a0356096d216a07aa3ff9395fc958bb736ec61e87446f1f4eaecdce",
+      "bytes": 7879
+    },
+    {
+      "path": "src/daos/moneda.Dao.ts",
+      "sha256": "722b84a9de3e5268b50e1421e3c534460f0269d4d7b8f8547ff81569e2faa62a",
+      "bytes": 3223
+    },
+    {
+      "path": "src/daos/pagadorlimite.Dao.ts",
+      "sha256": "d1e4cb8339fab56792039ff1c352bcf024bbecd11e4af6acc06cdd3a18e2301e",
+      "bytes": 4257
+    },
+    {
+      "path": "src/daos/pais.Dao.ts",
+      "sha256": "5b37399dce400afc79c8c227d001d702db6f121085a308a7b3474f4c41cca65e",
+      "bytes": 3560
+    },
+    {
+      "path": "src/daos/pepvinculo.Dao.ts",
+      "sha256": "97916299dd0cdc77129ad05f0ababc1c4a06be178cfb0aa01061950f0d57a70b",
+      "bytes": 3074
+    },
+    {
+      "path": "src/daos/persona.Dao.ts",
+      "sha256": "3f80ffb8dd2832f7d92463d5b7a470bc0190aa180bfca50dea96c771f320f1ed",
+      "bytes": 7146
+    },
+    {
+      "path": "src/daos/personadeclaracion.Dao.ts",
+      "sha256": "7fc12975b750c21237fca158b18bddca6cb45248e5bc95e238d3afe5929e061b",
+      "bytes": 3506
+    },
+    {
+      "path": "src/daos/personaestadoConsulta.Dao.ts",
+      "sha256": "a57dd2f8ffdd92ac5233ccfa10edf2827418725ab628a1cd7eae47711009e4ac",
+      "bytes": 570
+    },
+    {
+      "path": "src/daos/personapepdirecto.Dao.ts",
+      "sha256": "f6ea9c7766e80af3f500a05481df286bb3491bcb05538c743765b9f287081bdc",
+      "bytes": 3466
+    },
+    {
+      "path": "src/daos/personapepindirecto.Dao.ts",
+      "sha256": "9181a539f90c466a837113dc9a13574d5f27b735e22834bf5c52c18bc7874666",
+      "bytes": 3566
+    },
+    {
+      "path": "src/daos/personaverificacion.Dao.ts",
+      "sha256": "7e74fda87132759ab9f45454e9787887f2f11cf053c9c145236313550b700fa8",
+      "bytes": 4877
+    },
+    {
+      "path": "src/daos/personaverificacionestado.Dao.ts",
+      "sha256": "e9165e9768168ffed239acdf8a8200227cb4d0d07b1dff8138e535d847cfc008",
+      "bytes": 3757
+    },
+    {
+      "path": "src/daos/provincia.Dao.ts",
+      "sha256": "7c19008347a79c34bbfcc26aceb55b69bca1c57fe69a226fdee18f90df0bed90",
+      "bytes": 2985
+    },
+    {
+      "path": "src/daos/riesgo.Dao.ts",
+      "sha256": "976fd2e8aec9164a13c20091bcbdd7879f283c38b977a42c9fb708f6f994c6a2",
+      "bytes": 2844
+    },
+    {
+      "path": "src/daos/rol.Dao.ts",
+      "sha256": "ac49c3de403ee3812057f71232ab15b1b517ee02a51277b4026fd8b231e996a0",
+      "bytes": 587
+    },
+    {
+      "path": "src/daos/saldocontable.Dao.ts",
+      "sha256": "f2c3fb4177fe47ba0c544f0f164653ca5509262b9705573939e7866eefb1b301",
+      "bytes": 4403
+    },
+    {
+      "path": "src/daos/sbstipocambio.Dao.ts",
+      "sha256": "1e2208a075844708ecfec0e0e7d63edee221e59b821802a98e257d8aa8eaf639",
+      "bytes": 12646
+    },
+    {
+      "path": "src/daos/servicio.Dao.ts",
+      "sha256": "529aad9acb89e39113c32d96804a16d5689127d3222fd21e2f1590d2b27b9945",
+      "bytes": 3541
+    },
+    {
+      "path": "src/daos/servicioempresa.Dao.ts",
+      "sha256": "6b4235f0a5ce08810d64ccc4ecefbad9ce93cf4ca68fd0a45f755e094630e6b2",
+      "bytes": 6582
+    },
+    {
+      "path": "src/daos/servicioempresaestado.Dao.ts",
+      "sha256": "b4adac9db9561a028ab4fce2bbe52299555a250aa52b4672a69d4549c2bd7b84",
+      "bytes": 3666
+    },
+    {
+      "path": "src/daos/servicioempresaverificacion.Dao.ts",
+      "sha256": "dd12d4117607de60b03336d2986dc366da4d3141b3e80e626e1cc7380fdb4856",
+      "bytes": 5532
+    },
+    {
+      "path": "src/daos/servicioinversionista.Dao.ts",
+      "sha256": "337886cbde21019ac792cdc3f8f473cc0634807a5162df75831612093ca4b313",
+      "bytes": 6700
+    },
+    {
+      "path": "src/daos/servicioinversionistaestado.Dao.ts",
+      "sha256": "c01b32069bf7e7a28017ba3117904200856483f33b2cc09318079e0e8a41f8cd",
+      "bytes": 3966
+    },
+    {
+      "path": "src/daos/servicioinversionistaverificacion.Dao.ts",
+      "sha256": "0f977f1fe0d4347e40cb050fa7b099850f61105dfc82421177c49476fa6d93fa",
+      "bytes": 5670
+    },
+    {
+      "path": "src/daos/sunattipocambio.Dao.ts",
+      "sha256": "2775719ca795f2c24fe99ae13945e8fd828b0e5ac195d7e22ecce5be12574a83",
+      "bytes": 12632
+    },
+    {
+      "path": "src/daos/transaccionbancaria.Dao.ts",
+      "sha256": "302db0cb41ac28ddb108b8daff270d5b5ae71f7f7dfb34b9fdb3f3632ff22879",
+      "bytes": 9184
+    },
+    {
+      "path": "src/daos/usuario.Dao.ts",
+      "sha256": "130838f765f337ebd2318ce885d6c179b64500e6eb31a6e3556187158214eb3c",
+      "bytes": 8080
+    },
+    {
+      "path": "src/daos/usuariorol.Dao.ts",
+      "sha256": "0ca82faa7ff42fbb37f58519cc8a431327a4d057f327a09cd408974a5fe71768",
+      "bytes": 3058
+    },
+    {
+      "path": "src/daos/usuarioservicio.Dao.ts",
+      "sha256": "7371750dfb927bdb2f003487b0254eb31da0c4cf172bcdab9ea1cdaaa7cc31e1",
+      "bytes": 5871
+    },
+    {
+      "path": "src/daos/usuarioservicioempresa.Dao.ts",
+      "sha256": "f1703fd4ad060d12659b8c5c6415f2581f032274bd4972cff186c5d07b9e3f0e",
+      "bytes": 5169
+    },
+    {
+      "path": "src/daos/usuarioservicioempresaestado.Dao.ts",
+      "sha256": "e72c2711ce00155f94e979093c386c19f1891f88fcdc34d93e215b77989c9a57",
+      "bytes": 3938
+    },
+    {
+      "path": "src/daos/usuarioservicioempresarol.Dao.ts",
+      "sha256": "73da754a375f47d265aaf0e42a1b043e6800c236acbc53f1fa69e936bbb3bfbf",
+      "bytes": 3797
+    },
+    {
+      "path": "src/daos/usuarioservicioestado.Dao.ts",
+      "sha256": "d70c4abf614c5ab98c87b6ffb6f7a953552a597921fcc21e833af42200ef10d8",
+      "bytes": 3599
+    },
+    {
+      "path": "src/daos/usuarioservicioverificacion.Dao.ts",
+      "sha256": "6916caf6e35aa33dbd7a8cc7c5a1a921215a9f295a9808cd9d806aef5d49f1a6",
+      "bytes": 3881
+    },
+    {
+      "path": "src/daos/validacion.Dao.ts",
+      "sha256": "7422935ae27b1ed571c3d026f4b2aa85df94a5805d7fc652d479ce804b6c035e",
+      "bytes": 5032
+    },
+    {
+      "path": "src/daos/zlaboratoriopedido.Dao.ts",
+      "sha256": "8f63d55fa0668c76e407aa9a04debd4ed5b0d578977d244fe51453ef342288ec",
+      "bytes": 3150
+    },
+    {
+      "path": "src/daos/zlaboratoriousuario.Dao.ts",
+      "sha256": "1b241559e1f8fc86a7501237e4b7de34680a41b97c0d9b22bf243d95f05a3373",
+      "bytes": 3719
+    },
+    {
+      "path": "src/domain/banca/transaccionBancaria.Incidencia.ts",
+      "sha256": "0e5d56d0028ed765f796b1f6f4f7479926c3b9ca2c162cf3a01d78bbdd9e5b1b",
+      "bytes": 4775
+    },
+    {
+      "path": "src/domain/banca/transaccionBancaria.Policy.ts",
+      "sha256": "5515e24cfd8fa6e73d3ac17dff00b5e9cfa0e09afa5023c28c99414268402081",
+      "bytes": 6559
+    },
+    {
+      "path": "src/domain/factoring/detraccion.Rules.ts",
+      "sha256": "4bcdff88884bb204477b2f618c75bf2eddffaab44ee2c3b880f2898f8380a6f4",
+      "bytes": 1046
+    },
+    {
+      "path": "src/domain/factoring/factoring.Calculator.ts",
+      "sha256": "7720bfb0f18e6ad9c11068b866e0bbfed77dd5d4a76457d473bf558739ebfb91",
+      "bytes": 19842
+    },
+    {
+      "path": "src/domain/factoring/factoringPago.Policy.ts",
+      "sha256": "f63986c94f500f3825167d3e3dbb37734c117e70df1e4dbccf79afb601a2afea",
+      "bytes": 1327
+    },
+    {
+      "path": "src/domain/factoring/liquidacionLimits.ts",
+      "sha256": "0e0a77c0f5bb1745d2164f921dbf3ebbdc2a7642cf59986fba04e49848bc631a",
+      "bytes": 1937
+    },
+    {
+      "path": "src/domain/factoring/saldocontable/saldocontable.Policy.ts",
+      "sha256": "57e72ee3d8f46728203ecd3c61a70bea85c25a5eb80f950a72580ac88e629ba3",
+      "bytes": 5753
+    },
+    {
+      "path": "src/events/.gitkeep",
+      "sha256": "fb8faeb1c79600016672b43dcf51f1854c4961d7b787039774fc1c914b982862",
+      "bytes": 58
+    },
+    {
+      "path": "src/events/README.md",
+      "sha256": "205e404586dbc50edbcc8b2f8e2dfa1e50cfc43d3926bf5d71a4d8abab81d6eb",
+      "bytes": 252
+    },
+    {
+      "path": "src/index.ts",
+      "sha256": "db383af8fe56196bbea0b5daccc342d05957413937277ca6e7f3d1b439b4317a",
+      "bytes": 2482
+    },
+    {
+      "path": "src/index_prueba.ts",
+      "sha256": "9c5f8989e0c6cc289d84bfca2a2ed7725708385a2b7cfd1fb344d6d9448e54b9",
+      "bytes": 450
+    },
+    {
+      "path": "src/integrations/apisperu/apisperu.client.ts",
+      "sha256": "0f24ad259e69e93bd6d7ebca7d89709c0373a2ba21707069b06d9c553e1c22b0",
+      "bytes": 2072
+    },
+    {
+      "path": "src/integrations/apisperu/apisperu.service.ts",
+      "sha256": "e650d4be4b01463d9474b9fb99d60353600b5ceeeacd624a9ef0a9ec70518611",
+      "bytes": 6710
+    },
+    {
+      "path": "src/integrations/apisperu/apisperu.types.ts",
+      "sha256": "0f7efb31af8553717dab73140657d1841d30892c9a8fc202ee0def244663dcf1",
+      "bytes": 3396
+    },
+    {
+      "path": "src/integrations/apisperu/index.ts",
+      "sha256": "f1bfdfddac342a24291eab06078a9d026d0aa08abdb5451cd676cf5cafd1b5df",
+      "bytes": 244
+    },
+    {
+      "path": "src/integrations/banca/mysqlSource.ts",
+      "sha256": "0befb3f1a1158506e7aa8043486db93b5d49a31155f7f696f1c4827c2a566701",
+      "bytes": 7362
+    },
+    {
+      "path": "src/integrations/bbdd/mysqlConnection.ts",
+      "sha256": "e6b4fd0a23a814d3e3c6eb5c118a33a674fc39ec557e5b77e138d1038525a293",
+      "bytes": 12276
+    },
+    {
+      "path": "src/integrations/decolecta/decolecta.client.ts",
+      "sha256": "49fbce7a860643c68824572d85efd84fc5def0042c7f7ebcc5d7695f980a76ce",
+      "bytes": 2092
+    },
+    {
+      "path": "src/integrations/decolecta/decolecta.service.ts",
+      "sha256": "b06d6d71f20a30fdd96b07633583ca6633dedb2f8abd05f07f1398af0cafb8af",
+      "bytes": 6429
+    },
+    {
+      "path": "src/integrations/decolecta/decolecta.types.ts",
+      "sha256": "48765d8ccd99eeda7a7a572d66930e53f20a387bf31662a6644ebac5ed1bf92b",
+      "bytes": 3674
+    },
+    {
+      "path": "src/integrations/decolecta/index.ts",
+      "sha256": "0bd8e68db18b064155688c86f944d049b55b57bc216a637ea5a023e46cc5b138",
+      "bytes": 230
+    },
+    {
+      "path": "src/jobs/.gitkeep",
+      "sha256": "c5b67480d85cc46169d32dc11ae6e58cccd60785615dd920c6ee578a8206d7f6",
+      "bytes": 56
+    },
+    {
+      "path": "src/jobs/README.md",
+      "sha256": "fd19ff867ec064b33920fde421cd91bdc40b3e09421b01a50eef81f501404366",
+      "bytes": 331
+    },
+    {
+      "path": "src/menu/menuAdmin.ts",
+      "sha256": "651bf5740a380d710bd90943adf9a7059d1e3a8cb7969463bd2b2dd304df731c",
+      "bytes": 9577
+    },
+    {
+      "path": "src/menu/menuEmpresario.ts",
+      "sha256": "eca4f63aeb3722870bc64e518c18c23e5aaeb457d8c6d2f86e0cdf4204731606",
+      "bytes": 2107
+    },
+    {
+      "path": "src/menu/menuFinanciero.ts",
+      "sha256": "8ae6ff60df16d5779857665be7f43564cfd18e81d40488f70da3dce377a0cd6e",
+      "bytes": 3509
+    },
+    {
+      "path": "src/menu/menuInversionista.ts",
+      "sha256": "a9d5feb826e898ffc804df169bb6b8c85322aa62e8d66cf0d0af77242d9a75e2",
+      "bytes": 1486
+    },
+    {
+      "path": "src/menu/menuUsuario.ts",
+      "sha256": "3db621a27c3c83c61aa25bd5a9b2351b21e41a303497a0049194622a92ec187c",
+      "bytes": 1634
+    },
+    {
+      "path": "src/middlewares/archivoMiddleware.ts",
+      "sha256": "8747244d25cc3858e0152466b71af9d0ee5f5272d26be141809289aa72bb3bf1",
+      "bytes": 6880
+    },
+    {
+      "path": "src/middlewares/authMiddleware.ts",
+      "sha256": "ebf81aa54a11fd2727adf849bc3faa358d82d1419f6e3f58013db5e1049621fe",
+      "bytes": 4465
+    },
+    {
+      "path": "src/middlewares/blockSuspiciousUAMiddleware.ts",
+      "sha256": "6eebe5618c61947b80d75808d5d42613453688e9f9fa22dead0da266a356962c",
+      "bytes": 760
+    },
+    {
+      "path": "src/middlewares/corsMiddleware.ts",
+      "sha256": "cbee595d6f8d0ff3b0d499ec628504beddf96e86cdcd892524209c01774f4c74",
+      "bytes": 1244
+    },
+    {
+      "path": "src/middlewares/errorHandlerMiddleware.ts",
+      "sha256": "2a2f0f7153b0284a803df99f583c457b313f47f72be5031426ef02d47d9aa4ab",
+      "bytes": 1419
+    },
+    {
+      "path": "src/middlewares/helmetMiddleware.ts",
+      "sha256": "5246f826f13c32bc0426f5f9957a5a0347ac63d234e4d4cbf04108aece8e34da",
+      "bytes": 1459
+    },
+    {
+      "path": "src/middlewares/ipFilterMiddleware.ts",
+      "sha256": "31233de6047087fa08eb8ddc0fbe43d5ff5d66cf80ca6146d6a2a00b43694b5a",
+      "bytes": 1787
+    },
+    {
+      "path": "src/middlewares/loggerMiddleware.ts",
+      "sha256": "4f57809c1cfc0961d90580dc9e89ebeb7276a9b5ec4ff5f7f5d4c78982fe8321",
+      "bytes": 1582
+    },
+    {
+      "path": "src/middlewares/notFoundHandlerMiddleware.ts",
+      "sha256": "09e4cf32c8ee01e5aeb086837050b96226a8b2c24627809b39276ec80bd74aa3",
+      "bytes": 532
+    },
+    {
+      "path": "src/middlewares/ratelimiterMiddleware.ts",
+      "sha256": "f61eb34e8939576b3936a4e7f796bc9d82f5e5a59e50c0540e1a1820d1958412",
+      "bytes": 2303
+    },
+    {
+      "path": "src/models/prisma/db-factoring.ts",
+      "sha256": "c4dc6b597c05ed75edc014d7f170de2f450a09808b991fe95ef64eda5a7b0b74",
+      "bytes": 6332
+    },
+    {
+      "path": "src/models/prisma/mariadbAdapter.ts",
+      "sha256": "00b19bfaa1b083be39391eb62834730a62c864abb2902a5230138e3000bc0872",
+      "bytes": 2874
+    },
+    {
+      "path": "src/providers/bbdd/bbddCrypto.ts",
+      "sha256": "a25c02782e0478af7115a19ef538778c2603e297e16b9ec4282fba9a1e040522",
+      "bytes": 3073
+    },
+    {
+      "path": "src/providers/email/TemplateManager.ts",
+      "sha256": "32aacf54cb705ddab8ea8c9377b9a89f3fa137f717319bff9703fac79473b8e2",
+      "bytes": 86588
+    },
+    {
+      "path": "src/providers/email/email.Provider.ts",
+      "sha256": "bb233f04c2e7e78c914a40da47d3dd46a82db01389dc260ca215e198c4bbb14c",
+      "bytes": 15541
+    },
+    {
+      "path": "src/providers/email/emailSender.ts",
+      "sha256": "ed375f46761521c54b5dc158c51b8660db9d8dbde744f0167c001ff77704c16a",
+      "bytes": 5649
+    },
+    {
+      "path": "src/providers/telegram/telegram.Provider.ts",
+      "sha256": "fd0b691fca2a6ab64b6bfebaaf0d31d5a645ac5ff122e6808e26991bff80cddd",
+      "bytes": 4419
+    },
+    {
+      "path": "src/queues/.gitkeep",
+      "sha256": "f16569349fd8982f7ac37e5a88bfab8a6f3c201b2db48b289651e4a338bc2bcd",
+      "bytes": 58
+    },
+    {
+      "path": "src/queues/README.md",
+      "sha256": "78dc929f00e6e50ad772dac6657c0a789a280fe2e2d32d9098972bce94229341",
+      "bytes": 333
+    },
+    {
+      "path": "src/routes/admin/administracion.routes.ts",
+      "sha256": "a1f37994529a6bbecf2bfcba5b93c1ed7c7700d3d1cf2c88121b695926f4b506",
+      "bytes": 573
+    },
+    {
+      "path": "src/routes/admin/archivo.routes.ts",
+      "sha256": "68f3c3c32ee3282f35277b5c8500c37de93be033c510b29ea096e2e20acb8e54",
+      "bytes": 1109
+    },
+    {
+      "path": "src/routes/admin/archivofactura.routes.ts",
+      "sha256": "14cfb4e5105a732e5b0fad330fbb916db0b33a720e2736fa5041d39a23e41035",
+      "bytes": 490
+    },
+    {
+      "path": "src/routes/admin/cedentelimite.routes.ts",
+      "sha256": "99e170f2d1330ad4cea53fb49519963ce05d5bbd11d8072b7636587f235e217a",
+      "bytes": 1103
+    },
+    {
+      "path": "src/routes/admin/configuracionbbdd.routes.ts",
+      "sha256": "7e24e87dd60e0e653d5f2e17c9949866b0f53c41dd1811b7f5ae92391e523b08",
+      "bytes": 795
+    },
+    {
+      "path": "src/routes/admin/configuracioncorreo.routes.ts",
+      "sha256": "3178f71ddbd21c654713cbb4aca8c6fa25b0847399cd201ee2e66f52a4e648e9",
+      "bytes": 1358
+    },
+    {
+      "path": "src/routes/admin/contacto.routes.ts",
+      "sha256": "37f83b4a8bdb96a7fe3289450ff13ce8c17ece25a0d2ee0f3b1fd92e2a6b4d94",
+      "bytes": 993
+    },
+    {
+      "path": "src/routes/admin/cuentabancariaestado.routes.ts",
+      "sha256": "6c7d7eafecd44d4bf81af46dbc2d179757a614ba176cf8b66bd289f367d01aee",
+      "bytes": 1096
+    },
+    {
+      "path": "src/routes/admin/empresa.routes.ts",
+      "sha256": "56806eb00ee731c1f9c21d59f07b9ab8643aa1493f5e2a4c85606f48143e539f",
+      "bytes": 989
+    },
+    {
+      "path": "src/routes/admin/empresacuentabancaria.routes.ts",
+      "sha256": "57365832be402c037a29f08cb2260a7b5561d6471d79d90e00f3292f065c5b17",
+      "bytes": 1301
+    },
+    {
+      "path": "src/routes/admin/factoringempresaverificacion.routes.ts",
+      "sha256": "72cc34249e082fafe487e0a9359315f8c0d3d216b50ec240ba3387ffc5d346d0",
+      "bytes": 1675
+    },
+    {
+      "path": "src/routes/admin/factoringinversionistaverificacion.routes.ts",
+      "sha256": "41d1a9740a9cd1c3946ee4aa0e2b66106e03920b0fc9cad7a6568df72e8b1d05",
+      "bytes": 1813
+    },
+    {
+      "path": "src/routes/admin/factorlimite.routes.ts",
+      "sha256": "cd4c5545d444c8d14f1cce62ff247f774443def44d349f9b2824250cc30eab39",
+      "bytes": 1082
+    },
+    {
+      "path": "src/routes/admin/factura.routes.ts",
+      "sha256": "04f7a0463d44cd8576bef8308dcb0c0dd7290024d150d14274faebe135b24c71",
+      "bytes": 1254
+    },
+    {
+      "path": "src/routes/admin/index.ts",
+      "sha256": "55b19ffad64052049ee1404ae9ee0587694b18a9a0fb64c86bd525935eb89843",
+      "bytes": 5484
+    },
+    {
+      "path": "src/routes/admin/inversionistacuentabancaria.routes.ts",
+      "sha256": "f8da32c7c79ba85434d4b4a2dc6f92b309d4c8d264cf404539881862b4105d92",
+      "bytes": 1421
+    },
+    {
+      "path": "src/routes/admin/pagadorlimite.routes.ts",
+      "sha256": "85fc007f0741f4c8ab531b9f394847ed92ae24c0685d8113ba25599b98452a3c",
+      "bytes": 1103
+    },
+    {
+      "path": "src/routes/admin/persona.routes.ts",
+      "sha256": "965f03d70c766d8ddc7d421ab5c59f3ae413945ca4edd2afc629593d50b2121f",
+      "bytes": 993
+    },
+    {
+      "path": "src/routes/admin/personaverificacion.routes.ts",
+      "sha256": "13c9dc8e1bab464544f5f78e3e708d04b4c40dafef9d785c19eef08f4a2e203c",
+      "bytes": 1460
+    },
+    {
+      "path": "src/routes/admin/servicio.routes.ts",
+      "sha256": "0227b11c1b894de7b1e1863cccef04c2ffb3e267937235d88e80a49621565f8a",
+      "bytes": 1009
+    },
+    {
+      "path": "src/routes/admin/servicio/factoring/accionista.routes.ts",
+      "sha256": "80186d1c47fee7aac04983015a15e230babaec47acdbe02a417f0be274127237",
+      "bytes": 494
+    },
+    {
+      "path": "src/routes/admin/servicio/factoring/factoring.routes.ts",
+      "sha256": "007d90c7d76be92dc7199a58c74aa7561f89bc409531c9bfa6de3a94a92b523b",
+      "bytes": 1323
+    },
+    {
+      "path": "src/routes/admin/servicio/factoring/factoringcartera.routes.ts",
+      "sha256": "0fee8b7ad008ed8c2b370319b6e0eb1b2eea3a01bb8a01200f24dbd47ef57f03",
+      "bytes": 488
+    },
+    {
+      "path": "src/routes/admin/servicio/factoring/factoringfacturafactor.routes.ts",
+      "sha256": "a5d49976aeef8fb325b8d43ff707d93519d97126ddc922277e71503e806f26c7",
+      "bytes": 1472
+    },
+    {
+      "path": "src/routes/admin/servicio/factoring/factoringhistorialestado.routes.ts",
+      "sha256": "7a7901e766f6ba47dc456c40f9a7fcb4d7ac5699ba0f3cb41955c64186c08ab5",
+      "bytes": 1672
+    },
+    {
+      "path": "src/routes/admin/servicio/factoring/factoringliquidacion.routes.ts",
+      "sha256": "d5274e50649e083f1d698ab2507c54090ce1846a42864e7cd13edd42a5256122",
+      "bytes": 2244
+    },
+    {
+      "path": "src/routes/admin/servicio/factoring/factoringpago.routes.ts",
+      "sha256": "9e90bb6de6ec8cb210ed58437aac11e36e0d763f9cae65085378b50073f633e6",
+      "bytes": 719
+    },
+    {
+      "path": "src/routes/admin/servicio/factoring/factoringpropuesta.routes.ts",
+      "sha256": "a791b9d322874b33e8f2d040847230dc1c348f5c87be407c27b9cf22d94f9542",
+      "bytes": 1867
+    },
+    {
+      "path": "src/routes/admin/servicio/factoring/factoringpropuestahistorialestado.routes.ts",
+      "sha256": "2b7b8e58464a3b4d4add7db32651ce248164d2d106fdf2964860acd3f0d65788",
+      "bytes": 1892
+    },
+    {
+      "path": "src/routes/admin/servicio/factoring/factoringsimulacion.routes.ts",
+      "sha256": "f15f49af7f1f433bb77406151683810f66d0452257088387a3c10985d7c19383",
+      "bytes": 1706
+    },
+    {
+      "path": "src/routes/admin/servicio/factoring/factoringtransferenciacedente.routes.ts",
+      "sha256": "d3a8c892dc239da0df2bb049508fe14e2ec2abf98af596763624641f864b313c",
+      "bytes": 1837
+    },
+    {
+      "path": "src/routes/admin/servicio/factoring/funcionario.routes.ts",
+      "sha256": "2958de28de5da0f87cba4ddaec07955b7b74640d231ccbae154c610bdf261b98",
+      "bytes": 511
+    },
+    {
+      "path": "src/routes/admin/splaft/registrooperacion.routes.ts",
+      "sha256": "67df5cd6c7633447bf6a89c69c32ed1156e3d6ce413880a861a069be862586c4",
+      "bytes": 488
+    },
+    {
+      "path": "src/routes/admin/splaft/saldocontable.routes.ts",
+      "sha256": "2724d0a52256cfdbe762699e87c82aa60d5830dbf65964dca11ba07b052e43dc",
+      "bytes": 762
+    },
+    {
+      "path": "src/routes/admin/usuario.routes.ts",
+      "sha256": "8dc86c35bf878e5424a94a5532279ac79fad1979bc69ba2b8deac96fc42827d4",
+      "bytes": 756
+    },
+    {
+      "path": "src/routes/admin/zlaboratorio.routes.ts",
+      "sha256": "239d878b679e99e86d7377caee6b46206c9ac139873c25440b0dded33d9ec0ab",
+      "bytes": 1317
+    },
+    {
+      "path": "src/routes/empresario/contacto.routes.ts",
+      "sha256": "91c6c808e440a9fb130b41c180b631f47604983e6978dbcda58225373b6e6d6d",
+      "bytes": 803
+    },
+    {
+      "path": "src/routes/empresario/empresacuentabancaria.routes.ts",
+      "sha256": "a498bdea7787837dc65056b5940bc06b70188e88e620e9acd7d516821c32edb5",
+      "bytes": 996
+    },
+    {
+      "path": "src/routes/empresario/factoringfacturafactor.routes.ts",
+      "sha256": "9b43a0fe86bf7753daf42981ef0f49e946dd86a188061d1ecbc0e0c26b67cdd0",
+      "bytes": 706
+    },
+    {
+      "path": "src/routes/empresario/factoringliquidacion.routes.ts",
+      "sha256": "962d5c9b396170deb9b749accaa535a9a7b041a08860e9d291ab1fc5feb370c7",
+      "bytes": 712
+    },
+    {
+      "path": "src/routes/empresario/factoringtransferenciacedente.routes.ts",
+      "sha256": "4a1e6fea233b4bbef8c521f1c490a35cf1cbc34992340ccebe84cbc755ffa7c1",
+      "bytes": 800
+    },
+    {
+      "path": "src/routes/empresario/factura.routes.ts",
+      "sha256": "0a11243f1b0d9a6c56b6735e847dfbbd42395b5bca047e6f1718b521a74ae26c",
+      "bytes": 1174
+    },
+    {
+      "path": "src/routes/empresario/index.ts",
+      "sha256": "e2c919cf068b248f31b432add1d6b11137566cbc3e8eb555e8fe8a0eb9ff3d01",
+      "bytes": 2397
+    },
+    {
+      "path": "src/routes/empresario/servicio/factoring/contacto.routes.ts",
+      "sha256": "f8dee29f761397590d7e1e56973c0f19679cccc4bacbd382f945f744bbab3763",
+      "bytes": 748
+    },
+    {
+      "path": "src/routes/empresario/servicio/factoring/empresacuentabancaria.routes.ts",
+      "sha256": "c198e261536df33f87ff50b69e43ed70a0eed2ca3b913aca0cdd17e036b019b4",
+      "bytes": 892
+    },
+    {
+      "path": "src/routes/empresario/servicio/factoring/factoring.routes.ts",
+      "sha256": "e31c098c55e72084a9535bf0bea578bd6ef664735f637727d8b924770ccf051a",
+      "bytes": 967
+    },
+    {
+      "path": "src/routes/empresario/servicio/factoring/factoringpropuesta.routes.ts",
+      "sha256": "2c0c8a31f6287d01fe88967d006601654c4ad0fd724d66fe3cca5ee08cdfbfe8",
+      "bytes": 1601
+    },
+    {
+      "path": "src/routes/empresario/servicio/factoring/factura.routes.ts",
+      "sha256": "637d38db29197c154083dac5e69ca0529b35c6f7cfb53113a19ba065487c48df",
+      "bytes": 1018
+    },
+    {
+      "path": "src/routes/empresario/servicio/factoring/usuario.routes.ts",
+      "sha256": "e9620c0077b0ac4f5426656cb7adf1ca7684e344a86d5104f75834704094d531",
+      "bytes": 1076
+    },
+    {
+      "path": "src/routes/empresario/usuarioservicioempresa.routes.ts",
+      "sha256": "be8554adc02333753a02943b06932e4a60de6e1d858dbf5ffad0c9a44672c5be",
+      "bytes": 1337
+    },
+    {
+      "path": "src/routes/financiero/factura.routes.ts",
+      "sha256": "54e3f8306fdb6dda9e8909e32310e09239acf203f3b9d9d5d55c1fe5ceab23ef",
+      "bytes": 596
+    },
+    {
+      "path": "src/routes/financiero/index.ts",
+      "sha256": "16eed47841ab5f4b3237cac7c63d39341e1397a4d183538230808788aeab40a9",
+      "bytes": 2522
+    },
+    {
+      "path": "src/routes/financiero/sbs/sbstipocambio.routes.ts",
+      "sha256": "feeb229b9442d96e0f3cd15c408fc530f6a44c4f8122873f15e9027e7f7bfc23",
+      "bytes": 2643
+    },
+    {
+      "path": "src/routes/financiero/servicio/factoring/factoring.routes.ts",
+      "sha256": "1dee3c3b16b592971b49c561e38871cf71ea890f9352aa8e9c72305fa3927ce1",
+      "bytes": 1269
+    },
+    {
+      "path": "src/routes/financiero/servicio/factoring/factoringdetraccion.routes.ts",
+      "sha256": "b9ec529a4387724529bf948376b4288fda1a196b909bba50320cb2752c0b12a9",
+      "bytes": 731
+    },
+    {
+      "path": "src/routes/financiero/servicio/factoring/factoringfacturafactor.routes.ts",
+      "sha256": "89f69d86e85037e2165968fcd06565cde6cda85740659291f3dc96b85d9c9093",
+      "bytes": 1146
+    },
+    {
+      "path": "src/routes/financiero/servicio/factoring/factoringhistorialestado.routes.ts",
+      "sha256": "468911ff65fb25efc9af1b0ce4333619227dfb967c964cd56637f8e9e09a22ff",
+      "bytes": 960
+    },
+    {
+      "path": "src/routes/financiero/servicio/factoring/factoringliquidacion.routes.ts",
+      "sha256": "272981449f96080f398822dc0c12e57b4c002b006300adab5ac74273ba004db3",
+      "bytes": 1359
+    },
+    {
+      "path": "src/routes/financiero/servicio/factoring/factoringpago.routes.ts",
+      "sha256": "74dc0cd390e8a7e5036db86ae1588b228fb8ce4a60a34ee572e84eeae478bd21",
+      "bytes": 432
+    },
+    {
+      "path": "src/routes/financiero/servicio/factoring/factoringpropuesta.routes.ts",
+      "sha256": "972b6c088181411204a6b5367412fd5b1b558f7fa5f17336444b2b93b5a42b06",
+      "bytes": 1071
+    },
+    {
+      "path": "src/routes/financiero/servicio/factoring/factoringpropuestahistorialestado.routes.ts",
+      "sha256": "9332cc8be2a08421d92ddf8ed9ba63be85eeb9be3360958c83d349ea1ef58f59",
+      "bytes": 1077
+    },
+    {
+      "path": "src/routes/financiero/servicio/factoring/factoringtransferenciacedente.routes.ts",
+      "sha256": "5807d6f3b0baeb5637516d8b931e6446435b28e3450f03f75ab529840904783d",
+      "bytes": 1070
+    },
+    {
+      "path": "src/routes/financiero/sunat/sunattipocambio.routes.ts",
+      "sha256": "57df72117fa1bbc87b8e7157d5e78d2c970c8a657207c6595b854b76f9f1c6a5",
+      "bytes": 2962
+    },
+    {
+      "path": "src/routes/financiero/transaccionbancaria.routes.ts",
+      "sha256": "bdfb75c6d20c028fd624627f0decacc60ba898aab576bdcc03d7c42bb9b51c74",
+      "bytes": 1431
+    },
+    {
+      "path": "src/routes/index.routes.ts",
+      "sha256": "538666ca1f366cbcbe482fca0ffacda0f6b51027d67bed6588d5c295062c2cd1",
+      "bytes": 308
+    },
+    {
+      "path": "src/routes/inversionista/factoring/factoring.routes.ts",
+      "sha256": "b41449802690b6866b628c05979b8675eff1baa6ff4274ff655c9dab327d9cee",
+      "bytes": 895
+    },
+    {
+      "path": "src/routes/inversionista/index.ts",
+      "sha256": "d0d87bc26c0e34a1a2736b03891a48685cec5ba57811de737e0eb2d50ebed304",
+      "bytes": 459
+    },
+    {
+      "path": "src/routes/inversionista/inversionistacuentabancaria.routes.ts",
+      "sha256": "b303adcd111f65780ccdad6eebc525b42f690b096948220c7c552bbe33083471",
+      "bytes": 1093
+    },
+    {
+      "path": "src/routes/secure/index.ts",
+      "sha256": "763a74852698fb8a47f84473b13e5a80ba164c7bc2010c2ccf3a442c9e7f2ab3",
+      "bytes": 190
+    },
+    {
+      "path": "src/routes/secure/secure.routes.ts",
+      "sha256": "02b8fbb15ff8616006bd3503d34c21609f31e06979cd3924c6cea91c75040cb2",
+      "bytes": 1576
+    },
+    {
+      "path": "src/routes/usuario/archivo.routes.ts",
+      "sha256": "269483f835cbb5d2127536e210a0f8698cb6df1b1698f11baf43c0501f79be0b",
+      "bytes": 771
+    },
+    {
+      "path": "src/routes/usuario/credencial.routes.ts",
+      "sha256": "d3f6140c1aec24941e41fbfed35de75d4df4d010058cf1e7fe5d33510af666ef",
+      "bytes": 451
+    },
+    {
+      "path": "src/routes/usuario/index.ts",
+      "sha256": "66ad3d2e5aca7646fe6eee6a21fb401247de218f86f6fa28f5004be6911ac803",
+      "bytes": 819
+    },
+    {
+      "path": "src/routes/usuario/menu.routes.ts",
+      "sha256": "588ed865893756b88c7b25cc997e8e1816b0fb92e5d0c875c02f286f85907df4",
+      "bytes": 418
+    },
+    {
+      "path": "src/routes/usuario/persona.routes.ts",
+      "sha256": "ee0c01821a9d96b6ccd6e51498e73add4069ba0e22e0a565bf9b3c44618bb10b",
+      "bytes": 1073
+    },
+    {
+      "path": "src/routes/usuario/usuario.routes.ts",
+      "sha256": "607e6376ab9c38e40638a69bf94d514db6cacaf227de4a763e7bf8fcafe16e66",
+      "bytes": 892
+    },
+    {
+      "path": "src/routes/usuario/usuarioservicio.routes.ts",
+      "sha256": "be7a8089b4d702fad5ee257bf73c05cdd77b1a803408be28a3b0fb720a09fbe1",
+      "bytes": 1476
+    },
+    {
+      "path": "src/scripts/check_config.ts",
+      "sha256": "ab3e29348eaf2cfaab84d253edf8f226d4dc5bb2df3650c4ee3761c65071c14d",
+      "bytes": 1283
+    },
+    {
+      "path": "src/scripts/email_venta_frio.ts",
+      "sha256": "e8bc026ba12f1bcf54811e00aa6413e913f75dc90d094d39941def66a61914ce",
+      "bytes": 4755
+    },
+    {
+      "path": "src/scripts/sync_tipo_cambio.ts",
+      "sha256": "a2156cd2d146eb7c2643d9a9fbaee7e14efc409f45fca8ed0b757d91afab8a7d",
+      "bytes": 12341
+    },
+    {
+      "path": "src/scripts/sync_transacciones_bancarias.ts",
+      "sha256": "efc597c02f6de7ee33db99da9e03dbaa1bff41c7e3e8980546b64dcad0d878d3",
+      "bytes": 1200
+    },
+    {
+      "path": "src/services/README.md",
+      "sha256": "1e16ece4c1eb9c9a75c2fcceec61918f2120c71932da30b3b2ae72d90bcc72ab",
+      "bytes": 721
+    },
+    {
+      "path": "src/services/admin/accionista.Service.ts",
+      "sha256": "7ba65fa42590e90a9866909e5ad1b44413228214ff2a05c62931df57bfea5752",
+      "bytes": 1102
+    },
+    {
+      "path": "src/services/admin/administracionbd.Service.ts",
+      "sha256": "2471baede16daada512f638dc441b58faa86c7b639f329c7e889396add928415",
+      "bytes": 1721
+    },
+    {
+      "path": "src/services/admin/archivo.Service.ts",
+      "sha256": "efdab842327851f9737051dd6e72d0869c965c59d4be8be30c35f5079172ec1f",
+      "bytes": 6956
+    },
+    {
+      "path": "src/services/admin/archivofactura.Service.ts",
+      "sha256": "32546ded01544d355d399827d3f9930a2d9c5336098c57f3fa5243113a113616",
+      "bytes": 1716
+    },
+    {
+      "path": "src/services/admin/cedentelimite.Service.ts",
+      "sha256": "367f5490c41b17e2777f71a0f0462a3238de1453fe011b340976aaa4ba5571bb",
+      "bytes": 7370
+    },
+    {
+      "path": "src/services/admin/configuracionbbdd.Service.ts",
+      "sha256": "1a020deee166857a091d5de1b30cfcf015f8cd2e64638808a45f810a2bed2f27",
+      "bytes": 4481
+    },
+    {
+      "path": "src/services/admin/configuracioncorreo.Service.ts",
+      "sha256": "f717f39d649b4b8a696c2cd4cbaf4ac05bd8bf8c8af5d7cc5e92085a0516ff9e",
+      "bytes": 6022
+    },
+    {
+      "path": "src/services/admin/contacto.Service.ts",
+      "sha256": "173127b949beb7bc89182d15bcf0426d7954232ec51edff9df8e6cb1479cf980",
+      "bytes": 6960
+    },
+    {
+      "path": "src/services/admin/cuentabancariaestado.Service.ts",
+      "sha256": "48d99350152e26795ca2dd96e4cdae7cefa74bc5058db5d2dcdf4a0fda67d77a",
+      "bytes": 5253
+    },
+    {
+      "path": "src/services/admin/emailVentaFrio.Service.ts",
+      "sha256": "525c235fc904641f4e6acfd707ab0b8b4a0d6d3337192fbe8779b22a03556b50",
+      "bytes": 6741
+    },
+    {
+      "path": "src/services/admin/empresa.Service.ts",
+      "sha256": "87a6f84f275d6e28197984984dcbf42e4cac02426d759798e88b744ec7f0c2dc",
+      "bytes": 11233
+    },
+    {
+      "path": "src/services/admin/empresacuentabancaria.Service.ts",
+      "sha256": "b05b6fb1f7d44a0f819d3f58f0204d6ed797f8630b955cfa75d80905b4aac987",
+      "bytes": 11860
+    },
+    {
+      "path": "src/services/admin/factoring.Service copy.ts",
+      "sha256": "2358ebdc539979551500cedd69b489c6a6a0243621133983bbbbce3a4939cdfc",
+      "bytes": 5620
+    },
+    {
+      "path": "src/services/admin/factoring.Service.ts",
+      "sha256": "2e3024af836f9875c0c0041603707acaf5817b4edeafd0840680b085af875fea",
+      "bytes": 6194
+    },
+    {
+      "path": "src/services/admin/factoringCalculation.Service.ts",
+      "sha256": "f62a45aae165f72dc3b5d114b3aa6c660e74135a6f0577a7935d432a726eabdf",
+      "bytes": 7495
+    },
+    {
+      "path": "src/services/admin/factoringcartera.Service.ts",
+      "sha256": "81f04fed1853e67ff1c690b5cd3ad6d64123f3041f9d30e962d7f22ebe6372d1",
+      "bytes": 1200
+    },
+    {
+      "path": "src/services/admin/factoringempresaverificacion.Service.ts",
+      "sha256": "5943227043dc9210fb907136c8844cd8afce24c333a4bcfa279689f451c54991",
+      "bytes": 22491
+    },
+    {
+      "path": "src/services/admin/factoringfacturafactor.Service.ts",
+      "sha256": "0379cc6e21a8ba3aa0a4a3f8552b718d57b601c1828ce3b40f789ddd4bcaeba1",
+      "bytes": 12899
+    },
+    {
+      "path": "src/services/admin/factoringhistorialestado.Service.ts",
+      "sha256": "b8911d160da5b6ea49a4bead10fdec9b8348725727c0ca5775c97510f295b3d5",
+      "bytes": 16424
+    },
+    {
+      "path": "src/services/admin/factoringinversionistaverificacion.Service.ts",
+      "sha256": "0c65ab3ea433d621d490e6f97fe0ec4bfb74f96b63b2e1bdb0a23feaf14b800b",
+      "bytes": 22766
+    },
+    {
+      "path": "src/services/admin/factoringliquidacion.Service.ts",
+      "sha256": "8eb906b3bee161563d39b868fedefe76019b3cdd4833d1338e1afd63ab550b7e",
+      "bytes": 31859
+    },
+    {
+      "path": "src/services/admin/factoringpago.Service.ts",
+      "sha256": "44308f306e9e987556ca92cec02d5c67d92af3d8f59d4f08f00a345d8307f332",
+      "bytes": 8671
+    },
+    {
+      "path": "src/services/admin/factoringpropuesta.Service.ts",
+      "sha256": "f7af46bfba0294a9beb1f31304c614dc84adc0991f1e5c9c2dc5d3ab91198f00",
+      "bytes": 23419
+    },
+    {
+      "path": "src/services/admin/factoringpropuestahistorialestado.Service.ts",
+      "sha256": "96cbf2b9bde7076f26f4732666985cbc4794901278764ee3e387f2ca656e9df0",
+      "bytes": 10545
+    },
+    {
+      "path": "src/services/admin/factoringsimulacion.Service.ts",
+      "sha256": "df566d01a3cf1f2ec33b4475799a0c972b19268a7a36bd5ad34064fdd57a527b",
+      "bytes": 20221
+    },
+    {
+      "path": "src/services/admin/factoringtransferenciacedente.Service.ts",
+      "sha256": "1a346515b021b6f28ff8b85ef6cecf00cfc87945caf1ba5772ea55107e0414a2",
+      "bytes": 15913
+    },
+    {
+      "path": "src/services/admin/factorlimite.Service.ts",
+      "sha256": "06421e265efbb06df525aebc3aa9457c9357033751e69dffdf271d6cfcb8dda1",
+      "bytes": 7237
+    },
+    {
+      "path": "src/services/admin/factura.Service.ts",
+      "sha256": "ce14660187097926f7ae2c11648f513b41367f8cc1ffc3cb8f270dbe245a3487",
+      "bytes": 9092
+    },
+    {
+      "path": "src/services/admin/funcionario.Service.ts",
+      "sha256": "7823b321d8ed01a4f074e83e36bc27f3b449ab41ec33ea11a42f78dd6c1338a0",
+      "bytes": 1110
+    },
+    {
+      "path": "src/services/admin/inversionistacuentabancaria.Service.ts",
+      "sha256": "4ebf4af4ec8cb47daaadf65f7733dca20a6c45b48716a1c82a2e294aace5bc9a",
+      "bytes": 12537
+    },
+    {
+      "path": "src/services/admin/pagadorlimite.Service.ts",
+      "sha256": "96710410827cadb536b04d7fc7a6d255d2e9adaf77a29aab5cf5a81cb62e9056",
+      "bytes": 7371
+    },
+    {
+      "path": "src/services/admin/persona.Service.ts",
+      "sha256": "0b3ed4f348dc065131169948a669c52380a655a78e95d44d69e65d1016e00349",
+      "bytes": 4632
+    },
+    {
+      "path": "src/services/admin/personaverificacion.Service.ts",
+      "sha256": "49f48e72ee29fcf6d318d1bab1ad9479fa0f8015a0805dc49365035aa34a6984",
+      "bytes": 14841
+    },
+    {
+      "path": "src/services/admin/registrooperacion.Service.ts",
+      "sha256": "144538bc663f20c153cee4f48803889599c14fb3acedf686a036129b3e1271e1",
+      "bytes": 1243
+    },
+    {
+      "path": "src/services/admin/saldocontable.Service.ts",
+      "sha256": "4c0b72fe35baeb3f404d783c4a4aa6783431e5fca22694db2280d767f865acbc",
+      "bytes": 15030
+    },
+    {
+      "path": "src/services/admin/servicio.Service.ts",
+      "sha256": "8d87caf1b4133f40f1d1569d562199ebe6b2d286d13d20c21f3913f111128c38",
+      "bytes": 4899
+    },
+    {
+      "path": "src/services/admin/tipocambio.Service.ts",
+      "sha256": "d465c8a84655c642d994446327a49022440d7c1302540897959c6f44d0913c2d",
+      "bytes": 33854
+    },
+    {
+      "path": "src/services/admin/usuario.Service.ts",
+      "sha256": "4b604b9fdb26ffdbc7029fcd2e217c7763c44c3e5b15ea8f86fcb6dcf469cefe",
+      "bytes": 3012
+    },
+    {
+      "path": "src/services/admin/zlaboratorio.Service.ts",
+      "sha256": "ede637dc3028f5e5d7d0b3275bc262741488c471db00cb1da0d9c564a8d52b38",
+      "bytes": 2762
+    },
+    {
+      "path": "src/services/banca/transaccionbancaria.Service.ts",
+      "sha256": "e7c866efe2a67487bc32f88b79517400b627e71679c2383d47ca456695dac681",
+      "bytes": 24674
+    },
+    {
+      "path": "src/services/empresario/contacto.Service.ts",
+      "sha256": "ec98004418ab89f6b065db644b31056fd8c637d7ec7e75981b37c32afde6c604",
+      "bytes": 14052
+    },
+    {
+      "path": "src/services/empresario/empresacuentabancaria.Service.ts",
+      "sha256": "2950f6104c57d17fe1fbce3f7627027cd14b5ad0139ff34d34ced1a9fc46a078",
+      "bytes": 13306
+    },
+    {
+      "path": "src/services/empresario/factoring.Service.ts",
+      "sha256": "9e35461264c6e8486079ab6c9daa1468b8d3d6142a7a3c3ea506192ce8e6ea9c",
+      "bytes": 11456
+    },
+    {
+      "path": "src/services/empresario/factoringfacturafactor.Service.ts",
+      "sha256": "4ec96bfeeec0981556ce632abebd6f944d2b7cc48b965fd52d332cc2bc26b0d3",
+      "bytes": 3669
+    },
+    {
+      "path": "src/services/empresario/factoringliquidacion.Service.ts",
+      "sha256": "817de7a59b5ab3139485d85559d73eca1d737b89af481e03d718ba5d40f80e76",
+      "bytes": 4955
+    },
+    {
+      "path": "src/services/empresario/factoringpropuesta.Service.ts",
+      "sha256": "021aa4f776cfc34e3a2cfceed90795c219c71898d853c487a8bd6b81b51ec6d8",
+      "bytes": 10675
+    },
+    {
+      "path": "src/services/empresario/factoringtransferenciacedente.Service.ts",
+      "sha256": "ae34965ef7a0017169b0daca380c3399cc2db1aad8f65ec60d51d5bc5581dc61",
+      "bytes": 4397
+    },
+    {
+      "path": "src/services/empresario/factura.Service.ts",
+      "sha256": "2e8d9d96129e6e0b05c43ee070b2dcaafe643b5fe1b03a58a7587e4565e399a4",
+      "bytes": 21972
+    },
+    {
+      "path": "src/services/empresario/usuario.Service.ts",
+      "sha256": "e183c7ee6ddc2e3af00d13946d018214d36e6a69894dc0c590ffd599740c4d82",
+      "bytes": 847
+    },
+    {
+      "path": "src/services/empresario/usuarioservicioempresa.Service.ts",
+      "sha256": "022a0a7fb8d94ec85a3f4d3b3a1c052ebea602bd59a1c886fa87abbc29d9eeec",
+      "bytes": 1403
+    },
+    {
+      "path": "src/services/financiero/factoring.Service.ts",
+      "sha256": "b5af83d925fcc6174639df2dad4f243da815b46827e2f96ae3fcec35bbbda3ae",
+      "bytes": 16683
+    },
+    {
+      "path": "src/services/financiero/factoringConsolidado.Service.ts",
+      "sha256": "ccfb0eadceb5c96e26401d505dcfb6967dd4247c3b11a2291b202bacd92287a6",
+      "bytes": 408
+    },
+    {
+      "path": "src/services/financiero/factoringdetraccion.Service.ts",
+      "sha256": "25c81434c9383f05d329438c6b7765e531cbd87771ac4daaf226a841a4480e93",
+      "bytes": 4844
+    },
+    {
+      "path": "src/services/financiero/factoringfacturafactor.Service.ts",
+      "sha256": "35a492723052fbf7b431e8f46817844e2ca3bf31aa970f579c9de8836dafdde4",
+      "bytes": 11072
+    },
+    {
+      "path": "src/services/financiero/factoringhistorialestado.Service.ts",
+      "sha256": "aeaa44048da251cf200e446170854417c1b834b8e57e114818f3e2843634f695",
+      "bytes": 3097
+    },
+    {
+      "path": "src/services/financiero/factoringliquidacion.Service.ts",
+      "sha256": "306cf66451fe11af5e3986dfa14564f0e0f8d474cb540605d16d4bfd64c5da3a",
+      "bytes": 9999
+    },
+    {
+      "path": "src/services/financiero/factoringpropuesta.Service.ts",
+      "sha256": "294e5b43842b05b02fa0a967b897ce60421820796b76d8d94fe83a5c6455fe85",
+      "bytes": 5191
+    },
+    {
+      "path": "src/services/financiero/factoringpropuestahistorialestado.Service.ts",
+      "sha256": "48421b0bfed9fc613d0d8a0d9a2a7bea6b774b7359e03050b9df36a580f1f3bb",
+      "bytes": 3522
+    },
+    {
+      "path": "src/services/financiero/factoringtransferenciacedente.Service.ts",
+      "sha256": "207b89cb6c4d4b18623e21d1cbb123a44ad73e7f449933043e4128965ee8f127",
+      "bytes": 5737
+    },
+    {
+      "path": "src/services/financiero/factura.Service.ts",
+      "sha256": "65e4dce8ef82ed3eed8c5ccd3ffd06ffc7d99793a317ae95fe9e964e0e9d1c32",
+      "bytes": 2758
+    },
+    {
+      "path": "src/services/financiero/sbstipocambio.Service.ts",
+      "sha256": "1084b0204626d642b02a9971c8f2ab42435f3487c2c6722c6c4b94217c935083",
+      "bytes": 9906
+    },
+    {
+      "path": "src/services/financiero/sunattipocambio.Service.ts",
+      "sha256": "a0f4b0c5587dcfebc85a6e29ae5153ce29f09e92fa03dd7b74ed04e05ce257b7",
+      "bytes": 10559
+    },
+    {
+      "path": "src/services/health.Service.ts",
+      "sha256": "9d81b5605474ee55eb70836673e81d7d4aad722c33228403d0bc9edcdfc800d9",
+      "bytes": 578
+    },
+    {
+      "path": "src/services/inversionista/factoring.Service copy.ts",
+      "sha256": "bee980b5c908343f0b0c5ad7e284d517bfb931dd89fd30c21682af8cda9e0d79",
+      "bytes": 1014
+    },
+    {
+      "path": "src/services/inversionista/factoring.Service.ts",
+      "sha256": "bee980b5c908343f0b0c5ad7e284d517bfb931dd89fd30c21682af8cda9e0d79",
+      "bytes": 1014
+    },
+    {
+      "path": "src/services/inversionista/inversionistacuentabancaria.Service.ts",
+      "sha256": "2bb553656a0dad23bf1c02d4c02fefd40e47681dd9cca05475546d2618730bc4",
+      "bytes": 10313
+    },
+    {
+      "path": "src/services/secure/accesos.Service.ts",
+      "sha256": "c65130306759e9ca5403537500bf237788063b7e19935fcf66351a39e2df6f6a",
+      "bytes": 1704
+    },
+    {
+      "path": "src/services/secure/secure.Service.ts",
+      "sha256": "28ac5548a2dfdc0c88103474b712c2ad491ee82568bfbe51a8ed6140fdc6b054",
+      "bytes": 22686
+    },
+    {
+      "path": "src/services/usuario/archivo.Service.ts",
+      "sha256": "6c800183a26fe72d2c831954804e70093bd75c7f91bd10a417dcd366c541d11b",
+      "bytes": 8131
+    },
+    {
+      "path": "src/services/usuario/credencial.Service.ts",
+      "sha256": "61091b2a1e114792450cb41552869094c3578741cb6f63a1251402b8f4d6dfd1",
+      "bytes": 2377
+    },
+    {
+      "path": "src/services/usuario/menu.Service.ts",
+      "sha256": "8ac1a244331c037a771e8b535817f8fa467f387adea937534e59c9dd870fe41c",
+      "bytes": 1455
+    },
+    {
+      "path": "src/services/usuario/persona.Service.ts",
+      "sha256": "67c9a72a1411024306e69a7c2646a7ce9599678a9638e32c50fb1f7dd5ceb402",
+      "bytes": 14221
+    },
+    {
+      "path": "src/services/usuario/personaestadoConsulta.Service.ts",
+      "sha256": "94b1ecdb2d4288d593b2bbe7a23d45d1d3d2be446ed1a55eba1a7df367eac948",
+      "bytes": 629
+    },
+    {
+      "path": "src/services/usuario/usuario.Service.ts",
+      "sha256": "d8743ff35a79fa55fbccc4e8e42d5a66a0a0f306f5ab0dec49afd3fb584e0820",
+      "bytes": 1176
+    },
+    {
+      "path": "src/services/usuario/usuarioservicio.Service.ts",
+      "sha256": "59593d0991f882dbefeec08468b7eb3a8e7ee1948b46e2fdc53b5f409b9ff36f",
+      "bytes": 44384
+    },
+    {
+      "path": "src/services/usuario/usuarioservicioestadoConsulta.Service.ts",
+      "sha256": "6ebdf98951d0588d2a0fd3b823d5f1f9d23624552ea2cb25b272ef9622871aa3",
+      "bytes": 937
+    },
+    {
+      "path": "src/templates/telegram/factoring.Template.ts",
+      "sha256": "04b7816f262a42828c88283eac47e1f28ee0e6c958b012bd01da99d47ec91068",
+      "bytes": 634
+    },
+    {
+      "path": "src/templates/telegram/factoringpropuesta.Template.ts",
+      "sha256": "60fded39bbdf86821cffe12ba01e3e260b0ce56f26579386bb7f9a27ead68d97",
+      "bytes": 843
+    },
+    {
+      "path": "src/templates/telegram/factura.Template.ts",
+      "sha256": "56e57d767dd001096fea79440dca5239563e3fd3a7402603592e631f30851db3",
+      "bytes": 2702
+    },
+    {
+      "path": "src/templates/telegram/persona.Template.ts",
+      "sha256": "a18ebb00ecddd627aeb103505addf31523e21a46ec5f25264e109dc5006ceead",
+      "bytes": 749
+    },
+    {
+      "path": "src/templates/telegram/usuario.Template.ts",
+      "sha256": "1809ea77c47bced4c097a830e5eb3b5855affa53ef25bed364dac23320dd111e",
+      "bytes": 838
+    },
+    {
+      "path": "src/templates/telegram/usuarioservicio.Template.ts",
+      "sha256": "40f8b22c89df7c5dfda84f810a5ec8a6cb5177ce733ccd84a598718b0ba84568",
+      "bytes": 491
+    },
+    {
+      "path": "src/types/ConfiguracionBbdd.schemas.ts",
+      "sha256": "f0eab781598f724decd44785f4d195392a730ac06852d98d560214871e2814a0",
+      "bytes": 1259
+    },
+    {
+      "path": "src/types/FactoringDetraccion.types.ts",
+      "sha256": "e50529514801f4dcf9d41b891eaa187453cf6e0cfe79622e905fa53cf695d0e1",
+      "bytes": 686
+    },
+    {
+      "path": "src/types/FacturaXML.types.ts",
+      "sha256": "a6ee2751359d6772bbfd1d8a3e3eb06afc53940e2b1cb4a25a61477f25767229",
+      "bytes": 3176
+    },
+    {
+      "path": "src/types/Prisma.types.ts",
+      "sha256": "35609f427bc77030ca3963297ab8d2a2319c6b0b087df7a8787c46d34b54e413",
+      "bytes": 3334
+    },
+    {
+      "path": "src/types/SaldoContable.types.ts",
+      "sha256": "3472333b17dff0f4d9d62feb47fc1170cc55521485eb0d10f84517a4247a0922",
+      "bytes": 359
+    },
+    {
+      "path": "src/types/Simulacion.types.ts",
+      "sha256": "6dd6379542a17bf48c25bcc3b78b7093faca5f974f78af047fe13adbf94b4eb7",
+      "bytes": 1170
+    },
+    {
+      "path": "src/types/TransaccionBancaria.schemas.ts",
+      "sha256": "56b788edfeebb70c5a05d451ff74f5d7b8cfce3cbf9af130821adcf5fcbee227",
+      "bytes": 3938
+    },
+    {
+      "path": "src/types/UsuarioSession.types.ts",
+      "sha256": "624b5cf5704614c0cb306fa0dabdc2f15563d44995e74ab95b32e36092859f45",
+      "bytes": 250
+    },
+    {
+      "path": "src/types/express.d.ts",
+      "sha256": "9e6083ac6eadf3805514993a6ef98b696fbf65d0f449b167215bd6d567c1991c",
+      "bytes": 882
+    },
+    {
+      "path": "src/utils/CustomErrors.ts",
+      "sha256": "e475b8d9b770e5bfad158ac03e77d363926f805b42e56ecf6e0ea9b77c367a4d",
+      "bytes": 909
+    },
+    {
+      "path": "src/utils/CustomResponseError.ts",
+      "sha256": "3c814785b90636496b28ef967175212ab5bcaa3412d17c7e79071afda676a330",
+      "bytes": 142
+    },
+    {
+      "path": "src/utils/CustomResponseOk.ts",
+      "sha256": "9a62af0f55860d4148fefac4a661cee0d1440329e0acea7602193457c3439925",
+      "bytes": 128
+    },
+    {
+      "path": "src/utils/catchedAsync.ts",
+      "sha256": "06e87334c01aa9b04424c48d0cc01f265570e5b2d26d451c0ba5c133180bf1c2",
+      "bytes": 126
+    },
+    {
+      "path": "src/utils/context/loggerContext.ts",
+      "sha256": "c77ed122791b5af214a1ed5396b0c54431760bce88d63d37e37acf837ee887e3",
+      "bytes": 978
+    },
+    {
+      "path": "src/utils/cryptoUtils.ts",
+      "sha256": "7a0371a496df1f2c6dbe0ba1ea77172096b6cc1877cc51367ba2204ae0e61150",
+      "bytes": 1415
+    },
+    {
+      "path": "src/utils/dateUtils.ts",
+      "sha256": "9f45131a5c95d338f157788d5d84b39d13e4588caa8887ef6a64d5b067db3a5c",
+      "bytes": 6391
+    },
+    {
+      "path": "src/utils/debug.ts",
+      "sha256": "34b5708780197c1945fc021e56bc2aca1f06d1644651f68a362f8e98a9e5fbd0",
+      "bytes": 2392
+    },
+    {
+      "path": "src/utils/document/PDFgenerator.ts",
+      "sha256": "4475f6bc24328380a8b33c4ac402fa6ca4d8f6b344f01274d1ed1fc0bafc9e4f",
+      "bytes": 20568
+    },
+    {
+      "path": "src/utils/errorUtils.ts",
+      "sha256": "32530c289f79cbdb352e70e4ec191c86d98b39b846334facb3a296dec026d67a",
+      "bytes": 482
+    },
+    {
+      "path": "src/utils/factoringConsolidadoXlsx.ts",
+      "sha256": "968f97dc676085938128a2b1f5807aeaadd0c515e7ce04c67fc5a4c7d24747b6",
+      "bytes": 5288
+    },
+    {
+      "path": "src/utils/facturaUtils.ts",
+      "sha256": "2d50392bbce9b778e88190c07dc1b342779c689a480e8d0a3aa4d559155887bb",
+      "bytes": 25330
+    },
+    {
+      "path": "src/utils/globalErrorHandlers.ts",
+      "sha256": "fb9aae764c94345ae9647f2e951a17ef9c3a4e23e4f8e045e0968d1d75110a26",
+      "bytes": 1161
+    },
+    {
+      "path": "src/utils/httpUtils.ts",
+      "sha256": "8d5fd76824004900cb40783ebd4a6fd3accfbaf54f79534d292760ef01d3c4b6",
+      "bytes": 732
+    },
+    {
+      "path": "src/utils/ipAccessControl.ts",
+      "sha256": "f5f5de10161086dc1c0c38f0e3c7eba4b51c904c30f41425f8a940a7fc950e00",
+      "bytes": 1982
+    },
+    {
+      "path": "src/utils/jsonUtils.ts",
+      "sha256": "303e49e4131ffac539da876d4b89b99d519e09c421821812b9487225e4b32b12",
+      "bytes": 12529
+    },
+    {
+      "path": "src/utils/loadEnvironment.ts",
+      "sha256": "7017fd1d93a8af4a26cb13ce4bea2c1e4a50cf5b3299538629470d439a5d4ff4",
+      "bytes": 2821
+    },
+    {
+      "path": "src/utils/logger.pino.ts",
+      "sha256": "aab3b3cba9e50082c92c3a7436677e35e8101c533aa821a78f7cda1132fe6288",
+      "bytes": 4591
+    },
+    {
+      "path": "src/utils/multerUtils.ts",
+      "sha256": "146bde5a46d11b1db71a6b877844e776f942f2c4f63a3d03b6f01727bacb05a8",
+      "bytes": 846
+    },
+    {
+      "path": "src/utils/numberUtils.ts",
+      "sha256": "7817f20c9c6601fe2352631fce983b8c46838af1b24501fd854e34023dba1c37",
+      "bytes": 1396
+    },
+    {
+      "path": "src/utils/shutdownHandler.ts",
+      "sha256": "a6afce33aa3a58557dd96c0c74dbd5669a4c6af68e71609c990fd40886ebe115",
+      "bytes": 983
+    },
+    {
+      "path": "src/utils/startupDiagnostics.ts",
+      "sha256": "4427d7734a02b1fdd77551e0f493a3b60fab0ef1f5b273dab21a5906d542554d",
+      "bytes": 2913
+    },
+    {
+      "path": "src/utils/storageUtils.ts",
+      "sha256": "e0f7d366381e4db004db40c88d479e77cd6798b3c4c6b56311c0278ba20dcd61",
+      "bytes": 1542
+    },
+    {
+      "path": "src/utils/transactionUtils.ts",
+      "sha256": "dfc41803f230d7215b07b52d79338a689d8b7e25ca5e82377f114bfade8d9deb",
+      "bytes": 810
+    },
+    {
+      "path": "src/utils/validacionesZod.ts",
+      "sha256": "c639fb42ae2afd0d1a1a9eb62150ef7e1d0a20d122c8af0593b13afb3a00e76f",
+      "bytes": 956
+    },
+    {
+      "path": "src/utils/validationInputs.ts",
+      "sha256": "0015030d66697576aed141508616c137336fba95202a8951d7da33d7d3aea503",
+      "bytes": 3824
+    },
+    {
+      "path": "src/webhooks/.gitkeep",
+      "sha256": "76b81d95d67f8b64cbafa99f4b16f900284fd49ab5a69b25e69857a6f91d8c78",
+      "bytes": 60
+    },
+    {
+      "path": "src/webhooks/README.md",
+      "sha256": "f8bdd5cd9b77de4901f01ebbf49e2e35c119c4b6e907f4999656cfe4bd9463be",
+      "bytes": 404
+    },
+    {
+      "path": "static/email/templates/codigo-verificacion.html",
+      "sha256": "12adf33736ceaa6e8ea1dc47126b09ef199f4260cdf01117579da2bec7b4e1f5",
+      "bytes": 29161
+    },
+    {
+      "path": "static/email/templates/cuenta-usuario-activada-exito.html",
+      "sha256": "4c5d3058676926dddf4ef2cde99ae43332dd6e06c91088e0353d0db596e4ac30",
+      "bytes": 19286
+    },
+    {
+      "path": "static/email/templates/cuenta-usuario-verificada-exito.html",
+      "sha256": "36b48ba922b974f06fd46b048f7275b084c1504b5783370aacdb29b22ef61e43",
+      "bytes": 19430
+    },
+    {
+      "path": "static/email/templates/cuenta-usuario-verificada-mas-informacion.html",
+      "sha256": "bad0bd169c706bc2c28d18291a679190e0755c2ab5a758fb294482045ffb6063",
+      "bytes": 21494
+    },
+    {
+      "path": "static/email/templates/ejemplo.html",
+      "sha256": "725e7b0730c8d4bf5316efd606e82bb6fcb26ff06afe6c9033c43ca393266cd4",
+      "bytes": 177
+    },
+    {
+      "path": "static/email/templates/emailing-venta-en-frio.html",
+      "sha256": "5e4b5d4275812f215be06ff485b73518a3c496e8619e557cb1e4a00e541efba7",
+      "bytes": 24035
+    },
+    {
+      "path": "static/email/templates/factoring-empresa-servicio-factoring-cedente-confirmacion-inicio-operacion.html",
+      "sha256": "30d9e1c7893ae7580896f0c0aee1082390fe40f70e69b27f0a885751a138ccff",
+      "bytes": 84486
+    },
+    {
+      "path": "static/email/templates/factoring-empresa-servicio-factoring-cedente-confirmacion-transferencia.html",
+      "sha256": "c6fc5937566370861c86fff2b7bb5867150468f61ac9b8140c92de82665a4cca",
+      "bytes": 58872
+    },
+    {
+      "path": "static/email/templates/factoring-empresa-servicio-factoring-cedente-notificacion-liquidacion.html",
+      "sha256": "26a07ed9c371a1beec7512630eb00db1ab0fb3360fd6880b0fee83b2cce0222a",
+      "bytes": 46205
+    },
+    {
+      "path": "static/email/templates/factoring-empresa-servicio-factoring-deudor-notificacion-transferencia.html",
+      "sha256": "06e37388b920d0504cafa09f2159b6658f7b4d37777c8607a2f5779f8f4ed7ec",
+      "bytes": 70509
+    },
+    {
+      "path": "static/email/templates/factoring-empresa-servicio-factoring-deudor-solicitud-confirmacion.html",
+      "sha256": "64fe49332a869355fbf1cb83f85ef61da6d72592052b7158b707435cefb4b0d7",
+      "bytes": 52253
+    },
+    {
+      "path": "static/email/templates/factoring-empresa-servicio-factoring-propuesta-aceptada.html",
+      "sha256": "12c44eaaa2aa2edea13f22e9d943af570db37da9e137ac2737acabb04edf57be",
+      "bytes": 97230
+    },
+    {
+      "path": "static/email/templates/factoring-empresa-servicio-factoring-propuesta-disponible.html",
+      "sha256": "6543b9084f364212eb1e28db8c465990338b1baa83c5f13fc4628845d7908d37",
+      "bytes": 57832
+    },
+    {
+      "path": "static/email/templates/factoring-empresa-servicio-factoring-solicitud.html",
+      "sha256": "b68913b188b90c8da89eae4a3a2036b7d6fca93a2c290dca1647df3c4e7281ad",
+      "bytes": 50932
+    },
+    {
+      "path": "static/email/templates/factoring-empresa-verificacion-aprobado.html",
+      "sha256": "d8ee318bc83189d258c86b4e27e1d99892dee2afb123fbdfc8145fc5c5ec9ac2",
+      "bytes": 21302
+    },
+    {
+      "path": "static/email/templates/factoring-empresa-verificacion-mas-informacion.html",
+      "sha256": "9dc7cc767c66df5481d218556eb4844f1f5a0d6c6b5bdfe09a9d360af1f0e144",
+      "bytes": 34001
+    },
+    {
+      "path": "static/email/templates/factoring-empresa-verificacion-rechazado.html",
+      "sha256": "774a4e6b813d08c33c845b8c5b8b10a11fa23853bc7b45d2742c892b2a3b79ab",
+      "bytes": 21187
+    },
+    {
+      "path": "static/email/templates/factoring-inversionista-verificacion-aprobado.html",
+      "sha256": "6d6a1ee207771f0205dea7d38c30081382533131fc2eec5615e97d2d5b741367",
+      "bytes": 21249
+    },
+    {
+      "path": "static/email/templates/factoring-inversionista-verificacion-mas-informacion.html",
+      "sha256": "119b33f0bbafcf29b5d0195658142e21865661f023db3dfd80e7929c635aa5b7",
+      "bytes": 21754
+    },
+    {
+      "path": "static/email/templates/factoring-inversionista-verificacion-rechazado.html",
+      "sha256": "3d01decd2e6bca1ba7bebb3d144642f66875d48b64f48637e9c6359b7f2eab03",
+      "bytes": 20368
+    },
+    {
+      "path": "static/email/templates/recuperar-contrasena.html",
+      "sha256": "be550328d8602d8e6b4142b7246f37c0597976684d7cc7102c65bd0fd9024890",
+      "bytes": 31333
+    },
+    {
+      "path": "tests/README.md",
+      "sha256": "284addbecfe0d0e32a58d27701d5c29c0a1a5a75167e84f62b0b50f1e39a9b9e",
+      "bytes": 9251
+    },
+    {
+      "path": "tests/fixtures/ci-quick.env",
+      "sha256": "4d2cfeea4a7ccbbea873a262ae2e328d143ae440b47780bab592d586975813f0",
+      "bytes": 1253
+    },
+    {
+      "path": "tests/fixtures/frontend-date-contract/README.md",
+      "sha256": "52d27b8b507216c4b1b5251036c73fb632fe64bfa1a63c4b9fc062156aaa10fa",
+      "bytes": 1321
+    },
+    {
+      "path": "tests/fixtures/frontend-date-contract/provenance.json",
+      "sha256": "396228c4b39ec4902c062aad699c8921d8dc01ddd6ad0b6dab17ef6e181a4f74",
+      "bytes": 331
+    },
+    {
+      "path": "tests/fixtures/frontend-date-contract/src/utils/dateUtils.js",
+      "sha256": "c24d7928a78e846ff59148393f7d2b24b2d36d7cb5d28cbdd80ff675234b47c6",
+      "bytes": 4535
+    },
+    {
+      "path": "tests/manual/README.md",
+      "sha256": "4a67ddf80037fa1b0159d6692bfcec5039e87fa50e2d65dcac2ee37979000786",
+      "bytes": 1039
+    },
+    {
+      "path": "tests/manual/email/sendemail.manual.ts",
+      "sha256": "acb692581c24323804dd80e63ecc9bcbf24119b5915a7818a818c044d84cbdd5",
+      "bytes": 18705
+    },
+    {
+      "path": "tests/manual/integrations/apisperu/connectivity.ts",
+      "sha256": "63b9d9cb536067ceb562d780996c88522644eed2c24a0a26161310d07801ecf6",
+      "bytes": 3764
+    },
+    {
+      "path": "tests/manual/integrations/apisperu/fallback.ts",
+      "sha256": "4bd704666be076343d9eeb525deb236a9bf3843ec232097cde39ab44cb64e232",
+      "bytes": 8924
+    },
+    {
+      "path": "tests/manual/integrations/apisperu/provider-sync.ts",
+      "sha256": "adf52754964bbf7f3b8aba0ff33398d6711ff15def84fd1b3ce92a55ea173bf1",
+      "bytes": 7096
+    },
+    {
+      "path": "tests/manual/integrations/decolecta/connectivity.ts",
+      "sha256": "db71ca57b8d3b7617543a67eb9b19590985d062743e792a7ea42d8915cd2b2f8",
+      "bytes": 3040
+    },
+    {
+      "path": "tests/manual/telegram/telegram.manual.ts",
+      "sha256": "68c216558118a394fc3d1e270e19b54761e980a3cf035c0831dab55ae9b6e1eb",
+      "bytes": 1555
+    },
+    {
+      "path": "tests/mariadb/PLAN_AMPLIACION.md",
+      "sha256": "df6e21fb96af897849d758d5dc2512b58ad1933e9d8a0e3636ec2a6b22f63d4f",
+      "bytes": 7192
+    },
+    {
+      "path": "tests/mariadb/README.md",
+      "sha256": "db644cb4823a91634de225e7f33219c274dfc68f9b5b5cb8a11abc8c0da96eac",
+      "bytes": 21998
+    },
+    {
+      "path": "tests/mariadb/appHttp.test.ts",
+      "sha256": "01799285edfecc2f99888ea21059bf0c34d6f36bcfda1709faa8419c513be4af",
+      "bytes": 11536
+    },
+    {
+      "path": "tests/mariadb/authHttp.test.ts",
+      "sha256": "fb042820c8216b55880ea833f284ada011808319a6be40ba47abc7bfa3f8df8a",
+      "bytes": 20357
+    },
+    {
+      "path": "tests/mariadb/business.test.ts",
+      "sha256": "950b57090a85b68aafc58167dbe8321f06113890939182b995b53bc03cd17648",
+      "bytes": 14485
+    },
+    {
+      "path": "tests/mariadb/businessSupport.ts",
+      "sha256": "48b74490b472207afacd42e974333edc09b1a0ddd09b2aa5f1a679e21561266d",
+      "bytes": 11049
+    },
+    {
+      "path": "tests/mariadb/connectedFlow.test.ts",
+      "sha256": "a94712363a1c18906d73485cc5f22f1e71de94bac9ed61d4cb99c79685786197",
+      "bytes": 17160
+    },
+    {
+      "path": "tests/mariadb/detraccion.test.ts",
+      "sha256": "58458128e64a3fb928593b7dd4377e0b6b3f646c428fd3992af6c0f3a84dc642",
+      "bytes": 11635
+    },
+    {
+      "path": "tests/mariadb/entrepreneur.test.ts",
+      "sha256": "5d255b810d9aab2f67c220301c7dd04699b22faa571a01010c13f4d6da815d6c",
+      "bytes": 12290
+    },
+    {
+      "path": "tests/mariadb/environment.test.ts",
+      "sha256": "4889e24291fe70c2fedc1f338bb3542b66c11e68d4ab31e8ff72c8aa2f3dc7af",
+      "bytes": 3533
+    },
+    {
+      "path": "tests/mariadb/factoringConsolidado.test.ts",
+      "sha256": "3be8eaedf6740ce779744521ba35dc64188464bd80118f667b29c4dff1ab0c02",
+      "bytes": 2786
+    },
+    {
+      "path": "tests/mariadb/factoringPago.test.ts",
+      "sha256": "0635a85256c6be0698e223b2b16754d428e9feaf17f14b1cd34bfef0d78e254b",
+      "bytes": 14531
+    },
+    {
+      "path": "tests/mariadb/factoringPagoDdl.test.ts",
+      "sha256": "b94942643033c0bb40f9775058fc9c33008d52da2837310c63b2397d9370df1d",
+      "bytes": 2604
+    },
+    {
+      "path": "tests/mariadb/factoringPagoRegularizacion.test.ts",
+      "sha256": "65d4dfe51fa0318634a7787231d3cac87c7ed9046bd9cb530f1c5f6d951fc306",
+      "bytes": 6690
+    },
+    {
+      "path": "tests/mariadb/financialHttp.test.ts",
+      "sha256": "f49aa0efaacc5df9ead6c2057d7446f7492f3fe6cdf66ec1effbcd37454bebec",
+      "bytes": 15441
+    },
+    {
+      "path": "tests/mariadb/historicalAudit.test.ts",
+      "sha256": "5d7c6737ab5c032fabf3caa7aa5dea0f1d24596dea523072735d65c24cf8168c",
+      "bytes": 3434
+    },
+    {
+      "path": "tests/mariadb/invoiceHttp.test.ts",
+      "sha256": "8e511ad2b5b81f0d0ac2e3dbb7cf1134f9f9c1e50fa10c39e431c34c414b3b36",
+      "bytes": 27652
+    },
+    {
+      "path": "tests/mariadb/operation.test.ts",
+      "sha256": "b63d7d740c51b8699a117e4b450a257710ad3e46a5e355c3fd9499766ba01cc0",
+      "bytes": 15156
+    },
+    {
+      "path": "tests/mariadb/operationState.test.ts",
+      "sha256": "4a02effe1dc57a2f4e5f8e897ed06ea5ebd63eb0254dda795d2fe9b11c2f4c28",
+      "bytes": 15598
+    },
+    {
+      "path": "tests/mariadb/pdfHttp.test.ts",
+      "sha256": "bfd4074a93ce02762456a683ded5c06d8f526c5c8879142b781a5d0f90bfd1f5",
+      "bytes": 37577
+    },
+    {
+      "path": "tests/mariadb/proposal.test.ts",
+      "sha256": "017990c93db74806c6bffcaaded9980ae5fde35ebe9e663ce79e682b41f8e454",
+      "bytes": 14775
+    },
+    {
+      "path": "tests/mariadb/runtime.test.ts",
+      "sha256": "ccde0abd6877a3642ff3d5a4fc54f64ca141e420a428ff39662b6bbad2673e4f",
+      "bytes": 9847
+    },
+    {
+      "path": "tests/mariadb/saldocontable.test.ts",
+      "sha256": "af6a5ff3b649ea67ddb18abad021b5791908c87e095eaebafb76e981090c8614",
+      "bytes": 18273
+    },
+    {
+      "path": "tests/mariadb/schema/baseline.json",
+      "sha256": "b263f475091f94a79ebdc5b5ce6e6ff063cc3871be28db4a2ef5b4ce48692ff9",
+      "bytes": 257334
+    },
+    {
+      "path": "tests/mariadb/schema/factoring-pago-legacy.sql",
+      "sha256": "80d1ed449a59f1b56082d6dd8c8e72cf6a43584250677348cf023bfa29e40142",
+      "bytes": 1551
+    },
+    {
+      "path": "tests/mariadb/settlement.test.ts",
+      "sha256": "7a2f1583d9dd40ab1a9e8fedcda3418020861361a4f81b8d1c961ad2465ad298",
+      "bytes": 27409
+    },
+    {
+      "path": "tests/mariadb/settlementConcurrency.test.ts",
+      "sha256": "69e2f2970109de998bed09abc202c10bdfca86f735b16b8d7af692aea485f73b",
+      "bytes": 12267
+    },
+    {
+      "path": "tests/mariadb/settlementSupport.ts",
+      "sha256": "bdc6ea788e46adf12ecb505d02fd361d5b3d282879051d1e728be9e33f11570e",
+      "bytes": 4909
+    },
+    {
+      "path": "tests/mariadb/transaccionbancaria.test.ts",
+      "sha256": "a094d6c4e2fdab4e766351bec8fc8f9221c3c99963c5c6bd5153bea429f94aec",
+      "bytes": 7684
+    },
+    {
+      "path": "tests/mariadb/tsconfig.json",
+      "sha256": "5571448b12edbb5ba2e06a49c152f1c3c4ceb335202bb7700016257d1538f451",
+      "bytes": 214
+    },
+    {
+      "path": "tests/mariadb/vitest.config.ts",
+      "sha256": "db23f523913c77ebe0c80d7caacef86e2a272b46b36bcceef6c12a17464ae76a",
+      "bytes": 564
+    },
+    {
+      "path": "tests/tsconfig.json",
+      "sha256": "914690fdaccf2cf2a65a79a579c0b005925f6c6a3737e914be3418cfe3c36577",
+      "bytes": 167
+    },
+    {
+      "path": "tests/vitest/MATRIZ_NEGOCIO.md",
+      "sha256": "efa89bb6c10b449f9306976edcf3608fa2e9144abe83afa35446464fa62e55f7",
+      "bytes": 20235
+    },
+    {
+      "path": "tests/vitest/README.md",
+      "sha256": "cf14ff8bd4704a447aabfe27297954ff30362b57218d202e48ec0ed9e8623513",
+      "bytes": 23466
+    },
+    {
+      "path": "tests/vitest/http/factoring.business.test.ts",
+      "sha256": "057f23f8ad7a6646c464efb1b52932708beabbcbfe7ec6989a41465695d51e75",
+      "bytes": 12237
+    },
+    {
+      "path": "tests/vitest/http/factoringConsolidado.http.test.ts",
+      "sha256": "561d5bc27b1046c16aa972b41ce168edad8308ba6881b5b8df3dceea76a4275c",
+      "bytes": 3545
+    },
+    {
+      "path": "tests/vitest/http/factoringPago.http.test.ts",
+      "sha256": "ff8dbe650b9071acae55a9f8c16415d990845a6f68df8527d25eebc1bf848e4c",
+      "bytes": 5818
+    },
+    {
+      "path": "tests/vitest/http/factoringdetraccion.http.test.ts",
+      "sha256": "450e399577c191394d6b271be3688b3fcb10f6e26d549774f85401a0caf7d908",
+      "bytes": 5637
+    },
+    {
+      "path": "tests/vitest/http/factoringestado.business.test.ts",
+      "sha256": "2176029d7ee977fd5ec20edb712dd83c5086b561121eed35a8d5b5e85990e7aa",
+      "bytes": 7896
+    },
+    {
+      "path": "tests/vitest/http/factoringpropuestaPDF.empresario.test.ts",
+      "sha256": "daf48385253410af650d399c3b237801c240df6fee603e38b8f7fdb618bcfde6",
+      "bytes": 12117
+    },
+    {
+      "path": "tests/vitest/http/facturaXML.business.test.ts",
+      "sha256": "3a23e5ecd9a915ad5dbf777a3edfa3a25c749e137102dfbba758658877fd6823",
+      "bytes": 3805
+    },
+    {
+      "path": "tests/vitest/http/saldocontable.http.test.ts",
+      "sha256": "6e4f0c91ba835195f18771593ff34e01a6600eb7422f2115e8deae687f5a526c",
+      "bytes": 4966
+    },
+    {
+      "path": "tests/vitest/http/transaccionbancaria.http.test.ts",
+      "sha256": "20c6296050e6c6e4878aa934d2c02c15dabf4b62a05b1a16635ace6f9ad9db59",
+      "bytes": 8221
+    },
+    {
+      "path": "tests/vitest/migrated/README.md",
+      "sha256": "c95ec2eb541e211e21180779f5b0d6ca31b30bfaf6e69df79484913fc5db7328",
+      "bytes": 3470
+    },
+    {
+      "path": "tests/vitest/migrated/e2e/example.test.ts",
+      "sha256": "c04982960bb419d0ee730b0873d59638732272a172751b167f6cf278537cc731",
+      "bytes": 559
+    },
+    {
+      "path": "tests/vitest/migrated/e2e/index.test.ts",
+      "sha256": "2fea4d6225a6461809273e614f046818f5c93628684ec33d495d8bfde8b75012",
+      "bytes": 578
+    },
+    {
+      "path": "tests/vitest/migrated/unit/domain/factoring/factoring.Calculator.test.ts",
+      "sha256": "52556ac4cc0e0bd1296c2fe7fd5b9de9918af6e7bde3c12e97990d8ad11e5fb5",
+      "bytes": 5961
+    },
+    {
+      "path": "tests/vitest/migrated/unit/routes/factoringEmpresaDetalle.test.ts",
+      "sha256": "4d10a04dd6716fa1e7c37f685269d3d94e5de69a44bf307f25d132851f5766ba",
+      "bytes": 8016
+    },
+    {
+      "path": "tests/vitest/migrated/unit/services/admin/factoringliquidacion.Service.test.ts",
+      "sha256": "b2082c5296a84d0f77e8a95d0cbe6fc4872a2bd54abd1bfbcdcc8cb749d61ff9",
+      "bytes": 11456
+    },
+    {
+      "path": "tests/vitest/migrated/unit/services/admin/factoringliquidacion.audit.test.ts",
+      "sha256": "8b7b52da3a8811bd6174b2b9aa54c6e2fac64e32e2800d4638ec5b1b40aa8f8f",
+      "bytes": 23135
+    },
+    {
+      "path": "tests/vitest/migrated/unit/services/admin/factoringpropuesta.Service.test.ts",
+      "sha256": "14ff2a91b0759c11484fa49d53a97ef508fd042be494c172e6cad667c7b32b37",
+      "bytes": 8530
+    },
+    {
+      "path": "tests/vitest/migrated/unit/services/admin/factoringsimulacion.dates.test.ts",
+      "sha256": "fe951e1e9fa13b3d50f2f5803ca7dc5d7981ba22a17e6884277c5196622e3e87",
+      "bytes": 14553
+    },
+    {
+      "path": "tests/vitest/migrated/unit/services/factoring.Service.test.ts",
+      "sha256": "be563584820923706dbc82cafb1ba3b399bc97577e302853b5500a84af749189",
+      "bytes": 3957
+    },
+    {
+      "path": "tests/vitest/migrated/unit/services/factoring.dateTrace.test.ts",
+      "sha256": "152eb4ab3bc2caa73087e7d35635ba289c0a2a6a9bcc859dd2ad892d6ba792e5",
+      "bytes": 18401
+    },
+    {
+      "path": "tests/vitest/migrated/unit/services/financiero/factura.Service.test.ts",
+      "sha256": "0edee0b6b716cb6f62063e4a36de2c2a4f6f112c119369e1a892a8ebfd37d669",
+      "bytes": 3275
+    },
+    {
+      "path": "tests/vitest/migrated/unit/services/secure/accesos.Service.test.ts",
+      "sha256": "db87de462490f2340312556d6362287ecc1f43f6b851e560c60774f4eb4ce043",
+      "bytes": 12232
+    },
+    {
+      "path": "tests/vitest/migrated/unit/services/tipocambio.Service.test.ts",
+      "sha256": "b6593eee2730396c37963380d8d25252da44376b6a223ae9e55cde48d600772d",
+      "bytes": 1288
+    },
+    {
+      "path": "tests/vitest/migrated/unit/services/usuario/archivo.Service.test.ts",
+      "sha256": "95c5924eabad332f2de2d63faef515cb5d17f361f16d07fb523cde3e1b3f0498",
+      "bytes": 6372
+    },
+    {
+      "path": "tests/vitest/migrated/unit/utils/dateUtils.test.ts",
+      "sha256": "f2b96c2b3db67d3470e9caa3a96e85311556b428149ead6573014353dfb56c4f",
+      "bytes": 2687
+    },
+    {
+      "path": "tests/vitest/migrated/unit/utils/document/PDFgenerator.dates.test.ts",
+      "sha256": "7e1ddea1759c3f7c6b6f660d948b7a5d1f172feff79cb48799045008519e9528",
+      "bytes": 4417
+    },
+    {
+      "path": "tests/vitest/pending/business-decisions.test.ts",
+      "sha256": "9d26b14ef45c97cdc9fcc421a7038185ff8b43663d1ef2a64b83d459877c8ba0",
+      "bytes": 444
+    },
+    {
+      "path": "tests/vitest/support/factoringBoundary.ts",
+      "sha256": "3e62012f396d21c336ee983f3725b7b09752fef48cc594249b3421596d4a66c1",
+      "bytes": 19281
+    },
+    {
+      "path": "tests/vitest/support/invoiceBoundary.ts",
+      "sha256": "8cc41963fed256d3355653bc46e71f38c6510cfffb3755f6109b273742e15f0f",
+      "bytes": 3597
+    },
+    {
+      "path": "tests/vitest/support/invoiceFixture.ts",
+      "sha256": "ebad3482cb4c0a244ae3606a8d8907ac0362ed087437aa536a502defd8bab2be",
+      "bytes": 4591
+    },
+    {
+      "path": "tests/vitest/tsconfig.json",
+      "sha256": "3fafe071f7c6ba1a61e1cff23dec0f028e99475e51b5d19c1c1204fd9206bbed",
+      "bytes": 238
+    },
+    {
+      "path": "tests/vitest/unit/archivo.business.test.ts",
+      "sha256": "113652bc500ec57c850f3772b9d9a13b23c0c601eb5694f2ce0b61e6f845ba2c",
+      "bytes": 7625
+    },
+    {
+      "path": "tests/vitest/unit/archivoMiddleware.test.ts",
+      "sha256": "99134ae56ec7eea198cbe30829bc201a8c9ea184b8eeaf297d96f90ea15aa245",
+      "bytes": 2276
+    },
+    {
+      "path": "tests/vitest/unit/bancaCrypto.test.ts",
+      "sha256": "6fbe78ce8cbdaa108e4ac1d03cc7667a520067540995f37242eebd45d2e465f5",
+      "bytes": 2543
+    },
+    {
+      "path": "tests/vitest/unit/configuracionbbdd.Service.test.ts",
+      "sha256": "bed649178a722dc57b0bba750d45e98de343294080e92ce3de97f28cb8b0b944",
+      "bytes": 3314
+    },
+    {
+      "path": "tests/vitest/unit/databaseMaintenance.test.ts",
+      "sha256": "0f4c3ada431ccacd7c1ae83222ecd1bcf134d2a4bba0b7e5ab8fa0485e0bb1bf",
+      "bytes": 5769
+    },
+    {
+      "path": "tests/vitest/unit/dateUtils.test.ts",
+      "sha256": "e600212345ab39e516185f0cb01219ab86377acdf775e64f5c86f5d9dc9f14cf",
+      "bytes": 1337
+    },
+    {
+      "path": "tests/vitest/unit/emailSender.test.ts",
+      "sha256": "d8b8aef614e9837c0472f334120c5fead1be0697fa3702a15a93b8055104a3aa",
+      "bytes": 1368
+    },
+    {
+      "path": "tests/vitest/unit/factoring.Calculator.test.ts",
+      "sha256": "e90f8b30e6098c93a655fc58adf93e323b008cb7dcb47529703ee6b8379511fa",
+      "bytes": 5667
+    },
+    {
+      "path": "tests/vitest/unit/factoringConsolidadoXlsx.test.ts",
+      "sha256": "595181790604007c71afe65edf1bbdaba430583f46111e982f3dbd841d133f7e",
+      "bytes": 2550
+    },
+    {
+      "path": "tests/vitest/unit/factoringPago.Policy.test.ts",
+      "sha256": "1ad4647e1978d0d5aaddb8e32fcbe0c5e1a2b6523c69cd697e4ca1b60ac38b72",
+      "bytes": 1242
+    },
+    {
+      "path": "tests/vitest/unit/factoringaprobacion.business.test.ts",
+      "sha256": "056d3fa9efd1b0f6b233d4098d0200a076d2eccbf243334d763a7f5c2aab1a73",
+      "bytes": 6930
+    },
+    {
+      "path": "tests/vitest/unit/factoringdetraccion.business.test.ts",
+      "sha256": "deb6445f83060ab8b106a5bf761afea29dd8ddbb2711bfab1bfa8146f06910a8",
+      "bytes": 7006
+    },
+    {
+      "path": "tests/vitest/unit/factoringestado.business.test.ts",
+      "sha256": "950d9fbb890fe7dc6a07336e6fdbf4b432015cf25fda8d61bc3e50fd9ec49d6c",
+      "bytes": 10816
+    },
+    {
+      "path": "tests/vitest/unit/factoringfactura.business.test.ts",
+      "sha256": "19b1c20ece77de954357dadc7c5ed873e87b31dad4f57abadd7a06398612e5d0",
+      "bytes": 7510
+    },
+    {
+      "path": "tests/vitest/unit/factoringliquidacion.business.test.ts",
+      "sha256": "74969d09a3cbf80684ff7fa5a8a4d3b5fecce2c26dda87e7761c91e33fb9a07a",
+      "bytes": 26596
+    },
+    {
+      "path": "tests/vitest/unit/factoringpropuesta.business.test.ts",
+      "sha256": "055037c7799b94d7be899497d493215f2472325d2b4fb1fd1afb2e1264d724e0",
+      "bytes": 9256
+    },
+    {
+      "path": "tests/vitest/unit/factoringtransferencia.business.test.ts",
+      "sha256": "ad4da3e23ec5829c2abe79f8f432c6b5f421240a764715aefdb1e8c2a4b99f54",
+      "bytes": 5584
+    },
+    {
+      "path": "tests/vitest/unit/facturaRegistro.business.test.ts",
+      "sha256": "54980411102c986b41d624991a8844d0c878f43e346eb9bf933ce1e2ecc992bc",
+      "bytes": 5665
+    },
+    {
+      "path": "tests/vitest/unit/facturaXML.business.test.ts",
+      "sha256": "b5df58d1303fcfc1b86cf64dd40c2c0a9a6b160d2e09b6fa493b60baddcd4b0b",
+      "bytes": 8849
+    },
+    {
+      "path": "tests/vitest/unit/fileType.test.ts",
+      "sha256": "db55569470915aea7bbf246ec9090e09aae7751a068b87fc0b91d79bfdec13d7",
+      "bytes": 626
+    },
+    {
+      "path": "tests/vitest/unit/liquidacionLimits.test.ts",
+      "sha256": "2fbcf09dc3bd38a547cde434e5aabb27f438901fa75a8ba3e2677f3bcd72c94c",
+      "bytes": 1980
+    },
+    {
+      "path": "tests/vitest/unit/loadEnvironment.test.ts",
+      "sha256": "9ec447ffa3d1133916f838413c90a30dd33099b1fa81eff30fa5be95d77f46ea",
+      "bytes": 6970
+    },
+    {
+      "path": "tests/vitest/unit/mariadbEnvironment.test.ts",
+      "sha256": "6b8147d4c6800c37141f86cfa4e38fbd76ec8e240365b50cd7526e4316529561",
+      "bytes": 3374
+    },
+    {
+      "path": "tests/vitest/unit/mariadbOptions.test.ts",
+      "sha256": "3bf28b3d58a8b82de3a73a289b4763915dbd7879529a4d108d3f498508ef9b84",
+      "bytes": 857
+    },
+    {
+      "path": "tests/vitest/unit/mysqlConnection.test.ts",
+      "sha256": "80bcea6c5f4ce80a6ef72202acb4139a6bf193df5677ce1b1cf4a257da73bf33",
+      "bytes": 7157
+    },
+    {
+      "path": "tests/vitest/unit/mysqlSource.test.ts",
+      "sha256": "504cfe9898c491706e4d41550725f33294d524c7df17e319fd5925953ddc00e3",
+      "bytes": 6988
+    },
+    {
+      "path": "tests/vitest/unit/rehearsalGuard.test.ts",
+      "sha256": "97a280ba38a399c0a2e1d0e6c9b2fc79f0822d691918f7969004d7e9892601b0",
+      "bytes": 1850
+    },
+    {
+      "path": "tests/vitest/unit/saldocontable.Policy.test.ts",
+      "sha256": "6eb7ba862bca93556f7c23c008e5c29de84a826c621b4808f7b85d0b90b6a148",
+      "bytes": 6138
+    },
+    {
+      "path": "tests/vitest/unit/secure.business.test.ts",
+      "sha256": "ed20a5d3cb2405089c2ca30154a8fe155ca3438c8d8d96678ef8fb12ba18a121",
+      "bytes": 12113
+    },
+    {
+      "path": "tests/vitest/unit/startupDiagnostics.test.ts",
+      "sha256": "17a1aecdced9038cd99fc08127f603bcfb3c97f9cfbf14002149aaf443183920",
+      "bytes": 4041
+    },
+    {
+      "path": "tests/vitest/unit/transaccionbancaria.Incidencia.test.ts",
+      "sha256": "5ed0332097ab0127f7044d98fa21d11eb1bf89f389e2b719b5661773f284e4f7",
+      "bytes": 1971
+    },
+    {
+      "path": "tests/vitest/unit/transaccionbancaria.Policy.test.ts",
+      "sha256": "7a34e72db4ab4a9eaf0f40d4d5b0d7ea3a050e831559b08d38dc3f84b5088ec6",
+      "bytes": 3416
+    },
+    {
+      "path": "tests/vitest/unit/transaccionbancaria.Service.test.ts",
+      "sha256": "cc06d5c650910b7967b6aec331ca9c98a4345a07bb3ecc9ca7b9933f374e7318",
+      "bytes": 14670
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "f500cce89e3bf7b58b7e8477ef61a4ecbc8c99df9abce5190075633f0a19b08a",
+      "bytes": 643
+    },
+    {
+      "path": "tsdown.config.ts",
+      "sha256": "1802d8d49885ef54ffcb5e0c1986c88f47d1efd85dedf7c59605a89709498f38",
+      "bytes": 660
+    },
+    {
+      "path": "vitest.config.ts",
+      "sha256": "64974a7bd4d65a907c9760ba86c3fbbb00f3b1725e516fc1bf832917b8de40a2",
+      "bytes": 3242
+    }
+  ],
+  "excluded": "Perfiles personales, dependencias y salidas ignoradas; solo ejemplos de entorno versionados."
+}

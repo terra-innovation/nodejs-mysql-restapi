@@ -48,35 +48,38 @@ export type UsuarioConRoles = Prisma.usuarioGetPayload<{
   };
 }>;
 
-export type FactoringPDF = Prisma.factoringGetPayload<{
-  include: {
-    contacto_aceptante: true;
-    contacto_cedente: true;
-    cuenta_bancaria: {
-      include: {
-        banco: true;
-        cuenta_bancaria_estado: true;
-        cuenta_tipo: true;
-        moneda: true;
+export type FactoringPDF = Omit<
+  Prisma.factoringGetPayload<{
+    include: {
+      contacto_aceptante: true;
+      contacto_cedente: true;
+      cuenta_bancaria: {
+        include: {
+          banco: true;
+          cuenta_bancaria_estado: true;
+          cuenta_tipo: true;
+          moneda: true;
+        };
       };
-    };
-    empresa_aceptante: true;
-    empresa_cedente: true;
-    factoring_ejecutado: true;
-    factoring_ejecutado_factoringes: true;
-    factoring_estado: true;
-    factoring_facturas: { include: { factura: true } };
-    factoring_historial_estados: true;
-    factoring_pagos: true;
-    factoring_propuesta_aceptada: true;
-    factoring_propuesta_factoringes: {
-      include: {
-        factoring_propuesta_estado: true;
+      empresa_aceptante: true;
+      empresa_cedente: true;
+      factoring_ejecutado: true;
+      factoring_ejecutado_factoringes: true;
+      factoring_estado: true;
+      factoring_facturas: { include: { factura: true } };
+      factoring_historial_estados: true;
+      factoring_pagos: true;
+      factoring_propuesta_aceptada: true;
+      factoring_propuesta_factoringes: {
+        include: {
+          factoring_propuesta_estado: true;
+        };
       };
+      moneda: true;
     };
-    moneda: true;
-  };
-}>;
+  }>,
+  "factoring_pagos"
+> & { factoring_pagos: never[] };
 
 export type FactoringpropuestaPDF = Prisma.factoring_propuestaGetPayload<{
   include: {
@@ -121,4 +124,3 @@ export type FactoringliquidacionPDF = Prisma.factoring_liquidacionGetPayload<{
     };
   };
 }>;
-

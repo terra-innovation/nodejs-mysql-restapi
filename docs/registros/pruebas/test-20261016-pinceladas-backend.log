@@ -1,0 +1,18 @@
+
+> ft-app-backend@1.0.1 test:vitest
+> cross-env TZ=UTC NODE_ENV=test vitest run --config vitest.config.ts tests/vitest/http/transaccionbancaria.http.test.ts tests/vitest/unit/transaccionbancaria.Service.test.ts
+
+
+ RUN  v5.0.3 D:/06_Workspace_nodejs/ft-app-backend
+
+
+ Test Files  2 passed (2)
+      Tests  25 passed (25)
+   Start at  15:58:25
+   Duration  6.12s (transform 53%, import 36%, tests 10%, worker 1%)
+
+  Transform  transforming modules took 4.78s · 53% of tracked time, re-done on every run
+             persist transforms across runs with fsModuleCache: true
+             on CI this only helps when the cache directory is persisted between runs
+             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns
+

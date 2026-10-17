@@ -1,0 +1,16 @@
+{
+  "formatVersion": 1,
+  "id": "20261015-factor-transaccion-bancaria",
+  "description": "Seis tablas del módulo de transacciones bancarias del factor, sin _idmoneda redundante, autorizadas por el usuario el 15/10/2026 para crear en desarrollo y sincronizar Prisma. Sin ALTER, semillas, pagos ni carga de datos; origen MySQL sin cambios.",
+  "sqlFile": "../../../docs/transacciones-bancarias/esquema-propuesto.sql",
+  "createTables": [
+    "factor_transaccion_bancaria_conexion",
+    "factor_transaccion_bancaria_origen_cuenta",
+    "factor_transaccion_bancaria_sincronizacion",
+    "factor_transaccion_bancaria",
+    "factor_transaccion_bancaria_incidencia",
+    "factor_transaccion_bancaria_historial"
+  ],
+  "alterTables": [],
+  "seedTables": []
+}

@@ -1,0 +1,42 @@
+{
+  "checkedAt": "2026-10-16T02:33:54.933Z",
+  "source": ".env.development",
+  "targetSha256": "f9c511527fec5ac2f6b231619de812ce248bc3ec699a0e42f9f2dc33fb8f7527",
+  "serverVersion": "11.4.2-MariaDB",
+  "innodbPageSize": 16384,
+  "checkConstraintChecks": true,
+  "strictSqlMode": true,
+  "collationAvailable": true,
+  "newTablesAbsent": true,
+  "currencyDerivedViaExistingAccount": true,
+  "referenceColumns": [
+    {
+      "tableName": "cuenta_bancaria",
+      "columnName": "_idcuentabancaria",
+      "columnType": "int(11) unsigned"
+    },
+    {
+      "tableName": "cuenta_bancaria",
+      "columnName": "_idmoneda",
+      "columnType": "int(11) unsigned"
+    },
+    {
+      "tableName": "factor_cuenta_bancaria",
+      "columnName": "_idcuentabancaria",
+      "columnType": "int(11) unsigned"
+    },
+    {
+      "tableName": "factor_cuenta_bancaria",
+      "columnName": "_idfactorcuentabancaria",
+      "columnType": "int(11) unsigned"
+    },
+    {
+      "tableName": "moneda",
+      "columnName": "_idmoneda",
+      "columnType": "int(11) unsigned"
+    }
+  ],
+  "result": "passed",
+  "noBusinessRowsRead": true,
+  "noDatabaseWrites": true
+}

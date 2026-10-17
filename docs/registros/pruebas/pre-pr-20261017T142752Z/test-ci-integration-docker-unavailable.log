@@ -1,0 +1,9 @@
+
+> ft-app-backend@1.0.1 ci:integration
+> node scripts/quality/ci-runner.ts --scope integration
+
+prisma: APROBADO; docs/registros/pruebas/test-ci-backend-prisma.log
+doctor: FALLÓ; docs/registros/pruebas/test-ci-backend-doctor.log
+integration: OMITIDO por un requisito fallido; no cuenta como aprobado.
+evidence: OMITIDO por un requisito fallido; no cuenta como aprobado.
+Resumen: docs/registros/pruebas/test-ci-backend-summary.json

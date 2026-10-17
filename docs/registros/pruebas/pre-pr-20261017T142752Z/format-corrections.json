@@ -1,0 +1,44 @@
+{
+  "records": [
+    {
+      "file": "scripts/analisis/fecha-liquidacion-frontend.cjs",
+      "onlyPrettier": true,
+      "sha256": "b6644ede0d12135a1f0123335ec6c666160564d250c7b05eb8f672ac92788f27"
+    },
+    {
+      "file": "scripts/database/maintain.mjs",
+      "onlyPrettier": true,
+      "sha256": "c0d7b6df26f2733af19c387e1ccabbf2153a683ac91d832f9ce592e2462f29bb"
+    },
+    {
+      "file": "scripts/database/maintenance-core.mjs",
+      "onlyPrettier": true,
+      "sha256": "95a454da1319c50590c0b99d757e771507269e1f847bca8bac5b7c91185b6c61"
+    },
+    {
+      "file": "scripts/database/review-factoring-payments.mjs",
+      "onlyPrettier": true,
+      "sha256": "303c6d93d276fde8a5b60190d1531097babf857454172ca54ec1f086a30bd92b"
+    },
+    {
+      "file": "scripts/prisma/renombrar-atributos-especiales.js",
+      "onlyPrettier": true,
+      "sha256": "4142b712155d711631153ed72255f33f86d761cbf6e816ff87a146d0e1b68ee7"
+    },
+    {
+      "file": "tests/mariadb/businessSupport.ts",
+      "onlyPrettier": true,
+      "sha256": "88f863ceb1f2291766004e97443db919929ea7c59624b46aab0b2bef465afea4"
+    },
+    {
+      "file": "tests/vitest/support/factoringBoundary.ts",
+      "onlyPrettier": true,
+      "sha256": "d769fbcdc2b7ea99300c17628ea5cf93854a7ab7874b23a11a142494be707597"
+    },
+    {
+      "file": "tests/vitest/unit/factoringestado.business.test.ts",
+      "onlyPrettier": true,
+      "sha256": "61f0bd409e9d49abba80364e33d7ac338d11f5978919bc610a3ebd7662a75511"
+    }
+  ]
+}

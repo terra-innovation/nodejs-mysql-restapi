@@ -1,0 +1,13 @@
+
+> ft-app-backend@1.0.1 test:vitest
+> cross-env TZ=UTC NODE_ENV=test vitest run --config vitest.config.ts tests/vitest/migrated/unit/services/secure/accesos.Service.test.ts
+
+
+ RUN  v5.0.3 D:/06_Workspace_nodejs/ft-app-backend
+
+
+ Test Files  1 passed (1)
+      Tests  18 passed (18)
+   Start at  13:51:16
+   Duration  1.33s (import 51%, transform 41%, tests 8%)
+

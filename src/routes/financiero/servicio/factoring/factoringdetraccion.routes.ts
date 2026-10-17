@@ -1,0 +1,12 @@
+import { Router } from "express";
+import * as controller from "#src/controllers/financiero/servicio/factoring/factoringdetraccion.Controller.js";
+import { isAuth, isRole } from "#src/middlewares/authMiddleware.js";
+import { catchedAsync } from "#src/utils/catchedAsync.js";
+const router = Router();
+const base = "/financiero/servicio/factoring/factoringdetraccion";
+router.use(base, isAuth, isRole([6]));
+router.get(`${base}/listar`, catchedAsync(controller.listarDetracciones));
+router.get(`${base}/master`, catchedAsync(controller.getMaster));
+router.get(`${base}/detalle/:id`, catchedAsync(controller.getDetraccion));
+router.patch(`${base}/actualizar/:id`, catchedAsync(controller.actualizarDetraccion));
+export default router;

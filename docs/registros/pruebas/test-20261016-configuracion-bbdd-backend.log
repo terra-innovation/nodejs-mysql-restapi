@@ -1,0 +1,287 @@
+
+> ft-app-backend@1.0.1 test:vitest
+> cross-env TZ=UTC NODE_ENV=test vitest run --config vitest.config.ts
+
+
+ RUN  v5.0.3 D:/06_Workspace_nodejs/ft-app-backend
+
+[11:39:22.718] [34mDEBUG[39m: [36mArchivo aceptado sin firma: documento.txt, extensión: .txt[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "(anonymous) (D:/06_Workspace_nodejs/ft-app-backend/src/middlewares/archivoMiddleware.ts:140)"
+    [35menv[39m: "test"
+[11:39:22.782] [31mERROR[39m: [36mNo se proporcionó ningún archivo[39m
+    [35mlog[39m: "error"
+    [35mlocation[39m: "(anonymous) (D:/06_Workspace_nodejs/ft-app-backend/src/middlewares/archivoMiddleware.ts:117)"
+    [35menv[39m: "test"
+[11:39:22.804] [31mERROR[39m: [36mExtensión de archivo no permitida: [.exe] en archivo [malware.exe][39m
+    [35mlog[39m: "error"
+    [35mlocation[39m: "fileFilter (D:/06_Workspace_nodejs/ft-app-backend/src/middlewares/archivoMiddleware.ts:78)"
+    [35menv[39m: "test"
+[11:39:22.810] [31mERROR[39m: 
+    [35mlog[39m: "error"
+    [35mlocation[39m: "(anonymous) (D:/06_Workspace_nodejs/ft-app-backend/src/middlewares/archivoMiddleware.ts:103)"
+    [35menv[39m: "test"
+    error: {
+      "name": "Error",
+      "message": "Archivo no permitido",
+      "stack":
+          Error: Archivo no permitido
+              at fileFilter (D:/06_Workspace_nodejs/ft-app-backend/src/middlewares/archivoMiddleware.ts:79:17)
+              at wrappedFileFilter (D:\06_Workspace_nodejs\ft-app-backend\node_modules\multer\index.js:134:7)
+              at Multipart.<anonymous> (D:\06_Workspace_nodejs\ft-app-backend\node_modules\multer\lib\make-middleware.js:344:7)
+              at Multipart.emit (node:events:514:28)
+              at HeaderParser.cb (D:\06_Workspace_nodejs\ft-app-backend\node_modules\busboy\lib\types\multipart.js:358:14)
+              at HeaderParser.push (D:\06_Workspace_nodejs\ft-app-backend\node_modules\busboy\lib\types\multipart.js:162:20)
+              at SBMH.ssCb [as _cb] (D:\06_Workspace_nodejs\ft-app-backend\node_modules\busboy\lib\types\multipart.js:394:37)
+              at feed (D:\06_Workspace_nodejs\ft-app-backend\node_modules\streamsearch\lib\sbmh.js:219:14)
+              at SBMH.push (D:\06_Workspace_nodejs\ft-app-backend\node_modules\streamsearch\lib\sbmh.js:104:16)
+              at Multipart._write (D:\06_Workspace_nodejs\ft-app-backend\node_modules\busboy\lib\types\multipart.js:567:19)
+    }
+[11:39:24.369] [34mDEBUG[39m: [36mservice::admin::simulateFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.simulateFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:402)"
+    [35menv[39m: "test"
+[11:39:24.389] [33mWARN[39m: [36mFactoring no tiene propuesta aceptada[39m
+    [35mlog[39m: "warn"
+    [35mlocation[39m: "runSimulation (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:152)"
+    [35menv[39m: "test"
+[11:39:24.397] [34mDEBUG[39m: [36mservice::admin::simulateFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.simulateFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:402)"
+    [35menv[39m: "test"
+[11:39:24.398] [33mWARN[39m: [36mFactoring no tiene propuesta aceptada[39m
+    [35mlog[39m: "warn"
+    [35mlocation[39m: "runSimulation (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:152)"
+    [35menv[39m: "test"
+[11:39:24.399] [34mDEBUG[39m: [36mservice::admin::simulateFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.simulateFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:402)"
+    [35menv[39m: "test"
+[11:39:24.400] [33mWARN[39m: [36mFactoring no tiene propuesta aceptada[39m
+    [35mlog[39m: "warn"
+    [35mlocation[39m: "runSimulation (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:152)"
+    [35menv[39m: "test"
+[11:39:24.402] [34mDEBUG[39m: [36mservice::admin::createFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.createFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:422)"
+    [35menv[39m: "test"
+[11:39:24.403] [33mWARN[39m: [36mFactoring no tiene propuesta aceptada[39m
+    [35mlog[39m: "warn"
+    [35mlocation[39m: "runSimulation (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:152)"
+    [35menv[39m: "test"
+[11:39:24.404] [34mDEBUG[39m: [36mservice::admin::createFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.createFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:422)"
+    [35menv[39m: "test"
+[11:39:24.405] [33mWARN[39m: [36mFactoring no tiene propuesta aceptada[39m
+    [35mlog[39m: "warn"
+    [35mlocation[39m: "runSimulation (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:152)"
+    [35menv[39m: "test"
+[11:39:24.406] [34mDEBUG[39m: [36mservice::admin::createFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.createFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:422)"
+    [35menv[39m: "test"
+[11:39:24.406] [33mWARN[39m: [36mFactoring no tiene propuesta aceptada[39m
+    [35mlog[39m: "warn"
+    [35mlocation[39m: "runSimulation (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:152)"
+    [35menv[39m: "test"
+[11:39:24.409] [34mDEBUG[39m: [36mservice::admin::simulateFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.simulateFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:402)"
+    [35menv[39m: "test"
+[11:39:24.409] [33mWARN[39m: [36mFactoring no tiene fecha de inicio de operación[39m
+    [35mlog[39m: "warn"
+    [35mlocation[39m: "runSimulation (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:157)"
+    [35menv[39m: "test"
+[11:39:24.411] [34mDEBUG[39m: [36mservice::admin::simulateFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.simulateFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:402)"
+    [35menv[39m: "test"
+[11:39:24.412] [33mWARN[39m: [36mFactoring no tiene fecha de inicio de operación[39m
+    [35mlog[39m: "warn"
+    [35mlocation[39m: "runSimulation (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:157)"
+    [35menv[39m: "test"
+[11:39:24.413] [34mDEBUG[39m: [36mservice::admin::simulateFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.simulateFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:402)"
+    [35menv[39m: "test"
+[11:39:24.414] [33mWARN[39m: [36mFactoring no tiene fecha de inicio de operación[39m
+    [35mlog[39m: "warn"
+    [35mlocation[39m: "runSimulation (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:157)"
+    [35menv[39m: "test"
+[11:39:24.415] [34mDEBUG[39m: [36mservice::admin::createFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.createFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:422)"
+    [35menv[39m: "test"
+[11:39:24.416] [33mWARN[39m: [36mFactoring no tiene fecha de inicio de operación[39m
+    [35mlog[39m: "warn"
+    [35mlocation[39m: "runSimulation (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:157)"
+    [35menv[39m: "test"
+[11:39:24.419] [34mDEBUG[39m: [36mservice::admin::createFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.createFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:422)"
+    [35menv[39m: "test"
+[11:39:24.420] [33mWARN[39m: [36mFactoring no tiene fecha de inicio de operación[39m
+    [35mlog[39m: "warn"
+    [35mlocation[39m: "runSimulation (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:157)"
+    [35menv[39m: "test"
+[11:39:24.431] [34mDEBUG[39m: [36mservice::admin::createFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.createFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:422)"
+    [35menv[39m: "test"
+[11:39:24.432] [33mWARN[39m: [36mFactoring no tiene fecha de inicio de operación[39m
+    [35mlog[39m: "warn"
+    [35mlocation[39m: "runSimulation (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:157)"
+    [35menv[39m: "test"
+[11:39:24.435] [34mDEBUG[39m: [36mservice::admin::createFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.createFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:422)"
+    [35menv[39m: "test"
+[11:39:24.513] [34mDEBUG[39m: [36mservice::admin::simulateFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.simulateFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:402)"
+    [35menv[39m: "test"
+[11:39:24.520] [34mDEBUG[39m: [36mservice::admin::simulateFactoringliquidacionService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.simulateFactoringliquidacionService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringliquidacion.Service.ts:402)"
+    [35menv[39m: "test"
+[11:39:25.900] [34mDEBUG[39m: [36mservice::admin::simulateFactoringpropuestaService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.simulateFactoringpropuestaService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:186)"
+    [35menv[39m: "test"
+[11:39:25.968] [32mINFO[39m: [36msimulacion: [39m
+    [35mlog[39m: "info"
+    [35mlocation[39m: "__vite_ssr_import_9__.prismaFT.client.$transaction.timeout (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:220)"
+    [35mdata[39m: {
+      "tda": "0.26",
+      "tdm": "0.02",
+      "monto_efectivo": "8000",
+      "monto_garantia": "2000"
+    }
+    [35menv[39m: "test"
+[11:39:25.977] [34mDEBUG[39m: [36mservice::admin::simulateFactoringpropuestaService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.simulateFactoringpropuestaService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:186)"
+    [35menv[39m: "test"
+[11:39:25.982] [32mINFO[39m: [36msimulacion: [39m
+    [35mlog[39m: "info"
+    [35mlocation[39m: "__vite_ssr_import_9__.prismaFT.client.$transaction.timeout (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:220)"
+    [35mdata[39m: {}
+    [35menv[39m: "test"
+[11:39:25.985] [34mDEBUG[39m: [36mservice::admin::simulateFactoringpropuestaService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.simulateFactoringpropuestaService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:186)"
+    [35menv[39m: "test"
+[11:39:25.987] [32mINFO[39m: [36msimulacion: [39m
+    [35mlog[39m: "info"
+    [35mlocation[39m: "__vite_ssr_import_9__.prismaFT.client.$transaction.timeout (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:220)"
+    [35mdata[39m: {}
+    [35menv[39m: "test"
+[11:39:25.989] [34mDEBUG[39m: [36mservice::admin::simulateFactoringpropuestaService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.simulateFactoringpropuestaService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:186)"
+    [35menv[39m: "test"
+[11:39:25.991] [32mINFO[39m: [36msimulacion: [39m
+    [35mlog[39m: "info"
+    [35mlocation[39m: "__vite_ssr_import_9__.prismaFT.client.$transaction.timeout (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:220)"
+    [35mdata[39m: {}
+    [35menv[39m: "test"
+[11:39:25.993] [34mDEBUG[39m: [36mservice::admin::simulateFactoringpropuestaService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.simulateFactoringpropuestaService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:186)"
+    [35menv[39m: "test"
+[11:39:25.996] [32mINFO[39m: [36msimulacion: [39m
+    [35mlog[39m: "info"
+    [35mlocation[39m: "__vite_ssr_import_9__.prismaFT.client.$transaction.timeout (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:220)"
+    [35mdata[39m: {}
+    [35menv[39m: "test"
+[11:39:26.000] [34mDEBUG[39m: [36mservice::admin::createFactoringpropuestaService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.createFactoringpropuestaService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:232)"
+    [35menv[39m: "test"
+[11:39:26.002] [32mINFO[39m: [36msimulacion: [39m
+    [35mlog[39m: "info"
+    [35mlocation[39m: "__vite_ssr_import_9__.prismaFT.client.$transaction.timeout (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:284)"
+    [35mdata[39m: {
+      "tda": "0.26",
+      "tdm": "0.02",
+      "monto_efectivo": "8000",
+      "monto_garantia": "2000",
+      "comisiones": [
+        {
+          "financiero_tipo": {
+            "idfinancierotipo": 1
+          },
+          "financiero_concepto": {
+            "idfinancieroconcepto": 1
+          },
+          "cantidad": 1,
+          "monto_unitario": "100",
+          "monto": "100",
+          "igv": "18",
+          "total": "118",
+          "porcentaje_monto": "0.01"
+        }
+      ]
+    }
+    [35menv[39m: "test"
+[11:39:26.006] [34mDEBUG[39m: [36mfactoringpropuestaCreated:[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "__vite_ssr_import_9__.prismaFT.client.$transaction.timeout (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:349)"
+    [35mdata[39m: {
+      "idfactoringpropuesta": 100
+    }
+    [35menv[39m: "test"
+[11:39:26.007] [34mDEBUG[39m: [36mfactoringpropuestahistorialestadoCreated:[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "__vite_ssr_import_9__.prismaFT.client.$transaction.timeout (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:370)"
+    [35mdata[39m: {
+      "idfactoringpropuestahistorialestado": 200
+    }
+    [35menv[39m: "test"
+[11:39:26.009] [34mDEBUG[39m: [36mservice::admin::activateFactoringpropuestaService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.activateFactoringpropuestaService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:438)"
+    [35menv[39m: "test"
+[11:39:26.012] [34mDEBUG[39m: [36mservice::admin::deleteFactoringpropuestaService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.deleteFactoringpropuestaService (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringpropuesta.Service.ts:457)"
+    [35menv[39m: "test"
+[11:39:26.726] [34mDEBUG[39m: [36mlogic::simulateFactoringLogicV4[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.simulateFactoringLogicV4 (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringCalculation.Service.ts:17)"
+    [35menv[39m: "test"
+[11:39:26.747] [34mDEBUG[39m: [36mlogic::simulateFactoringLogicV3[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "simulateFactoringLogicV3 (D:/06_Workspace_nodejs/ft-app-backend/src/services/admin/factoringCalculation.Service.ts:30)"
+    [35menv[39m: "test"
+[11:39:30.666] [34mDEBUG[39m: [36mservice::financiero::subirFacturaFactorService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.subirFacturaFactorService (D:/06_Workspace_nodejs/ft-app-backend/src/services/financiero/factura.Service.ts:26)"
+    [35menv[39m: "test"
+[11:39:30.683] [34mDEBUG[39m: [36mservice::financiero::getFacturasByFactoringidService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.getFacturasByFactoringidService (D:/06_Workspace_nodejs/ft-app-backend/src/services/financiero/factura.Service.ts:34)"
+    [35menv[39m: "test"
+[11:39:30.685] [34mDEBUG[39m: [36mservice::financiero::activateFacturaService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.activateFacturaService (D:/06_Workspace_nodejs/ft-app-backend/src/services/financiero/factura.Service.ts:42)"
+    [35menv[39m: "test"
+[11:39:30.687] [34mDEBUG[39m: [36mservice::financiero::deleteFacturaService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.deleteFacturaService (D:/06_Workspace_nodejs/ft-app-backend/src/services/financiero/factura.Service.ts:50)"
+    [35menv[39m: "test"
+[11:39:30.689] [34mDEBUG[39m: [36mservice::financiero::getFacturaMasterService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.getFacturaMasterService (D:/06_Workspace_nodejs/ft-app-backend/src/services/financiero/factura.Service.ts:58)"
+    [35menv[39m: "test"
+[11:39:30.691] [34mDEBUG[39m: [36mservice::financiero::getFacturasService[39m
+    [35mlog[39m: "debug"
+    [35mlocation[39m: "Module.getFacturasService (D:/06_Workspace_nodejs/ft-app-backend/src/services/financiero/factura.Service.ts:66)"
+    [35menv[39m: "test"
+
+ Test Files  54 passed | 1 skipped (55)
+      Tests  3689 passed | 3 todo (3692)
+   Start at  11:38:50
+   Duration  62.95s (tests 72%, import 22%, transform 6%)
+

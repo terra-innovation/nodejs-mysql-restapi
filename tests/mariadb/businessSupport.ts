@@ -11,12 +11,20 @@ const connection = await connect(options);
 try {
   const rows = await connection.query(`SELECT * FROM ${quoteIdentifier(guardTable)} WHERE run_id=?`, [runId]);
   if (rows.length !== 1 || rows[0].schema_hash !== baseline.sha256) throw new Error("Base ajena o estructura incorrecta.");
-} finally { await connection.end(); }
+} finally {
+  await connection.end();
+}
 export const db = new PrismaClient({ adapter: createMariaDbAdapter(url) });
 
 export async function seedMasters() {
   await db.documento_tipo.create({ data: { iddocumentotipo: 1, nombre: "Prueba", alias: "PRUEBA" } });
   const usuario = await db.usuario.create({ data: { code: "IT-USUARIO", iddocumentotipo: 1, documentonumero: "IT-0001", usuarionombres: "Sintetico", apellidopaterno: "Prueba", apellidomaterno: "Prueba", email: "it@example.test", celular: "000000000", hash: "it-hash" } });
+  for (const [id, code] of [
+    [1, "PENDIENTE"],
+    [2, "PARCIAL"],
+    [3, "CANCELADO"],
+  ] as const)
+    await db.factoring_pago_estado.create({ data: { idfactoringpagoestado: id, code, nombre: code, alias: code, color: "info", idusuariocrea: usuario.idusuario, idusuariomod: usuario.idusuario } });
   await db.archivo_estado.create({ data: { idarchivoestado: 1, nombre: "Prueba" } });
   for (const id of [8, 9]) await db.archivo_tipo.create({ data: { idarchivotipo: id, nombre: `Prueba ${id}`, extensiones_permitidas: "xml,pdf", mimetypes_permitidos: "application/xml,application/pdf" } });
   for (const codigo of ["PEN", "USD"]) await db.moneda.create({ data: { idmoneda: codigo === "PEN" ? 1 : 2, code: codigo, codigo, nombre: codigo, alias: codigo, simbolo: codigo === "PEN" ? "S/" : "$", color: "blue" } });
@@ -49,6 +57,11 @@ export async function seedApproval(idusuario: number) {
 }
 
 export async function cleanFixtures() {
+  await db.factoring_pago_historial.deleteMany({});
+  await db.factoring_pago_detalle.deleteMany({});
+  await db.factoring_pago.deleteMany({});
+  await db.factoring_pago_estado.deleteMany({});
+  await db.factor_transaccion_bancaria.deleteMany({});
   await db.usuario_rol.deleteMany({});
   await db.credencial.deleteMany({});
   await db.rol.deleteMany({});

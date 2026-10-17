@@ -1,0 +1,16 @@
+{
+  "checkedAt": "2026-10-16T02:39:08.980Z",
+  "source": ".env.development",
+  "targetSha256": "f9c511527fec5ac2f6b231619de812ce248bc3ec699a0e42f9f2dc33fb8f7527",
+  "sameDestinationAsBankDdl": true,
+  "bankTablesPresentAndUnchanged": true,
+  "sbsTablesPresent": [
+    "sbs_saldo_contable_detalle",
+    "sbs_saldo_contable_operacion_tipo",
+    "sbs_saldo_contable_periodo",
+    "sbs_saldo_contable_periodo_estado"
+  ],
+  "result": "passed",
+  "noBusinessRowsRead": true,
+  "noDatabaseWrites": true
+}

@@ -1,0 +1,15 @@
+
+> ft-app-backend@1.0.1 ci:check
+> node scripts/quality/ci-runner.ts --base 98b5a7687ff23cd04cd201debe4a462f72283d82
+
+prisma: APROBADO; docs/registros/pruebas/test-ci-backend-prisma.log
+types: APROBADO; docs/registros/pruebas/test-ci-backend-types.log
+lint: APROBADO; docs/registros/pruebas/test-ci-backend-lint.log
+format: APROBADO; docs/registros/pruebas/test-ci-backend-format.log
+frontend-contract: APROBADO; docs/registros/pruebas/test-ci-backend-frontend-contract.log
+vitest: APROBADO; docs/registros/pruebas/test-ci-backend-vitest.log
+build: APROBADO; docs/registros/compilaciones/build-ci-backend.log
+doctor: APROBADO; docs/registros/pruebas/test-ci-backend-doctor.log
+integration: FALLÓ; docs/registros/pruebas/test-ci-backend-integration.log
+evidence: FALLÓ; docs/registros/pruebas/test-ci-backend-evidence.log
+Resumen: docs/registros/pruebas/test-ci-backend-summary.json

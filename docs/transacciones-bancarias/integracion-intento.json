@@ -1,0 +1,9 @@
+{
+  "runId": "ed5669cfca8b77ea71c640b1",
+  "image": "mariadb:11.4.10",
+  "startedAt": "2026-10-16T03:27:54.348Z",
+  "status": "failed",
+  "cleanup": "not-created",
+  "error": "docker falló (1). Comprueba que Docker esté iniciado.",
+  "finishedAt": "2026-10-16T03:27:54.516Z"
+}

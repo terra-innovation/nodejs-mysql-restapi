@@ -1,0 +1,590 @@
+
+> ft-app-backend@1.0.1 test:integration
+> node scripts/integration/run-mariadb.mjs
+
+Preparando mariadb:11.4.10 con 131 tablas. No se consulta desarrollo.
+MariaDB lista. Ejecutando pruebas reales de entorno y negocio con Prisma.
+
+ RUN  v5.0.3 D:/06_Workspace_nodejs/ft-app-backend
+
+ ✓ tests/mariadb/pdfHttp.test.ts (104 tests) 159650ms
+   ✓ PDF reales: contenido, descarga y limpieza (104)
+     ✓ admin/propuesta, PEN: PDF contiene moneda, fechas e importes SQL y elimina temporal 6807ms
+     ✓ admin/propuesta, USD: PDF contiene moneda, fechas e importes SQL y elimina temporal 3848ms
+     ✓ financiero/propuesta, PEN: PDF contiene moneda, fechas e importes SQL y elimina temporal 3733ms
+     ✓ financiero/propuesta, USD: PDF contiene moneda, fechas e importes SQL y elimina temporal 3103ms
+     ✓ admin/liquidacion, PEN: PDF contiene moneda, fechas e importes SQL y elimina temporal 2947ms
+     ✓ admin/liquidacion, USD: PDF contiene moneda, fechas e importes SQL y elimina temporal 1696ms
+     ✓ financiero/liquidacion, PEN: PDF contiene moneda, fechas e importes SQL y elimina temporal 1223ms
+     ✓ financiero/liquidacion, USD: PDF contiene moneda, fechas e importes SQL y elimina temporal 1175ms
+     ✓ liquidación PEN por cobrar contiene total y cuentas de pago SQL 1179ms
+     ✓ liquidación USD por cobrar contiene total y cuentas de pago SQL 963ms
+     ✓ admin/liquidacion PEN, anticipado: fechas, reintegro/interés y saldo SQL en PDF 1043ms
+     ✓ admin/liquidacion PEN, mora: fechas, reintegro/interés y saldo SQL en PDF 1234ms
+     ✓ financiero/liquidacion PEN, anticipado: fechas, reintegro/interés y saldo SQL en PDF 1467ms
+     ✓ financiero/liquidacion PEN, mora: fechas, reintegro/interés y saldo SQL en PDF 1105ms
+     ✓ admin/liquidacion USD, anticipado: fechas, reintegro/interés y saldo SQL en PDF 990ms
+     ✓ admin/liquidacion USD, mora: fechas, reintegro/interés y saldo SQL en PDF 1080ms
+     ✓ financiero/liquidacion USD, anticipado: fechas, reintegro/interés y saldo SQL en PDF 966ms
+     ✓ financiero/liquidacion USD, mora: fechas, reintegro/interés y saldo SQL en PDF 927ms
+     ✓ propuesta PEN: 60 conceptos completos entre páginas, total y pie presentes 2426ms
+     ✓ propuesta USD: 60 conceptos completos entre páginas, total y pie presentes 2595ms
+     ✓ liquidacion PEN: 60 conceptos completos entre páginas, total y pie presentes 2361ms
+     ✓ liquidacion USD: 60 conceptos completos entre páginas, total y pie presentes 3261ms
+     ✓ admin/propuesta PEN: nombres largos y veinte facturas conservan texto e importes; caracteriza DT-PDF-05 1601ms
+     ✓ admin/propuesta USD: nombres largos y veinte facturas conservan texto e importes; caracteriza DT-PDF-05 1350ms
+     ✓ financiero/propuesta PEN: nombres largos y veinte facturas conservan texto e importes; caracteriza DT-PDF-05 1193ms
+     ✓ financiero/propuesta USD: nombres largos y veinte facturas conservan texto e importes; caracteriza DT-PDF-05 1250ms
+     ✓ admin/liquidacion PEN: nombres largos y veinte facturas conservan texto e importes; caracteriza DT-PDF-05 1175ms
+     ✓ admin/liquidacion USD: nombres largos y veinte facturas conservan texto e importes; caracteriza DT-PDF-05 1129ms
+     ✓ financiero/liquidacion PEN: nombres largos y veinte facturas conservan texto e importes; caracteriza DT-PDF-05 1165ms
+     ✓ financiero/liquidacion USD: nombres largos y veinte facturas conservan texto e importes; caracteriza DT-PDF-05 1181ms
+     ✓ admin/propuesta PEN: diagnóstico DT-PDF-05 pendiente, criterio sin superposición incumplido 1047ms
+     ✓ admin/propuesta USD: diagnóstico DT-PDF-05 pendiente, criterio sin superposición incumplido 1002ms
+     ✓ financiero/propuesta PEN: diagnóstico DT-PDF-05 pendiente, criterio sin superposición incumplido 1193ms
+     ✓ financiero/propuesta USD: diagnóstico DT-PDF-05 pendiente, criterio sin superposición incumplido 1075ms
+     ✓ financiero/liquidacion: rechaza expirado sin generar PDF 301ms
+     ✓ admin/propuesta: registro inexistente sin archivo responde 404 325ms
+     ✓ financiero/propuesta: registro inexistente sin archivo responde 404 378ms
+     ✓ admin/liquidacion: registro inexistente sin archivo responde 404 361ms
+     ✓ financiero/liquidacion: registro inexistente sin archivo responde 404 351ms
+     ✓ admin/propuesta: fallo de entrega después de generar limpia el PDF 1272ms
+     ✓ financiero/propuesta: fallo de entrega después de generar limpia el PDF 1714ms
+     ✓ admin/liquidacion: fallo de entrega después de generar limpia el PDF 1907ms
+     ✓ financiero/liquidacion: fallo de entrega después de generar limpia el PDF 1574ms
+     ✓ propuesta: fallo posterior a generación deja archivo; caracteriza límite anterior al finally 1374ms
+     ✓ liquidacion: fallo posterior a generación deja archivo; caracteriza límite anterior al finally 1514ms
+     ✓ admin/propuesta PEN: cancelación TCP antes de cabeceras limpia temporal y permite reintentar 1914ms
+     ✓ admin/propuesta USD: cancelación TCP antes de cabeceras limpia temporal y permite reintentar 1483ms
+     ✓ admin/propuesta PEN: cancelación TCP tras cabeceras antes del cuerpo limpia temporal y permite reintentar 2219ms
+     ✓ admin/propuesta USD: cancelación TCP tras cabeceras antes del cuerpo limpia temporal y permite reintentar 2823ms
+     ✓ financiero/propuesta PEN: cancelación TCP antes de cabeceras limpia temporal y permite reintentar 2118ms
+     ✓ financiero/propuesta USD: cancelación TCP antes de cabeceras limpia temporal y permite reintentar 2095ms
+     ✓ financiero/propuesta PEN: cancelación TCP tras cabeceras antes del cuerpo limpia temporal y permite reintentar 2227ms
+     ✓ financiero/propuesta USD: cancelación TCP tras cabeceras antes del cuerpo limpia temporal y permite reintentar 1950ms
+     ✓ admin/liquidacion PEN: cancelación TCP antes de cabeceras limpia temporal y permite reintentar 2564ms
+     ✓ admin/liquidacion USD: cancelación TCP antes de cabeceras limpia temporal y permite reintentar 2256ms
+     ✓ admin/liquidacion PEN: cancelación TCP tras cabeceras antes del cuerpo limpia temporal y permite reintentar 2018ms
+     ✓ admin/liquidacion USD: cancelación TCP tras cabeceras antes del cuerpo limpia temporal y permite reintentar 1954ms
+     ✓ financiero/liquidacion PEN: cancelación TCP antes de cabeceras limpia temporal y permite reintentar 1959ms
+     ✓ financiero/liquidacion USD: cancelación TCP antes de cabeceras limpia temporal y permite reintentar 1744ms
+     ✓ financiero/liquidacion PEN: cancelación TCP tras cabeceras antes del cuerpo limpia temporal y permite reintentar 2055ms
+     ✓ financiero/liquidacion USD: cancelación TCP tras cabeceras antes del cuerpo limpia temporal y permite reintentar 1617ms
+     ✓ admin/propuesta PEN: fallo de escritura open, conserva SQL y caracteriza DT-PDF-01 1375ms
+     ✓ admin/propuesta USD: fallo de escritura open, conserva SQL y caracteriza DT-PDF-01 1649ms
+     ✓ admin/propuesta PEN: fallo de escritura partial, conserva SQL y caracteriza DT-PDF-01 1459ms
+     ✓ admin/propuesta USD: fallo de escritura partial, conserva SQL y caracteriza DT-PDF-01 1532ms
+     ✓ financiero/propuesta PEN: fallo de escritura open, conserva SQL y caracteriza DT-PDF-01 1622ms
+     ✓ financiero/propuesta USD: fallo de escritura open, conserva SQL y caracteriza DT-PDF-01 1588ms
+     ✓ financiero/propuesta PEN: fallo de escritura partial, conserva SQL y caracteriza DT-PDF-01 1672ms
+     ✓ financiero/propuesta USD: fallo de escritura partial, conserva SQL y caracteriza DT-PDF-01 1729ms
+     ✓ admin/liquidacion PEN: fallo de escritura open, conserva SQL y caracteriza DT-PDF-01 1559ms
+     ✓ admin/liquidacion USD: fallo de escritura open, conserva SQL y caracteriza DT-PDF-01 1521ms
+     ✓ admin/liquidacion PEN: fallo de escritura partial, conserva SQL y caracteriza DT-PDF-01 1579ms
+     ✓ admin/liquidacion USD: fallo de escritura partial, conserva SQL y caracteriza DT-PDF-01 1497ms
+     ✓ financiero/liquidacion PEN: fallo de escritura open, conserva SQL y caracteriza DT-PDF-01 1594ms
+     ✓ financiero/liquidacion USD: fallo de escritura open, conserva SQL y caracteriza DT-PDF-01 1643ms
+     ✓ financiero/liquidacion PEN: fallo de escritura partial, conserva SQL y caracteriza DT-PDF-01 1516ms
+     ✓ financiero/liquidacion USD: fallo de escritura partial, conserva SQL y caracteriza DT-PDF-01 1577ms
+     ✓ propuesta PEN, admin/admin: caracteriza colisión del mismo temporal y limpieza concurrente 1927ms
+     ✓ propuesta USD, admin/admin: caracteriza colisión del mismo temporal y limpieza concurrente 1691ms
+     ✓ propuesta PEN, financiero/financiero: caracteriza colisión del mismo temporal y limpieza concurrente 2038ms
+     ✓ propuesta USD, financiero/financiero: caracteriza colisión del mismo temporal y limpieza concurrente 1667ms
+     ✓ propuesta PEN, admin/financiero: caracteriza colisión del mismo temporal y limpieza concurrente 1609ms
+     ✓ propuesta USD, admin/financiero: caracteriza colisión del mismo temporal y limpieza concurrente 2476ms
+     ✓ liquidacion PEN, admin/admin: caracteriza colisión del mismo temporal y limpieza concurrente 1639ms
+     ✓ liquidacion USD, admin/admin: caracteriza colisión del mismo temporal y limpieza concurrente 2053ms
+     ✓ liquidacion PEN, financiero/financiero: caracteriza colisión del mismo temporal y limpieza concurrente 1603ms
+     ✓ liquidacion USD, financiero/financiero: caracteriza colisión del mismo temporal y limpieza concurrente 1547ms
+     ✓ liquidacion PEN, admin/financiero: caracteriza colisión del mismo temporal y limpieza concurrente 1617ms
+     ✓ liquidacion USD, admin/financiero: caracteriza colisión del mismo temporal y limpieza concurrente 1248ms
+     ✓ propuesta PEN: documentos distintos descargan completos sin interferencia 1309ms
+     ✓ propuesta USD: documentos distintos descargan completos sin interferencia 1530ms
+     ✓ liquidacion PEN: documentos distintos descargan completos sin interferencia 1476ms
+     ✓ liquidacion USD: documentos distintos descargan completos sin interferencia 1662ms
+ ✓ tests/mariadb/settlement.test.ts (58 tests) 48139ms
+   ✓ Liquidaciones: cálculos y persistencia en MariaDB (43)
+     ✓ DT-LIQ-02-RANGO: diez decimales se conservan en Prisma y el producto queda a dos 1150ms
+     ✓ DT-LIQ-02-RANGO: esquema antiguo rechaza alta precisión antes de guardar 900ms
+     ✓ DT-LIQ-02-RANGO: conserva exactamente los dos factores admitidos al guardar 982ms
+     ✓ DT-LIQ-06: reintegro sin garantía en PEN descuenta el gasto una vez al guardar y leer 1103ms
+     ✓ DT-LIQ-06: reintegro sin garantía en USD descuenta el gasto una vez al guardar y leer 1092ms
+     ✓ DT-LIQ-02-RANGO: 1.00000000001/100 rechaza sin registros parciales 798ms
+     ✓ DT-LIQ-02-RANGO: 1/100.00000000001 rechaza sin registros parciales 846ms
+     ✓ DT-LIQ-02-RANGO: 2/60000000 rechaza sin registros parciales 908ms
+     ✓ DT-LIQ-02-RANGO: 1/90000000 rechaza sin registros parciales 891ms
+     ✓ DT-LIQ-03: tipo 2, afecto false, factor -1 guarda impuesto y desglose coherentes 1060ms
+     ✓ DT-LIQ-03: tipo 2, afecto false, factor 1 guarda impuesto y desglose coherentes 1077ms
+     ✓ DT-LIQ-03: tipo 2, afecto true, factor -1 guarda impuesto y desglose coherentes 1112ms
+     ✓ DT-LIQ-03: tipo 2, afecto true, factor 1 guarda impuesto y desglose coherentes 859ms
+     ✓ DT-LIQ-03: tipo 4, afecto false, factor -1 guarda impuesto y desglose coherentes 877ms
+     ✓ DT-LIQ-03: tipo 4, afecto false, factor 1 guarda impuesto y desglose coherentes 953ms
+     ✓ DT-LIQ-03: tipo 4, afecto true, factor -1 guarda impuesto y desglose coherentes 979ms
+     ✓ DT-LIQ-03: tipo 4, afecto true, factor 1 guarda impuesto y desglose coherentes 968ms
+     ✓ DT-LIQ-01: rechaza pago anterior 2026-08-31T12:00:00-05:00 sin registros financieros 718ms
+     ✓ DT-LIQ-01: rechaza pago anterior 2026-08-21T12:00:00-05:00 sin registros financieros 696ms
+     ✓ DT-LIQ-02: rechaza cantidad/monto -1/100 sin registros financieros 677ms
+     ✓ DT-LIQ-02: rechaza cantidad/monto 1/-100 sin registros financieros 720ms
+     ✓ DT-LIQ-02: rechaza cantidad/monto -1/-100 sin registros financieros 662ms
+     ✓ PEN, pago anticipado guarda y lee cabecera y detalles 937ms
+     ✓ PEN, pago puntual guarda y lee cabecera y detalles 922ms
+     ✓ PEN, pago mora guarda y lee cabecera y detalles 933ms
+     ✓ USD, pago anticipado guarda y lee cabecera y detalles 916ms
+     ✓ USD, pago puntual guarda y lee cabecera y detalles 919ms
+     ✓ USD, pago mora guarda y lee cabecera y detalles 865ms
+     ✓ gasto interbancario en PEN y exoneración se conservan al leer 870ms
+     ✓ gasto interbancario en USD y exoneración se conservan al leer 980ms
+     ✓ cargo adicional tipo 2, monto 100 persiste IGV y saldo 862ms
+     ✓ cargo adicional tipo 4, monto 100 persiste IGV y saldo 791ms
+     ✓ cargo adicional tipo 2, monto 5000 persiste IGV y saldo 748ms
+     ✓ falta operacion: rechaza y no persiste una liquidación 661ms
+     ✓ falta propuesta: rechaza y no persiste una liquidación 723ms
+     ✓ falta inicio: rechaza y no persiste una liquidación 666ms
+     ✓ falta estado: rechaza y no persiste una liquidación 648ms
+     ✓ falta tipo: rechaza y no persiste una liquidación 739ms
+     ✓ falta concepto: rechaza y no persiste una liquidación 765ms
+     ✓ fallo SQL en cabecera revierte cabecera y todos los detalles 793ms
+     ✓ fallo SQL en segundo detalle revierte cabecera y todos los detalles 780ms
+     ✓ cambia estado y fecha; elimina y reactiva conservando importes y detalles 796ms
+     ✓ fallo SQL al cambiar estado conserva estado, fecha y actor anteriores 911ms
+   ✓ Transferencias al cedente: servicio y SQL reales (15)
+     ✓ guarda y lee transferencia PEN con constancia y cuenta bancaria 897ms
+     ✓ guarda y lee transferencia USD con constancia y cuenta bancaria 693ms
+     ✓ referencia factoringid desconocida no guarda registros parciales 608ms
+     ✓ referencia factoringtransferenciatipoid desconocida no guarda registros parciales 679ms
+     ✓ referencia factoringtransferenciaestadoid desconocida no guarda registros parciales 733ms
+     ✓ referencia factorcuentabancariaid desconocida no guarda registros parciales 703ms
+     ✓ referencia empresacuentabancariaid desconocida no guarda registros parciales 743ms
+     ✓ referencia monedaid desconocida no guarda registros parciales 629ms
+     ✓ referencia archivo_constancia_transferencia desconocida no guarda registros parciales 572ms
+     ✓ fallo SQL en transferencia revierte transferencia y vínculo de archivo 657ms
+     ✓ fallo SQL en constancia revierte transferencia y vínculo de archivo 769ms
+     ✓ cambia estado; elimina y reactiva conservando monto y constancia 790ms
+     ✓ fallo SQL al actualizar conserva transferencia y constancia 747ms
+     ✓ actualización con transferencia desconocido conserva el registro existente 781ms
+     ✓ actualización con estado desconocido conserva el registro existente 696ms
+ ✓ tests/mariadb/invoiceHttp.test.ts (83 tests) 45233ms
+   ✓ HTTP, JWT, Multer, disco, parser y MariaDB reales (7)
+     ✓ /api/v1/admin/factura/factor/subir, PEN: carga ambos archivos, registra y lee moneda/fechas/actor 1698ms
+     ✓ /api/v1/admin/factura/factor/subir, USD: carga ambos archivos, registra y lee moneda/fechas/actor 815ms
+     ✓ /api/v1/financiero/factura/factor/subir, PEN: carga ambos archivos, registra y lee moneda/fechas/actor 694ms
+     ✓ /api/v1/financiero/factura/factor/subir, USD: carga ambos archivos, registra y lee moneda/fechas/actor 794ms
+     ✓ /api/v1/empresario/servicio/factoring/factura/subir, PEN: carga ambos archivos, registra y lee moneda/fechas/actor 985ms
+     ✓ /api/v1/empresario/servicio/factoring/factura/subir, USD: carga ambos archivos, registra y lee moneda/fechas/actor 981ms
+     ✓ lee las facturas de una operación desde el router administrativo con rol 2 901ms
+   ✓ Eliminación de archivos por HTTP: contrato vigente (14)
+     ✓ sin sesión rechaza eliminación sin efectos 480ms
+     ✓ rol incorrecto rechaza eliminación sin efectos 455ms
+     ✓ JWT expirado rechaza eliminación sin efectos 441ms
+     ✓ sin roles rechaza eliminación sin efectos 381ms
+     ✓ firma inválida rechaza eliminación sin efectos 430ms
+     ✓ XML: elimina lógicamente, conserva contenido y permite descarga 546ms
+     ✓ PDF: elimina lógicamente, conserva contenido y permite descarga 552ms
+     ✓ identificador invalid responde 400 sin tocar otros archivos 496ms
+     ✓ identificador 00000000-0000-0000-0000-000000000000 responde 404 sin tocar otros archivos 483ms
+     ✓ XML vinculado a factura: eliminación lógica conserva factura, vínculo y descarga 809ms
+     ✓ PDF vinculado a factura: eliminación lógica conserva factura, vínculo y descarga 759ms
+     ✓ otro usuario con rol 5 puede eliminar un archivo ajeno: limitación de pertenencia 444ms
+     ✓ repetir la eliminación responde 204 y conserva una sola fila y copia 522ms
+     ✓ fallo SQL durante eliminación devuelve 500 y conserva fila activa y contenido 521ms
+   ✓ JWT expirados y sesiones sin roles válidos (30)
+     ✓ carga: expirado responde 401 antes de Multer 407ms
+     ✓ carga: sin usuario responde 401 antes de Multer 399ms
+     ✓ carga: sin roles responde 403 antes de Multer 461ms
+     ✓ carga: roles nulos responde 403 antes de Multer 423ms
+     ✓ carga: roles vacíos responde 403 antes de Multer 355ms
+     ✓ carga: rol desconocido responde 403 antes de Multer 353ms
+     ✓ /api/v1/admin/factura/factor/subir: expirado responde 401 y conserva las cargas previas 475ms
+     ✓ /api/v1/admin/factura/factor/subir: sin usuario responde 401 y conserva las cargas previas 418ms
+     ✓ /api/v1/admin/factura/factor/subir: sin roles responde 403 y conserva las cargas previas 479ms
+     ✓ /api/v1/admin/factura/factor/subir: roles nulos responde 403 y conserva las cargas previas 455ms
+     ✓ /api/v1/admin/factura/factor/subir: roles vacíos responde 403 y conserva las cargas previas 599ms
+     ✓ /api/v1/admin/factura/factor/subir: rol desconocido responde 403 y conserva las cargas previas 571ms
+     ✓ /api/v1/financiero/factura/factor/subir: expirado responde 401 y conserva las cargas previas 608ms
+     ✓ /api/v1/financiero/factura/factor/subir: sin usuario responde 401 y conserva las cargas previas 566ms
+     ✓ /api/v1/financiero/factura/factor/subir: sin roles responde 403 y conserva las cargas previas 604ms
+     ✓ /api/v1/financiero/factura/factor/subir: roles nulos responde 403 y conserva las cargas previas 488ms
+     ✓ /api/v1/financiero/factura/factor/subir: roles vacíos responde 403 y conserva las cargas previas 454ms
+     ✓ /api/v1/financiero/factura/factor/subir: rol desconocido responde 403 y conserva las cargas previas 417ms
+     ✓ /api/v1/empresario/servicio/factoring/factura/subir: expirado responde 401 y conserva las cargas previas 424ms
+     ✓ /api/v1/empresario/servicio/factoring/factura/subir: sin usuario responde 401 y conserva las cargas previas 380ms
+     ✓ /api/v1/empresario/servicio/factoring/factura/subir: sin roles responde 403 y conserva las cargas previas 425ms
+     ✓ /api/v1/empresario/servicio/factoring/factura/subir: roles nulos responde 403 y conserva las cargas previas 412ms
+     ✓ /api/v1/empresario/servicio/factoring/factura/subir: roles vacíos responde 403 y conserva las cargas previas 457ms
+     ✓ /api/v1/empresario/servicio/factoring/factura/subir: rol desconocido responde 403 y conserva las cargas previas 525ms
+     ✓ descarga: expirado responde 401 sin entregar el contenido 450ms
+     ✓ descarga: sin usuario responde 401 sin entregar el contenido 427ms
+     ✓ descarga: sin roles responde 403 sin entregar el contenido 443ms
+     ✓ descarga: roles nulos responde 403 sin entregar el contenido 444ms
+     ✓ descarga: roles vacíos responde 403 sin entregar el contenido 403ms
+     ✓ descarga: rol desconocido responde 403 sin entregar el contenido 392ms
+   ✓ Rechazos de carga: middleware y catálogos reales (17)
+     ✓ límite global 20 MiB: desplazamiento -1 byte(s) devuelve 200 1040ms
+     ✓ límite global 20 MiB: desplazamiento 0 byte(s) devuelve 200 1113ms
+     ✓ límite global 20 MiB: desplazamiento 1 byte(s) devuelve 400 647ms
+     ✓ autorización undefined devuelve 403 antes de guardar archivo 383ms
+     ✓ autorización invalid devuelve 401 antes de guardar archivo 353ms
+     ✓ autorización Bearer invalid devuelve 401 antes de guardar archivo 376ms
+     ✓ autorización wrong-key devuelve 401 antes de guardar archivo 372ms
+     ✓ autorización wrong-role devuelve 403 antes de guardar archivo 315ms
+     ✓ rechaza sin archivo sin registro de archivo 340ms
+     ✓ rechaza campo incorrecto sin registro de archivo 310ms
+     ✓ rechaza dos archivos sin registro de archivo 321ms
+     ✓ rechaza campos extra sin registro de archivo 359ms
+     ✓ rechaza extension bloqueada sin registro de archivo 386ms
+     ✓ rechaza PDF sin firma sin registro de archivo 431ms
+     ✓ rechaza contenido PNG sin registro de archivo 490ms
+     ✓ rechaza tipo inexistente sin registro de archivo 485ms
+     ✓ rechaza tamaño de catálogo sin registro de archivo 477ms
+   ✓ Registro de factura: permisos, validación y rollback HTTP/SQL (15)
+     ✓ tipo de archivo con código inválido responde 400 antes del servicio; caracteriza temporal pendiente de limpieza 544ms
+     ✓ /api/v1/admin/factura/factor/subir rechaza rol 2 aunque los archivos existan 1038ms
+     ✓ /api/v1/financiero/factura/factor/subir rechaza rol 3 aunque los archivos existan 1031ms
+     ✓ /api/v1/empresario/servicio/factoring/factura/subir rechaza rol 6 aunque los archivos existan 698ms
+     ✓ sin identificadores se rechaza y no deja una factura parcial 539ms
+     ✓ uuid inválido se rechaza y no deja una factura parcial 449ms
+     ✓ archivo ausente se rechaza y no deja una factura parcial 466ms
+     ✓ tipos intercambiados se rechaza y no deja una factura parcial 539ms
+     ✓ XML inválido se rechaza y no deja una factura parcial 536ms
+     ✓ otra estructura se rechaza y no deja una factura parcial 467ms
+     ✓ otra clase documento se rechaza y no deja una factura parcial 486ms
+     ✓ moneda sin maestro se rechaza y no deja una factura parcial 595ms
+     ✓ fallo SQL PDF se rechaza y no deja una factura parcial 613ms
+     ✓ empresario no elegible se rechaza y no deja una factura parcial 623ms
+     ✓ fallo SQL al guardar archivo revierte el registro y elimina temporal; caracteriza copia final huérfana 459ms
+ ✓ tests/mariadb/runtime.test.ts (2 tests) 31073ms
+   ✓ Backend compilado: proceso real y MariaDB exclusiva (2)
+     ✓ arranca, consulta MariaDB por HTTP y cierra mediante el hook real 3970ms
+     ✓ credenciales MariaDB inválidas agotan reintentos y salen con código 1 sin escuchar 21412ms
+ ✓ tests/mariadb/financialHttp.test.ts (60 tests) 82175ms
+   ✓ HTTP administrativo y financiero con MariaDB real (60)
+     ✓ factoringpropuesta, PEN: crea con actor de sesión y consulta con ambos perfiles 5007ms
+     ✓ factoringpropuesta, USD: crea con actor de sesión y consulta con ambos perfiles 3488ms
+     ✓ factoringliquidacion, PEN: crea con actor de sesión y consulta con ambos perfiles 2644ms
+     ✓ factoringliquidacion, USD: crea con actor de sesión y consulta con ambos perfiles 2774ms
+     ✓ factoringtransferenciacedente, PEN: crea con actor de sesión y consulta con ambos perfiles 1914ms
+     ✓ factoringtransferenciacedente, USD: crea con actor de sesión y consulta con ambos perfiles 2816ms
+     ✓ factoringpropuesta: creación rechaza sin sesión sin escribir 535ms
+     ✓ factoringpropuesta: creación rechaza rol financiero sin escribir 835ms
+     ✓ factoringpropuesta: creación rechaza JWT expirado sin escribir 1105ms
+     ✓ factoringliquidacion: creación rechaza sin sesión sin escribir 485ms
+     ✓ factoringliquidacion: creación rechaza rol financiero sin escribir 516ms
+     ✓ factoringliquidacion: creación rechaza JWT expirado sin escribir 573ms
+     ✓ factoringtransferenciacedente: creación rechaza sin sesión sin escribir 642ms
+     ✓ factoringtransferenciacedente: creación rechaza rol financiero sin escribir 1040ms
+     ✓ factoringtransferenciacedente: creación rechaza JWT expirado sin escribir 1144ms
+     ✓ admin/factoringpropuesta: consulta rechaza sin sesión antes de SQL de negocio 1222ms
+     ✓ admin/factoringpropuesta: consulta rechaza rol ajeno antes de SQL de negocio 708ms
+     ✓ admin/factoringpropuesta: consulta rechaza JWT expirado antes de SQL de negocio 593ms
+     ✓ financiero/factoringpropuesta: consulta rechaza sin sesión antes de SQL de negocio 428ms
+     ✓ financiero/factoringpropuesta: consulta rechaza rol ajeno antes de SQL de negocio 734ms
+     ✓ financiero/factoringpropuesta: consulta rechaza JWT expirado antes de SQL de negocio 942ms
+     ✓ admin/factoringliquidacion: consulta rechaza sin sesión antes de SQL de negocio 863ms
+     ✓ admin/factoringliquidacion: consulta rechaza rol ajeno antes de SQL de negocio 914ms
+     ✓ admin/factoringliquidacion: consulta rechaza JWT expirado antes de SQL de negocio 997ms
+     ✓ financiero/factoringliquidacion: consulta rechaza sin sesión antes de SQL de negocio 888ms
+     ✓ financiero/factoringliquidacion: consulta rechaza rol ajeno antes de SQL de negocio 2429ms
+     ✓ financiero/factoringliquidacion: consulta rechaza JWT expirado antes de SQL de negocio 853ms
+     ✓ admin/factoringtransferenciacedente: consulta rechaza sin sesión antes de SQL de negocio 448ms
+     ✓ admin/factoringtransferenciacedente: consulta rechaza rol ajeno antes de SQL de negocio 758ms
+     ✓ admin/factoringtransferenciacedente: consulta rechaza JWT expirado antes de SQL de negocio 1004ms
+     ✓ financiero/factoringtransferenciacedente: consulta rechaza sin sesión antes de SQL de negocio 838ms
+     ✓ financiero/factoringtransferenciacedente: consulta rechaza rol ajeno antes de SQL de negocio 603ms
+     ✓ financiero/factoringtransferenciacedente: consulta rechaza JWT expirado antes de SQL de negocio 753ms
+     ✓ factoringpropuesta: campo requerido devuelve 400 sin cambios 2216ms
+     ✓ factoringpropuesta: identificador corto devuelve 400 sin cambios 1719ms
+     ✓ factoringpropuesta: fecha inválida devuelve 400 sin cambios 1696ms
+     ✓ factoringpropuesta: importe o porcentaje inválido devuelve 400 sin cambios 1936ms
+     ✓ factoringliquidacion: campo requerido devuelve 400 sin cambios 1391ms
+     ✓ factoringliquidacion: identificador corto devuelve 400 sin cambios 1255ms
+     ✓ factoringliquidacion: fecha inválida devuelve 400 sin cambios 1341ms
+     ✓ factoringliquidacion: importe o porcentaje inválido devuelve 400 sin cambios 1035ms
+     ✓ factoringtransferenciacedente: campo requerido devuelve 400 sin cambios 1112ms
+     ✓ factoringtransferenciacedente: identificador corto devuelve 400 sin cambios 1624ms
+     ✓ factoringtransferenciacedente: fecha inválida devuelve 400 sin cambios 1260ms
+     ✓ factoringtransferenciacedente: importe o porcentaje inválido devuelve 400 sin cambios 1062ms
+     ✓ factoringpropuesta: operación inexistente devuelve 404 y conserva filas previas 2063ms
+     ✓ factoringliquidacion: operación inexistente devuelve 404 y conserva filas previas 1420ms
+     ✓ factoringtransferenciacedente: operación inexistente devuelve 404 y conserva filas previas 1777ms
+     ✓ factoringpropuesta: fallo SQL en cabecera devuelve 500 con rollback 3419ms
+     ✓ factoringpropuesta: fallo SQL en detalle o vínculo devuelve 500 con rollback 1396ms
+     ✓ factoringliquidacion: fallo SQL en cabecera devuelve 500 con rollback 1350ms
+     ✓ factoringliquidacion: fallo SQL en detalle o vínculo devuelve 500 con rollback 1253ms
+     ✓ factoringtransferenciacedente: fallo SQL en cabecera devuelve 500 con rollback 1419ms
+     ✓ factoringtransferenciacedente: fallo SQL en detalle o vínculo devuelve 500 con rollback 1316ms
+     ✓ factoringpropuesta: actualización, baja y activación por HTTP preservan importes y detalles 1658ms
+     ✓ factoringliquidacion: actualización, baja y activación por HTTP preservan importes y detalles 3554ms
+     ✓ factoringtransferenciacedente: actualización, baja y activación por HTTP preservan importes y detalles 1253ms
+     ✓ factoringpropuesta: ruta financiera de creación no existe (404) 381ms
+     ✓ factoringliquidacion: ruta financiera de creación no existe (404) 340ms
+     ✓ factoringtransferenciacedente: ruta financiera de creación no existe (404) 393ms
+ ✓ tests/mariadb/proposal.test.ts (24 tests) 31638ms
+   ✓ Cálculo y creación de propuestas con Prisma/MariaDB reales (21)
+     ✓ DT-LIQ-04: guarda financiamiento más garantía igual al neto con centavo impar 3452ms
+     ✓ DT-LIQ-05: guarda y lee simulación con cobertura null y financiamiento 0.8 2610ms
+     ✓ DT-LIQ-05: guarda y lee simulación con cobertura null y financiamiento 1 1047ms
+     ✓ DT-LIQ-05: guarda y lee cobertura null con tasa cero y financiamiento 0.8 1454ms
+     ✓ DT-LIQ-05: guarda y lee cobertura null con tasa cero y financiamiento 1 1367ms
+     ✓ PEN, banco 1: simula sin escrituras y guarda cabecera, historial y detalles conciliados 3942ms
+     ✓ PEN, banco 2: simula sin escrituras y guarda cabecera, historial y detalles conciliados 2426ms
+     ✓ USD, banco 1: simula sin escrituras y guarda cabecera, historial y detalles conciliados 1310ms
+     ✓ USD, banco 2: simula sin escrituras y guarda cabecera, historial y detalles conciliados 1293ms
+     ✓ referencia factoringid inexistente no altera propuestas previas 812ms
+     ✓ referencia factoringtipoid inexistente no altera propuestas previas 802ms
+     ✓ referencia factoringestrategiaid inexistente no altera propuestas previas 848ms
+     ✓ referencia riesgooperacionid inexistente no altera propuestas previas 737ms
+     ✓ referencia riesgocedenteid inexistente no altera propuestas previas 698ms
+     ✓ referencia riesgoaceptanteid inexistente no altera propuestas previas 756ms
+     ✓ referencia factoringpropuestaestadoid inexistente no altera propuestas previas 768ms
+     ✓ fallo SQL en cabecera revierte la propuesta nueva y preserva la anterior 858ms
+     ✓ fallo SQL en historial revierte la propuesta nueva y preserva la anterior 883ms
+     ✓ fallo SQL en primer detalle revierte la propuesta nueva y preserva la anterior 869ms
+     ✓ fallo SQL en segundo detalle revierte la propuesta nueva y preserva la anterior 902ms
+     ✓ fallo de lectura en la transacción del calculador no deja escrituras 886ms
+   ✓ Aislamiento y concurrencia: caracterización del comportamiento actual (3)
+     ✓ la transacción del calculador usa otra conexión y puede leer configuración posterior al snapshot exterior 800ms
+     ✓ dos creaciones simultáneas guardan propuestas independientes y detalles completos sin reemplazar la aceptada 1020ms
+     ✓ una aprobación entre lectura y creación conserva el vínculo e importes aprobados; la creación aún se permite 1077ms
+ ✓ tests/mariadb/entrepreneur.test.ts (27 tests) 13251ms
+   ✓ Registro XML empresario: elegibilidad y persistencia reales (25)
+     ✓ acepta PEN con una cuota y líneas exactamente iguales al neto; reutiliza empresas 998ms
+     ✓ acepta USD con una cuota y líneas exactamente iguales al neto; reutiliza empresas 458ms
+     ✓ rechaza otro usuario sin dejar factura 388ms
+     ✓ rechaza asociacion inactiva sin dejar factura 364ms
+     ✓ rechaza cedente inactivo sin dejar factura 465ms
+     ✓ rechaza contado y revierte todos los detalles 430ms
+     ✓ rechaza dos cuotas y revierte todos los detalles 497ms
+     ✓ rechaza vencimiento a cinco dias y revierte todos los detalles 479ms
+     ✓ acepta vencimiento a seis días: frontera de la regla superior a cinco 486ms
+     ✓ factor_limite: sin linea devuelve 422 sin registros parciales 474ms
+     ✓ factor_limite: linea inactiva devuelve 422 sin registros parciales 484ms
+     ✓ factor_limite: neto excede disponible devuelve 422 sin registros parciales 533ms
+     ✓ cedente_limite: sin linea devuelve 422 sin registros parciales 453ms
+     ✓ cedente_limite: linea inactiva devuelve 422 sin registros parciales 497ms
+     ✓ cedente_limite: neto excede disponible devuelve 422 sin registros parciales 544ms
+     ✓ pagador_limite: sin linea devuelve 422 sin registros parciales 524ms
+     ✓ pagador_limite: linea inactiva devuelve 422 sin registros parciales 501ms
+     ✓ pagador_limite: neto excede disponible devuelve 422 sin registros parciales 512ms
+     ✓ pagador no registrado se rechaza y no se crea automáticamente 480ms
+     ✓ moneda sin maestro se rechaza y revierte el guardado 479ms
+     ✓ cedente desconocido no se crea automáticamente ni deja una factura 447ms
+     ✓ factura vinculada a operación con estado lógico 1 conserva el filtro de duplicados 695ms
+     ✓ factura vinculada a operación con estado lógico 0 conserva el filtro de duplicados 633ms
+     ✓ fallo SQL al vincular PDF revierte la etapa de persistencia 467ms
+     ✓ fallo SQL en enriquecimiento final revierte importación y conserva empresas existentes 468ms
+ ✓ tests/mariadb/operationState.test.ts (27 tests) 25506ms
+   ✓ Estados e historial: guardado, lectura y rollback reales (27)
+     ✓ PEN, estado 29: guarda historial, adjuntos y notificación coherentes 1336ms
+     ✓ PEN, estado 10: guarda historial, adjuntos y notificación coherentes 779ms
+     ✓ PEN, estado 36: guarda historial, adjuntos y notificación coherentes 1001ms
+     ✓ USD, estado 29: guarda historial, adjuntos y notificación coherentes 972ms
+     ✓ USD, estado 10: guarda historial, adjuntos y notificación coherentes 1008ms
+     ✓ USD, estado 36: guarda historial, adjuntos y notificación coherentes 990ms
+     ✓ estado sin acción especial conserva fecha de inicio y no notifica 951ms
+     ✓ operación inexistente rechaza sin cambios 946ms
+     ✓ estado inexistente rechaza sin cambios 835ms
+     ✓ segundo adjunto inexistente rechaza sin cambios 756ms
+     ✓ fallo SQL en historial revierte toda la creación 949ms
+     ✓ fallo SQL en operación revierte toda la creación 1027ms
+     ✓ fallo SQL en segundo vínculo revierte toda la creación 1052ms
+     ✓ fallo SQL en fecha de inicio revierte toda la creación 1006ms
+     ✓ fallo de notificación de estado 29 revierte SQL y preserva adjuntos 974ms
+     ✓ fallo de notificación de estado 10 revierte SQL y preserva adjuntos 920ms
+     ✓ fallo de notificación de estado 36 revierte SQL y preserva adjuntos 913ms
+     ✓ editar historial cambia comentario/estado y añade adjunto sin cambiar la operación 925ms
+     ✓ edición con historial inexistente conserva registros previos 822ms
+     ✓ edición con estado inexistente conserva registros previos 847ms
+     ✓ edición con adjunto inexistente conserva registros previos 864ms
+     ✓ fallo SQL al añadir adjunto en edición revierte comentario y estado del historial 912ms
+     ✓ eliminar y activar historial conserva operación, fecha, adjuntos y lectura 963ms
+     ✓ eliminar: fallo SQL conserva todo el historial 1053ms
+     ✓ eliminar: historial desconocido devuelve 404 816ms
+     ✓ activar: fallo SQL conserva todo el historial 998ms
+     ✓ activar: historial desconocido devuelve 404 862ms
+ ✓ tests/mariadb/connectedFlow.test.ts (10 tests) 22212ms
+   ✓ Recorrido conectado: XML → operación → propuesta → aprobación → inicio → liquidación (10)
+     ✓ PEN, pago anticipado conserva trazabilidad e importes 3600ms
+     ✓ PEN, pago puntual conserva trazabilidad e importes 2516ms
+     ✓ PEN, pago mora conserva trazabilidad e importes 2372ms
+     ✓ USD, pago anticipado conserva trazabilidad e importes 2267ms
+     ✓ USD, pago puntual conserva trazabilidad e importes 2150ms
+     ✓ USD, pago mora conserva trazabilidad e importes 1823ms
+     ✓ PEN: no aprueba propuesta aún no disponible; conserva etapas previas 1558ms
+     ✓ USD: no aprueba propuesta aún no disponible; conserva etapas previas 1420ms
+     ✓ PEN: fallo tardío de liquidación conserva recorrido confirmado y permite reintentar 2498ms
+     ✓ USD: fallo tardío de liquidación conserva recorrido confirmado y permite reintentar 1969ms
+ ✓ tests/mariadb/appHttp.test.ts (29 tests) 18186ms
+   ✓ Montaje global real de Express con MariaDB (29)
+     ✓ raíz pública pasa filtros, CORS, trazabilidad y Helmet 1001ms
+     ✓ ping consulta MariaDB desde la ruta pública real 396ms
+     ✓ ruta desconocida llega al manejador 404 JSON y conserva SQL 403ms
+     ✓ router montado: /api/v1/admin/servicio/factoring/factoringliquidacion/master/factoring/00000000-0000-0000-0000-000000000000 exige sesión 358ms
+     ✓ router montado: /api/v1/financiero/servicio/factoring/factoringliquidacion/master/factoring/00000000-0000-0000-0000-000000000000 exige sesión 337ms
+     ✓ router montado: /api/v1/empresario/servicio/factoring/factoring/listar exige sesión 361ms
+     ✓ router montado: /api/v1/inversionista/factoring/factoring/listar exige sesión 350ms
+     ✓ router montado: /api/v1/usuario/archivo/descargar/00000000-0000-0000-0000-000000000000 exige sesión 324ms
+     ✓ router secure montado exige sesión para actualizar accesos 332ms
+     ✓ creación real rechaza sesión ausente sin escrituras 354ms
+     ✓ creación real rechaza sesión formato sin escrituras 332ms
+     ✓ creación real rechaza sesión expirado sin escrituras 370ms
+     ✓ creación real rechaza sesión firma sin escrituras 333ms
+     ✓ creación real rechaza sesión rol sin escrituras 312ms
+     ✓ Zod devuelve 400 a través del manejador global, sin escrituras 397ms
+     ✓ PEN: crea y relee liquidación con permisos reales de ambos perfiles 1368ms
+     ✓ USD: crea y relee liquidación con permisos reales de ambos perfiles 1072ms
+     ✓ fallo SQL devuelve 500 global y revierte cabecera/detalles 1017ms
+     ✓ error inesperado de conexión llega a 500 global y notifica solo al proveedor sustituido 342ms
+     ✓ filtro IP real: blacklist rechaza antes de CORS y rutas 343ms
+     ✓ filtro IP real: blacklist global rechaza antes de CORS y rutas 350ms
+     ✓ filtro IP real: whitelist vacía rechaza antes de CORS y rutas 325ms
+     ✓ filtro IP real: fuera de whitelist rechaza antes de CORS y rutas 444ms
+     ✓ User-Agent bloqueado devuelve 404 vacío en producción 321ms
+     ✓ JSON inválido devuelve 400 antes de filtros y conserva SQL 309ms
+     ✓ limitador global real: 500 solicitudes admitidas y siguiente 429 por IP 5466ms
+ ✓ tests/mariadb/operation.test.ts (27 tests) 22014ms
+   ✓ Creación de factoring: servicios, XML y SQL reales (21)
+     ✓ crea en PEN con importes de factura, estado inicial, historial y asociación; no consume líneas 1039ms
+     ✓ crea en USD con importes de factura, estado inicial, historial y asociación; no consume líneas 553ms
+     ✓ suma dos facturas Decimal sin concatenar y usa la emisión más antigua 781ms
+     ✓ factura inexistente rechaza sin escritura parcial 661ms
+     ✓ cedenteid inexistente rechaza sin escritura parcial 618ms
+     ✓ aceptanteid inexistente rechaza sin escritura parcial 658ms
+     ✓ cuentabancariaid inexistente rechaza sin escritura parcial 657ms
+     ✓ monedaid inexistente rechaza sin escritura parcial 758ms
+     ✓ contactoaceptanteid inexistente rechaza sin escritura parcial 813ms
+     ✓ persona inexistente rechaza sin escritura parcial 688ms
+     ✓ colaborador inexistente rechaza sin escritura parcial 664ms
+     ✓ factura repetida en el mismo payload provoca rollback de operación e historial 801ms
+     ✓ segunda creación secuencial con la misma factura se rechaza sin duplicar asociación 816ms
+     ✓ fallo SQL en factoring_historial_estado revierte la operación completa 779ms
+     ✓ fallo SQL en factoring_factura revierte la operación completa 825ms
+     ✓ fallo de email revierte operación, historial y asociaciones, conservando la factura 812ms
+     ✓ dos solicitudes no crean dos operaciones con la misma factura (copias XML: false) 802ms
+     ✓ dos solicitudes no crean dos operaciones con la misma factura (copias XML: true) 1029ms
+     ✓ solicitudes simultáneas sin coordinador no duplican operaciones 808ms
+     ✓ dos facturas distintas del mismo cedente pueden crear operaciones concurrentes 1279ms
+     ✓ fallo en la segunda asociación revierte también la primera y conserva ambas facturas 883ms
+   ✓ Líneas: actualización administrativa real, sin reserva implícita (6)
+     ✓ actualiza factor: disponible=total-usado y conserva actor 766ms
+     ✓ actualiza cedente: disponible=total-usado y conserva actor 813ms
+     ✓ actualiza pagador: disponible=total-usado y conserva actor 809ms
+     ✓ fallo SQL al actualizar factor conserva los saldos anteriores 970ms
+     ✓ fallo SQL al actualizar cedente conserva los saldos anteriores 1053ms
+     ✓ fallo SQL al actualizar pagador conserva los saldos anteriores 838ms
+ ✓ tests/mariadb/settlementConcurrency.test.ts (12 tests) 13105ms
+   ✓ Caracterización de solicitudes repetidas; no establece idempotencia comercial (4)
+     ✓ liquidación PEN: repetir el mismo payload guarda dos registros completos 1398ms
+     ✓ liquidación USD: repetir el mismo payload guarda dos registros completos 889ms
+     ✓ transferencia PEN: repetir número de operación y constancia guarda dos registros 1294ms
+     ✓ transferencia USD: repetir número de operación y constancia guarda dos registros 1327ms
+   ✓ Creaciones concurrentes completas (4)
+     ✓ liquidaciones simultáneas sin coordinación guardan dos registros independientes 1200ms
+     ✓ transferencias simultáneas sin coordinación repiten la operación y vinculan ambas constancias 1117ms
+     ✓ dos liquidaciones insertadas sin commit en conexiones distintas terminan con todos sus detalles 1042ms
+     ✓ dos transferencias insertadas sin commit en conexiones distintas conservan sus vínculos 814ms
+   ✓ Rollback aislado de una solicitud concurrente (4)
+     ✓ liquidación: fallo primero; error en segundo detalle no afecta a la otra solicitud 1162ms
+     ✓ liquidación: éxito primero; error en segundo detalle no afecta a la otra solicitud 1110ms
+     ✓ transferencia: fallo primero; error en constancia no afecta a la otra solicitud 953ms
+     ✓ transferencia: éxito primero; error en constancia no afecta a la otra solicitud 785ms
+ ✓ tests/mariadb/business.test.ts (15 tests) 10737ms
+   ✓ XML: guardado, lectura y rollback reales (7)
+     ✓ persiste moneda PEN, fechas y todos los detalles; vuelve a leer por Prisma y DAO 924ms
+     ✓ persiste moneda USD, fechas y todos los detalles; vuelve a leer por Prisma y DAO 400ms
+     ✓ vencimiento ausente permanece NULL al leer desde MariaDB 365ms
+     ✓ fallo SQL tardío al vincular el PDF revierte cabecera, detalles y primer vínculo 465ms
+     ✓ XML inválido se rechaza sin registros parciales 364ms
+     ✓ XML inválido se rechaza sin registros parciales 336ms
+     ✓ moneda sin maestro revierte toda la importación 522ms
+   ✓ Aprobación: estados, rollback y concurrencia reales (8)
+     ✓ aprueba, vincula la propuesta, registra ambos historiales y rechaza la repetición 1370ms
+     ✓ otro usuario no puede aprobar y no deja escrituras 683ms
+     ✓ si la propuesta pierde vigencia después de leerla, revierte la reserva y el historial 706ms
+     ✓ solicitudes simultáneas sin coordinador dejan una sola aprobación 1013ms
+     ✓ error de proveedor de email revierte estados, vínculo y ambos historiales 1032ms
+     ✓ fallo SQL al actualizar factoring revierte el cambio de propuesta y ambos historiales 694ms
+     ✓ dos solicitudes concurrentes aprueban una sola vez (propuestas distintas: false) 919ms
+     ✓ dos solicitudes concurrentes aprueban una sola vez (propuestas distintas: true) 874ms
+ ✓ tests/mariadb/authHttp.test.ts (37 tests) 19534ms
+   ✓ Login y refresco de accesos: app real, bcrypt y MariaDB (37)
+     ✓ monta detracciones en la app real y comprueba el rol financiero vigente 4311ms
+     ✓ login rol 2 emite JWT firmado y conserva credenciales 672ms
+     ✓ login rol 3 emite JWT firmado y conserva credenciales 496ms
+     ✓ login rol 4 emite JWT firmado y conserva credenciales 375ms
+     ✓ login rol 5 emite JWT firmado y conserva credenciales 399ms
+     ✓ login rol 6 emite JWT firmado y conserva credenciales 511ms
+     ✓ login rechaza correo ajeno sin cambiar SQL 444ms
+     ✓ login rechaza password incorrecta sin cambiar SQL 408ms
+     ✓ login rechaza email inválido sin cambiar SQL 395ms
+     ✓ login rechaza password corta sin cambiar SQL 359ms
+     ✓ login rechaza password ausente sin cambiar SQL 376ms
+     ✓ refresco conserva exp/iat, depura perfil y produce menú administrativo 393ms
+     ✓ refresco incorpora rol financiero posterior al login sin extender la sesión 544ms
+     ✓ refresco retira vínculo inactivo estado 0; revoca también permisos del JWT anterior 441ms
+     ✓ refresco retira rol inactivo estado 0; revoca también permisos del JWT anterior 406ms
+     ✓ refresco retira vínculo inactivo estado 2; revoca también permisos del JWT anterior 404ms
+     ✓ refresco retira rol inactivo estado 2; revoca también permisos del JWT anterior 422ms
+     ✓ login sin credencial devuelve 404 sin token ni notificación 367ms
+     ✓ retirar físicamente el vínculo revoca el JWT previo 427ms
+     ✓ desactivar cuenta después del login rechaza JWT previo en rutas protegidas 422ms
+     ✓ JWT firmado con rol ajeno a SQL no concede ese permiso 355ms
+     ✓ fallo al leer permisos vigentes no autoriza con el JWT anterior 379ms
+     ✓ login con usuario estado 0: solo estado 1 autentica y concede roles 321ms
+     ✓ login con credencial estado 0: solo estado 1 autentica y concede roles 312ms
+     ✓ login con vínculo estado 0: solo estado 1 autentica y concede roles 316ms
+     ✓ login con rol estado 0: solo estado 1 autentica y concede roles 354ms
+     ✓ login con usuario estado 2: solo estado 1 autentica y concede roles 389ms
+     ✓ login con credencial estado 2: solo estado 1 autentica y concede roles 424ms
+     ✓ login con vínculo estado 2: solo estado 1 autentica y concede roles 437ms
+     ✓ login con rol estado 2: solo estado 1 autentica y concede roles 445ms
+     ✓ refresco rechaza expirado sin escrituras 414ms
+     ✓ refresco rechaza sin exp sin escrituras 376ms
+     ✓ refresco rechaza usuario inexistente sin escrituras 348ms
+     ✓ refresco rechaza sin idusuario sin escrituras 395ms
+     ✓ fallo de lectura Prisma en refresco devuelve 500 y conserva SQL 345ms
+     ✓ login limita diez intentos por IP; otra IP puede autenticar 628ms
+     ✓ refresco limita diez solicitudes por usuario, aunque cambie IP, con Retry-After 698ms
+ ✓ tests/mariadb/saldocontable.test.ts (17 tests) 10454ms
+   ✓ Saldo Contable: servicios, DAO y transacciones reales (17)
+     ✓ crea nombre/fechas flexibles, rechaza fechas inválidas y duplicado sin duplicar cabecera 718ms
+     ✓ guarda neto aceptado distinto al inicial, multiplicador PEN=1, total y autoría 588ms
+     ✓ USD requiere contable exacto, no compra/venta ni último disponible; conserva precisión 511ms
+     ✓ operación pendiente vuelve a sugerirse y asociarse en otro corte 576ms
+     ✓ retiro/reactivación reutiliza detalle, conserva identidad y evita asociación duplicada 634ms
+     ✓ cobro real 2026-06-30T15:00:00Z excluye al corte 554ms
+     ✓ cobro real 2026-07-01T04:59:59Z excluye al corte 656ms
+     ✓ descarta liquidación anulada y acepta cobro posterior; varias vigentes requieren revisión 767ms
+     ✓ crea futuro/curso y bloquea asociación/cierre desde servicio 683ms
+     ✓ crea futuro/curso y bloquea asociación/cierre desde servicio 628ms
+     ✓ cerrado conserva copias aunque se registren cobros y cambios de fuentes posteriores 1007ms
+     ✓ cambio del contable antes del cierre exige recalcular; el cierre no cambia importes silenciosamente 706ms
+     ✓ eliminación lógica conserva detalle, bloquea cambios y permite activar 525ms
+     ✓ no cambia fechas con asociaciones; editar nombre sí conserva importe 481ms
+     ✓ fallo SQL tras insertar detalle revierte detalle, total y versión en la misma transacción 520ms
+     ✓ dos ediciones concurrentes de la misma versión producen una escritura y un conflicto 366ms
+     ✓ lote con operación inexistente es atómico y cerrar vacío no se permite 513ms
+ ✓ tests/mariadb/historicalAudit.test.ts (5 tests) 2295ms
+   ✓ audita sumas Decimal correctas sin falsos positivos ni escrituras 769ms
+   ✓ detecta importes concatenados sin atribuir automáticamente su causa 386ms
+   ✓ marca vínculos faltantes y conserva en alcance operaciones eliminadas 411ms
+   ✓ detecta monedas inconsistentes aunque los importes coincidan 363ms
+   ✓ detecta varias facturas vinculadas aunque la cantidad declarada sea uno 356ms
+stdout | tests/mariadb/detraccion.test.ts
+[config] {"selection":"default","file":".env.test","loaded":true,"fileVariables":31,"retainedVariables":2,"conflictingKeys":["PRISMA_DATABASE_FACTORING_URL"]} precedence=process.env
+[config] Las claves en conflictingKeys tienen valores diferentes en el proceso y en el archivo. Prevalece el proceso (incluido el entorno heredado de PM2). Solo se muestran los nombres.
+
+ ✓ tests/mariadb/detraccion.test.ts (5 tests) 3967ms
+   ✓ filtro/paginación conserva operaciones liquidadas y omite NO APLICA/eliminados 1317ms
+   ✓ paga, corrige y reabre conservando fecha, archivos y campos ajenos 808ms
+   ✓ dos comprobantes de una operación conservan filas, búsqueda compuesta y orden con fecha nula al final 772ms
+   ✓ fallo de vínculo revierte estado/fecha/auditoría en SQL real 564ms
+   ✓ dos escritores con una versión producen un éxito y un conflicto sin duplicar archivos 491ms
+ ✓ tests/mariadb/environment.test.ts (4 tests) 785ms
+
+ Test Files  18 passed (18)
+      Tests  546 passed (546)
+   Start at  16:36:31
+   Duration  613.97s (tests 93%, import 4%, transform 2%)
+
+JUNIT report written to D:/06_Workspace_nodejs/ft-app-backend/coverage/mariadb/junit.xml
+Resumen: coverage/mariadb/last-run.json

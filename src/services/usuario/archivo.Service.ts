@@ -82,6 +82,9 @@ export const cargarArchivoService = async (dto: CargarArchivoDto): Promise<{ arc
 
         // C. Validar Mimetype Real (Magic Numbers)
         const tipoDetectado = await fileTypeFromFile(archivoOrigen);
+        if (archivotipo.code === "AT012000" && (!tipoDetectado || !["application/pdf", "image/png", "image/jpeg"].includes(tipoDetectado.mime) || size > 5 * 1024 * 1024)) {
+          throw new ClientError("Constancia debe contener un PDF, PNG o JPG válido de hasta 5 MB", 400);
+        }
         const mimeReal = tipoDetectado ? tipoDetectado.mime : mimeMulter;
 
         if (archivotipo.mimetypes_permitidos) {

@@ -87,7 +87,12 @@ const renombrarAtributosEspeciales = (filePath) => {
 
   const updatedLines = lines.map((line, i) => {
     const originalLine = line;
-
+    // Prisma conserva nombres anteriores de relaciones durante db pull. Ajuste
+    // acotado al renombre autorizado del catálogo genérico, conservando ? y @relation.
+    if (/^\s*factor_transaccion_bancaria_conexion\s+configuracion_bbdd\??\s+@relation/.test(line)) {
+      modificados++;
+      return line.replace("factor_transaccion_bancaria_conexion", "configuracion_bbdd");
+    }
 
     //if (!line.includes('@relation("')) return line;
 

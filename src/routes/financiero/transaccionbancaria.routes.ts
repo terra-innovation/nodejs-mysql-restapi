@@ -1,0 +1,22 @@
+import { Router } from "express";
+import { isAuth, isRole } from "#src/middlewares/authMiddleware.js";
+import { catchedAsync } from "#src/utils/catchedAsync.js";
+import * as controller from "#src/controllers/banca/transaccionbancaria.Controller.js";
+const router = Router(),
+  base = "/financiero/transaccionbancaria";
+router.use(base, isAuth, isRole([6]));
+router.get(`${base}/master`, catchedAsync(controller.master));
+router.get(`${base}/origen`, catchedAsync(controller.origen));
+router.get(`${base}/movimientos`, catchedAsync(controller.movimientos));
+router.post(`${base}/movimientos`, catchedAsync(controller.crearMovimiento));
+router.get(`${base}/movimientos/:id`, catchedAsync(controller.detalleMovimiento));
+router.patch(`${base}/movimientos/:id`, catchedAsync(controller.mutarMovimiento));
+router.get(`${base}/cuentas`, catchedAsync(controller.mapeos));
+router.post(`${base}/cuentas`, catchedAsync(controller.crearMapeo));
+router.patch(`${base}/cuentas/:id`, catchedAsync(controller.estadoMapeo));
+router.post(`${base}/sincronizar`, catchedAsync(controller.sincronizar));
+router.get(`${base}/ejecuciones`, catchedAsync(controller.logs("ejecuciones")));
+router.get(`${base}/incidencias`, catchedAsync(controller.logs("incidencias")));
+router.patch(`${base}/incidencias/:id`, catchedAsync(controller.resolverIncidencia));
+router.get(`${base}/historial`, catchedAsync(controller.logs("historial")));
+export default router;

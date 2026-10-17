@@ -16,6 +16,25 @@ servidor Vite, navegador, puerto adicional, base de datos ni `.env.test` para
 estas pruebas unitarias y HTTP. La carga de archivos usa carpetas desechables
 creadas con `mkdtemp` y las elimina tras cada caso.
 
+## Selección por fase y riesgo
+
+Durante el desarrollo, seleccionar las suites del comportamiento cambiado y ampliar primero a sus consumidores. Al cerrar una nueva funcionalidad, un cambio transversal o una migración, comprobar la selección completa de cada proyecto afectado y los controles reales pertinentes. Respetar los límites de ejecución del usuario; una validación pendiente no permite declarar cierre verificado.
+
+| Cambio | Durante el desarrollo | Cierre |
+| --- | --- | --- |
+| Documentación sin efecto ejecutable | Revisar contenido y enlaces; sin pruebas de aplicación | Revisión documental |
+| Texto local | Revisar resultado y prueba afectada si es contrato observable | Comprobación focalizada; sin full local por rutina |
+| Lógica, validación o endpoint local | Suites exactas del comportamiento y casos límite | Regresión del módulo; full al cierre si integra una nueva funcionalidad |
+| Dinero, fechas, permisos o utilidades compartidas | Suites del cambio y consumidores afectados según la matriz de negocio | Full al cierre de funcionalidad o impacto transversal, más controles pertinentes |
+| SQL, rollback o concurrencia | Lógica pertinente e integración focalizada con MariaDB desechable | Regresión de persistencia pertinente y full al cierre de funcionalidad o impacto transversal |
+| Dependencias, configuración global o runner | Comprobación focalizada inicial; ampliar al estabilizar el bloque | Full; comparar la misma selección antes/después en migraciones |
+
+Antes del cierre, justificar una completa por impacto transversal o por una incertidumbre concreta que no resuelva la selección focalizada. Si no existe prueba pertinente, declarar el hueco y añadir una regresión útil cuando el comportamiento y riesgo lo requieran; una suite ajena no valida el cambio.
+
+`npm test` y `test:vitest` sin filtros ejecutan toda la selección rápida configurada; “rápida” no significa focalizada. `test:vitest:ci` añade cobertura y reportes. `test:all` añade tipos de Vitest a la selección rápida, pero no integra todos los tipos ni MariaDB. Nombrar siempre el alcance de una full: Vitest, MariaDB o controles de calidad; ninguna certifica automáticamente navegador/E2E ni producción.
+
+No repetir comprobaciones aprobadas sin cambios relevantes, fallos o dudas nuevas. Registrar revisión, diff pendiente, selección y entorno. Una full sobre una versión anterior no cierra cambios ejecutables posteriores; si solo cambió documentación sin efecto ejecutable, no repetirla. Reutilizar evidencia de CI únicamente para la misma versión y alcance pertinentes, sin atribuir validación de una plataforma a otra. No ejecutar cobertura, agregadores de calidad ni builds por rutina en cada iteración. Los pipelines actuales conservan sus controles y eventos.
+
 ## Comandos
 
 Las suites originales de Jest están adaptadas en [`migrated/`](migrated/README.md),
@@ -38,7 +57,7 @@ Ejecutar un archivo o filtrar por nombre:
 
 ```bash
 npm run test:vitest -- tests/vitest/unit/dateUtils.test.ts
-npm run test:vitest -- -t "desembolso sin días de interés"
+npm run test:vitest -- tests/vitest/unit/factoring.Calculator.test.ts -t "desembolso sin días de interés"
 ```
 
 Vitest transforma TypeScript pero no sustituye su comprobación de tipos.

@@ -1,0 +1,13 @@
+
+> ft-app-backend@1.0.1 test:vitest
+> cross-env TZ=UTC NODE_ENV=test vitest run --config vitest.config.ts tests/vitest/unit/factoringPago.Policy.test.ts tests/vitest/unit/factoringestado.business.test.ts tests/vitest/unit/transaccionbancaria.Service.test.ts
+
+
+ RUN  v5.0.3 D:/06_Workspace_nodejs/ft-app-backend
+
+
+ Test Files  3 passed (3)
+      Tests  47 passed (47)
+   Start at  22:24:58
+   Duration  863ms (transform 60%, import 37%, tests 2%, worker 1%)
+
